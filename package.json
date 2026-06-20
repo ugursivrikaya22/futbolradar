@@ -1,0 +1,13 @@
+{
+  "name": "futbolradar-starter",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python3 -m http.server 8080",
+    "fetch:api-football": "node scripts/fetch-api-football.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}

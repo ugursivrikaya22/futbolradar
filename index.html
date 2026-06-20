@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FutbolRadar | Bugünkü Maç Analizleri, Form ve Momentum Skoru</title>
+  <meta name="description" content="FutbolRadar; bugünkü maçları form, momentum, gol eğilimi ve takım ritmi üzerinden analiz eden futbol veri platformudur." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://www.futbolradar.com/" />
+  <meta property="og:title" content="FutbolRadar | Maçları Skordan Önce Oku" />
+  <meta property="og:description" content="Bugünkü maç analizleri, momentum skoru, form tablosu ve gol eğilimleri." />
+  <meta property="og:type" content="website" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <script defer src="assets/app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="FutbolRadar ana sayfa">
+        <span class="brand-mark">FR</span>
+        <span>FutbolRadar</span>
+      </a>
+      <nav class="main-nav" aria-label="Ana menü">
+        <a href="index.html">Bugünkü Maçlar</a>
+        <a href="mac-analizi-galatasaray-fenerbahce.html">Maç Analizleri</a>
+        <a href="super-lig-form-tablosu.html">Form Tablosu</a>
+        <a href="takim-galatasaray.html">Takımlar</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">Form • Momentum • Gol Eğilimi</p>
+          <h1>Maçları skordan önce form ve momentumla oku.</h1>
+          <p class="hero-text">FutbolRadar, günlük maçları takım ritmi, son 5 maç formu, iç/dış saha dengesi ve gol potansiyeli üzerinden analiz eden veri odaklı futbol platformudur.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#bugunku-maclar">Bugünkü maçları gör</a>
+            <a class="btn secondary" href="super-lig-form-tablosu.html">Form tablosu</a>
+          </div>
+        </div>
+        <aside class="hero-card">
+          <span class="card-kicker">Günün Radar Maçı</span>
+          <h2>Galatasaray - Fenerbahçe</h2>
+          <div class="score-row">
+            <div>
+              <strong id="heroHomeScore">82</strong>
+              <span>GS Momentum</span>
+            </div>
+            <div>
+              <strong id="heroAwayScore">76</strong>
+              <span>FB Momentum</span>
+            </div>
+          </div>
+          <p class="mini-note">Gol potansiyeli yüksek • Risk seviyesi orta • Form dengesi ev sahibi lehine</p>
+          <a class="text-link" href="mac-analizi-galatasaray-fenerbahce.html">Detaylı analizi aç →</a>
+        </aside>
+      </div>
+    </section>
+
+    <section id="bugunku-maclar" class="section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Günlük analiz</p>
+            <h2>Bugünkü maç radarları</h2>
+          </div>
+          <span class="date-pill" id="todayLabel">Bugün</span>
+        </div>
+        <div class="match-grid" id="matchGrid"></div>
+      </div>
+    </section>
+
+    <section class="section alt-bg">
+      <div class="container two-col">
+        <div class="panel">
+          <div class="section-head compact">
+            <div>
+              <p class="eyebrow">Momentum</p>
+              <h2>En formda takımlar</h2>
+            </div>
+          </div>
+          <div class="team-list" id="teamMomentumList"></div>
+        </div>
+        <div class="panel">
+          <div class="section-head compact">
+            <div>
+              <p class="eyebrow">SEO içerik</p>
+              <h2>Öne çıkan analiz başlıkları</h2>
+            </div>
+          </div>
+          <ul class="article-list">
+            <li><a href="super-lig-form-tablosu.html">Süper Lig form tablosu nasıl okunur?</a></li>
+            <li><a href="mac-analizi-galatasaray-fenerbahce.html">Galatasaray - Fenerbahçe maç analizi</a></li>
+            <li><a href="takim-galatasaray.html">Galatasaray takım formu ve gol eğilimi</a></li>
+            <li><a href="#">Bugünkü maçlarda gol potansiyeli yüksek karşılaşmalar</a></li>
+            <li><a href="#">Alt lig radar: sürpriz üretme potansiyeli olan takımlar</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container ad-box">
+        <span>Reklam Alanı</span>
+        <p>Google AdSense veya reklam ağı kodu buraya eklenecek.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <strong>FutbolRadar</strong>
+        <p>İstatistik, form ve momentum odaklı futbol analiz platformu.</p>
+      </div>
+      <div>
+        <p class="disclaimer">Bu sitedeki analizler bilgilendirme amaçlıdır. Bahis veya yatırım tavsiyesi değildir.</p>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
