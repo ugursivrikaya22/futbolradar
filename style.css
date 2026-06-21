@@ -4,12 +4,22 @@ if (todayLabel) {
   todayLabel.textContent = formatter.format(new Date());
 }
 
+const navToggle = document.querySelector('.nav-toggle');
+const mainNav = document.querySelector('.main-nav');
+if (navToggle && mainNav) {
+  navToggle.addEventListener('click', () => {
+    const isOpen = mainNav.classList.toggle('is-open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+}
+
 async function loadData() {
   try {
-    const response = await fetch('data/matches.json');
+    const response = await fetch('/data/matches.json');
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return await response.json();
   } catch (error) {
-    console.warn('Demo veri yüklenemedi:', error);
+    console.warn('Demo veri yuklenemedi:', error);
     return { matches: [], teams: [] };
   }
 }
@@ -25,6 +35,7 @@ function riskClass(risk) {
 function renderMatches(matches) {
   const grid = document.getElementById('matchGrid');
   if (!grid) return;
+
   grid.innerHTML = matches.map(match => `
     <article class="match-card">
       <div class="match-meta"><span>${match.league}</span><span>${match.time}</span></div>
@@ -46,7 +57,7 @@ function renderMatches(matches) {
         <span class="${riskClass(match.risk)}">Risk: ${match.risk}</span>
       </div>
       <p>${match.note}</p>
-      <a class="text-link" href="${match.url}">Analizi aç →</a>
+      <a class="text-link" href="${match.url}">Analizi aç</a>
     </article>
   `).join('');
 }
@@ -54,6 +65,7 @@ function renderMatches(matches) {
 function renderTeams(teams) {
   const list = document.getElementById('teamMomentumList');
   if (!list) return;
+
   const sorted = [...teams].sort((a, b) => b.momentum - a.momentum);
   list.innerHTML = sorted.map((team, index) => `
     <div class="team-row">
@@ -70,6 +82,7 @@ function renderTeams(teams) {
 function renderFormTable(teams) {
   const tbody = document.getElementById('formTableBody');
   if (!tbody) return;
+
   const sorted = [...teams].sort((a, b) => b.momentum - a.momentum);
   tbody.innerHTML = sorted.map((team, index) => `
     <tr>
