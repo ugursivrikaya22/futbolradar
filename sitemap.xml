@@ -1,24 +1,23 @@
-# FutbolRadar
-
-FutbolRadar, futbol maçlarını form, momentum, gol eğilimi ve takım ritmi üzerinden sunan statik HTML/CSS/JS analiz sitesidir.
-
-## Dosya Yapısı
-
-- `index.html`: Ana sayfa ve bugünkü maç radarları
-- `mac-analizi-galatasaray-fenerbahce.html`: Örnek maç analizi
-- `takim-galatasaray.html`: Örnek takım profili
-- `super-lig-form-tablosu.html`: Süper Lig form tablosu
-- `assets/style.css`: Tasarım
-- `assets/app.js`: JSON veri okuma ve mobil menü
-- `data/matches.json`: Demo maç ve takım verisi
-- `robots.txt`: Arama motoru erişim ayarı
-- `sitemap.xml`: SEO site haritası
-- `vercel.json`: Temiz URL rewrite/redirect ayarları
-
-## Lokal Çalıştırma
-
-```bash
-python -m http.server 8080
-```
-
-Tarayıcıdan `http://localhost:8080` adresini açın.
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.futbolradar.com/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.futbolradar.com/mac-analizi.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.futbolradar.com/takim-formu.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.futbolradar.com/form-tablosu.html</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+</urlset>
