@@ -1,38 +1,45 @@
-// FutbolRadar — TheSportsDB veri çekme scripti
-// API anahtarı GEREKTİRMEZ. Ücretsiz ve güncel sezon verisi sunar.
-// Kullanım: npm run fetch
-// Günde 2 istek yapar: 1) lig tablosu (form dahil)  2) günün maçları
+// FutbolRadar — TheSportsDB veri çekme scripti v2 (çoklu lig + 3 gün ileri)
+// API anahtarı GEREKTİRMEZ. Kullanım: npm run fetch
 
 import { writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const LEAGUE_ID = process.env.FUTBOLRADAR_LEAGUE || '4339'; // 4339 = Türkiye Süper Lig
 const TIMEZONE = process.env.FUTBOLRADAR_TIMEZONE || 'Europe/Istanbul';
+const DAYS_AHEAD = Number(process.env.FUTBOLRADAR_DAYS || 3);
 const BASE = 'https://www.thesportsdb.com/api/v1/json/123';
 
-const today = process.env.FUTBOLRADAR_DATE ||
-  new Intl.DateTimeFormat('en-CA', { timeZone: TIMEZONE }).format(new Date());
+const LEAGUES = [
+  { id: '4339', name: 'Süper Lig', main: true },
+  { id: '4328', name: 'Premier Lig' },
+  { id: '4335', name: 'La Liga' },
+  { id: '4332', name: 'Serie A' },
+  { id: '4331', name: 'Bundesliga' },
+  { id: '4480', name: 'Şampiyonlar Ligi', noTable: true },
+];
+
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+const dayStr = (offset) => {
+  const d = new Date(Date.now() + offset * 86400000);
+  return new Intl.DateTimeFormat('en-CA', { timeZone: TIMEZONE }).format(d);
+};
+const today = process.env.FUTBOLRADAR_DATE || dayStr(0);
 
 async function api(pathname) {
+  await sleep(300);
   const res = await fetch(`${BASE}${pathname}`);
   if (!res.ok) throw new Error(`API hata: ${pathname} -> HTTP ${res.status}`);
   return res.json();
 }
 
-// W/D/L -> G/B/M (Galibiyet / Beraberlik / Mağlubiyet)
-const trForm = (form) => (form || '')
-  .slice(-5).split('')
-  .map(c => ({ W: 'G', D: 'B', L: 'M' }[c] || c))
-  .join(' ');
+const trForm = (f) => (f || '').slice(-5).split('')
+  .map(c => ({ W: 'G', D: 'B', L: 'M' }[c] || c)).join(' ');
 
-// Momentum: son 5 maç puanı %80 + gol farkı katkısı %20 (0-100)
 function momentum(form, goalDiff) {
   const last5 = (form || '').slice(-5);
   const pts = [...last5].reduce((s, c) => s + (c === 'W' ? 3 : c === 'D' ? 1 : 0), 0);
-  const base = (pts / 15) * 80;
   const gd = Math.max(-10, Math.min(10, Number(goalDiff) || 0));
-  return Math.round(base + ((gd + 10) / 20) * 20);
+  return Math.round((pts / 15) * 80 + ((gd + 10) / 20) * 20);
 }
 
 function teamNote(form) {
@@ -45,74 +52,68 @@ function teamNote(form) {
   return 'Dengeli ama kırılgan bir form profili.';
 }
 
-const goalPotential = (hm, am) => {
-  const avg = (hm + am) / 2;
-  return avg >= 70 ? 'Yüksek' : avg >= 50 ? 'Orta' : 'Düşük';
-};
+const goalPotential = (h, a) => { const g = (h + a) / 2; return g >= 70 ? 'Yüksek' : g >= 50 ? 'Orta' : 'Düşük'; };
+const risk = (h, a) => { const d = Math.abs(h - a); return d <= 8 ? 'Yüksek' : d <= 20 ? 'Orta' : 'Düşük'; };
+const matchNote = (home, away, h, a) => Math.abs(h - a) <= 8
+  ? `${home} - ${away} form açısından dengede, maç ritmi ilk gole göre şekillenebilir.`
+  : `${h > a ? home : away} momentum üstünlüğüyle sahaya çıkıyor; rakibin direnç profili maçın anahtarı.`;
 
-const risk = (hm, am) => {
-  const d = Math.abs(hm - am);
-  return d <= 8 ? 'Yüksek' : d <= 20 ? 'Orta' : 'Düşük';
-};
+console.log(`FutbolRadar v2 | ${LEAGUES.length} lig | ${today} +${DAYS_AHEAD} gün`);
 
-const matchNote = (home, away, hm, am) =>
-  Math.abs(hm - am) <= 8
-    ? `${home} - ${away} form açısından dengede, maç ritmi ilk gole göre şekillenebilir.`
-    : `${hm > am ? home : away} momentum üstünlüğüyle sahaya çıkıyor; rakibin direnç profili maçın anahtarı.`;
-
-console.log(`FutbolRadar veri çekimi (TheSportsDB) | Lig: ${LEAGUE_ID} | Tarih: ${today}`);
-
-// 1) Güncel lig tablosu (form serisi dahil)
-const tableRes = await api(`/lookuptable.php?l=${LEAGUE_ID}`);
-const table = tableRes?.table || [];
-if (!table.length) throw new Error('Lig tablosu boş döndü. Lig ID doğru mu? (4339 = Süper Lig)');
-
-const teams = table.map(row => ({
-  name: row.strTeam,
-  form: trForm(row.strForm),
-  goalDiff: Number(row.intGoalDifference) || 0,
-  momentum: momentum(row.strForm, row.intGoalDifference),
-  note: teamNote(row.strForm),
-}));
-
-const byName = new Map(teams.map(t => [t.name, t]));
-
-// 2) Bugünün maçları
-let events = [];
-try {
-  const dayRes = await api(`/eventsday.php?d=${today}&l=${LEAGUE_ID}`);
-  events = dayRes?.events || [];
-} catch (e) {
-  console.warn('Günün maçları alınamadı, maç listesi boş bırakılıyor:', e.message);
+const byName = new Map();
+let mainTeams = [];
+for (const lg of LEAGUES) {
+  if (lg.noTable) continue;
+  try {
+    const res = await api(`/lookuptable.php?l=${lg.id}`);
+    const rows = res?.table || [];
+    const mapped = rows.map(r => ({
+      name: r.strTeam,
+      form: trForm(r.strForm),
+      goalDiff: Number(r.intGoalDifference) || 0,
+      momentum: momentum(r.strForm, r.intGoalDifference),
+      note: teamNote(r.strForm),
+    }));
+    mapped.forEach(t => byName.set(t.name, t));
+    if (lg.main) mainTeams = mapped;
+    console.log(`  tablo ${lg.name}: ${mapped.length} takım`);
+  } catch (e) { console.warn(`  tablo ${lg.name} alınamadı:`, e.message); }
 }
 
-const matches = events.map(ev => {
-  const home = ev.strHomeTeam;
-  const away = ev.strAwayTeam;
-  const hm = byName.get(home)?.momentum ?? 50;
-  const am = byName.get(away)?.momentum ?? 50;
-  let time = ev.strTime ? ev.strTime.slice(0, 5) : '—';
-  if (ev.strTimestamp) {
-    time = new Date(ev.strTimestamp + (ev.strTimestamp.endsWith('Z') ? '' : 'Z'))
-      .toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: TIMEZONE });
+const all = [];
+for (let off = 0; off <= DAYS_AHEAD; off++) {
+  const date = dayStr(off);
+  for (const lg of LEAGUES) {
+    try {
+      const res = await api(`/eventsday.php?d=${date}&l=${lg.id}`);
+      for (const ev of (res?.events || [])) {
+        const home = ev.strHomeTeam, away = ev.strAwayTeam;
+        const hm = byName.get(home)?.momentum ?? 50;
+        const am = byName.get(away)?.momentum ?? 50;
+        let time = ev.strTime ? ev.strTime.slice(0, 5) : '—';
+        if (ev.strTimestamp) {
+          time = new Date(ev.strTimestamp + (ev.strTimestamp.endsWith('Z') ? '' : 'Z'))
+            .toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: TIMEZONE });
+        }
+        all.push({
+          date, league: lg.name, time, home, away,
+          homeScore: hm, awayScore: am,
+          goalPotential: goalPotential(hm, am), risk: risk(hm, am),
+          note: matchNote(home, away, hm, am), url: '/mac-analizi.html',
+        });
+      }
+    } catch (e) { console.warn(`  ${date} ${lg.name} alınamadı:`, e.message); }
   }
-  return {
-    league: ev.strLeague || 'Süper Lig',
-    time,
-    home, away,
-    homeScore: hm,
-    awayScore: am,
-    goalPotential: goalPotential(hm, am),
-    risk: risk(hm, am),
-    note: matchNote(home, away, hm, am),
-    url: '/mac-analizi.html',
-  };
-});
+}
+
+const matches = all.filter(m => m.date === today);
+const upcoming = all.filter(m => m.date !== today);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const outPath = path.join(__dirname, '..', 'data', 'matches.json');
 await mkdir(path.dirname(outPath), { recursive: true });
-await writeFile(outPath, JSON.stringify({ updatedAt: new Date().toISOString(), matches, teams }, null, 2), 'utf8');
+await writeFile(outPath, JSON.stringify({
+  updatedAt: new Date().toISOString(), matches, upcoming, teams: mainTeams,
+}, null, 2), 'utf8');
 
-console.log(`✔ ${teams.length} takım, ${matches.length} maç yazıldı -> data/matches.json`);
-if (!matches.length) console.log('Not: Bugün ligde maç yok (yaz arası olabilir); form tablosu yine de güncellendi.');
+console.log(`✔ ${mainTeams.length} takım, bugün ${matches.length} + ileri ${upcoming.length} maç yazıldı.`);
