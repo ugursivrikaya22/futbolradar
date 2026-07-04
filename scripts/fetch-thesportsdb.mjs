@@ -3,18 +3,7 @@
 // Kullanım: npm run fetch
 // Günde 2 istek yapar: 1) lig tablosu (form dahil)  2) günün maçları
 
-import { writeFile, mkdir } from 'node:{
-  "name": "futbolradar-static",
-  "version": "0.5.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "python3 -m http.server 8080",
-    "fetch": "node scripts/fetch-thesportsdb.mjs",
-    "fetch:api-football": "node scripts/fetch-api-football.mjs"
-  }
-}
-fs/promises';
+import { writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
