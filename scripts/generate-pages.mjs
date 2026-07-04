@@ -1,9 +1,10 @@
-// FutbolRadar — Otomatik maç analiz sayfası üretici
-// data/matches.json'daki her maç için /mac/ altında SEO sayfası üretir,
-// matches.json'daki linkleri günceller ve sitemap.xml'i yeniden oluşturur.
+// FutbolRadar — Otomatik maç analiz sayfası üretici v2
+// Bugünün VE önümüzdeki günlerin maçları için /mac/ altında SEO sayfası üretir,
+// linkleri günceller ve sitemap.xml'i yeniden oluşturur.
 // Kullanım: npm run pages  (fetch'ten SONRA çalıştırılır)
 
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -191,7 +192,10 @@ function sitemapXml(macSlugs) {
     ['fenerbahce-formu.html', 'weekly', '0.8'],
     ['besiktas-formu.html', 'weekly', '0.8'],
     ['trabzonspor-formu.html', 'weekly', '0.8'],
-  ];
+    ['hakkinda.html', 'monthly', '0.5'],
+    ['iletisim.html', 'monthly', '0.5'],
+    ['gizlilik-politikasi.html', 'monthly', '0.3'],
+  ].filter(([p]) => p === '' || p === 'mac/' || existsSync(path.join(ROOT, p)));
   const urls = [
     ...staticPages.map(([p, f, pr]) =>
       `  <url><loc>${SITE}/${p}</loc><changefreq>${f}</changefreq><priority>${pr}</priority></url>`),
@@ -207,25 +211,24 @@ const data = JSON.parse(await readFile(dataPath, 'utf8'));
 const teams = data.teams || [];
 const byName = new Map(teams.map(t => [t.name, t]));
 
-const dateISO = (data.updatedAt || new Date().toISOString()).slice(0, 10);
-const dateTR = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
-  .format(new Date(dateISO));
+const todayISO = (data.updatedAt || new Date().toISOString()).slice(0, 10);
+const fmtTR = (iso) => new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
+  .format(new Date(iso));
 
 await mkdir(MAC_DIR, { recursive: true });
 
 let created = 0;
-for (const m of (data.matches || [])) {
+for (const m of [...(data.matches || []), ...(data.upcoming || [])]) {
+  const dateISO = m.date || todayISO;
   const slug = `${dateISO}-${slugify(m.home)}-${slugify(m.away)}`;
-  const html = pageHtml(m, dateISO, dateTR, byName.get(m.home), byName.get(m.away), slug);
+  const html = pageHtml(m, dateISO, fmtTR(dateISO), byName.get(m.home), byName.get(m.away), slug);
   await writeFile(path.join(MAC_DIR, `${slug}.html`), html, 'utf8');
   m.url = `/mac/${slug}.html`;
   created++;
 }
 
-// Linkleri güncellenen matches.json'ı geri yaz
 await writeFile(dataPath, JSON.stringify(data, null, 2), 'utf8');
 
-// Arşiv sayfası: mac/ içindeki tüm sayfalar, en yeni üstte
 const files = (await readdir(MAC_DIR)).filter(f => f.endsWith('.html') && f !== 'index.html').sort().reverse();
 const items = files.map(f => {
   const slug = f.replace(/\.html$/, '');
@@ -235,7 +238,6 @@ const items = files.map(f => {
 });
 await writeFile(path.join(MAC_DIR, 'index.html'), archiveHtml(items), 'utf8');
 
-// Sitemap'i yeniden üret
 await writeFile(path.join(ROOT, 'sitemap.xml'), sitemapXml(files.map(f => f.replace(/\.html$/, ''))), 'utf8');
 
 console.log(`✔ ${created} maç sayfası üretildi, arşiv ve sitemap güncellendi (toplam ${files.length} sayfa).`);
