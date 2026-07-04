@@ -1,4 +1,64 @@
-User-agent: *
-Allow: /
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Süper Lig Momentum Sıralaması | FutbolRadar</title>
+  <meta name="description" content="Süper Lig takımlarının güncel momentum sıralaması: son 5 maç formu, gol farkı ve takım ritmi bir arada." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://www.futbolradar.com/super-lig-momentum.html" />
+  <meta property="og:title" content="Süper Lig Momentum Sıralaması | FutbolRadar" />
+  <meta property="og:description" content="Süper Lig momentum sıralaması ve form ritmi." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.futbolradar.com/super-lig-momentum.html" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="stylesheet" href="/assets/style.css" />
+  <script defer src="/assets/app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="/"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
+      <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="main-nav" aria-label="Ana menü">
+        <a href="/">Bugünkü Maçlar</a>
+        <a href="/gunluk-mac-analizleri.html">Günlük Analizler</a>
+        <a href="/super-lig-momentum.html" aria-current="page">Momentum</a>
+        <a href="/form-tablosu.html">Form Tablosu</a>
+        <a href="/galatasaray-formu.html">Takımlar</a>
+      </nav>
+    </div>
+  </header>
 
-Sitemap: https://www.futbolradar.com/sitemap.xml
+  <main>
+    <section class="section">
+      <div class="container">
+        <p class="eyebrow">Momentum Radarı</p>
+        <h1>Süper Lig momentum sıralaması</h1>
+        <p class="lead">Takımların son 5 maç formu ve gol farkından üretilen 0-100 arası momentum skoru sıralaması.</p>
+      </div>
+    </section>
+
+    <section class="section alt-bg">
+      <div class="container two-col">
+        <div class="panel">
+          <h2>Güncel sıralama</h2>
+          <div id="teamMomentumList" class="team-list"></div>
+        </div>
+        <div class="panel">
+          <h2>Momentum skoru nasıl hesaplanır?</h2>
+          <p>Momentum skoru iki bileşenden oluşur: son 5 maçta toplanan puanlar (ağırlık %80) ve sezonluk gol farkı (ağırlık %20). Böylece hem güncel ritim hem de genel güç dengesi tek skora indirgenir.</p>
+          <p>Skor 70 ve üzeriyse takım "yüksek ritim", 50-70 arası "dengeli", 50 altı "form arayışında" olarak okunur.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div><strong>FutbolRadar</strong><p>Süper Lig momentum sıralaması.</p></div>
+      <p class="disclaimer">Analizler bilgilendirme amaçlıdır; kesin sonuç veya yönlendirme niteliği taşımaz.</p>
+    </div>
+  </footer>
+</body>
+</html>

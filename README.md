@@ -1,123 +1,46 @@
-<!doctype html>
-<html lang="tr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Galatasaray - Fenerbahçe Maç Analizi | FutbolRadar</title>
-  <meta name="description" content="Galatasaray - Fenerbahçe maç analizi: son 5 maç formu, momentum skoru, gol eğilimi, iç/dış saha performansı ve risk seviyesi." />
-  <meta name="robots" content="index,follow" />
-  <link rel="canonical" href="https://www.futbolradar.com/mac-analizi.html" />
-  <meta property="og:title" content="Galatasaray - Fenerbahçe Maç Analizi | FutbolRadar" />
-  <meta property="og:description" content="Derbi için form, momentum, gol eğilimi ve risk okuması." />
-  <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://www.futbolradar.com/mac-analizi.html" />
-  <meta name="twitter:card" content="summary" />
-  <link rel="stylesheet" href="/assets/style.css" />
-  <script defer src="/assets/app.js"></script>
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      "headline": "Galatasaray - Fenerbahçe maç analizi",
-      "mainEntityOfPage": "https://www.futbolradar.com/mac-analizi.html",
-      "publisher": { "@type": "Organization", "name": "FutbolRadar" },
-      "about": ["Galatasaray", "Fenerbahçe", "Süper Lig", "maç analizi"]
-    }
-  </script>
-</head>
-<body>
-  <header class="site-header">
-    <div class="container nav-wrap">
-      <a class="brand" href="/"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
-      <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false"><span></span><span></span><span></span></button>
-      <nav class="main-nav" aria-label="Ana menü">
-        <a href="/">Bugünkü Maçlar</a>
-        <a href="/gunluk-mac-analizleri.html">Günlük Analizler</a>
-        <a href="/super-lig-momentum.html">Momentum</a>
-        <a href="/form-tablosu.html">Form Tablosu</a>
-        <a href="/galatasaray-formu.html">Takımlar</a>
-      </nav>
-    </div>
-  </header>
+# FutbolRadar
 
-  <main class="article-page">
-    <section class="section">
-      <div class="container article-layout">
-        <article class="article-main">
-          <p class="eyebrow">Maç Önü Analiz</p>
-          <h1>Galatasaray - Fenerbahçe maç analizi: form, momentum ve gol eğilimi</h1>
-          <p class="lead">Bu analiz demo verilerle hazırlanmıştır. Gerçek veri bağlantısı kurulduğunda maç tarihi, kadro bilgileri, son 5 maç ve lig verileri otomatik güncellenebilir.</p>
+FutbolRadar, futbol maçlarını form, momentum, gol eğilimi ve takım ritmi üzerinden sunan statik HTML/CSS/JS analiz sitesidir.
 
-          <div class="match-summary-card">
-            <div>
-              <span class="team-label">Ev sahibi</span>
-              <h2>Galatasaray</h2>
-              <strong class="big-score">82/100</strong>
-              <p>Momentum Skoru</p>
-            </div>
-            <div class="vs-badge">VS</div>
-            <div>
-              <span class="team-label">Deplasman</span>
-              <h2>Fenerbahçe</h2>
-              <strong class="big-score">76/100</strong>
-              <p>Momentum Skoru</p>
-            </div>
-          </div>
+## Dosya Yapısı
 
-          <h2>Kısa maç yorumu</h2>
-          <p>Galatasaray son dönem iç saha ritmi, hücum üretimi ve skor devamlılığı açısından daha yüksek momentum gösteriyor. Fenerbahçe tarafında deplasman formu güçlü olsa da maç dengesi yüksek tempoya ve iki takımın hücum etkinliğine bağlı görünüyor.</p>
+- `index.html` — Ana sayfa ve bugünkü maç radarları
+- `mac-analizi.html` — Örnek maç analizi
+- `*-formu.html` — Takım profilleri (GS, FB, BJK, TS)
+- `form-tablosu.html` — Süper Lig form tablosu
+- `super-lig-momentum.html` — Momentum sıralaması
+- `takim-formu.html` — Takım sayfaları dizini
+- `assets/style.css` — Tasarım
+- `assets/app.js` — JSON veri okuma ve mobil menü
+- `data/matches.json` — Maç ve takım verisi (script otomatik üretir)
+- `scripts/fetch-api-football.mjs` — API-Football'dan günlük veri çeker
+- `.github/workflows/gunluk-veri.yml` — Her sabah veriyi otomatik günceller
+- `vercel.json`, `robots.txt`, `sitemap.xml` — Deploy ve SEO ayarları
 
-          <h2>FutbolRadar maç özeti</h2>
-          <div class="insight-grid">
-            <div class="insight"><span>Gol Potansiyeli</span><strong>Yüksek</strong></div>
-            <div class="insight"><span>Risk Seviyesi</span><strong>Orta</strong></div>
-            <div class="insight"><span>Form Dengesi</span><strong>Ev sahibi hafif üstün</strong></div>
-            <div class="insight"><span>Tempo Beklentisi</span><strong>Yüksek</strong></div>
-          </div>
+## Lokal Çalıştırma
 
-          <h2>Momentum skoru nasıl hesaplandı?</h2>
-          <div class="data-table-wrap">
-            <table class="data-table">
-              <thead>
-                <tr><th>Kriter</th><th>Ağırlık</th><th>Yorum</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>Son 5 maç puan ortalaması</td><td>%25</td><td>Form devamlılığı</td></tr>
-                <tr><td>Son 5 maç gol farkı</td><td>%20</td><td>Skor kalitesi</td></tr>
-                <tr><td>İç/dış saha uyumu</td><td>%15</td><td>Maç bağlamı</td></tr>
-                <tr><td>Rakip gücü</td><td>%15</td><td>Formun kalitesi</td></tr>
-                <tr><td>Hücum formu</td><td>%10</td><td>Gol üretimi</td></tr>
-                <tr><td>Savunma formu</td><td>%10</td><td>Gol yeme eğilimi</td></tr>
-                <tr><td>Eksik oyuncu etkisi</td><td>%5</td><td>Kadro riski</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </article>
+```bash
+npm run dev
+# http://localhost:8080
+```
 
-        <aside class="sidebar">
-          <div class="sticky panel">
-            <p class="eyebrow">Derbi radarı</p>
-            <h2>Öne çıkan metrikler</h2>
-            <ul class="metric-list">
-              <li><span>Gol eğilimi</span><strong>Yüksek</strong></li>
-              <li><span>Risk seviyesi</span><strong>Orta</strong></li>
-              <li><span>Tempo</span><strong>Yüksek</strong></li>
-            </ul>
-            <div class="tag-row">
-              <a class="text-link" href="/galatasaray-formu.html">Galatasaray formu</a>
-              <a class="text-link" href="/fenerbahce-formu.html">Fenerbahçe formu</a>
-            </div>
-          </div>
-        </aside>
-      </div>
-    </section>
-  </main>
+## Gerçek Veri Çekme
 
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div><strong>FutbolRadar</strong><p>Maç analizi ve momentum okuması.</p></div>
-      <p class="disclaimer">Bilgilendirme amaçlıdır; kesin sonuç veya yönlendirme niteliği taşımaz.</p>
-    </div>
-  </footer>
-</body>
-</html>
+1. https://dashboard.api-football.com adresinden ücretsiz hesap açıp API anahtarı alın.
+2. `env.example` dosyasını kopyalayıp `.env` yapın, anahtarınızı yazın.
+3. Çalıştırın:
+
+```bash
+export $(grep -v '^#' .env | xargs)
+npm run fetch
+```
+
+`data/matches.json` gerçek Süper Lig verisiyle güncellenir. Script günde sadece 2 API isteği yapar (ücretsiz planın 100 istek/gün limitine rahat sığar).
+
+## Otomatik Günlük Güncelleme (GitHub Actions)
+
+1. GitHub'da repo → Settings → Secrets and variables → Actions → New repository secret
+2. İsim: `API_FOOTBALL_KEY`, değer: API anahtarınız
+3. Workflow her sabah 09:00'da (TR) veriyi çekip commitler; Vercel otomatik yeniden deploy eder.
+
+Not: API-Football ücretsiz planında bazı sezonlar/özellikler kısıtlı olabilir; Süper Lig güncel sezon verisi ücretsiz planda yoksa Pro plan ($19/ay) gerekebilir. Script hata mesajıyla bunu açıkça bildirir.
