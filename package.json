@@ -1,10 +1,11 @@
 {
   "name": "futbolradar-static",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "python3 -m http.server 8080",
-    "fetch": "node scripts/fetch-api-football.mjs"
+    "fetch": "node scripts/fetch-thesportsdb.mjs",
+    "fetch:api-football": "node scripts/fetch-api-football.mjs"
   }
 }
