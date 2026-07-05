@@ -1,9 +1,3 @@
-const todayLabel = document.getElementById('todayLabel');
-if (todayLabel) {
-  const formatter = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-  todayLabel.textContent = formatter.format(new Date());
-}
-
 const navToggle = document.querySelector('.nav-toggle');
 const mainNav = document.querySelector('.main-nav');
 if (navToggle && mainNav) {
@@ -19,8 +13,8 @@ async function loadData() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return await response.json();
   } catch (error) {
-    console.warn('Demo veri yuklenemedi:', error);
-    return { matches: [], teams: [] };
+    console.warn('Veri yuklenemedi:', error);
+    return { matches: [], upcoming: [], teams: [] };
   }
 }
 
@@ -32,13 +26,21 @@ function riskClass(risk) {
   return 'success';
 }
 
-function renderMatches(matches) {
+const gunTR = (iso) => new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' })
+  .format(new Date(iso + 'T12:00:00'));
+
+function renderMatches(matches, showDates) {
   const grid = document.getElementById('matchGrid');
   if (!grid) return;
 
+  if (!matches.length) {
+    grid.innerHTML = '<article class="match-card"><h3>Şu an takvimde maç yok</h3><p>Takip edilen liglerde önümüzdeki günlerde maç bulunmuyor. Form tablosu ve momentum sıralaması güncel kalmaya devam ediyor.</p><a class="text-link" href="/mac-sonucu/">Son maç sonuçlarına bak</a></article>';
+    return;
+  }
+
   grid.innerHTML = matches.map(match => `
     <article class="match-card">
-      <div class="match-meta"><span>${match.league}</span><span>${match.time}</span></div>
+      <div class="match-meta"><span>${match.league}</span><span>${showDates && match.date ? gunTR(match.date) + ' • ' : ''}${match.time}</span></div>
       <h3>${match.home} - ${match.away}</h3>
       <div class="momentum-bars">
         <div>
@@ -97,7 +99,21 @@ function renderFormTable(teams) {
 }
 
 loadData().then(data => {
-  renderMatches(data.matches || []);
+  const todayMatches = data.matches || [];
+  const upcoming = data.upcoming || [];
+  const useUpcoming = todayMatches.length === 0 && upcoming.length > 0;
+
+  const todayLabel = document.getElementById('todayLabel');
+  if (todayLabel) {
+    if (useUpcoming) {
+      todayLabel.textContent = 'Yaklaşan maçlar';
+    } else {
+      const formatter = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+      todayLabel.textContent = formatter.format(new Date());
+    }
+  }
+
+  renderMatches(useUpcoming ? upcoming : todayMatches, useUpcoming);
   renderTeams(data.teams || []);
   renderFormTable(data.teams || []);
 });
