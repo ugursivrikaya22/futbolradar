@@ -1,4 +1,4 @@
-// FutbolRadar — TheSportsDB veri çekme scripti v2 (çoklu lig + 3 gün ileri)
+// FutbolRadar — TheSportsDB veri çekme scripti v3 (çoklu lig + takım bazlı gerçek form)
 // API anahtarı GEREKTİRMEZ. Kullanım: npm run fetch
 
 import { writeFile, mkdir } from 'node:fs/promises';
@@ -58,7 +58,7 @@ const matchNote = (home, away, h, a) => Math.abs(h - a) <= 8
   ? `${home} - ${away} form açısından dengede, maç ritmi ilk gole göre şekillenebilir.`
   : `${h > a ? home : away} momentum üstünlüğüyle sahaya çıkıyor; rakibin direnç profili maçın anahtarı.`;
 
-console.log(`FutbolRadar v2 | ${LEAGUES.length} lig | ${today} +${DAYS_AHEAD} gün`);
+console.log(`FutbolRadar v3 | ${LEAGUES.length} lig | ${today} +${DAYS_AHEAD} gün`);
 
 const byName = new Map();
 let mainTeams = [];
@@ -80,6 +80,27 @@ for (const lg of LEAGUES) {
   } catch (e) { console.warn(`  tablo ${lg.name} alınamadı:`, e.message); }
 }
 
+// Tabloda olmayan takımlar için: takım ara -> son maçlarından gerçek form hesapla
+async function resolveTeam(name) {
+  try {
+    const s = await api(`/searchteams.php?t=${encodeURIComponent(name)}`);
+    const team = (s?.teams || []).find(t => t.strTeam === name) || (s?.teams || [])[0];
+    if (!team?.idTeam) return null;
+    const ev = await api(`/eventslast.php?id=${team.idTeam}`);
+    const results = (ev?.results || []).filter(e => e.intHomeScore != null && e.intAwayScore != null).slice(0, 5);
+    if (!results.length) return null;
+    let letters = '', gd = 0;
+    for (const e of results.reverse()) {
+      const isHome = e.strHomeTeam === team.strTeam;
+      const us = Number(isHome ? e.intHomeScore : e.intAwayScore);
+      const them = Number(isHome ? e.intAwayScore : e.intHomeScore);
+      letters += us > them ? 'W' : us < them ? 'L' : 'D';
+      gd += us - them;
+    }
+    return { name, form: trForm(letters), goalDiff: gd, momentum: momentum(letters, gd), note: teamNote(letters) };
+  } catch { return null; }
+}
+
 const all = [];
 for (let off = 0; off <= DAYS_AHEAD; off++) {
   const date = dayStr(off);
@@ -88,8 +109,16 @@ for (let off = 0; off <= DAYS_AHEAD; off++) {
       const res = await api(`/eventsday.php?d=${date}&l=${lg.id}`);
       for (const ev of (res?.events || [])) {
         const home = ev.strHomeTeam, away = ev.strAwayTeam;
+        for (const n of [home, away]) {
+          if (!byName.has(n)) {
+            const t = await resolveTeam(n);
+            byName.set(n, t); // null da olabilir: tekrar denememek icin kaydet
+            if (t) console.log(`  form çözüldü: ${n} -> ${t.momentum} (${t.form})`);
+          }
+        }
         const hm = byName.get(home)?.momentum ?? 50;
         const am = byName.get(away)?.momentum ?? 50;
+        const dataOk = Boolean(byName.get(home)) && Boolean(byName.get(away));
         let time = ev.strTime ? ev.strTime.slice(0, 5) : '—';
         if (ev.strTimestamp) {
           time = new Date(ev.strTimestamp + (ev.strTimestamp.endsWith('Z') ? '' : 'Z'))
@@ -99,7 +128,7 @@ for (let off = 0; off <= DAYS_AHEAD; off++) {
           date, league: lg.name, time, home, away,
           homeScore: hm, awayScore: am,
           goalPotential: goalPotential(hm, am), risk: risk(hm, am),
-          note: matchNote(home, away, hm, am), url: '/mac-analizi.html',
+          note: dataOk ? matchNote(home, away, hm, am) : 'Bu maç için form verisi sınırlı; momentum skorları nötr varsayımla gösteriliyor.', url: '/mac-analizi.html',
         });
       }
     } catch (e) { console.warn(`  ${date} ${lg.name} alınamadı:`, e.message); }
