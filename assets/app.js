@@ -18,6 +18,52 @@ async function loadData() {
   }
 }
 
+async function loadLive() {
+  try {
+    const response = await fetch('/data/live.json');
+    if (!response.ok) return null;
+    return await response.json();
+  } catch { return null; }
+}
+
+function scoreBadge(g) {
+  if (g.hs == null) return `<span class="pill">${g.time}</span>`;
+  const cls = g.status === 'Bitti' ? '' : ' style="background:rgba(251,191,36,.15);color:var(--warning)"';
+  return `<span class="pill"${cls}>${g.hs} - ${g.as}</span>`;
+}
+
+function renderLive(live) {
+  if (!live || !live.games || !live.games.length) return false;
+  const bugun = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date());
+  if (live.date !== bugun) return false;
+  const scored = live.games.filter(g => g.hs != null);
+  if (!scored.length) return false;
+
+  const section = document.createElement('section');
+  section.className = 'section';
+  section.innerHTML = `
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">Günün skorları</p>
+          <h2>Bugünkü maç sonuçları</h2>
+        </div>
+        <span class="date-pill">30 dk'da bir güncellenir</span>
+      </div>
+      <div class="team-list">
+        ${live.games.map(g => `
+          <div class="team-row">
+            <span class="rank" style="width:auto;padding:0 8px;font-size:.75rem">${g.league}</span>
+            <div><strong>${g.home} - ${g.away}</strong><small>${g.status}</small></div>
+            ${scoreBadge(g)}
+          </div>`).join('')}
+      </div>
+    </div>`;
+  const anchor = document.getElementById('bugunku-maclar');
+  if (anchor) anchor.parentNode.insertBefore(section, anchor);
+  return true;
+}
+
 function riskClass(risk) {
   if (!risk) return '';
   const lower = risk.toLocaleLowerCase('tr-TR');
@@ -71,49 +117,4 @@ function renderTeams(teams) {
   const sorted = [...teams].sort((a, b) => b.momentum - a.momentum);
   list.innerHTML = sorted.map((team, index) => `
     <div class="team-row">
-      <span class="rank">${index + 1}</span>
-      <div>
-        <strong>${team.name}</strong>
-        <small>${team.note}</small>
-      </div>
-      <span class="pill">${team.momentum}</span>
-    </div>
-  `).join('');
-}
-
-function renderFormTable(teams) {
-  const tbody = document.getElementById('formTableBody');
-  if (!tbody) return;
-
-  const sorted = [...teams].sort((a, b) => b.momentum - a.momentum);
-  tbody.innerHTML = sorted.map((team, index) => `
-    <tr>
-      <td>${index + 1}</td>
-      <td><strong>${team.name}</strong></td>
-      <td>${team.form}</td>
-      <td>${team.goalDiff > 0 ? '+' : ''}${team.goalDiff}</td>
-      <td><strong>${team.momentum}</strong></td>
-      <td>${team.note}</td>
-    </tr>
-  `).join('');
-}
-
-loadData().then(data => {
-  const todayMatches = data.matches || [];
-  const upcoming = data.upcoming || [];
-  const useUpcoming = todayMatches.length === 0 && upcoming.length > 0;
-
-  const todayLabel = document.getElementById('todayLabel');
-  if (todayLabel) {
-    if (useUpcoming) {
-      todayLabel.textContent = 'Yaklaşan maçlar';
-    } else {
-      const formatter = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-      todayLabel.textContent = formatter.format(new Date());
-    }
-  }
-
-  renderMatches(useUpcoming ? upcoming : todayMatches, useUpcoming);
-  renderTeams(data.teams || []);
-  renderFormTable(data.teams || []);
-});
+      <span class="rank">${index +
