@@ -117,4 +117,51 @@ function renderTeams(teams) {
   const sorted = [...teams].sort((a, b) => b.momentum - a.momentum);
   list.innerHTML = sorted.map((team, index) => `
     <div class="team-row">
-      <span class="rank">${index +
+      <span class="rank">${index + 1}</span>
+      <div>
+        <strong>${team.name}</strong>
+        <small>${team.note}</small>
+      </div>
+      <span class="pill">${team.momentum}</span>
+    </div>
+  `).join('');
+}
+
+function renderFormTable(teams) {
+  const tbody = document.getElementById('formTableBody');
+  if (!tbody) return;
+
+  const sorted = [...teams].sort((a, b) => b.momentum - a.momentum);
+  tbody.innerHTML = sorted.map((team, index) => `
+    <tr>
+      <td>${index + 1}</td>
+      <td><strong>${team.name}</strong></td>
+      <td>${team.form}</td>
+      <td>${team.goalDiff > 0 ? '+' : ''}${team.goalDiff}</td>
+      <td><strong>${team.momentum}</strong></td>
+      <td>${team.note}</td>
+    </tr>
+  `).join('');
+}
+
+Promise.all([loadData(), loadLive()]).then(([data, live]) => {
+  renderLive(live);
+
+  const todayMatches = data.matches || [];
+  const upcoming = data.upcoming || [];
+  const useUpcoming = todayMatches.length === 0 && upcoming.length > 0;
+
+  const todayLabel = document.getElementById('todayLabel');
+  if (todayLabel) {
+    if (useUpcoming) {
+      todayLabel.textContent = 'Yaklaşan maçlar';
+    } else {
+      const formatter = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+      todayLabel.textContent = formatter.format(new Date());
+    }
+  }
+
+  renderMatches(useUpcoming ? upcoming : todayMatches, useUpcoming);
+  renderTeams(data.teams || []);
+  renderFormTable(data.teams || []);
+});
