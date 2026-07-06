@@ -19,11 +19,13 @@ jobs:
         run: node scripts/generate-pages.mjs
       - name: Maç sonuçlarını üret
         run: node scripts/generate-results.mjs
+      - name: Takım sayfalarını güncelle
+        run: node scripts/generate-teams.mjs
       - name: Değişikliği commitle
         run: |
           git config user.name "futbolradar-bot"
           git config user.email "bot@futbolradar"
-          git add data/matches.json mac mac-sonucu sitemap.xml
-          git diff --cached --quiet || git commit -m "Günlük veri, maç sayfaları ve sonuçlar"
+          git add data/matches.json mac mac-sonucu sitemap.xml galatasaray-formu.html fenerbahce-formu.html besiktas-formu.html trabzonspor-formu.html
+          git diff --cached --quiet || git commit -m "Günlük veri, maç ve takım sayfaları"
           git pull --rebase origin main || true
           git push
