@@ -1,4 +1,4 @@
-// FutbolRadar — TheSportsDB veri çekme scripti v3 (çoklu lig + takım bazlı gerçek form)
+// FutbolRadar — TheSportsDB veri çekme scripti v3.1 (çoklu lig + takım bazlı form + limit sigortası)
 // API anahtarı GEREKTİRMEZ. Kullanım: npm run fetch
 
 import { writeFile, mkdir } from 'node:fs/promises';
@@ -26,8 +26,9 @@ const dayStr = (offset) => {
 const today = process.env.FUTBOLRADAR_DATE || dayStr(0);
 
 async function api(pathname) {
-  await sleep(300);
-  const res = await fetch(`${BASE}${pathname}`);
+  await sleep(1200);
+  let res = await fetch(`${BASE}${pathname}`);
+  if (res.status === 429) { await sleep(20000); res = await fetch(`${BASE}${pathname}`); }
   if (!res.ok) throw new Error(`API hata: ${pathname} -> HTTP ${res.status}`);
   return res.json();
 }
@@ -58,7 +59,7 @@ const matchNote = (home, away, h, a) => Math.abs(h - a) <= 8
   ? `${home} - ${away} form açısından dengede, maç ritmi ilk gole göre şekillenebilir.`
   : `${h > a ? home : away} momentum üstünlüğüyle sahaya çıkıyor; rakibin direnç profili maçın anahtarı.`;
 
-console.log(`FutbolRadar v3 | ${LEAGUES.length} lig | ${today} +${DAYS_AHEAD} gün`);
+console.log(`FutbolRadar v3.1 | ${LEAGUES.length} lig | ${today} +${DAYS_AHEAD} gün`);
 
 const byName = new Map();
 let mainTeams = [];
