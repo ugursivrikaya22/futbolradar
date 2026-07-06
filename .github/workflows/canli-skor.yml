@@ -1,0 +1,25 @@
+name: Günün skorları
+on:
+  schedule:
+    - cron: "*/30 13-22 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Skorları kontrol et
+        run: node scripts/fetch-live.mjs
+      - name: Değişiklik varsa commitle
+        run: |
+          git config user.name "futbolradar-bot"
+          git config user.email "bot@futbolradar"
+          git add data/live.json
+          git diff --cached --quiet || git commit -m "Skor güncellemesi"
+          git pull --rebase origin main || true
+          git push
