@@ -639,6 +639,18 @@ h3 { font-size: 1.18rem; }
 }
 .team-badge-fallback {
   display: inline-grid;
+  .data-table td strong,
+.team-row strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+.data-table img,
+.team-row img,
+.data-table .team-badge-fallback,
+.team-row .team-badge-fallback {
+  flex-shrink: 0;
+}
   place-items: center;
   width: 24px;
   height: 24px;
