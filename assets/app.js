@@ -89,4 +89,88 @@ function renderMatches(matches, showDates) {
   if (!grid) return;
 
   if (!matches.length) {
-    grid.innerHTML = '<article class="match-card"><h3>Şu
+    grid.innerHTML = `<article class="match-card"><h3>Takvimde maç yok</h3><p>Takip edilen liglerde önümüzdeki günlerde maç bulunmuyor. Form tablosu ve momentum güncel kalmaya devam ediyor.</p><a class="text-link" href="/mac-sonucu/">Son sonuçlara bak</a></article>`;
+    return;
+  }
+
+  grid.innerHTML = matches.map(match => `
+    <article class="match-card">
+      <div class="match-meta"><span>${match.league}</span><span>${showDates && match.date ? gunTR(match.date) + ' • ' : ''}${match.time}</span></div>
+      <h3>${match.home} - ${match.away}</h3>
+      <div class="momentum-bars">
+        <div>
+          <span>${teamLogo(match.home, match.homeBadge)} ${match.home}</span>
+          <div class="bar"><i style="width:${match.homeScore}%"></i></div>
+          <strong>${match.homeScore}</strong>
+        </div>
+        <div>
+          <span>${teamLogo(match.away, match.awayBadge)} ${match.away}</span>
+          <div class="bar"><i style="width:${match.awayScore}%"></i></div>
+          <strong>${match.awayScore}</strong>
+        </div>
+      </div>
+      <div class="tag-row">
+        <span>Gol: ${match.goalPotential}</span>
+        <span class="${riskClass(match.risk)}">Risk: ${match.risk}</span>
+      </div>
+      <p>${match.note}</p>
+      <a class="text-link" href="${match.url}">Analizi aç</a>
+    </article>
+  `).join('');
+}
+
+function renderTeams(teams) {
+  const list = document.getElementById('teamMomentumList');
+  if (!list) return;
+
+  const sorted = [...teams].sort((a, b) => b.momentum - a.momentum);
+  list.innerHTML = sorted.map((team, index) => `
+    <div class="team-row">
+      <span class="rank">${index + 1}</span>
+      <div>
+        <strong>${team.name}</strong>
+        <small>${team.note}</small>
+      </div>
+      <span class="pill">${team.momentum}</span>
+    </div>
+  `).join('');
+}
+
+function renderFormTable(teams) {
+  const tbody = document.getElementById('formTableBody');
+  if (!tbody) return;
+
+  const sorted = [...teams].sort((a, b) => b.momentum - a.momentum);
+  tbody.innerHTML = sorted.map((team, index) => `
+    <tr>
+      <td>${index + 1}</td>
+      <td><strong>${team.name}</strong></td>
+      <td>${team.form}</td>
+      <td>${team.goalDiff > 0 ? '+' : ''}${team.goalDiff}</td>
+      <td><strong>${team.momentum}</strong></td>
+      <td>${team.note}</td>
+    </tr>
+  `).join('');
+}
+
+Promise.all([loadData(), loadLive()]).then(([data, live]) => {
+  renderLive(live);
+
+  const todayMatches = data.matches || [];
+  const upcoming = data.upcoming || [];
+  const useUpcoming = todayMatches.length === 0 && upcoming.length > 0;
+
+  const todayLabel = document.getElementById('todayLabel');
+  if (todayLabel) {
+    if (useUpcoming) {
+      todayLabel.textContent = 'Yaklaşan maçlar';
+    } else {
+      const formatter = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+      todayLabel.textContent = formatter.format(new Date());
+    }
+  }
+
+  renderMatches(useUpcoming ? upcoming : todayMatches, useUpcoming);
+  renderTeams(data.teams || []);
+  renderFormTable(data.teams || []);
+});
