@@ -1,4 +1,4 @@
-// FutbolRadar — TheSportsDB veri çekme scripti v3.1 (çoklu lig + takım bazlı form + limit sigortası)
+// FutbolRadar — TheSportsDB veri çekme scripti v3.2 (çoklu lig + form + logolar)
 // API anahtarı GEREKTİRMEZ. Kullanım: npm run fetch
 
 import { writeFile, mkdir } from 'node:fs/promises';
@@ -59,7 +59,7 @@ const matchNote = (home, away, h, a) => Math.abs(h - a) <= 8
   ? `${home} - ${away} form açısından dengede, maç ritmi ilk gole göre şekillenebilir.`
   : `${h > a ? home : away} momentum üstünlüğüyle sahaya çıkıyor; rakibin direnç profili maçın anahtarı.`;
 
-console.log(`FutbolRadar v3.1 | ${LEAGUES.length} lig | ${today} +${DAYS_AHEAD} gün`);
+console.log(`FutbolRadar v3.2 | ${LEAGUES.length} lig | ${today} +${DAYS_AHEAD} gün`);
 
 const byName = new Map();
 let mainTeams = [];
@@ -74,6 +74,7 @@ for (const lg of LEAGUES) {
       goalDiff: Number(r.intGoalDifference) || 0,
       momentum: momentum(r.strForm, r.intGoalDifference),
       note: teamNote(r.strForm),
+      badge: (r.strBadge || '').replace(/\/tiny$/, ''),
     }));
     mapped.forEach(t => byName.set(t.name, t));
     if (lg.main) mainTeams = mapped;
@@ -98,7 +99,7 @@ async function resolveTeam(name) {
       letters += us > them ? 'W' : us < them ? 'L' : 'D';
       gd += us - them;
     }
-    return { name, form: trForm(letters), goalDiff: gd, momentum: momentum(letters, gd), note: teamNote(letters) };
+    return { name, form: trForm(letters), goalDiff: gd, momentum: momentum(letters, gd), note: teamNote(letters), badge: (team.strBadge || '').replace(/\/tiny$/, '') };
   } catch { return null; }
 }
 
@@ -129,6 +130,7 @@ for (let off = 0; off <= DAYS_AHEAD; off++) {
           date, league: lg.name, time, home, away,
           homeScore: hm, awayScore: am,
           goalPotential: goalPotential(hm, am), risk: risk(hm, am),
+          homeBadge: byName.get(home)?.badge || '', awayBadge: byName.get(away)?.badge || '',
           note: dataOk ? matchNote(home, away, hm, am) : 'Bu maç için form verisi sınırlı; momentum skorları nötr varsayımla gösteriliyor.', url: '/mac-analizi.html',
         });
       }
