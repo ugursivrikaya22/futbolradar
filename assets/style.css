@@ -637,3 +637,20 @@ h3 { font-size: 1.18rem; }
     grid-column: 1 / -1;
   }
 }
+.team-badge-fallback {
+  display: inline-grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .1);
+  color: var(--muted);
+  font-size: .68rem;
+  font-weight: 900;
+  vertical-align: middle;
+}
+.momentum-bars > div span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
