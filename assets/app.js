@@ -128,7 +128,7 @@ function renderTeams(teams) {
     <div class="team-row">
       <span class="rank">${index + 1}</span>
       <div>
-        <strong>${team.name}</strong>
+        <strong>${teamLogo(team.name, team.badge)} ${team.name}</strong>
         <small>${team.note}</small>
       </div>
       <span class="pill">${team.momentum}</span>
@@ -144,7 +144,7 @@ function renderFormTable(teams) {
   tbody.innerHTML = sorted.map((team, index) => `
     <tr>
       <td>${index + 1}</td>
-      <td><strong>${team.name}</strong></td>
+      <td><strong>${teamLogo(team.name, team.badge)} ${team.name}</strong></td>
       <td>${team.form}</td>
       <td>${team.goalDiff > 0 ? '+' : ''}${team.goalDiff}</td>
       <td><strong>${team.momentum}</strong></td>
