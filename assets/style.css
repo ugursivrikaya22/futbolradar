@@ -639,18 +639,6 @@ h3 { font-size: 1.18rem; }
 }
 .team-badge-fallback {
   display: inline-grid;
-  .data-table td strong,
-.team-row strong {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-}
-.data-table img,
-.team-row img,
-.data-table .team-badge-fallback,
-.team-row .team-badge-fallback {
-  flex-shrink: 0;
-}
   place-items: center;
   width: 24px;
   height: 24px;
@@ -661,8 +649,92 @@ h3 { font-size: 1.18rem; }
   font-weight: 900;
   vertical-align: middle;
 }
+
+.data-table td strong,
+.team-row strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.data-table img,
+.team-row img,
+.data-table .team-badge-fallback,
+.team-row .team-badge-fallback {
+  flex-shrink: 0;
+}
+
 .momentum-bars > div span {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+/* --- Canlı görünüm --- */
+@keyframes barGrow {
+  from { width: 0; }
+}
+
+.bar i {
+  animation: barGrow .9s cubic-bezier(.25, 1, .35, 1) both;
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .35; transform: scale(.8); }
+}
+
+.live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--danger);
+  vertical-align: middle;
+  animation: livePulse 1.4s ease-in-out infinite;
+}
+
+.pill.is-live {
+  gap: 2px;
+  background: rgba(251, 113, 133, .14);
+  color: var(--danger);
+}
+
+.pill.neutral {
+  background: rgba(255, 255, 255, .08);
+  color: var(--muted);
+}
+
+.team-row.live-row {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.league-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .08);
+  color: var(--muted);
+  font-size: .72rem;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+@media (max-width: 560px) {
+  .team-row.live-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .team-row.live-row .league-tag {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar i,
+  .live-dot {
+    animation: none;
+  }
 }

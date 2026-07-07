@@ -20,49 +20,16 @@ async function loadData() {
 
 async function loadLive() {
   try {
-    const response = await fetch('/data/live.json');
+    const response = await fetch('/data/live.json', { cache: 'no-cache' });
     if (!response.ok) return null;
     return await response.json();
   } catch { return null; }
 }
 
-function scoreBadge(g) {
-  if (g.hs == null) return `<span class="pill">${g.time}</span>`;
-  const cls = g.status === 'Bitti' ? '' : ' style="background:rgba(251,191,36,.15);color:var(--warning)"';
-  return `<span class="pill"${cls}>${g.hs} - ${g.as}</span>`;
-}
-
-function renderLive(live) {
-  if (!live || !live.games || !live.games.length) return false;
-  const bugun = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date());
-  if (live.date !== bugun) return false;
-  const scored = live.games.filter(g => g.hs != null);
-  if (!scored.length) return false;
-
-  const section = document.createElement('section');
-  section.className = 'section';
-  section.innerHTML = `
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Günün skorları</p>
-          <h2>Bugünkü maç sonuçları</h2>
-        </div>
-        <span class="date-pill">30 dk'da bir güncellenir</span>
-      </div>
-      <div class="team-list">
-        ${live.games.map(g => `
-          <div class="team-row">
-            <span class="rank" style="width:auto;padding:0 8px;font-size:.75rem">${g.league}</span>
-            <div><strong>${g.home} - ${g.away}</strong><small>${g.status}</small></div>
-            ${scoreBadge(g)}
-          </div>`).join('')}
-      </div>
-    </div>`;
-  const anchor = document.getElementById('bugunku-maclar');
-  if (anchor) anchor.parentNode.insertBefore(section, anchor);
-  return true;
-}
+const todayISO = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date());
+const saatTR = (iso) => new Date(iso).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' });
+const gunTR = (iso) => new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' })
+  .format(new Date(iso + 'T12:00:00'));
 
 function riskClass(risk) {
   if (!risk) return '';
@@ -81,8 +48,131 @@ function teamLogo(name, badge) {
   return `<span class="team-badge-fallback">${initials}</span>`;
 }
 
-const gunTR = (iso) => new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' })
-  .format(new Date(iso + 'T12:00:00'));
+// ---- Günün radar maçı (hero kartı) ----
+
+function findLiveGame(live, match) {
+  if (!live || !Array.isArray(live.games)) return null;
+  return live.games.find(g => g.home === match.home && g.away === match.away) || null;
+}
+
+function pickHeroMatch(data) {
+  const today = data.matches || [];
+  const upcoming = data.upcoming || [];
+  const pool = today.length ? today : upcoming;
+  if (!pool.length) return null;
+  const weight = (m) => (m.homeScore + m.awayScore) + (m.league === 'Süper Lig' ? 100 : 0);
+  return [...pool].sort((a, b) => weight(b) - weight(a))[0];
+}
+
+function renderHero(data, live) {
+  const title = document.getElementById('heroTitle');
+  if (!title) return;
+  const kicker = document.getElementById('heroKicker');
+  const scores = document.getElementById('heroScores');
+  const note = document.getElementById('heroNote');
+  const link = document.getElementById('heroLink');
+
+  const match = pickHeroMatch(data);
+  if (!match) {
+    title.textContent = 'Bugün radar maçı yok';
+    note.textContent = 'Takvim boş olsa da form tablosu ve momentum sıralaması güncel kalıyor.';
+    link.href = '/form-tablosu.html';
+    link.textContent = 'Form tablosunu aç';
+    return;
+  }
+
+  const isUpcoming = match.date && match.date !== todayISO();
+  const liveGame = findLiveGame(live, match);
+  const hasScore = liveGame && liveGame.hs != null;
+
+  kicker.textContent = `Günün Radar Maçı • ${match.league}`;
+  title.textContent = `${match.home} - ${match.away}`;
+  scores.hidden = false;
+
+  const homeVal = document.getElementById('heroHomeVal');
+  const awayVal = document.getElementById('heroAwayVal');
+  const homeLabel = document.getElementById('heroHomeLabel');
+  const awayLabel = document.getElementById('heroAwayLabel');
+
+  if (hasScore) {
+    homeVal.textContent = liveGame.hs;
+    awayVal.textContent = liveGame.as;
+    homeLabel.textContent = match.home;
+    awayLabel.textContent = match.away;
+    const canli = liveGame.status !== 'Bitti';
+    note.innerHTML = canli
+      ? `<span class="live-dot" aria-hidden="true"></span> Maç şu anda oynanıyor — skor otomatik güncellenir.`
+      : `Maç sona erdi. ${match.note}`;
+  } else {
+    homeVal.textContent = match.homeScore;
+    awayVal.textContent = match.awayScore;
+    homeLabel.textContent = `${match.home} Momentum`;
+    awayLabel.textContent = `${match.away} Momentum`;
+    note.textContent = `${isUpcoming ? gunTR(match.date) + ' • ' : ''}${match.time !== '—' ? match.time + ' • ' : ''}${match.note}`;
+  }
+
+  link.href = match.url || '/mac/';
+  link.textContent = 'Detaylı analizi aç';
+}
+
+// ---- Günün skor panosu ----
+
+function liveBadge(g) {
+  if (g.hs == null) return `<span class="pill neutral">${g.time || 'Bugün'}</span>`;
+  if (g.status === 'Bitti') return `<span class="pill">${g.hs} - ${g.as}</span>`;
+  return `<span class="pill is-live"><span class="live-dot" aria-hidden="true"></span>${g.hs} - ${g.as}</span>`;
+}
+
+function liveStatusText(g) {
+  if (g.hs == null) return g.time ? `Başlama saati ${g.time}` : 'Başlamadı';
+  return g.status === 'Bitti' ? 'Bitti' : 'Devam ediyor';
+}
+
+function sortLiveGames(games) {
+  const order = (g) => (g.hs != null && g.status !== 'Bitti') ? 0 : (g.hs == null ? 1 : 2);
+  return [...games].sort((a, b) => order(a) - order(b) || (a.time || '').localeCompare(b.time || ''));
+}
+
+function renderLive(live) {
+  const anchor = document.getElementById('bugunku-maclar');
+  if (!anchor) return;
+  const existing = document.getElementById('canliSkorlar');
+
+  const gecerli = live && Array.isArray(live.games) && live.games.length && live.date === todayISO();
+  if (!gecerli) { if (existing) existing.remove(); return; }
+
+  const canliVar = live.games.some(g => g.hs != null && g.status !== 'Bitti');
+  const html = `
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">${canliVar ? 'Şu anda sahada' : 'Günün skorları'}</p>
+          <h2>Bugünkü maçlar ve skorlar</h2>
+        </div>
+        <span class="date-pill">Güncellendi ${saatTR(live.updatedAt)}</span>
+      </div>
+      <div class="team-list">
+        ${sortLiveGames(live.games).map(g => `
+          <div class="team-row live-row">
+            <span class="league-tag">${g.league}</span>
+            <div><strong>${g.home} - ${g.away}</strong><small>${liveStatusText(g)}</small></div>
+            ${liveBadge(g)}
+          </div>`).join('')}
+      </div>
+    </div>`;
+
+  if (existing) {
+    existing.innerHTML = html;
+  } else {
+    const section = document.createElement('section');
+    section.id = 'canliSkorlar';
+    section.className = 'section';
+    section.innerHTML = html;
+    anchor.parentNode.insertBefore(section, anchor);
+  }
+}
+
+// ---- Maç radarları ----
 
 function renderMatches(matches, showDates) {
   const grid = document.getElementById('matchGrid');
@@ -153,8 +243,14 @@ function renderFormTable(teams) {
   `).join('');
 }
 
+// ---- Başlat + canlı yenileme ----
+
+let siteData = null;
+
 Promise.all([loadData(), loadLive()]).then(([data, live]) => {
+  siteData = data;
   renderLive(live);
+  renderHero(data, live);
 
   const todayMatches = data.matches || [];
   const upcoming = data.upcoming || [];
@@ -174,3 +270,12 @@ Promise.all([loadData(), loadLive()]).then(([data, live]) => {
   renderTeams(data.teams || []);
   renderFormTable(data.teams || []);
 });
+
+// Skorlar 60 saniyede bir sessizce tazelenir (sekme görünürken).
+setInterval(async () => {
+  if (document.hidden || !siteData) return;
+  const live = await loadLive();
+  if (!live) return;
+  renderLive(live);
+  renderHero(siteData, live);
+}, 60000);

@@ -14,7 +14,9 @@ FutbolRadar, futbol maçlarını form, momentum, gol eğilimi ve takım ritmi ü
 - `assets/app.js` — JSON veri okuma ve mobil menü
 - `data/matches.json` — Maç ve takım verisi (script otomatik üretir)
 - `scripts/fetch-api-football.mjs` — API-Football'dan günlük veri çeker
+- `scripts/fetch-live.mjs` — Günün skorlarını `data/live.json`'a yazar
 - `.github/workflows/gunluk-veri.yml` — Her sabah veriyi otomatik günceller
+- `.github/workflows/canli-skor.yml` — Akşamları 30 dk'da bir skorları günceller; ana sayfa skorları 60 sn'de bir tazeler
 - `vercel.json`, `robots.txt`, `sitemap.xml` — Deploy ve SEO ayarları
 
 ## Lokal Çalıştırma

@@ -97,9 +97,10 @@ function resultPage(r, homeT, awayT, slug) {
       <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="main-nav" aria-label="Ana menü">
         <a href="/">Bugünkü Maçlar</a>
-        <a href="/gunluk-mac-analizleri.html">Günlük Analizler</a>
-        <a href="/mac-sonucu/">Maç Sonuçları</a>
+        <a href="/puan-durumu.html">Puan Durumu</a>
+        <a href="/super-lig-momentum.html">Momentum</a>
         <a href="/form-tablosu.html">Form Tablosu</a>
+        <a href="/mac-sonucu/">Maç Sonuçları</a>
         <a href="/takim-formu.html">Takımlar</a>
       </nav>
     </div>
@@ -159,9 +160,10 @@ function archivePage(items) {
       <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="main-nav" aria-label="Ana menü">
         <a href="/">Bugünkü Maçlar</a>
-        <a href="/gunluk-mac-analizleri.html">Günlük Analizler</a>
-        <a href="/mac-sonucu/" aria-current="page">Maç Sonuçları</a>
+        <a href="/puan-durumu.html">Puan Durumu</a>
+        <a href="/super-lig-momentum.html">Momentum</a>
         <a href="/form-tablosu.html">Form Tablosu</a>
+        <a href="/mac-sonucu/" aria-current="page">Maç Sonuçları</a>
         <a href="/takim-formu.html">Takımlar</a>
       </nav>
     </div>
