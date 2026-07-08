@@ -15,6 +15,8 @@ jobs:
           node-version: 22
       - name: Veriyi çek
         run: node scripts/fetch-thesportsdb.mjs
+      - name: Veri katmanını üret
+        run: node scripts/build-data.mjs
       - name: Maç sayfalarını üret
         run: node scripts/generate-pages.mjs
       - name: Maç sonuçlarını üret
@@ -25,7 +27,7 @@ jobs:
         run: |
           git config user.name "futbolradar-bot"
           git config user.email "bot@futbolradar"
-          git add data/matches.json mac mac-sonucu sitemap.xml galatasaray-formu.html fenerbahce-formu.html besiktas-formu.html trabzonspor-formu.html
+          git add data/matches.json data/teams.json data/momentum.json data/signals.json mac mac-sonucu sitemap.xml galatasaray-formu.html fenerbahce-formu.html besiktas-formu.html trabzonspor-formu.html
           git diff --cached --quiet || git commit -m "Günlük veri, maç ve takım sayfaları"
           git pull --rebase origin main || true
           git push

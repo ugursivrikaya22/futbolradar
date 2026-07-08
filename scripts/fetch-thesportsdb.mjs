@@ -72,6 +72,9 @@ for (const lg of LEAGUES) {
       name: r.strTeam,
       form: trForm(r.strForm),
       goalDiff: Number(r.intGoalDifference) || 0,
+      played: Number(r.intPlayed) || 0,
+      goalsFor: Number(r.intGoalsFor) || 0,
+      goalsAgainst: Number(r.intGoalsAgainst) || 0,
       momentum: momentum(r.strForm, r.intGoalDifference),
       note: teamNote(r.strForm),
       badge: (r.strBadge || '').replace(/\/tiny$/, ''),
@@ -91,15 +94,17 @@ async function resolveTeam(name) {
     const ev = await api(`/eventslast.php?id=${team.idTeam}`);
     const results = (ev?.results || []).filter(e => e.intHomeScore != null && e.intAwayScore != null).slice(0, 5);
     if (!results.length) return null;
-    let letters = '', gd = 0;
+    let letters = '', gd = 0, gf = 0, ga = 0;
     for (const e of results.reverse()) {
       const isHome = e.strHomeTeam === team.strTeam;
       const us = Number(isHome ? e.intHomeScore : e.intAwayScore);
       const them = Number(isHome ? e.intAwayScore : e.intHomeScore);
       letters += us > them ? 'W' : us < them ? 'L' : 'D';
       gd += us - them;
+      gf += us;
+      ga += them;
     }
-    return { name, form: trForm(letters), goalDiff: gd, momentum: momentum(letters, gd), note: teamNote(letters), badge: (team.strBadge || '').replace(/\/tiny$/, '') };
+    return { name, form: trForm(letters), goalDiff: gd, played: results.length, goalsFor: gf, goalsAgainst: ga, momentum: momentum(letters, gd), note: teamNote(letters), badge: (team.strBadge || '').replace(/\/tiny$/, '') };
   } catch { return null; }
 }
 

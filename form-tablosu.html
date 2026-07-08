@@ -31,10 +31,11 @@
       <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="main-nav" aria-label="Ana menü">
         <a href="/">Bugünkü Maçlar</a>
-        <a href="/gunluk-mac-analizleri.html">Günlük Analizler</a>
+        <a href="/puan-durumu.html">Puan Durumu</a>
         <a href="/super-lig-momentum.html">Momentum</a>
         <a href="/form-tablosu.html" aria-current="page">Form Tablosu</a>
-        <a href="/galatasaray-formu.html">Takımlar</a>
+        <a href="/mac-sonucu/">Maç Sonuçları</a>
+        <a href="/takim-formu.html">Takımlar</a>
       </nav>
     </div>
   </header>
@@ -50,7 +51,7 @@
             <thead>
               <tr><th>#</th><th>Takım</th><th>Son 5</th><th>Gol Farkı</th><th>Momentum</th><th>Radar Notu</th></tr>
             </thead>
-            <tbody id="formTableBody"></tbody>
+            <tbody id="formTableBody" data-api-section="formtable"></tbody>
           </table>
         </div>
       </div>

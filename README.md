@@ -11,10 +11,30 @@ FutbolRadar, futbol maçlarını form, momentum, gol eğilimi ve takım ritmi ü
 - `super-lig-momentum.html` — Momentum sıralaması
 - `takim-formu.html` — Takım sayfaları dizini
 - `assets/style.css` — Tasarım
-- `assets/app.js` — JSON veri okuma ve mobil menü
-- `data/matches.json` — Maç ve takım verisi (script otomatik üretir)
+- `assets/app.js` — Merkezi veri katmanı: `data-api-section` kancalarını tarar, JSON'dan kart render eder, mobil menü
 - `scripts/fetch-api-football.mjs` — API-Football'dan günlük veri çeker
+- `scripts/fetch-live.mjs` — Günün skorlarını `data/live.json`'a yazar
+- `scripts/build-data.mjs` — `matches.json`'dan türetilmiş veri dosyalarını üretir
 - `.github/workflows/gunluk-veri.yml` — Her sabah veriyi otomatik günceller
+
+### Veri katmanı (`/data`)
+
+Kartlar HTML'e gömülü değildir; sayfalar `data-api-section` kancasıyla ilgili JSON'u fetch edip render eder.
+
+| Dosya | İçerik | Kaynak |
+| --- | --- | --- |
+| `matches.json` | Bugünkü + yaklaşan maçlar, ham takım verisi | `fetch-thesportsdb.mjs` (tek doğruluk kaynağı) |
+| `live.json` | Günün canlı skorları | `fetch-live.mjs` |
+| `teams.json` | Takım kataloğu (+ hücum/savunma radar puanı) | `build-data.mjs` (türetilir) |
+| `momentum.json` | Momentum sıralaması | `build-data.mjs` (türetilir) |
+| `signals.json` | Radar sinyalleri | `build-data.mjs` (türetilir) |
+| `players.json` | Oyuncu radar önizleme | elle yazılır |
+| `analyses.json` | Analiz (SEO) kartları | elle yazılır |
+
+Kancalar: `data-api-section` (bölüm), `data-card` (kart), `data-team` / `data-player` (kimlik). Veri gelmezse: fetch/JSON hatasında statik fallback korunur, veri boşsa temiz "boş durum" gösterilir; sayfa hiçbir durumda kırılmaz.
+
+Pipeline: `npm run fetch` → `npm run data` → `npm run pages`
+- `.github/workflows/canli-skor.yml` — Akşamları 30 dk'da bir skorları günceller; ana sayfa skorları 60 sn'de bir tazeler
 - `vercel.json`, `robots.txt`, `sitemap.xml` — Deploy ve SEO ayarları
 
 ## Lokal Çalıştırma

@@ -79,9 +79,10 @@ function pageHtml(m, dateISO, dateTR, homeTeam, awayTeam, slug) {
       <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="main-nav" aria-label="Ana menü">
         <a href="/">Bugünkü Maçlar</a>
-        <a href="/gunluk-mac-analizleri.html">Günlük Analizler</a>
+        <a href="/puan-durumu.html">Puan Durumu</a>
         <a href="/super-lig-momentum.html">Momentum</a>
         <a href="/form-tablosu.html">Form Tablosu</a>
+        <a href="/mac-sonucu/">Maç Sonuçları</a>
         <a href="/takim-formu.html">Takımlar</a>
       </nav>
     </div>
@@ -147,9 +148,10 @@ function archiveHtml(items) {
       <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false"><span></span><span></span><span></span></button>
       <nav class="main-nav" aria-label="Ana menü">
         <a href="/">Bugünkü Maçlar</a>
-        <a href="/gunluk-mac-analizleri.html">Günlük Analizler</a>
+        <a href="/puan-durumu.html">Puan Durumu</a>
         <a href="/super-lig-momentum.html">Momentum</a>
         <a href="/form-tablosu.html">Form Tablosu</a>
+        <a href="/mac-sonucu/">Maç Sonuçları</a>
         <a href="/takim-formu.html">Takımlar</a>
       </nav>
     </div>
@@ -182,6 +184,7 @@ function archiveHtml(items) {
 function sitemapXml(macSlugs) {
   const staticPages = [
     ['', 'daily', '1.0'],
+    ['bugunun-maclari.html', 'daily', '0.9'],
     ['gunluk-mac-analizleri.html', 'daily', '0.9'],
     ['form-tablosu.html', 'daily', '0.9'],
     ['super-lig-momentum.html', 'daily', '0.9'],
