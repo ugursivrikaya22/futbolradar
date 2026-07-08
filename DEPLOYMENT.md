@@ -35,6 +35,42 @@ FOOTBALL_API_BASE_URL=https://api.football-data.org/v4
 FOOTBALL_COMPETITION_CODE=TSL
 ```
 
+`FOOTBALL_API_KEY` is the preferred key name. The API layer also accepts these
+aliases so an existing Vercel variable can still activate the live provider:
+
+```text
+FOOTBALL_DATA_API_KEY
+FOOTBALLDATA_API_KEY
+FOOTBALL_DATA_ORG_API_KEY
+FOOTBALL_DATA_AUTH_TOKEN
+FOOTBALL_DATA_TOKEN
+FOOTBALLDATA_TOKEN
+FOOTBALL_API_TOKEN
+```
+
+The base URL and competition code also have safe aliases:
+
+```text
+FOOTBALL_DATA_BASE_URL
+FOOTBALLDATA_BASE_URL
+FOOTBALL_DATA_COMPETITION_CODE
+FOOTBALLDATA_COMPETITION_CODE
+COMPETITION_CODE
+```
+
+After changing Vercel variables, create a new Production deployment. Serverless
+functions only see the updated environment after a fresh deployment.
+
+## Live API health check
+
+Use `/api/health` after deployment. It never returns the secret value, only
+whether an accepted environment variable name is present.
+
+- `apiKeyConfigured: true`: `/api/matches` and `/api/standings` can use the live provider.
+- `apiKeyConfigured: false`: live provider is not visible to Production, so the site uses Mock API data.
+- `baseUrlConfigured: true`: the default or configured football-data base URL is active.
+- `competitionCodeConfigured: true`: the default or configured competition code is active.
+
 ## Post-deploy QA
 
 Check these pages:
@@ -59,6 +95,7 @@ Check these API routes:
 - `/api/momentum`
 - `/api/signals`
 - `/api/analyses`
+- `/api/health`
 
 Expected API response shape:
 
