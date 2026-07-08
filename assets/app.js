@@ -1,3 +1,18 @@
+/* ============================================================
+   FutbolRadar — merkezi veri katmanı ve kart render motoru
+   ------------------------------------------------------------
+   Kartlar HTML'e gömülü değildir; /data/*.json dosyalarından
+   okunur. Her dinamik alan HTML'de bir kanca ile işaretlenir:
+
+     <div data-api-section="players">…statik fallback…</div>
+
+   app.js bu kancaları tarar, ilgili JSON'u yükler ve uygun
+   render fonksiyonunu çağırır. Veri gelmezse:
+     - fetch/JSON hatası  → varsa statik fallback korunur
+     - veri boş           → temiz "boş durum" mesajı gösterilir
+   ============================================================ */
+
+/* ---------- Mobil menü ---------- */
 const navToggle = document.querySelector('.nav-toggle');
 const mainNav = document.querySelector('.main-nav');
 if (navToggle && mainNav) {
@@ -7,35 +22,29 @@ if (navToggle && mainNav) {
   });
 }
 
-async function loadData() {
-  try {
-    const response = await fetch('/data/matches.json');
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return await response.json();
-  } catch (error) {
-    console.warn('Veri yuklenemedi:', error);
-    return { matches: [], upcoming: [], teams: [] };
-  }
-}
-
-async function loadLive() {
-  try {
-    const response = await fetch('/data/live.json', { cache: 'no-cache' });
-    if (!response.ok) return null;
-    return await response.json();
-  } catch { return null; }
-}
-
-// ---- Yardımcılar ----
+/* ---------- Yardımcılar ---------- */
 const clamp = (n, lo = 20, hi = 99) => Math.max(lo, Math.min(hi, Math.round(n)));
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const emptyState = (msg) => `<div class="empty-state">${esc(msg)}</div>`;
+
 const todayISO = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Istanbul' }).format(new Date());
 const saatTR = (iso) => new Date(iso).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' });
 const tarihSaatTR = (iso) => new Date(iso).toLocaleString('tr-TR', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Istanbul' });
 const gunTR = (iso) => new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' }).format(new Date(iso + 'T12:00:00'));
 
+// JSON yükleyici — aynı dosya bir kez indirilir (önbellek)
+const _cache = new Map();
+async function loadJSON(url, { fresh = false } = {}) {
+  if (!fresh && _cache.has(url)) return _cache.get(url);
+  const res = await fetch(url, fresh ? { cache: 'no-cache' } : {});
+  if (!res.ok) throw new Error(`HTTP ${res.status} · ${url}`);
+  const data = await res.json();
+  _cache.set(url, data);
+  return data;
+}
+
 function riskClass(risk) {
-  if (!risk) return '';
-  const lower = risk.toLocaleLowerCase('tr-TR');
+  const lower = (risk || '').toLocaleLowerCase('tr-TR');
   if (lower.includes('yüksek')) return 'danger';
   if (lower.includes('orta')) return 'warning';
   return 'success';
@@ -45,9 +54,9 @@ function badgeEl(name, badge, cls = 'team-badge-fallback') {
   const words = (name || '').split(' ').filter(Boolean);
   const initials = (words.length >= 2 ? words[0][0] + words[1][0] : (name || '?').slice(0, 2)).toLocaleUpperCase('tr-TR');
   if (badge) {
-    return `<img src="${badge}" alt="${name}" loading="lazy" width="26" height="26" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'${cls}',textContent:'${initials}'}))">`;
+    return `<img src="${esc(badge)}" alt="${esc(name)}" loading="lazy" width="26" height="26" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'${cls}',textContent:'${esc(initials)}'}))">`;
   }
-  return `<span class="${cls}">${initials}</span>`;
+  return `<span class="${cls}">${esc(initials)}</span>`;
 }
 
 // AI tahmini: momentum farkından türetilir (ev sahibi avantajı dahil)
@@ -60,216 +69,80 @@ function aiPick(m) {
   return { label: 'MS 2', conf: clamp(60 + Math.abs(d), 60, 92) };
 }
 
-// Hücum / savunma radar puanı (momentum + averajdan şeffaf türetim; gerçek gf/ga varsa onu kullanır)
-function radarScores(t) {
-  if (t.played && t.goalsFor != null && t.goalsAgainst != null) {
-    const gp = Math.max(1, t.played);
-    return {
-      attack: clamp((t.goalsFor / gp) / 2.2 * 100),
-      defense: clamp((1 - (t.goalsAgainst / gp) / 2.2) * 100),
-    };
+const dots = (form) => (Array.isArray(form) ? form : String(form || '').split(' '))
+  .filter(Boolean)
+  .map(c => `<i class="${c === 'G' ? 'g' : c === 'B' ? 'b' : 'm'}"></i>`).join('');
+
+/* ============================================================
+   Render fonksiyonları — her biri (container, data) alır
+   ============================================================ */
+
+// Bugünkü / yaklaşan maç radar kartları
+function renderMatches(el, data) {
+  const today = data.matches || [];
+  const upcoming = data.upcoming || [];
+  const useUpcoming = today.length === 0 && upcoming.length > 0;
+  const list = useUpcoming ? upcoming : today;
+
+  const label = document.getElementById('todayLabel');
+  if (label) {
+    label.textContent = useUpcoming
+      ? 'Yaklaşan maçlar'
+      : new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
   }
-  return {
-    attack: clamp(52 + t.goalDiff * 0.85),
-    defense: clamp(42 + t.momentum * 0.5 + (t.goalDiff > 0 ? 6 : -6)),
-  };
-}
 
-// ---- Hero radar maçı ----
-function pickHeroMatch(data) {
-  const pool = (data.matches && data.matches.length) ? data.matches : (data.upcoming || []);
-  if (!pool.length) return null;
-  const weight = (m) => (m.homeScore + m.awayScore) + (m.league === 'Süper Lig' ? 100 : 0);
-  return [...pool].sort((a, b) => weight(b) - weight(a))[0];
-}
-
-function renderHero(data, live) {
-  const card = document.getElementById('heroRadar');
-  if (!card) return;
-  const m = pickHeroMatch(data);
-  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-
-  const statM = document.getElementById('statMatches');
-  const statT = document.getElementById('statTeams');
-  if (statM) statM.textContent = (data.matches || []).length || (data.upcoming || []).length || '0';
-  if (statT) statT.textContent = (data.teams || []).length || '0';
-
-  const upd = document.getElementById('lastUpdate');
-  if (upd) upd.textContent = data.updatedAt ? tarihSaatTR(data.updatedAt) : '—';
-
-  if (!m) {
-    set('rhHome', 'Bugün maç yok');
-    set('rhAway', '');
-    document.getElementById('rhLink').setAttribute('href', '/form-tablosu.html');
+  if (!list.length) {
+    el.innerHTML = `<article class="match-card glass"><h3>Takvimde maç yok</h3><p>Takip edilen liglerde önümüzdeki günlerde maç bulunmuyor. Form tablosu ve momentum güncel kalmaya devam ediyor.</p><a class="text-link" href="/mac-sonucu/">Son sonuçlara bak →</a></article>`;
     return;
   }
 
-  document.getElementById('rhHomeBadge').innerHTML = badgeEl(m.home, m.homeBadge, 'rh-badge-fallback');
-  document.getElementById('rhAwayBadge').innerHTML = badgeEl(m.away, m.awayBadge, 'rh-badge-fallback');
-  set('rhHome', m.home);
-  set('rhAway', m.away);
-
-  const liveGame = live && Array.isArray(live.games) ? live.games.find(g => g.home === m.home && g.away === m.away) : null;
-  const liveTag = card.querySelector('.rh-live-tag');
-  const hasScore = liveGame && liveGame.hs != null;
-  const isRunning = hasScore && liveGame.status !== 'Bitti';
-
-  set('rhHomeLabel', `${m.home} Momentum`);
-  set('rhAwayLabel', `${m.away} Momentum`);
-  set('rhHomeVal', m.homeScore);
-  set('rhAwayVal', m.awayScore);
-  document.getElementById('rhHomeBar').style.width = m.homeScore + '%';
-  document.getElementById('rhAwayBar').style.width = m.awayScore + '%';
-
-  if (liveTag) liveTag.hidden = !isRunning;
-  if (hasScore) {
-    set('rhHomeVal', liveGame.hs);
-    set('rhAwayVal', liveGame.as);
-    set('rhHomeLabel', `${m.home}`);
-    set('rhAwayLabel', `${m.away}`);
-  }
-
-  const ai = aiPick(m);
-  set('rhAI', `${ai.label} · %${ai.conf}`);
-  set('rhGoal', m.goalPotential);
-  set('rhRisk', m.risk);
-  const riskEl = document.getElementById('rhRisk');
-  if (riskEl) riskEl.className = riskClass(m.risk);
-
-  document.getElementById('rhLink').setAttribute('href', m.url || '/mac/');
-}
-
-// ---- Canlı skor bandı ----
-function liveBadge(g) {
-  if (g.hs == null) return `<span class="pill neutral">${g.time || 'Bugün'}</span>`;
-  if (g.status === 'Bitti') return `<span class="pill">${g.hs} - ${g.as}</span>`;
-  return `<span class="pill is-live"><span class="live-dot"></span>${g.hs} - ${g.as}</span>`;
-}
-function liveStatusText(g) {
-  if (g.hs == null) return g.time ? `Başlama ${g.time}` : 'Başlamadı';
-  return g.status === 'Bitti' ? 'Bitti' : 'Devam ediyor';
-}
-function sortLiveGames(games) {
-  const order = (g) => (g.hs != null && g.status !== 'Bitti') ? 0 : (g.hs == null ? 1 : 2);
-  return [...games].sort((a, b) => order(a) - order(b) || (a.time || '').localeCompare(b.time || ''));
-}
-
-function renderLive(live) {
-  const grid = document.getElementById('liveScoreGrid');
-  if (!grid) return;
-  const eyebrow = document.getElementById('liveEyebrow');
-  const updated = document.getElementById('liveUpdated');
-
-  const gecerli = live && Array.isArray(live.games) && live.games.length && live.date === todayISO();
-  if (!gecerli) {
-    grid.innerHTML = `<div class="live-empty">Bugün takip edilen liglerde canlı maç görünmüyor. Radar kartları ve momentum güncel kalmaya devam ediyor.</div>`;
-    if (updated) updated.textContent = 'Bugün maç yok';
-    return;
-  }
-
-  const canliVar = live.games.some(g => g.hs != null && g.status !== 'Bitti');
-  if (eyebrow) eyebrow.textContent = canliVar ? 'Şu anda sahada' : 'Günün skorları';
-  if (updated) updated.textContent = `Güncellendi ${saatTR(live.updatedAt)}`;
-
-  grid.innerHTML = sortLiveGames(live.games).map(g => `
-    <div class="live-row${g.hs != null && g.status !== 'Bitti' ? ' running' : ''}">
-      <span class="league-tag">${g.league}</span>
-      <div class="live-teams"><strong>${g.home}</strong><strong>${g.away}</strong></div>
-      <div class="live-meta">${liveBadge(g)}<small>${liveStatusText(g)}</small></div>
-    </div>`).join('');
-}
-
-// ---- Bugünkü maç radar kartları ----
-function renderMatches(matches, showDates) {
-  const grid = document.getElementById('matchGrid');
-  if (!grid) return;
-
-  if (!matches.length) {
-    grid.innerHTML = `<article class="match-card glass"><h3>Takvimde maç yok</h3><p>Takip edilen liglerde önümüzdeki günlerde maç bulunmuyor. Form tablosu ve momentum güncel kalmaya devam ediyor.</p><a class="text-link" href="/mac-sonucu/">Son sonuçlara bak →</a></article>`;
-    return;
-  }
-
-  grid.innerHTML = matches.map(match => {
-    const ai = aiPick(match);
+  el.innerHTML = list.map(m => {
+    const ai = aiPick(m);
     return `
-    <article class="match-card glass">
-      <div class="match-meta"><span class="league-tag">${match.league}</span><span>${showDates && match.date ? gunTR(match.date) + ' • ' : ''}${match.time}</span></div>
-      <h3>${match.home} <span class="mc-vs">–</span> ${match.away}</h3>
+    <article class="match-card glass" data-card data-team="${esc(m.home)}">
+      <div class="match-meta"><span class="league-tag">${esc(m.league)}</span><span>${useUpcoming && m.date ? gunTR(m.date) + ' • ' : ''}${esc(m.time)}</span></div>
+      <h3>${esc(m.home)} <span class="mc-vs">–</span> ${esc(m.away)}</h3>
       <div class="momentum-bars">
         <div>
-          <span>${badgeEl(match.home, match.homeBadge)} ${match.home}</span>
-          <div class="bar"><i style="width:${match.homeScore}%"></i></div>
-          <strong>${match.homeScore}</strong>
+          <span>${badgeEl(m.home, m.homeBadge)} ${esc(m.home)}</span>
+          <div class="bar"><i style="width:${m.homeScore}%"></i></div>
+          <strong>${m.homeScore}</strong>
         </div>
         <div>
-          <span>${badgeEl(match.away, match.awayBadge)} ${match.away}</span>
-          <div class="bar alt"><i style="width:${match.awayScore}%"></i></div>
-          <strong>${match.awayScore}</strong>
+          <span>${badgeEl(m.away, m.awayBadge)} ${esc(m.away)}</span>
+          <div class="bar alt"><i style="width:${m.awayScore}%"></i></div>
+          <strong>${m.awayScore}</strong>
         </div>
       </div>
       <div class="ai-row">
-        <span class="ai-pill">AI: ${ai.label}</span>
+        <span class="ai-pill">AI: ${esc(ai.label)}</span>
         <span class="ai-conf">%${ai.conf} güven</span>
       </div>
       <div class="tag-row">
-        <span>Gol: ${match.goalPotential}</span>
-        <span class="${riskClass(match.risk)}">Risk: ${match.risk}</span>
+        <span>Gol: ${esc(m.goalPotential)}</span>
+        <span class="${riskClass(m.risk)}">Risk: ${esc(m.risk)}</span>
       </div>
-      <a class="text-link" href="${match.url}">Radar analizini aç →</a>
+      <a class="text-link" href="${esc(m.url || '/mac/')}">Radar analizini aç →</a>
     </article>`;
   }).join('');
 }
 
-// ---- Radar sinyalleri ----
-function renderSignals(data) {
-  const wrap = document.getElementById('radarSignals');
-  if (!wrap) return;
+// Süper Lig takım radar kartları
+function renderTeams(el, data) {
   const teams = data.teams || [];
-  const games = [...(data.matches || []), ...(data.upcoming || [])];
-
-  const cards = [];
-
-  const rising = [...teams].sort((a, b) => b.momentum - a.momentum)[0];
-  if (rising) cards.push({ icon: '▲', tone: 'up', label: 'Formu yükselen takım', value: rising.name, sub: `Momentum ${rising.momentum} · ${rising.form}` });
-
-  const goalHi = [...games].sort((a, b) => (b.homeScore + b.awayScore) - (a.homeScore + a.awayScore))[0];
-  if (goalHi) cards.push({ icon: '◎', tone: 'goal', label: 'Gol potansiyeli yüksek maç', value: `${goalHi.home} - ${goalHi.away}`, sub: `Gol eğilimi: ${goalHi.goalPotential}` });
-
-  const surprise = [...games].sort((a, b) => Math.abs(a.homeScore - a.awayScore) - Math.abs(b.homeScore - b.awayScore))[0];
-  if (surprise) cards.push({ icon: '⚡', tone: 'risk', label: 'Sürpriz riski', value: `${surprise.home} - ${surprise.away}`, sub: `Risk: ${surprise.risk}` });
-
-  const falling = [...teams].sort((a, b) => a.momentum - b.momentum)[0];
-  if (falling) cards.push({ icon: '▼', tone: 'down', label: 'Momentum düşüşü', value: falling.name, sub: `Momentum ${falling.momentum} · ${falling.form}` });
-
-  if (!cards.length) {
-    wrap.innerHTML = `<div class="signal-card glass"><p>Sinyal üretmek için yeterli maç verisi yok. Sezon başlayınca radar dolacak.</p></div>`;
-    return;
-  }
-
-  wrap.innerHTML = cards.map(c => `
-    <article class="signal-card glass ${c.tone}">
-      <span class="sig-icon">${c.icon}</span>
-      <p class="sig-label">${c.label}</p>
-      <strong class="sig-value">${c.value}</strong>
-      <small class="sig-sub">${c.sub}</small>
-    </article>`).join('');
-}
-
-// ---- Süper Lig takım radarı ----
-function renderTeamRadar(teams) {
-  const wrap = document.getElementById('teamRadar');
-  if (!wrap) return;
+  if (!teams.length) { el.innerHTML = emptyState('Takım verisi şu anda yüklenemedi.'); return; }
   const sorted = [...teams].sort((a, b) => b.momentum - a.momentum);
-  wrap.innerHTML = sorted.map(t => {
-    const { attack, defense } = radarScores(t);
+  el.innerHTML = sorted.map(t => {
+    const attack = t.attack ?? clamp(52 + t.goalDiff * 0.85);
+    const defense = t.defense ?? clamp(42 + t.momentum * 0.5 + (t.goalDiff > 0 ? 6 : -6));
     return `
-    <article class="team-radar-card glass">
+    <article class="team-radar-card glass" data-card data-team="${esc(t.name)}">
       <div class="trc-head">
         <span class="trc-badge">${badgeEl(t.name, t.badge)}</span>
-        <div><strong>${t.name}</strong><small>Averaj ${t.goalDiff > 0 ? '+' : ''}${t.goalDiff}</small></div>
+        <div><strong>${esc(t.name)}</strong><small>Averaj ${t.goalDiff > 0 ? '+' : ''}${t.goalDiff}</small></div>
         <span class="trc-momentum">${t.momentum}</span>
       </div>
-      <div class="form-dots" aria-label="Son 5 maç">${t.form.split(' ').filter(Boolean).map(c => `<i class="${c === 'G' ? 'g' : c === 'B' ? 'b' : 'm'}"></i>`).join('')}</div>
+      <div class="form-dots" aria-label="Son 5 maç">${dots(t.form)}</div>
       <div class="trc-stats">
         <div><span>Hücum</span><div class="mini-bar"><i style="width:${attack}%"></i></div><b>${attack}</b></div>
         <div><span>Savunma</span><div class="mini-bar"><i class="def" style="width:${defense}%"></i></div><b>${defense}</b></div>
@@ -279,52 +152,222 @@ function renderTeamRadar(teams) {
   }).join('');
 }
 
-// ---- Form tablosu (form-tablosu.html) ----
-function renderFormTable(teams) {
-  const tbody = document.getElementById('formTableBody');
-  if (!tbody) return;
-  const sorted = [...teams].sort((a, b) => b.momentum - a.momentum);
-  tbody.innerHTML = sorted.map((team, index) => `
-    <tr>
-      <td>${index + 1}</td>
-      <td><strong>${badgeEl(team.name, team.badge)} ${team.name}</strong></td>
-      <td>${team.form}</td>
-      <td>${team.goalDiff > 0 ? '+' : ''}${team.goalDiff}</td>
-      <td><strong>${team.momentum}</strong></td>
-      <td>${team.note}</td>
+// Momentum sıralaması (team-list satırları)
+function renderMomentum(el, data) {
+  const ranking = data.ranking || [];
+  if (!ranking.length) { el.innerHTML = emptyState('Momentum sıralaması şu anda yüklenemedi.'); return; }
+  el.innerHTML = ranking.map(t => `
+    <div class="team-row" data-card data-team="${esc(t.name)}">
+      <span class="rank">${t.rank}</span>
+      <div>
+        <strong>${badgeEl(t.name, t.badge)} ${esc(t.name)}</strong>
+        <small>${esc(t.note)}</small>
+      </div>
+      <span class="pill">${t.momentum}</span>
+    </div>`).join('');
+}
+
+// Form tablosu satırları (tbody)
+function renderFormTable(el, data) {
+  const ranking = data.ranking || [];
+  if (!ranking.length) { el.innerHTML = `<tr><td colspan="6">${esc('Form tablosu şu anda yüklenemedi.')}</td></tr>`; return; }
+  el.innerHTML = ranking.map(t => `
+    <tr data-card data-team="${esc(t.name)}">
+      <td>${t.rank}</td>
+      <td><strong>${badgeEl(t.name, t.badge)} ${esc(t.name)}</strong></td>
+      <td>${esc(t.form)}</td>
+      <td>${t.goalDiff > 0 ? '+' : ''}${t.goalDiff}</td>
+      <td><strong>${t.momentum}</strong></td>
+      <td>${esc(t.note)}</td>
     </tr>`).join('');
 }
 
-// ---- Başlat ----
-let siteData = null;
+// Radar sinyalleri
+function renderSignals(el, data) {
+  const signals = data.signals || [];
+  if (!signals.length) { el.innerHTML = emptyState('Sinyal üretecek yeterli veri yok.'); return; }
+  el.innerHTML = signals.map(c => `
+    <article class="signal-card glass ${esc(c.tone)}" data-card>
+      <span class="sig-icon">${esc(c.icon)}</span>
+      <p class="sig-label">${esc(c.label)}</p>
+      <strong class="sig-value">${esc(c.value)}</strong>
+      <small class="sig-sub">${esc(c.sub)}</small>
+    </article>`).join('');
+}
 
-Promise.all([loadData(), loadLive()]).then(([data, live]) => {
-  siteData = data;
-  renderHero(data, live);
-  renderLive(live);
+// Oyuncu radar kartları
+function renderPlayers(el, data) {
+  const players = data.players || [];
+  if (!players.length) { el.innerHTML = emptyState('Oyuncu verisi şu anda yüklenemedi.'); return; }
+  el.innerHTML = players.map(p => {
+    const words = p.name.split(' ').filter(Boolean);
+    const initials = (words.length >= 2 ? words[0][0] + words[words.length - 1][0] : p.name.slice(0, 2)).toLocaleUpperCase('tr-TR');
+    const icon = p.trend === 'up' ? '▲' : p.trend === 'down' ? '▼' : '▬';
+    return `
+    <article class="player-card glass" data-card data-player="${esc(p.name)}">
+      <div class="pc-top"><span class="pc-avatar">${esc(initials)}</span><span class="pc-trend ${esc(p.trend)}">${icon} ${esc(p.trendLabel)}</span></div>
+      <h3>${esc(p.name)}</h3>
+      <p class="pc-meta">${esc(p.team)} · ${esc(p.position)}</p>
+      <div class="pc-rating"><span>AI Rating</span><strong>${esc(p.rating)}</strong></div>
+      <div class="form-dots" aria-label="Son 5 maç">${dots(p.form)}</div>
+    </article>`;
+  }).join('');
+}
 
-  const todayMatches = data.matches || [];
-  const upcoming = data.upcoming || [];
-  const useUpcoming = todayMatches.length === 0 && upcoming.length > 0;
+// Analiz (SEO) kartları
+function renderAnalyses(el, data) {
+  const analyses = data.analyses || [];
+  if (!analyses.length) { el.innerHTML = emptyState('Analiz içeriği şu anda yüklenemedi.'); return; }
+  el.innerHTML = analyses.map(a => `
+    <a class="article-card glass" href="${esc(a.href)}" data-card>
+      <h3>${esc(a.title)}</h3>
+      <p>${esc(a.excerpt)}</p>
+      <span class="text-link">${esc(a.cta)} →</span>
+    </a>`).join('');
+}
 
-  const todayLabel = document.getElementById('todayLabel');
-  if (todayLabel) {
-    todayLabel.textContent = useUpcoming
-      ? 'Yaklaşan maçlar'
-      : new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
+// Canlı skor satırları
+function liveBadge(g) {
+  if (g.hs == null) return `<span class="pill neutral">${esc(g.time || 'Bugün')}</span>`;
+  if (g.status === 'Bitti') return `<span class="pill">${g.hs} - ${g.as}</span>`;
+  return `<span class="pill is-live"><span class="live-dot"></span>${g.hs} - ${g.as}</span>`;
+}
+const liveStatusText = (g) => g.hs == null ? (g.time ? `Başlama ${g.time}` : 'Başlamadı') : (g.status === 'Bitti' ? 'Bitti' : 'Devam ediyor');
+const sortLiveGames = (games) => {
+  const order = (g) => (g.hs != null && g.status !== 'Bitti') ? 0 : (g.hs == null ? 1 : 2);
+  return [...games].sort((a, b) => order(a) - order(b) || (a.time || '').localeCompare(b.time || ''));
+};
+
+function renderLive(el, data) {
+  const eyebrow = document.getElementById('liveEyebrow');
+  const updated = document.getElementById('liveUpdated');
+  const gecerli = data && Array.isArray(data.games) && data.games.length && data.date === todayISO();
+
+  if (!gecerli) {
+    el.innerHTML = `<div class="live-empty">Bugün takip edilen liglerde canlı maç görünmüyor. Radar kartları ve momentum güncel kalmaya devam ediyor.</div>`;
+    if (updated) updated.textContent = 'Bugün maç yok';
+    return;
+  }
+  const canliVar = data.games.some(g => g.hs != null && g.status !== 'Bitti');
+  if (eyebrow) eyebrow.textContent = canliVar ? 'Şu anda sahada' : 'Günün skorları';
+  if (updated) updated.textContent = `Güncellendi ${saatTR(data.updatedAt)}`;
+
+  el.innerHTML = sortLiveGames(data.games).map(g => `
+    <div class="live-row${g.hs != null && g.status !== 'Bitti' ? ' running' : ''}" data-card>
+      <span class="league-tag">${esc(g.league)}</span>
+      <div class="live-teams"><strong>${esc(g.home)}</strong><strong>${esc(g.away)}</strong></div>
+      <div class="live-meta">${liveBadge(g)}<small>${liveStatusText(g)}</small></div>
+    </div>`).join('');
+}
+
+/* ============================================================
+   Bölüm kayıt defteri (data-api-section → dosya + renderer)
+   ============================================================ */
+const SECTIONS = {
+  matches:   { url: '/data/matches.json',  render: renderMatches },
+  teams:     { url: '/data/teams.json',     render: renderTeams },
+  momentum:  { url: '/data/momentum.json',  render: renderMomentum },
+  formtable: { url: '/data/momentum.json',  render: renderFormTable },
+  signals:   { url: '/data/signals.json',   render: renderSignals },
+  players:   { url: '/data/players.json',   render: renderPlayers },
+  analyses:  { url: '/data/analyses.json',  render: renderAnalyses },
+  live:      { url: '/data/live.json',      render: renderLive },
+};
+
+async function hydrateSection(el) {
+  const name = el.getAttribute('data-api-section');
+  const cfg = SECTIONS[name];
+  if (!cfg) return;
+  try {
+    const data = await loadJSON(cfg.url);
+    cfg.render(el, data);
+  } catch (err) {
+    console.warn(`[FutbolRadar] "${name}" bölümü yüklenemedi:`, err.message);
+    // Statik fallback varsa dokunma; yoksa temiz boş durum göster
+    if (el.childElementCount === 0) el.innerHTML = emptyState('Veri şu anda yüklenemedi. Lütfen daha sonra tekrar deneyin.');
+  }
+}
+
+/* ============================================================
+   Hero radar maçı (yalnızca ana sayfa) — matches + live + teams
+   ============================================================ */
+function pickHeroMatch(m) {
+  const pool = (m.matches && m.matches.length) ? m.matches : (m.upcoming || []);
+  if (!pool.length) return null;
+  const weight = (x) => (x.homeScore + x.awayScore) + (x.league === 'Süper Lig' ? 100 : 0);
+  return [...pool].sort((a, b) => weight(b) - weight(a))[0];
+}
+
+function renderHero(matchesData, teamsData, live) {
+  const card = document.getElementById('heroRadar');
+  if (!card) return;
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+
+  set('statMatches', (matchesData.matches || []).length || (matchesData.upcoming || []).length || '0');
+  set('statTeams', (teamsData?.teams || []).length || '0');
+  const upd = document.getElementById('lastUpdate');
+  if (upd) upd.textContent = matchesData.updatedAt ? tarihSaatTR(matchesData.updatedAt) : '—';
+
+  const m = pickHeroMatch(matchesData);
+  if (!m) {
+    set('rhHome', 'Bugün maç yok'); set('rhAway', '');
+    document.getElementById('rhLink')?.setAttribute('href', '/form-tablosu.html');
+    return;
   }
 
-  renderMatches(useUpcoming ? upcoming : todayMatches, useUpcoming);
-  renderSignals(data);
-  renderTeamRadar(data.teams || []);
-  renderFormTable(data.teams || []);
-});
+  document.getElementById('rhHomeBadge').innerHTML = badgeEl(m.home, m.homeBadge, 'rh-badge-fallback');
+  document.getElementById('rhAwayBadge').innerHTML = badgeEl(m.away, m.awayBadge, 'rh-badge-fallback');
+  set('rhHome', m.home); set('rhAway', m.away);
+  set('rhHomeVal', m.homeScore); set('rhAwayVal', m.awayScore);
+  set('rhHomeLabel', `${m.home} Momentum`); set('rhAwayLabel', `${m.away} Momentum`);
+  document.getElementById('rhHomeBar').style.width = m.homeScore + '%';
+  document.getElementById('rhAwayBar').style.width = m.awayScore + '%';
 
-// Skorlar 60 sn'de bir sessizce tazelenir (sekme görünürken)
+  const liveGame = live && Array.isArray(live.games) ? live.games.find(g => g.home === m.home && g.away === m.away) : null;
+  const hasScore = liveGame && liveGame.hs != null;
+  const isRunning = hasScore && liveGame.status !== 'Bitti';
+  const liveTag = card.querySelector('.rh-live-tag');
+  if (liveTag) liveTag.hidden = !isRunning;
+  if (hasScore) {
+    set('rhHomeVal', liveGame.hs); set('rhAwayVal', liveGame.as);
+    set('rhHomeLabel', m.home); set('rhAwayLabel', m.away);
+  }
+
+  const ai = aiPick(m);
+  set('rhAI', `${ai.label} · %${ai.conf}`);
+  set('rhGoal', m.goalPotential);
+  const riskEl = document.getElementById('rhRisk');
+  if (riskEl) { riskEl.textContent = m.risk; riskEl.className = riskClass(m.risk); }
+  document.getElementById('rhLink')?.setAttribute('href', m.url || '/mac/');
+}
+
+async function initHero() {
+  if (!document.getElementById('heroRadar')) return;
+  const [matchesData, teamsData, live] = await Promise.all([
+    loadJSON('/data/matches.json').catch(() => ({})),
+    loadJSON('/data/teams.json').catch(() => ({})),
+    loadJSON('/data/live.json').catch(() => null),
+  ]);
+  renderHero(matchesData, teamsData, live);
+}
+
+/* ============================================================
+   Başlat + canlı yenileme
+   ============================================================ */
+document.querySelectorAll('[data-api-section]').forEach(hydrateSection);
+initHero();
+
+// Canlı skorlar 60 sn'de bir sessizce tazelenir (sekme görünürken)
 setInterval(async () => {
-  if (document.hidden || !siteData) return;
-  const live = await loadLive();
-  if (!live) return;
-  renderLive(live);
-  renderHero(siteData, live);
+  if (document.hidden) return;
+  let live;
+  try { live = await loadJSON('/data/live.json', { fresh: true }); } catch { return; }
+  document.querySelectorAll('[data-api-section="live"]').forEach(el => renderLive(el, live));
+  if (document.getElementById('heroRadar')) {
+    const [matchesData, teamsData] = await Promise.all([
+      loadJSON('/data/matches.json').catch(() => ({})),
+      loadJSON('/data/teams.json').catch(() => ({})),
+    ]);
+    renderHero(matchesData, teamsData, live);
+  }
 }, 60000);

@@ -1051,6 +1051,18 @@ h3 { font-size: 1.18rem; }
 
 .section-note { margin-top: 18px; color: var(--muted); font-size: .84rem; }
 
+/* Veri gelmediğinde boş durum */
+.empty-state {
+  grid-column: 1 / -1;
+  padding: 26px;
+  border-radius: var(--radius);
+  border: 1px dashed var(--line);
+  background: rgba(255, 255, 255, .025);
+  color: var(--muted);
+  text-align: center;
+  font-size: .92rem;
+}
+
 /* SEO analiz kartları */
 .article-grid {
   display: grid;
