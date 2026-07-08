@@ -76,7 +76,8 @@
   function unwrapResourcePayload(payload) {
     return {
       data: unwrapPayload(payload),
-      source: payload && payload.source ? payload.source : ""
+      source: payload && payload.source ? payload.source : "",
+      updatedAt: payload && payload.updatedAt ? payload.updatedAt : ""
     };
   }
 
@@ -99,6 +100,42 @@
     }).then(unwrapResourcePayload).finally(function () {
       if (timer) {
         window.clearTimeout(timer);
+      }
+    });
+  }
+
+  function formatUpdatedAt(value) {
+    if (!value) {
+      return "";
+    }
+
+    var date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+
+    return new Intl.DateTimeFormat("tr-TR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Europe/Istanbul"
+    }).format(date) + " TSİ";
+  }
+
+  function updateUpdatedAtLabel(updatedAt) {
+    var label = formatUpdatedAt(updatedAt);
+    if (!label) {
+      return;
+    }
+
+    document.querySelectorAll(".source-strip div").forEach(function (item) {
+      var title = item.querySelector("span");
+      var value = item.querySelector("b");
+
+      if (title && value && title.textContent.toLocaleLowerCase("tr-TR").indexOf("son güncelleme") !== -1) {
+        value.textContent = label;
       }
     });
   }
@@ -168,9 +205,10 @@
       if (config.api) {
         cache[name] = fetchJson(getApiUrl(config))
           .then(function (result) {
-            if (config.reportSource) {
-              updateSourceLabel("api", result.source);
-            }
+          if (config.reportSource) {
+            updateSourceLabel("api", result.source);
+            updateUpdatedAtLabel(result.updatedAt);
+          }
             return result.data;
           })
           .catch(fallback);
