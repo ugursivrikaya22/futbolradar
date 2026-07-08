@@ -1,9 +1,12 @@
-const CACHE_CONTROL = "public, max-age=0, s-maxage=300, stale-while-revalidate=600";
+const BROWSER_CACHE_CONTROL = "public, max-age=0";
+const CDN_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=600";
 const DEFAULT_SOURCE = "FutbolRadar API";
 const DEFAULT_TIMEOUT_MS = 5000;
 
 function setCacheHeaders(res) {
-  res.setHeader("Cache-Control", CACHE_CONTROL);
+  res.setHeader("Cache-Control", BROWSER_CACHE_CONTROL);
+  res.setHeader("CDN-Cache-Control", CDN_CACHE_CONTROL);
+  res.setHeader("Vercel-CDN-Cache-Control", CDN_CACHE_CONTROL);
 }
 
 function sendJson(res, statusCode, payload) {
