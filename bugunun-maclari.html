@@ -1,139 +1,71 @@
 <!doctype html>
 <html lang="tr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bugünün Maçları | Form, Momentum ve AI Sinyalleri | FutbolRadar</title>
-  <meta name="description" content="Bugünün maçları; lig, saat, gol potansiyeli, risk ve AI tahmin filtreleriyle. Her maç için form/momentum avantajı ve radar sinyaliyle veri odaklı okuma." />
-  <meta name="robots" content="index,follow" />
-  <meta name="theme-color" content="#050f1c" />
-  <link rel="canonical" href="https://www.futbolradar.com/bugunun-maclari.html" />
-  <meta property="og:title" content="Bugünün Maçları — Radar Sinyalleri | FutbolRadar" />
-  <meta property="og:description" content="Günün maçlarını form, momentum, gol potansiyeli ve AI tahminle filtrele." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.futbolradar.com/bugunun-maclari.html" />
-  <meta name="twitter:card" content="summary" />
-  <link rel="preconnect" href="https://r2.thesportsdb.com" crossorigin />
-  <link rel="stylesheet" href="/assets/style.css" />
-  <script defer src="/assets/app.js"></script>
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "CollectionPage",
-      "name": "Bugünün Maçları",
-      "url": "https://www.futbolradar.com/bugunun-maclari.html",
-      "description": "Günün maçları için form, momentum, gol potansiyeli, risk ve AI tahmin sinyalleri.",
-      "isPartOf": { "@type": "WebSite", "name": "FutbolRadar", "url": "https://www.futbolradar.com" }
-    }
-  </script>
-</head>
-<body>
-  <header class="site-header">
-    <div class="container nav-wrap">
-      <a class="brand" href="/" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>Futbol<span class="brand-accent">Radar</span></span></a>
-      <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false"><span></span><span></span><span></span></button>
-      <nav class="main-nav" aria-label="Ana menü">
-        <a href="/bugunun-maclari.html" aria-current="page">Bugünkü Maçlar</a>
-        <a href="/puan-durumu.html">Puan Durumu</a>
-        <a href="/super-lig-momentum.html">Momentum</a>
-        <a href="/form-tablosu.html">Form Tablosu</a>
-        <a href="/mac-sonucu/">Maç Sonuçları</a>
-        <a href="/takim-formu.html">Takımlar</a>
-      </nav>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bugünkü Maçlar | FutbolRadar</title>
+    <meta name="description" content="FutbolRadar bugünkü maçlar ekranı; saat, lig, form puanı, momentum ve AI tahmin görünümü." />
+    <link rel="canonical" href="https://www.futbolradar.com/bugunun-maclari.html" />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content="FutbolRadar" />
+    <meta property="og:title" content="Bugünkü Maçlar | FutbolRadar" />
+    <meta property="og:description" content="Bugünkü maçları form, momentum ve AI tahmin sinyalleriyle takip et." />
+    <meta property="og:url" content="https://www.futbolradar.com/bugunun-maclari.html" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./page.css" />
+  </head>
+  <body class="subpage">
+    <header class="topbar">
+      <nav class="container nav" aria-label="Ana menü">
+  <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa">
+    <span class="brand-mark">FR</span>
+    <span>FutbolRadar</span>
+  </a>
+  <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu">
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+  </button>
+  <div class="nav-menu" id="primary-menu">
+    <div class="nav-links">
+      <a href="./bugunun-maclari.html">Bugünkü Maçlar</a>
+      <a href="./canli-skor.html">Canlı Skor</a>
+      <a href="./puan-durumu.html">Puan Durumu</a>
+      <a href="./takimlar.html">Takımlar</a>
+      <a href="./oyuncu-radari.html">Oyuncu Radar</a>
+      <a href="./momentum.html">Momentum</a>
     </div>
-  </header>
-
-  <main id="macExplorer">
-    <section class="section">
-      <div class="container">
-        <p class="eyebrow">Günün Radarı</p>
-        <h1>Bugünün maçları</h1>
-        <p class="lead">Günün maçlarını sadece liste olarak değil; form, momentum avantajı, gol potansiyeli, risk ve AI tahmin sinyalleriyle oku.</p>
-
-        <!-- 1 · Üst özet -->
-        <div class="summary-grid" id="macOzet">
-          <div class="summary-tile glass"><strong id="ozetToplam">–</strong><span>Bugünkü maç</span></div>
-          <div class="summary-tile glass"><strong id="ozetGol">–</strong><span>Yüksek gol potansiyeli</span></div>
-          <div class="summary-tile glass"><strong id="ozetMomentum">–</strong><span>Belirgin momentum avantajı</span></div>
-          <div class="summary-tile glass"><strong id="ozetRisk">–</strong><span>Sürpriz riski</span></div>
+    <a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a>
+  </div>
+</nav>
+    </header>
+    <main class="container">
+      <section class="hero">
+        <div class="hero-row">
+          <div>
+            <span class="eyebrow">Maç merkezi</span>
+            <h1>Bugünkü Maçlar</h1>
+            <p class="lead">Günün maçlarını saat, lig, form puanı, momentum ve AI tahmin sinyalleriyle takip et.</p>
+          </div>
+          <span class="hero-meta">Son güncelleme: 07 Temmuz 2026 · 23:55</span>
         </div>
-      </div>
-    </section>
-
-    <section class="section alt-bg">
-      <div class="container">
-        <!-- 2 · Filtre barı -->
-        <div class="filter-bar" role="group" aria-label="Maç filtreleri">
-          <label class="filter-field">
-            <span>Lig</span>
-            <select id="fLig"><option value="all">Tümü</option></select>
-          </label>
-          <label class="filter-field">
-            <span>Saat</span>
-            <select id="fSaat">
-              <option value="all">Tümü</option>
-              <option value="e">18:00 öncesi</option>
-              <option value="a">18:00 – 20:59</option>
-              <option value="g">21:00 ve sonrası</option>
-            </select>
-          </label>
-          <label class="filter-field">
-            <span>Gol potansiyeli</span>
-            <select id="fGol">
-              <option value="all">Tümü</option>
-              <option value="Yüksek">Yüksek</option>
-              <option value="Orta">Orta</option>
-              <option value="Düşük">Düşük</option>
-            </select>
-          </label>
-          <label class="filter-field">
-            <span>Risk</span>
-            <select id="fRisk">
-              <option value="all">Tümü</option>
-              <option value="Yüksek">Yüksek</option>
-              <option value="Orta">Orta</option>
-              <option value="Düşük">Düşük</option>
-            </select>
-          </label>
-          <label class="filter-field">
-            <span>AI tahmin</span>
-            <select id="fAI">
-              <option value="all">Tümü</option>
-              <option value="MS 1">MS 1</option>
-              <option value="1X">1X</option>
-              <option value="X">X</option>
-              <option value="X2">X2</option>
-              <option value="MS 2">MS 2</option>
-            </select>
-          </label>
-          <button type="button" id="fSifirla" class="filter-reset">Filtreleri sıfırla</button>
-        </div>
-        <p class="filter-count" id="macSayac"></p>
-
-        <!-- 3 · Maç kartları -->
-        <div id="macKartlari" class="match-grid"></div>
-
-        <!-- 5 · Boş durum -->
-        <div id="macBos" class="empty-state" hidden>Bugün için listelenmiş maç bulunamadı. Veriler güncellendiğinde burada görünecek.</div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
-        <a class="brand" href="/"><span class="brand-mark">FR</span><span>Futbol<span class="brand-accent">Radar</span></span></a>
-        <p>Canlı skor, momentum ve AI maç analizi odaklı futbol veri platformu.</p>
-      </div>
-      <nav class="footer-links" aria-label="Alt menü">
-        <a href="/puan-durumu.html">Puan Durumu</a>
-        <a href="/form-tablosu.html">Form Tablosu</a>
-        <a href="/super-lig-momentum.html">Momentum</a>
-        <a href="/mac-sonucu/">Maç Sonuçları</a>
-        <a href="/takim-formu.html">Takımlar</a>
-      </nav>
-      <p class="disclaimer">Veriler TheSportsDB üzerinden alınır. Analizler bilgilendirme amaçlıdır; kesin sonuç veya yönlendirme niteliği taşımaz.</p>
-    </div>
-  </footer>
-</body>
+      </section>
+      <section class="grid" id="today-matches-page" data-api-section="today-matches" data-api-target="matches-page">
+        <article class="data-empty" data-card="empty-state">
+          <strong>Maç listesi yükleniyor</strong>
+          <span>Bugünün maçları JSON veri katmanından okunuyor.</span>
+        </article>
+      </section>
+      <section class="source-strip" aria-label="Veri bilgisi">
+        <div><span>Veri kaynağı</span><b>Canlı skor akışı ve maç istatistikleri</b></div>
+        <div><span>Model kapsamı</span><b>Form, momentum, gol eğilimi ve risk</b></div>
+        <div><span>Yenileme</span><b>Maç günü sinyalleri periyodik güncellenir</b></div>
+      </section>
+    </main>
+    <footer class="footer"><div class="container">FutbolRadar · Bugünkü Maçlar</div></footer>
+      <script src="./site.js" defer></script>
+      <script src="./app.js" defer></script>
+  </body>
 </html>

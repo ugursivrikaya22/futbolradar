@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Oyuncu Radarı | FutbolRadar</title>
+    <meta name="description" content="FutbolRadar oyuncu radarı ekranı; oyuncu rating, trend ve son 5 maç formu." />
+    <link rel="canonical" href="https://www.futbolradar.com/oyuncu-radari.html" />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content="FutbolRadar" />
+    <meta property="og:title" content="Oyuncu Radarı | FutbolRadar" />
+    <meta property="og:description" content="Oyuncu etkisini AI rating, trend ve son form metrikleriyle takip et." />
+    <meta property="og:url" content="https://www.futbolradar.com/oyuncu-radari.html" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./page.css" />
+  </head>
+  <body class="subpage">
+    <header class="topbar">
+      <nav class="container nav" aria-label="Ana menü">
+  <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa">
+    <span class="brand-mark">FR</span>
+    <span>FutbolRadar</span>
+  </a>
+  <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu">
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+  </button>
+  <div class="nav-menu" id="primary-menu">
+    <div class="nav-links">
+      <a href="./bugunun-maclari.html">Bugünkü Maçlar</a>
+      <a href="./canli-skor.html">Canlı Skor</a>
+      <a href="./puan-durumu.html">Puan Durumu</a>
+      <a href="./takimlar.html">Takımlar</a>
+      <a href="./oyuncu-radari.html">Oyuncu Radar</a>
+      <a href="./momentum.html">Momentum</a>
+    </div>
+    <a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a>
+  </div>
+</nav>
+    </header>
+    <main class="container">
+      <section class="hero">
+        <div class="hero-row">
+          <div>
+            <span class="eyebrow">Oyuncu radar</span>
+            <h1>Oyuncu Radarı</h1>
+            <p class="lead">Oyuncu etkisini AI rating, trend, mevki ve son 5 maç form çizgisiyle takip et.</p>
+          </div>
+          <span class="hero-meta">Son güncelleme: 07 Temmuz 2026 · 23:55</span>
+        </div>
+      </section>
+      <section class="grid" id="player-radar-page" data-api-section="player-radar" data-api-target="players-page">
+        <article class="data-empty" data-card="empty-state">
+          <strong>Oyuncu radarı yükleniyor</strong>
+          <span>Oyuncu kartları JSON veri katmanından okunuyor.</span>
+        </article>
+      </section>
+      <section class="source-strip" aria-label="Veri bilgisi">
+        <div><span>Veri kaynağı</span><b>Oyuncu maç performansı ve aksiyon metrikleri</b></div>
+        <div><span>Model kapsamı</span><b>Rating, trend, pozisyon etkisi ve son form</b></div>
+        <div><span>Yenileme</span><b>Oyuncu verileri maç sonrası güncellenir</b></div>
+      </section>
+    </main>
+    <footer class="footer"><div class="container">FutbolRadar · Oyuncu Radarı</div></footer>
+      <script src="./site.js" defer></script>
+      <script src="./app.js" defer></script>
+  </body>
+</html>

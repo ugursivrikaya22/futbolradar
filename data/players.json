@@ -1,32 +1,68 @@
-{
-  "note": "Oyuncu radarı önizleme verisidir; AI rating ve trend alanları yakında canlı veriyle beslenecek.",
-  "players": [
-    {
-      "name": "Mauro Icardi",
-      "team": "Galatasaray",
-      "position": "Santrafor",
-      "rating": "8.7",
-      "trend": "up",
-      "trendLabel": "Yükselişte",
-      "form": ["G", "G", "B", "G", "G"]
-    },
-    {
-      "name": "Youssef En-Nesyri",
-      "team": "Fenerbahçe",
-      "position": "Santrafor",
-      "rating": "8.4",
-      "trend": "up",
-      "trendLabel": "Yükselişte",
-      "form": ["G", "B", "G", "G", "M"]
-    },
-    {
-      "name": "Paul Onuachu",
-      "team": "Trabzonspor",
-      "position": "Santrafor",
-      "rating": "7.9",
-      "trend": "flat",
-      "trendLabel": "Stabil",
-      "form": ["B", "G", "M", "G", "B"]
-    }
-  ]
-}
+[
+  {
+    "id": "kerem-akturkoglu",
+    "name": "Kerem Akturkoglu",
+    "team": "Galatasaray",
+    "position": "Sol kanat",
+    "aiRating": 8.4,
+    "trend": "Yükseliyor",
+    "impact": 84,
+    "goals": 7,
+    "assists": 5,
+    "form": [
+      { "label": "8", "result": "win" },
+      { "label": "8", "result": "win" },
+      { "label": "7", "result": "draw" },
+      { "label": "9", "result": "win" },
+      { "label": "8", "result": "win" }
+    ],
+    "tags": [
+      { "label": "Trend yükseliyor", "variant": "green" },
+      { "label": "Kanat üretimi yüksek", "variant": "" }
+    ]
+  },
+  {
+    "id": "sebastian-szymanski",
+    "name": "Sebastian Szymanski",
+    "team": "Fenerbahçe",
+    "position": "10 numara",
+    "aiRating": 8.1,
+    "trend": "Stabil",
+    "impact": 81,
+    "goals": 6,
+    "assists": 8,
+    "form": [
+      { "label": "8", "result": "win" },
+      { "label": "7", "result": "draw" },
+      { "label": "8", "result": "win" },
+      { "label": "7", "result": "draw" },
+      { "label": "9", "result": "win" }
+    ],
+    "tags": [
+      { "label": "Trend stabil", "variant": "green" },
+      { "label": "Pas kalitesi güçlü", "variant": "" }
+    ]
+  },
+  {
+    "id": "gedson-fernandes",
+    "name": "Gedson Fernandes",
+    "team": "Beşiktaş",
+    "position": "Merkez orta saha",
+    "aiRating": 7.7,
+    "trend": "Toparlanıyor",
+    "impact": 77,
+    "goals": 3,
+    "assists": 4,
+    "form": [
+      { "label": "7", "result": "draw" },
+      { "label": "8", "result": "win" },
+      { "label": "6", "result": "loss" },
+      { "label": "8", "result": "win" },
+      { "label": "7", "result": "draw" }
+    ],
+    "tags": [
+      { "label": "Trend toparlanıyor", "variant": "" },
+      { "label": "Pres katkısı önde", "variant": "soft" }
+    ]
+  }
+]

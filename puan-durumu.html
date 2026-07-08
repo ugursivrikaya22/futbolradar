@@ -1,336 +1,75 @@
 <!doctype html>
 <html lang="tr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Süper Lig Puan Durumu — Güncel Tablo | FutbolRadar</title>
-  <meta name="description" content="Süper Lig güncel puan durumu: sıralama, oynanan maç, galibiyet, averaj, puan ve son 5 maç formu. Her gün otomatik güncellenen tablo." />
-  <meta name="robots" content="index,follow" />
-  <link rel="canonical" href="https://www.futbolradar.com/puan-durumu.html" />
-  <meta property="og:title" content="Süper Lig Puan Durumu | FutbolRadar" />
-  <meta property="og:description" content="Süper Lig güncel puan durumu ve son 5 maç formu — her gün güncellenir." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.futbolradar.com/puan-durumu.html" />
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": "Süper Lig Puan Durumu",
-    "description": "Süper Lig güncel puan durumu tablosu: sıralama, puan, averaj ve form.",
-    "inLanguage": "tr",
-    "isPartOf": { "@type": "WebSite", "name": "FutbolRadar", "url": "https://www.futbolradar.com" }
-  }
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --saha: #0e1a14;        /* koyu çim */
-      --panel: #14241b;
-      --panel-2: #182b20;
-      --tebesir: #eaf2ec;     /* çizgi beyazı */
-      --soluk: #8fa898;
-      --cizgi: rgba(234, 242, 236, 0.12);
-      --amber: #f2b93b;       /* radar taraması */
-      --cl: #57c785;          /* şampiyonlar ligi kulvarı */
-      --avrupa: #4c8dd6;
-      --dusme: #d6584c;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--saha);
-      color: var(--tebesir);
-      font-family: "Inter", system-ui, -apple-system, sans-serif;
-      font-size: 15px;
-      line-height: 1.5;
-      min-height: 100vh;
-    }
-    a { color: var(--tebesir); }
-    .kap { max-width: 880px; margin: 0 auto; padding: 0 16px; }
-
-    /* Üst bar */
-    .ustbar {
-      border-bottom: 1px solid var(--cizgi);
-      padding: 14px 0;
-    }
-    .ustbar .kap { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-    .marka {
-      font-family: "Barlow Condensed", sans-serif;
-      font-weight: 700; font-size: 22px; letter-spacing: 0.04em;
-      text-transform: uppercase; text-decoration: none;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .marka .nokta { color: var(--amber); }
-    nav.menu { display: flex; gap: 16px; flex-wrap: wrap; }
-    nav.menu a { color: var(--soluk); text-decoration: none; font-size: 13.5px; font-weight: 500; }
-    nav.menu a:hover, nav.menu a:focus-visible { color: var(--tebesir); }
-    nav.menu a[aria-current="page"] { color: var(--amber); }
-    a:focus-visible, button:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; border-radius: 3px; }
-
-    /* Başlık: radar taraması */
-    header.tepe { padding: 36px 0 22px; }
-    .radar {
-      width: 46px; height: 46px; border-radius: 50%;
-      border: 1px solid var(--cizgi);
-      position: relative; overflow: hidden; flex: none;
-      background:
-        radial-gradient(circle at center, transparent 0 30%, rgba(234,242,236,0.05) 31% 32%, transparent 33% 62%, rgba(234,242,236,0.05) 63% 64%, transparent 65%);
-    }
-    .radar::after {
-      content: ""; position: absolute; inset: 0;
-      background: conic-gradient(from 0deg, rgba(242,185,59,0.55), transparent 70deg);
-      animation: tarama 4s linear infinite;
-    }
-    @keyframes tarama { to { transform: rotate(360deg); } }
-    @media (prefers-reduced-motion: reduce) { .radar::after { animation: none; } }
-    .tepe-satir { display: flex; align-items: center; gap: 16px; }
-    h1 {
-      font-family: "Barlow Condensed", sans-serif;
-      font-weight: 700; font-size: clamp(30px, 5.5vw, 44px);
-      letter-spacing: 0.02em; text-transform: uppercase; line-height: 1.05;
-    }
-    .altnot { color: var(--soluk); font-size: 13.5px; margin-top: 8px; }
-    .altnot strong { color: var(--tebesir); font-weight: 600; }
-
-    /* Tablo */
-    .tablo-kabuk {
-      background: var(--panel);
-      border: 1px solid var(--cizgi);
-      border-radius: 10px;
-      overflow-x: auto;
-      margin-bottom: 18px;
-    }
-    table { width: 100%; border-collapse: collapse; min-width: 640px; }
-    thead th {
-      font-family: "Barlow Condensed", sans-serif;
-      font-weight: 600; font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--soluk); text-align: right;
-      padding: 12px 10px; border-bottom: 1px solid var(--cizgi);
-      white-space: nowrap;
-    }
-    thead th.sol { text-align: left; }
-    tbody td {
-      padding: 10px; text-align: right;
-      font-variant-numeric: tabular-nums;
-      border-bottom: 1px solid rgba(234,242,236,0.06);
-      white-space: nowrap;
-    }
-    tbody tr:last-child td { border-bottom: none; }
-    tbody tr:hover { background: var(--panel-2); }
-    td.sol { text-align: left; }
-    .sira {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 26px; height: 26px; border-radius: 6px;
-      font-weight: 600; font-size: 13px; color: var(--soluk);
-      border-left: 3px solid transparent;
-    }
-    tr.z-cl .sira     { border-left-color: var(--cl); color: var(--tebesir); }
-    tr.z-avrupa .sira { border-left-color: var(--avrupa); color: var(--tebesir); }
-    tr.z-dusme .sira  { border-left-color: var(--dusme); color: var(--tebesir); }
-    .takim { display: flex; align-items: center; gap: 10px; font-weight: 500; }
-    .takim img { width: 22px; height: 22px; object-fit: contain; flex: none; }
-    td.puan { font-weight: 600; color: var(--amber); }
-    tr:first-child td.puan { font-size: 16px; }
-
-    /* Form noktaları */
-    .form { display: inline-flex; gap: 4px; }
-    .form i {
-      width: 9px; height: 9px; border-radius: 50%; display: inline-block;
-      background: var(--soluk); font-style: normal;
-    }
-    .form i.g { background: var(--cl); }
-    .form i.b { background: var(--soluk); }
-    .form i.m { background: var(--dusme); }
-
-    /* Kulvar açıklaması */
-    .lejant { display: flex; gap: 18px; flex-wrap: wrap; color: var(--soluk); font-size: 13px; margin-bottom: 40px; }
-    .lejant span { display: inline-flex; align-items: center; gap: 7px; }
-    .lejant b { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
-    .lejant .k-cl b { background: var(--cl); }
-    .lejant .k-avrupa b { background: var(--avrupa); }
-    .lejant .k-dusme b { background: var(--dusme); }
-
-    /* Durum mesajları */
-    .durum {
-      background: var(--panel); border: 1px solid var(--cizgi); border-radius: 10px;
-      padding: 28px 20px; text-align: center; color: var(--soluk); margin-bottom: 40px;
-    }
-    .durum .buyuk { color: var(--tebesir); font-weight: 600; margin-bottom: 6px; }
-    .durum button {
-      margin-top: 14px; background: var(--amber); color: #1a1508; border: none;
-      font: 600 14px "Inter", sans-serif; padding: 9px 18px; border-radius: 7px; cursor: pointer;
-    }
-
-    footer { border-top: 1px solid var(--cizgi); padding: 20px 0 34px; color: var(--soluk); font-size: 13px; }
-    footer a { color: var(--soluk); }
-
-    @media (max-width: 560px) {
-      .gizle-dar { display: none; }
-      table { min-width: 480px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="ustbar">
-    <div class="kap">
-      <a class="marka" href="/">Futbol<span class="nokta">Radar</span></a>
-      <nav class="menu" aria-label="Site menüsü">
-        <a href="/">Günün Maçları</a>
-        <a href="/puan-durumu.html" aria-current="page">Puan Durumu</a>
-        <a href="/super-lig-momentum.html">Momentum</a>
-        <a href="/form-tablosu.html">Form Tablosu</a>
-        <a href="/mac-sonucu/">Maç Sonuçları</a>
-        <a href="/takim-formu.html">Takımlar</a>
-      </nav>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Puan Durumu | FutbolRadar</title>
+    <meta name="description" content="FutbolRadar puan durumu ekranı; lig sıralaması, form ve momentum görünümü." />
+    <link rel="canonical" href="https://www.futbolradar.com/puan-durumu.html" />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content="FutbolRadar" />
+    <meta property="og:title" content="Puan Durumu | FutbolRadar" />
+    <meta property="og:description" content="Puan durumunu form ve momentum sinyalleriyle birlikte oku." />
+    <meta property="og:url" content="https://www.futbolradar.com/puan-durumu.html" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./page.css" />
+  </head>
+  <body class="subpage">
+    <header class="topbar">
+      <nav class="container nav" aria-label="Ana menü">
+  <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa">
+    <span class="brand-mark">FR</span>
+    <span>FutbolRadar</span>
+  </a>
+  <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu">
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+  </button>
+  <div class="nav-menu" id="primary-menu">
+    <div class="nav-links">
+      <a href="./bugunun-maclari.html">Bugünkü Maçlar</a>
+      <a href="./canli-skor.html">Canlı Skor</a>
+      <a href="./puan-durumu.html">Puan Durumu</a>
+      <a href="./takimlar.html">Takımlar</a>
+      <a href="./oyuncu-radari.html">Oyuncu Radar</a>
+      <a href="./momentum.html">Momentum</a>
     </div>
+    <a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a>
   </div>
-
-  <header class="tepe">
-    <div class="kap">
-      <div class="tepe-satir">
-        <div class="radar" aria-hidden="true"></div>
-        <h1>Süper Lig Puan Durumu</h1>
-      </div>
-      <p class="altnot" id="sezon-notu">Tablo yükleniyor…</p>
-    </div>
-  </header>
-
-  <main class="kap">
-    <div class="tablo-kabuk" id="tablo-kabuk" hidden>
-      <table>
-        <caption class="gizle-dar" style="text-align:left; color:var(--soluk); font-size:12.5px; padding:10px 10px 0;">
-          O: Oynanan · G: Galibiyet · B: Beraberlik · M: Mağlubiyet · Av: Averaj · P: Puan
-        </caption>
-        <thead>
-          <tr>
-            <th class="sol">#</th>
-            <th class="sol">Takım</th>
-            <th>O</th>
-            <th>G</th>
-            <th>B</th>
-            <th>M</th>
-            <th class="gizle-dar">AG</th>
-            <th class="gizle-dar">YG</th>
-            <th>Av</th>
-            <th>P</th>
-            <th class="gizle-dar">Son 5</th>
-          </tr>
-        </thead>
-        <tbody id="tablo-govde"></tbody>
-      </table>
-    </div>
-
-    <div class="lejant" id="lejant" hidden>
-      <span class="k-cl"><b></b> Şampiyonlar Ligi kulvarı</span>
-      <span class="k-avrupa"><b></b> Avrupa kulvarı</span>
-      <span class="k-dusme"><b></b> Düşme hattı</span>
-    </div>
-
-    <div class="durum" id="durum">
-      <div class="buyuk">Puan durumu yükleniyor</div>
-      <div>Güncel tablo birkaç saniye içinde burada.</div>
-    </div>
-  </main>
-
-  <footer>
-    <div class="kap">
-      Veriler TheSportsDB üzerinden alınır ve gün içinde güncellenir. Kulvar renkleri temsilidir; resmi kriterler sezon kurallarına göre değişebilir.
-      · <a href="/">FutbolRadar ana sayfa</a>
-    </div>
-  </footer>
-
-  <script>
-    (function () {
-      var LIG_ID = 4339; // TheSportsDB: Turkish Süper Lig
-      var govde = document.getElementById("tablo-govde");
-      var kabuk = document.getElementById("tablo-kabuk");
-      var lejant = document.getElementById("lejant");
-      var durum = document.getElementById("durum");
-      var sezonNotu = document.getElementById("sezon-notu");
-
-      // Avrupa sezonu mantığı: Ağustos ve sonrası yeni sezon
-      function sezonAdi(kaydir) {
-        var simdi = new Date();
-        var yil = simdi.getFullYear() - (simdi.getMonth() + 1 >= 8 ? 0 : 1) - kaydir;
-        return yil + "-" + (yil + 1);
-      }
-
-      function formNoktalari(str) {
-        if (!str) return "";
-        var son5 = str.replace(/[^WDL]/g, "").slice(-5).split("");
-        return '<span class="form">' + son5.map(function (h) {
-          var sinif = h === "W" ? "g" : (h === "D" ? "b" : "m");
-          var etiket = h === "W" ? "Galibiyet" : (h === "D" ? "Beraberlik" : "Mağlubiyet");
-          return '<i class="' + sinif + '" title="' + etiket + '"></i>';
-        }).join("") + "</span>";
-      }
-
-      function kulvarSinifi(sira, toplam) {
-        if (sira <= 2) return "z-cl";
-        if (sira <= 5) return "z-avrupa";
-        if (sira > toplam - 4) return "z-dusme";
-        return "";
-      }
-
-      function ciz(satirlar, sezon) {
-        govde.innerHTML = satirlar.map(function (t, i) {
-          var sira = Number(t.intRank || i + 1);
-          var rozet = t.strBadge || t.strTeamBadge || "";
-          return '<tr class="' + kulvarSinifi(sira, satirlar.length) + '">' +
-            '<td class="sol"><span class="sira">' + sira + "</span></td>" +
-            '<td class="sol"><span class="takim">' +
-              (rozet ? '<img src="' + rozet + '/tiny" alt="" loading="lazy" onerror="this.remove()">' : "") +
-              (t.strTeam || "-") +
-            "</span></td>" +
-            "<td>" + (t.intPlayed || 0) + "</td>" +
-            "<td>" + (t.intWin || 0) + "</td>" +
-            "<td>" + (t.intDraw || 0) + "</td>" +
-            "<td>" + (t.intLoss || 0) + "</td>" +
-            '<td class="gizle-dar">' + (t.intGoalsFor || 0) + "</td>" +
-            '<td class="gizle-dar">' + (t.intGoalsAgainst || 0) + "</td>" +
-            "<td>" + (t.intGoalDifference > 0 ? "+" : "") + (t.intGoalDifference || 0) + "</td>" +
-            '<td class="puan">' + (t.intPoints || 0) + "</td>" +
-            '<td class="gizle-dar">' + formNoktalari(t.strForm) + "</td>" +
-          "</tr>";
-        }).join("");
-        kabuk.hidden = false;
-        lejant.hidden = false;
-        durum.hidden = true;
-        sezonNotu.innerHTML = "<strong>" + sezon + "</strong> sezonu · " +
-          satirlar.length + " takım · Sayfa her açılışta güncel veriyi çeker.";
-      }
-
-      function getir(kaydir) {
-        var sezon = sezonAdi(kaydir);
-        var url = "https://www.thesportsdb.com/api/v1/json/123/lookuptable.php?l=" +
-                  LIG_ID + "&s=" + encodeURIComponent(sezon);
-        return fetch(url)
-          .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-          .then(function (d) {
-            var tablo = d && d.table;
-            if (!tablo || !tablo.length) throw new Error("bos");
-            tablo.sort(function (a, b) { return Number(a.intRank) - Number(b.intRank); });
-            ciz(tablo, sezon);
-          });
-      }
-
-      function hata() {
-        durum.hidden = false;
-        kabuk.hidden = true;
-        lejant.hidden = true;
-        sezonNotu.textContent = "Tablo şu anda alınamadı.";
-        durum.innerHTML =
-          '<div class="buyuk">Puan durumu şu anda alınamadı</div>' +
-          "<div>Veri kaynağına ulaşılamıyor. Bağlantınızı kontrol edip tabloyu yenileyin.</div>" +
-          '<button type="button" onclick="location.reload()">Tabloyu yenile</button>';
-      }
-
-      // Önce güncel sezon; sezon arasıysa (tablo boşsa) bir önceki sezon
-      getir(0).catch(function () {
-        getir(1).catch(hata);
-      });
-    })();
-  </script>
-</body>
+</nav>
+    </header>
+    <main class="container">
+      <section class="hero">
+        <div class="hero-row">
+          <div>
+            <span class="eyebrow">Lig görünümü</span>
+            <h1>Puan Durumu</h1>
+            <p class="lead">Sıralamayı yalnız puanla değil; form, averaj ve momentumla birlikte değerlendir.</p>
+          </div>
+          <span class="hero-meta">Son güncelleme: 07 Temmuz 2026 · 23:55</span>
+        </div>
+      </section>
+      <section class="data-panel" id="standings-page" data-api-section="standings">
+        <div class="panel-title"><h2>Süper Lig Tablosu</h2><span>Form ve momentum görünümü</span></div>
+        <div class="table-row header"><span>#</span><span>Takım</span><span>O</span><span>P</span><span>Av</span><span>Mom</span></div>
+        <div class="table-body" data-api-target="standings">
+          <article class="data-empty" data-card="empty-state">
+            <strong>Puan durumu yükleniyor</strong>
+            <span>Lig tablosu JSON veri katmanından okunuyor.</span>
+          </article>
+        </div>
+      </section>
+      <section class="source-strip" aria-label="Veri bilgisi">
+        <div><span>Veri kaynağı</span><b>Lig tablosu, maç sonuçları ve takım istatistikleri</b></div>
+        <div><span>Model kapsamı</span><b>Puan, averaj, son form ve momentum</b></div>
+        <div><span>Yenileme</span><b>Maç sonuçları sonrası tablo güncellenir</b></div>
+      </section>
+    </main>
+    <footer class="footer"><div class="container">FutbolRadar · Puan Durumu</div></footer>
+      <script src="./site.js" defer></script>
+      <script src="./app.js" defer></script>
+  </body>
 </html>

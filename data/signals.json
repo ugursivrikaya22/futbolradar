@@ -1,33 +1,52 @@
 {
-  "updatedAt": "2026-07-07T13:58:01.530Z",
-  "signals": [
+  "radarSignals": [
     {
-      "icon": "▲",
-      "tone": "up",
-      "label": "Formu yükselen takım",
-      "value": "İstanbul Başakşehir",
-      "sub": "Momentum 73 · G G M G B"
+      "id": "rising-team",
+      "label": "Formu yukselen takım",
+      "title": "Samsunspor son 5 maçta ivme aldi.",
+      "value": "+18",
+      "description": "Form puani iki hafta üst üste artışta."
     },
     {
-      "icon": "◎",
-      "tone": "goal",
+      "id": "high-goal-match",
       "label": "Gol potansiyeli yüksek maç",
-      "value": "Flora Tallinn - Iberia 1999",
-      "sub": "Gol eğilimi: Orta"
+      "title": "Galatasaray - Fenerbahçe",
+      "value": "2.8+",
+      "description": "Iki takımin gol eğilimi lig ortalamasinin üzerinde."
     },
     {
-      "icon": "⚡",
-      "tone": "risk",
+      "id": "surprise-risk",
       "label": "Sürpriz riski",
-      "value": "Kairat Almaty - Sutjeska",
-      "sub": "Risk: Yüksek"
+      "title": "Beşiktaş - Trabzonspor",
+      "value": "%42",
+      "description": "Deplasman gecisleri risk modelini yukari taşıyor."
     },
     {
-      "icon": "▼",
-      "tone": "down",
-      "label": "Momentum düşüşü",
-      "value": "Beşiktaş",
-      "sub": "Momentum 47 · B M G B M"
+      "id": "momentum-drop",
+      "label": "Momentum dususu",
+      "title": "Valencia baskı üretiminde geriledi.",
+      "value": "-11",
+      "description": "Son iki maçta ikinci yarı momentumu zayıf."
+    }
+  ],
+  "momentumSignals": [
+    {
+      "id": "strongest-momentum",
+      "label": "En güçlü ivme",
+      "title": "Galatasaray",
+      "description": "Hücum üretimi ve son form momentumu yukari taşıyor."
+    },
+    {
+      "id": "rising-momentum",
+      "label": "Yukselen sinyal",
+      "title": "Samsunspor",
+      "description": "Son iki maçta form puani ve baskı suresi artışta."
+    },
+    {
+      "id": "watch-area",
+      "label": "Dikkat alani",
+      "title": "Trabzonspor",
+      "description": "Gol üretimi dengeli, momentum kırılımı maç temposuna bağlı."
     }
   ]
 }
