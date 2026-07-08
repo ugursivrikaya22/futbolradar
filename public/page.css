@@ -1756,3 +1756,54 @@ h1 {
     margin-right: auto;
   }
 }
+
+@media (max-width: 1060px) {
+  .nav {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 42px !important;
+    align-items: center;
+  }
+
+  .nav-toggle {
+    display: grid !important;
+    position: static !important;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .nav-menu {
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .home-page .container,
+  .subpage .container {
+    width: auto !important;
+    max-width: none !important;
+    margin-left: 12px !important;
+    margin-right: 12px !important;
+  }
+
+  .hero,
+  .radar-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .hero-actions,
+  .hero-actions .button,
+  .match-card,
+  .glass-card,
+  .metric-tile,
+  .source-strip {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .hero-actions .button {
+    width: 100%;
+  }
+}

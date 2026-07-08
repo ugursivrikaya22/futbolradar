@@ -5,8 +5,23 @@ const DEFAULT_TIMEOUT_MS = 5000;
 const API_KEY_ENV_NAMES = [
   "FOOTBALL_API_KEY",
   "FOOTBALL_DATA_API_KEY",
+  "FOOTBALLDATA_API_KEY",
+  "FOOTBALL_DATA_ORG_API_KEY",
+  "FOOTBALL_DATA_AUTH_TOKEN",
   "FOOTBALL_DATA_TOKEN",
+  "FOOTBALLDATA_TOKEN",
   "FOOTBALL_API_TOKEN"
+];
+const BASE_URL_ENV_NAMES = [
+  "FOOTBALL_API_BASE_URL",
+  "FOOTBALL_DATA_BASE_URL",
+  "FOOTBALLDATA_BASE_URL"
+];
+const COMPETITION_CODE_ENV_NAMES = [
+  "FOOTBALL_COMPETITION_CODE",
+  "FOOTBALL_DATA_COMPETITION_CODE",
+  "FOOTBALLDATA_COMPETITION_CODE",
+  "COMPETITION_CODE"
 ];
 
 function setCacheHeaders(res) {
@@ -106,8 +121,13 @@ function normalizeText(value) {
     .toLowerCase();
 }
 
+function firstPresentEnv(names) {
+  const found = names.find((name) => Boolean(process.env[name]));
+  return found ? process.env[found] : "";
+}
+
 function hasProviderConfig() {
-  return API_KEY_ENV_NAMES.some((name) => Boolean(process.env[name]));
+  return Boolean(firstPresentEnv(API_KEY_ENV_NAMES));
 }
 
 function rejectUnsupportedMethod(req, res) {
@@ -231,7 +251,10 @@ module.exports = {
   DEFAULT_SOURCE,
   DEFAULT_TIMEOUT_MS,
   API_KEY_ENV_NAMES,
+  BASE_URL_ENV_NAMES,
+  COMPETITION_CODE_ENV_NAMES,
   errorResponse,
+  firstPresentEnv,
   getQuery,
   hasProviderConfig,
   normalizeText,

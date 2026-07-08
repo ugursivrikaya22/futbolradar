@@ -1,4 +1,11 @@
-const { DEFAULT_TIMEOUT_MS, withTimeout } = require("../_utils");
+const {
+  API_KEY_ENV_NAMES,
+  BASE_URL_ENV_NAMES,
+  COMPETITION_CODE_ENV_NAMES,
+  DEFAULT_TIMEOUT_MS,
+  firstPresentEnv,
+  withTimeout
+} = require("../_utils");
 
 const source = "FutbolRadar Live API";
 
@@ -13,15 +20,9 @@ class ProviderError extends Error {
 function getConfig() {
   return {
     provider: process.env.FOOTBALL_API_PROVIDER || "football-data",
-    baseUrl: process.env.FOOTBALL_API_BASE_URL || "https://api.football-data.org/v4",
-    apiKey: process.env.FOOTBALL_API_KEY ||
-      process.env.FOOTBALL_DATA_API_KEY ||
-      process.env.FOOTBALL_DATA_TOKEN ||
-      process.env.FOOTBALL_API_TOKEN,
-    competitionCode: process.env.FOOTBALL_COMPETITION_CODE ||
-      process.env.FOOTBALL_DATA_COMPETITION_CODE ||
-      process.env.COMPETITION_CODE ||
-      "TSL"
+    baseUrl: firstPresentEnv(BASE_URL_ENV_NAMES) || "https://api.football-data.org/v4",
+    apiKey: firstPresentEnv(API_KEY_ENV_NAMES),
+    competitionCode: firstPresentEnv(COMPETITION_CODE_ENV_NAMES) || "TSL"
   };
 }
 
@@ -86,9 +87,18 @@ function notImplemented(resource) {
   );
 }
 
+function todayInTimeZone(timeZone) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+}
+
 function toDateOnly(value) {
   if (!value) {
-    return new Date().toISOString().slice(0, 10);
+    return todayInTimeZone("Europe/Istanbul");
   }
 
   return String(value).slice(0, 10);
@@ -333,5 +343,6 @@ module.exports = {
   normalizeLiveMomentum,
   normalizeLiveSignal,
   normalizeLiveAnalysis,
+  todayInTimeZone,
   resolveCompetitionCode
 };

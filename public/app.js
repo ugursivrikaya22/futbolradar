@@ -3,8 +3,9 @@
 
   var API_ROOT = "./api/";
   var DATA_ROOT = "./data/";
+  var FETCH_TIMEOUT_MS = 6500;
   var cache = Object.create(null);
-  var sourceState = { api: 0, fallback: 0, empty: 0 };
+  var sourceState = { api: 0, fallback: 0, empty: 0, live: 0, mock: 0, apiSource: "" };
   var RESOURCE_CONFIG = {
     matches: { api: "matches", fallback: "matches", reportSource: true },
     standings: { api: "standings", fallback: "teams", reportSource: true },
@@ -72,18 +73,46 @@
     return payload;
   }
 
+  function unwrapResourcePayload(payload) {
+    return {
+      data: unwrapPayload(payload),
+      source: payload && payload.source ? payload.source : ""
+    };
+  }
+
   function fetchJson(url) {
-    return fetch(url, { cache: "no-store" }).then(function (response) {
+    var controller = window.AbortController ? new AbortController() : null;
+    var timer = controller
+      ? window.setTimeout(function () { controller.abort(); }, FETCH_TIMEOUT_MS)
+      : null;
+    var options = { cache: "no-store" };
+
+    if (controller) {
+      options.signal = controller.signal;
+    }
+
+    return fetch(url, options).then(function (response) {
       if (!response.ok) {
         throw new Error("data-load-failed");
       }
       return response.json();
-    }).then(unwrapPayload);
+    }).then(unwrapResourcePayload).finally(function () {
+      if (timer) {
+        window.clearTimeout(timer);
+      }
+    });
   }
 
-  function updateSourceLabel(source) {
+  function updateSourceLabel(source, apiSource) {
     if (source === "api") {
       sourceState.api += 1;
+      sourceState.apiSource = apiSource || sourceState.apiSource || "FutbolRadar API";
+
+      if (apiSource === "FutbolRadar Live API") {
+        sourceState.live += 1;
+      } else if (apiSource === "FutbolRadar Mock API") {
+        sourceState.mock += 1;
+      }
     } else if (source === "fallback") {
       sourceState.fallback += 1;
     } else if (source === "empty") {
@@ -96,8 +125,12 @@
       label = "Veri alınamadı";
     } else if (sourceState.fallback > 0) {
       label = "Statik yedek veri";
+    } else if (sourceState.live > 0) {
+      label = "FutbolRadar Live API";
+    } else if (sourceState.mock > 0) {
+      label = "FutbolRadar Mock API";
     } else if (sourceState.api > 0) {
-      label = "FutbolRadar API";
+      label = sourceState.apiSource || "FutbolRadar API";
     }
 
     if (!label) {
@@ -124,21 +157,21 @@
     if (!cache[name]) {
       var fallbackUrl = DATA_ROOT + config.fallback + ".json";
       var fallback = function () {
-        return fetchJson(fallbackUrl).then(function (data) {
+        return fetchJson(fallbackUrl).then(function (result) {
           if (config.reportSource) {
             updateSourceLabel("fallback");
           }
-          return data;
+          return result.data;
         });
       };
 
       if (config.api) {
         cache[name] = fetchJson(getApiUrl(config))
-          .then(function (data) {
+          .then(function (result) {
             if (config.reportSource) {
-              updateSourceLabel("api");
+              updateSourceLabel("api", result.source);
             }
-            return data;
+            return result.data;
           })
           .catch(fallback);
       } else {
@@ -238,7 +271,7 @@
       '</span><span class="bar"><i style="--value: ' +
       width +
       '%"></i></span><b>' +
-      escapeHtml(valueLabel) +
+      escapeHtml(displayValue(valueLabel)) +
       "</b></div>"
     );
   }
@@ -397,17 +430,21 @@
   }
 
   function renderStandingRow(team) {
+    var teamName = team.name || team.team;
+
     return (
       '<div class="table-row" data-card="standing-row" data-team="' + escapeHtml(team.id) + '">' +
-      "<span>" + escapeHtml(team.rank) + "</span><b>" + escapeHtml(team.name) + "</b><span>" + escapeHtml(team.played) + "</span><span>" + escapeHtml(team.points) + "</span><span>" + escapeHtml(team.average) + "</span><span>" + escapeHtml(team.momentum) + "</span>" +
+      "<span>" + escapeHtml(displayValue(team.rank)) + "</span><b>" + escapeHtml(teamName) + "</b><span>" + escapeHtml(displayValue(team.played)) + "</span><span>" + escapeHtml(displayValue(team.points)) + "</span><span>" + escapeHtml(displayValue(team.average)) + "</span><span>" + escapeHtml(displayValue(team.momentum)) + "</span>" +
       "</div>"
     );
   }
 
   function renderHomeStandingRow(team) {
+    var teamName = team.name || team.team;
+
     return (
       '<div class="standing-row" data-card="standing-row" data-team="' + escapeHtml(team.id) + '">' +
-      "<span>" + escapeHtml(team.rank) + "</span><b>" + escapeHtml(team.name) + "</b><span>" + escapeHtml(team.points) + " P</span><span>" + escapeHtml(team.momentum) + " M</span>" +
+      "<span>" + escapeHtml(displayValue(team.rank)) + "</span><b>" + escapeHtml(teamName) + "</b><span>" + escapeHtml(displayValue(team.points)) + " P</span><span>" + escapeHtml(displayValue(team.momentum)) + " M</span>" +
       "</div>"
     );
   }
@@ -455,7 +492,7 @@
   function renderMomentumRow(item) {
     return (
       '<div class="table-row" data-card="momentum" data-team="' + escapeHtml(item.team) + '">' +
-      "<span>" + escapeHtml(item.rank) + "</span><b>" + escapeHtml(item.team) + "</b><span>" + escapeHtml(item.momentum) + "</span><span>" + escapeHtml(item.formScore) + "</span><span>" + escapeHtml(item.goalSignal) + "</span><span>" + escapeHtml(item.risk) + "</span>" +
+      "<span>" + escapeHtml(displayValue(item.rank)) + "</span><b>" + escapeHtml(item.team) + "</b><span>" + escapeHtml(displayValue(item.momentum)) + "</span><span>" + escapeHtml(displayValue(item.formScore)) + "</span><span>" + escapeHtml(displayValue(item.goalSignal)) + "</span><span>" + escapeHtml(displayValue(item.risk)) + "</span>" +
       "</div>"
     );
   }
