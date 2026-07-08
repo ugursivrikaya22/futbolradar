@@ -130,6 +130,15 @@ async function checkApi() {
     expect(payload && Array.isArray(payload.data), `${endpoint}: data must be array`);
     expect(!hasSecretLeak(text), `${endpoint}: secret marker found`);
 
+    if (endpoint === "/api/health") {
+      const diagnostics = payload?.data?.[0] || {};
+      expect(["mock", "live-ready"].includes(diagnostics.mode), `${endpoint}: mode mismatch`);
+      expect(Boolean(diagnostics.providerSource), `${endpoint}: missing providerSource`);
+      expect(Boolean(diagnostics.nextAction), `${endpoint}: missing nextAction`);
+      expect(Array.isArray(diagnostics.acceptedApiKeyEnvNames), `${endpoint}: missing accepted API key env names`);
+      expect(!hasSecretLeak(JSON.stringify(diagnostics)), `${endpoint}: secret marker found in diagnostics`);
+    }
+
     summary.push({
       type: "api",
       path: endpoint,

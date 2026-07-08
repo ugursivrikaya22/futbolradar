@@ -13,6 +13,41 @@ function presentEnvNames(names) {
   return names.filter((name) => Boolean(process.env[name]));
 }
 
+function buildDiagnostics(config) {
+  const apiKeyEnvNamesPresent = presentEnvNames(API_KEY_ENV_NAMES);
+  const baseUrlEnvNamesPresent = presentEnvNames(BASE_URL_ENV_NAMES);
+  const competitionEnvNamesPresent = presentEnvNames(COMPETITION_CODE_ENV_NAMES);
+  const liveProviderConfigured = hasLiveProviderConfig();
+  const liveProviderResources = Array.from(LIVE_PROVIDER_RESOURCES);
+
+  return {
+    mode: liveProviderConfigured ? "live-ready" : "mock",
+    providerSource: liveProviderConfigured ? "FutbolRadar Live API" : "FutbolRadar Mock API",
+    liveProviderConfigured,
+    provider: config.provider,
+    baseUrlConfigured: Boolean(config.baseUrl),
+    baseUrlEnvConfigured: Boolean(baseUrlEnvNamesPresent.length),
+    baseUrlEnvNamesPresent,
+    acceptedBaseUrlEnvNames: BASE_URL_ENV_NAMES,
+    apiKeyConfigured: liveProviderConfigured,
+    apiKeyEnvNamesPresent,
+    acceptedApiKeyEnvNames: API_KEY_ENV_NAMES,
+    competitionCodeConfigured: Boolean(config.competitionCode),
+    competitionCodeEnvConfigured: Boolean(competitionEnvNamesPresent.length),
+    competitionEnvNamesPresent,
+    acceptedCompetitionEnvNames: COMPETITION_CODE_ENV_NAMES,
+    defaultCompetitionCode: "TSL",
+    liveProviderResources,
+    mockOnlyResources: ["teams", "players", "momentum", "signals", "analyses"],
+    missingRequiredEnv: liveProviderConfigured ? [] : ["one accepted API key env name"],
+    nextAction: liveProviderConfigured
+      ? "Live provider matches ve standings icin secilir; provider hata verirse frontend statik yedek veriye duser."
+      : "Production ortaminda kabul edilen API key env isimlerinden biri gorunmuyor; matches ve standings Mock API kullanir.",
+    vercelEnv: process.env.VERCEL_ENV || "",
+    nodeEnv: process.env.NODE_ENV || ""
+  };
+}
+
 module.exports = async function handler(req, res) {
   if (rejectUnsupportedMethod(req, res)) {
     return;
@@ -22,22 +57,5 @@ module.exports = async function handler(req, res) {
 
   const config = getConfig();
 
-  return sendSuccess(res, [
-    {
-      liveProviderConfigured: hasLiveProviderConfig(),
-      provider: config.provider,
-      baseUrlConfigured: Boolean(config.baseUrl),
-      baseUrlEnvConfigured: Boolean(presentEnvNames(BASE_URL_ENV_NAMES).length),
-      baseUrlEnvNamesPresent: presentEnvNames(BASE_URL_ENV_NAMES),
-      apiKeyConfigured: hasLiveProviderConfig(),
-      apiKeyEnvNamesPresent: presentEnvNames(API_KEY_ENV_NAMES),
-      competitionCodeConfigured: Boolean(config.competitionCode),
-      competitionCodeEnvConfigured: Boolean(presentEnvNames(COMPETITION_CODE_ENV_NAMES).length),
-      competitionEnvNamesPresent: presentEnvNames(COMPETITION_CODE_ENV_NAMES),
-      defaultCompetitionCode: "TSL",
-      liveProviderResources: Array.from(LIVE_PROVIDER_RESOURCES),
-      vercelEnv: process.env.VERCEL_ENV || "",
-      nodeEnv: process.env.NODE_ENV || ""
-    }
-  ]);
+  return sendSuccess(res, [buildDiagnostics(config)]);
 };

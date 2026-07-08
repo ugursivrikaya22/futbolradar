@@ -183,6 +183,16 @@ async function checkApi() {
       response.headers["cdn-cache-control"] === "public, s-maxage=300, stale-while-revalidate=600",
       `${endpoint}: CDN cache header mismatch`
     );
+
+    if (endpoint === "health") {
+      const diagnostics = payload.data[0] || {};
+      expect(["mock", "live-ready"].includes(diagnostics.mode), "health: mode mismatch");
+      expect(Boolean(diagnostics.providerSource), "health: missing providerSource");
+      expect(Boolean(diagnostics.nextAction), "health: missing nextAction");
+      expect(Array.isArray(diagnostics.acceptedApiKeyEnvNames), "health: missing accepted API key env names");
+      expect(Array.isArray(diagnostics.liveProviderResources), "health: missing live provider resources");
+      expect(!JSON.stringify(diagnostics).includes("X-Auth-Token"), "health: should not expose auth header markers");
+    }
   }
 
   const invalidDate = await callEndpoint("matches", "/api/matches?date=yanlis");
