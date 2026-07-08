@@ -1,4 +1,4 @@
-const CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=600";
+const CACHE_CONTROL = "public, max-age=0, s-maxage=300, stale-while-revalidate=600";
 const DEFAULT_SOURCE = "FutbolRadar API";
 const DEFAULT_TIMEOUT_MS = 5000;
 
