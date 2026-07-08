@@ -73,6 +73,22 @@ whether an accepted environment variable name is present.
 
 ## Post-deploy QA
 
+Run local static/API checks before pushing:
+
+```bash
+npm run qa
+```
+
+Run live checks after the Production deployment finishes:
+
+```bash
+npm run qa:live
+```
+
+The live check verifies pages, API response shape, sitemap/robots, manifest,
+Open Graph image, security headers, and accidental secret exposure markers.
+It uses Node's system certificate store via `node --use-system-ca`.
+
 Check these pages:
 
 - `/`

@@ -5,6 +5,7 @@
   "scripts": {
     "build": "echo \"No build step required\"",
     "qa": "node scripts/qa.mjs",
+    "qa:live": "node --use-system-ca scripts/live-qa.mjs",
     "fetch": "node scripts/fetch-thesportsdb.mjs",
     "data": "node scripts/build-data.mjs",
     "pages": "node scripts/generate-pages.mjs",
