@@ -3,7 +3,12 @@ const mockProvider = require("./mockProvider");
 const LIVE_PROVIDER_RESOURCES = new Set(["matches", "standings"]);
 
 function hasLiveProviderConfig() {
-  return Boolean(process.env.FOOTBALL_API_KEY);
+  return Boolean(
+    process.env.FOOTBALL_API_KEY ||
+    process.env.FOOTBALL_DATA_API_KEY ||
+    process.env.FOOTBALL_DATA_TOKEN ||
+    process.env.FOOTBALL_API_TOKEN
+  );
 }
 
 function getProvider(resource) {

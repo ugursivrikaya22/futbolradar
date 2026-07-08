@@ -14,8 +14,14 @@ function getConfig() {
   return {
     provider: process.env.FOOTBALL_API_PROVIDER || "football-data",
     baseUrl: process.env.FOOTBALL_API_BASE_URL || "https://api.football-data.org/v4",
-    apiKey: process.env.FOOTBALL_API_KEY,
-    competitionCode: process.env.FOOTBALL_COMPETITION_CODE
+    apiKey: process.env.FOOTBALL_API_KEY ||
+      process.env.FOOTBALL_DATA_API_KEY ||
+      process.env.FOOTBALL_DATA_TOKEN ||
+      process.env.FOOTBALL_API_TOKEN,
+    competitionCode: process.env.FOOTBALL_COMPETITION_CODE ||
+      process.env.FOOTBALL_DATA_COMPETITION_CODE ||
+      process.env.COMPETITION_CODE ||
+      "TSL"
   };
 }
 
