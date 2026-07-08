@@ -2,6 +2,12 @@ const BROWSER_CACHE_CONTROL = "public, max-age=0";
 const CDN_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=600";
 const DEFAULT_SOURCE = "FutbolRadar API";
 const DEFAULT_TIMEOUT_MS = 5000;
+const API_KEY_ENV_NAMES = [
+  "FOOTBALL_API_KEY",
+  "FOOTBALL_DATA_API_KEY",
+  "FOOTBALL_DATA_TOKEN",
+  "FOOTBALL_API_TOKEN"
+];
 
 function setCacheHeaders(res) {
   res.setHeader("Cache-Control", BROWSER_CACHE_CONTROL);
@@ -101,7 +107,7 @@ function normalizeText(value) {
 }
 
 function hasProviderConfig() {
-  return Boolean(process.env.FOOTBALL_API_KEY);
+  return API_KEY_ENV_NAMES.some((name) => Boolean(process.env[name]));
 }
 
 function rejectUnsupportedMethod(req, res) {
@@ -224,6 +230,7 @@ function rateLimitHint(req) {
 module.exports = {
   DEFAULT_SOURCE,
   DEFAULT_TIMEOUT_MS,
+  API_KEY_ENV_NAMES,
   errorResponse,
   getQuery,
   hasProviderConfig,

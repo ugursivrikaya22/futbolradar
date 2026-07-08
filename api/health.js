@@ -1,16 +1,10 @@
 const {
+  API_KEY_ENV_NAMES,
   getQuery,
   rejectUnsupportedMethod,
   sendSuccess
 } = require("./_utils");
 const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig } = require("./providers");
-
-const API_KEY_ENV_NAMES = [
-  "FOOTBALL_API_KEY",
-  "FOOTBALL_DATA_API_KEY",
-  "FOOTBALL_DATA_TOKEN",
-  "FOOTBALL_API_TOKEN"
-];
 
 const COMPETITION_ENV_NAMES = [
   "FOOTBALL_COMPETITION_CODE",
