@@ -40,5 +40,30 @@
     });
   }
 
+  function normalizePath(path) {
+    var clean = String(path || "").split("#")[0].split("?")[0].replace(/^\.\//, "");
+
+    if (!clean || clean === "/") {
+      return "index.html";
+    }
+
+    return clean.replace(/^\/+/, "");
+  }
+
+  function markCurrentPage() {
+    var current = normalizePath(window.location.pathname.split("/").pop() || "index.html");
+
+    document.querySelectorAll(".nav-menu a[href]").forEach(function (link) {
+      var href = normalizePath(link.getAttribute("href"));
+
+      if (href === current) {
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+  }
+
   document.querySelectorAll(".nav").forEach(setupNav);
+  markCurrentPage();
 })();
