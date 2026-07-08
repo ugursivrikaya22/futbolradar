@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Puan Durumu | FutbolRadar</title>
+    <meta name="description" content="FutbolRadar puan durumu ekranı; lig sıralaması, form ve momentum görünümü." />
+    <link rel="canonical" href="https://www.futbolradar.com/puan-durumu.html" />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content="FutbolRadar" />
+    <meta property="og:title" content="Puan Durumu | FutbolRadar" />
+    <meta property="og:description" content="Puan durumunu form ve momentum sinyalleriyle birlikte oku." />
+    <meta property="og:url" content="https://www.futbolradar.com/puan-durumu.html" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./page.css" />
+  </head>
+  <body class="subpage">
+    <header class="topbar">
+      <nav class="container nav" aria-label="Ana menü">
+  <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa">
+    <span class="brand-mark">FR</span>
+    <span>FutbolRadar</span>
+  </a>
+  <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu">
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+  </button>
+  <div class="nav-menu" id="primary-menu">
+    <div class="nav-links">
+      <a href="./bugunun-maclari.html">Bugünkü Maçlar</a>
+      <a href="./canli-skor.html">Canlı Skor</a>
+      <a href="./puan-durumu.html">Puan Durumu</a>
+      <a href="./takimlar.html">Takımlar</a>
+      <a href="./oyuncu-radari.html">Oyuncu Radar</a>
+      <a href="./momentum.html">Momentum</a>
+    </div>
+    <a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a>
+  </div>
+</nav>
+    </header>
+    <main class="container">
+      <section class="hero">
+        <div class="hero-row">
+          <div>
+            <span class="eyebrow">Lig görünümü</span>
+            <h1>Puan Durumu</h1>
+            <p class="lead">Sıralamayı yalnız puanla değil; form, averaj ve momentumla birlikte değerlendir.</p>
+          </div>
+          <span class="hero-meta">Son güncelleme: 07 Temmuz 2026 · 23:55</span>
+        </div>
+      </section>
+      <section class="data-panel" id="standings-page" data-api-section="standings">
+        <div class="panel-title"><h2>Süper Lig Tablosu</h2><span>Form ve momentum görünümü</span></div>
+        <div class="table-row header"><span>#</span><span>Takım</span><span>O</span><span>P</span><span>Av</span><span>Mom</span></div>
+        <div class="table-body" data-api-target="standings">
+          <article class="data-empty" data-card="empty-state">
+            <strong>Puan durumu yükleniyor</strong>
+            <span>Lig tablosu JSON veri katmanından okunuyor.</span>
+          </article>
+        </div>
+      </section>
+      <section class="source-strip" aria-label="Veri bilgisi">
+        <div><span>Veri kaynağı</span><b>Lig tablosu, maç sonuçları ve takım istatistikleri</b></div>
+        <div><span>Model kapsamı</span><b>Puan, averaj, son form ve momentum</b></div>
+        <div><span>Yenileme</span><b>Maç sonuçları sonrası tablo güncellenir</b></div>
+      </section>
+    </main>
+    <footer class="footer"><div class="container">FutbolRadar · Puan Durumu</div></footer>
+      <script src="./site.js" defer></script>
+      <script src="./app.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FutbolRadar | Canlı Skor, Momentum ve AI Futbol Analizi</title>
+    <meta
+      name="description"
+      content="FutbolRadar; canlı skor, son 5 maç formu, gol eğilimi, takım momentumu ve AI maç analiziyle futbolu veriye dayalı okumanı sağlar."
+    />
+    <link rel="canonical" href="https://www.futbolradar.com/" />
+    <meta name="robots" content="index,follow" />
+    <meta name="theme-color" content="#060b10" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content="FutbolRadar" />
+    <meta property="og:url" content="https://www.futbolradar.com/" />
+    <meta property="og:title" content="FutbolRadar | Momentum ve AI Futbol Analizi" />
+    <meta
+      property="og:description"
+      content="Canlı skor, form, gol eğilimi, takım momentumu ve AI maç analiziyle maçları skordan önce oku."
+    />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./page.css" />
+  </head>
+  <body class="home-page">
+    <div class="shell">
+      <header class="topbar">
+        <nav class="container nav" aria-label="Ana menü">
+  <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa">
+    <span class="brand-mark">FR</span>
+    <span>FutbolRadar</span>
+  </a>
+  <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu">
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+  </button>
+  <div class="nav-menu" id="primary-menu">
+    <div class="nav-links">
+      <a href="./bugunun-maclari.html">Bugünkü Maçlar</a>
+      <a href="./canli-skor.html">Canlı Skor</a>
+      <a href="./puan-durumu.html">Puan Durumu</a>
+      <a href="./takimlar.html">Takımlar</a>
+      <a href="./oyuncu-radari.html">Oyuncu Radar</a>
+      <a href="./momentum.html">Momentum</a>
+    </div>
+    <a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a>
+  </div>
+</nav>
+      </header>
+
+      <main>
+        <section class="container hero" id="hero-canli-skor">
+          <div>
+            <span class="eyebrow">Canlı skor + form + AI analiz</span>
+            <h1>
+              <span>Maçları</span>
+              <span>skordan önce</span>
+              <span>form ve</span>
+              <span>momentumla oku.</span>
+            </h1>
+            <p class="hero-copy">
+              FutbolRadar; canlı skor, son 5 maç formu, gol eğilimi, takım momentumu ve AI maç
+              analiziyle futbolu veriye dayalı okumanı sağlar.
+            </p>
+            <div class="hero-actions">
+              <a class="button primary" href="./bugunun-maclari.html">Bugünkü Maçları Gör</a>
+              <a class="button secondary" href="./momentum.html">Momentum Tablosu</a>
+            </div>
+            <div class="hero-metrics" aria-label="FutbolRadar özet metrikleri">
+              <div class="metric-tile">
+                <strong>28</strong>
+                <span>Bugün izlenen maç</span>
+              </div>
+              <div class="metric-tile">
+                <strong>%74</strong>
+                <span>Momentum eşleşme oranı</span>
+              </div>
+              <div class="metric-tile">
+                <strong>12 dk</strong>
+                <span>Sinyal yenileme aralığı</span>
+              </div>
+            </div>
+          </div>
+
+          <article class="glass-card match-card" id="featured-radar-match" data-api-section="featured-match" data-api-target="featured-match" aria-label="Gunun Radar Maci">
+            <div class="data-empty" data-card="empty-state">
+              <strong>Radar maçı yükleniyor</strong>
+              <span>JSON veri katmani okunuyor.</span>
+            </div>
+          </article>
+        </section>
+
+        <section class="container section section-matches" id="bugunun-maclari-preview" data-api-section="today-matches">
+          <div class="section-head">
+            <div class="section-title">
+              <span class="section-kicker">Bugünün Maçları</span>
+              <h2>Canlı akış, form puanı ve AI tahmin aynı kartta.</h2>
+              <p>Maç öncesi güç dengesi, gol eğilimi ve momentum tek bakışta okunur.</p>
+            </div>
+            <span class="data-stamp">Son güncelleme: 07 Temmuz 2026 · 22:55</span>
+          </div>
+
+          <div class="matches-grid" id="today-matches-grid" data-api-target="today-matches">
+            <article class="data-empty" data-card="empty-state">
+              <strong>Maçlar yükleniyor</strong>
+              <span>Bugünün maçları JSON veri katmanından okunuyor.</span>
+            </article>
+          </div>
+        </section>
+
+        <section class="container section section-radar-signals" id="radar-sinyalleri" data-api-section="radar-signals">
+          <div class="section-head">
+            <div class="section-title">
+              <span class="section-kicker">Radar Sinyalleri</span>
+              <h2>Form, gol ve risk hareketlerini yakala.</h2>
+            </div>
+          </div>
+          <div class="signals-grid" id="radar-signals-grid" data-api-target="radar-signals">
+            <article class="data-empty" data-card="empty-state">
+              <strong>Sinyaller yükleniyor</strong>
+              <span>Radar sinyalleri JSON veri katmanından okunuyor.</span>
+            </article>
+          </div>
+        </section>
+
+        <section class="container section section-team-radar" id="takim-radar" data-api-section="team-radar">
+          <div class="section-head">
+            <div class="section-title">
+              <span class="section-kicker">Süper Lig Takım Radar</span>
+              <h2>Takım formunu hücum, savunma ve momentumla karşılaştır.</h2>
+            </div>
+            <span class="data-stamp" id="puan-durumu-preview">Puan durumu görünümü · İlk 5</span>
+          </div>
+
+          <div class="radar-layout">
+            <div class="teams-grid" id="team-radar-grid" data-api-target="team-radar">
+              <article class="data-empty" data-card="empty-state">
+                <strong>Takım radarı yükleniyor</strong>
+                <span>Takım kartları JSON veri katmanından okunuyor.</span>
+              </article>
+            </div>
+
+            <aside class="standings" aria-label="Puan durumu">
+              <header>
+                <h3>Puan Durumu</h3>
+                <p>Form ve momentum ağırlıklı görünüm</p>
+              </header>
+              <div id="home-standings-list" data-api-target="home-standings">
+                <article class="data-empty" data-card="empty-state">
+                  <strong>Puan durumu yükleniyor</strong>
+                  <span>Takım sıralaması JSON veri katmanından okunuyor.</span>
+                </article>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="container section section-player-radar" id="oyuncu-radar-preview" data-api-section="player-radar">
+          <div class="section-head">
+            <div class="section-title">
+              <span class="section-kicker">Oyuncu Radar Önizleme</span>
+              <h2>Oyuncu etkisini rating, trend ve son form ile oku.</h2>
+            </div>
+          </div>
+
+          <div class="players-grid" id="player-radar-grid" data-api-target="player-radar">
+            <article class="data-empty" data-card="empty-state">
+              <strong>Oyuncu radarı yükleniyor</strong>
+              <span>Oyuncu kartları JSON veri katmanından okunuyor.</span>
+            </article>
+          </div>
+        </section>
+
+        <section class="container section" id="analizler" data-api-section="analysis">
+          <div class="section-head">
+            <div class="section-title">
+              <span class="section-kicker">FutbolRadar Analizleri</span>
+              <h2>FutbolRadar Analizleri</h2>
+            </div>
+          </div>
+
+          <div class="articles-grid" id="analysis-preview-grid" data-api-target="analysis-preview">
+            <article class="data-empty" data-card="empty-state">
+              <strong>Analizler yükleniyor</strong>
+              <span>Analiz kartları JSON veri katmanından okunuyor.</span>
+            </article>
+          </div>
+        </section>
+
+        <section class="container source-strip" aria-label="Veri bilgisi">
+          <div>
+            <span>Son güncelleme</span>
+            <b>07 Temmuz 2026 · 22:55 TSİ</b>
+          </div>
+          <div>
+            <span>Veri kaynağı</span>
+            <b>Canlı skor akışı, maç istatistikleri ve FutbolRadar momentum modeli</b>
+          </div>
+          <div>
+            <span>Model kapsamı</span>
+            <b>Form, gol eğilimi, hücum, savunma, tempo ve risk sinyalleri</b>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="container">FutbolRadar · Canlı skor, momentum ve AI futbol analizi</div>
+      </footer>
+    </div>
+      <script src="./site.js" defer></script>
+      <script src="./app.js" defer></script>
+  </body>
+</html>
