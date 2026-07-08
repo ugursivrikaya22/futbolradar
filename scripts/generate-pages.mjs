@@ -184,6 +184,7 @@ function archiveHtml(items) {
 function sitemapXml(macSlugs) {
   const staticPages = [
     ['', 'daily', '1.0'],
+    ['bugunun-maclari.html', 'daily', '0.9'],
     ['gunluk-mac-analizleri.html', 'daily', '0.9'],
     ['form-tablosu.html', 'daily', '0.9'],
     ['super-lig-momentum.html', 'daily', '0.9'],

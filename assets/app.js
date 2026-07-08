@@ -352,10 +352,162 @@ async function initHero() {
 }
 
 /* ============================================================
+   Bugünün Maçları — filtrelenebilir maç kâşifi (bugunun-maclari.html)
+   ============================================================ */
+// Maç için tek belirgin radar sinyali
+function radarSignalLabel(m) {
+  const d = m.homeScore - m.awayScore;
+  if ((m.goalPotential || '').includes('Yüksek')) return { text: 'Gol potansiyeli yüksek', tone: 'goal' };
+  if (Math.abs(d) <= 6) {
+    return (m.risk || '').includes('Yüksek')
+      ? { text: 'Sürpriz riski', tone: 'risk' }
+      : { text: 'Dengeli maç', tone: 'neutral' };
+  }
+  if (d >= 12) return { text: 'Form avantajı ev sahibinde', tone: 'up' };
+  if (d <= -12) return { text: 'Form avantajı deplasmanda', tone: 'up' };
+  return (m.risk || '').includes('Yüksek')
+    ? { text: 'Sürpriz riski', tone: 'risk' }
+    : { text: 'Dengeli maç', tone: 'neutral' };
+}
+
+// Saat dilimi kovası: e = 18 öncesi, a = 18-20, g = 21+
+function timeBucket(time) {
+  const h = parseInt(String(time || '').slice(0, 2), 10);
+  if (Number.isNaN(h)) return null;
+  if (h < 18) return 'e';
+  if (h < 21) return 'a';
+  return 'g';
+}
+
+function explorerCard(m) {
+  const ai = aiPick(m);
+  const sig = radarSignalLabel(m);
+  const edge = m.homeScore - m.awayScore;
+  const edgeText = Math.abs(edge) <= 6 ? 'Dengede'
+    : (edge > 0 ? `${m.home} +${edge}` : `${m.away} +${Math.abs(edge)}`);
+  return `
+    <article class="match-card glass" data-card data-team="${esc(m.home)}">
+      <div class="match-meta"><span class="league-tag">${esc(m.league)}</span><span>${esc(m.time)}</span></div>
+      <span class="signal-chip ${esc(sig.tone)}">${esc(sig.text)}</span>
+      <h3>${esc(m.home)} <span class="mc-vs">–</span> ${esc(m.away)}</h3>
+      <div class="momentum-bars">
+        <div>
+          <span>${badgeEl(m.home, m.homeBadge)} ${esc(m.home)}</span>
+          <div class="bar"><i style="width:${m.homeScore}%"></i></div>
+          <strong>${m.homeScore}</strong>
+        </div>
+        <div>
+          <span>${badgeEl(m.away, m.awayBadge)} ${esc(m.away)}</span>
+          <div class="bar alt"><i style="width:${m.awayScore}%"></i></div>
+          <strong>${m.awayScore}</strong>
+        </div>
+      </div>
+      <div class="mc-edge"><span>Momentum avantajı</span><strong>${esc(edgeText)}</strong></div>
+      <div class="ai-row">
+        <span class="ai-pill">AI: ${esc(ai.label)}</span>
+        <span class="ai-conf">%${ai.conf} güven</span>
+      </div>
+      <div class="tag-row">
+        <span>Gol: ${esc(m.goalPotential)}</span>
+        <span class="${riskClass(m.risk)}">Risk: ${esc(m.risk)}</span>
+      </div>
+      <a class="text-link" href="${esc(m.url || '/mac/')}">Detaya git →</a>
+    </article>`;
+}
+
+async function initMatchExplorer() {
+  const root = document.getElementById('macExplorer');
+  if (!root) return;
+
+  const grid = document.getElementById('macKartlari');
+  const bos = document.getElementById('macBos');
+  const sayac = document.getElementById('macSayac');
+  const F = {
+    lig: document.getElementById('fLig'),
+    saat: document.getElementById('fSaat'),
+    gol: document.getElementById('fGol'),
+    risk: document.getElementById('fRisk'),
+    ai: document.getElementById('fAI'),
+  };
+
+  let data;
+  try {
+    data = await loadJSON('/data/matches.json');
+  } catch (err) {
+    console.warn('[FutbolRadar] maç kâşifi yüklenemedi:', err.message);
+    grid.innerHTML = '';
+    bos.hidden = false;
+    return;
+  }
+
+  const today = data.matches || [];
+  const upcoming = data.upcoming || [];
+  const list = today.length ? today : upcoming;
+
+  // Veri hiç yoksa: boş durum
+  if (!list.length) {
+    grid.innerHTML = '';
+    bos.hidden = false;
+    document.getElementById('ozetToplam').textContent = '0';
+    document.getElementById('ozetGol').textContent = '0';
+    document.getElementById('ozetMomentum').textContent = '0';
+    document.getElementById('ozetRisk').textContent = '0';
+    return;
+  }
+
+  // Üst özet — tüm günün maçlarından
+  const count = (fn) => list.filter(fn).length;
+  document.getElementById('ozetToplam').textContent = list.length;
+  document.getElementById('ozetGol').textContent = count(m => (m.goalPotential || '').includes('Yüksek'));
+  document.getElementById('ozetMomentum').textContent = count(m => Math.abs(m.homeScore - m.awayScore) >= 15);
+  document.getElementById('ozetRisk').textContent = count(m => (m.risk || '').includes('Yüksek'));
+
+  // Lig filtresini mevcut liglerle doldur
+  [...new Set(list.map(m => m.league))].sort().forEach(lg => {
+    const opt = document.createElement('option');
+    opt.value = lg; opt.textContent = lg;
+    F.lig.appendChild(opt);
+  });
+
+  function apply() {
+    const v = { lig: F.lig.value, saat: F.saat.value, gol: F.gol.value, risk: F.risk.value, ai: F.ai.value };
+    const filtered = list.filter(m =>
+      (v.lig === 'all' || m.league === v.lig) &&
+      (v.saat === 'all' || timeBucket(m.time) === v.saat) &&
+      (v.gol === 'all' || m.goalPotential === v.gol) &&
+      (v.risk === 'all' || m.risk === v.risk) &&
+      (v.ai === 'all' || aiPick(m).label === v.ai)
+    );
+
+    if (!filtered.length) {
+      grid.innerHTML = '';
+      bos.hidden = false;
+      bos.textContent = 'Seçilen filtrelerle eşleşen maç yok. Filtreleri sıfırlayıp tekrar deneyin.';
+      sayac.textContent = '';
+      return;
+    }
+    bos.hidden = true;
+    grid.innerHTML = filtered.map(explorerCard).join('');
+    sayac.textContent = filtered.length === list.length
+      ? `${list.length} maç listeleniyor`
+      : `${list.length} maç içinden ${filtered.length} tanesi gösteriliyor`;
+  }
+
+  Object.values(F).forEach(sel => sel.addEventListener('change', apply));
+  document.getElementById('fSifirla').addEventListener('click', () => {
+    Object.values(F).forEach(sel => { sel.value = 'all'; });
+    apply();
+  });
+
+  apply();
+}
+
+/* ============================================================
    Başlat + canlı yenileme
    ============================================================ */
 document.querySelectorAll('[data-api-section]').forEach(hydrateSection);
 initHero();
+initMatchExplorer();
 
 // Canlı skorlar 60 sn'de bir sessizce tazelenir (sekme görünürken)
 setInterval(async () => {
