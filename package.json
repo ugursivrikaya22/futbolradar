@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "echo \"No build step required\""
+    "build": "echo \"No build step required\"",
+    "fetch": "node scripts/fetch-thesportsdb.mjs",
+    "data": "node scripts/build-data.mjs",
+    "pages": "node scripts/generate-pages.mjs",
+    "fetch:api-football": "node scripts/fetch-api-football.mjs",
+    "generate": "node scripts/generate-pages.mjs",
+    "generate:results": "node scripts/generate-results.mjs",
+    "generate:teams": "node scripts/generate-teams.mjs"
   }
 }

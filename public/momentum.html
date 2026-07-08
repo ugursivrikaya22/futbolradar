@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Momentum | FutbolRadar</title>
+    <meta name="description" content="FutbolRadar momentum ekranı; takım ivmesi, form değişimi ve maç önü risk sinyalleri." />
+    <link rel="canonical" href="https://www.futbolradar.com/momentum.html" />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content="FutbolRadar" />
+    <meta property="og:title" content="Momentum | FutbolRadar" />
+    <meta property="og:description" content="Takım momentumunu form, tempo ve risk sinyalleriyle incele." />
+    <meta property="og:url" content="https://www.futbolradar.com/momentum.html" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./page.css" />
+  </head>
+  <body class="subpage">
+    <header class="topbar">
+      <nav class="container nav" aria-label="Ana menü">
+  <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa">
+    <span class="brand-mark">FR</span>
+    <span>FutbolRadar</span>
+  </a>
+  <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu">
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+    <span class="nav-toggle-bar"></span>
+  </button>
+  <div class="nav-menu" id="primary-menu">
+    <div class="nav-links">
+      <a href="./bugunun-maclari.html">Bugünkü Maçlar</a>
+      <a href="./canli-skor.html">Canlı Skor</a>
+      <a href="./puan-durumu.html">Puan Durumu</a>
+      <a href="./takimlar.html">Takımlar</a>
+      <a href="./oyuncu-radari.html">Oyuncu Radar</a>
+      <a href="./momentum.html">Momentum</a>
+    </div>
+    <a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a>
+  </div>
+</nav>
+    </header>
+    <main class="container">
+      <section class="hero">
+        <div class="hero-row">
+          <div>
+            <span class="eyebrow">Momentum tablosu</span>
+            <h1>Momentum</h1>
+            <p class="lead">Takımların güncel ivmesini form, tempo, gol eğilimi ve risk sinyalleriyle sırala.</p>
+          </div>
+          <span class="hero-meta">Son güncelleme: 07 Temmuz 2026 · 23:55</span>
+        </div>
+      </section>
+      <section class="data-panel" id="momentum-page" data-api-section="momentum">
+        <div class="panel-title"><h2>Takım Momentum Sıralaması</h2><span>AI maç önü sinyalleri</span></div>
+        <div class="table-row header"><span>#</span><span>Takım</span><span>Mom</span><span>Form</span><span>Gol</span><span>Risk</span></div>
+        <div class="table-body" data-api-target="momentum">
+          <article class="data-empty" data-card="empty-state">
+            <strong>Momentum tablosu yükleniyor</strong>
+            <span>Momentum sıralaması JSON veri katmanından okunuyor.</span>
+          </article>
+        </div>
+      </section>
+      <section class="grid three tight" id="momentum-signals" data-api-section="momentum-signals" data-api-target="momentum-signals">
+        <article class="data-empty" data-card="empty-state">
+          <strong>Momentum sinyalleri yükleniyor</strong>
+          <span>Sinyal kartları JSON veri katmanından okunuyor.</span>
+        </article>
+      </section>
+      <section class="source-strip" aria-label="Veri bilgisi">
+        <div><span>Veri kaynağı</span><b>Takım formu, maç temposu ve gol eğilimi</b></div>
+        <div><span>Model kapsamı</span><b>Momentum, form puanı, risk ve gol sinyali</b></div>
+        <div><span>Yenileme</span><b>Maç önü ve maç sonrası periyodik güncellenir</b></div>
+      </section>
+    </main>
+    <footer class="footer"><div class="container">FutbolRadar · Momentum</div></footer>
+      <script src="./site.js" defer></script>
+      <script src="./app.js" defer></script>
+  </body>
+</html>
