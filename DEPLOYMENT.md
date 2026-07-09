@@ -66,10 +66,27 @@ functions only see the updated environment after a fresh deployment.
 Use `/api/health` after deployment. It never returns the secret value, only
 whether an accepted environment variable name is present.
 
+- `mode: "live-ready"`: Production can see an accepted API key env name.
+- `mode: "mock"`: Production cannot see an accepted API key env name.
+- `providerSource`: tells which provider family the API will use.
 - `apiKeyConfigured: true`: `/api/matches` and `/api/standings` can use the live provider.
 - `apiKeyConfigured: false`: live provider is not visible to Production, so the site uses Mock API data.
 - `baseUrlConfigured: true`: the default or configured football-data base URL is active.
 - `competitionCodeConfigured: true`: the default or configured competition code is active.
+- `acceptedApiKeyEnvNames`: accepted Vercel variable names for the API key.
+- `apiKeyEnvNamesPresent`: accepted variable names that are currently visible to the function.
+- `nextAction`: short human-readable explanation of what to fix next.
+
+If `/api/health` shows `mode: "mock"` on the live domain, check the Vercel
+project's Production environment variables first. The most common causes are:
+
+- the key exists only in Preview or Development, not Production
+- the variable name is different from every accepted key name
+- the variable was added after the last Production deployment
+- the domain is attached to a different Vercel project than expected
+
+After changing Vercel variables, redeploy the Production deployment. A refresh
+alone is not enough for serverless functions to see new values.
 
 ## Post-deploy QA
 
