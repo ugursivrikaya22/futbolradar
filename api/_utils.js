@@ -222,6 +222,14 @@ function validateAnalyses(data) {
   return validateCollection(data, (item) => item.title && requireAny(item, ["excerpt", "url"]), "INVALID_ANALYSIS_SCHEMA");
 }
 
+function validateTransfers(data) {
+  return validateCollection(
+    data,
+    (item) => (item.playerName || item.playerId) && (item.date || item.season) && item.fromTeam && item.toTeam,
+    "INVALID_TRANSFER_SCHEMA"
+  );
+}
+
 function validateOrSend(res, data, validator) {
   const result = validator(data);
   if (!result.ok) {
@@ -277,5 +285,6 @@ module.exports = {
   validateSignals,
   validateStandings,
   validateTeams,
+  validateTransfers,
   withTimeout
 };

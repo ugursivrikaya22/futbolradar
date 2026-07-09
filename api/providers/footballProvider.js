@@ -7,7 +7,7 @@ const {
   withTimeout
 } = require("../_utils");
 
-const source = "FutbolRadar Live API";
+const source = "FutbolRadar Football-Data Live API";
 
 class ProviderError extends Error {
   constructor(code, message) {

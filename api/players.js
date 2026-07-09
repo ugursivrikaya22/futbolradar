@@ -1,10 +1,10 @@
-const { getProvider } = require("./providers");
+const { getProvider, mockProvider } = require("./providers");
+const { mergeProviderPlayers } = require("../services/playerService");
 const {
   DEFAULT_TIMEOUT_MS,
   getQuery,
   rateLimitHint,
   rejectUnsupportedMethod,
-  sendError,
   sendSuccess,
   validateOrSend,
   validatePlayers,
@@ -20,22 +20,29 @@ module.exports = async function handler(req, res) {
 
   const query = getQuery(req);
   const provider = getProvider("players");
+  const localData = await mockProvider.getPlayers(query);
   let data = [];
+  let source = provider.source;
 
   try {
-    data = await withTimeout(provider.getPlayers(query), DEFAULT_TIMEOUT_MS);
+    if (provider === mockProvider) {
+      data = localData;
+      source = mockProvider.source;
+    } else {
+      const providerData = await withTimeout(provider.getPlayers(query), DEFAULT_TIMEOUT_MS);
+      data = Array.isArray(providerData) && providerData.length
+        ? mergeProviderPlayers(localData, providerData, provider.name)
+        : localData;
+      source = Array.isArray(providerData) && providerData.length ? provider.source : mockProvider.source;
+    }
   } catch (error) {
-    return sendError(
-      res,
-      200,
-      error.message || "Oyuncu verisi provider katmanindan alinamadi.",
-      error.code || "PROVIDER_ERROR"
-    );
+    data = localData;
+    source = mockProvider.source;
   }
 
   if (!validateOrSend(res, data, validatePlayers)) {
     return;
   }
 
-  return sendSuccess(res, data, provider.source);
+  return sendSuccess(res, data, source);
 };

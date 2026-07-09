@@ -179,6 +179,44 @@ function byTeam(items, team) {
   return items.filter((item) => normalizeText(item.currentTeam || item.team || item.name).includes(wanted));
 }
 
+function bySearch(items, search) {
+  if (!search) {
+    return items;
+  }
+
+  const wanted = normalizeText(search);
+  return items.filter((item) => normalizeText(item.name || item.playerName || item.team || "").includes(wanted));
+}
+
+function byPage(items, page, pageSize) {
+  const pageNumber = Number(page);
+  if (!Number.isFinite(pageNumber) || pageNumber <= 0) {
+    return items;
+  }
+
+  const size = Number(pageSize) > 0 ? Number(pageSize) : 25;
+  const start = (pageNumber - 1) * size;
+  return items.slice(start, start + size);
+}
+
+function normalizeTransferRow(player, transfer, index) {
+  return {
+    id: `${player.id || slug(player.name)}-${transfer.date || index}-${slug(transfer.toTeam || "transfer")}`,
+    playerId: player.id || slug(player.name),
+    playerName: player.name,
+    date: transfer.date || null,
+    season: transfer.date ? `${String(transfer.date).slice(0, 4)}/${String(Number(String(transfer.date).slice(2, 4)) + 1).padStart(2, "0")}` : null,
+    fromTeam: transfer.fromTeam || null,
+    toTeam: transfer.toTeam || null,
+    type: transfer.type || transfer.transferType || null,
+    fee: transfer.feeLabel || null,
+    feeEur: transfer.feeEur == null ? null : Number(transfer.feeEur),
+    marketValueEur: transfer.marketValueEur == null ? null : Number(transfer.marketValueEur),
+    source: transfer.source || "manual",
+    note: transfer.note || ""
+  };
+}
+
 async function getMatches(query) {
   const data = byLeague(matches.map(normalizeMatch), query && query.league);
   return data;
@@ -205,13 +243,30 @@ async function getPlayers(query) {
   }
 
   data = byTeam(data, query && query.team);
+  data = bySearch(data, query && query.search);
 
   if (query && query.position) {
     const wanted = normalizeText(query.position);
     data = data.filter((player) => normalizeText(player.position).includes(wanted));
   }
 
-  return data;
+  return byPage(data, query && query.page, query && query.pageSize);
+}
+
+async function getPlayerTransfers(query) {
+  let data = players.map(normalizePlayer);
+
+  if (query && query.playerId) {
+    const wanted = normalizeText(query.playerId);
+    data = data.filter((player) => normalizeText(player.id).includes(wanted) || normalizeText(player.providerId).includes(wanted));
+  }
+
+  data = byTeam(data, query && query.team);
+  data = bySearch(data, query && query.search);
+
+  return data.flatMap((player) => {
+    return (player.transferHistory || []).map((transfer, index) => normalizeTransferRow(player, transfer, index));
+  });
 }
 
 async function getMomentum(query) {
@@ -241,6 +296,7 @@ module.exports = {
   getStandings,
   getTeams,
   getPlayers,
+  getPlayerTransfers,
   getMomentum,
   getSignals,
   getAnalyses,
@@ -248,6 +304,7 @@ module.exports = {
   normalizeStanding,
   normalizeTeam,
   normalizePlayer,
+  normalizeTransferRow,
   normalizeMomentum,
   normalizeSignal,
   normalizeSignals,

@@ -18,6 +18,33 @@ node scripts/update-player-transfers.mjs --apply --generate-pages '{"playerSlug"
 node scripts/generate-player-profile-pages.mjs
 ```
 
+## API-Football Provider Hazirligi
+
+Oyuncu ve transfer verisi icin `api/providers/apiFootballProvider.js` adapter dosyasi kullanilir. API key frontend'e cikmaz; yalnizca Vercel Environment Variables uzerinden okunur.
+
+Beklenen env degiskenleri:
+
+```bash
+APIFOOTBALL_API_KEY=
+APIFOOTBALL_API_BASE_URL=https://v3.football.api-sports.io
+APIFOOTBALL_LEAGUE_ID=
+APIFOOTBALL_SEASON=2026
+APIFOOTBALL_COUNTRY=Turkey
+FOOTBALL_PLAYER_PROVIDER=api-football
+FOOTBALL_TRANSFER_PROVIDER=api-football
+```
+
+Env yoksa `/api/players` ve `/api/transfers` local dogrulanmis veriye duser. `dataStatus` veya `ratingStatus` manual/verified ise provider farkli veri gonderse bile local alanlar otomatik ezilmez; `dataConflict` veya `transferConflict` ile isaretlenir.
+
+## Transfer Script Yeni Kullanim
+
+```bash
+node scripts/update-player-transfers.mjs --dry-run --player "Kerem Akturkoglu" --team "Fenerbahce" --season 2026
+node scripts/update-player-transfers.mjs --apply --playerId kerem-akturkoglu --team "Fenerbahce" --generate-pages
+```
+
+`--dry-run` dosya yazmaz, sadece farki raporlar. `--apply` local oyuncu datasini gunceller; `--generate-pages` statik oyuncu profil sayfalarini yeniden uretir.
+
 `transferHistory` kayıtlarında `date`, `fromTeam`, `toTeam`, `type`, `feeEur`, `feeLabel`, `source` ve `note` alanları desteklenir. Profil sayfasındaki "Transfer Geçmişi" timeline'ı bu alanlardan üretilir.
 
 Gerçek player API bağlandığında adapter, normalize edilmiş alanları `services/playerService.js` modeline göre üretmelidir.

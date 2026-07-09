@@ -171,6 +171,184 @@ function ratingFields() {
   ];
 }
 
+function hasValue(value) {
+  return value !== undefined && value !== null && value !== "";
+}
+
+function isProtectedStatus(status) {
+  const normalized = normalizeText(status);
+  return normalized.includes("manual") || normalized.includes("verified");
+}
+
+function conflictObject(field, localValue, providerValue, providerName) {
+  return {
+    field,
+    localValue,
+    providerValue,
+    provider: providerName || "provider",
+    detectedAt: new Date().toISOString()
+  };
+}
+
+function transferKey(transfer) {
+  return [
+    String(transfer.date || "").slice(0, 10),
+    normalizeText(transfer.fromTeam),
+    normalizeText(transfer.toTeam),
+    normalizeText(transfer.type)
+  ].join("|");
+}
+
+function mergeTransferHistory(localHistory, providerHistory) {
+  const local = normalizeTransferHistory(localHistory);
+  const provider = normalizeTransferHistory(providerHistory).map((transfer) => ({
+    ...transfer,
+    source: transfer.source || "provider"
+  }));
+  const seen = new Set(local.map(transferKey));
+  const merged = local.slice();
+
+  provider.forEach((transfer) => {
+    const key = transferKey(transfer);
+    if (!seen.has(key)) {
+      seen.add(key);
+      merged.push(transfer);
+    }
+  });
+
+  return merged.sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+}
+
+function mergePlayerWithProvider(localPlayer, providerPlayer, providerName) {
+  const local = localPlayer ? normalizePlayer(localPlayer) : null;
+  const provider = providerPlayer ? normalizePlayer(providerPlayer) : null;
+
+  if (!local && provider) {
+    return normalizePlayer({
+      ...provider,
+      dataStatus: provider.dataStatus || "provider",
+      ratingStatus: provider.ratingStatus || "provider",
+      providerName: providerName || provider.providerName || "provider"
+    });
+  }
+
+  if (!provider) {
+    return local;
+  }
+
+  const protectedData = isProtectedStatus(local.dataStatus);
+  const protectedRating = isProtectedStatus(local.ratingStatus);
+  const merged = {
+    ...local,
+    providerSnapshot: {
+      provider: providerName || provider.providerName || "provider",
+      providerId: provider.providerId || provider.id || null,
+      lastSyncedAt: provider.lastSyncedAt || new Date().toISOString()
+    }
+  };
+
+  [
+    "providerId",
+    "providerName",
+    "photo",
+    "height",
+    "weight",
+    "birthDate",
+    "nationality",
+    "preferredFoot",
+    "contractUntil",
+    "marketValueEur",
+    "marketValue",
+    "league",
+    "position"
+  ].forEach((field) => {
+    if (!hasValue(merged[field]) && hasValue(provider[field])) {
+      merged[field] = provider[field];
+    }
+  });
+
+  if (hasValue(provider.currentTeam) && normalizeText(provider.currentTeam) !== normalizeText(local.currentTeam)) {
+    if (protectedData) {
+      merged.dataConflict = conflictObject("currentTeam", local.currentTeam, provider.currentTeam, providerName);
+    } else {
+      merged.currentTeam = provider.currentTeam;
+      merged.team = provider.currentTeam;
+      merged.dataStatus = provider.dataStatus || "provider";
+    }
+  }
+
+  if (!protectedRating) {
+    ratingFields().forEach((field) => {
+      if (hasValue(provider[field])) {
+        merged[field] = provider[field];
+      }
+    });
+    merged.ratingStatus = provider.ratingStatus || merged.ratingStatus || "provider";
+  }
+
+  ["appearances", "minutesPlayed", "minutes", "goals", "assists", "yellowCards", "redCards"].forEach((field) => {
+    if (!hasValue(merged[field]) && hasValue(provider[field])) {
+      merged[field] = provider[field];
+    }
+  });
+
+  if (provider.stats && typeof provider.stats === "object") {
+    merged.stats = { ...(provider.stats || {}), ...(merged.stats || {}) };
+  }
+
+  merged.formerTeams = Array.from(new Set(normalizeArray(local.formerTeams).concat(normalizeArray(provider.formerTeams))))
+    .filter((team) => normalizeText(team) !== normalizeText(merged.currentTeam));
+  merged.transferHistory = mergeTransferHistory(local.transferHistory, provider.transferHistory);
+  merged.lastSyncedAt = provider.lastSyncedAt || new Date().toISOString();
+
+  const latest = merged.transferHistory[merged.transferHistory.length - 1];
+  if (latest && latest.toTeam && normalizeText(latest.toTeam) !== normalizeText(merged.currentTeam)) {
+    merged.transferConflict = conflictObject("transferHistory.latest.toTeam", merged.currentTeam, latest.toTeam, providerName);
+  }
+
+  return normalizePlayer(merged);
+}
+
+function mergeProviderPlayers(localPlayers, providerPlayers, providerName) {
+  const local = getPlayers(localPlayers);
+  const provider = getPlayers(providerPlayers);
+  const byName = new Map(local.map((player) => [normalizeText(player.name), player]));
+  const byProviderId = new Map(local.filter((player) => player.providerId).map((player) => [String(player.providerId), player]));
+  const used = new Set();
+  const merged = provider.map((providerPlayer) => {
+    const match = byProviderId.get(String(providerPlayer.providerId || "")) || byName.get(normalizeText(providerPlayer.name));
+    if (match) {
+      used.add(match.id);
+    }
+    return mergePlayerWithProvider(match, providerPlayer, providerName);
+  });
+
+  local.forEach((player) => {
+    if (!used.has(player.id)) {
+      merged.push(player);
+    }
+  });
+
+  return merged;
+}
+
+function mergeProviderTransfers(localTransfers, providerTransfers) {
+  const local = Array.isArray(localTransfers) ? localTransfers : [];
+  const provider = Array.isArray(providerTransfers) ? providerTransfers : [];
+  const seen = new Set(local.map(transferKey));
+  const merged = local.slice();
+
+  provider.forEach((transfer) => {
+    const key = transferKey(transfer);
+    if (!seen.has(key)) {
+      seen.add(key);
+      merged.push(transfer);
+    }
+  });
+
+  return merged.sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+}
+
 function validatePlayerData(rawPlayers) {
   const errors = [];
   const warnings = [];
@@ -304,6 +482,9 @@ module.exports = {
   formatMarketValueEur,
   getPlayerBySlug,
   getPlayers,
+  mergePlayerWithProvider,
+  mergeProviderPlayers,
+  mergeProviderTransfers,
   normalizePlayer,
   normalizeText,
   slug,
