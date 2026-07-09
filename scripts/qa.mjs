@@ -3,6 +3,8 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 const root = process.cwd();
+const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+const playerProfilePages = players.map((player) => `oyuncular/${player.id}.html`);
 const pages = [
   "index.html",
   "puan-durumu.html",
@@ -18,6 +20,7 @@ const pages = [
   "oyuncular/orta-sahalar.html",
   "oyuncular/genc-yetenekler.html",
   "oyuncular/en-iyi-oyuncular.html",
+  ...playerProfilePages,
   "canli-skor.html",
   "bugunun-maclari.html",
   "momentum.html",
@@ -93,6 +96,10 @@ function checkJson() {
         `vercel rewrite missing /oyuncular/${slug}`
       );
     });
+    expect(
+      rewrites.get("/oyuncular/:slug") === "/oyuncular/:slug.html",
+      "vercel rewrite missing /oyuncular/:slug"
+    );
   } catch (error) {
     failures.push(`vercel config parse failed: ${error.message}`);
   }

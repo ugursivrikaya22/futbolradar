@@ -1,4 +1,11 @@
+import fs from "node:fs";
+import path from "node:path";
+
 const baseUrl = (process.argv[2] || process.env.FUTBOLRADAR_BASE_URL || "https://www.futbolradar.com").replace(/\/+$/, "");
+const root = process.cwd();
+const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+const playerProfilePages = players.map((player) => `/oyuncular/${player.id}.html`);
+const playerRewritePages = players.map((player) => `/oyuncular/${player.id}`);
 const pages = [
   "/",
   "/puan-durumu.html",
@@ -14,6 +21,7 @@ const pages = [
   "/oyuncular/orta-sahalar.html",
   "/oyuncular/genc-yetenekler.html",
   "/oyuncular/en-iyi-oyuncular.html",
+  ...playerProfilePages,
   "/canli-skor.html",
   "/bugunun-maclari.html",
   "/momentum.html",
@@ -25,7 +33,8 @@ const rewritePages = [
   "/oyuncular/defanslar",
   "/oyuncular/orta-sahalar",
   "/oyuncular/genc-yetenekler",
-  "/oyuncular/en-iyi-oyuncular"
+  "/oyuncular/en-iyi-oyuncular",
+  ...playerRewritePages
 ];
 const endpoints = ["/api/matches", "/api/standings", "/api/teams", "/api/players", "/api/momentum", "/api/signals", "/api/analyses", "/api/health"];
 const staticAssets = ["/sitemap.xml", "/robots.txt", "/page.css", "/app.js", "/site.js", "/site.webmanifest", "/assets/og-image.svg"];

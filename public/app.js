@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  var API_ROOT = "./api/";
-  var DATA_ROOT = "./data/";
+  var API_ROOT = "/api/";
+  var DATA_ROOT = "/data/";
   var FETCH_TIMEOUT_MS = 6500;
   var cache = Object.create(null);
   var RESOURCE_CONFIG = {
@@ -722,8 +722,8 @@
         { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
       ].concat(player.tags || [])) +
       '<div class="player-actions">' +
-      '<a class="detail-link" href="./oyuncu-detay.html?id=' + escapeHtml(player.id) + '">Detay</a>' +
-      '<a class="detail-link" href="./oyuncu-karsilastir.html?p1=' + escapeHtml(player.id) + '">Karşılaştır</a>' +
+      '<a class="detail-link" href="/oyuncular/' + escapeHtml(player.id) + '.html">Detay</a>' +
+      '<a class="detail-link" href="/oyuncu-karsilastir.html?p1=' + escapeHtml(player.id) + '">Karşılaştır</a>' +
       '<button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Radar kartını paylaş</button>' +
       "</div>" +
       "</article>"
@@ -750,7 +750,7 @@
         sport: "Football"
       } : undefined,
       jobTitle: player.position || "Football Player",
-      url: "https://www.futbolradar.com/oyuncu-detay.html?id=" + encodeURIComponent(player.id),
+      url: "https://www.futbolradar.com/oyuncular/" + encodeURIComponent(player.id) + ".html",
       description: playerInsight(player),
       additionalProperty: [
         { "@type": "PropertyValue", name: "AI Rating", value: player.aiRating || player.rating || "" },
@@ -837,7 +837,7 @@
           "<span>" + escapeHtml(candidate.team) + " · " + escapeHtml(candidate.position) + "</span>" +
           "<strong>" + escapeHtml(candidate.name) + "</strong>" +
           "<b>AI " + escapeHtml(displayValue(candidate.aiRating || candidate.rating)) + "</b>" +
-          '<a href="./oyuncu-detay.html?id=' + escapeHtml(candidate.id) + '">Profili aç</a>' +
+          '<a href="/oyuncular/' + escapeHtml(candidate.id) + '.html">Profili aç</a>' +
           "</article>"
         );
       }).join("") +
@@ -902,7 +902,7 @@
       ]) +
       '<section class="profile-section"><h2>Radar Profili</h2>' + playerRadarChartHtml(player, null, player.name + " radar profili") + playerRadarHtml(player) + "</section>" +
       similarPlayersHtml(player, players) +
-      '<div class="player-actions"><a class="detail-link" href="./oyuncu-radari.html?team=' + encodeURIComponent(player.team) + '">Takım filtresine git</a><a class="detail-link" href="./oyuncu-karsilastir.html?p1=' + escapeHtml(player.id) + '">Karşılaştır</a><button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Radar kartını paylaş</button></div>' +
+      '<div class="player-actions"><a class="detail-link" href="/oyuncu-radari.html?team=' + encodeURIComponent(player.team) + '">Takım filtresine git</a><a class="detail-link" href="/oyuncu-karsilastir.html?p1=' + escapeHtml(player.id) + '">Karşılaştır</a><button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Radar kartını paylaş</button></div>' +
       "</article>"
     );
   }
@@ -1576,7 +1576,7 @@
     }
 
     var query = new URLSearchParams(window.location.search);
-    var playerId = query.get("id") || query.get("player");
+    var playerId = target.getAttribute("data-player-id") || query.get("id") || query.get("player");
 
     target.dataset.state = "loading";
 
