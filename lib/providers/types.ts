@@ -1,0 +1,76 @@
+export type PlayerRadar = {
+  finishing?: number;
+  creativity?: number;
+  pressing?: number;
+  tempo?: number;
+  consistency?: number;
+  Bitiricilik?: number;
+  Yaratıcılık?: number;
+  Pres?: number;
+  Tempo?: number;
+  Süreklilik?: number;
+};
+
+export type PlayerProviderRecord = {
+  id: string;
+  providerId?: string;
+  providerName?: string;
+  lastSyncedAt?: string;
+  name: string;
+  team: string;
+  league?: string;
+  position: string;
+  age?: number;
+  height?: string;
+  weight?: string;
+  nationality?: string;
+  preferredFoot?: string;
+  marketValue?: string;
+  contractUntil?: string;
+  appearances?: number;
+  goals?: number;
+  assists?: number;
+  minutes?: number;
+  minutesPlayed?: number;
+  yellowCards?: number;
+  redCards?: number;
+  passAccuracy?: number;
+  shots?: number;
+  shotsPerGame?: number;
+  keyPasses?: number;
+  tacklesPerGame?: number;
+  interceptionsPerGame?: number;
+  xg?: number;
+  xa?: number;
+  duels?: number;
+  duelsWon?: number;
+  press?: number;
+  pressures?: number;
+  aiRating?: number;
+  rating?: number;
+  formChange?: number;
+  trend?: string;
+  trendDirection?: "up" | "down" | "stable" | string;
+  threatScore?: number;
+  creativityScore?: number;
+  pressingScore?: number;
+  continuityScore?: number;
+  tempoScore?: number;
+  badges?: string[];
+  radar?: PlayerRadar;
+};
+
+export type PlayerQuery = {
+  id?: string;
+  team?: string;
+  league?: string;
+  position?: string;
+  nationality?: string;
+};
+
+export type PlayerProvider = {
+  name: string;
+  source: string;
+  getPlayers(query?: PlayerQuery): Promise<PlayerProviderRecord[]>;
+  getPlayerById(id: string): Promise<PlayerProviderRecord | null>;
+};

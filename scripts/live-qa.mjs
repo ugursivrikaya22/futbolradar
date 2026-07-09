@@ -5,6 +5,9 @@ const pages = [
   "/takimlar.html",
   "/oyuncu-radari.html",
   "/oyuncu-karsilastir.html",
+  "/oyuncu-detay.html",
+  "/players/position/forvet.html",
+  "/players/league/super-lig.html",
   "/canli-skor.html",
   "/bugunun-maclari.html",
   "/momentum.html",
@@ -80,7 +83,7 @@ async function checkPages() {
     expect(ogUrl === expectedUrl(page), `${page}: og:url mismatch`);
     expect(ogImage === `${baseUrl}/assets/og-image.svg`, `${page}: og:image mismatch`);
     expect(text.includes('name="twitter:card" content="summary_large_image"'), `${page}: missing twitter card`);
-    expect(text.includes('rel="manifest" href="./site.webmanifest"'), `${page}: missing manifest link`);
+    expect(/<link\s+rel="manifest"\s+href="[^"]+"/i.test(text), `${page}: missing manifest link`);
     expect(!hasMojibake(text), `${page}: mojibake marker found`);
     expect(!hasSecretLeak(text), `${page}: secret marker found`);
 
@@ -143,6 +146,40 @@ async function checkApi() {
       expect(Boolean(diagnostics.nextAction), `${endpoint}: missing nextAction`);
       expect(Array.isArray(diagnostics.acceptedApiKeyEnvNames), `${endpoint}: missing accepted API key env names`);
       expect(!hasSecretLeak(JSON.stringify(diagnostics)), `${endpoint}: secret marker found in diagnostics`);
+    }
+
+    if (endpoint === "/api/players") {
+      const firstPlayer = payload?.data?.[0] || {};
+      const requiredPlayerFields = [
+        "height",
+        "weight",
+        "age",
+        "nationality",
+        "team",
+        "league",
+        "position",
+        "preferredFoot",
+        "marketValue",
+        "contractUntil",
+        "appearances",
+        "goals",
+        "assists",
+        "minutesPlayed",
+        "yellowCards",
+        "redCards",
+        "passAccuracy",
+        "shotsPerGame",
+        "tacklesPerGame",
+        "interceptionsPerGame",
+        "rating",
+        "providerId",
+        "providerName",
+        "lastSyncedAt"
+      ];
+      expect(payload.data.length === 6, `${endpoint}: expected 6 player records`);
+      for (const field of requiredPlayerFields) {
+        expect(Object.prototype.hasOwnProperty.call(firstPlayer, field), `${endpoint}: missing ${field}`);
+      }
     }
 
     summary.push({

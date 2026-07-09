@@ -220,22 +220,51 @@ function normalizeLiveTeam(item) {
 }
 
 function normalizeLivePlayer(item) {
+  const player = item.player || item;
+  const statistics = Array.isArray(item.statistics) && item.statistics[0] ? item.statistics[0] : {};
+  const team = item.team || statistics.team || {};
+  const games = statistics.games || {};
+  const goals = statistics.goals || {};
+  const cards = statistics.cards || {};
+  const passes = statistics.passes || {};
+  const shots = statistics.shots || {};
+  const tackles = statistics.tackles || {};
+  const rating = item.rating || games.rating || item.aiRating || null;
+  const minutesPlayed = item.minutesPlayed || item.minutes || games.minutes || item.playedMinutes || 0;
+
   return {
-    id: String(item.id || item.playerId || item.name || ""),
-    name: item.name || "",
-    team: item.team || "",
+    id: String(player.id || item.playerId || item.id || item.name || ""),
+    providerId: String(player.id || item.playerId || item.id || ""),
+    providerName: "football-data",
+    lastSyncedAt: new Date().toISOString(),
+    name: player.name || item.name || "",
+    height: player.height || item.height || null,
+    weight: player.weight || item.weight || null,
+    nationality: player.nationality || item.nationality || null,
+    team: teamName(team) || item.team || "",
     league: item.league || "",
-    position: item.position || item.role || "",
-    age: item.age,
-    aiRating: item.aiRating || item.rating,
-    rating: item.rating || item.aiRating,
+    position: player.position || item.position || games.position || item.role || "",
+    age: player.age || item.age || null,
+    preferredFoot: player.preferredFoot || item.preferredFoot || null,
+    marketValue: player.marketValue || item.marketValue || null,
+    contractUntil: player.contractUntil || item.contractUntil || null,
+    appearances: item.appearances || games.appearences || games.appearances || 0,
+    aiRating: item.aiRating || rating,
+    rating,
     trend: item.trend || "",
     trendDirection: item.trendDirection || item.trendState || "",
-    impact: item.impact || item.rating || 0,
-    goals: item.goals,
-    assists: item.assists,
-    minutes: item.minutes || item.playedMinutes,
-    shots: item.shots || item.totalShots,
+    impact: item.impact || rating || 0,
+    goals: item.goals || goals.total || 0,
+    assists: item.assists || goals.assists || 0,
+    minutesPlayed,
+    minutes: item.minutes || minutesPlayed,
+    yellowCards: item.yellowCards || cards.yellow || 0,
+    redCards: item.redCards || cards.red || 0,
+    passAccuracy: item.passAccuracy || passes.accuracy || null,
+    shotsPerGame: item.shotsPerGame || null,
+    tacklesPerGame: item.tacklesPerGame || null,
+    interceptionsPerGame: item.interceptionsPerGame || null,
+    shots: item.shots || shots.total || item.totalShots,
     keyPasses: item.keyPasses || item.chancesCreated,
     xg: item.xg || item.expectedGoals,
     xa: item.xa || item.expectedAssists,
@@ -252,11 +281,11 @@ function normalizeLivePlayer(item) {
     tempoScore: item.tempoScore,
     summary: item.summary || "",
     radar: item.radar || {
-      finishing: item.finishing,
-      creativity: item.creativity,
-      pressing: item.pressing,
-      tempo: item.tempo,
-      consistency: item.consistency
+      finishing: item.finishing || item.threatScore,
+      creativity: item.creativity || item.creativityScore,
+      pressing: item.pressing || item.pressingScore,
+      tempo: item.tempo || item.tempoScore,
+      consistency: item.consistency || item.continuityScore
     },
     form: item.form || []
   };

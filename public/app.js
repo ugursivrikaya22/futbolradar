@@ -280,6 +280,30 @@
     );
   }
 
+  function profileValue(value, fallback) {
+    return value === undefined || value === null || value === "" ? (fallback || "Bilinmiyor") : value;
+  }
+
+  function profileItemHtml(label, value, fallback) {
+    return (
+      '<div class="profile-item">' +
+      "<span>" + escapeHtml(label) + "</span>" +
+      "<b>" + escapeHtml(profileValue(value, fallback)) + "</b>" +
+      "</div>"
+    );
+  }
+
+  function profileSectionHtml(title, items) {
+    return (
+      '<section class="profile-section">' +
+      "<h2>" + escapeHtml(title) + "</h2>" +
+      '<div class="profile-grid">' +
+      items.join("") +
+      "</div>" +
+      "</section>"
+    );
+  }
+
   function playerMetricsHtml(player, compact) {
     var metrics = [
       { label: "Dakika", value: player.minutes },
@@ -596,9 +620,83 @@
         { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
       ].concat(player.tags || [])) +
       '<div class="player-actions">' +
+      '<a class="detail-link" href="./oyuncu-detay.html?id=' + escapeHtml(player.id) + '">Detay</a>' +
       '<a class="detail-link" href="./oyuncu-karsilastir.html?p1=' + escapeHtml(player.id) + '">Karşılaştır</a>' +
       '<button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Radar kartını paylaş</button>' +
       "</div>" +
+      "</article>"
+    );
+  }
+
+  function updatePlayerDetailMeta(player) {
+    var title = player.name + " | " + player.team + " " + player.position + " Performans Radarı | FutbolRadar";
+    var description = player.name + " oyuncu detayı; AI rating, gol tehdidi, yaratıcılık, pres gücü, fiziksel profil ve kariyer metrikleri.";
+    var descriptionMeta = document.querySelector('meta[name="description"]');
+    var ogTitle = document.querySelector('meta[property="og:title"]');
+    var ogDescription = document.querySelector('meta[property="og:description"]');
+
+    document.title = title;
+
+    if (descriptionMeta) {
+      descriptionMeta.setAttribute("content", description);
+    }
+
+    if (ogTitle) {
+      ogTitle.setAttribute("content", title);
+    }
+
+    if (ogDescription) {
+      ogDescription.setAttribute("content", description);
+    }
+  }
+
+  function renderPlayerDetail(player) {
+    if (!player) {
+      return "";
+    }
+
+    updatePlayerDetailMeta(player);
+
+    return (
+      '<article class="player-profile-card" data-card="player-detail" data-player="' + escapeHtml(player.id) + '">' +
+      '<header class="profile-hero"><div><span>' + escapeHtml(player.team) + " · " + escapeHtml(player.league || "Lig bilgisi yakında") + "</span><h1>" + escapeHtml(player.name) + "</h1><p>" + escapeHtml(playerInsight(player)) + "</p></div><strong>" + escapeHtml(displayValue(player.aiRating)) + "</strong></header>" +
+      badgesHtml(playerBadges(player)) +
+      profileSectionHtml("Teknik Profil", [
+        profileItemHtml("Mevki", player.position),
+        profileItemHtml("Tercih edilen ayak", player.preferredFoot),
+        profileItemHtml("Pas isabeti", player.passAccuracy == null ? null : "%" + player.passAccuracy),
+        profileItemHtml("Şut / maç", player.shotsPerGame, "Veri yok"),
+        profileItemHtml("xG", player.xg, "Veri yok"),
+        profileItemHtml("xA", player.xa, "Veri yok")
+      ]) +
+      profileSectionHtml("Fiziksel Profil", [
+        profileItemHtml("Yaş", player.age),
+        profileItemHtml("Boy", player.height),
+        profileItemHtml("Kilo", player.weight),
+        profileItemHtml("Uyruk", player.nationality),
+        profileItemHtml("Tempo skoru", player.tempoScore, "Yakında"),
+        profileItemHtml("Süreklilik", player.continuityScore, "Yakında")
+      ]) +
+      profileSectionHtml("Kariyer", [
+        profileItemHtml("Takım", player.team),
+        profileItemHtml("Piyasa değeri", player.marketValue, "Yakında"),
+        profileItemHtml("Sözleşme", player.contractUntil, "Yakında"),
+        profileItemHtml("Provider ID", player.providerId, "Yakında"),
+        profileItemHtml("Provider", player.providerName, "Mock"),
+        profileItemHtml("Son senkron", player.lastSyncedAt, "Yakında")
+      ]) +
+      profileSectionHtml("Sezon İstatistikleri", [
+        profileItemHtml("Maç", player.appearances, "0"),
+        profileItemHtml("Dakika", player.minutesPlayed || player.minutes, "0"),
+        profileItemHtml("Gol", player.goals, "0"),
+        profileItemHtml("Asist", player.assists, "0"),
+        profileItemHtml("Sarı kart", player.yellowCards, "0"),
+        profileItemHtml("Kırmızı kart", player.redCards, "0"),
+        profileItemHtml("Top kapma / maç", player.tacklesPerGame, "Veri yok"),
+        profileItemHtml("Araya girme / maç", player.interceptionsPerGame, "Veri yok")
+      ]) +
+      '<section class="profile-section"><h2>Radar Profili</h2>' + playerRadarHtml(player) + "</section>" +
+      '<div class="player-actions"><a class="detail-link" href="./oyuncu-radari.html?team=' + encodeURIComponent(player.team) + '">Takım filtresine git</a><a class="detail-link" href="./oyuncu-karsilastir.html?p1=' + escapeHtml(player.id) + '">Karşılaştır</a><button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Radar kartını paylaş</button></div>' +
       "</article>"
     );
   }
@@ -1032,6 +1130,7 @@
       compareRowHtml("Bitiricilik", radarMetric(left, "finishing", "Bitiricilik"), radarMetric(right, "finishing", "Bitiricilik")) +
       compareRowHtml("Tempo", playerScore(left, "tempoScore", radarMetric(left, "tempo", "Tempo")), playerScore(right, "tempoScore", radarMetric(right, "tempo", "Tempo"))) +
       compareRowHtml("Süreklilik", playerScore(left, "continuityScore", radarMetric(left, "consistency", "Süreklilik")), playerScore(right, "continuityScore", radarMetric(right, "consistency", "Süreklilik"))) +
+      '<section class="radar-chart-placeholder" aria-label="Radar grafik yer tutucu"><span>Radar grafik yakında</span><strong>' + escapeHtml(left.name) + " / " + escapeHtml(right.name) + "</strong><p>API verisiyle radar chart aktif olacak.</p></section>" +
       '<p class="compare-note">FutbolRadar yorumu: ' + escapeHtml(left.aiRating >= right.aiRating ? left.name : right.name) + " genel radar etkisinde öne çıkıyor; rol farkı için gol tehdidi, yaratıcılık ve pres satırlarını birlikte oku.</p>" +
       "</article>"
     );
@@ -1081,6 +1180,30 @@
       render();
     }).catch(function () {
       setEmpty(target, "Karşılaştırma yüklenemedi", "Oyuncu verisi geçici olarak okunamıyor.");
+    });
+  }
+
+  function initPlayerDetail(target) {
+    if (!target) {
+      return;
+    }
+
+    var query = new URLSearchParams(window.location.search);
+    var playerId = query.get("id") || query.get("player");
+
+    target.dataset.state = "loading";
+
+    loadData("players").then(function (players) {
+      var player = players.find(function (item) { return item.id === playerId; }) || players[0];
+
+      if (!player) {
+        setEmpty(target, "Oyuncu bulunamadı", "Bu oyuncu profili için gösterilecek kayıt yok.");
+        return;
+      }
+
+      setContent(target, renderPlayerDetail(player));
+    }).catch(function () {
+      setEmpty(target, "Oyuncu detayı yüklenemedi", "Oyuncu verisi geçici olarak okunamıyor.");
     });
   }
 
@@ -1184,6 +1307,7 @@
 
     initPlayerFilters(document.querySelector('[data-api-target="players-page"]'));
     initPlayerCompare(document.querySelector('[data-api-target="player-compare"]'));
+    initPlayerDetail(document.querySelector('[data-api-target="player-detail"]'));
 
     renderInto(
       document.querySelector('[data-api-target="momentum"]'),

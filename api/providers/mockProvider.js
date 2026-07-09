@@ -52,10 +52,45 @@ function normalizeTeam(team) {
 }
 
 function normalizePlayer(player) {
+  const rating = player.rating || player.aiRating || 0;
+  const minutesPlayed = player.minutesPlayed || player.minutes || 0;
+
   return {
     ...player,
     id: player.id || slug(`${player.name}-${player.team}`),
-    rating: player.rating || player.aiRating
+    height: player.height || null,
+    weight: player.weight || null,
+    age: player.age || null,
+    nationality: player.nationality || null,
+    team: player.team || "",
+    league: player.league || "",
+    position: player.position || "",
+    preferredFoot: player.preferredFoot || null,
+    marketValue: player.marketValue || null,
+    contractUntil: player.contractUntil || null,
+    appearances: player.appearances || 0,
+    goals: player.goals || 0,
+    assists: player.assists || 0,
+    minutesPlayed,
+    minutes: player.minutes || minutesPlayed,
+    yellowCards: player.yellowCards || 0,
+    redCards: player.redCards || 0,
+    passAccuracy: player.passAccuracy || null,
+    shotsPerGame: player.shotsPerGame || null,
+    tacklesPerGame: player.tacklesPerGame || null,
+    interceptionsPerGame: player.interceptionsPerGame || null,
+    rating,
+    aiRating: player.aiRating || rating,
+    providerId: player.providerId || `mock-${slug(`${player.name}-${player.team}`)}`,
+    providerName: player.providerName || "FutbolRadar Mock",
+    lastSyncedAt: player.lastSyncedAt || "2026-07-09T08:00:00+03:00",
+    radar: player.radar || {
+      finishing: player.threatScore || rating,
+      creativity: player.creativityScore || rating,
+      pressing: player.pressingScore || rating,
+      tempo: player.tempoScore || rating,
+      consistency: player.continuityScore || rating
+    }
   };
 }
 

@@ -9,6 +9,9 @@ const pages = [
   "takimlar.html",
   "oyuncu-radari.html",
   "oyuncu-karsilastir.html",
+  "oyuncu-detay.html",
+  "players/position/forvet.html",
+  "players/league/super-lig.html",
   "canli-skor.html",
   "bugunun-maclari.html",
   "momentum.html",
@@ -90,7 +93,9 @@ function checkSeoAndLinks() {
     const twitterCard = (html.match(/<meta\s+name="twitter:card"\s+content="([^"]+)"/i) || [])[1] || "";
     const twitterTitle = (html.match(/<meta\s+name="twitter:title"\s+content="([^"]+)"/i) || [])[1] || "";
     const twitterDescription = (html.match(/<meta\s+name="twitter:description"\s+content="([^"]+)"/i) || [])[1] || "";
+    const manifestHref = (html.match(/<link\s+rel="manifest"\s+href="([^"]+)"/i) || [])[1] || "";
     const expectedUrl = pageUrl(page);
+    const pageDir = path.dirname(page);
 
     expect(Boolean(title), `${page}: missing title`);
     expect(Boolean(description), `${page}: missing meta description`);
@@ -103,7 +108,7 @@ function checkSeoAndLinks() {
     expect(twitterCard === "summary_large_image", `${page}: twitter card mismatch`);
     expect(twitterTitle === ogTitle, `${page}: twitter title should match og:title`);
     expect(twitterDescription === ogDescription, `${page}: twitter description should match og:description`);
-    expect(html.includes('rel="manifest" href="./site.webmanifest"'), `${page}: missing manifest link`);
+    expect(Boolean(manifestHref), `${page}: missing manifest link`);
 
     if (title) titles.set(title, (titles.get(title) || 0) + 1);
     if (description) descriptions.set(description, (descriptions.get(description) || 0) + 1);
@@ -119,7 +124,10 @@ function checkSeoAndLinks() {
         continue;
       }
 
-      expect(fs.existsSync(path.resolve(root, cleanTarget)), `${page}: missing local target ${target}`);
+      const resolvedTarget = cleanTarget.startsWith("/")
+        ? path.join(root, cleanTarget.replace(/^\/+/, ""))
+        : path.resolve(root, pageDir, cleanTarget);
+      expect(fs.existsSync(resolvedTarget), `${page}: missing local target ${target}`);
     }
   }
 
@@ -199,6 +207,39 @@ async function checkApi() {
   const invalidDate = await callEndpoint("matches", "/api/matches?date=yanlis");
   expect(invalidDate.payload.ok === false, "matches invalid date should return ok:false");
   expect(invalidDate.payload.error?.code === "INVALID_DATE", "matches invalid date should return INVALID_DATE");
+
+  const playersResponse = await callEndpoint("players");
+  const playerFields = [
+    "height",
+    "weight",
+    "age",
+    "nationality",
+    "team",
+    "league",
+    "position",
+    "preferredFoot",
+    "marketValue",
+    "contractUntil",
+    "appearances",
+    "goals",
+    "assists",
+    "minutesPlayed",
+    "yellowCards",
+    "redCards",
+    "passAccuracy",
+    "shotsPerGame",
+    "tacklesPerGame",
+    "interceptionsPerGame",
+    "rating",
+    "providerId",
+    "providerName",
+    "lastSyncedAt"
+  ];
+  const firstPlayer = playersResponse.payload.data[0] || {};
+  expect(playersResponse.payload.data.length === 6, "players: expected 6 mock players");
+  for (const field of playerFields) {
+    expect(Object.prototype.hasOwnProperty.call(firstPlayer, field), `players: missing ${field}`);
+  }
 }
 
 checkJavaScriptSyntax();
