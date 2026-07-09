@@ -96,6 +96,12 @@ Run local static/API checks before pushing:
 npm run qa
 ```
 
+Regenerate static player profile pages when `data/players.json` changes:
+
+```bash
+npm run generate:players
+```
+
 Run live checks after the Production deployment finishes:
 
 ```bash
@@ -116,6 +122,14 @@ Check these pages:
 - `/bugunun-maclari.html`
 - `/momentum.html`
 - `/analizler.html`
+- `/oyuncular/mauro-icardi.html`
+- `/oyuncular/kerem-akturkoglu.html`
+- `/oyuncular/edina-dzeko.html`
+- `/oyuncular/sebastian-szymanski.html`
+- `/oyuncular/gedson-fernandes.html`
+- `/oyuncular/ugurcan-cakir.html`
+- `/oyuncular/abdulkerim-bardakci.html`
+- `/oyuncular/semih-kilicsoy.html`
 - `/sitemap.xml`
 - `/robots.txt`
 
