@@ -230,6 +230,22 @@ function validateTransfers(data) {
   );
 }
 
+function validateSquad(data) {
+  return validateCollection(
+    data,
+    (item) => item.name && (item.currentTeam || item.team) && item.position,
+    "INVALID_SQUAD_SCHEMA"
+  );
+}
+
+function validateMatchDetail(data) {
+  return validateCollection(
+    data,
+    (item) => item.id && item.homeTeam && item.awayTeam && item.league && item.score && Array.isArray(item.events) && Array.isArray(item.statistics),
+    "INVALID_MATCH_DETAIL_SCHEMA"
+  );
+}
+
 function validateOrSend(res, data, validator) {
   const result = validator(data);
   if (!result.ok) {
@@ -280,8 +296,10 @@ module.exports = {
   validateDateParam,
   validateMatches,
   validateMomentum,
+  validateMatchDetail,
   validateOrSend,
   validatePlayers,
+  validateSquad,
   validateSignals,
   validateStandings,
   validateTeams,

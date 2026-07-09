@@ -15,7 +15,26 @@ const pages = [
   "oyuncu-radari.html",
   "oyuncu-karsilastir.html",
   "oyuncu-detay.html",
+  "mac-detay.html",
+  "takim-detay.html",
   "super-lig-fikstur.html",
+  "super-lig-form-durumu.html",
+  "super-lig-momentum-siralamasi.html",
+  "bugunku-mac-tahminleri.html",
+  "super-lig-oyuncu-radari.html",
+  "galatasaray-oyuncu-radari.html",
+  "fenerbahce-oyuncu-radari.html",
+  "besiktas-oyuncu-radari.html",
+  "trabzonspor-oyuncu-radari.html",
+  "galatasaray-form-durumu.html",
+  "fenerbahce-form-durumu.html",
+  "besiktas-form-durumu.html",
+  "trabzonspor-form-durumu.html",
+  "veri-notu.html",
+  "gizlilik.html",
+  "kullanim-sartlari.html",
+  "iletisim.html",
+  "hakkinda.html",
   "players/position/forvet.html",
   "players/league/super-lig.html",
   "oyuncular/forvetler.html",
@@ -30,7 +49,7 @@ const pages = [
   "momentum.html",
   "analizler.html"
 ];
-const endpoints = ["matches", "standings", "teams", "players", "momentum", "signals", "analyses", "health"];
+const endpoints = ["matches", "standings", "teams", "players", "transfers", "squad", "match-detail", "momentum", "signals", "analyses", "health"];
 const skipDirs = new Set([".git", ".agents", ".codex", "node_modules", "work", "outputs"]);
 const failures = [];
 

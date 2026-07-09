@@ -353,9 +353,10 @@ function ensureLeagueForData(params) {
 }
 
 async function getFixtures(query) {
-  const league = ensureLeagueForData(query);
+  const fixtureId = query && (query.fixtureId || query.id);
+  const league = fixtureId ? resolveLeague(query && query.league) : ensureLeagueForData(query);
   const season = resolveSeason(query && query.season);
-  const payload = await providerFetch("/fixtures", { league, season, date: query && query.date });
+  const payload = await providerFetch("/fixtures", { id: fixtureId, league, season, date: query && query.date });
   return responseItems(payload).map(normalizeFixture);
 }
 
@@ -484,6 +485,37 @@ async function getPredictions(query) {
   return responseItems(payload);
 }
 
+async function getMatchDetail(query) {
+  const fixtureId = query && (query.fixtureId || query.id);
+  if (!fixtureId) {
+    throw new ProviderError("PROVIDER_QUERY_MISSING", "Mac detayi icin fixtureId veya id query gerekli.");
+  }
+
+  const fixtures = await getFixtures({ fixtureId });
+  const match = fixtures[0];
+  if (!match) {
+    throw new ProviderError("PROVIDER_NOT_FOUND", "Mac detayi provider tarafinda bulunamadi.");
+  }
+
+  const [lineups, events, statistics, predictions] = await Promise.all([
+    getLineups({ fixtureId }).catch(() => []),
+    getFixtureEvents({ fixtureId }).catch(() => []),
+    getFixtureStatistics({ fixtureId }).catch(() => []),
+    getPredictions({ fixtureId }).catch(() => [])
+  ]);
+
+  return {
+    ...match,
+    fixtureId: String(fixtureId),
+    lineups,
+    events,
+    statistics,
+    prediction: predictions[0] || null,
+    source: "api-football",
+    updatedAt: new Date().toISOString()
+  };
+}
+
 function canSearchLocally(player, search) {
   if (!search) {
     return true;
@@ -514,6 +546,7 @@ module.exports = {
   getFixtureEvents,
   getFixtureStatistics,
   getPredictions,
+  getMatchDetail,
   normalizeFixture,
   normalizeStandingRow,
   normalizeTeam,

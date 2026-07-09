@@ -34,7 +34,7 @@ function providerCandidates(resource) {
   }
 
   if (resource === "teams" || resource === "squad") {
-    return [process.env.FOOTBALL_TEAM_PROVIDER, "mock"];
+    return [process.env.FOOTBALL_TEAM_PROVIDER, primary, "mock"];
   }
 
   if (resource === "momentum" || resource === "signals" || resource === "analyses") {

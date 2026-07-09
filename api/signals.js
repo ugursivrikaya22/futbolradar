@@ -1,4 +1,8 @@
-const { getProvider } = require("./providers");
+const matches = require("../data/matches.json");
+const teams = require("../data/teams.json");
+const fallbackSignals = require("../data/signals.json");
+const { computeLeagueMomentum } = require("../services/momentumService");
+const { generateSignals } = require("../services/signalService");
 const {
   DEFAULT_TIMEOUT_MS,
   getQuery,
@@ -18,17 +22,20 @@ module.exports = async function handler(req, res) {
 
   rateLimitHint(req);
 
-  const query = getQuery(req);
-  const provider = getProvider("signals");
-  let data = {};
+  getQuery(req);
+  let data = [];
 
   try {
-    data = await withTimeout(provider.getSignals(query), DEFAULT_TIMEOUT_MS);
+    const momentum = computeLeagueMomentum(teams, matches, teams);
+    data = await withTimeout(Promise.resolve(generateSignals({ matches, standings: teams, momentum })), DEFAULT_TIMEOUT_MS);
+    if (!data.length) {
+      data = [].concat(fallbackSignals.radarSignals || [], fallbackSignals.momentumSignals || []);
+    }
   } catch (error) {
     return sendError(
       res,
       200,
-      error.message || "Radar sinyali provider katmanindan alinamadi.",
+      error.message || "Radar sinyali hesaplanamadi.",
       error.code || "PROVIDER_ERROR"
     );
   }
@@ -37,5 +44,5 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  return sendSuccess(res, data, provider.source);
+  return sendSuccess(res, data, "FutbolRadar Computed API");
 };

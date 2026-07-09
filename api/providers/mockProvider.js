@@ -28,6 +28,26 @@ function normalizeMatch(match) {
   };
 }
 
+function normalizeMatchDetail(match) {
+  const normalized = normalizeMatch(match || {});
+  return {
+    ...normalized,
+    fixtureId: normalized.providerId || normalized.id,
+    status: normalized.status || "SCHEDULED",
+    score: typeof normalized.score === "object" ? normalized.score : { home: null, away: null },
+    lineups: [],
+    events: [],
+    statistics: [
+      { team: normalized.homeTeam, type: "Momentum", value: normalized.homeMomentum || normalized.homeForm || null },
+      { team: normalized.awayTeam, type: "Momentum", value: normalized.awayMomentum || normalized.awayForm || null },
+      { team: normalized.homeTeam, type: "Goal potential", value: normalized.goalPotential || null }
+    ],
+    prediction: normalized.aiPrediction ? { label: normalized.aiPrediction, risk: normalized.risk || null } : null,
+    source: "mock",
+    updatedAt: new Date().toISOString()
+  };
+}
+
 function normalizeStanding(team) {
   return {
     id: team.id || slug(team.name || team.team),
@@ -45,10 +65,21 @@ function normalizeStanding(team) {
 }
 
 function normalizeTeam(team) {
+  const squadCount = players.filter((player) => normalizeText(player.currentTeam || player.team) === normalizeText(team.name)).length;
   return {
     ...team,
     id: team.id || slug(team.name),
-    rating: team.rating || team.momentum
+    providerId: team.providerId || `mock-${team.id || slug(team.name)}`,
+    shortName: team.shortName || String(team.name || "").slice(0, 3).toUpperCase(),
+    logo: team.logo || null,
+    country: team.country || "Turkey",
+    venue: team.venue || null,
+    coach: team.coach || null,
+    squadCount,
+    rating: team.rating || team.momentum,
+    attackRating: team.attackRating || team.attack,
+    defenseRating: team.defenseRating || team.defense,
+    source: "mock"
   };
 }
 
@@ -222,6 +253,17 @@ async function getMatches(query) {
   return data;
 }
 
+async function getMatchDetail(query) {
+  const id = query && (query.fixtureId || query.id);
+  const data = matches.map(normalizeMatchDetail);
+  if (!id) {
+    return data[0] || null;
+  }
+
+  const wanted = normalizeText(id);
+  return data.find((match) => normalizeText(match.id) === wanted || normalizeText(match.fixtureId) === wanted) || null;
+}
+
 async function getStandings(query) {
   const data = byLeague(teams.map(normalizeStanding), query && query.league);
   return data.sort((a, b) => Number(a.rank || 0) - Number(b.rank || 0));
@@ -230,7 +272,42 @@ async function getStandings(query) {
 async function getTeams(query) {
   let data = byLeague(teams.map(normalizeTeam), query && query.league);
   data = byTeam(data, query && query.team);
+  data = bySearch(data, query && query.search);
+  if (query && (query.teamId || query.id)) {
+    const wanted = normalizeText(query.teamId || query.id);
+    data = data.filter((team) => normalizeText(team.id).includes(wanted) || normalizeText(team.providerId).includes(wanted));
+  }
   return data;
+}
+
+async function getSquad(query) {
+  const teamQuery = query && (query.team || query.teamId || query.id);
+  let data = players.map(normalizePlayer);
+
+  if (teamQuery) {
+    const wanted = normalizeText(teamQuery);
+    data = data.filter((player) => {
+      return normalizeText(player.currentTeam || player.team).includes(wanted) ||
+        normalizeText(player.id).includes(wanted) ||
+        normalizeText(player.providerId).includes(wanted);
+    });
+  }
+
+  return data.map((player) => ({
+    id: player.id,
+    providerId: player.providerId,
+    name: player.name,
+    currentTeam: player.currentTeam || player.team,
+    team: player.currentTeam || player.team,
+    position: player.position,
+    birthDate: player.birthDate || null,
+    computedAge: player.computedAge || player.age || null,
+    nationality: player.nationality || null,
+    photo: player.photo || null,
+    number: player.number || null,
+    aiRating: player.aiRating || player.rating,
+    source: "mock"
+  }));
 }
 
 async function getPlayers(query) {
@@ -293,14 +370,17 @@ module.exports = {
   name: "mock",
   source,
   getMatches,
+  getMatchDetail,
   getStandings,
   getTeams,
+  getSquad,
   getPlayers,
   getPlayerTransfers,
   getMomentum,
   getSignals,
   getAnalyses,
   normalizeMatch,
+  normalizeMatchDetail,
   normalizeStanding,
   normalizeTeam,
   normalizePlayer,

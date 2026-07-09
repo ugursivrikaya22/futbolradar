@@ -1,5 +1,6 @@
 const { getProvider, mockProvider } = require("./providers");
 const { mergeProviderPlayers } = require("../services/playerService");
+const { enrichPlayerRating } = require("../services/ratingService");
 const {
   DEFAULT_TIMEOUT_MS,
   getQuery,
@@ -43,6 +44,8 @@ module.exports = async function handler(req, res) {
   if (!validateOrSend(res, data, validatePlayers)) {
     return;
   }
+
+  data = data.map((player) => enrichPlayerRating(player));
 
   return sendSuccess(res, data, source);
 };

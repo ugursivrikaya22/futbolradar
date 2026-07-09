@@ -45,6 +45,12 @@ node scripts/update-player-transfers.mjs --apply --playerId kerem-akturkoglu --t
 
 `--dry-run` dosya yazmaz, sadece farki raporlar. `--apply` local oyuncu datasini gunceller; `--generate-pages` statik oyuncu profil sayfalarini yeniden uretir.
 
+## AI Rating v1
+
+`services/ratingService.js` oyuncu ratingini pozisyona gore hesaplar. Forvetlerde gol/asist ve form, orta sahalarda asist/dakika/form, defansta dakika/takim savunmasi/disiplin, kalecide dakika/takim savunmasi/clean sheet agirliklidir. Manuel rating varsa otomatik ezilmez; `ratingStatus: "manual"` korunur.
+
+Eksik veri olan oyuncularda skor yine 0-100 araliginda uretilebilir ama `ratingStatus: "estimated"` olarak isaretlenir. Profil sayfalarinda rating aciklamasi kullaniciya gosterilir.
+
 `transferHistory` kayıtlarında `date`, `fromTeam`, `toTeam`, `type`, `feeEur`, `feeLabel`, `source` ve `note` alanları desteklenir. Profil sayfasındaki "Transfer Geçmişi" timeline'ı bu alanlardan üretilir.
 
 Gerçek player API bağlandığında adapter, normalize edilmiş alanları `services/playerService.js` modeline göre üretmelidir.

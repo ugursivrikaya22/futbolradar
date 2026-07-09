@@ -1,10 +1,9 @@
-const { getProvider } = require("./providers");
+const { getProvider, mockProvider } = require("./providers");
 const {
   DEFAULT_TIMEOUT_MS,
   getQuery,
   rateLimitHint,
   rejectUnsupportedMethod,
-  sendError,
   sendSuccess,
   validateOrSend,
   validateTeams,
@@ -20,22 +19,30 @@ module.exports = async function handler(req, res) {
 
   const query = getQuery(req);
   const provider = getProvider("teams");
-  let data = [];
+  const localData = await mockProvider.getTeams(query);
+  let data = localData;
+  let source = mockProvider.source;
 
   try {
-    data = await withTimeout(provider.getTeams(query), DEFAULT_TIMEOUT_MS);
+    if (provider !== mockProvider) {
+      const providerData = await withTimeout(provider.getTeams(query), DEFAULT_TIMEOUT_MS);
+      if (Array.isArray(providerData) && providerData.length) {
+        data = providerData.map((team) => ({
+          ...team,
+          momentum: team.momentum == null ? 0 : team.momentum,
+          rating: team.rating == null ? team.momentum || 0 : team.rating
+        }));
+        source = provider.source;
+      }
+    }
   } catch (error) {
-    return sendError(
-      res,
-      200,
-      error.message || "Takim verisi provider katmanindan alinamadi.",
-      error.code || "PROVIDER_ERROR"
-    );
+    data = localData;
+    source = mockProvider.source;
   }
 
   if (!validateOrSend(res, data, validateTeams)) {
     return;
   }
 
-  return sendSuccess(res, data, provider.source);
+  return sendSuccess(res, data, source);
 };

@@ -2167,6 +2167,58 @@ h1 {
         font-size: 0.88rem;
       }
 
+      .metric-grid.compact {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin: 14px 0;
+      }
+
+      .metric-grid.compact span,
+      .timeline-row,
+      .squad-player-card {
+        border: 1px solid rgba(148, 163, 184, 0.16);
+        border-radius: 8px;
+        background: rgba(15, 23, 42, 0.42);
+        padding: 12px;
+      }
+
+      .metric-grid.compact span,
+      .timeline-row span,
+      .squad-player-card span,
+      .profile-note {
+        color: var(--muted);
+      }
+
+      .squad-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .squad-player-card {
+        display: grid;
+        gap: 8px;
+      }
+
+      .squad-player-card a,
+      .timeline-row a {
+        color: var(--accent);
+        font-weight: 800;
+      }
+
+      .timeline-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 10px;
+      }
+
+      .profile-note {
+        margin: 0;
+      }
+
       .player-radar-chart {
         grid-column: 1 / -1;
         display: grid;
@@ -2468,6 +2520,16 @@ h1 {
 
         .reliability-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .metric-grid.compact,
+        .squad-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .timeline-row {
+          align-items: flex-start;
+          flex-direction: column;
         }
       }
 
