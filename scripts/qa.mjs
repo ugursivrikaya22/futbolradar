@@ -12,6 +12,7 @@ const pages = [
   "oyuncu-radari.html",
   "oyuncu-karsilastir.html",
   "oyuncu-detay.html",
+  "super-lig-fikstur.html",
   "players/position/forvet.html",
   "players/league/super-lig.html",
   "oyuncular/forvetler.html",
