@@ -265,6 +265,53 @@
     );
   }
 
+  function compactMetricHtml(label, value) {
+    return (
+      '<div class="player-metric">' +
+      "<span>" + escapeHtml(label) + "</span>" +
+      "<b>" + escapeHtml(displayValue(value)) + "</b>" +
+      "</div>"
+    );
+  }
+
+  function playerMetricsHtml(player, compact) {
+    var metrics = [
+      { label: "Dakika", value: player.minutes },
+      { label: "Şut", value: player.shots },
+      { label: "Kilit pas", value: player.keyPasses },
+      { label: "xG", value: player.xg },
+      { label: "xA", value: player.xa },
+      { label: "İkili", value: player.duelsWon }
+    ];
+
+    if (compact) {
+      metrics = metrics.slice(0, 3);
+    }
+
+    return '<div class="player-metrics">' + metrics.map(function (metric) {
+      return compactMetricHtml(metric.label, metric.value);
+    }).join("") + "</div>";
+  }
+
+  function playerRadarHtml(player, compact) {
+    var radar = player.radar || {};
+    var rows = [
+      { label: "Bitiricilik", value: radar.finishing },
+      { label: "Yaratıcılık", value: radar.creativity },
+      { label: "Pres", value: radar.pressing },
+      { label: "Tempo", value: radar.tempo },
+      { label: "Süreklilik", value: radar.consistency }
+    ];
+
+    if (compact) {
+      rows = rows.slice(0, 3);
+    }
+
+    return '<div class="player-radar">' + rows.map(function (row) {
+      return barRowHtml(row.label, displayValue(row.value), row.value);
+    }).join("") + "</div>";
+  }
+
   function matchTitle(match) {
     return escapeHtml(match.homeTeam) + " - " + escapeHtml(match.awayTeam);
   }
@@ -443,22 +490,26 @@
       '<article class="player-card" data-card="player-radar" data-player="' + escapeHtml(player.id) + '">' +
       '<header><div><h3>' + escapeHtml(player.name) + "</h3><span>" + escapeHtml(player.team) + " · " + escapeHtml(player.position) + '</span></div><strong class="rating">' + escapeHtml(player.aiRating) + "</strong></header>" +
       '<span class="trend">Trend: ' + escapeHtml(player.trend) + "</span>" +
+      playerMetricsHtml(player, true) +
+      playerRadarHtml(player, true) +
       tagsHtml([
         { label: "Gol " + (player.goals == null ? "-" : player.goals), variant: "green" },
         { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
       ]) +
       formDotsHtml(player.form) +
-      barRowHtml("Etki", player.impact, player.impact) +
       "</article>"
     );
   }
 
   function renderPlayerPageCard(player) {
     return (
-      '<article class="card" data-card="player" data-player="' + escapeHtml(player.id) + '">' +
+      '<article class="card player-detail-card" data-card="player" data-player="' + escapeHtml(player.id) + '">' +
       '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(player.team) + " · " + escapeHtml(player.position) + "</span><h2>" + escapeHtml(player.name) + '</h2></div><strong class="big-value">' + escapeHtml(player.aiRating) + "</strong></div>" +
+      '<p class="player-summary">' + escapeHtml(player.summary || "Oyuncu performansı son maç etkisi, rol verimliliği ve form sürekliliğiyle okunur.") + "</p>" +
+      playerMetricsHtml(player) +
       formDotsHtml(player.form) +
       barRowHtml("Etki", player.impact, player.impact) +
+      playerRadarHtml(player) +
       tagsHtml([
         { label: "Gol " + (player.goals == null ? "-" : player.goals), variant: "green" },
         { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
@@ -595,7 +646,7 @@
       document.querySelector('[data-api-target="player-radar"]'),
       "players",
       function (players) {
-        return players.map(renderPlayerHomeCard).join("");
+        return players.slice(0, 3).map(renderPlayerHomeCard).join("");
       },
       "Oyuncu radari yüklenemedi"
     );

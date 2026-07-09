@@ -232,6 +232,21 @@ function normalizeLivePlayer(item) {
     impact: item.impact || item.rating || 0,
     goals: item.goals,
     assists: item.assists,
+    minutes: item.minutes || item.playedMinutes,
+    shots: item.shots || item.totalShots,
+    keyPasses: item.keyPasses || item.chancesCreated,
+    xg: item.xg || item.expectedGoals,
+    xa: item.xa || item.expectedAssists,
+    duelsWon: item.duelsWon || item.duels,
+    pressures: item.pressures || item.pressActions,
+    summary: item.summary || "",
+    radar: item.radar || {
+      finishing: item.finishing,
+      creativity: item.creativity,
+      pressing: item.pressing,
+      tempo: item.tempo,
+      consistency: item.consistency
+    },
     form: item.form || []
   };
 }
