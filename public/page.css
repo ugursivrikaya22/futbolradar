@@ -2473,8 +2473,9 @@ h1 {
 
       @media (max-width: 760px) {
         .container {
-          width: calc(100% - 24px);
+          width: 100%;
           max-width: var(--container);
+          padding-inline: 12px;
         }
 
         .nav {
@@ -2608,6 +2609,12 @@ h1 {
           width: 100%;
           max-width: calc(100vw - 24px);
           padding: 12px;
+        }
+
+        .player-profile-card *,
+        .player-profile-shell,
+        main.container {
+          max-width: 100%;
         }
 
         .profile-hero,
