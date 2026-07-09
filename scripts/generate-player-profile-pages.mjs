@@ -23,7 +23,7 @@ function stripTags(value) {
 
 function playerDescription(player) {
   const team = player.currentTeam || player.team || "Takım bilgisi yakında";
-  return `${player.name}; ${team} ${player.position} profili. Overall rating ${player.overallRating || player.aiRating || player.rating}, potansiyel ${player.potentialRating || "yakında"}, teknik, fiziksel, mental ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
+  return `${player.name}; güncel takım ${team}, mevki ${player.position}. Transfer geçmişi, overall rating ${player.overallRating || player.aiRating || player.rating}, potansiyel ${player.potentialRating || "yakında"} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
 }
 
 function relatedLinks(currentId) {
@@ -45,7 +45,7 @@ function relatedLinks(currentId) {
 function pageHtml(player) {
   const team = player.currentTeam || player.team || "Takım bilgisi yakında";
   const age = player.computedAge || player.age || "Yaş yakında";
-  const title = `${player.name} | ${team} ${player.position} Oyuncu Profili | FutbolRadar`;
+  const title = `${player.name} Oyuncu Profili | ${team} | FutbolRadar`;
   const description = playerDescription(player);
   const canonical = `https://www.futbolradar.com/oyuncular/${player.id}.html`;
   const overall = player.overallRating || player.aiRating || player.rating || "-";
@@ -109,7 +109,7 @@ function pageHtml(player) {
       <section class="hero">
         <div class="hero-row">
           <div>
-            <span class="eyebrow">${escapeHtml(team)} oyuncu profili</span>
+            <span class="eyebrow">Güncel takım: ${escapeHtml(team)}</span>
             <h1>${escapeHtml(player.name)}</h1>
             <p class="lead">${escapeHtml(player.summary || description)}</p>
           </div>

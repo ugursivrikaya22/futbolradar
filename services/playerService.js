@@ -64,11 +64,33 @@ function normalizeTransferHistory(history) {
     date: item.date || null,
     fromTeam: item.fromTeam || item.from || null,
     toTeam: item.toTeam || item.to || null,
+    type: item.type || item.transferType || inferTransferType(item),
     feeEur: item.feeEur == null ? null : Number(item.feeEur),
     feeLabel: item.feeLabel || formatMarketValueEur(item.feeEur) || "Bilinmiyor",
     source: item.source || "manual",
     note: item.note || ""
   }));
+}
+
+function inferTransferType(item) {
+  if (!item) {
+    return null;
+  }
+
+  const feeLabel = String(item.feeLabel || "").toLowerCase();
+  if (feeLabel === "academy") {
+    return "Altyapı";
+  }
+
+  if (feeLabel === "free" || Number(item.feeEur) === 0) {
+    return "Serbest transfer";
+  }
+
+  if (Number(item.feeEur) > 0) {
+    return "Bonservis";
+  }
+
+  return null;
 }
 
 function normalizePlayer(player, options) {
@@ -154,6 +176,7 @@ function validatePlayerData(rawPlayers) {
   const warnings = [];
   const seenIds = new Set();
   const list = getPlayers(rawPlayers);
+  const now = new Date();
 
   list.forEach((player, index) => {
     const label = player.name || `index ${index}`;
@@ -189,7 +212,7 @@ function validatePlayerData(rawPlayers) {
     }
 
     if (player.formerTeams.some((team) => normalizeText(team) === normalizeText(player.currentTeam))) {
-      errors.push(`${label}: currentTeam formerTeams içinde olmamalı.`);
+      warnings.push(`${label}: currentTeam formerTeams içinde görünüyor; eski kulüp listesi temizlenmeli.`);
     }
 
     if (player.marketValueEur != null && (!Number.isFinite(Number(player.marketValueEur)) || Number(player.marketValueEur) < 0)) {
@@ -208,6 +231,28 @@ function validatePlayerData(rawPlayers) {
         errors.push(`${label}: transferHistory[${transferIndex}] date ve toTeam içermeli.`);
       }
     });
+
+    if (player.transferHistory.length) {
+      const latestTransfer = player.transferHistory
+        .slice()
+        .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+      const latest = latestTransfer[latestTransfer.length - 1];
+      if (latest && latest.toTeam && normalizeText(latest.toTeam) !== normalizeText(player.currentTeam)) {
+        warnings.push(`${label}: son transfer currentTeam ile uyumlu değil.`);
+      }
+    }
+
+    if (player.transferUpdatedAt) {
+      const updatedDate = new Date(`${String(player.transferUpdatedAt).slice(0, 10)}T00:00:00Z`);
+      if (Number.isNaN(updatedDate.getTime())) {
+        errors.push(`${label}: transferUpdatedAt geçersiz.`);
+      } else {
+        const ageDays = Math.floor((now.getTime() - updatedDate.getTime()) / 86400000);
+        if (ageDays > 180) {
+          warnings.push(`${label}: transferUpdatedAt ${ageDays} günlük; güncellik kontrolü önerilir.`);
+        }
+      }
+    }
   });
 
   return { ok: errors.length === 0, errors, warnings };
@@ -232,6 +277,7 @@ function updatePlayerTransfer(rawPlayers, update, now) {
       date: update.date || updatedAt,
       fromTeam: previousTeam || null,
       toTeam: currentTeam,
+      type: update.type || update.transferType || inferTransferType(update),
       feeEur: update.feeEur == null ? null : Number(update.feeEur),
       feeLabel: update.feeLabel || formatMarketValueEur(update.feeEur) || "Bilinmiyor",
       source: update.source || "manual",

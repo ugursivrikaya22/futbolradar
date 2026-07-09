@@ -14,8 +14,10 @@ Komutlar:
 
 ```bash
 node scripts/validate-player-data.mjs
-node scripts/update-player-transfers.mjs --apply '{"playerSlug":"kerem-akturkoglu","fromTeam":"Benfica","toTeam":"Fenerbahçe","league":"Süper Lig","date":"2025-09-01","feeEur":22500000}'
+node scripts/update-player-transfers.mjs --apply --generate-pages '{"playerSlug":"kerem-akturkoglu","fromTeam":"Benfica","toTeam":"Fenerbahçe","league":"Süper Lig","date":"2025-09-01","type":"Bonservis","feeEur":22500000}'
 node scripts/generate-player-profile-pages.mjs
 ```
+
+`transferHistory` kayıtlarında `date`, `fromTeam`, `toTeam`, `type`, `feeEur`, `feeLabel`, `source` ve `note` alanları desteklenir. Profil sayfasındaki "Transfer Geçmişi" timeline'ı bu alanlardan üretilir.
 
 Gerçek player API bağlandığında adapter, normalize edilmiş alanları `services/playerService.js` modeline göre üretmelidir.

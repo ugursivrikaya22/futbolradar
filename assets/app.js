@@ -489,16 +489,67 @@
       return null;
     }
 
-    if (player.marketValue) {
-      return player.marketValue;
-    }
-
     var value = Number(player.marketValueEur);
-    if (!Number.isFinite(value) || value <= 0) {
-      return null;
+    if (Number.isFinite(value) && value > 0) {
+      return value >= 1000000 ? "€" + (Math.round(value / 100000) / 10).toFixed(1) + "M" : "€" + value.toLocaleString("tr-TR");
     }
 
-    return value >= 1000000 ? (Math.round(value / 100000) / 10) + "M EUR" : value.toLocaleString("tr-TR") + " EUR";
+    return player.marketValue || null;
+  }
+
+  function statusBadge(label, variant) {
+    return '<span class="status-badge ' + escapeHtml(variant || "neutral") + '">' + escapeHtml(label) + "</span>";
+  }
+
+  function statusLabel(status, kind) {
+    var normalized = normalizeSearchText(status);
+
+    if (normalized === "verified") {
+      return "Doğrulandı";
+    }
+
+    if (normalized === "manually_verified" || normalized === "manual") {
+      return kind === "rating" ? "Manuel skor" : "Manuel kontrol";
+    }
+
+    if (normalized === "stale" || normalized === "mock_needs_verification") {
+      return "Güncelleme gerekli";
+    }
+
+    if (normalized === "pending" || normalized === "transfer_needs_monitoring") {
+      return "Beklemede";
+    }
+
+    if (normalized === "estimated") {
+      return "Tahmini";
+    }
+
+    if (normalized === "provider") {
+      return "Provider";
+    }
+
+    return status || "Bilinmiyor";
+  }
+
+  function statusVariant(status) {
+    var normalized = normalizeSearchText(status);
+    if (normalized === "verified" || normalized === "manually_verified" || normalized === "manual" || normalized === "provider") {
+      return "verified";
+    }
+    if (normalized === "estimated") {
+      return "estimated";
+    }
+    if (normalized === "stale" || normalized === "mock_needs_verification") {
+      return "stale";
+    }
+    if (normalized === "pending" || normalized === "transfer_needs_monitoring") {
+      return "pending";
+    }
+    return "neutral";
+  }
+
+  function statusBadgeHtml(status, kind) {
+    return statusBadge(statusLabel(status, kind), statusVariant(status));
   }
 
   function playerRatingTags(player) {
@@ -527,6 +578,127 @@
     }
 
     return "Tahmini kayıt";
+  }
+
+  function formatProfileDate(value) {
+    if (!value) {
+      return null;
+    }
+
+    var date = new Date(String(value).slice(0, 10) + "T00:00:00Z");
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+
+    return new Intl.DateTimeFormat("tr-TR", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      timeZone: "Europe/Istanbul"
+    }).format(date);
+  }
+
+  function transferTypeLabel(transfer) {
+    if (!transfer) {
+      return null;
+    }
+
+    if (transfer.type || transfer.transferType) {
+      return transfer.type || transfer.transferType;
+    }
+
+    if (transfer.feeLabel) {
+      if (transfer.feeLabel === "Free") {
+        return "Serbest transfer";
+      }
+
+      if (transfer.feeLabel === "Academy") {
+        return "Altyapı";
+      }
+
+      return transfer.feeLabel;
+    }
+
+    if (Number(transfer.feeEur) > 0) {
+      return "Transfer";
+    }
+
+    return "Serbest / altyapı";
+  }
+
+  function transferFeeLabel(transfer) {
+    if (!transfer) {
+      return null;
+    }
+
+    var fee = Number(transfer.feeEur);
+    if (Number.isFinite(fee) && fee > 0) {
+      return fee >= 1000000 ? "€" + (Math.round(fee / 100000) / 10).toFixed(1) + "M" : "€" + fee.toLocaleString("tr-TR");
+    }
+
+    return transfer.feeLabel && transfer.feeLabel !== "Free" && transfer.feeLabel !== "Academy" ? transfer.feeLabel : null;
+  }
+
+  function transferTimelineHtml(player) {
+    var history = Array.isArray(player && player.transferHistory) ? player.transferHistory.slice() : [];
+    if (!history.length) {
+      return '<section class="profile-section transfer-section"><h2>Transfer Geçmişi</h2><article class="data-empty compact"><strong>Transfer geçmişi yakında</strong><span>Bu oyuncu için transfer çizelgesi güncelleniyor.</span></article></section>';
+    }
+
+    history.sort(function (a, b) {
+      return String(a.date || "").localeCompare(String(b.date || ""));
+    });
+
+    return (
+      '<section class="profile-section transfer-section"><div class="profile-section-head"><h2>Transfer Geçmişi</h2>' +
+      (player.transferUpdatedAt ? '<span>Transfer bilgisi son güncelleme: ' + escapeHtml(formatProfileDate(player.transferUpdatedAt)) + "</span>" : "") +
+      "</div>" +
+      '<div class="transfer-timeline">' +
+      history.map(function (transfer) {
+        var fee = transferFeeLabel(transfer);
+        return (
+          '<article class="transfer-event">' +
+          '<span class="transfer-date">' + escapeHtml(formatProfileDate(transfer.date) || transfer.season || "Tarih yakında") + "</span>" +
+          '<div class="transfer-body">' +
+          '<div class="transfer-route"><b>' + escapeHtml(transfer.fromTeam || "Bilinmiyor") + "</b><em>→</em><b>" + escapeHtml(transfer.toTeam || playerCurrentTeam(player)) + "</b></div>" +
+          '<div class="transfer-meta">' +
+          (transferTypeLabel(transfer) ? "<span>" + escapeHtml(transferTypeLabel(transfer)) + "</span>" : "") +
+          (fee ? "<span>" + escapeHtml(fee) + "</span>" : "") +
+          statusBadgeHtml(transfer.source || player.dataStatus, "data") +
+          "</div>" +
+          (transfer.note ? '<p class="transfer-note">' + escapeHtml(transfer.note) + "</p>" : "") +
+          "</div>" +
+          "</article>"
+        );
+      }).join("") +
+      "</div></section>"
+    );
+  }
+
+  function formerTeamsHtml(player) {
+    var teams = Array.isArray(player && player.formerTeams) ? player.formerTeams : [];
+    if (!teams.length) {
+      return "";
+    }
+
+    return (
+      '<section class="profile-section former-team-section"><h2>Eski Kulüpler</h2><div class="former-team-list">' +
+      teams.map(function (team) {
+        return '<span class="former-team-chip">' + escapeHtml(team) + "</span>";
+      }).join("") +
+      "</div></section>"
+    );
+  }
+
+  function reliabilitySectionHtml(player) {
+    return (
+      '<section class="profile-section reliability-section"><h2>Veri Güvenilirliği</h2><div class="reliability-grid">' +
+      '<article><span>Takım verisi</span>' + statusBadgeHtml(player.dataStatus, "data") + "</article>" +
+      '<article><span>Rating modeli</span>' + statusBadgeHtml(player.ratingStatus, "rating") + "</article>" +
+      '<article><span>Yaş hesaplama</span><b>' + escapeHtml(player.birthDate ? "Doğum tarihinden" : "Yakında") + "</b></article>" +
+      '<article><span>Transfer güncellemesi</span><b>' + escapeHtml(formatProfileDate(player.transferUpdatedAt) || "Yakında") + "</b></article>" +
+      "</div></section>"
+    );
   }
 
   function normalizeSearchText(value) {
@@ -917,8 +1089,8 @@
 
   function updatePlayerDetailMeta(player) {
     var team = playerCurrentTeam(player);
-    var title = player.name + " | " + team + " " + player.position + " Performans Radarı | FutbolRadar";
-    var description = player.name + " oyuncu detayı; AI rating, gol tehdidi, yaratıcılık, pres gücü, fiziksel profil ve kariyer metrikleri.";
+    var title = player.name + " Oyuncu Profili | " + team + " | FutbolRadar";
+    var description = player.name + " oyuncu profili; güncel takım " + team + ", transfer geçmişi, AI rating, gol tehdidi, yaratıcılık ve form radarları.";
     var descriptionMeta = document.querySelector('meta[name="description"]');
     var ogTitle = document.querySelector('meta[property="og:title"]');
     var ogDescription = document.querySelector('meta[property="og:description"]');
@@ -1016,7 +1188,7 @@
 
     return (
       '<article class="player-profile-card" data-card="player-detail" data-player="' + escapeHtml(player.id) + '">' +
-      '<header class="profile-hero"><div><span>' + escapeHtml(team) + " · " + escapeHtml(player.league || "Lig bilgisi yakında") + "</span><h1>" + escapeHtml(player.name) + "</h1><p>" + escapeHtml(playerInsight(player)) + "</p></div><strong>" + escapeHtml(displayValue(player.overallRating || player.aiRating || player.rating)) + "</strong></header>" +
+      '<header class="profile-hero"><div><span>Güncel takım: ' + escapeHtml(team) + " · " + escapeHtml(player.league || "Lig bilgisi yakında") + "</span><h1>" + escapeHtml(player.name) + "</h1><p>" + escapeHtml(playerInsight(player)) + "</p></div><strong>" + escapeHtml(displayValue(player.overallRating || player.aiRating || player.rating)) + "</strong></header>" +
       badgesHtml(playerBadges(player)) +
       tagsHtml(transferTags.concat(playerRatingTags(player))) +
       profileSectionHtml("Rating Modeli", [
@@ -1050,9 +1222,9 @@
       profileSectionHtml("Kariyer", [
         profileItemHtml("Güncel takım", team),
         profileItemHtml("Eski kulüpler", playerFormerTeams(player), "Yakında"),
-        profileItemHtml("Piyasa değeri", marketValue, "Bilinmiyor"),
+        profileItemHtml("Piyasa değeri", marketValue, "Piyasa değeri yakında"),
         profileItemHtml("Sözleşme", player.contractUntil, "Yakında"),
-        profileItemHtml("Transfer güncellemesi", player.transferUpdatedAt || player.lastUpdated, "Yakında"),
+        profileItemHtml("Transfer güncellemesi", formatProfileDate(player.transferUpdatedAt || player.lastUpdated), "Yakında"),
         profileItemHtml("Provider ID", player.providerId, "Yakında"),
         profileItemHtml("Kayıt durumu", playerDataStatusLabel(player), "Yakında"),
         profileItemHtml("Son senkron", player.lastSyncedAt, "Yakında")
@@ -1068,6 +1240,9 @@
         profileItemHtml("Araya girme / maç", player.interceptionsPerGame, "Veri yok")
       ]) +
       '<section class="profile-section"><h2>Radar Profili</h2>' + playerRadarChartHtml(player, null, player.name + " radar profili") + playerRadarHtml(player) + "</section>" +
+      transferTimelineHtml(player) +
+      formerTeamsHtml(player) +
+      reliabilitySectionHtml(player) +
       similarPlayersHtml(player, players) +
       '<div class="player-actions"><a class="detail-link" href="/oyuncu-radari.html?team=' + encodeURIComponent(team) + '">Takım filtresine git</a><a class="detail-link" href="/oyuncu-karsilastir.html?p1=' + escapeHtml(player.id) + '">Karşılaştır</a><button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Radar kartını paylaş</button></div>' +
       "</article>"
