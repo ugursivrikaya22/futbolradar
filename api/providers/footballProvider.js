@@ -239,6 +239,11 @@ function normalizeLivePlayer(item) {
     xa: item.xa || item.expectedAssists,
     duelsWon: item.duelsWon || item.duels,
     pressures: item.pressures || item.pressActions,
+    badges: item.badges || [],
+    formChange: item.formChange,
+    threatScore: item.threatScore,
+    creativityScore: item.creativityScore,
+    pressingScore: item.pressingScore,
     summary: item.summary || "",
     radar: item.radar || {
       finishing: item.finishing,

@@ -209,10 +209,6 @@
         setContent(target, html);
       })
       .catch(function () {
-        var config = RESOURCE_CONFIG[dataName] || {};
-        if (config.reportSource) {
-          updateSourceLabel("empty");
-        }
         setEmpty(target, emptyTitle || "Veri yüklenemedi", "Veri katmanı su anda okunamıyor. Sayfa diger bölümleriyle açik kalir.");
       });
   }
@@ -234,6 +230,16 @@
 
   function tagsHtml(tags) {
     return '<div class="tag-row">' + (Array.isArray(tags) ? tags.map(tagHtml).join("") : "") + "</div>";
+  }
+
+  function badgesHtml(badges) {
+    if (!Array.isArray(badges) || !badges.length) {
+      return "";
+    }
+
+    return '<div class="badge-row">' + badges.map(function (badge) {
+      return '<span class="radar-badge">' + escapeHtml(badge) + "</span>";
+    }).join("") + "</div>";
   }
 
   function formDotsHtml(form) {
@@ -343,6 +349,19 @@
     }
 
     return values.reduce(function (total, value) { return total + value; }, 0) / values.length;
+  }
+
+  function playerAiScore(player) {
+    var rating = Number(player.aiRating || player.rating || 0);
+    return rating <= 10 ? rating * 10 : rating;
+  }
+
+  function playerScore(player, key, fallback) {
+    if (player[key] !== undefined && player[key] !== null && player[key] !== "") {
+      return Number(player[key]) || 0;
+    }
+
+    return Number(fallback) || 0;
   }
 
   function matchScoreText(score) {
@@ -515,6 +534,7 @@
       '<article class="player-card" data-card="player-radar" data-player="' + escapeHtml(player.id) + '">' +
       '<header><div><h3>' + escapeHtml(player.name) + "</h3><span>" + escapeHtml(player.team) + " · " + escapeHtml(player.position) + '</span></div><strong class="rating">' + escapeHtml(player.aiRating) + "</strong></header>" +
       '<span class="trend">Trend: ' + escapeHtml(player.trend) + "</span>" +
+      badgesHtml(player.badges) +
       playerMetricsHtml(player, true) +
       playerRadarHtml(player, true) +
       tagsHtml([
@@ -531,6 +551,7 @@
       '<article class="card player-detail-card" data-card="player" data-player="' + escapeHtml(player.id) + '">' +
       '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(player.team) + " · " + escapeHtml(player.position) + "</span><h2>" + escapeHtml(player.name) + '</h2></div><strong class="big-value">' + escapeHtml(player.aiRating) + "</strong></div>" +
       '<p class="player-summary">' + escapeHtml(player.summary || "Oyuncu performansı son maç etkisi, rol verimliliği ve form sürekliliğiyle okunur.") + "</p>" +
+      badgesHtml(player.badges) +
       playerMetricsHtml(player) +
       formDotsHtml(player.form) +
       barRowHtml("Etki", player.impact, player.impact) +
@@ -541,6 +562,50 @@
       ].concat(player.tags || [])) +
       "</article>"
     );
+  }
+
+  function topPlayer(players, scorer) {
+    return players.slice().sort(function (a, b) {
+      return scorer(b) - scorer(a);
+    })[0];
+  }
+
+  function playerSignalCard(title, player, value, href) {
+    if (!player) {
+      return "";
+    }
+
+    return (
+      '<article class="player-signal-card" data-card="player-signal" data-player="' + escapeHtml(player.id) + '">' +
+      '<span class="signal-label">' + escapeHtml(title) + "</span>" +
+      "<h3>" + escapeHtml(player.name) + "</h3>" +
+      '<strong class="signal-value">' + escapeHtml(displayValue(value)) + "</strong>" +
+      "<p>" + escapeHtml(player.team) + " · " + escapeHtml(player.position) + "</p>" +
+      '<a href="' + escapeHtml(href) + '">Oyuncu radarına git</a>' +
+      "</article>"
+    );
+  }
+
+  function renderPlayerSignals(players) {
+    if (!Array.isArray(players) || !players.length) {
+      return "";
+    }
+
+    var highestRating = topPlayer(players, playerAiScore);
+    var goalThreat = topPlayer(players, function (player) { return playerScore(player, "threatScore", Number(player.xg) * 12 + Number(player.goals) * 6); });
+    var creative = topPlayer(players, function (player) { return playerScore(player, "creativityScore", Number(player.keyPasses) * 4 + Number(player.assists) * 8); });
+    var presser = topPlayer(players, function (player) { return playerScore(player, "pressingScore", Number(player.pressures)); });
+    var rising = topPlayer(players.filter(function (player) { return playerMatchesSignal(player, "yukselen"); }), function (player) {
+      return Number(player.formChange || 0) * 10 + Number(player.impact || 0);
+    });
+
+    return [
+      playerSignalCard("En yüksek AI rating", highestRating, playerAiScore(highestRating), "./oyuncu-radari.html?filter=ai-rating-80"),
+      playerSignalCard("En yüksek gol tehdidi", goalThreat, playerScore(goalThreat, "threatScore"), "./oyuncu-radari.html?filter=gol-tehdidi"),
+      playerSignalCard("En yaratıcı oyuncu", creative, playerScore(creative, "creativityScore"), "./oyuncu-radari.html?filter=yaraticilik"),
+      playerSignalCard("En güçlü pres oyuncusu", presser, playerScore(presser, "pressingScore"), "./oyuncu-radari.html?filter=pres-gucu"),
+      playerSignalCard("Yükselen oyuncu", rising, rising ? "+" + displayValue(rising.formChange) : "-", "./oyuncu-radari.html?filter=yukselen")
+    ].join("");
   }
 
   function renderRadarSignal(signal) {
@@ -587,13 +652,24 @@
     );
   }
 
-  function populatePlayerSelect(select, values) {
+  var PLAYER_FILTER_COPY = {
+    all: "Tüm oyuncular; AI rating, rol metrikleri, son 5 maç formu ve radar skorlarıyla karşılaştırılır.",
+    yukselen: "Bu liste, trend yönü, son form artışı ve etki skoruna göre yükselen oyuncuları öne çıkarır.",
+    "gol-tehdidi": "Bu liste, şut hacmi, xG, gol katkısı ve ceza sahası etkisine göre gol tehdidi yüksek oyuncuları öne çıkarır.",
+    yaraticilik: "Bu liste, kilit pas, xA, asist katkısı ve yaratıcılık radarına göre oyun kurucu etkisi yüksek oyuncuları gösterir.",
+    "pres-gucu": "Bu liste, pres aksiyonu, ikili mücadele ve baskı radarına göre rakibi zorlayan oyuncuları öne çıkarır.",
+    "form-dususu": "Bu liste, son form değişimi ve süreklilik skoruna göre izlenmesi gereken düşüş sinyallerini gösterir.",
+    "ai-rating-80": "Bu liste, AI rating değeri 80 ve üzeri etki seviyesine denk gelen oyuncuları gösterir.",
+    "dakika-500": "Bu liste, son periyotta 500 dakika ve üzeri süre alan, ritim ve rol sürekliliği yüksek oyuncuları gösterir."
+  };
+
+  function populatePlayerSelect(select, values, label) {
     if (!select) {
       return;
     }
 
     var current = select.value;
-    var options = ['<option value="">Tümü</option>'].concat(values.map(function (value) {
+    var options = ['<option value="">' + escapeHtml(label || "Tümü") + "</option>"].concat(values.map(function (value) {
       return '<option value="' + escapeHtml(value) + '">' + escapeHtml(value) + "</option>";
     }));
 
@@ -608,6 +684,10 @@
   }
 
   function hasFormDrop(player) {
+    if (Number(player.formChange) < 0) {
+      return true;
+    }
+
     var form = player.form || [];
     if (form.length < 4) {
       return Number(player.radar && player.radar.consistency) <= 78;
@@ -622,24 +702,32 @@
     var radar = player.radar || {};
     var trend = normalizeSearchText(player.trend);
 
-    if (signal === "rising") {
-      return trend.indexOf("yuksel") !== -1 || trend.indexOf("toparlan") !== -1 || Number(player.impact) >= 83;
+    if (signal === "yukselen") {
+      return trend.indexOf("yuksel") !== -1 || trend.indexOf("toparlan") !== -1 || Number(player.formChange) > 0 || Number(player.impact) >= 83;
     }
 
-    if (signal === "goal") {
-      return Number(player.goals) >= 6 || Number(player.xg) >= 3.5 || Number(radar.finishing) >= 82;
+    if (signal === "gol-tehdidi") {
+      return Number(player.goals) >= 6 || Number(player.xg) >= 3.5 || Number(radar.finishing) >= 82 || playerScore(player, "threatScore") >= 82;
     }
 
-    if (signal === "creativity") {
-      return Number(player.assists) >= 5 || Number(player.keyPasses) >= 12 || Number(radar.creativity) >= 84;
+    if (signal === "yaraticilik") {
+      return Number(player.assists) >= 5 || Number(player.keyPasses) >= 12 || Number(radar.creativity) >= 84 || playerScore(player, "creativityScore") >= 84;
     }
 
-    if (signal === "pressing") {
-      return Number(player.pressures) >= 60 || Number(radar.pressing) >= 82;
+    if (signal === "pres-gucu") {
+      return Number(player.pressures) >= 60 || Number(radar.pressing) >= 82 || playerScore(player, "pressingScore") >= 82;
     }
 
-    if (signal === "drop") {
+    if (signal === "form-dususu") {
       return hasFormDrop(player);
+    }
+
+    if (signal === "ai-rating-80") {
+      return playerAiScore(player) >= 80;
+    }
+
+    if (signal === "dakika-500") {
+      return Number(player.minutes) >= 500;
     }
 
     return true;
@@ -662,22 +750,72 @@
     var positionSelect = document.querySelector("[data-player-position-filter]");
     var chips = Array.from(document.querySelectorAll("[data-player-filter]"));
     var count = document.querySelector("[data-player-count]");
+    var description = document.querySelector("[data-player-filter-description]");
+    var query = new URLSearchParams(window.location.search);
     var state = { team: "", position: "", signal: "all" };
 
     target.dataset.state = "loading";
 
     loadData("players")
       .then(function (players) {
-        populatePlayerSelect(teamSelect, uniqueSorted(players, "team"));
-        populatePlayerSelect(positionSelect, uniqueSorted(players, "position"));
+        populatePlayerSelect(teamSelect, uniqueSorted(players, "team"), "Tüm takımlar");
+        populatePlayerSelect(positionSelect, uniqueSorted(players, "position"), "Tüm mevkiler");
+
+        state.signal = PLAYER_FILTER_COPY[query.get("filter")] ? query.get("filter") : "all";
+
+        if (teamSelect && query.get("team")) {
+          teamSelect.value = query.get("team");
+        }
+
+        if (positionSelect && query.get("position")) {
+          positionSelect.value = query.get("position");
+        }
+
+        function syncActiveChip() {
+          chips.forEach(function (item) {
+            var active = (item.getAttribute("data-player-filter") || "all") === state.signal;
+            item.classList.toggle("is-active", active);
+            item.setAttribute("aria-pressed", active ? "true" : "false");
+          });
+        }
+
+        function updateQuery() {
+          var params = new URLSearchParams(window.location.search);
+          if (state.signal && state.signal !== "all") {
+            params.set("filter", state.signal);
+          } else {
+            params.delete("filter");
+          }
+
+          if (state.team) {
+            params.set("team", state.team);
+          } else {
+            params.delete("team");
+          }
+
+          if (state.position) {
+            params.set("position", state.position);
+          } else {
+            params.delete("position");
+          }
+
+          var next = window.location.pathname + (params.toString() ? "?" + params.toString() : "") + window.location.hash;
+          window.history.replaceState({}, "", next);
+        }
 
         function render() {
           state.team = teamSelect ? teamSelect.value : "";
           state.position = positionSelect ? positionSelect.value : "";
+          syncActiveChip();
+          updateQuery();
 
           var filtered = filterPlayers(players, state);
           if (count) {
             count.textContent = filtered.length + " oyuncu";
+          }
+
+          if (description) {
+            description.textContent = PLAYER_FILTER_COPY[state.signal] || PLAYER_FILTER_COPY.all;
           }
 
           if (!filtered.length) {
@@ -691,11 +829,6 @@
         chips.forEach(function (chip) {
           chip.addEventListener("click", function () {
             state.signal = chip.getAttribute("data-player-filter") || "all";
-            chips.forEach(function (item) {
-              var active = item === chip;
-              item.classList.toggle("is-active", active);
-              item.setAttribute("aria-pressed", active ? "true" : "false");
-            });
             render();
           });
         });
@@ -802,6 +935,13 @@
         return players.slice(0, 3).map(renderPlayerHomeCard).join("");
       },
       "Oyuncu radari yüklenemedi"
+    );
+
+    renderInto(
+      document.querySelector('[data-api-target="player-signals"]'),
+      "players",
+      renderPlayerSignals,
+      "Oyuncu sinyalleri yüklenemedi"
     );
 
     initPlayerFilters(document.querySelector('[data-api-target="players-page"]'));

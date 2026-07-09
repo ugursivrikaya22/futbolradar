@@ -76,13 +76,18 @@
         </div>
         <div class="filter-chips" role="group" aria-label="Performans sinyali">
           <button class="filter-chip is-active" type="button" data-player-filter="all" aria-pressed="true">Tümü</button>
-          <button class="filter-chip" type="button" data-player-filter="rising" aria-pressed="false">Yükselenler</button>
-          <button class="filter-chip" type="button" data-player-filter="goal" aria-pressed="false">Gol tehdidi</button>
-          <button class="filter-chip" type="button" data-player-filter="creativity" aria-pressed="false">Yaratıcılık</button>
-          <button class="filter-chip" type="button" data-player-filter="pressing" aria-pressed="false">Pres gücü</button>
-          <button class="filter-chip" type="button" data-player-filter="drop" aria-pressed="false">Form düşüşü</button>
+          <button class="filter-chip" type="button" data-player-filter="yukselen" aria-pressed="false">Yükselenler</button>
+          <button class="filter-chip" type="button" data-player-filter="gol-tehdidi" aria-pressed="false">Gol tehdidi</button>
+          <button class="filter-chip" type="button" data-player-filter="yaraticilik" aria-pressed="false">Yaratıcılık</button>
+          <button class="filter-chip" type="button" data-player-filter="pres-gucu" aria-pressed="false">Pres gücü</button>
+          <button class="filter-chip" type="button" data-player-filter="form-dususu" aria-pressed="false">Form düşüşü</button>
+          <button class="filter-chip" type="button" data-player-filter="ai-rating-80" aria-pressed="false">AI rating 80+</button>
+          <button class="filter-chip" type="button" data-player-filter="dakika-500" aria-pressed="false">Dakika 500+</button>
         </div>
         <span class="player-count" data-player-count>Oyuncular hazırlanıyor</span>
+      </section>
+      <section class="player-filter-note" data-player-filter-description>
+        Tüm oyuncular; AI rating, rol metrikleri, son 5 maç formu ve radar skorlarıyla karşılaştırılır.
       </section>
       <section class="grid" id="player-radar-page" data-api-section="player-radar" data-api-target="players-page">
         <article class="data-empty" data-card="empty-state">
