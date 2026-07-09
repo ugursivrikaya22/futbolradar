@@ -12,6 +12,12 @@ const pages = [
   "oyuncu-detay.html",
   "players/position/forvet.html",
   "players/league/super-lig.html",
+  "oyuncular/forvetler.html",
+  "oyuncular/kaleciler.html",
+  "oyuncular/defanslar.html",
+  "oyuncular/orta-sahalar.html",
+  "oyuncular/genc-yetenekler.html",
+  "oyuncular/en-iyi-oyuncular.html",
   "canli-skor.html",
   "bugunun-maclari.html",
   "momentum.html",
@@ -233,10 +239,24 @@ async function checkApi() {
     "rating",
     "providerId",
     "providerName",
-    "lastSyncedAt"
+    "lastSyncedAt",
+    "overallRating",
+    "potentialRating",
+    "technicalRating",
+    "physicalRating",
+    "mentalRating",
+    "defensiveRating",
+    "attackingRating",
+    "passingRating",
+    "shootingRating",
+    "paceRating",
+    "dribblingRating",
+    "staminaRating",
+    "formRating",
+    "lastUpdated"
   ];
   const firstPlayer = playersResponse.payload.data[0] || {};
-  expect(playersResponse.payload.data.length === 6, "players: expected 6 mock players");
+  expect(playersResponse.payload.data.length >= 8, "players: expected at least 8 mock players");
   for (const field of playerFields) {
     expect(Object.prototype.hasOwnProperty.call(firstPlayer, field), `players: missing ${field}`);
   }

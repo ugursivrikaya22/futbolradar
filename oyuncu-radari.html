@@ -88,6 +88,30 @@
             <option value="">Tüm mevkiler</option>
           </select>
         </div>
+        <div class="filter-group">
+          <label for="player-league-filter">Lig</label>
+          <select id="player-league-filter" data-player-league-filter>
+            <option value="">Tüm ligler</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="player-age-filter">Yaş</label>
+          <select id="player-age-filter" data-player-age-filter>
+            <option value="">Tüm yaşlar</option>
+            <option value="u23">23 ve altı</option>
+            <option value="24-29">24-29</option>
+            <option value="30-plus">30+</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="player-rating-filter">Overall</label>
+          <select id="player-rating-filter" data-player-rating-filter>
+            <option value="">Tüm ratingler</option>
+            <option value="80">80+</option>
+            <option value="85">85+</option>
+            <option value="90">90+</option>
+          </select>
+        </div>
         <div class="filter-chips" role="group" aria-label="Performans sinyali">
           <button class="filter-chip is-active" type="button" data-player-filter="all" aria-pressed="true">Tümü</button>
           <button class="filter-chip" type="button" data-player-filter="yukselen" aria-pressed="false">Yükselenler</button>
@@ -115,6 +139,12 @@
       </section>
       <section class="popular-links" aria-label="Sık aranan oyuncu radarları">
         <span>Sık arananlar</span>
+        <a href="./oyuncular/forvetler.html">Forvetler</a>
+        <a href="./oyuncular/kaleciler.html">Kaleciler</a>
+        <a href="./oyuncular/defanslar.html">Defans oyuncuları</a>
+        <a href="./oyuncular/orta-sahalar.html">Orta sahalar</a>
+        <a href="./oyuncular/genc-yetenekler.html">Genç yetenekler</a>
+        <a href="./oyuncular/en-iyi-oyuncular.html">En iyi oyuncular</a>
         <a href="./players/position/forvet.html">Forvet oyuncuları</a>
         <a href="./players/league/super-lig.html">Süper Lig oyuncu radarları</a>
         <a href="./oyuncu-radari.html?filter=gol-tehdidi">Süper Lig gol tehdidi yüksek oyuncular</a>

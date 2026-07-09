@@ -231,6 +231,7 @@ function normalizeLivePlayer(item) {
   const tackles = statistics.tackles || {};
   const rating = item.rating || games.rating || item.aiRating || null;
   const minutesPlayed = item.minutesPlayed || item.minutes || games.minutes || item.playedMinutes || 0;
+  const overallRating = item.overallRating || item.overall || item.aiRating || rating;
 
   return {
     id: String(player.id || item.playerId || item.id || item.name || ""),
@@ -249,8 +250,21 @@ function normalizeLivePlayer(item) {
     marketValue: player.marketValue || item.marketValue || null,
     contractUntil: player.contractUntil || item.contractUntil || null,
     appearances: item.appearances || games.appearences || games.appearances || 0,
-    aiRating: item.aiRating || rating,
+    aiRating: item.aiRating || overallRating,
     rating,
+    overallRating,
+    potentialRating: item.potentialRating || item.potential || overallRating,
+    technicalRating: item.technicalRating || item.technical || overallRating,
+    physicalRating: item.physicalRating || item.physical || overallRating,
+    mentalRating: item.mentalRating || item.mental || overallRating,
+    defensiveRating: item.defensiveRating || item.defensive || overallRating,
+    attackingRating: item.attackingRating || item.attacking || overallRating,
+    passingRating: item.passingRating || item.passing || passes.accuracy || overallRating,
+    shootingRating: item.shootingRating || item.shooting || overallRating,
+    paceRating: item.paceRating || item.pace || overallRating,
+    dribblingRating: item.dribblingRating || item.dribbling || overallRating,
+    staminaRating: item.staminaRating || item.stamina || overallRating,
+    formRating: item.formRating || item.formScore || overallRating,
     trend: item.trend || "",
     trendDirection: item.trendDirection || item.trendState || "",
     impact: item.impact || rating || 0,
@@ -280,6 +294,7 @@ function normalizeLivePlayer(item) {
     continuityScore: item.continuityScore,
     tempoScore: item.tempoScore,
     summary: item.summary || "",
+    lastUpdated: item.lastUpdated || new Date().toISOString().slice(0, 10),
     radar: item.radar || {
       finishing: item.finishing || item.threatScore,
       creativity: item.creativity || item.creativityScore,
