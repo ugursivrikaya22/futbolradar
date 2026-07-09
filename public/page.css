@@ -483,6 +483,47 @@ h1 {
   font-size: 0.86rem;
 }
 
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.8;
+}
+
+.footer-links a {
+  color: var(--soft);
+  font-weight: 750;
+}
+
+.footer-links a:hover {
+  color: var(--green);
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 22px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.breadcrumb a {
+  color: var(--cyan);
+}
+
+.breadcrumb span:last-child {
+  color: var(--soft);
+}
+
+.alias-redirect {
+  min-height: 70vh;
+  align-items: center;
+}
+
 @media (max-width: 920px) {
   .nav {
     grid-template-columns: 1fr;

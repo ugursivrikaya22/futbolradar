@@ -252,7 +252,7 @@ function sitemapXml(files) {
     "oyuncular/en-iyi-oyuncular.html",
     "oyuncular/mauro-icardi.html",
     "oyuncular/kerem-akturkoglu.html",
-    "oyuncular/edina-dzeko.html",
+    "oyuncular/edin-dzeko.html",
     "oyuncular/sebastian-szymanski.html",
     "oyuncular/gedson-fernandes.html",
     "oyuncular/ugurcan-cakir.html",

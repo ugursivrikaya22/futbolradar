@@ -106,6 +106,7 @@ function checkJson() {
   try {
     const vercelConfig = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
     const rewrites = new Map((vercelConfig.rewrites || []).map((rewrite) => [rewrite.source, rewrite.destination]));
+    const redirects = new Map((vercelConfig.redirects || []).map((redirect) => [redirect.source, redirect.destination]));
     [
       "forvetler",
       "kaleciler",
@@ -122,6 +123,14 @@ function checkJson() {
     expect(
       rewrites.get("/oyuncular/:slug") === "/oyuncular/:slug.html",
       "vercel rewrite missing /oyuncular/:slug"
+    );
+    expect(
+      redirects.get("/oyuncular/edina-dzeko") === "/oyuncular/edin-dzeko.html",
+      "vercel redirect missing /oyuncular/edina-dzeko"
+    );
+    expect(
+      redirects.get("/oyuncular/edina-dzeko.html") === "/oyuncular/edin-dzeko.html",
+      "vercel redirect missing /oyuncular/edina-dzeko.html"
     );
   } catch (error) {
     failures.push(`vercel config parse failed: ${error.message}`);

@@ -7,6 +7,7 @@ const require = createRequire(import.meta.url);
 const { getPlayers } = require("../services/playerService.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const outDir = path.join(root, "oyuncular");
+const publicOutDir = path.join(root, "public", "oyuncular");
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -106,6 +107,13 @@ function pageHtml(player) {
       </nav>
     </header>
     <main class="container">
+      <nav class="breadcrumb" aria-label="Sayfa yolu">
+        <a href="../index.html">Ana Sayfa</a>
+        <span>/</span>
+        <a href="../oyuncu-radari.html">Oyuncu Radar</a>
+        <span>/</span>
+        <span>${escapeHtml(player.name)}</span>
+      </nav>
       <section class="hero">
         <div class="hero-row">
           <div>
@@ -127,7 +135,7 @@ function pageHtml(player) {
         ${relatedLinks(player.id)}
       </section>
     </main>
-    <footer class="footer"><div class="container">FutbolRadar · ${escapeHtml(player.name)}</div></footer>
+    <footer class="footer"><div class="container footer-links">FutbolRadar · Oyuncu profilleri · <a href="../hakkinda.html">Hakkında</a> · <a href="../veri-notu.html">Veri Notu</a> · <a href="../iletisim.html">İletişim</a> · <a href="../gizlilik.html">Gizlilik</a> · <a href="../kullanim-sartlari.html">Kullanım Şartları</a></div></footer>
     <script src="../site.js" defer></script>
     <script src="../app.js" defer></script>
   </body>
@@ -135,10 +143,71 @@ function pageHtml(player) {
 `;
 }
 
+function aliasHtml(player, alias) {
+  const canonical = `https://www.futbolradar.com/oyuncular/${player.id}.html`;
+  const title = `${player.name} Oyuncu Profili | FutbolRadar`;
+  const description = `${player.name} oyuncu profili FutbolRadar kanonik sayfasına yönlendirilir.`;
+
+  return `<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapeHtml(title)}</title>
+    <meta name="description" content="${escapeHtml(description)}" />
+    <link rel="canonical" href="${canonical}" />
+    <meta name="robots" content="noindex,follow" />
+    <meta http-equiv="refresh" content="0; url=./${escapeHtml(player.id)}.html" />
+    <meta property="og:type" content="profile" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content="FutbolRadar" />
+    <meta property="og:title" content="${escapeHtml(title)}" />
+    <meta property="og:description" content="${escapeHtml(description)}" />
+    <meta property="og:url" content="${canonical}" />
+    <meta property="og:image" content="https://www.futbolradar.com/assets/og-image.svg" />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(title)}" />
+    <meta name="twitter:description" content="${escapeHtml(description)}" />
+    <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="../site.webmanifest" />
+    <link rel="stylesheet" href="../page.css" />
+    <script>window.location.replace("./${escapeHtml(player.id)}.html");</script>
+  </head>
+  <body class="subpage">
+    <main class="container">
+      <section class="hero alias-redirect">
+        <div class="hero-row">
+          <div>
+            <span class="eyebrow">Oyuncu profili taşındı</span>
+            <h1>${escapeHtml(player.name)}</h1>
+            <p class="lead">Bu adres güncellendi. FutbolRadar kanonik oyuncu profiline yönlendiriliyorsun.</p>
+            <a class="button primary" href="./${escapeHtml(player.id)}.html">Oyuncu profilini aç</a>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
+`;
+}
+
 fs.mkdirSync(outDir, { recursive: true });
+fs.mkdirSync(publicOutDir, { recursive: true });
 
 for (const player of players) {
-  fs.writeFileSync(path.join(outDir, `${player.id}.html`), pageHtml(player));
+  const html = pageHtml(player);
+  fs.writeFileSync(path.join(outDir, `${player.id}.html`), html, "utf8");
+  fs.writeFileSync(path.join(publicOutDir, `${player.id}.html`), html, "utf8");
+
+  for (const alias of player.aliases || []) {
+    const html = aliasHtml(player, alias);
+    fs.writeFileSync(path.join(outDir, `${alias}.html`), html, "utf8");
+    fs.writeFileSync(path.join(publicOutDir, `${alias}.html`), html, "utf8");
+  }
 }
 
 console.log(`Generated ${players.length} player profile pages`);
