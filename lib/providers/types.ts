@@ -13,20 +13,42 @@ export type PlayerRadar = {
 
 export type PlayerProviderRecord = {
   id: string;
+  slug?: string;
   providerId?: string;
   providerName?: string;
   lastSyncedAt?: string;
   name: string;
+  fullName?: string;
+  currentTeam?: string;
   team: string;
   league?: string;
   position: string;
+  secondaryPosition?: string;
+  birthDate?: string;
+  computedAge?: number | null;
   age?: number;
   height?: string;
+  heightCm?: number | null;
   weight?: string;
   nationality?: string;
   preferredFoot?: string;
   marketValue?: string;
+  marketValueEur?: number | null;
   contractUntil?: string;
+  formerTeams?: string[];
+  transferHistory?: {
+    date?: string | null;
+    fromTeam?: string | null;
+    toTeam?: string | null;
+    feeEur?: number | null;
+    feeLabel?: string;
+    source?: string;
+    note?: string;
+  }[];
+  dataStatus?: "manually_verified" | "mock_needs_verification" | "transfer_needs_monitoring" | string;
+  ratingStatus?: "estimated" | "provider" | string;
+  sourceNote?: string;
+  transferUpdatedAt?: string;
   appearances?: number;
   goals?: number;
   assists?: number;

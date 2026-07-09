@@ -19,7 +19,7 @@ function matchesQuery(player: PlayerProviderRecord, query?: PlayerQuery): boolea
     return false;
   }
 
-  if (query.team && normalizeText(player.team) !== normalizeText(query.team)) {
+  if (query.team && normalizeText(player.currentTeam || player.team) !== normalizeText(query.team)) {
     return false;
   }
 

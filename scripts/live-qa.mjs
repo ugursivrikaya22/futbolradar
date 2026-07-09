@@ -194,15 +194,27 @@ async function checkApi() {
       const firstPlayer = payload?.data?.[0] || {};
       const requiredPlayerFields = [
         "height",
+        "heightCm",
         "weight",
         "age",
+        "computedAge",
+        "birthDate",
         "nationality",
+        "currentTeam",
         "team",
         "league",
         "position",
+        "secondaryPosition",
         "preferredFoot",
         "marketValue",
+        "marketValueEur",
         "contractUntil",
+        "formerTeams",
+        "transferHistory",
+        "dataStatus",
+        "ratingStatus",
+        "sourceNote",
+        "transferUpdatedAt",
         "appearances",
         "goals",
         "assists",
@@ -236,6 +248,12 @@ async function checkApi() {
       for (const field of requiredPlayerFields) {
         expect(Object.prototype.hasOwnProperty.call(firstPlayer, field), `${endpoint}: missing ${field}`);
       }
+      const kerem = payload.data.find((player) => player.id === "kerem-akturkoglu");
+      expect(kerem && kerem.currentTeam === "Fenerbahçe", `${endpoint}: Kerem currentTeam must be Fenerbahçe`);
+      expect(
+        kerem && Array.isArray(kerem.formerTeams) && kerem.formerTeams.includes("Galatasaray"),
+        `${endpoint}: Kerem formerTeams must include Galatasaray`
+      );
     }
 
     summary.push({

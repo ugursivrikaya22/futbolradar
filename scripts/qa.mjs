@@ -1,8 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { createRequire } from "node:module";
 
 const root = process.cwd();
+const require = createRequire(import.meta.url);
+const { validatePlayerData } = require("../services/playerService.js");
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const playerProfilePages = players.map((player) => `oyuncular/${player.id}.html`);
 const pages = [
@@ -104,6 +107,26 @@ function checkJson() {
   } catch (error) {
     failures.push(`vercel config parse failed: ${error.message}`);
   }
+
+  const playerValidation = validatePlayerData(players);
+  for (const warning of playerValidation.warnings) {
+    console.warn(`Player data warning: ${warning}`);
+  }
+  if (!playerValidation.ok) {
+    failures.push(`player data validation failed:\n${playerValidation.errors.join("\n")}`);
+  }
+
+  const kerem = players.find((player) => player.id === "kerem-akturkoglu");
+  expect(Boolean(kerem), "players: Kerem Aktürkoğlu record missing");
+  expect(kerem && kerem.currentTeam === "Fenerbahçe", "players: Kerem currentTeam must be Fenerbahçe");
+  expect(kerem && kerem.team === "Fenerbahçe", "players: Kerem team alias must be Fenerbahçe");
+  expect(kerem && Array.isArray(kerem.formerTeams) && kerem.formerTeams.includes("Galatasaray"), "players: Kerem formerTeams must include Galatasaray");
+
+  const ugurcan = players.find((player) => player.id === "ugurcan-cakir");
+  expect(ugurcan && ugurcan.currentTeam === "Galatasaray", "players: Uğurcan currentTeam must be Galatasaray");
+
+  const serializedPlayers = JSON.stringify(players);
+  expect(!serializedPlayers.includes("?"), "players: mojibake marker '?' found after transfer update");
 }
 
 function pageUrl(page) {
@@ -245,15 +268,27 @@ async function checkApi() {
   const playersResponse = await callEndpoint("players");
   const playerFields = [
     "height",
+    "heightCm",
     "weight",
     "age",
+    "computedAge",
+    "birthDate",
     "nationality",
+    "currentTeam",
     "team",
     "league",
     "position",
+    "secondaryPosition",
     "preferredFoot",
     "marketValue",
+    "marketValueEur",
     "contractUntil",
+    "formerTeams",
+    "transferHistory",
+    "dataStatus",
+    "ratingStatus",
+    "sourceNote",
+    "transferUpdatedAt",
     "appearances",
     "goals",
     "assists",
@@ -288,6 +323,10 @@ async function checkApi() {
   for (const field of playerFields) {
     expect(Object.prototype.hasOwnProperty.call(firstPlayer, field), `players: missing ${field}`);
   }
+
+  const keremApi = playersResponse.payload.data.find((player) => player.id === "kerem-akturkoglu");
+  expect(keremApi && keremApi.currentTeam === "Fenerbahçe", "api players: Kerem currentTeam must be Fenerbahçe");
+  expect(keremApi && Array.isArray(keremApi.formerTeams) && keremApi.formerTeams.includes("Galatasaray"), "api players: Kerem formerTeams must include Galatasaray");
 }
 
 checkJavaScriptSyntax();

@@ -5,6 +5,7 @@ const momentum = require("../../data/momentum.json");
 const signals = require("../../data/signals.json");
 const analyses = require("../../data/analyses.json");
 const { normalizeText } = require("../_utils");
+const { normalizePlayer: normalizePlayerRecord } = require("../../services/playerService");
 
 const source = "FutbolRadar Mock API";
 
@@ -52,58 +53,71 @@ function normalizeTeam(team) {
 }
 
 function normalizePlayer(player) {
-  const rating = player.rating || player.aiRating || 0;
-  const minutesPlayed = player.minutesPlayed || player.minutes || 0;
+  const normalized = normalizePlayerRecord(player);
+  const rating = normalized.rating || normalized.aiRating || normalized.overallRating || 0;
+  const minutesPlayed = normalized.minutesPlayed || normalized.minutes || 0;
 
   return {
-    ...player,
-    id: player.id || slug(`${player.name}-${player.team}`),
-    height: player.height || null,
-    weight: player.weight || null,
-    age: player.age || null,
-    nationality: player.nationality || null,
-    team: player.team || "",
-    league: player.league || "",
-    position: player.position || "",
-    preferredFoot: player.preferredFoot || null,
-    marketValue: player.marketValue || null,
-    contractUntil: player.contractUntil || null,
-    appearances: player.appearances || 0,
-    goals: player.goals || 0,
-    assists: player.assists || 0,
+    ...normalized,
+    id: normalized.id || slug(`${normalized.name}-${normalized.currentTeam || normalized.team}`),
+    height: normalized.height || null,
+    weight: normalized.weight || null,
+    age: normalized.age || null,
+    nationality: normalized.nationality || null,
+    currentTeam: normalized.currentTeam || normalized.team || "",
+    team: normalized.currentTeam || normalized.team || "",
+    league: normalized.league || "",
+    position: normalized.position || "",
+    preferredFoot: normalized.preferredFoot || null,
+    marketValue: normalized.marketValue || null,
+    marketValueEur: normalized.marketValueEur == null ? null : normalized.marketValueEur,
+    contractUntil: normalized.contractUntil || null,
+    formerTeams: normalized.formerTeams || [],
+    transferHistory: normalized.transferHistory || [],
+    dataStatus: normalized.dataStatus || "mock_needs_verification",
+    ratingStatus: normalized.ratingStatus || "estimated",
+    sourceNote: normalized.sourceNote || "",
+    transferUpdatedAt: normalized.transferUpdatedAt || normalized.lastUpdated || null,
+    birthDate: normalized.birthDate || null,
+    computedAge: normalized.computedAge || null,
+    secondaryPosition: normalized.secondaryPosition || "",
+    heightCm: normalized.heightCm || null,
+    appearances: normalized.appearances || 0,
+    goals: normalized.goals || 0,
+    assists: normalized.assists || 0,
     minutesPlayed,
-    minutes: player.minutes || minutesPlayed,
-    yellowCards: player.yellowCards || 0,
-    redCards: player.redCards || 0,
-    passAccuracy: player.passAccuracy || null,
-    shotsPerGame: player.shotsPerGame || null,
-    tacklesPerGame: player.tacklesPerGame || null,
-    interceptionsPerGame: player.interceptionsPerGame || null,
+    minutes: normalized.minutes || minutesPlayed,
+    yellowCards: normalized.yellowCards || 0,
+    redCards: normalized.redCards || 0,
+    passAccuracy: normalized.passAccuracy || null,
+    shotsPerGame: normalized.shotsPerGame || null,
+    tacklesPerGame: normalized.tacklesPerGame || null,
+    interceptionsPerGame: normalized.interceptionsPerGame || null,
     rating,
-    aiRating: player.aiRating || rating,
-    overallRating: player.overallRating || rating,
-    potentialRating: player.potentialRating || player.overallRating || rating,
-    technicalRating: player.technicalRating || rating,
-    physicalRating: player.physicalRating || rating,
-    mentalRating: player.mentalRating || rating,
-    defensiveRating: player.defensiveRating || rating,
-    attackingRating: player.attackingRating || rating,
-    passingRating: player.passingRating || rating,
-    shootingRating: player.shootingRating || rating,
-    paceRating: player.paceRating || rating,
-    dribblingRating: player.dribblingRating || rating,
-    staminaRating: player.staminaRating || rating,
-    formRating: player.formRating || rating,
-    providerId: player.providerId || `mock-${slug(`${player.name}-${player.team}`)}`,
-    providerName: player.providerName || "FutbolRadar Mock",
-    lastSyncedAt: player.lastSyncedAt || "2026-07-09T08:00:00+03:00",
-    lastUpdated: player.lastUpdated || String(player.lastSyncedAt || "2026-07-09T08:00:00+03:00").slice(0, 10),
-    radar: player.radar || {
-      finishing: player.threatScore || rating,
-      creativity: player.creativityScore || rating,
-      pressing: player.pressingScore || rating,
-      tempo: player.tempoScore || rating,
-      consistency: player.continuityScore || rating
+    aiRating: normalized.aiRating || rating,
+    overallRating: normalized.overallRating || rating,
+    potentialRating: normalized.potentialRating || normalized.overallRating || rating,
+    technicalRating: normalized.technicalRating || rating,
+    physicalRating: normalized.physicalRating || rating,
+    mentalRating: normalized.mentalRating || rating,
+    defensiveRating: normalized.defensiveRating || rating,
+    attackingRating: normalized.attackingRating || rating,
+    passingRating: normalized.passingRating || rating,
+    shootingRating: normalized.shootingRating || rating,
+    paceRating: normalized.paceRating || rating,
+    dribblingRating: normalized.dribblingRating || rating,
+    staminaRating: normalized.staminaRating || rating,
+    formRating: normalized.formRating || rating,
+    providerId: normalized.providerId || `mock-${slug(`${normalized.name}-${normalized.currentTeam || normalized.team}`)}`,
+    providerName: normalized.providerName || "FutbolRadar Mock",
+    lastSyncedAt: normalized.lastSyncedAt || "2026-07-09T08:00:00+03:00",
+    lastUpdated: normalized.lastUpdated || String(normalized.lastSyncedAt || "2026-07-09T08:00:00+03:00").slice(0, 10),
+    radar: normalized.radar || {
+      finishing: normalized.threatScore || rating,
+      creativity: normalized.creativityScore || rating,
+      pressing: normalized.pressingScore || rating,
+      tempo: normalized.tempoScore || rating,
+      consistency: normalized.continuityScore || rating
     }
   };
 }
@@ -162,7 +176,7 @@ function byTeam(items, team) {
   }
 
   const wanted = normalizeText(team);
-  return items.filter((item) => normalizeText(item.team || item.name).includes(wanted));
+  return items.filter((item) => normalizeText(item.currentTeam || item.team || item.name).includes(wanted));
 }
 
 async function getMatches(query) {
@@ -187,7 +201,7 @@ async function getPlayers(query) {
 
   if (query && query.league) {
     const wanted = normalizeText(query.league);
-    data = data.filter((player) => normalizeText(player.league || teamLeague.get(player.team)) === wanted);
+    data = data.filter((player) => normalizeText(player.league || teamLeague.get(player.currentTeam || player.team)) === wanted);
   }
 
   data = byTeam(data, query && query.team);

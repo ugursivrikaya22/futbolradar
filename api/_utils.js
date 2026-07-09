@@ -197,7 +197,7 @@ function validateTeams(data) {
 function validatePlayers(data) {
   return validateCollection(
     data,
-    (item) => item.name && item.team && requireAny(item, ["position", "rating", "aiRating", "overallRating"]),
+    (item) => item.name && (item.currentTeam || item.team) && requireAny(item, ["position", "rating", "aiRating", "overallRating"]),
     "INVALID_PLAYER_SCHEMA"
   );
 }

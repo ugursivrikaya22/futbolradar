@@ -1,8 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
 
 const root = process.cwd();
-const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+const require = createRequire(import.meta.url);
+const { getPlayers } = require("../services/playerService.js");
+const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const outDir = path.join(root, "oyuncular");
 
 function escapeHtml(value) {
@@ -19,7 +22,8 @@ function stripTags(value) {
 }
 
 function playerDescription(player) {
-  return `${player.name}; ${player.team} ${player.position} profili. Overall rating ${player.overallRating || player.aiRating || player.rating}, potansiyel ${player.potentialRating || "yakında"}, teknik, fiziksel, mental ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
+  const team = player.currentTeam || player.team || "Takım bilgisi yakında";
+  return `${player.name}; ${team} ${player.position} profili. Overall rating ${player.overallRating || player.aiRating || player.rating}, potansiyel ${player.potentialRating || "yakında"}, teknik, fiziksel, mental ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
 }
 
 function relatedLinks(currentId) {
@@ -39,7 +43,9 @@ function relatedLinks(currentId) {
 }
 
 function pageHtml(player) {
-  const title = `${player.name} | ${player.team} ${player.position} Oyuncu Profili | FutbolRadar`;
+  const team = player.currentTeam || player.team || "Takım bilgisi yakında";
+  const age = player.computedAge || player.age || "Yaş yakında";
+  const title = `${player.name} | ${team} ${player.position} Oyuncu Profili | FutbolRadar`;
   const description = playerDescription(player);
   const canonical = `https://www.futbolradar.com/oyuncular/${player.id}.html`;
   const overall = player.overallRating || player.aiRating || player.rating || "-";
@@ -76,7 +82,7 @@ function pageHtml(player) {
         height: player.height,
         memberOf: {
           "@type": "SportsTeam",
-          name: player.team,
+          name: team,
           sport: "Football"
         },
         jobTitle: player.position,
@@ -103,11 +109,11 @@ function pageHtml(player) {
       <section class="hero">
         <div class="hero-row">
           <div>
-            <span class="eyebrow">${escapeHtml(player.team)} oyuncu profili</span>
+            <span class="eyebrow">${escapeHtml(team)} oyuncu profili</span>
             <h1>${escapeHtml(player.name)}</h1>
             <p class="lead">${escapeHtml(player.summary || description)}</p>
           </div>
-          <span class="hero-meta">Overall ${escapeHtml(overall)} · ${escapeHtml(player.position)} · ${escapeHtml(player.age || "Yaş yakında")}</span>
+          <span class="hero-meta">Overall ${escapeHtml(overall)} · ${escapeHtml(player.position)} · ${escapeHtml(age)}</span>
         </div>
       </section>
       <section class="player-profile-shell" data-api-target="player-detail" data-player-id="${escapeHtml(player.id)}">
