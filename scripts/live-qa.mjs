@@ -128,6 +128,11 @@ async function checkApi() {
     expect(payload && payload.source, `${endpoint}: missing source`);
     expect(payload && payload.updatedAt, `${endpoint}: missing updatedAt`);
     expect(payload && Array.isArray(payload.data), `${endpoint}: data must be array`);
+    expect(response.headers.get("cache-control") === "public, max-age=0", `${endpoint}: browser cache header mismatch`);
+    expect(
+      response.headers.get("cdn-cache-control") === "public, s-maxage=300, stale-while-revalidate=600",
+      `${endpoint}: CDN cache header mismatch`
+    );
     expect(!hasSecretLeak(text), `${endpoint}: secret marker found`);
 
     if (endpoint === "/api/health") {
@@ -148,6 +153,14 @@ async function checkApi() {
       count: Array.isArray(payload?.data) ? payload.data.length : null
     });
   }
+
+  const invalidDate = await fetchText("/api/matches?date=yanlis&v=liveqa");
+  const invalidPayload = JSON.parse(invalidDate.text);
+  expect(invalidDate.response.status === 200, "invalid date: expected controlled 200 response");
+  expect(invalidPayload.ok === false, "invalid date: should return ok:false");
+  expect(invalidPayload.error?.code === "INVALID_DATE", "invalid date: should return INVALID_DATE");
+  expect(Array.isArray(invalidPayload.data) && invalidPayload.data.length === 0, "invalid date: data should be empty array");
+  expect(!hasSecretLeak(invalidDate.text), "invalid date: secret marker found");
 }
 
 async function checkSecurityHeaders() {
