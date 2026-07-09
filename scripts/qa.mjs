@@ -76,6 +76,26 @@ function checkJson() {
   } catch (error) {
     failures.push(`manifest parse failed: ${error.message}`);
   }
+
+  try {
+    const vercelConfig = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
+    const rewrites = new Map((vercelConfig.rewrites || []).map((rewrite) => [rewrite.source, rewrite.destination]));
+    [
+      "forvetler",
+      "kaleciler",
+      "defanslar",
+      "orta-sahalar",
+      "genc-yetenekler",
+      "en-iyi-oyuncular"
+    ].forEach((slug) => {
+      expect(
+        rewrites.get(`/oyuncular/${slug}`) === `/oyuncular/${slug}.html`,
+        `vercel rewrite missing /oyuncular/${slug}`
+      );
+    });
+  } catch (error) {
+    failures.push(`vercel config parse failed: ${error.message}`);
+  }
 }
 
 function pageUrl(page) {

@@ -19,6 +19,14 @@ const pages = [
   "/momentum.html",
   "/analizler.html"
 ];
+const rewritePages = [
+  "/oyuncular/forvetler",
+  "/oyuncular/kaleciler",
+  "/oyuncular/defanslar",
+  "/oyuncular/orta-sahalar",
+  "/oyuncular/genc-yetenekler",
+  "/oyuncular/en-iyi-oyuncular"
+];
 const endpoints = ["/api/matches", "/api/standings", "/api/teams", "/api/players", "/api/momentum", "/api/signals", "/api/analyses", "/api/health"];
 const staticAssets = ["/sitemap.xml", "/robots.txt", "/page.css", "/app.js", "/site.js", "/site.webmanifest", "/assets/og-image.svg"];
 const secretMarkers = [
@@ -119,6 +127,16 @@ async function checkStaticAssets() {
     expect(payload.name === "FutbolRadar", "manifest name mismatch");
   } catch (error) {
     failures.push(`manifest JSON parse failed: ${error.message}`);
+  }
+}
+
+async function checkRewritePages() {
+  for (const page of rewritePages) {
+    const { response, text } = await fetchText(`${page}?v=liveqa`);
+    expect(response.status === 200, `${page}: expected rewritten 200, got ${response.status}`);
+    expect(text.includes("<h1>"), `${page}: rewritten page missing h1`);
+    expect(!hasSecretLeak(text), `${page}: secret marker found`);
+    summary.push({ type: "rewrite", path: page, status: response.status });
   }
 }
 
@@ -230,6 +248,7 @@ async function checkSecurityHeaders() {
 }
 
 await checkPages();
+await checkRewritePages();
 await checkStaticAssets();
 await checkApi();
 await checkSecurityHeaders();

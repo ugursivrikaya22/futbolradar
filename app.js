@@ -1517,19 +1517,36 @@
     target.dataset.state = "loading";
 
     loadData("players").then(function (players) {
+      if (!Array.isArray(players) || !players.length) {
+        setEmpty(target, "Karşılaştırma için oyuncu yok", "Oyuncu listesi şu anda boş görünüyor.");
+        return;
+      }
+
       var options = players.map(function (player) {
         return '<option value="' + escapeHtml(player.id) + '">' + escapeHtml(player.name) + " · " + escapeHtml(player.team) + "</option>";
       }).join("");
 
       selects.forEach(function (select, index) {
+        var requestedId = query.get(index === 0 ? "p1" : "p2");
+        var fallback = (players[index] && players[index].id) || (players[0] && players[0].id) || "";
+        var exists = players.some(function (player) { return player.id === requestedId; });
         select.innerHTML = options;
-        select.value = query.get(index === 0 ? "p1" : "p2") || (players[index] && players[index].id) || "";
+        select.value = exists ? requestedId : fallback;
       });
+
+      if (selects[0] && selects[1] && selects[0].value === selects[1].value && players.length > 1) {
+        selects[1].value = players.find(function (player) { return player.id !== selects[0].value; }).id;
+      }
 
       function render() {
         var left = players.find(function (player) { return player.id === (selects[0] && selects[0].value); });
         var right = players.find(function (player) { return player.id === (selects[1] && selects[1].value); });
         var params = new URLSearchParams(window.location.search);
+
+        if (!left || !right) {
+          setEmpty(target, "Karşılaştırma hazırlanamadı", "Seçilen oyunculardan biri bulunamadı. Lütfen listeden farklı oyuncu seç.");
+          return;
+        }
 
         if (left) {
           params.set("p1", left.id);
