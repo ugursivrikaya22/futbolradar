@@ -5,7 +5,6 @@
   var DATA_ROOT = "./data/";
   var FETCH_TIMEOUT_MS = 6500;
   var cache = Object.create(null);
-  var sourceState = { api: 0, fallback: 0, empty: 0, live: 0, mock: 0, apiSource: "" };
   var RESOURCE_CONFIG = {
     matches: { api: "matches", fallback: "matches", reportSource: true },
     standings: { api: "standings", fallback: "teams", reportSource: true },
@@ -140,50 +139,6 @@
     });
   }
 
-  function updateSourceLabel(source, apiSource) {
-    if (source === "api") {
-      sourceState.api += 1;
-      sourceState.apiSource = apiSource || sourceState.apiSource || "FutbolRadar API";
-
-      if (apiSource === "FutbolRadar Live API") {
-        sourceState.live += 1;
-      } else if (apiSource === "FutbolRadar Mock API") {
-        sourceState.mock += 1;
-      }
-    } else if (source === "fallback") {
-      sourceState.fallback += 1;
-    } else if (source === "empty") {
-      sourceState.empty += 1;
-    }
-
-    var label = "";
-
-    if (sourceState.empty > 0) {
-      label = "Veri alınamadı";
-    } else if (sourceState.fallback > 0) {
-      label = "Statik yedek veri";
-    } else if (sourceState.live > 0) {
-      label = "FutbolRadar Live API";
-    } else if (sourceState.mock > 0) {
-      label = "FutbolRadar Mock API";
-    } else if (sourceState.api > 0) {
-      label = sourceState.apiSource || "FutbolRadar API";
-    }
-
-    if (!label) {
-      return;
-    }
-
-    document.querySelectorAll(".source-strip div").forEach(function (item) {
-      var title = item.querySelector("span");
-      var value = item.querySelector("b");
-
-      if (title && value && title.textContent.toLocaleLowerCase("tr-TR").indexOf("veri kayna") !== -1) {
-        value.textContent = label;
-      }
-    });
-  }
-
   function loadData(name) {
     var config = RESOURCE_CONFIG[name] || { fallback: name, reportSource: false };
 
@@ -195,9 +150,6 @@
       var fallbackUrl = DATA_ROOT + config.fallback + ".json";
       var fallback = function () {
         return fetchJson(fallbackUrl).then(function (result) {
-          if (config.reportSource) {
-            updateSourceLabel("fallback");
-          }
           return result.data;
         });
       };
@@ -206,7 +158,6 @@
         cache[name] = fetchJson(getApiUrl(config))
           .then(function (result) {
           if (config.reportSource) {
-            updateSourceLabel("api", result.source);
             updateUpdatedAtLabel(result.updatedAt);
           }
             return result.data;
