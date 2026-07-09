@@ -61,13 +61,21 @@ function expect(condition, message) {
 }
 
 async function fetchText(path) {
-  const response = await fetch(`${baseUrl}${path}`, {
-    headers: {
-      "user-agent": "FutbolRadar-Live-QA/1.0"
-    }
-  });
-  const text = await response.text();
-  return { response, text };
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const response = await fetch(`${baseUrl}${path}`, {
+      headers: {
+        "user-agent": "FutbolRadar-Live-QA/1.0"
+      },
+      signal: controller.signal
+    });
+    const text = await response.text();
+    return { response, text };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function meta(html, selector) {
