@@ -320,6 +320,31 @@
     return value === undefined || value === null || value === "" ? "-" : value;
   }
 
+  function normalizeSearchText(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\u0131/g, "i")
+      .trim()
+      .toLowerCase();
+  }
+
+  function averageRating(form) {
+    if (!Array.isArray(form) || !form.length) {
+      return 0;
+    }
+
+    var values = form.map(function (item) { return Number(item.label); }).filter(function (value) {
+      return !Number.isNaN(value);
+    });
+
+    if (!values.length) {
+      return 0;
+    }
+
+    return values.reduce(function (total, value) { return total + value; }, 0) / values.length;
+  }
+
   function matchScoreText(score) {
     if (score && typeof score === "object") {
       return displayValue(score.home) + "-" + displayValue(score.away);
@@ -562,6 +587,134 @@
     );
   }
 
+  function populatePlayerSelect(select, values) {
+    if (!select) {
+      return;
+    }
+
+    var current = select.value;
+    var options = ['<option value="">Tümü</option>'].concat(values.map(function (value) {
+      return '<option value="' + escapeHtml(value) + '">' + escapeHtml(value) + "</option>";
+    }));
+
+    select.innerHTML = options.join("");
+    select.value = values.indexOf(current) === -1 ? "" : current;
+  }
+
+  function uniqueSorted(items, key) {
+    return Array.from(new Set(items.map(function (item) { return item[key]; }).filter(Boolean))).sort(function (a, b) {
+      return String(a).localeCompare(String(b), "tr");
+    });
+  }
+
+  function hasFormDrop(player) {
+    var form = player.form || [];
+    if (form.length < 4) {
+      return Number(player.radar && player.radar.consistency) <= 78;
+    }
+
+    var early = averageRating(form.slice(0, 3));
+    var recent = averageRating(form.slice(-2));
+    return recent + 0.5 < early || Number(player.radar && player.radar.consistency) <= 78;
+  }
+
+  function playerMatchesSignal(player, signal) {
+    var radar = player.radar || {};
+    var trend = normalizeSearchText(player.trend);
+
+    if (signal === "rising") {
+      return trend.indexOf("yuksel") !== -1 || trend.indexOf("toparlan") !== -1 || Number(player.impact) >= 83;
+    }
+
+    if (signal === "goal") {
+      return Number(player.goals) >= 6 || Number(player.xg) >= 3.5 || Number(radar.finishing) >= 82;
+    }
+
+    if (signal === "creativity") {
+      return Number(player.assists) >= 5 || Number(player.keyPasses) >= 12 || Number(radar.creativity) >= 84;
+    }
+
+    if (signal === "pressing") {
+      return Number(player.pressures) >= 60 || Number(radar.pressing) >= 82;
+    }
+
+    if (signal === "drop") {
+      return hasFormDrop(player);
+    }
+
+    return true;
+  }
+
+  function filterPlayers(players, state) {
+    return players.filter(function (player) {
+      var teamOk = !state.team || player.team === state.team;
+      var positionOk = !state.position || player.position === state.position;
+      return teamOk && positionOk && playerMatchesSignal(player, state.signal);
+    });
+  }
+
+  function initPlayerFilters(target) {
+    if (!target) {
+      return;
+    }
+
+    var teamSelect = document.querySelector("[data-player-team-filter]");
+    var positionSelect = document.querySelector("[data-player-position-filter]");
+    var chips = Array.from(document.querySelectorAll("[data-player-filter]"));
+    var count = document.querySelector("[data-player-count]");
+    var state = { team: "", position: "", signal: "all" };
+
+    target.dataset.state = "loading";
+
+    loadData("players")
+      .then(function (players) {
+        populatePlayerSelect(teamSelect, uniqueSorted(players, "team"));
+        populatePlayerSelect(positionSelect, uniqueSorted(players, "position"));
+
+        function render() {
+          state.team = teamSelect ? teamSelect.value : "";
+          state.position = positionSelect ? positionSelect.value : "";
+
+          var filtered = filterPlayers(players, state);
+          if (count) {
+            count.textContent = filtered.length + " oyuncu";
+          }
+
+          if (!filtered.length) {
+            setEmpty(target, "Oyuncu bulunamadı", "Bu filtrelerle eşleşen oyuncu yok.");
+            return;
+          }
+
+          setContent(target, filtered.map(renderPlayerPageCard).join(""));
+        }
+
+        chips.forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            state.signal = chip.getAttribute("data-player-filter") || "all";
+            chips.forEach(function (item) {
+              var active = item === chip;
+              item.classList.toggle("is-active", active);
+              item.setAttribute("aria-pressed", active ? "true" : "false");
+            });
+            render();
+          });
+        });
+
+        if (teamSelect) {
+          teamSelect.addEventListener("change", render);
+        }
+
+        if (positionSelect) {
+          positionSelect.addEventListener("change", render);
+        }
+
+        render();
+      })
+      .catch(function () {
+        setEmpty(target, "Oyuncu verisi yüklenemedi", "Veri katmanı geçici olarak yanıt vermiyor.");
+      });
+  }
+
   function initDataLayer() {
     renderInto(
       document.querySelector('[data-api-target="featured-match"]'),
@@ -651,14 +804,7 @@
       "Oyuncu radari yüklenemedi"
     );
 
-    renderInto(
-      document.querySelector('[data-api-target="players-page"]'),
-      "players",
-      function (players) {
-        return players.map(renderPlayerPageCard).join("");
-      },
-      "Oyuncu verisi yüklenemedi"
-    );
+    initPlayerFilters(document.querySelector('[data-api-target="players-page"]'));
 
     renderInto(
       document.querySelector('[data-api-target="momentum"]'),

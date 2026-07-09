@@ -1377,6 +1377,85 @@ h1 {
         gap: 14px;
       }
 
+      .player-toolbar {
+        display: grid;
+        grid-template-columns: minmax(150px, 0.8fr) minmax(150px, 0.8fr) minmax(0, 2fr) auto;
+        align-items: end;
+        gap: 12px;
+        margin: -30px 0 18px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)), var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .filter-group {
+        display: grid;
+        gap: 7px;
+        min-width: 0;
+      }
+
+      .filter-group label {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 850;
+        text-transform: uppercase;
+      }
+
+      .filter-group select {
+        width: 100%;
+        min-height: 40px;
+        border: 1px solid rgba(77, 229, 255, 0.2);
+        border-radius: var(--radius);
+        padding: 0 10px;
+        color: var(--text);
+        background: rgba(3, 10, 14, 0.84);
+        font: inherit;
+        font-size: 0.88rem;
+      }
+
+      .filter-group select:focus-visible,
+      .filter-chip:focus-visible {
+        outline: 2px solid rgba(128, 255, 155, 0.45);
+        outline-offset: 2px;
+      }
+
+      .filter-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .filter-chip {
+        min-height: 38px;
+        border: 1px solid rgba(134, 255, 218, 0.18);
+        border-radius: 999px;
+        padding: 0 12px;
+        color: #c5d5d2;
+        background: rgba(255, 255, 255, 0.045);
+        font: inherit;
+        font-size: 0.82rem;
+        font-weight: 850;
+        cursor: pointer;
+      }
+
+      .filter-chip.is-active {
+        border-color: rgba(128, 255, 155, 0.48);
+        color: var(--green);
+        background: rgba(128, 255, 155, 0.1);
+      }
+
+      .player-count {
+        align-self: center;
+        justify-self: end;
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 850;
+        white-space: nowrap;
+      }
+
       .player-card,
       .article-card {
         min-height: 218px;
@@ -1548,6 +1627,19 @@ h1 {
         .standings {
           max-width: none;
         }
+
+        .player-toolbar {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .filter-chips,
+        .player-count {
+          grid-column: 1 / -1;
+        }
+
+        .player-count {
+          justify-self: start;
+        }
       }
 
       @media (max-width: 760px) {
@@ -1620,6 +1712,21 @@ h1 {
         .hero-actions .button {
           flex: 0 0 100%;
           width: 100%;
+        }
+
+        .player-toolbar {
+          grid-template-columns: 1fr;
+          margin-top: -22px;
+        }
+
+        .filter-chips {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .filter-chip {
+          width: 100%;
+          padding-inline: 8px;
         }
 
         .hero-metrics,

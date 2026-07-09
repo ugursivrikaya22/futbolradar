@@ -61,6 +61,29 @@
           <span class="hero-meta">Son güncelleme: 07 Temmuz 2026 · 23:55</span>
         </div>
       </section>
+      <section class="player-toolbar" aria-label="Oyuncu filtreleri">
+        <div class="filter-group">
+          <label for="player-team-filter">Takım</label>
+          <select id="player-team-filter" data-player-team-filter>
+            <option value="">Tüm takımlar</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="player-position-filter">Mevki</label>
+          <select id="player-position-filter" data-player-position-filter>
+            <option value="">Tüm mevkiler</option>
+          </select>
+        </div>
+        <div class="filter-chips" role="group" aria-label="Performans sinyali">
+          <button class="filter-chip is-active" type="button" data-player-filter="all" aria-pressed="true">Tümü</button>
+          <button class="filter-chip" type="button" data-player-filter="rising" aria-pressed="false">Yükselenler</button>
+          <button class="filter-chip" type="button" data-player-filter="goal" aria-pressed="false">Gol tehdidi</button>
+          <button class="filter-chip" type="button" data-player-filter="creativity" aria-pressed="false">Yaratıcılık</button>
+          <button class="filter-chip" type="button" data-player-filter="pressing" aria-pressed="false">Pres gücü</button>
+          <button class="filter-chip" type="button" data-player-filter="drop" aria-pressed="false">Form düşüşü</button>
+        </div>
+        <span class="player-count" data-player-count>Oyuncular hazırlanıyor</span>
+      </section>
       <section class="grid" id="player-radar-page" data-api-section="player-radar" data-api-target="players-page">
         <article class="data-empty" data-card="empty-state">
           <strong>Oyuncu radarı yükleniyor</strong>
