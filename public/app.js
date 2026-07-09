@@ -326,14 +326,18 @@
     }).join("") + "</div>";
   }
 
-  function playerRadarHtml(player, compact) {
-    var rows = [
+  function playerRadarRows(player) {
+    return [
       { label: "Bitiricilik", value: radarMetric(player, "finishing", "Bitiricilik") },
       { label: "Yaratıcılık", value: radarMetric(player, "creativity", "Yaratıcılık") },
       { label: "Pres", value: radarMetric(player, "pressing", "Pres") },
       { label: "Tempo", value: radarMetric(player, "tempo", "Tempo") },
       { label: "Süreklilik", value: radarMetric(player, "consistency", "Süreklilik") }
     ];
+  }
+
+  function playerRadarHtml(player, compact) {
+    var rows = playerRadarRows(player);
 
     if (compact) {
       rows = rows.slice(0, 3);
@@ -342,6 +346,101 @@
     return '<div class="player-radar">' + rows.map(function (row) {
       return barRowHtml(row.label, displayValue(row.value), row.value);
     }).join("") + "</div>";
+  }
+
+  function clampScore(value) {
+    var number = Number(value);
+
+    if (Number.isNaN(number)) {
+      return 0;
+    }
+
+    return Math.max(0, Math.min(100, number));
+  }
+
+  function radarPoint(index, total, value, radius) {
+    var angle = (-90 + (360 / total) * index) * Math.PI / 180;
+    var scoreRadius = radius * (clampScore(value) / 100);
+
+    return {
+      x: 120 + Math.cos(angle) * scoreRadius,
+      y: 120 + Math.sin(angle) * scoreRadius
+    };
+  }
+
+  function radarPoints(rows, radiusScale) {
+    var radius = 82 * radiusScale;
+
+    return rows.map(function (row, index) {
+      var point = radarPoint(index, rows.length, row.value, radius);
+      return point.x.toFixed(1) + "," + point.y.toFixed(1);
+    }).join(" ");
+  }
+
+  function radarGridPoints(rows, radiusScale) {
+    var radius = 82 * radiusScale;
+
+    return rows.map(function (_, index) {
+      var angle = (-90 + (360 / rows.length) * index) * Math.PI / 180;
+      var x = 120 + Math.cos(angle) * radius;
+      var y = 120 + Math.sin(angle) * radius;
+      return x.toFixed(1) + "," + y.toFixed(1);
+    }).join(" ");
+  }
+
+  function radarAxisHtml(rows) {
+    return rows.map(function (row, index) {
+      var angle = (-90 + (360 / rows.length) * index) * Math.PI / 180;
+      var edge = {
+        x: 120 + Math.cos(angle) * 82,
+        y: 120 + Math.sin(angle) * 82
+      };
+      var label = {
+        x: 120 + Math.cos(angle) * 104,
+        y: 120 + Math.sin(angle) * 104
+      };
+
+      return (
+        '<line class="radar-axis" x1="120" y1="120" x2="' + edge.x.toFixed(1) + '" y2="' + edge.y.toFixed(1) + '"></line>' +
+        '<text class="radar-axis-label" x="' + label.x.toFixed(1) + '" y="' + label.y.toFixed(1) + '">' + escapeHtml(row.label) + "</text>"
+      );
+    }).join("");
+  }
+
+  function radarLegendHtml(player, className) {
+    return (
+      '<span class="' + escapeHtml(className) + '">' +
+      "<i></i>" +
+      escapeHtml(player.name) +
+      "</span>"
+    );
+  }
+
+  function playerRadarChartHtml(left, right, title) {
+    var leftRows = playerRadarRows(left);
+    var rightRows = right ? playerRadarRows(right) : null;
+    var grids = [0.25, 0.5, 0.75, 1].map(function (scale) {
+      return '<polygon class="radar-grid-ring" points="' + radarGridPoints(leftRows, scale) + '"></polygon>';
+    }).join("");
+
+    return (
+      '<section class="player-radar-chart" aria-label="' + escapeHtml(title || "Oyuncu radar grafiği") + '">' +
+      '<div class="radar-chart-head"><span>Radar Grafik</span><strong>' + escapeHtml(title || left.name) + "</strong></div>" +
+      '<div class="radar-chart-stage">' +
+      '<svg viewBox="0 0 240 240" role="img" aria-hidden="true" focusable="false">' +
+      grids +
+      radarAxisHtml(leftRows) +
+      '<polygon class="radar-area radar-area-left" points="' + radarPoints(leftRows, 1) + '"></polygon>' +
+      (rightRows ? '<polygon class="radar-area radar-area-right" points="' + radarPoints(rightRows, 1) + '"></polygon>' : "") +
+      '<circle class="radar-center" cx="120" cy="120" r="4"></circle>' +
+      "</svg>" +
+      "</div>" +
+      '<div class="radar-chart-legend">' +
+      radarLegendHtml(left, "left") +
+      (right ? radarLegendHtml(right, "right") : "") +
+      "</div>" +
+      "</section>"
+    );
   }
 
   function matchTitle(match) {
@@ -628,12 +727,45 @@
     );
   }
 
+  function updatePlayerDetailSchema(player) {
+    var schema = document.querySelector('script[type="application/ld+json"]');
+
+    if (!schema) {
+      return;
+    }
+
+    schema.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name: player.name,
+      nationality: player.nationality || undefined,
+      height: player.height || undefined,
+      weight: player.weight || undefined,
+      memberOf: player.team ? {
+        "@type": "SportsTeam",
+        name: player.team,
+        sport: "Football"
+      } : undefined,
+      jobTitle: player.position || "Football Player",
+      url: "https://www.futbolradar.com/oyuncu-detay.html?id=" + encodeURIComponent(player.id),
+      description: playerInsight(player),
+      additionalProperty: [
+        { "@type": "PropertyValue", name: "AI Rating", value: player.aiRating || player.rating || "" },
+        { "@type": "PropertyValue", name: "Gol Tehdidi", value: player.threatScore || "" },
+        { "@type": "PropertyValue", name: "Yaratıcılık", value: player.creativityScore || "" },
+        { "@type": "PropertyValue", name: "Pres Gücü", value: player.pressingScore || "" }
+      ]
+    });
+  }
+
   function updatePlayerDetailMeta(player) {
     var title = player.name + " | " + player.team + " " + player.position + " Performans Radarı | FutbolRadar";
     var description = player.name + " oyuncu detayı; AI rating, gol tehdidi, yaratıcılık, pres gücü, fiziksel profil ve kariyer metrikleri.";
     var descriptionMeta = document.querySelector('meta[name="description"]');
     var ogTitle = document.querySelector('meta[property="og:title"]');
     var ogDescription = document.querySelector('meta[property="og:description"]');
+    var twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    var twitterDescription = document.querySelector('meta[name="twitter:description"]');
 
     document.title = title;
 
@@ -648,9 +780,69 @@
     if (ogDescription) {
       ogDescription.setAttribute("content", description);
     }
+
+    if (twitterTitle) {
+      twitterTitle.setAttribute("content", title);
+    }
+
+    if (twitterDescription) {
+      twitterDescription.setAttribute("content", description);
+    }
+
+    updatePlayerDetailSchema(player);
   }
 
-  function renderPlayerDetail(player) {
+  function similarPlayerScore(player, candidate) {
+    var score = 0;
+
+    if (candidate.team === player.team) {
+      score += 35;
+    }
+
+    if (candidate.position === player.position) {
+      score += 30;
+    }
+
+    if (candidate.league === player.league) {
+      score += 15;
+    }
+
+    score += Math.max(0, 20 - Math.abs(playerAiScore(player) - playerAiScore(candidate)));
+    return score;
+  }
+
+  function similarPlayersHtml(player, players) {
+    if (!Array.isArray(players) || players.length < 2) {
+      return "";
+    }
+
+    var similar = players
+      .filter(function (candidate) { return candidate.id !== player.id; })
+      .sort(function (a, b) { return similarPlayerScore(player, b) - similarPlayerScore(player, a); })
+      .slice(0, 3);
+
+    if (!similar.length) {
+      return "";
+    }
+
+    return (
+      '<section class="profile-section similar-players"><h2>Benzer Oyuncular</h2>' +
+      '<div class="similar-player-grid">' +
+      similar.map(function (candidate) {
+        return (
+          '<article class="similar-player-card" data-card="similar-player" data-player="' + escapeHtml(candidate.id) + '">' +
+          "<span>" + escapeHtml(candidate.team) + " · " + escapeHtml(candidate.position) + "</span>" +
+          "<strong>" + escapeHtml(candidate.name) + "</strong>" +
+          "<b>AI " + escapeHtml(displayValue(candidate.aiRating || candidate.rating)) + "</b>" +
+          '<a href="./oyuncu-detay.html?id=' + escapeHtml(candidate.id) + '">Profili aç</a>' +
+          "</article>"
+        );
+      }).join("") +
+      "</div></section>"
+    );
+  }
+
+  function renderPlayerDetail(player, players) {
     if (!player) {
       return "";
     }
@@ -695,7 +887,8 @@
         profileItemHtml("Top kapma / maç", player.tacklesPerGame, "Veri yok"),
         profileItemHtml("Araya girme / maç", player.interceptionsPerGame, "Veri yok")
       ]) +
-      '<section class="profile-section"><h2>Radar Profili</h2>' + playerRadarHtml(player) + "</section>" +
+      '<section class="profile-section"><h2>Radar Profili</h2>' + playerRadarChartHtml(player, null, player.name + " radar profili") + playerRadarHtml(player) + "</section>" +
+      similarPlayersHtml(player, players) +
       '<div class="player-actions"><a class="detail-link" href="./oyuncu-radari.html?team=' + encodeURIComponent(player.team) + '">Takım filtresine git</a><a class="detail-link" href="./oyuncu-karsilastir.html?p1=' + escapeHtml(player.id) + '">Karşılaştır</a><button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Radar kartını paylaş</button></div>' +
       "</article>"
     );
@@ -1130,7 +1323,7 @@
       compareRowHtml("Bitiricilik", radarMetric(left, "finishing", "Bitiricilik"), radarMetric(right, "finishing", "Bitiricilik")) +
       compareRowHtml("Tempo", playerScore(left, "tempoScore", radarMetric(left, "tempo", "Tempo")), playerScore(right, "tempoScore", radarMetric(right, "tempo", "Tempo"))) +
       compareRowHtml("Süreklilik", playerScore(left, "continuityScore", radarMetric(left, "consistency", "Süreklilik")), playerScore(right, "continuityScore", radarMetric(right, "consistency", "Süreklilik"))) +
-      '<section class="radar-chart-placeholder" aria-label="Radar grafik yer tutucu"><span>Radar grafik yakında</span><strong>' + escapeHtml(left.name) + " / " + escapeHtml(right.name) + "</strong><p>API verisiyle radar chart aktif olacak.</p></section>" +
+      playerRadarChartHtml(left, right, left.name + " / " + right.name) +
       '<p class="compare-note">FutbolRadar yorumu: ' + escapeHtml(left.aiRating >= right.aiRating ? left.name : right.name) + " genel radar etkisinde öne çıkıyor; rol farkı için gol tehdidi, yaratıcılık ve pres satırlarını birlikte oku.</p>" +
       "</article>"
     );
@@ -1201,7 +1394,7 @@
         return;
       }
 
-      setContent(target, renderPlayerDetail(player));
+      setContent(target, renderPlayerDetail(player, players));
     }).catch(function () {
       setEmpty(target, "Oyuncu detayı yüklenemedi", "Oyuncu verisi geçici olarak okunamıyor.");
     });

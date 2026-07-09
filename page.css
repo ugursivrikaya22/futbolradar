@@ -1830,6 +1830,154 @@ h1 {
         font-size: 0.94rem;
       }
 
+      .player-radar-chart {
+        grid-column: 1 / -1;
+        display: grid;
+        gap: 14px;
+        border: 1px solid rgba(134, 255, 218, 0.18);
+        border-radius: var(--radius);
+        padding: 16px;
+        background:
+          radial-gradient(circle at 50% 40%, rgba(128, 255, 155, 0.12), transparent 36%),
+          rgba(255, 255, 255, 0.035);
+      }
+
+      .radar-chart-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .radar-chart-head span {
+        color: var(--cyan);
+        font-size: 0.75rem;
+        font-weight: 850;
+        text-transform: uppercase;
+      }
+
+      .radar-chart-head strong {
+        color: var(--text);
+        font-size: 0.96rem;
+        text-align: right;
+      }
+
+      .radar-chart-stage {
+        display: grid;
+        min-height: 260px;
+        place-items: center;
+        overflow: hidden;
+      }
+
+      .player-radar-chart svg {
+        width: min(100%, 360px);
+        height: auto;
+        overflow: visible;
+      }
+
+      .radar-grid-ring {
+        fill: none;
+        stroke: rgba(134, 255, 218, 0.2);
+        stroke-width: 1;
+      }
+
+      .radar-axis {
+        stroke: rgba(255, 255, 255, 0.1);
+        stroke-width: 1;
+      }
+
+      .radar-axis-label {
+        fill: #b9cbc8;
+        font-size: 8px;
+        font-weight: 800;
+        text-anchor: middle;
+        dominant-baseline: central;
+      }
+
+      .radar-area {
+        stroke-width: 2.5;
+        vector-effect: non-scaling-stroke;
+      }
+
+      .radar-area-left {
+        fill: rgba(128, 255, 155, 0.22);
+        stroke: var(--green);
+      }
+
+      .radar-area-right {
+        fill: rgba(77, 229, 255, 0.18);
+        stroke: var(--cyan);
+      }
+
+      .radar-center {
+        fill: var(--text);
+      }
+
+      .radar-chart-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .radar-chart-legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--soft);
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+
+      .radar-chart-legend i {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: var(--green);
+        box-shadow: 0 0 14px rgba(128, 255, 155, 0.42);
+      }
+
+      .radar-chart-legend .right i {
+        background: var(--cyan);
+        box-shadow: 0 0 14px rgba(77, 229, 255, 0.42);
+      }
+
+      .similar-player-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .similar-player-card {
+        min-width: 0;
+        border: 1px solid rgba(77, 229, 255, 0.14);
+        border-radius: var(--radius);
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.035);
+      }
+
+      .similar-player-card span,
+      .similar-player-card b {
+        display: block;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 800;
+      }
+
+      .similar-player-card strong {
+        display: block;
+        margin: 6px 0;
+        color: var(--text);
+        line-height: 1.18;
+      }
+
+      .similar-player-card a {
+        display: inline-flex;
+        margin-top: 10px;
+        color: var(--green);
+        font-size: 0.82rem;
+        font-weight: 850;
+      }
+
       .radar-chart-placeholder {
         grid-column: 1 / -1;
         display: grid;
@@ -2099,6 +2247,18 @@ h1 {
 
         .profile-grid {
           grid-template-columns: 1fr;
+        }
+
+        .similar-player-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .radar-chart-head {
+          display: grid;
+        }
+
+        .radar-chart-head strong {
+          text-align: left;
         }
 
         .section-head {
