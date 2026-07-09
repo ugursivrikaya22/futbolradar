@@ -283,15 +283,18 @@
   function playerMetricsHtml(player, compact) {
     var metrics = [
       { label: "Dakika", value: player.minutes },
-      { label: "Şut", value: player.shots },
-      { label: "Kilit pas", value: player.keyPasses },
+      { label: "Gol", value: player.goals },
+      { label: "Asist", value: player.assists },
       { label: "xG", value: player.xg },
       { label: "xA", value: player.xa },
-      { label: "İkili", value: player.duelsWon }
+      { label: "Şut", value: player.shots },
+      { label: "Kilit pas", value: player.keyPasses },
+      { label: "Pres", value: playerMetric(player, "press", "pressures") },
+      { label: "İkili", value: playerMetric(player, "duels", "duelsWon") }
     ];
 
     if (compact) {
-      metrics = metrics.slice(0, 3);
+      metrics = [metrics[0], metrics[1], metrics[3]];
     }
 
     return '<div class="player-metrics">' + metrics.map(function (metric) {
@@ -300,13 +303,12 @@
   }
 
   function playerRadarHtml(player, compact) {
-    var radar = player.radar || {};
     var rows = [
-      { label: "Bitiricilik", value: radar.finishing },
-      { label: "Yaratıcılık", value: radar.creativity },
-      { label: "Pres", value: radar.pressing },
-      { label: "Tempo", value: radar.tempo },
-      { label: "Süreklilik", value: radar.consistency }
+      { label: "Bitiricilik", value: radarMetric(player, "finishing", "Bitiricilik") },
+      { label: "Yaratıcılık", value: radarMetric(player, "creativity", "Yaratıcılık") },
+      { label: "Pres", value: radarMetric(player, "pressing", "Pres") },
+      { label: "Tempo", value: radarMetric(player, "tempo", "Tempo") },
+      { label: "Süreklilik", value: radarMetric(player, "consistency", "Süreklilik") }
     ];
 
     if (compact) {
@@ -362,6 +364,39 @@
     }
 
     return Number(fallback) || 0;
+  }
+
+  function radarMetric(player, key, label) {
+    var radar = player.radar || {};
+    return playerScore(radar, key, radar[label]);
+  }
+
+  function playerMetric(player, primary, secondary) {
+    if (player[primary] !== undefined && player[primary] !== null && player[primary] !== "") {
+      return player[primary];
+    }
+
+    return secondary ? player[secondary] : 0;
+  }
+
+  function canonicalPlayerFilter(value) {
+    var normalized = normalizeSearchText(value || "all").replace(/_/g, "-");
+    var aliases = {
+      rising: "yukselen",
+      yukselenler: "yukselen",
+      goal: "gol-tehdidi",
+      "gol": "gol-tehdidi",
+      creativity: "yaraticilik",
+      pressing: "pres-gucu",
+      pres: "pres-gucu",
+      drop: "form-dususu",
+      "form-dusuk": "form-dususu",
+      "ai-rating-80": "rating-80",
+      "rating80": "rating-80",
+      "dakika500": "dakika-500"
+    };
+
+    return aliases[normalized] || normalized || "all";
   }
 
   function matchScoreText(score) {
@@ -534,7 +569,7 @@
       '<article class="player-card" data-card="player-radar" data-player="' + escapeHtml(player.id) + '">' +
       '<header><div><h3>' + escapeHtml(player.name) + "</h3><span>" + escapeHtml(player.team) + " · " + escapeHtml(player.position) + '</span></div><strong class="rating">' + escapeHtml(player.aiRating) + "</strong></header>" +
       '<span class="trend">Trend: ' + escapeHtml(player.trend) + "</span>" +
-      badgesHtml(player.badges) +
+      badgesHtml(playerBadges(player)) +
       playerMetricsHtml(player, true) +
       playerRadarHtml(player, true) +
       tagsHtml([
@@ -550,8 +585,8 @@
     return (
       '<article class="card player-detail-card" data-card="player" data-player="' + escapeHtml(player.id) + '">' +
       '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(player.team) + " · " + escapeHtml(player.position) + "</span><h2>" + escapeHtml(player.name) + '</h2></div><strong class="big-value">' + escapeHtml(player.aiRating) + "</strong></div>" +
-      '<p class="player-summary">' + escapeHtml(player.summary || "Oyuncu performansı son maç etkisi, rol verimliliği ve form sürekliliğiyle okunur.") + "</p>" +
-      badgesHtml(player.badges) +
+      '<p class="player-summary">' + escapeHtml(playerInsight(player)) + "</p>" +
+      badgesHtml(playerBadges(player)) +
       playerMetricsHtml(player) +
       formDotsHtml(player.form) +
       barRowHtml("Etki", player.impact, player.impact) +
@@ -560,6 +595,10 @@
         { label: "Gol " + (player.goals == null ? "-" : player.goals), variant: "green" },
         { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
       ].concat(player.tags || [])) +
+      '<div class="player-actions">' +
+      '<a class="detail-link" href="./oyuncu-karsilastir.html?p1=' + escapeHtml(player.id) + '">Karşılaştır</a>' +
+      '<button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Radar kartını paylaş</button>' +
+      "</div>" +
       "</article>"
     );
   }
@@ -581,6 +620,7 @@
       "<h3>" + escapeHtml(player.name) + "</h3>" +
       '<strong class="signal-value">' + escapeHtml(displayValue(value)) + "</strong>" +
       "<p>" + escapeHtml(player.team) + " · " + escapeHtml(player.position) + "</p>" +
+      '<p class="signal-note">' + escapeHtml(playerInsight(player)) + "</p>" +
       '<a href="' + escapeHtml(href) + '">Oyuncu radarına git</a>' +
       "</article>"
     );
@@ -600,7 +640,7 @@
     });
 
     return [
-      playerSignalCard("En yüksek AI rating", highestRating, playerAiScore(highestRating), "./oyuncu-radari.html?filter=ai-rating-80"),
+      playerSignalCard("En yüksek AI rating", highestRating, playerAiScore(highestRating), "./oyuncu-radari.html?filter=rating-80"),
       playerSignalCard("En yüksek gol tehdidi", goalThreat, playerScore(goalThreat, "threatScore"), "./oyuncu-radari.html?filter=gol-tehdidi"),
       playerSignalCard("En yaratıcı oyuncu", creative, playerScore(creative, "creativityScore"), "./oyuncu-radari.html?filter=yaraticilik"),
       playerSignalCard("En güçlü pres oyuncusu", presser, playerScore(presser, "pressingScore"), "./oyuncu-radari.html?filter=pres-gucu"),
@@ -653,14 +693,25 @@
   }
 
   var PLAYER_FILTER_COPY = {
-    all: "Tüm oyuncular; AI rating, rol metrikleri, son 5 maç formu ve radar skorlarıyla karşılaştırılır.",
+    all: "FutbolRadar oyuncu performans ekranı; AI rating, gol tehdidi, yaratıcılık, pres gücü, xG, xA ve radar profillerine göre oyuncuları analiz eder.",
     yukselen: "Bu liste, trend yönü, son form artışı ve etki skoruna göre yükselen oyuncuları öne çıkarır.",
     "gol-tehdidi": "Bu liste, şut hacmi, xG, gol katkısı ve ceza sahası etkisine göre gol tehdidi yüksek oyuncuları öne çıkarır.",
     yaraticilik: "Bu liste, kilit pas, xA, asist katkısı ve yaratıcılık radarına göre oyun kurucu etkisi yüksek oyuncuları gösterir.",
     "pres-gucu": "Bu liste, pres aksiyonu, ikili mücadele ve baskı radarına göre rakibi zorlayan oyuncuları öne çıkarır.",
     "form-dususu": "Bu liste, son form değişimi ve süreklilik skoruna göre izlenmesi gereken düşüş sinyallerini gösterir.",
-    "ai-rating-80": "Bu liste, AI rating değeri 80 ve üzeri etki seviyesine denk gelen oyuncuları gösterir.",
+    "rating-80": "Bu liste, AI rating değeri 80 ve üzeri etki seviyesine denk gelen oyuncuları gösterir.",
     "dakika-500": "Bu liste, son periyotta 500 dakika ve üzeri süre alan, ritim ve rol sürekliliği yüksek oyuncuları gösterir."
+  };
+
+  var PLAYER_FILTER_TITLES = {
+    all: "Oyuncu Performans Radarları",
+    yukselen: "Yükselen Oyuncular",
+    "gol-tehdidi": "Gol Tehdidi Yüksek Oyuncular",
+    yaraticilik: "Yaratıcılığı Yüksek Oyuncular",
+    "pres-gucu": "Pres Gücü Yüksek Oyuncular",
+    "form-dususu": "Form Düşüşü Sinyali Veren Oyuncular",
+    "rating-80": "AI Rating 80+ Oyuncular",
+    "dakika-500": "Dakika 500+ Oyuncular"
   };
 
   function populatePlayerSelect(select, values, label) {
@@ -690,39 +741,108 @@
 
     var form = player.form || [];
     if (form.length < 4) {
-      return Number(player.radar && player.radar.consistency) <= 78;
+      return radarMetric(player, "consistency", "Süreklilik") <= 78;
     }
 
     var early = averageRating(form.slice(0, 3));
     var recent = averageRating(form.slice(-2));
-    return recent + 0.5 < early || Number(player.radar && player.radar.consistency) <= 78;
+    return recent + 0.5 < early || radarMetric(player, "consistency", "Süreklilik") <= 78;
+  }
+
+  function playerBadges(player) {
+    var badges = Array.isArray(player.badges) ? player.badges.slice() : [];
+    var trend = normalizeSearchText(player.trendDirection || player.trend);
+    var add = function (label) {
+      if (badges.indexOf(label) === -1) {
+        badges.push(label);
+      }
+    };
+
+    if (averageRating(player.form) >= 8 || Number(player.impact) >= 84) {
+      add("Formda");
+    }
+
+    if (trend === "up" || trend.indexOf("yuksel") !== -1 || Number(player.formChange) > 7) {
+      add("Yükselişte");
+    }
+
+    if (playerScore(player, "threatScore", Number(player.xg) * 12 + Number(player.goals) * 6) >= 80) {
+      add("Gol Tehdidi");
+    }
+
+    if (playerScore(player, "creativityScore", Number(player.xa) * 18 + Number(player.keyPasses) * 3) >= 80) {
+      add("Yaratıcı");
+    }
+
+    if (playerScore(player, "pressingScore", playerMetric(player, "press", "pressures")) >= 80) {
+      add("Pres Makinesi");
+    }
+
+    if (trend === "down" || Number(player.formChange) < -5 || hasFormDrop(player)) {
+      add("Form Düşüşü");
+    }
+
+    if (Number(player.minutes) >= 800 || playerScore(player, "continuityScore", radarMetric(player, "consistency", "Süreklilik")) >= 80) {
+      add("Süreklilik");
+    }
+
+    if (playerScore(player, "tempoScore", radarMetric(player, "tempo", "Tempo")) >= 82) {
+      add("Tempo");
+    }
+
+    return badges.slice(0, 6);
+  }
+
+  function playerInsight(player) {
+    if (hasFormDrop(player)) {
+      return "Form düşüşü sinyali var; radar profili ve katkı metrikleri takip edilmeli.";
+    }
+
+    if (playerScore(player, "threatScore") >= 80) {
+      return "Gol tehdidi yüksek; xG ve şut hacmiyle hücumda belirgin etki yaratıyor.";
+    }
+
+    if (playerScore(player, "creativityScore") >= 80) {
+      return "Yaratıcılık profili güçlü; kilit pas ve xA üretimiyle takım hücumunu destekliyor.";
+    }
+
+    if (playerScore(player, "pressingScore") >= 80) {
+      return "Pres gücü yüksek; tempo ve ikili mücadele verileriyle savunma katkısı öne çıkıyor.";
+    }
+
+    if (normalizeSearchText(player.trendDirection || player.trend).indexOf("up") !== -1 || Number(player.formChange) > 0) {
+      return "Form trendi yukarı yönlü; son performans sinyalleri pozitif.";
+    }
+
+    return player.summary || "Oyuncu performansı rol verimliliği, süreklilik ve radar profiliyle takip edilmeli.";
   }
 
   function playerMatchesSignal(player, signal) {
-    var radar = player.radar || {};
+    signal = canonicalPlayerFilter(signal);
     var trend = normalizeSearchText(player.trend);
+    var trendDirection = normalizeSearchText(player.trendDirection);
 
     if (signal === "yukselen") {
-      return trend.indexOf("yuksel") !== -1 || trend.indexOf("toparlan") !== -1 || Number(player.formChange) > 0 || Number(player.impact) >= 83;
+      return trendDirection === "up" || trend.indexOf("yuksel") !== -1 || trend.indexOf("toparlan") !== -1 || Number(player.formChange) > 0 || Number(player.impact) >= 83;
     }
 
     if (signal === "gol-tehdidi") {
-      return Number(player.goals) >= 6 || Number(player.xg) >= 3.5 || Number(radar.finishing) >= 82 || playerScore(player, "threatScore") >= 82;
+      return Number(player.goals) >= 6 || Number(player.xg) >= 3.5 || radarMetric(player, "finishing", "Bitiricilik") >= 82 || playerScore(player, "threatScore") >= 82;
     }
 
     if (signal === "yaraticilik") {
-      return Number(player.assists) >= 5 || Number(player.keyPasses) >= 12 || Number(radar.creativity) >= 84 || playerScore(player, "creativityScore") >= 84;
+      return Number(player.assists) >= 5 || Number(player.keyPasses) >= 12 || radarMetric(player, "creativity", "Yaratıcılık") >= 84 || playerScore(player, "creativityScore") >= 84;
     }
 
     if (signal === "pres-gucu") {
-      return Number(player.pressures) >= 60 || Number(radar.pressing) >= 82 || playerScore(player, "pressingScore") >= 82;
+      return Number(playerMetric(player, "press", "pressures")) >= 60 || radarMetric(player, "pressing", "Pres") >= 82 || playerScore(player, "pressingScore") >= 82;
     }
 
     if (signal === "form-dususu") {
       return hasFormDrop(player);
     }
 
-    if (signal === "ai-rating-80") {
+    if (signal === "rating-80") {
       return playerAiScore(player) >= 80;
     }
 
@@ -736,7 +856,11 @@
   function filterPlayers(players, state) {
     return players.filter(function (player) {
       var teamOk = !state.team || player.team === state.team;
-      var positionOk = !state.position || player.position === state.position;
+      var playerPosition = normalizeSearchText(player.position);
+      var wantedPosition = normalizeSearchText(state.position);
+      var positionOk = !wantedPosition || playerPosition === wantedPosition ||
+        (wantedPosition === "forvet" && (playerPosition.indexOf("santrfor") !== -1 || playerPosition.indexOf("kanat") !== -1)) ||
+        (wantedPosition === "orta saha" && (playerPosition.indexOf("orta saha") !== -1 || playerPosition.indexOf("10 numara") !== -1));
       return teamOk && positionOk && playerMatchesSignal(player, state.signal);
     });
   }
@@ -751,6 +875,8 @@
     var chips = Array.from(document.querySelectorAll("[data-player-filter]"));
     var count = document.querySelector("[data-player-count]");
     var description = document.querySelector("[data-player-filter-description]");
+    var titleElement = document.querySelector("[data-player-filter-title]");
+    var leadElement = document.querySelector("[data-player-filter-lead]");
     var query = new URLSearchParams(window.location.search);
     var state = { team: "", position: "", signal: "all" };
 
@@ -761,7 +887,7 @@
         populatePlayerSelect(teamSelect, uniqueSorted(players, "team"), "Tüm takımlar");
         populatePlayerSelect(positionSelect, uniqueSorted(players, "position"), "Tüm mevkiler");
 
-        state.signal = PLAYER_FILTER_COPY[query.get("filter")] ? query.get("filter") : "all";
+        state.signal = PLAYER_FILTER_COPY[canonicalPlayerFilter(query.get("filter"))] ? canonicalPlayerFilter(query.get("filter")) : "all";
 
         if (teamSelect && query.get("team")) {
           teamSelect.value = query.get("team");
@@ -818,6 +944,14 @@
             description.textContent = PLAYER_FILTER_COPY[state.signal] || PLAYER_FILTER_COPY.all;
           }
 
+          if (titleElement) {
+            titleElement.textContent = PLAYER_FILTER_TITLES[state.signal] || PLAYER_FILTER_TITLES.all;
+          }
+
+          if (leadElement) {
+            leadElement.textContent = PLAYER_FILTER_COPY[state.signal] || PLAYER_FILTER_COPY.all;
+          }
+
           if (!filtered.length) {
             setEmpty(target, "Oyuncu bulunamadı", "Bu filtrelerle eşleşen oyuncu yok.");
             return;
@@ -828,7 +962,7 @@
 
         chips.forEach(function (chip) {
           chip.addEventListener("click", function () {
-            state.signal = chip.getAttribute("data-player-filter") || "all";
+            state.signal = canonicalPlayerFilter(chip.getAttribute("data-player-filter") || "all");
             render();
           });
         });
@@ -848,7 +982,111 @@
       });
   }
 
+  function initPlayerSharing() {
+    document.addEventListener("click", function (event) {
+      var button = event.target.closest("[data-share-player]");
+      if (!button) {
+        return;
+      }
+
+      var playerId = button.getAttribute("data-share-player");
+      var url = window.location.origin + window.location.pathname + "?player=" + encodeURIComponent(playerId);
+      var title = "FutbolRadar oyuncu radar kartı";
+
+      if (navigator.share) {
+        navigator.share({ title: title, url: url }).catch(function () {});
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(function () {
+          button.textContent = "Link kopyalandı";
+          window.setTimeout(function () {
+            button.textContent = "Radar kartını paylaş";
+          }, 1600);
+        }).catch(function () {});
+      }
+    });
+  }
+
+  function compareRowHtml(label, left, right) {
+    return (
+      '<div class="compare-row">' +
+      "<span>" + escapeHtml(label) + "</span>" +
+      "<b>" + escapeHtml(displayValue(left)) + "</b>" +
+      "<b>" + escapeHtml(displayValue(right)) + "</b>" +
+      "</div>"
+    );
+  }
+
+  function renderPlayerComparison(left, right) {
+    if (!left || !right) {
+      return "";
+    }
+
+    return (
+      '<article class="compare-card">' +
+      '<div class="compare-player"><span>' + escapeHtml(left.team) + " · " + escapeHtml(left.position) + "</span><h2>" + escapeHtml(left.name) + "</h2></div>" +
+      '<div class="compare-player right"><span>' + escapeHtml(right.team) + " · " + escapeHtml(right.position) + "</span><h2>" + escapeHtml(right.name) + "</h2></div>" +
+      compareRowHtml("AI rating", left.aiRating, right.aiRating) +
+      compareRowHtml("Gol tehdidi", playerScore(left, "threatScore"), playerScore(right, "threatScore")) +
+      compareRowHtml("Yaratıcılık", playerScore(left, "creativityScore"), playerScore(right, "creativityScore")) +
+      compareRowHtml("Pres gücü", playerScore(left, "pressingScore"), playerScore(right, "pressingScore")) +
+      compareRowHtml("Bitiricilik", radarMetric(left, "finishing", "Bitiricilik"), radarMetric(right, "finishing", "Bitiricilik")) +
+      compareRowHtml("Tempo", playerScore(left, "tempoScore", radarMetric(left, "tempo", "Tempo")), playerScore(right, "tempoScore", radarMetric(right, "tempo", "Tempo"))) +
+      compareRowHtml("Süreklilik", playerScore(left, "continuityScore", radarMetric(left, "consistency", "Süreklilik")), playerScore(right, "continuityScore", radarMetric(right, "consistency", "Süreklilik"))) +
+      '<p class="compare-note">FutbolRadar yorumu: ' + escapeHtml(left.aiRating >= right.aiRating ? left.name : right.name) + " genel radar etkisinde öne çıkıyor; rol farkı için gol tehdidi, yaratıcılık ve pres satırlarını birlikte oku.</p>" +
+      "</article>"
+    );
+  }
+
+  function initPlayerCompare(target) {
+    if (!target) {
+      return;
+    }
+
+    var selects = Array.from(document.querySelectorAll("[data-compare-player]"));
+    var query = new URLSearchParams(window.location.search);
+
+    target.dataset.state = "loading";
+
+    loadData("players").then(function (players) {
+      var options = players.map(function (player) {
+        return '<option value="' + escapeHtml(player.id) + '">' + escapeHtml(player.name) + " · " + escapeHtml(player.team) + "</option>";
+      }).join("");
+
+      selects.forEach(function (select, index) {
+        select.innerHTML = options;
+        select.value = query.get(index === 0 ? "p1" : "p2") || (players[index] && players[index].id) || "";
+      });
+
+      function render() {
+        var left = players.find(function (player) { return player.id === (selects[0] && selects[0].value); });
+        var right = players.find(function (player) { return player.id === (selects[1] && selects[1].value); });
+        var params = new URLSearchParams(window.location.search);
+
+        if (left) {
+          params.set("p1", left.id);
+        }
+
+        if (right) {
+          params.set("p2", right.id);
+        }
+
+        window.history.replaceState({}, "", window.location.pathname + "?" + params.toString());
+        setContent(target, renderPlayerComparison(left, right));
+      }
+
+      selects.forEach(function (select) {
+        select.addEventListener("change", render);
+      });
+
+      render();
+    }).catch(function () {
+      setEmpty(target, "Karşılaştırma yüklenemedi", "Oyuncu verisi geçici olarak okunamıyor.");
+    });
+  }
+
   function initDataLayer() {
+    initPlayerSharing();
+
     renderInto(
       document.querySelector('[data-api-target="featured-match"]'),
       "matches",
@@ -945,6 +1183,7 @@
     );
 
     initPlayerFilters(document.querySelector('[data-api-target="players-page"]'));
+    initPlayerCompare(document.querySelector('[data-api-target="player-compare"]'));
 
     renderInto(
       document.querySelector('[data-api-target="momentum"]'),

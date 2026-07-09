@@ -1320,6 +1320,16 @@ h1 {
         font-weight: 800;
       }
 
+      .detail-link.ghost {
+        border-color: rgba(134, 255, 218, 0.18);
+        color: #c5d5d2;
+        background: rgba(255, 255, 255, 0.04);
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+
       .standings {
         border: 1px solid rgba(77, 229, 255, 0.18);
         border-radius: var(--radius);
@@ -1569,6 +1579,13 @@ h1 {
         min-height: 360px;
       }
 
+      .player-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin-top: 14px;
+      }
+
       .player-signals-grid {
         display: grid;
         grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -1592,16 +1609,130 @@ h1 {
       }
 
       .player-signal-card p {
-        min-height: 36px;
         margin: 8px 0 12px;
         color: var(--muted);
         font-size: 0.82rem;
+      }
+
+      .player-signal-card .signal-note {
+        min-height: 58px;
+        color: #c5d5d2;
       }
 
       .player-signal-card a {
         color: var(--green);
         font-size: 0.82rem;
         font-weight: 850;
+      }
+
+      .popular-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        align-items: center;
+        margin: -22px 0 54px;
+      }
+
+      .popular-links span {
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 850;
+        text-transform: uppercase;
+      }
+
+      .popular-links a {
+        display: inline-flex;
+        min-height: 34px;
+        align-items: center;
+        border: 1px solid rgba(77, 229, 255, 0.18);
+        border-radius: 999px;
+        padding: 0 11px;
+        color: #c5d5d2;
+        background: rgba(255, 255, 255, 0.04);
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+
+      .compare-toolbar {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+        gap: 12px;
+        align-items: end;
+        margin: -30px 0 18px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)), var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .compare-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .compare-card {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 18px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)), var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .compare-player {
+        border: 1px solid rgba(77, 229, 255, 0.14);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.035);
+      }
+
+      .compare-player.right {
+        text-align: right;
+      }
+
+      .compare-player span {
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 800;
+      }
+
+      .compare-player h2 {
+        margin: 5px 0 0;
+        font-size: 1.25rem;
+      }
+
+      .compare-row,
+      .compare-note {
+        grid-column: 1 / -1;
+      }
+
+      .compare-row {
+        display: grid;
+        grid-template-columns: minmax(110px, 1fr) minmax(0, 0.8fr) minmax(0, 0.8fr);
+        gap: 10px;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        padding: 10px 0;
+      }
+
+      .compare-row span {
+        color: var(--muted);
+        font-size: 0.82rem;
+        font-weight: 800;
+      }
+
+      .compare-row b {
+        color: var(--green);
+        text-align: right;
+      }
+
+      .compare-note {
+        margin: 8px 0 0;
+        color: #c5d5d2;
+        font-size: 0.9rem;
       }
 
       .article-card {
@@ -1709,6 +1840,10 @@ h1 {
         .player-signals-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
+
+        .compare-toolbar {
+          grid-template-columns: 1fr;
+        }
       }
 
       @media (max-width: 760px) {
@@ -1811,6 +1946,20 @@ h1 {
 
         .player-signals-grid {
           grid-template-columns: 1fr;
+        }
+
+        .player-actions {
+          display: grid;
+        }
+
+        .compare-card,
+        .compare-row {
+          grid-template-columns: 1fr;
+        }
+
+        .compare-player.right,
+        .compare-row b {
+          text-align: left;
         }
 
         .section-head {

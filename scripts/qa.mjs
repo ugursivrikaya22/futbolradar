@@ -8,6 +8,7 @@ const pages = [
   "puan-durumu.html",
   "takimlar.html",
   "oyuncu-radari.html",
+  "oyuncu-karsilastir.html",
   "canli-skor.html",
   "bugunun-maclari.html",
   "momentum.html",
