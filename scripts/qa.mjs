@@ -104,6 +104,8 @@ const cssFeatureMarkers = [
   "player-signal-actions",
   "player-radar-hero",
   "player-radar-metrics",
+  "comparison-hub-strip",
+  "comparison-hub-card",
   "player-filter-panel",
   "player-rating-badge",
   "radar-mini-bars",
@@ -317,6 +319,11 @@ function checkSeoAndLinks() {
     if (playerProfilePages.includes(page)) {
       expect(html.includes("static-profile-links"), `${page}: missing static profile comparison links`);
       expect(html.includes("../karsilastirma/"), `${page}: missing static comparison page href`);
+    }
+
+    if (page === "oyuncu-radari.html") {
+      expect(html.includes("comparison-hub-strip"), `${page}: missing visible comparison hub`);
+      expect(html.includes("./karsilastirma/"), `${page}: missing static comparison hub links`);
     }
 
     if (playerComparisonPages.includes(page)) {

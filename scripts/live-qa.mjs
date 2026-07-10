@@ -100,6 +100,8 @@ const cssFeatureMarkers = [
   "player-signal-actions",
   "player-radar-hero",
   "player-radar-metrics",
+  "comparison-hub-strip",
+  "comparison-hub-card",
   "player-filter-panel",
   "player-rating-badge",
   "radar-mini-bars",

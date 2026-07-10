@@ -1553,6 +1553,81 @@ h1 {
         font-weight: 900;
       }
 
+      .comparison-hub-strip {
+        display: grid;
+        gap: 14px;
+        margin: 0 0 18px;
+        border: 1px solid rgba(77, 229, 255, 0.16);
+        border-radius: var(--radius);
+        padding: 16px;
+        background:
+          linear-gradient(180deg, rgba(77, 229, 255, 0.055), rgba(128, 255, 155, 0.026)),
+          var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .comparison-hub-head {
+        display: grid;
+        gap: 5px;
+      }
+
+      .comparison-hub-head span {
+        color: var(--green);
+        font-size: 0.74rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .comparison-hub-head h2 {
+        margin: 0;
+        color: var(--text);
+        font-size: clamp(1.15rem, 2.4vw, 1.7rem);
+        line-height: 1.12;
+      }
+
+      .comparison-hub-head p {
+        max-width: 780px;
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .comparison-hub-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .comparison-hub-card {
+        display: grid;
+        min-width: 0;
+        gap: 8px;
+        border: 1px solid rgba(128, 255, 155, 0.14);
+        border-radius: var(--radius);
+        padding: 13px;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.035);
+      }
+
+      .comparison-hub-card span,
+      .comparison-hub-card em {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-style: normal;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .comparison-hub-card strong {
+        color: var(--green);
+        font-size: 0.94rem;
+        line-height: 1.24;
+      }
+
+      .comparison-hub-card em {
+        color: var(--cyan);
+      }
+
       .player-summary-metrics {
         display: grid;
         grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -4318,6 +4393,10 @@ h1 {
           grid-template-columns: 1fr;
         }
 
+        .comparison-hub-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         .compare-guide {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -4478,6 +4557,10 @@ h1 {
         .player-summary-metrics {
           grid-template-columns: 1fr;
           margin-top: -22px;
+        }
+
+        .comparison-hub-grid {
+          grid-template-columns: 1fr;
         }
 
         .player-card-meta-grid {
