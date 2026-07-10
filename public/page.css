@@ -2874,6 +2874,54 @@ h1 {
         font-size: 1.05rem;
       }
 
+      .match-action-panel {
+        display: grid;
+        gap: 12px;
+        margin: 14px 0;
+        border: 1px solid rgba(128, 255, 155, 0.14);
+        border-radius: var(--radius);
+        padding: 15px;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(128, 255, 155, 0.1), transparent 30%),
+          rgba(255, 255, 255, 0.028);
+      }
+
+      .match-action-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .match-action-card {
+        display: grid;
+        min-width: 0;
+        gap: 7px;
+        border: 1px solid rgba(77, 229, 255, 0.13);
+        border-radius: 8px;
+        padding: 12px;
+        background: rgba(15, 23, 42, 0.48);
+      }
+
+      .match-action-card span {
+        color: var(--cyan);
+        font-size: 0.7rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .match-action-card strong {
+        color: var(--text);
+        font-size: 0.95rem;
+      }
+
+      .match-action-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.8rem;
+        line-height: 1.45;
+      }
+
       .profile-section {
         width: 100%;
         min-width: 0;
@@ -3884,6 +3932,7 @@ h1 {
         .team-radar-snapshot,
         .team-signal-grid,
         .match-radar-snapshot,
+        .match-action-grid,
         .match-signal-grid,
         .transfer-summary-grid,
         .transfer-radar-summary {
@@ -4082,6 +4131,10 @@ h1 {
         }
 
         .compare-insights-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .match-action-grid {
           grid-template-columns: 1fr;
         }
 

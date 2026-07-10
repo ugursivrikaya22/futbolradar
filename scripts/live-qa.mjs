@@ -14,6 +14,7 @@ const pages = [
   "/oyuncu-radari.html",
   "/oyuncu-karsilastir.html",
   "/oyuncu-detay.html",
+  "/mac-detay.html",
   "/super-lig-fikstur.html",
   "/players/position/forvet.html",
   "/players/league/super-lig.html",
@@ -59,6 +60,7 @@ const appFeatureMarkers = [
   "compareInsightCardsHtml",
   "teamPlayerSpotlightHtml",
   "teamCardLeaderHtml",
+  "matchActionPanelHtml",
   "comparePresetDefinitions",
   "renderLandingInsights",
   "player-signal-actions"
@@ -69,6 +71,7 @@ const cssFeatureMarkers = [
   "compare-insight-card",
   "team-player-spotlight-card",
   "team-card-player",
+  "match-action-card",
   "compare-preset-card",
   "landing-insight-card",
   "player-signal-actions"

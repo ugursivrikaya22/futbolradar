@@ -3915,6 +3915,26 @@
     );
   }
 
+  function matchActionPanelHtml(match) {
+    var home = displayValue(match.homeTeam);
+    var away = displayValue(match.awayTeam);
+    var actions = [
+      { label: "Ev sahibi oyuncular", title: home, text: "Kadro icinde form, gol tehdidi ve AI rating filtrelerini ac.", href: "./oyuncu-radari.html?team=" + encodeURIComponent(home) },
+      { label: "Deplasman oyuncular", title: away, text: "Rakip kadronun yaraticilik, pres ve form sinyallerini incele.", href: "./oyuncu-radari.html?team=" + encodeURIComponent(away) },
+      { label: "Momentum kiyas", title: "Takim momentumu", text: "Mac oncesi guc dengesini momentum siralamasinda oku.", href: "./momentum.html" },
+      { label: "Mac listesi", title: "Bugunun maclari", text: "Ayni gunun diger radar maclarina geri don.", href: "./bugunun-maclari.html" }
+    ];
+
+    return (
+      '<section class="match-action-panel">' +
+      '<div class="profile-section-head"><h2>Mac radar aksiyonlari</h2><span>Takim ve oyuncu analizine hizli gecis</span></div>' +
+      '<div class="match-action-grid">' + actions.map(function (action) {
+        return '<a class="match-action-card" data-card="match-action" href="' + escapeHtml(action.href) + '"><span>' + escapeHtml(action.label) + "</span><strong>" + escapeHtml(action.title) + "</strong><p>" + escapeHtml(action.text) + "</p></a>";
+      }).join("") + "</div>" +
+      "</section>"
+    );
+  }
+
   function renderMatchDetail(detail) {
     if (!detail) {
       return "";
@@ -3930,6 +3950,7 @@
       matchRadarSnapshotHtml(detail) +
       matchSignalCardsHtml(detail) +
       matchTeamLinksHtml(detail) +
+      matchActionPanelHtml(detail) +
       '<section class="profile-section"><h2>Kadrolar</h2>' + renderTimelineList(detail.lineups, "Kadro verisi bekleniyor") + "</section>" +
       '<section class="profile-section"><h2>MaÃ§ OlaylarÄ±</h2>' + renderTimelineList(detail.events, "Olay verisi bekleniyor") + "</section>" +
       '<section class="profile-section"><h2>Ä°statistikler</h2>' + renderStatisticsList(detail.statistics) + "</section>" +
