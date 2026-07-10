@@ -18,6 +18,7 @@ const pages = [
   "/takim-detay.html",
   "/oyuncu-radari.html",
   "/oyuncu-karsilastir.html",
+  "/oyuncu-karsilastirmalari.html",
   "/oyuncu-detay.html",
   "/mac-detay.html",
   "/super-lig-fikstur.html",
@@ -43,6 +44,7 @@ const rewritePages = [
   "/oyuncular/orta-sahalar",
   "/oyuncular/genc-yetenekler",
   "/oyuncular/en-iyi-oyuncular",
+  "/oyuncu-karsilastirmalari",
   ...playerRewritePages,
   ...playerComparisonRewritePages
 ];
@@ -88,6 +90,8 @@ const cssFeatureMarkers = [
   "static-profile-link-card",
   "static-comparison-summary",
   "comparison-mini-card",
+  "comparison-index-grid",
+  "comparison-index-card",
   "compare-insight-card",
   "team-player-spotlight-card",
   "team-card-player",

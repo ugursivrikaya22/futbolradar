@@ -288,6 +288,114 @@ function pageHtml(pair) {
 `;
 }
 
+function comparisonIndexCard(pair) {
+  const { left, right, slug, reasons } = pair;
+  const ratingDelta = Math.abs(playerRating(left) - playerRating(right));
+  const roleLabel = playerPositionGroup(left) === playerPositionGroup(right)
+    ? `${playerPositionGroup(left)} eslesmesi`
+    : `${playerPositionGroup(left)} / ${playerPositionGroup(right)}`;
+
+  return `<a class="comparison-index-card" href="./karsilastirma/${escapeHtml(slug)}.html">
+    <span>${escapeHtml(roleLabel)}</span>
+    <strong>${escapeHtml(left.name)} vs ${escapeHtml(right.name)}</strong>
+    <p>${escapeHtml((reasons && reasons[0]) || "Rating, form ve rol etkisi")}</p>
+    <em>Rating farki ${escapeHtml(ratingDelta.toFixed(1))}</em>
+  </a>`;
+}
+
+function comparisonIndexHtml(pairs) {
+  const title = "Oyuncu Karsilastirmalari | Statik Kiyaslar | FutbolRadar";
+  const description = "FutbolRadar oyuncu karsilastirmalari; Super Lig oyuncularini AI rating, form, rol etkisi, piyasa degeri ve transfer sinyalleriyle yan yana inceler.";
+  const canonical = `${domain}/oyuncu-karsilastirmalari.html`;
+  const topPairs = pairs.slice(0, 20);
+
+  return `<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapeHtml(title)}</title>
+    <meta name="description" content="${escapeHtml(description)}" />
+    <link rel="canonical" href="${canonical}" />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content="FutbolRadar" />
+    <meta property="og:title" content="${escapeHtml(title)}" />
+    <meta property="og:description" content="${escapeHtml(description)}" />
+    <meta property="og:url" content="${canonical}" />
+    <meta property="og:image" content="${domain}/assets/og-image.svg" />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(title)}" />
+    <meta name="twitter:description" content="${escapeHtml(description)}" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <script type="application/ld+json">
+      ${JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: title,
+        description,
+        url: canonical,
+        mainEntity: {
+          "@type": "ItemList",
+          itemListElement: topPairs.map((pair, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            name: `${pair.left.name} vs ${pair.right.name}`,
+            url: `${domain}/karsilastirma/${pair.slug}.html`
+          }))
+        }
+      }, null, 8)}
+    </script>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="stylesheet" href="./page.css" />
+  </head>
+  <body class="subpage">
+    <header class="topbar">
+      <nav class="container nav" aria-label="Ana menu">
+        <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
+        <button class="nav-toggle" type="button" aria-label="Menuyu ac" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
+        <div class="nav-menu" id="primary-menu">
+          <div class="nav-links"><a href="./bugunun-maclari.html">Bugunku Maclar</a><a href="./canli-skor.html">Canli Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takimlar.html">Takimlar</a><a href="./oyuncu-radari.html">Oyuncu Radar</a><a href="./momentum.html">Momentum</a></div>
+          <a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a>
+        </div>
+      </nav>
+    </header>
+    <main class="container comparison-index-page">
+      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><a href="./oyuncu-radari.html">Oyuncu Radar</a><span>/</span><span>Oyuncu Karsilastirmalari</span></nav>
+      <section class="hero">
+        <div class="hero-row">
+          <div>
+            <span class="eyebrow">Statik oyuncu karsilastirma merkezi</span>
+            <h1>Oyuncu Karsilastirmalari</h1>
+            <p class="lead">${escapeHtml(description)}</p>
+          </div>
+          <span class="hero-meta">${escapeHtml(topPairs.length)} hazir kiyas</span>
+        </div>
+      </section>
+      <section class="comparison-index-grid" aria-label="Hazir oyuncu karsilastirmalari">
+        ${topPairs.map(comparisonIndexCard).join("\n        ")}
+      </section>
+      <section class="comparison-seo-links" aria-label="Oyuncu karsilastirma gezinme">
+        <span>Devam et</span>
+        <a href="./oyuncu-radari.html">Oyuncu Radar</a>
+        <a href="./oyuncu-karsilastir.html">Interaktif kiyas</a>
+        <a href="./oyuncular/en-iyi-oyuncular.html">En iyi oyuncular</a>
+        <a href="./transfer-radari.html">Transfer Radar</a>
+      </section>
+    </main>
+    <footer class="footer"><div class="container footer-links">FutbolRadar - Oyuncu karsilastirmalari - <a href="./hakkinda.html">Hakkinda</a> - <a href="./veri-notu.html">Veri Notu</a> - <a href="./iletisim.html">Iletisim</a></div></footer>
+    <script src="./site.js" defer></script>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
+`;
+}
+
 fs.mkdirSync(outDir, { recursive: true });
 fs.mkdirSync(publicOutDir, { recursive: true });
 
@@ -298,4 +406,8 @@ for (const pair of pairs) {
   fs.writeFileSync(path.join(publicOutDir, `${pair.slug}.html`), html, "utf8");
 }
 
-console.log(`Generated ${pairs.length} static player comparison pages`);
+const indexHtml = comparisonIndexHtml(pairs);
+fs.writeFileSync(path.join(root, "oyuncu-karsilastirmalari.html"), indexHtml, "utf8");
+fs.writeFileSync(path.join(root, "public", "oyuncu-karsilastirmalari.html"), indexHtml, "utf8");
+
+console.log(`Generated ${pairs.length} static player comparison pages and index`);

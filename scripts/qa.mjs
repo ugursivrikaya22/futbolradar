@@ -18,6 +18,7 @@ const pages = [
   "takimlar.html",
   "oyuncu-radari.html",
   "oyuncu-karsilastir.html",
+  "oyuncu-karsilastirmalari.html",
   "oyuncu-detay.html",
   "mac-detay.html",
   "takim-detay.html",
@@ -92,6 +93,8 @@ const cssFeatureMarkers = [
   "static-profile-link-card",
   "static-comparison-summary",
   "comparison-mini-card",
+  "comparison-index-grid",
+  "comparison-index-card",
   "compare-insight-card",
   "team-player-spotlight-card",
   "team-card-player",
@@ -324,6 +327,16 @@ function checkSeoAndLinks() {
     if (page === "oyuncu-radari.html") {
       expect(html.includes("comparison-hub-strip"), `${page}: missing visible comparison hub`);
       expect(html.includes("./karsilastirma/"), `${page}: missing static comparison hub links`);
+      expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison index link`);
+    }
+
+    if (page === "oyuncu-karsilastir.html") {
+      expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison index link`);
+    }
+
+    if (page === "oyuncu-karsilastirmalari.html") {
+      expect(html.includes("comparison-index-grid"), `${page}: missing comparison index grid`);
+      expect(html.includes("./karsilastirma/"), `${page}: missing static comparison links`);
     }
 
     if (playerComparisonPages.includes(page)) {

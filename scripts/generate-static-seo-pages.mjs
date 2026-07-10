@@ -394,6 +394,7 @@ function sitemapXml(files) {
     "takim-detay.html",
     "oyuncu-radari.html",
     "oyuncu-karsilastir.html",
+    "oyuncu-karsilastirmalari.html",
     "oyuncu-detay.html",
     "mac-detay.html",
     "players/position/forvet.html",

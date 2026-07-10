@@ -1592,6 +1592,13 @@ h1 {
         line-height: 1.5;
       }
 
+      .comparison-hub-all {
+        justify-self: start;
+        color: var(--cyan);
+        font-size: 0.84rem;
+        font-weight: 900;
+      }
+
       .comparison-hub-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -3531,6 +3538,53 @@ h1 {
         background: rgba(128, 255, 155, 0.052);
       }
 
+      .comparison-index-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin: 18px 0;
+      }
+
+      .comparison-index-card {
+        display: grid;
+        min-width: 0;
+        gap: 9px;
+        border: 1px solid rgba(77, 229, 255, 0.14);
+        border-radius: var(--radius);
+        padding: 14px;
+        color: var(--text);
+        background:
+          linear-gradient(180deg, rgba(77, 229, 255, 0.046), rgba(128, 255, 155, 0.022)),
+          var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .comparison-index-card span,
+      .comparison-index-card em {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-style: normal;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .comparison-index-card strong {
+        color: var(--green);
+        font-size: 0.98rem;
+        line-height: 1.24;
+      }
+
+      .comparison-index-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.45;
+      }
+
+      .comparison-index-card em {
+        color: var(--cyan);
+      }
+
       .profile-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4397,6 +4451,10 @@ h1 {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .comparison-index-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         .compare-guide {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -4560,6 +4618,10 @@ h1 {
         }
 
         .comparison-hub-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .comparison-index-grid {
           grid-template-columns: 1fr;
         }
 
