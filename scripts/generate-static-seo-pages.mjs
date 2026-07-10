@@ -119,6 +119,81 @@ const seoPages = [
   }
 ];
 
+const playerSeoPages = [
+  {
+    file: "en-iyi-super-lig-oyunculari.html",
+    landing: "en-iyi-super-lig-oyunculari",
+    title: "En Iyi Super Lig Oyunculari | AI Rating ve Scouting | FutbolRadar",
+    description: "En iyi Super Lig oyunculari listesi; AI rating, form, radar skoru, piyasa degeri ve scouting sinyallerine gore siralanir.",
+    h1: "En Iyi Super Lig Oyunculari",
+    lead: "Super Lig oyuncularini AI rating, rol grubu, form ve radar etkisine gore karsilastir.",
+    cards: ["AI rating", "Radar profili", "Scouting sinyali"]
+  },
+  {
+    file: "en-iyi-forvetler.html",
+    landing: "en-iyi-forvetler",
+    title: "En Iyi Forvetler | Gol Tehdidi ve AI Rating | FutbolRadar",
+    description: "En iyi forvetler listesi; gol tehdidi, xG, sut hacmi, form ve AI rating sinyalleriyle hazirlanir.",
+    h1: "En Iyi Forvetler",
+    lead: "Forvet ve kanat oyuncularini gol tehdidi, hucum radari ve form ivmesiyle oku.",
+    cards: ["Gol tehdidi", "Hucum radari", "Bitiricilik"]
+  },
+  {
+    file: "en-iyi-orta-sahalar.html",
+    landing: "en-iyi-orta-sahalar",
+    title: "En Iyi Orta Sahalar | Yaraticilik ve Pres Radari | FutbolRadar",
+    description: "En iyi orta sahalar; yaraticilik, pas, pres gucu, form ve AI rating metrikleriyle listelenir.",
+    h1: "En Iyi Orta Sahalar",
+    lead: "Orta saha oyuncularini yaraticilik, pres, pas ve sureklilik sinyalleriyle karsilastir.",
+    cards: ["Yaraticilik", "Pres gucu", "Pas kalitesi"]
+  },
+  {
+    file: "en-iyi-defanslar.html",
+    landing: "en-iyi-defanslar",
+    title: "En Iyi Defanslar | Savunma Radari | FutbolRadar",
+    description: "En iyi defanslar; savunma radari, sureklilik, disiplin, top kapma ve AI rating sinyalleriyle analiz edilir.",
+    h1: "En Iyi Defanslar",
+    lead: "Defans oyuncularini savunma etkisi, disiplin, fiziksel sureklilik ve radar skoruyla oku.",
+    cards: ["Savunma radari", "Disiplin", "Sureklilik"]
+  },
+  {
+    file: "en-iyi-kaleciler.html",
+    landing: "en-iyi-kaleciler",
+    title: "En Iyi Kaleciler | Kaleci Performans Radari | FutbolRadar",
+    description: "En iyi kaleciler; form, savunma etkisi, veri guveni ve AI rating sinyalleriyle takip edilir.",
+    h1: "En Iyi Kaleciler",
+    lead: "Kalecileri form, savunma katkisi ve performans radariyla karsilastir.",
+    cards: ["Kaleci formu", "Savunma etkisi", "Veri guveni"]
+  },
+  {
+    file: "yukselen-oyuncular.html",
+    landing: "yukselen-oyuncular",
+    title: "Yukselen Oyuncular | Form Artisi ve Scouting Sinyali | FutbolRadar",
+    description: "Yukselen oyuncular listesi; form degisimi, trend yonu, dakika artisi ve AI radar sinyalleriyle hazirlanir.",
+    h1: "Yukselen Oyuncular",
+    lead: "Formu yukselen oyunculari trend, dakika, potansiyel ve radar metrikleriyle takip et.",
+    cards: ["Form artisi", "Trend", "Potansiyel"]
+  },
+  {
+    file: "transfer-radari.html",
+    landing: "transfer-radari",
+    title: "Transfer Radari | Guncel Takim ve Eski Kulup Takibi | FutbolRadar",
+    description: "Transfer radari; oyuncularin guncel takim, eski kulup, transfer gecmisi, veri durumu ve piyasa degeri alanlarini izler.",
+    h1: "Transfer Radari",
+    lead: "Oyuncu transfer gecmisini, guncel takimi ve veri guvenilirligini tek ekranda oku.",
+    cards: ["Guncel takim", "Transfer gecmisi", "Veri guveni"]
+  },
+  {
+    file: "genc-yetenekler.html",
+    landing: "genc-yetenekler",
+    title: "Genc Yetenekler | Potansiyel ve AI Rating | FutbolRadar",
+    description: "Genc yetenekler listesi; yas, potansiyel rating, form, piyasa degeri ve radar sinyallerine gore hazirlanir.",
+    h1: "Genc Yetenekler",
+    lead: "Genc oyunculari potansiyel, form ve piyasa degeri radariyla incele.",
+    cards: ["Potansiyel", "Yas profili", "Piyasa degeri"]
+  }
+];
+
 const legalPages = [
   {
     file: "veri-notu.html",
@@ -208,7 +283,11 @@ ${nav}
           <span class="hero-meta">Veriler periyodik olarak güncellenir</span>
         </div>
       </section>
-      <section class="grid three">${cardsHtml(page.cards)}</section>
+      ${page.landing ? `<section class="grid three">${cardsHtml(page.cards)}</section>
+      <section class="player-filter-note"><span data-landing-count>Oyuncu listesi hazirlaniyor</span></section>
+      <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${page.landing}">
+        <article class="data-empty" data-card="empty-state"><strong>Oyuncular yukleniyor</strong><span>Scouting kartlari veri katmanindan okunuyor.</span></article>
+      </section>` : `<section class="grid three">${cardsHtml(page.cards)}</section>`}
       <section class="source-strip" aria-label="İlgili bağlantılar">
         <div><span>İlgili ekran</span><b><a href="./oyuncu-radari.html">Oyuncu Radar</a></b></div>
         <div><span>Takım verisi</span><b><a href="./momentum.html">Momentum</a></b></div>
@@ -279,7 +358,7 @@ ${unique.map((file) => {
 `;
 }
 
-const pages = [...seoPages, ...legalPages];
+const pages = [...seoPages, ...playerSeoPages, ...legalPages];
 pages.forEach(writePage);
 const sitemap = sitemapXml(pages.map((page) => page.file));
 fs.writeFileSync(path.join(root, "sitemap.xml"), sitemap, "utf8");

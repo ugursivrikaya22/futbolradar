@@ -1,6 +1,26 @@
 const players = require("../data/players.json");
+const {
+  computeOverallRating,
+  computePlayerRadar,
+  deriveStrengths,
+  deriveWeaknesses,
+  positionGroup: resolvePositionGroup
+} = require("./ratingService");
 
 const DEFAULT_SOURCE_NOTE = "FutbolRadar tahmini ve manuel veri kontrolü";
+
+const VALID_DATA_STATUSES = new Set([
+  "verified",
+  "manual",
+  "manually_verified",
+  "provider",
+  "stale",
+  "estimated",
+  "pending",
+  "mock_needs_verification",
+  "transfer_needs_monitoring"
+]);
+const VALID_RATING_STATUSES = new Set(["verified", "manual", "provider", "estimated", "pending", "stale"]);
 
 function normalizeText(value) {
   return String(value || "")
@@ -59,6 +79,76 @@ function normalizeArray(value) {
   return Array.isArray(value) ? value.filter(Boolean) : [];
 }
 
+function normalizeNumber(value, fallback) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
+function normalizeStats(player) {
+  const stats = player.stats && typeof player.stats === "object" ? player.stats : {};
+
+  return {
+    appearances: normalizeNumber(stats.appearances ?? player.appearances, 0),
+    goals: normalizeNumber(stats.goals ?? player.goals, 0),
+    assists: normalizeNumber(stats.assists ?? player.assists, 0),
+    minutesPlayed: normalizeNumber(stats.minutesPlayed ?? player.minutesPlayed ?? player.minutes, 0),
+    yellowCards: normalizeNumber(stats.yellowCards ?? player.yellowCards, 0),
+    redCards: normalizeNumber(stats.redCards ?? player.redCards, 0),
+    passAccuracy: normalizeNumber(stats.passAccuracy ?? player.passAccuracy, null),
+    shotsPerGame: normalizeNumber(stats.shotsPerGame ?? player.shotsPerGame, null),
+    tacklesPerGame: normalizeNumber(stats.tacklesPerGame ?? player.tacklesPerGame, null),
+    interceptionsPerGame: normalizeNumber(stats.interceptionsPerGame ?? player.interceptionsPerGame, null),
+    shots: normalizeNumber(stats.shots ?? player.shots, 0),
+    keyPasses: normalizeNumber(stats.keyPasses ?? player.keyPasses, 0),
+    xg: normalizeNumber(stats.xg ?? player.xg, 0),
+    xa: normalizeNumber(stats.xa ?? player.xa, 0),
+    duelsWon: normalizeNumber(stats.duelsWon ?? player.duelsWon ?? player.duels, 0),
+    pressures: normalizeNumber(stats.pressures ?? player.pressures ?? player.press, 0),
+    cleanSheets: normalizeNumber(stats.cleanSheets ?? player.cleanSheets, 0),
+    goalsConceded: normalizeNumber(stats.goalsConceded ?? player.goalsConceded, 0)
+  };
+}
+
+function normalizeSource(player) {
+  const source = player.source && typeof player.source === "object" ? player.source : {};
+
+  return {
+    provider: source.provider || player.providerName || "FutbolRadar Mock Player Provider",
+    providerId: source.providerId || player.providerId || null,
+    status: source.status || player.dataStatus || "mock_needs_verification",
+    ratingStatus: source.ratingStatus || player.ratingStatus || "estimated",
+    lastSyncedAt: source.lastSyncedAt || player.lastSyncedAt || new Date().toISOString(),
+    note: source.note || player.sourceNote || DEFAULT_SOURCE_NOTE
+  };
+}
+
+function normalizeSimilarPlayers(value) {
+  return normalizeArray(value).map((item) => {
+    if (typeof item === "string") {
+      return { id: slug(item), name: item, reason: "Benzer rol profili" };
+    }
+
+    return {
+      id: item.id || item.slug || slug(item.name || item.playerName),
+      name: item.name || item.playerName || item.id || "",
+      reason: item.reason || item.note || "Benzer radar profili",
+      score: item.score == null ? null : Number(item.score)
+    };
+  }).filter((item) => item.id || item.name);
+}
+
+function normalizeRadar(player, base, context) {
+  const computed = computePlayerRadar(base, context || {});
+  const group = base.positionGroup || resolvePositionGroup(base.position);
+  const overall = computeOverallRating(computed, group, base);
+
+  return {
+    ...(player.radar || {}),
+    ...computed,
+    overall
+  };
+}
+
 function normalizeTransferHistory(history) {
   return normalizeArray(history).map((item) => ({
     date: item.date || null,
@@ -101,10 +191,16 @@ function normalizePlayer(player, options) {
   const height = player.height || (player.heightCm ? `${player.heightCm} cm` : null);
   const marketValue = player.marketValue || formatMarketValueEur(player.marketValueEur);
   const formerTeams = normalizeArray(player.formerTeams).filter((team) => normalizeText(team) !== normalizeText(currentTeam));
-  const rating = player.rating || player.aiRating || player.overallRating || null;
-  const minutesPlayed = player.minutesPlayed || player.minutes || 0;
-
-  return {
+  const stats = normalizeStats(player);
+  const rawRating = player.rating || player.aiRating || player.overallRating || null;
+  const minutesPlayed = stats.minutesPlayed;
+  const positionGroup = player.positionGroup || resolvePositionGroup(player.position);
+  const source = normalizeSource({
+    ...player,
+    currentTeam,
+    providerId: player.providerId || `mock-${id}`
+  });
+  const base = {
     ...player,
     id,
     slug: player.slug || id,
@@ -129,11 +225,55 @@ function normalizePlayer(player, options) {
     lastUpdated: player.lastUpdated || new Date().toISOString().slice(0, 10),
     transferUpdatedAt: player.transferUpdatedAt || player.lastUpdated || new Date().toISOString().slice(0, 10),
     lastSyncedAt: player.lastSyncedAt || new Date().toISOString(),
+    source,
+    positionGroup,
+    stats,
     minutesPlayed,
     minutes: player.minutes || minutesPlayed,
-    rating,
-    aiRating: player.aiRating || rating,
-    overallRating: player.overallRating || rating
+    appearances: stats.appearances,
+    goals: stats.goals,
+    assists: stats.assists,
+    yellowCards: stats.yellowCards,
+    redCards: stats.redCards,
+    passAccuracy: stats.passAccuracy,
+    shotsPerGame: stats.shotsPerGame,
+    tacklesPerGame: stats.tacklesPerGame,
+    interceptionsPerGame: stats.interceptionsPerGame,
+    shots: stats.shots,
+    keyPasses: stats.keyPasses,
+    xg: stats.xg,
+    xa: stats.xa,
+    duelsWon: stats.duelsWon,
+    duels: player.duels || stats.duelsWon,
+    pressures: stats.pressures,
+    press: player.press || stats.pressures,
+    rating: rawRating,
+    aiRating: player.aiRating || rawRating,
+    overallRating: player.overallRating || rawRating
+  };
+
+  const radar = normalizeRadar(player, base, options && options.context);
+  const manualRating = isProtectedStatus(base.ratingStatus) && Number.isFinite(Number(rawRating));
+  const rating = manualRating ? Number(rawRating) : radar.overall;
+
+  return {
+    ...base,
+    rating: base.rating || rating,
+    aiRating: rating,
+    overallRating: rating,
+    radar: {
+      ...radar,
+      overall: rating
+    },
+    ratingComponents: {
+      ...radar,
+      overall: rating
+    },
+    strengths: deriveStrengths(base, radar),
+    weaknesses: deriveWeaknesses(base, radar),
+    similarPlayers: normalizeSimilarPlayers(player.similarPlayers),
+    dataConflict: player.dataConflict || null,
+    transferConflict: player.transferConflict || null
   };
 }
 
@@ -353,6 +493,7 @@ function validatePlayerData(rawPlayers) {
   const errors = [];
   const warnings = [];
   const seenIds = new Set();
+  const seenSlugs = new Set();
   const list = getPlayers(rawPlayers);
   const now = new Date();
 
@@ -367,12 +508,29 @@ function validatePlayerData(rawPlayers) {
     }
     seenIds.add(player.id);
 
+    if (seenSlugs.has(player.slug)) {
+      errors.push(`${label}: duplicate player slug ${player.slug}.`);
+    }
+    seenSlugs.add(player.slug);
+
     if (!player.currentTeam) {
       errors.push(`${label}: currentTeam eksik.`);
     }
 
     if (!player.position) {
       errors.push(`${label}: position eksik.`);
+    }
+
+    if (!player.positionGroup) {
+      errors.push(`${label}: positionGroup hesaplanamadi.`);
+    }
+
+    if (!VALID_DATA_STATUSES.has(player.dataStatus)) {
+      warnings.push(`${label}: dataStatus '${player.dataStatus}' beklenen sozlukte degil.`);
+    }
+
+    if (!VALID_RATING_STATUSES.has(player.ratingStatus)) {
+      warnings.push(`${label}: ratingStatus '${player.ratingStatus}' beklenen sozlukte degil.`);
     }
 
     if (!player.birthDate) {
@@ -403,6 +561,17 @@ function validatePlayerData(rawPlayers) {
         errors.push(`${label}: ${field} 0-100 aralığında olmalı.`);
       }
     });
+
+    ["overall", "form", "attack", "creativity", "defense", "discipline", "durability", "potential", "transferValue", "dataConfidence"].forEach((field) => {
+      const value = player.radar && player.radar[field];
+      if (value != null && value !== "" && (Number(value) < 0 || Number(value) > 100)) {
+        errors.push(`${label}: radar.${field} 0-100 araliginda olmali.`);
+      }
+    });
+
+    if (!player.stats || typeof player.stats !== "object") {
+      errors.push(`${label}: stats nesnesi eksik.`);
+    }
 
     player.transferHistory.forEach((transfer, transferIndex) => {
       if (!transfer.date || !transfer.toTeam) {
@@ -486,6 +655,7 @@ module.exports = {
   mergeProviderPlayers,
   mergeProviderTransfers,
   normalizePlayer,
+  normalizeStats,
   normalizeText,
   slug,
   updatePlayerTransfer,

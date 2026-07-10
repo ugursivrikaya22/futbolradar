@@ -1430,7 +1430,7 @@ h1 {
 
       .player-toolbar {
         display: grid;
-        grid-template-columns: repeat(5, minmax(130px, 1fr));
+        grid-template-columns: repeat(6, minmax(130px, 1fr));
         align-items: end;
         gap: 12px;
         margin: -30px 0 18px;
@@ -1454,7 +1454,8 @@ h1 {
         text-transform: uppercase;
       }
 
-      .filter-group select {
+      .filter-group select,
+      .filter-group input {
         width: 100%;
         min-height: 40px;
         border: 1px solid rgba(77, 229, 255, 0.2);
@@ -1467,6 +1468,7 @@ h1 {
       }
 
       .filter-group select:focus-visible,
+      .filter-group input:focus-visible,
       .filter-chip:focus-visible {
         outline: 2px solid rgba(128, 255, 155, 0.45);
         outline-offset: 2px;
@@ -1476,7 +1478,7 @@ h1 {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-        grid-column: 1 / 5;
+        grid-column: 1 / 6;
         min-width: 0;
       }
 
@@ -1502,7 +1504,7 @@ h1 {
       .player-count {
         align-self: center;
         justify-self: end;
-        grid-column: 5;
+        grid-column: 6;
         color: var(--muted);
         font-size: 0.82rem;
         font-weight: 850;
@@ -1806,7 +1808,7 @@ h1 {
 
       .compare-toolbar {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
         gap: 12px;
         align-items: end;
         margin: -30px 0 18px;
@@ -1831,6 +1833,16 @@ h1 {
         padding: 18px;
         background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)), var(--panel);
         box-shadow: var(--shadow);
+      }
+
+      .compare-card-multi {
+        grid-template-columns: 1fr;
+      }
+
+      .compare-player-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
       }
 
       .compare-player {
@@ -1873,6 +1885,10 @@ h1 {
         align-items: center;
         border-bottom: 1px solid rgba(255, 255, 255, 0.07);
         padding: 10px 0;
+      }
+
+      .compare-row-multi {
+        grid-template-columns: minmax(110px, 1fr) repeat(3, minmax(64px, 0.65fr));
       }
 
       .compare-row span {
@@ -2260,6 +2276,25 @@ h1 {
         margin: 0;
       }
 
+      .scouting-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .scouting-pill {
+        display: inline-flex;
+        min-height: 32px;
+        align-items: center;
+        border: 1px solid rgba(128, 255, 155, 0.24);
+        border-radius: 999px;
+        padding: 0 11px;
+        color: var(--green);
+        background: rgba(128, 255, 155, 0.08);
+        font-size: 0.82rem;
+        font-weight: 850;
+      }
+
       .player-radar-chart {
         grid-column: 1 / -1;
         display: grid;
@@ -2552,6 +2587,10 @@ h1 {
         }
 
         .compare-toolbar {
+          grid-template-columns: 1fr;
+        }
+
+        .compare-player-row {
           grid-template-columns: 1fr;
         }
 

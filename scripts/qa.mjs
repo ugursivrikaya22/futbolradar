@@ -22,6 +22,14 @@ const pages = [
   "super-lig-momentum-siralamasi.html",
   "bugunku-mac-tahminleri.html",
   "super-lig-oyuncu-radari.html",
+  "en-iyi-super-lig-oyunculari.html",
+  "en-iyi-forvetler.html",
+  "en-iyi-orta-sahalar.html",
+  "en-iyi-defanslar.html",
+  "en-iyi-kaleciler.html",
+  "yukselen-oyuncular.html",
+  "transfer-radari.html",
+  "genc-yetenekler.html",
   "galatasaray-oyuncu-radari.html",
   "fenerbahce-oyuncu-radari.html",
   "besiktas-oyuncu-radari.html",
@@ -49,7 +57,7 @@ const pages = [
   "momentum.html",
   "analizler.html"
 ];
-const endpoints = ["matches", "standings", "teams", "players", "transfers", "squad", "match-detail", "momentum", "signals", "analyses", "health"];
+const endpoints = ["matches", "standings", "teams", "players", "player-detail", "player-compare", "player-rankings", "transfers", "squad", "match-detail", "momentum", "signals", "analyses", "health"];
 const skipDirs = new Set([".git", ".agents", ".codex", "node_modules", "work", "outputs"]);
 const failures = [];
 
@@ -306,6 +314,7 @@ async function checkApi() {
     "team",
     "league",
     "position",
+    "positionGroup",
     "secondaryPosition",
     "preferredFoot",
     "marketValue",
@@ -351,6 +360,12 @@ async function checkApi() {
   for (const field of playerFields) {
     expect(Object.prototype.hasOwnProperty.call(firstPlayer, field), `players: missing ${field}`);
   }
+  ["stats", "radar", "ratingComponents", "source"].forEach((field) => {
+    expect(firstPlayer[field] && typeof firstPlayer[field] === "object", `players: missing object ${field}`);
+  });
+  ["strengths", "weaknesses", "similarPlayers"].forEach((field) => {
+    expect(Array.isArray(firstPlayer[field]), `players: missing array ${field}`);
+  });
 
   const keremApi = playersResponse.payload.data.find((player) => player.id === "kerem-akturkoglu");
   expect(keremApi && keremApi.currentTeam === "Fenerbahçe", "api players: Kerem currentTeam must be Fenerbahçe");

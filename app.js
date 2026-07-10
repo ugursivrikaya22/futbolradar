@@ -314,18 +314,19 @@
   }
 
   function playerMetricsHtml(player, compact) {
+    var stats = playerStats(player);
     var metrics = [
       { label: "Overall", value: player.overallRating || player.aiRating || player.rating },
       { label: "Yaş", value: playerAge(player) },
       { label: "Piyasa", value: playerMarketValue(player) },
-      { label: "Dakika", value: player.minutes },
-      { label: "Gol", value: player.goals },
-      { label: "Asist", value: player.assists },
-      { label: "xG", value: player.xg },
-      { label: "xA", value: player.xa },
+      { label: "Dakika", value: stats.minutesPlayed },
+      { label: "Gol", value: stats.goals },
+      { label: "Asist", value: stats.assists },
+      { label: "xG", value: stats.xg },
+      { label: "xA", value: stats.xa },
       { label: "Şut", value: player.shots },
-      { label: "Kilit pas", value: player.keyPasses },
-      { label: "Pres", value: playerMetric(player, "press", "pressures") },
+      { label: "Kilit pas", value: stats.keyPasses },
+      { label: "Pres", value: stats.pressures },
       { label: "İkili", value: playerMetric(player, "duels", "duelsWon") }
     ];
 
@@ -339,6 +340,15 @@
   }
 
   function playerRadarRows(player) {
+    return [
+      { label: "Form", value: radarMetric(player, "form", "Form") },
+      { label: "Hucum", value: radarMetric(player, "attack", "Hucum") },
+      { label: "Yaraticilik", value: radarMetric(player, "creativity", "Yaraticilik") },
+      { label: "Savunma", value: radarMetric(player, "defense", "Savunma") },
+      { label: "Potansiyel", value: radarMetric(player, "potential", "Potansiyel") },
+      { label: "Veri", value: radarMetric(player, "dataConfidence", "Veri") }
+    ];
+
     return [
       { label: "Bitiricilik", value: radarMetric(player, "finishing", "Bitiricilik") },
       { label: "Yaratıcılık", value: radarMetric(player, "creativity", "Yaratıcılık") },
@@ -747,9 +757,64 @@
     return Number(fallback) || 0;
   }
 
+  function playerStats(player) {
+    var stats = player && player.stats && typeof player.stats === "object" ? player.stats : {};
+
+    return {
+      appearances: stats.appearances != null ? stats.appearances : playerMetric(player, "appearances"),
+      goals: stats.goals != null ? stats.goals : playerMetric(player, "goals"),
+      assists: stats.assists != null ? stats.assists : playerMetric(player, "assists"),
+      minutesPlayed: stats.minutesPlayed != null ? stats.minutesPlayed : playerMetric(player, "minutesPlayed", "minutes"),
+      yellowCards: stats.yellowCards != null ? stats.yellowCards : playerMetric(player, "yellowCards"),
+      redCards: stats.redCards != null ? stats.redCards : playerMetric(player, "redCards"),
+      passAccuracy: stats.passAccuracy != null ? stats.passAccuracy : playerMetric(player, "passAccuracy"),
+      shotsPerGame: stats.shotsPerGame != null ? stats.shotsPerGame : playerMetric(player, "shotsPerGame"),
+      tacklesPerGame: stats.tacklesPerGame != null ? stats.tacklesPerGame : playerMetric(player, "tacklesPerGame"),
+      interceptionsPerGame: stats.interceptionsPerGame != null ? stats.interceptionsPerGame : playerMetric(player, "interceptionsPerGame"),
+      shots: stats.shots != null ? stats.shots : playerMetric(player, "shots"),
+      keyPasses: stats.keyPasses != null ? stats.keyPasses : playerMetric(player, "keyPasses"),
+      xg: stats.xg != null ? stats.xg : playerMetric(player, "xg"),
+      xa: stats.xa != null ? stats.xa : playerMetric(player, "xa"),
+      pressures: stats.pressures != null ? stats.pressures : playerMetric(player, "pressures", "press"),
+      duelsWon: stats.duelsWon != null ? stats.duelsWon : playerMetric(player, "duelsWon", "duels")
+    };
+  }
+
+  function playerRadar(player) {
+    var radar = player && player.radar && typeof player.radar === "object" ? player.radar : {};
+
+    return {
+      overall: radar.overall != null ? radar.overall : playerAiScore(player),
+      form: radar.form != null ? radar.form : playerScore(player, "formRating", playerScore(player, "impact")),
+      attack: radar.attack != null ? radar.attack : playerScore(player, "threatScore", radar.finishing),
+      creativity: radar.creativity != null ? radar.creativity : playerScore(player, "creativityScore"),
+      defense: radar.defense != null ? radar.defense : playerScore(player, "defensiveRating", radar.pressing),
+      discipline: radar.discipline != null ? radar.discipline : 72,
+      durability: radar.durability != null ? radar.durability : playerScore(player, "continuityScore", radar.consistency),
+      potential: radar.potential != null ? radar.potential : playerScore(player, "potentialRating"),
+      transferValue: radar.transferValue != null ? radar.transferValue : 0,
+      dataConfidence: radar.dataConfidence != null ? radar.dataConfidence : 68,
+      finishing: radar.finishing != null ? radar.finishing : playerScore(player, "threatScore"),
+      pressing: radar.pressing != null ? radar.pressing : playerScore(player, "pressingScore"),
+      tempo: radar.tempo != null ? radar.tempo : playerScore(player, "tempoScore"),
+      consistency: radar.consistency != null ? radar.consistency : playerScore(player, "continuityScore")
+    };
+  }
+
   function radarMetric(player, key, label) {
-    var radar = player.radar || {};
-    return playerScore(radar, key, radar[label]);
+    var radar = playerRadar(player);
+    var aliases = {
+      finishing: "attack",
+      pressing: "defense",
+      consistency: "durability",
+      tempo: "form",
+      "Bitiricilik": "attack",
+      "Pres": "defense",
+      "SÃ¼reklilik": "durability",
+      "Tempo": "form"
+    };
+    var resolved = radar[key] != null ? key : aliases[key] || aliases[label] || key;
+    return playerScore(radar, resolved, radar[label]);
   }
 
   function playerMetric(player, primary, secondary) {
@@ -1212,6 +1277,23 @@
     );
   }
 
+  function scoutingListSectionHtml(title, items, emptyText) {
+    var list = Array.isArray(items) ? items.filter(Boolean) : [];
+
+    if (!list.length) {
+      return '<section class="profile-section"><h2>' + escapeHtml(title) + '</h2><article class="data-empty compact"><strong>' + escapeHtml(emptyText || "Veri yakinda") + '</strong><span>Bu alan gercek oyuncu API verisiyle genisletilecek.</span></article></section>';
+    }
+
+    return (
+      '<section class="profile-section"><h2>' + escapeHtml(title) + '</h2><div class="scouting-list">' +
+      list.map(function (item) {
+        var value = typeof item === "string" ? item : (item.label || item.name || item.reason || "");
+        return '<span class="scouting-pill">' + escapeHtml(value) + "</span>";
+      }).join("") +
+      "</div></section>"
+    );
+  }
+
   function renderPlayerDetail(player, players) {
     if (!player) {
       return "";
@@ -1279,6 +1361,8 @@
       ]) +
       '<section class="profile-section"><h2>Radar Profili</h2>' + playerRadarChartHtml(player, null, player.name + " radar profili") + playerRadarHtml(player) + "</section>" +
       '<section class="profile-section"><h2>AI Rating Notu</h2><p class="profile-note">' + escapeHtml(player.ratingExplanation || "Bu rating; dakika, gol/asist, form, disiplin ve veri gÃ¼venilirliÄŸi bileÅŸenlerinden hesaplanÄ±r.") + "</p></section>" +
+      scoutingListSectionHtml("Guclu Yonler", player.strengths, "Guclu yonler yakinda") +
+      scoutingListSectionHtml("Gelisim Alanlari", player.weaknesses, "Gelisim alani sinyali yok") +
       transferTimelineHtml(player) +
       formerTeamsHtml(player) +
       reliabilitySectionHtml(player) +
@@ -1443,6 +1527,48 @@
       match: function (player) {
         return playerAiScore(player) >= 80;
       }
+    },
+    "en-iyi-super-lig-oyunculari": {
+      title: "En Iyi Super Lig Oyunculari",
+      match: function (player) {
+        return normalizeSearchText(player.league).indexOf("super lig") !== -1 && playerAiScore(player) >= 75;
+      }
+    },
+    "en-iyi-forvetler": {
+      title: "En Iyi Forvetler",
+      match: function (player) {
+        return player.positionGroup === "forward" || player.positionGroup === "winger";
+      }
+    },
+    "en-iyi-orta-sahalar": {
+      title: "En Iyi Orta Sahalar",
+      match: function (player) {
+        return player.positionGroup === "midfielder";
+      }
+    },
+    "en-iyi-defanslar": {
+      title: "En Iyi Defanslar",
+      match: function (player) {
+        return player.positionGroup === "defender";
+      }
+    },
+    "en-iyi-kaleciler": {
+      title: "En Iyi Kaleciler",
+      match: function (player) {
+        return player.positionGroup === "goalkeeper";
+      }
+    },
+    "yukselen-oyuncular": {
+      title: "Yukselen Oyuncular",
+      match: function (player) {
+        return playerMatchesSignal(player, "yukselen");
+      }
+    },
+    "transfer-radari": {
+      title: "Transfer Radari",
+      match: function (player) {
+        return Array.isArray(player.transferHistory) && player.transferHistory.length;
+      }
     }
   };
 
@@ -1593,6 +1719,17 @@
 
   function filterPlayers(players, state) {
     return players.filter(function (player) {
+      var search = normalizeSearchText(state.search);
+      var searchOk = !search || [
+        player.name,
+        player.fullName,
+        playerCurrentTeam(player),
+        player.position,
+        player.league,
+        player.nationality
+      ].some(function (value) {
+        return normalizeSearchText(value).indexOf(search) !== -1;
+      });
       var teamOk = !state.team || playerCurrentTeam(player) === state.team;
       var leagueOk = !state.league || player.league === state.league;
       var playerPosition = normalizeSearchText(player.position);
@@ -1601,14 +1738,35 @@
         (wantedPosition === "forvet" && (playerPosition.indexOf("santrfor") !== -1 || playerPosition.indexOf("kanat") !== -1)) ||
         (wantedPosition === "orta saha" && (playerPosition.indexOf("orta saha") !== -1 || playerPosition.indexOf("10 numara") !== -1)) ||
         (wantedPosition === "defans" && (playerPosition.indexOf("stoper") !== -1 || playerPosition.indexOf("bek") !== -1));
+      var positionGroupOk = !state.positionGroup || normalizeSearchText(player.positionGroup) === normalizeSearchText(state.positionGroup);
       var age = Number(playerAge(player) || 0);
       var ageOk = !state.age ||
         (state.age === "u23" && age > 0 && age <= 23) ||
         (state.age === "24-29" && age >= 24 && age <= 29) ||
         (state.age === "30-plus" && age >= 30);
       var ratingOk = !state.minRating || playerAiScore(player) >= Number(state.minRating);
-      return teamOk && leagueOk && positionOk && ageOk && ratingOk && playerMatchesSignal(player, state.signal);
+      var dataStatusOk = !state.dataStatus || normalizeSearchText(player.dataStatus) === normalizeSearchText(state.dataStatus);
+      var ratingStatusOk = !state.ratingStatus || normalizeSearchText(player.ratingStatus) === normalizeSearchText(state.ratingStatus);
+      var marketValue = Number(player.marketValueEur || 0);
+      var marketOk = !state.market ||
+        (state.market === "10m" && marketValue >= 10000000) ||
+        (state.market === "20m" && marketValue >= 20000000) ||
+        (state.market === "empty" && !marketValue);
+      return searchOk && teamOk && leagueOk && positionOk && positionGroupOk && ageOk && ratingOk && dataStatusOk && ratingStatusOk && marketOk && playerMatchesSignal(player, state.signal);
     });
+  }
+
+  function sortPlayers(players, sortKey) {
+    var sorters = {
+      rating: function (a, b) { return playerAiScore(b) - playerAiScore(a); },
+      age: function (a, b) { return Number(playerAge(a) || 999) - Number(playerAge(b) || 999); },
+      market: function (a, b) { return Number(b.marketValueEur || 0) - Number(a.marketValueEur || 0); },
+      form: function (a, b) { return radarMetric(b, "form") - radarMetric(a, "form"); },
+      potential: function (a, b) { return radarMetric(b, "potential") - radarMetric(a, "potential"); },
+      team: function (a, b) { return playerCurrentTeam(a).localeCompare(playerCurrentTeam(b), "tr"); }
+    };
+
+    return players.slice().sort(sorters[sortKey] || sorters.rating);
   }
 
   function initPlayerFilters(target) {
@@ -1619,15 +1777,34 @@
     var teamSelect = document.querySelector("[data-player-team-filter]");
     var leagueSelect = document.querySelector("[data-player-league-filter]");
     var positionSelect = document.querySelector("[data-player-position-filter]");
+    var positionGroupSelect = document.querySelector("[data-player-position-group-filter]");
     var ageSelect = document.querySelector("[data-player-age-filter]");
     var ratingSelect = document.querySelector("[data-player-rating-filter]");
+    var searchInput = document.querySelector("[data-player-search-filter]");
+    var marketSelect = document.querySelector("[data-player-market-filter]");
+    var dataStatusSelect = document.querySelector("[data-player-data-status-filter]");
+    var ratingStatusSelect = document.querySelector("[data-player-rating-status-filter]");
+    var sortSelect = document.querySelector("[data-player-sort]");
     var chips = Array.from(document.querySelectorAll("[data-player-filter]"));
     var count = document.querySelector("[data-player-count]");
     var description = document.querySelector("[data-player-filter-description]");
     var titleElement = document.querySelector("[data-player-filter-title]");
     var leadElement = document.querySelector("[data-player-filter-lead]");
     var query = new URLSearchParams(window.location.search);
-    var state = { team: "", league: "", position: "", age: "", minRating: "", signal: "all" };
+    var state = {
+      search: "",
+      team: "",
+      league: "",
+      position: "",
+      positionGroup: "",
+      age: "",
+      minRating: "",
+      market: "",
+      dataStatus: "",
+      ratingStatus: "",
+      sort: "rating",
+      signal: "all"
+    };
 
     target.dataset.state = "loading";
 
@@ -1637,7 +1814,15 @@
         populatePlayerSelect(leagueSelect, uniqueSorted(players, "league"), "Tüm ligler");
         populatePlayerSelect(positionSelect, uniqueSorted(players, "position"), "Tüm mevkiler");
 
+        populatePlayerSelect(positionGroupSelect, uniqueSorted(players, "positionGroup"), "Tum rol gruplari");
+        populatePlayerSelect(dataStatusSelect, uniqueSorted(players, "dataStatus"), "Tum veri durumlari");
+        populatePlayerSelect(ratingStatusSelect, uniqueSorted(players, "ratingStatus"), "Tum rating durumlari");
+
         state.signal = PLAYER_FILTER_COPY[canonicalPlayerFilter(query.get("filter"))] ? canonicalPlayerFilter(query.get("filter")) : "all";
+
+        if (searchInput && query.get("search")) {
+          searchInput.value = query.get("search");
+        }
 
         if (teamSelect && query.get("team")) {
           teamSelect.value = query.get("team");
@@ -1645,6 +1830,10 @@
 
         if (positionSelect && query.get("position")) {
           positionSelect.value = query.get("position");
+        }
+
+        if (positionGroupSelect && query.get("positionGroup")) {
+          positionGroupSelect.value = query.get("positionGroup");
         }
 
         if (leagueSelect && query.get("league")) {
@@ -1657,6 +1846,22 @@
 
         if (ratingSelect && (query.get("minRating") || query.get("rating"))) {
           ratingSelect.value = query.get("minRating") || query.get("rating");
+        }
+
+        if (marketSelect && query.get("market")) {
+          marketSelect.value = query.get("market");
+        }
+
+        if (dataStatusSelect && query.get("dataStatus")) {
+          dataStatusSelect.value = query.get("dataStatus");
+        }
+
+        if (ratingStatusSelect && query.get("ratingStatus")) {
+          ratingStatusSelect.value = query.get("ratingStatus");
+        }
+
+        if (sortSelect && query.get("sort")) {
+          sortSelect.value = query.get("sort");
         }
 
         function syncActiveChip() {
@@ -1673,6 +1878,12 @@
             params.set("filter", state.signal);
           } else {
             params.delete("filter");
+          }
+
+          if (state.search) {
+            params.set("search", state.search);
+          } else {
+            params.delete("search");
           }
 
           if (state.team) {
@@ -1693,6 +1904,12 @@
             params.delete("position");
           }
 
+          if (state.positionGroup) {
+            params.set("positionGroup", state.positionGroup);
+          } else {
+            params.delete("positionGroup");
+          }
+
           if (state.age) {
             params.set("age", state.age);
           } else {
@@ -1707,20 +1924,50 @@
             params.delete("rating");
           }
 
+          if (state.market) {
+            params.set("market", state.market);
+          } else {
+            params.delete("market");
+          }
+
+          if (state.dataStatus) {
+            params.set("dataStatus", state.dataStatus);
+          } else {
+            params.delete("dataStatus");
+          }
+
+          if (state.ratingStatus) {
+            params.set("ratingStatus", state.ratingStatus);
+          } else {
+            params.delete("ratingStatus");
+          }
+
+          if (state.sort && state.sort !== "rating") {
+            params.set("sort", state.sort);
+          } else {
+            params.delete("sort");
+          }
+
           var next = window.location.pathname + (params.toString() ? "?" + params.toString() : "") + window.location.hash;
           window.history.replaceState({}, "", next);
         }
 
         function render() {
+          state.search = searchInput ? searchInput.value : "";
           state.team = teamSelect ? teamSelect.value : "";
           state.league = leagueSelect ? leagueSelect.value : "";
           state.position = positionSelect ? positionSelect.value : "";
+          state.positionGroup = positionGroupSelect ? positionGroupSelect.value : "";
           state.age = ageSelect ? ageSelect.value : "";
           state.minRating = ratingSelect ? ratingSelect.value : "";
+          state.market = marketSelect ? marketSelect.value : "";
+          state.dataStatus = dataStatusSelect ? dataStatusSelect.value : "";
+          state.ratingStatus = ratingStatusSelect ? ratingStatusSelect.value : "";
+          state.sort = sortSelect ? sortSelect.value : "rating";
           syncActiveChip();
           updateQuery();
 
-          var filtered = filterPlayers(players, state);
+          var filtered = sortPlayers(filterPlayers(players, state), state.sort);
           if (count) {
             count.textContent = filtered.length + " oyuncu";
           }
@@ -1771,6 +2018,16 @@
         if (ratingSelect) {
           ratingSelect.addEventListener("change", render);
         }
+
+        if (searchInput) {
+          searchInput.addEventListener("input", render);
+        }
+
+        [positionGroupSelect, marketSelect, dataStatusSelect, ratingStatusSelect, sortSelect].forEach(function (select) {
+          if (select) {
+            select.addEventListener("change", render);
+          }
+        });
 
         render();
       })
@@ -1901,6 +2158,56 @@
     );
   }
 
+  function comparePlayerSummaryHtml(player) {
+    return (
+      '<div class="compare-player">' +
+      "<span>" + escapeHtml(playerCurrentTeam(player)) + " - " + escapeHtml(player.position) + "</span>" +
+      "<h2>" + escapeHtml(player.name) + "</h2>" +
+      "<p>Yas " + escapeHtml(displayValue(playerAge(player))) + " - " + escapeHtml(displayValue(playerMarketValue(player))) + "</p>" +
+      '<strong class="rating">' + escapeHtml(displayValue(player.overallRating || player.aiRating || player.rating)) + "</strong>" +
+      "</div>"
+    );
+  }
+
+  function compareMultiRowHtml(label, players, getter) {
+    var values = players.map(function (player) { return Number(getter(player)); });
+    var best = Math.max.apply(Math, values.filter(function (value) { return !Number.isNaN(value); }));
+
+    return (
+      '<div class="compare-row compare-row-multi">' +
+      "<span>" + escapeHtml(label) + "</span>" +
+      players.map(function (player, index) {
+        var value = values[index];
+        var leading = !Number.isNaN(value) && value === best;
+        return '<b class="' + (leading ? "is-leading" : "") + '">' + escapeHtml(displayValue(value)) + "</b>";
+      }).join("") +
+      "</div>"
+    );
+  }
+
+  function renderPlayerComparisonSet(players) {
+    var selected = Array.isArray(players) ? players.filter(Boolean).slice(0, 3) : [];
+
+    if (selected.length < 2) {
+      return "";
+    }
+
+    return (
+      '<article class="compare-card compare-card-multi">' +
+      '<div class="compare-player-row">' + selected.map(comparePlayerSummaryHtml).join("") + "</div>" +
+      compareMultiRowHtml("Overall", selected, function (player) { return player.overallRating || player.aiRating || player.rating; }) +
+      compareMultiRowHtml("Form", selected, function (player) { return radarMetric(player, "form"); }) +
+      compareMultiRowHtml("Hucum", selected, function (player) { return radarMetric(player, "attack"); }) +
+      compareMultiRowHtml("Yaraticilik", selected, function (player) { return radarMetric(player, "creativity"); }) +
+      compareMultiRowHtml("Savunma", selected, function (player) { return radarMetric(player, "defense"); }) +
+      compareMultiRowHtml("Potansiyel", selected, function (player) { return radarMetric(player, "potential"); }) +
+      compareMultiRowHtml("Veri guveni", selected, function (player) { return radarMetric(player, "dataConfidence"); }) +
+      playerRadarChartHtml(selected[0], selected[1], selected.map(function (player) { return player.name; }).join(" / ")) +
+      '<p class="compare-note">FutbolRadar yorumu: lider oyuncu metrik bazinda yesil vurgulanir; 3. oyuncu radar grafigine hazir veri olarak tutulur.</p>' +
+      "</article>"
+    );
+  }
+
   function initPlayerCompare(target) {
     if (!target) {
       return;
@@ -1921,12 +2228,17 @@
         return '<option value="' + escapeHtml(player.id) + '">' + escapeHtml(player.name) + " · " + escapeHtml(playerCurrentTeam(player)) + "</option>";
       }).join("");
 
+      var requestedIds = String(query.get("players") || "").split(",").filter(Boolean);
+      if (!requestedIds.length) {
+        requestedIds = [query.get("p1"), query.get("p2"), query.get("p3")].filter(Boolean);
+      }
+
       selects.forEach(function (select, index) {
-        var requestedId = query.get(index === 0 ? "p1" : "p2");
+        var requestedId = requestedIds[index] || query.get(index === 0 ? "p1" : index === 1 ? "p2" : "p3");
         var fallback = (players[index] && players[index].id) || (players[0] && players[0].id) || "";
         var exists = players.some(function (player) { return player.id === requestedId; });
-        select.innerHTML = options;
-        select.value = exists ? requestedId : fallback;
+        select.innerHTML = (index > 1 ? '<option value="">Opsiyonel 3. oyuncu</option>' : "") + options;
+        select.value = exists ? requestedId : (index > 1 ? "" : fallback);
       });
 
       if (selects[0] && selects[1] && selects[0].value === selects[1].value && players.length > 1) {
@@ -1934,6 +2246,26 @@
       }
 
       function render() {
+        var selectedIds = selects.map(function (select) { return select && select.value; }).filter(Boolean);
+        selectedIds = selectedIds.filter(function (id, index) { return selectedIds.indexOf(id) === index; });
+        var selected = selectedIds.map(function (id) {
+          return players.find(function (player) { return player.id === id; });
+        }).filter(Boolean);
+        var params = new URLSearchParams(window.location.search);
+
+        if (selected.length < 2) {
+          setEmpty(target, "Karsilastirma hazirlanamadi", "En az iki farkli oyuncu sec.");
+          return;
+        }
+
+        params.set("players", selected.map(function (player) { return player.id; }).join(","));
+        params.delete("p1");
+        params.delete("p2");
+        params.delete("p3");
+        window.history.replaceState({}, "", window.location.pathname + "?" + params.toString());
+        setContent(target, renderPlayerComparisonSet(selected));
+        return;
+
         var left = players.find(function (player) { return player.id === (selects[0] && selects[0].value); });
         var right = players.find(function (player) { return player.id === (selects[1] && selects[1].value); });
         var params = new URLSearchParams(window.location.search);
