@@ -3217,6 +3217,69 @@ h1 {
         line-height: 1.55;
       }
 
+      .profile-compare-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .profile-compare-card {
+        display: grid;
+        min-width: 0;
+        gap: 8px;
+        align-content: start;
+        border: 1px solid rgba(128, 255, 155, 0.16);
+        border-radius: var(--radius);
+        padding: 13px;
+        background:
+          linear-gradient(180deg, rgba(128, 255, 155, 0.06), rgba(77, 229, 255, 0.026)),
+          rgba(0, 0, 0, 0.16);
+      }
+
+      .profile-compare-card span {
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .profile-compare-card strong {
+        color: var(--text);
+        font-size: 1rem;
+        line-height: 1.22;
+      }
+
+      .profile-compare-card b {
+        color: var(--green);
+        font-size: 0.78rem;
+      }
+
+      .profile-compare-card p {
+        margin: 0;
+        color: #c4d4d1;
+        font-size: 0.83rem;
+        line-height: 1.55;
+      }
+
+      .profile-compare-actions,
+      .profile-compare-footer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .profile-compare-actions a {
+        color: var(--cyan);
+        font-size: 0.8rem;
+        font-weight: 900;
+      }
+
+      .profile-compare-footer {
+        margin-top: 14px;
+      }
+
       .profile-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4067,6 +4130,10 @@ h1 {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .profile-compare-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         .compare-guide {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -4107,6 +4174,7 @@ h1 {
         .profile-radar-snapshot,
         .scouting-summary-grid,
         .watch-checklist-grid,
+        .profile-compare-grid,
         .team-radar-snapshot,
         .team-signal-grid,
         .match-radar-snapshot,
@@ -4357,6 +4425,7 @@ h1 {
         .profile-hero > div,
         .profile-hero p,
         .profile-section,
+        .profile-compare-grid,
         .profile-grid,
         .profile-item {
           max-width: 100%;

@@ -1663,6 +1663,73 @@
     );
   }
 
+  function profileCompareCandidateCardHtml(label, player, candidate, note) {
+    if (!player || !candidate) {
+      return "";
+    }
+
+    var href = playerCompareHref("?players=" + encodeURIComponent(player.id) + "," + encodeURIComponent(candidate.id));
+    var role = playerPositionGroupLabel(playerPositionGroup(candidate));
+
+    return (
+      '<article class="profile-compare-card" data-card="profile-compare" data-player="' + escapeHtml(candidate.id) + '">' +
+      '<span>' + escapeHtml(label) + '</span>' +
+      '<strong>' + escapeHtml(candidate.name) + '</strong>' +
+      '<b>' + escapeHtml(playerCurrentTeam(candidate)) + " - " + escapeHtml(role) + '</b>' +
+      '<p>' + escapeHtml(note || playerInsight(candidate)) + '</p>' +
+      '<div class="profile-compare-actions">' +
+      '<a href="' + escapeHtml(href) + '">Kiyasla</a>' +
+      '<a href="' + escapeHtml(playerProfileHref(candidate.id)) + '">Profili ac</a>' +
+      '</div>' +
+      '</article>'
+    );
+  }
+
+  function profileCompareHubHtml(player, players) {
+    var list = Array.isArray(players) ? players.filter(function (candidate) { return candidate && candidate.id !== player.id; }) : [];
+    if (!player || !list.length) {
+      return "";
+    }
+
+    var used = new Set();
+    var cards = [];
+    var pushCandidate = function (label, candidate, note) {
+      if (!candidate || used.has(candidate.id)) {
+        return;
+      }
+
+      used.add(candidate.id);
+      cards.push(profileCompareCandidateCardHtml(label, player, candidate, note));
+    };
+    var sameRole = list.slice().sort(function (a, b) { return comparePeerScore(player, b) - comparePeerScore(player, a); });
+    var ratingTest = list.slice().sort(function (a, b) {
+      return Math.abs(playerAiScore(player) - playerAiScore(a)) - Math.abs(playerAiScore(player) - playerAiScore(b));
+    })[0];
+    var transferRead = list.filter(playerHasTransferHistory).sort(function (a, b) {
+      return Number(b.marketValueEur || 0) - Number(a.marketValueEur || 0);
+    })[0];
+
+    pushCandidate("Akilli eslesme", bestComparePeer(player, players), "Rol, lig, rating ve piyasa yakinligina gore otomatik secildi.");
+    pushCandidate("Ayni rol", sameRole[0], "Benzer rol grubu ve radar profiliyle yan yana okunabilir.");
+    pushCandidate("Rating sinavi", ratingTest, "Overall farki dusuk oyuncuyla karar metriği daha net gorunur.");
+    pushCandidate("Transfer okuma", transferRead, "Guncel takim, piyasa degeri ve transfer gecmisi birlikte karsilastirilir.");
+
+    if (!cards.length) {
+      return "";
+    }
+
+    return (
+      '<section class="profile-section profile-compare-hub">' +
+      '<div class="profile-section-head"><h2>Karsilastirma Merkezi</h2><span>Profil icinden akilli kiyas akisi</span></div>' +
+      '<div class="profile-compare-grid">' + cards.slice(0, 4).join("") + '</div>' +
+      '<div class="profile-compare-footer">' +
+      '<a class="detail-link" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Akilli eslesmeyi ac</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(siteHref("oyuncu-radari.html?team=" + encodeURIComponent(playerCurrentTeam(player)))) + '">Takim oyuncularini filtrele</a>' +
+      '</div>' +
+      '</section>'
+    );
+  }
+
   function scoutingListSectionHtml(title, items, emptyText) {
     var list = Array.isArray(items) ? items.filter(Boolean) : [];
 
@@ -1866,6 +1933,7 @@
       profileRadarSnapshotHtml(player) +
       scoutingSnapshotHtml(player) +
       playerWatchChecklistHtml(player) +
+      profileCompareHubHtml(player, players) +
       profileSectionHtml("Profil Ozeti", [
         profileItemHtml("Guncel takim", team),
         profileItemHtml("Mevki", player.position),

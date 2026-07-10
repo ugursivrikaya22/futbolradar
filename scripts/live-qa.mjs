@@ -57,6 +57,8 @@ const hiddenSourceLabels = [
 const appFeatureMarkers = [
   "scoutingSnapshotHtml",
   "playerWatchChecklistHtml",
+  "profileCompareHubHtml",
+  "profileCompareCandidateCardHtml",
   "compareInsightCardsHtml",
   "teamPlayerSpotlightHtml",
   "teamCardLeaderHtml",
@@ -73,6 +75,8 @@ const appFeatureMarkers = [
 const cssFeatureMarkers = [
   "scouting-summary-grid",
   "watch-check-card",
+  "profile-compare-card",
+  "profile-compare-grid",
   "compare-insight-card",
   "team-player-spotlight-card",
   "team-card-player",
