@@ -1754,6 +1754,66 @@
     );
   }
 
+  function playerWatchChecklist(player) {
+    var role = playerScoutingRole(player);
+    var stats = playerStats(player);
+    var threat = playerScore(player, "threatScore");
+    var creativity = playerScore(player, "creativityScore");
+    var pressing = playerScore(player, "pressingScore");
+    var form = radarMetric(player, "form");
+    var items = [
+      {
+        label: "Rol sinyali",
+        title: role,
+        text: "Ilk 20 dakikada top aldigi bolge ve takim icindeki rol dagilimi izlenmeli."
+      },
+      {
+        label: "Ana aksiyon",
+        title: playerPrimaryWeapon(player),
+        text: threat >= creativity && threat >= pressing ? "Ceza sahasi kosulari, sut secimi ve xG uretimi belirleyici." : creativity >= pressing ? "Kilit pas, ara pas ve xA uretimi one cikiyor." : "Pres tetigi, ikili mucadele ve ikinci top takibi izlenmeli."
+      },
+      {
+        label: "Form kontrolu",
+        title: "Form " + displayValue(form),
+        text: Number(player.formChange || 0) < 0 ? "Son mac formu asagi yonlu; karar kalitesi ve tempo dususu takip edilmeli." : "Form ivmesi pozitif; sureklilik ve dakika payi onemli."
+      },
+      {
+        label: "Skor katkisi",
+        title: displayValue(stats.goals) + " gol / " + displayValue(stats.assists) + " asist",
+        text: "Gol-asist katkisi radar metrikleriyle birlikte okunmali; tek maclik skor verisi yaniltici olabilir."
+      }
+    ];
+
+    if (playerNeedsDataRefresh(player)) {
+      items.push({
+        label: "Veri kontrolu",
+        title: statusLabel(player.dataStatus, "data"),
+        text: "Transfer veya veri guveni izleme listesinde; profil yorumu manuel kontrolle desteklenmeli."
+      });
+    }
+
+    return items.slice(0, 5);
+  }
+
+  function playerWatchChecklistHtml(player) {
+    var items = playerWatchChecklist(player);
+    return (
+      '<section class="profile-section watch-checklist">' +
+      '<div class="profile-section-head"><h2>Macta Ne Izlenmeli?</h2><span>Scouting kontrol listesi</span></div>' +
+      '<div class="watch-checklist-grid">' +
+      items.map(function (item) {
+        return (
+          '<article class="watch-check-card">' +
+          '<span>' + escapeHtml(item.label) + '</span>' +
+          '<strong>' + escapeHtml(item.title) + '</strong>' +
+          '<p>' + escapeHtml(item.text) + '</p>' +
+          "</article>"
+        );
+      }).join("") +
+      "</div></section>"
+    );
+  }
+
   function renderPlayerDetail(player, players) {
     if (!player) {
       return "";
@@ -1773,6 +1833,7 @@
       tagsHtml(transferTags.concat(playerRatingTags(player))) +
       profileRadarSnapshotHtml(player) +
       scoutingSnapshotHtml(player) +
+      playerWatchChecklistHtml(player) +
       profileSectionHtml("Profil Ozeti", [
         profileItemHtml("Guncel takim", team),
         profileItemHtml("Mevki", player.position),

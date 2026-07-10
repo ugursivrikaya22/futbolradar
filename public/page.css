@@ -2847,6 +2847,46 @@ h1 {
         font-weight: 900;
       }
 
+      .watch-checklist-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .watch-check-card {
+        display: grid;
+        min-width: 0;
+        gap: 8px;
+        align-content: start;
+        border: 1px solid rgba(77, 229, 255, 0.16);
+        border-radius: var(--radius);
+        padding: 13px;
+        background:
+          linear-gradient(180deg, rgba(77, 229, 255, 0.055), rgba(128, 255, 155, 0.024)),
+          rgba(0, 0, 0, 0.16);
+      }
+
+      .watch-check-card span {
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .watch-check-card strong {
+        color: var(--cyan);
+        font-size: 0.98rem;
+        line-height: 1.24;
+      }
+
+      .watch-check-card p {
+        margin: 0;
+        color: #c4d4d1;
+        font-size: 0.83rem;
+        line-height: 1.55;
+      }
+
       .profile-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -3590,6 +3630,7 @@ h1 {
 
         .profile-radar-snapshot,
         .scouting-summary-grid,
+        .watch-checklist-grid,
         .team-radar-snapshot,
         .team-signal-grid,
         .match-radar-snapshot,
@@ -3854,6 +3895,7 @@ h1 {
 
         .profile-radar-snapshot,
         .scouting-summary-grid,
+        .watch-checklist-grid,
         .team-radar-snapshot,
         .team-signal-grid,
         .match-radar-snapshot,
