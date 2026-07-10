@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node scripts/qa.mjs",
+    "build": "node scripts/_noop-build-step.mjs \"Vercel build\"",
     "lint": "node scripts/qa.mjs",
     "qa": "node scripts/qa.mjs",
     "qa:live": "node --use-system-ca scripts/live-qa.mjs",
