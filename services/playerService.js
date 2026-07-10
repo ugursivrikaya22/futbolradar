@@ -115,7 +115,7 @@ function normalizeSource(player) {
   const source = player.source && typeof player.source === "object" ? player.source : {};
 
   return {
-    provider: source.provider || player.providerName || "FutbolRadar Mock Player Provider",
+    provider: source.provider || player.providerName || "FutbolRadar Player Data Layer",
     providerId: source.providerId || player.providerId || null,
     status: source.status || player.dataStatus || "mock_needs_verification",
     ratingStatus: source.ratingStatus || player.ratingStatus || "estimated",
@@ -222,7 +222,7 @@ function normalizePlayer(player, options) {
     dataStatus: player.dataStatus || "mock_needs_verification",
     ratingStatus: player.ratingStatus || "estimated",
     sourceNote: player.sourceNote || DEFAULT_SOURCE_NOTE,
-    providerName: player.providerName || "FutbolRadar Mock Player Provider",
+    providerName: player.providerName || "FutbolRadar Player Data Layer",
     providerId: player.providerId || `mock-${id}`,
     lastUpdated: player.lastUpdated || new Date().toISOString().slice(0, 10),
     transferUpdatedAt: player.transferUpdatedAt || player.lastUpdated || new Date().toISOString().slice(0, 10),
