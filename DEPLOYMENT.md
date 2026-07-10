@@ -24,11 +24,14 @@ that can block a deployment before it starts:
 ```json
 {
   "buildCommand": "npm run build",
+  "framework": null,
   "ignoreCommand": "node scripts/vercel-continue-build.mjs",
   "installCommand": "",
   "outputDirectory": ".",
   "git": {
-    "deploymentEnabled": true
+    "deploymentEnabled": {
+      "main": true
+    }
   },
   "cleanUrls": false,
   "trailingSlash": false
