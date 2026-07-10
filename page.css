@@ -1683,6 +1683,84 @@ h1 {
         outline: 0;
       }
 
+      .home-agenda-hub {
+        padding-top: 20px;
+      }
+
+      .home-agenda-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .home-agenda-card {
+        min-width: 0;
+        min-height: 236px;
+        display: grid;
+        align-content: start;
+        gap: 12px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 18px;
+        background:
+          radial-gradient(circle at 100% 0%, rgba(77, 229, 255, 0.1), transparent 34%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.024)),
+          var(--panel);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .home-agenda-card > span {
+        color: var(--cyan);
+        font-size: 0.74rem;
+        font-weight: 850;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .home-agenda-card strong {
+        font-size: 1.16rem;
+        line-height: 1.12;
+      }
+
+      .home-agenda-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .home-agenda-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 2px;
+      }
+
+      .home-agenda-actions a {
+        min-height: 32px;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid rgba(128, 255, 155, 0.23);
+        border-radius: 999px;
+        padding: 0 10px;
+        background: rgba(128, 255, 155, 0.065);
+        color: var(--soft);
+        font-size: 0.78rem;
+        font-weight: 780;
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          color 180ms ease;
+      }
+
+      .home-agenda-actions a:hover,
+      .home-agenda-actions a:focus-visible {
+        transform: translateY(-1px);
+        border-color: rgba(128, 255, 155, 0.5);
+        color: var(--green);
+        outline: 0;
+      }
+
       .traffic-deep-links {
         padding-top: 20px;
       }
@@ -5137,7 +5215,8 @@ h1 {
         .traffic-stack-grid,
         .home-search-results,
         .home-directory-grid,
-        .home-intelligence-grid {
+        .home-intelligence-grid,
+        .home-agenda-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
@@ -5387,6 +5466,7 @@ h1 {
         .home-search-results,
         .home-directory-grid,
         .home-intelligence-grid,
+        .home-agenda-grid,
         .teams-grid,
         .players-grid,
         .articles-grid,

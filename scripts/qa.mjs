@@ -137,7 +137,10 @@ const cssFeatureMarkers = [
   "home-intelligence-board",
   "home-leader-row",
   "home-flow-list",
-  "home-team-corridor"
+  "home-team-corridor",
+  "home-agenda-hub",
+  "home-agenda-card",
+  "home-agenda-actions"
 ];
 const failures = [];
 
@@ -357,6 +360,7 @@ function checkSeoAndLinks() {
       expect(html.includes("data-home-search"), `${page}: missing home search hook`);
       expect(html.includes("home-directory"), `${page}: missing homepage directory`);
       expect(html.includes("home-intelligence-board"), `${page}: missing homepage intelligence board`);
+      expect(html.includes("home-agenda-hub"), `${page}: missing homepage agenda hub`);
       expect(html.includes("traffic-deep-links"), `${page}: missing deep traffic links`);
       expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison traffic link`);
       expect(html.includes("super-lig-fikstur.html"), `${page}: missing fixture traffic link`);
