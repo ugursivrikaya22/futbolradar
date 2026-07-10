@@ -55,6 +55,7 @@ const hiddenSourceLabels = [
 const appFeatureMarkers = [
   "scoutingSnapshotHtml",
   "playerWatchChecklistHtml",
+  "compareInsightCardsHtml",
   "comparePresetDefinitions",
   "renderLandingInsights",
   "player-signal-actions"
@@ -62,6 +63,7 @@ const appFeatureMarkers = [
 const cssFeatureMarkers = [
   "scouting-summary-grid",
   "watch-check-card",
+  "compare-insight-card",
   "compare-preset-card",
   "landing-insight-card",
   "player-signal-actions"

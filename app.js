@@ -3163,6 +3163,50 @@
     );
   }
 
+  function compareLeaderBy(players, getter) {
+    return (Array.isArray(players) ? players : []).slice().sort(function (a, b) {
+      return Number(getter(b) || 0) - Number(getter(a) || 0);
+    })[0] || null;
+  }
+
+  function compareInsightCardHtml(label, players, getter, note) {
+    var leader = compareLeaderBy(players, getter);
+    if (!leader) {
+      return "";
+    }
+
+    return (
+      '<article class="compare-insight-card">' +
+      '<span>' + escapeHtml(label) + '</span>' +
+      '<strong>' + escapeHtml(leader.name) + '</strong>' +
+      '<b>' + escapeHtml(displayValue(getter(leader))) + '</b>' +
+      '<p>' + escapeHtml(note) + '</p>' +
+      '<a href="' + escapeHtml(playerProfileHref(leader.id)) + '">Profili ac</a>' +
+      "</article>"
+    );
+  }
+
+  function compareInsightCardsHtml(players) {
+    var selected = Array.isArray(players) ? players.filter(Boolean).slice(0, 3) : [];
+    if (selected.length < 2) {
+      return "";
+    }
+
+    var cards = [
+      compareInsightCardHtml("Skor tehdidi", selected, function (player) { return playerScore(player, "threatScore") + playerStats(player).goals * 2; }, "Gol tehdidi, xG ve bitiricilik etkisi birlikte okunur."),
+      compareInsightCardHtml("Oyun kurma", selected, function (player) { return playerScore(player, "creativityScore") + playerStats(player).assists * 2; }, "Yaraticilik, xA ve kilit pas etkisi onde."),
+      compareInsightCardHtml("Pres direnci", selected, function (player) { return playerScore(player, "pressingScore") + playerStats(player).pressures / 5; }, "Pres, ikili mucadele ve ikinci top takibi izlenir."),
+      compareInsightCardHtml("Form / potansiyel", selected, function (player) { return radarMetric(player, "form") * 0.55 + radarMetric(player, "potential") * 0.45; }, "Anlik form ile gelecek tavanini birlikte tartar.")
+    ].filter(Boolean);
+
+    return (
+      '<section class="compare-insights">' +
+      '<div class="compare-insights-head"><span>Kisa analiz</span><strong>Bu eslesmede kim, nerede one cikiyor?</strong></div>' +
+      '<div class="compare-insights-grid">' + cards.join("") + "</div>" +
+      "</section>"
+    );
+  }
+
   function renderPlayerComparisonSet(players) {
     var selected = Array.isArray(players) ? players.filter(Boolean).slice(0, 3) : [];
 
@@ -3175,6 +3219,7 @@
       comparisonSharePanelHtml(selected) +
       '<div class="compare-player-row">' + selected.map(comparePlayerSummaryHtml).join("") + "</div>" +
       compareWinnerSummaryHtml(selected) +
+      compareInsightCardsHtml(selected) +
       compareMultiRowHtml("Overall", selected, function (player) { return player.overallRating || player.aiRating || player.rating; }) +
       compareMultiRowHtml("Form", selected, function (player) { return radarMetric(player, "form"); }) +
       compareMultiRowHtml("Hucum", selected, function (player) { return radarMetric(player, "attack"); }) +
