@@ -157,7 +157,10 @@ const cssFeatureMarkers = [
   "intent-link-grid",
   "home-explore-lab",
   "explore-lab-grid",
-  "explore-lab-card"
+  "explore-lab-card",
+  "intent-stack-grid",
+  "intent-stack-card",
+  "intent-chip-row"
 ];
 const suspiciousCodes = new Set([0x00c2, 0x00c3, 0x00c4, 0x00c5]);
 const failures = [];
