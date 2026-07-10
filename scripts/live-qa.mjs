@@ -46,6 +46,26 @@ const secretMarkers = [
   "FOOTBALLDATA_TOKEN=",
   "FOOTBALL_API_TOKEN="
 ];
+const hiddenSourceLabels = [
+  "Veri kaynağı",
+  "Veri kaynagi",
+  "FutbolRadar API",
+  "Statik yedek veri"
+];
+const appFeatureMarkers = [
+  "scoutingSnapshotHtml",
+  "playerWatchChecklistHtml",
+  "comparePresetDefinitions",
+  "renderLandingInsights",
+  "player-signal-actions"
+];
+const cssFeatureMarkers = [
+  "scouting-summary-grid",
+  "watch-check-card",
+  "compare-preset-card",
+  "landing-insight-card",
+  "player-signal-actions"
+];
 const suspiciousCodes = new Set([0x00c2, 0x00c3, 0x00c4, 0x00c5]);
 const failures = [];
 const summary = [];
@@ -62,6 +82,10 @@ function hasMojibake(text) {
 
 function hasSecretLeak(text) {
   return secretMarkers.some((marker) => String(text || "").includes(marker));
+}
+
+function hasHiddenSourceLabel(text) {
+  return hiddenSourceLabels.some((marker) => String(text || "").includes(marker));
 }
 
 function expect(condition, message) {
@@ -118,6 +142,7 @@ async function checkPages() {
     expect(/<link\s+rel="manifest"\s+href="[^"]+"/i.test(text), `${page}: missing manifest link`);
     expect(!hasMojibake(text), `${page}: mojibake marker found`);
     expect(!hasSecretLeak(text), `${page}: secret marker found`);
+    expect(!hasHiddenSourceLabel(text), `${page}: hidden source label should not be visible`);
 
     if (title) titles.add(title);
     if (description) descriptions.add(description);
@@ -133,6 +158,19 @@ async function checkStaticAssets() {
     const { response, text } = await fetchText(`${asset}?v=liveqa`);
     expect(response.status === 200, `${asset}: expected 200, got ${response.status}`);
     expect(!hasSecretLeak(text), `${asset}: secret marker found`);
+
+    if (asset === "/app.js") {
+      for (const marker of appFeatureMarkers) {
+        expect(text.includes(marker), `${asset}: missing player feature marker ${marker}`);
+      }
+    }
+
+    if (asset === "/page.css") {
+      for (const marker of cssFeatureMarkers) {
+        expect(text.includes(marker), `${asset}: missing player CSS marker ${marker}`);
+      }
+    }
+
     summary.push({ type: "asset", path: asset, status: response.status });
   }
 
@@ -186,7 +224,9 @@ async function checkApi() {
       expect(["mock", "live-ready"].includes(diagnostics.mode), `${endpoint}: mode mismatch`);
       expect(Boolean(diagnostics.providerSource), `${endpoint}: missing providerSource`);
       expect(Boolean(diagnostics.nextAction), `${endpoint}: missing nextAction`);
-      expect(Array.isArray(diagnostics.acceptedApiKeyEnvNames), `${endpoint}: missing accepted API key env names`);
+      expect(typeof diagnostics.credentialEnvCount === "number", `${endpoint}: missing credential env count`);
+      expect(typeof diagnostics.baseUrlEnvCount === "number", `${endpoint}: missing base URL env count`);
+      expect(typeof diagnostics.competitionEnvCount === "number", `${endpoint}: missing competition env count`);
       expect(!hasSecretLeak(JSON.stringify(diagnostics)), `${endpoint}: secret marker found in diagnostics`);
     }
 
