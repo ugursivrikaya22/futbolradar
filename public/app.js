@@ -1141,6 +1141,11 @@
       '<div class="prediction"><span>AI Tahmin</span><b>' + escapeHtml(displayValue(match.aiPrediction)) + "</b></div>" +
       '<div class="prediction"><span>Gol Potansiyeli</span><b>' + escapeHtml(displayValue(match.goalPotential)) + "</b></div>" +
       '<div class="prediction"><span>Risk</span><b>' + escapeHtml(displayValue(match.risk)) + "</b></div>" +
+      "</div>" +
+      '<div class="player-actions match-actions featured-match-actions">' +
+      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Mac detay merkezi</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.homeTeam })) + '">Ev radar</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.awayTeam })) + '">Dep. radar</a>' +
       "</div>"
     );
   }

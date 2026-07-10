@@ -67,6 +67,7 @@ const appFeatureMarkers = [
   "teamPlayerSpotlightHtml",
   "teamCardLeaderHtml",
   "matchActionPanelHtml",
+  "featured-match-actions",
   "comparePresetDefinitions",
   "renderLandingInsights",
   "player-signal-actions"
@@ -78,6 +79,7 @@ const cssFeatureMarkers = [
   "team-player-spotlight-card",
   "team-card-player",
   "match-action-card",
+  "featured-match-actions",
   "compare-preset-card",
   "landing-insight-card",
   "player-signal-actions"
