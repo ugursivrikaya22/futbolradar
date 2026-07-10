@@ -80,7 +80,9 @@ const appFeatureMarkers = [
   "ensureCompareGuide",
   "comparePresetDefinitions",
   "renderLandingInsights",
-  "player-signal-actions"
+  "player-signal-actions",
+  "initHomeSearch",
+  "data-home-search"
 ];
 const cssFeatureMarkers = [
   "scouting-summary-grid",
@@ -123,7 +125,12 @@ const cssFeatureMarkers = [
   "traffic-deep-links",
   "traffic-player-card",
   "traffic-mini-link",
-  "traffic-fixture-note"
+  "traffic-fixture-note",
+  "home-search-section",
+  "home-search-card",
+  "home-search-results",
+  "home-directory",
+  "home-directory-panel"
 ];
 const suspiciousCodes = new Set([0x00c2, 0x00c3, 0x00c4, 0x00c5]);
 const failures = [];

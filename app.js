@@ -221,6 +221,50 @@
     target.dataset.state = "empty";
   }
 
+  function normalizeSearchText(value) {
+    return String(value || "")
+      .toLocaleLowerCase("tr-TR")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/ı/g, "i");
+  }
+
+  function initHomeSearch() {
+    var input = document.querySelector("[data-home-search]");
+    if (!input) {
+      return;
+    }
+
+    var items = Array.from(document.querySelectorAll("[data-home-search-item]"));
+    var count = document.querySelector("[data-home-search-count]");
+    var empty = document.querySelector("[data-home-search-empty]");
+
+    function render() {
+      var query = normalizeSearchText(input.value);
+      var visible = 0;
+
+      items.forEach(function (item) {
+        var text = normalizeSearchText(item.getAttribute("data-search-text") + " " + item.textContent);
+        var isVisible = !query || text.indexOf(query) !== -1;
+        item.hidden = !isVisible;
+        if (isVisible) {
+          visible += 1;
+        }
+      });
+
+      if (count) {
+        count.textContent = visible + " rota";
+      }
+
+      if (empty) {
+        empty.hidden = visible !== 0;
+      }
+    }
+
+    input.addEventListener("input", render);
+    render();
+  }
+
   function renderInto(target, dataName, renderer, emptyTitle) {
     if (!target) {
       return;
@@ -4257,6 +4301,7 @@
   }
 
   function initDataLayer() {
+    initHomeSearch();
     initPlayerSharing();
 
     renderInto(

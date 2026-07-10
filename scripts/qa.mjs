@@ -83,7 +83,9 @@ const appFeatureMarkers = [
   "ensureCompareGuide",
   "comparePresetDefinitions",
   "renderLandingInsights",
-  "player-signal-actions"
+  "player-signal-actions",
+  "initHomeSearch",
+  "data-home-search"
 ];
 const cssFeatureMarkers = [
   "scouting-summary-grid",
@@ -126,7 +128,12 @@ const cssFeatureMarkers = [
   "traffic-deep-links",
   "traffic-player-card",
   "traffic-mini-link",
-  "traffic-fixture-note"
+  "traffic-fixture-note",
+  "home-search-section",
+  "home-search-card",
+  "home-search-results",
+  "home-directory",
+  "home-directory-panel"
 ];
 const failures = [];
 
@@ -342,6 +349,9 @@ function checkSeoAndLinks() {
 
     if (page === "index.html") {
       expect(html.includes("traffic-hub"), `${page}: missing live traffic hub`);
+      expect(html.includes("home-search-section"), `${page}: missing home search section`);
+      expect(html.includes("data-home-search"), `${page}: missing home search hook`);
+      expect(html.includes("home-directory"), `${page}: missing homepage directory`);
       expect(html.includes("traffic-deep-links"), `${page}: missing deep traffic links`);
       expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison traffic link`);
       expect(html.includes("super-lig-fikstur.html"), `${page}: missing fixture traffic link`);
