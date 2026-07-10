@@ -17,6 +17,7 @@ const VALID_DATA_STATUSES = new Set([
   "stale",
   "estimated",
   "pending",
+  "manual-review",
   "mock_needs_verification",
   "transfer_needs_monitoring"
 ]);
@@ -92,6 +93,7 @@ function normalizeStats(player) {
     goals: normalizeNumber(stats.goals ?? player.goals, 0),
     assists: normalizeNumber(stats.assists ?? player.assists, 0),
     minutesPlayed: normalizeNumber(stats.minutesPlayed ?? player.minutesPlayed ?? player.minutes, 0),
+    minutes: normalizeNumber(stats.minutes ?? stats.minutesPlayed ?? player.minutes ?? player.minutesPlayed, 0),
     yellowCards: normalizeNumber(stats.yellowCards ?? player.yellowCards, 0),
     redCards: normalizeNumber(stats.redCards ?? player.redCards, 0),
     passAccuracy: normalizeNumber(stats.passAccuracy ?? player.passAccuracy, null),
@@ -601,6 +603,21 @@ function validatePlayerData(rawPlayers) {
       }
     }
   });
+
+  const kerem = list.find((player) => player.id === "kerem-akturkoglu");
+  if (!kerem || normalizeText(kerem.currentTeam) !== normalizeText("Fenerbahce")) {
+    errors.push("Kerem Akturkoglu: currentTeam Fenerbahce olmali.");
+  }
+
+  const ugurcan = list.find((player) => player.id === "ugurcan-cakir");
+  if (!ugurcan || normalizeText(ugurcan.currentTeam) !== normalizeText("Galatasaray")) {
+    errors.push("Ugurcan Cakir: currentTeam Galatasaray olmali.");
+  }
+
+  const dzeko = list.find((player) => player.id === "edin-dzeko");
+  if (!dzeko || normalizeText(dzeko.currentTeam).indexOf(normalizeText("Schalke")) === -1 || normalizeText(dzeko.league).indexOf(normalizeText("Bundesliga")) === -1) {
+    errors.push("Edin Dzeko: currentTeam Schalke 04 ve league 2. Bundesliga olmali.");
+  }
 
   return { ok: errors.length === 0, errors, warnings };
 }

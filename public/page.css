@@ -1521,6 +1521,46 @@ h1 {
         font-size: 0.94rem;
       }
 
+      .player-summary-metrics {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+        margin: -28px 0 18px;
+      }
+
+      .player-summary-metric {
+        min-width: 0;
+        border: 1px solid rgba(134, 255, 218, 0.18);
+        border-radius: var(--radius);
+        padding: 15px;
+        background:
+          linear-gradient(180deg, rgba(128, 255, 155, 0.065), rgba(255, 255, 255, 0.025)),
+          var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .player-summary-metric span,
+      .player-summary-metric em {
+        display: block;
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-style: normal;
+        font-weight: 850;
+        text-transform: uppercase;
+      }
+
+      .player-summary-metric strong {
+        display: block;
+        margin: 8px 0 5px;
+        color: var(--green);
+        font-size: clamp(1.45rem, 3vw, 2.1rem);
+        line-height: 0.95;
+      }
+
+      .player-summary-metrics + .player-toolbar {
+        margin-top: 0;
+      }
+
       .player-card,
       .article-card {
         min-height: 218px;
@@ -1576,6 +1616,31 @@ h1 {
         margin: -4px 0 14px;
         color: var(--muted);
         font-size: 0.9rem;
+      }
+
+      .player-status-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin: 0 0 12px;
+      }
+
+      .player-card-meta-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin: 0 0 14px;
+      }
+
+      .data-quality-warning {
+        margin: 0 0 14px;
+        border: 1px solid rgba(255, 209, 102, 0.24);
+        border-radius: var(--radius);
+        padding: 10px 12px;
+        color: #ffe2a1;
+        background: rgba(255, 209, 102, 0.08);
+        font-size: 0.82rem;
+        font-weight: 800;
       }
 
       .player-metrics {
@@ -1922,6 +1987,37 @@ h1 {
 
       .compare-note {
         margin: 8px 0 0;
+        color: #c5d5d2;
+        font-size: 0.9rem;
+      }
+
+      .compare-winner {
+        grid-column: 1 / -1;
+        border: 1px solid rgba(128, 255, 155, 0.22);
+        border-radius: var(--radius);
+        padding: 14px;
+        background:
+          linear-gradient(90deg, rgba(128, 255, 155, 0.09), rgba(77, 229, 255, 0.045)),
+          rgba(255, 255, 255, 0.035);
+      }
+
+      .compare-winner span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.75rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .compare-winner strong {
+        display: block;
+        margin: 6px 0;
+        color: var(--green);
+        font-size: 1.24rem;
+      }
+
+      .compare-winner p {
+        margin: 0;
         color: #c5d5d2;
         font-size: 0.9rem;
       }
@@ -2568,6 +2664,14 @@ h1 {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .player-summary-metrics {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .player-card-meta-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         .filter-chips,
         .player-count {
           grid-column: 1 / -1;
@@ -2689,6 +2793,15 @@ h1 {
         .player-toolbar {
           grid-template-columns: 1fr;
           margin-top: -22px;
+        }
+
+        .player-summary-metrics {
+          grid-template-columns: 1fr;
+          margin-top: -22px;
+        }
+
+        .player-card-meta-grid {
+          grid-template-columns: 1fr;
         }
 
         .filter-chips {
@@ -3047,12 +3160,23 @@ h1 {
 }
 
 @media (max-width: 760px) {
+  .nav-toggle {
+    display: grid !important;
+    position: fixed !important;
+    top: 18px !important;
+    right: 18px !important;
+    z-index: 120 !important;
+    border-color: rgba(128, 255, 155, 0.62) !important;
+    background: rgba(7, 24, 18, 0.96) !important;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.34), 0 0 18px rgba(128, 255, 155, 0.18);
+  }
+
   .home-page .container,
   .subpage .container {
-    width: calc(100vw - 24px) !important;
-    inline-size: calc(100vw - 24px) !important;
-    max-width: calc(100vw - 24px) !important;
-    max-inline-size: calc(100vw - 24px) !important;
+    width: calc(100% - 24px) !important;
+    inline-size: calc(100% - 24px) !important;
+    max-width: calc(100% - 24px) !important;
+    max-inline-size: calc(100% - 24px) !important;
     margin-left: 12px !important;
     margin-right: 12px !important;
     padding-left: 0 !important;

@@ -36,8 +36,13 @@ function applyPlayerFilters(players, query) {
   const dataStatus = normalizeText(query.dataStatus);
   const ratingStatus = normalizeText(query.ratingStatus);
   const minRating = Number(query.minRating || query.rating);
+  const maxRating = Number(query.maxRating);
   const maxAge = Number(query.maxAge);
   const minAge = Number(query.minAge);
+  const minMarketValue = Number(query.minMarketValue);
+  const maxMarketValue = Number(query.maxMarketValue);
+  const hasTransfers = normalizeText(query.hasTransfers);
+  const needsUpdate = normalizeText(query.needsUpdate);
   const sort = normalizeText(query.sort || "rating");
   const limit = Number(query.limit);
 
@@ -82,6 +87,10 @@ function applyPlayerFilters(players, query) {
     data = data.filter((player) => numberValue(player.overallRating || player.aiRating || player.rating, 0) >= minRating);
   }
 
+  if (Number.isFinite(maxRating)) {
+    data = data.filter((player) => numberValue(player.overallRating || player.aiRating || player.rating, 0) <= maxRating);
+  }
+
   if (Number.isFinite(minAge)) {
     data = data.filter((player) => numberValue(player.computedAge || player.age, 0) >= minAge);
   }
@@ -93,12 +102,32 @@ function applyPlayerFilters(players, query) {
     });
   }
 
+  if (Number.isFinite(minMarketValue)) {
+    data = data.filter((player) => numberValue(player.marketValueEur, 0) >= minMarketValue);
+  }
+
+  if (Number.isFinite(maxMarketValue)) {
+    data = data.filter((player) => numberValue(player.marketValueEur, 0) <= maxMarketValue);
+  }
+
+  if (["1", "true", "yes"].includes(hasTransfers)) {
+    data = data.filter((player) => Array.isArray(player.transferHistory) && player.transferHistory.length > 0);
+  }
+
+  if (["1", "true", "yes"].includes(needsUpdate)) {
+    data = data.filter((player) => {
+      const status = normalizeText(player.dataStatus);
+      return status.includes("stale") || status.includes("monitoring") || status.includes("mock_needs_verification") || status.includes("manual-review");
+    });
+  }
+
   const sorters = {
     rating: (a, b) => numberValue(b.overallRating || b.aiRating || b.rating, 0) - numberValue(a.overallRating || a.aiRating || a.rating, 0),
     age: (a, b) => numberValue(a.computedAge || a.age, 999) - numberValue(b.computedAge || b.age, 999),
     market: (a, b) => numberValue(b.marketValueEur, 0) - numberValue(a.marketValueEur, 0),
     form: (a, b) => numberValue(b.radar && b.radar.form, b.formRating || 0) - numberValue(a.radar && a.radar.form, a.formRating || 0),
     potential: (a, b) => numberValue(b.radar && b.radar.potential, b.potentialRating || 0) - numberValue(a.radar && a.radar.potential, a.potentialRating || 0),
+    updated: (a, b) => String(b.transferUpdatedAt || b.lastUpdated || "").localeCompare(String(a.transferUpdatedAt || a.lastUpdated || "")),
     team: (a, b) => currentTeam(a).localeCompare(currentTeam(b), "tr")
   };
 

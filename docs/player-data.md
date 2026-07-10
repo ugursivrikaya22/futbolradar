@@ -54,3 +54,11 @@ Eksik veri olan oyuncularda skor yine 0-100 araliginda uretilebilir ama `ratingS
 `transferHistory` kayıtlarında `date`, `fromTeam`, `toTeam`, `type`, `feeEur`, `feeLabel`, `source` ve `note` alanları desteklenir. Profil sayfasındaki "Transfer Geçmişi" timeline'ı bu alanlardan üretilir.
 
 Gerçek player API bağlandığında adapter, normalize edilmiş alanları `services/playerService.js` modeline göre üretmelidir.
+
+## Oyuncu Radar Scouting Modeli
+
+`services/playerService.js` her oyuncuyu `currentTeam` öncelikli olacak şekilde normalize eder; `team` alanı yalnızca eski uyumluluk için aynı değere çekilir. `stats.minutes` ve `stats.minutesPlayed` birlikte desteklenir, böylece farklı provider alan adları UI tarafını bozmaz.
+
+`services/ratingService.js` form, hücum, yaratıcılık, savunma, disiplin, süreklilik, potansiyel, transfer değeri ve veri güveni skorlarını 0-100 aralığında üretir. Overall rating pozisyon grubuna göre ağırlıklandırılır; manuel/verified rating varsa otomatik provider verisiyle ezilmez.
+
+Oyuncu Radar ekranında transfer geçmişi, veri güncelleme ihtiyacı, piyasa değeri, yaş, uyruk, veri durumu ve rating durumu görünür kart alanlarıdır. `/api/players` tarafında `search`, `team`, `position`, `positionGroup`, `minRating`, `maxRating`, `minAge`, `maxAge`, `minMarketValue`, `maxMarketValue`, `hasTransfers`, `needsUpdate`, `sort` ve `limit` parametreleri desteklenir.

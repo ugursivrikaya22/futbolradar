@@ -350,5 +350,6 @@ module.exports = {
   deriveStrengths,
   deriveWeaknesses,
   enrichPlayerRating,
+  inferPositionGroup: positionGroup,
   positionGroup
 };

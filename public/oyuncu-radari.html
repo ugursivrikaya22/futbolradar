@@ -69,11 +69,18 @@
         <div class="hero-row">
           <div>
             <span class="eyebrow">Oyuncu performans radarları</span>
-            <h1 data-player-filter-title>Oyuncu Performans Radarları</h1>
+            <h1 data-player-filter-title>Oyuncu Radar</h1>
             <p class="lead" data-player-filter-lead>FutbolRadar oyuncu performans ekranı; AI rating, gol tehdidi, yaratıcılık, pres gücü, xG, xA ve radar profillerine göre oyuncuları analiz eder.</p>
           </div>
           <span class="hero-meta">Son güncelleme: 07 Temmuz 2026 · 23:55</span>
         </div>
+      </section>
+      <section class="player-summary-metrics" data-player-summary-metrics data-state="loading" aria-label="Oyuncu radar ozeti">
+        <article class="player-summary-metric">
+          <span>Oyuncular</span>
+          <strong>...</strong>
+          <em>radar hazirlaniyor</em>
+        </article>
       </section>
       <section class="player-toolbar" aria-label="Oyuncu filtreleri">
         <div class="filter-group">
@@ -150,6 +157,7 @@
             <option value="form">Form</option>
             <option value="potential">Potansiyel</option>
             <option value="market">Piyasa degeri</option>
+            <option value="updated">Guncelleme tarihi</option>
             <option value="age">Yas</option>
             <option value="team">Takim</option>
           </select>
@@ -163,6 +171,8 @@
           <button class="filter-chip" type="button" data-player-filter="form-dususu" aria-pressed="false">Form düşüşü</button>
           <button class="filter-chip" type="button" data-player-filter="rating-80" aria-pressed="false">AI rating 80+</button>
           <button class="filter-chip" type="button" data-player-filter="dakika-500" aria-pressed="false">Dakika 500+</button>
+          <button class="filter-chip" type="button" data-player-filter="transfer-history" aria-pressed="false">Transfer gecmisi</button>
+          <button class="filter-chip" type="button" data-player-filter="needs-update" aria-pressed="false">Guncelleme gereken</button>
         </div>
         <span class="player-count" data-player-count>Oyuncular hazırlanıyor</span>
       </section>

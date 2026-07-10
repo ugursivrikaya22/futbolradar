@@ -81,7 +81,7 @@ function rankingScore(player, type) {
     return numberValue(radar.transferValue, 0);
   }
 
-  return numberValue(player.overallRating || player.aiRating || player.rating, 0);
+  return numberValue(radar.overall, numberValue(player.overallRating || player.aiRating || player.rating, 0));
 }
 
 async function handlePlayerDetail(req, res, query) {
@@ -104,7 +104,9 @@ async function handlePlayerCompare(req, res, query) {
   const { data, source } = await getPlayerData(query);
   const wanted = requestedPlayers(query);
   const selected = wanted.length
-    ? data.filter((player) => wanted.includes(normalizeText(player.id)) || wanted.includes(normalizeText(player.slug)))
+    ? wanted.map((id) => data.find((player) => {
+      return normalizeText(player.id) === id || normalizeText(player.slug) === id || normalizeText(player.name) === id;
+    })).filter(Boolean)
     : data.slice(0, 3);
 
   if (selected.length < 2) {

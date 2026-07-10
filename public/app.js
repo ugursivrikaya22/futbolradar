@@ -370,6 +370,34 @@
     }).join("") + "</div>";
   }
 
+  function renderPlayerSummaryMetrics(players) {
+    var list = Array.isArray(players) ? players : [];
+    var highest = topPlayer(list, playerAiScore);
+    var rising = list.filter(function (player) { return playerMatchesSignal(player, "yukselen"); }).length;
+    var needsUpdate = list.filter(playerNeedsDataRefresh).length;
+    var verified = list.filter(function (player) {
+      var status = normalizeSearchText(player.dataStatus);
+      return status === "verified" || status === "manually_verified" || status === "manual";
+    }).length;
+    var cards = [
+      { label: "Toplam oyuncu", value: list.length, note: "radar modelinde" },
+      { label: "En yuksek AI Rating", value: highest ? playerAiScore(highest) : "-", note: highest ? highest.name : "Veri bekleniyor" },
+      { label: "Yukselen oyuncular", value: rising, note: "pozitif form sinyali" },
+      { label: "Guncelleme gereken", value: needsUpdate, note: "veri takibi acik" },
+      { label: "Dogrulanmis veri", value: verified, note: "manuel/verified kayit" }
+    ];
+
+    return cards.map(function (card) {
+      return (
+        '<article class="player-summary-metric">' +
+        "<span>" + escapeHtml(card.label) + "</span>" +
+        "<strong>" + escapeHtml(card.value) + "</strong>" +
+        "<em>" + escapeHtml(card.note) + "</em>" +
+        "</article>"
+      );
+    }).join("");
+  }
+
   function clampScore(value) {
     var number = Number(value);
 
@@ -530,6 +558,10 @@
       return kind === "rating" ? "Manuel skor" : "Manuel kontrol";
     }
 
+    if (normalized === "manual-review") {
+      return "Manuel inceleme";
+    }
+
     if (normalized === "stale" || normalized === "mock_needs_verification") {
       return "Güncelleme gerekli";
     }
@@ -557,7 +589,7 @@
     if (normalized === "estimated") {
       return "estimated";
     }
-    if (normalized === "stale" || normalized === "mock_needs_verification") {
+    if (normalized === "stale" || normalized === "mock_needs_verification" || normalized === "manual-review") {
       return "stale";
     }
     if (normalized === "pending" || normalized === "transfer_needs_monitoring") {
@@ -576,6 +608,51 @@
     }
 
     return [{ label: "Tahmini skor", variant: "soft" }];
+  }
+
+  function playerHasTransferHistory(player) {
+    return Array.isArray(player && player.transferHistory) && player.transferHistory.length > 0;
+  }
+
+  function playerNeedsDataRefresh(player) {
+    var status = normalizeSearchText(player && player.dataStatus);
+    return status === "stale" || status === "manual-review" || status === "mock_needs_verification" || status === "transfer_needs_monitoring";
+  }
+
+  function transferStatusBadgeHtml(player) {
+    var count = playerHasTransferHistory(player) ? player.transferHistory.length : 0;
+    return statusBadge(count ? "Transfer: " + count + " kayit" : "Transfer yakinda", count ? "verified" : "pending");
+  }
+
+  function playerStatusRowHtml(player) {
+    return (
+      '<div class="player-status-row">' +
+      statusBadgeHtml(player.dataStatus, "data") +
+      statusBadgeHtml(player.ratingStatus, "rating") +
+      transferStatusBadgeHtml(player) +
+      "</div>"
+    );
+  }
+
+  function playerQualityWarningHtml(player) {
+    if (!playerNeedsDataRefresh(player)) {
+      return "";
+    }
+
+    return '<p class="data-quality-warning">Bu oyuncu icin veri guncellemesi onerilir.</p>';
+  }
+
+  function playerMetaGridHtml(player) {
+    return (
+      '<div class="player-card-meta-grid">' +
+      compactMetricHtml("Guncel takim", playerCurrentTeam(player)) +
+      compactMetricHtml("Mevki", player.position) +
+      compactMetricHtml("Yas", playerAge(player)) +
+      compactMetricHtml("Uyruk", player.nationality) +
+      compactMetricHtml("Piyasa", playerMarketValue(player) || "Yakinda") +
+      compactMetricHtml("Lig", player.league) +
+      "</div>"
+    );
   }
 
   function playerFormerTeams(player) {
@@ -839,7 +916,13 @@
       "form-dusuk": "form-dususu",
       "ai-rating-80": "rating-80",
       "rating80": "rating-80",
-      "dakika500": "dakika-500"
+      "dakika500": "dakika-500",
+      transfers: "transfer-history",
+      transfer: "transfer-history",
+      "transfer-gecmisi": "transfer-history",
+      "needs-update": "needs-update",
+      "guncelleme-gereken": "needs-update",
+      "veri-guncelleme": "needs-update"
     };
 
     return aliases[normalized] || normalized || "all";
@@ -1140,6 +1223,9 @@
       '<article class="card player-detail-card" data-card="player" data-player="' + escapeHtml(player.id) + '">' +
       '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(team) + " · " + escapeHtml(player.position) + "</span><h2>" + escapeHtml(player.name) + '</h2></div><strong class="big-value">' + escapeHtml(displayValue(player.overallRating || player.aiRating || player.rating)) + "</strong></div>" +
       '<p class="player-summary">' + escapeHtml(playerInsight(player)) + "</p>" +
+      playerStatusRowHtml(player) +
+      playerMetaGridHtml(player) +
+      playerQualityWarningHtml(player) +
       badgesHtml(playerBadges(player)) +
       playerMetricsHtml(player) +
       formDotsHtml(player.form) +
@@ -1487,6 +1573,12 @@
     "dakika-500": "Dakika 500+ Oyuncular"
   };
 
+  PLAYER_FILTER_COPY["transfer-history"] = "Bu liste, transfer gecmisi kayitli olan oyunculari guncel takim ve eski kulup ayrimiyla gosterir.";
+  PLAYER_FILTER_COPY["needs-update"] = "Bu liste, veri guncellemesi veya manuel inceleme takibi onerilen oyunculari one cikarir.";
+  PLAYER_FILTER_TITLES.all = "Oyuncu Radar";
+  PLAYER_FILTER_TITLES["transfer-history"] = "Transfer Gecmisi Olan Oyuncular";
+  PLAYER_FILTER_TITLES["needs-update"] = "Guncelleme Gereken Oyuncular";
+
   var PLAYER_LANDING_CONFIG = {
     forvetler: {
       title: "Forvet Oyuncuları",
@@ -1714,6 +1806,14 @@
       return Number(player.minutes) >= 500;
     }
 
+    if (signal === "transfer-history") {
+      return playerHasTransferHistory(player);
+    }
+
+    if (signal === "needs-update") {
+      return playerNeedsDataRefresh(player);
+    }
+
     return true;
   }
 
@@ -1763,6 +1863,7 @@
       market: function (a, b) { return Number(b.marketValueEur || 0) - Number(a.marketValueEur || 0); },
       form: function (a, b) { return radarMetric(b, "form") - radarMetric(a, "form"); },
       potential: function (a, b) { return radarMetric(b, "potential") - radarMetric(a, "potential"); },
+      updated: function (a, b) { return String(b.transferUpdatedAt || b.lastUpdated || "").localeCompare(String(a.transferUpdatedAt || a.lastUpdated || "")); },
       team: function (a, b) { return playerCurrentTeam(a).localeCompare(playerCurrentTeam(b), "tr"); }
     };
 
@@ -1786,6 +1887,7 @@
     var ratingStatusSelect = document.querySelector("[data-player-rating-status-filter]");
     var sortSelect = document.querySelector("[data-player-sort]");
     var chips = Array.from(document.querySelectorAll("[data-player-filter]"));
+    var summaryTarget = document.querySelector("[data-player-summary-metrics]");
     var count = document.querySelector("[data-player-count]");
     var description = document.querySelector("[data-player-filter-description]");
     var titleElement = document.querySelector("[data-player-filter-title]");
@@ -1817,6 +1919,11 @@
         populatePlayerSelect(positionGroupSelect, uniqueSorted(players, "positionGroup"), "Tum rol gruplari");
         populatePlayerSelect(dataStatusSelect, uniqueSorted(players, "dataStatus"), "Tum veri durumlari");
         populatePlayerSelect(ratingStatusSelect, uniqueSorted(players, "ratingStatus"), "Tum rating durumlari");
+
+        if (summaryTarget) {
+          summaryTarget.innerHTML = renderPlayerSummaryMetrics(players);
+          summaryTarget.dataset.state = "ready";
+        }
 
         state.signal = PLAYER_FILTER_COPY[canonicalPlayerFilter(query.get("filter"))] ? canonicalPlayerFilter(query.get("filter")) : "all";
 
@@ -2185,6 +2292,27 @@
     );
   }
 
+  function compareWinnerSummaryHtml(players) {
+    var selected = Array.isArray(players) ? players.filter(Boolean) : [];
+    if (!selected.length) {
+      return "";
+    }
+
+    var leader = selected.slice().sort(function (a, b) {
+      var scoreA = playerAiScore(a) * 0.45 + radarMetric(a, "form") * 0.25 + radarMetric(a, "dataConfidence") * 0.15 + radarMetric(a, "potential") * 0.15;
+      var scoreB = playerAiScore(b) * 0.45 + radarMetric(b, "form") * 0.25 + radarMetric(b, "dataConfidence") * 0.15 + radarMetric(b, "potential") * 0.15;
+      return scoreB - scoreA;
+    })[0];
+
+    return (
+      '<section class="compare-winner">' +
+      '<span>Kim onde?</span>' +
+      "<strong>" + escapeHtml(leader.name) + "</strong>" +
+      "<p>Overall, form, potansiyel ve veri guveni birlikte okundugunda bu eslesmede radar lideri olarak one cikiyor.</p>" +
+      "</section>"
+    );
+  }
+
   function renderPlayerComparisonSet(players) {
     var selected = Array.isArray(players) ? players.filter(Boolean).slice(0, 3) : [];
 
@@ -2195,13 +2323,21 @@
     return (
       '<article class="compare-card compare-card-multi">' +
       '<div class="compare-player-row">' + selected.map(comparePlayerSummaryHtml).join("") + "</div>" +
+      compareWinnerSummaryHtml(selected) +
       compareMultiRowHtml("Overall", selected, function (player) { return player.overallRating || player.aiRating || player.rating; }) +
       compareMultiRowHtml("Form", selected, function (player) { return radarMetric(player, "form"); }) +
       compareMultiRowHtml("Hucum", selected, function (player) { return radarMetric(player, "attack"); }) +
       compareMultiRowHtml("Yaraticilik", selected, function (player) { return radarMetric(player, "creativity"); }) +
       compareMultiRowHtml("Savunma", selected, function (player) { return radarMetric(player, "defense"); }) +
+      compareMultiRowHtml("Disiplin", selected, function (player) { return radarMetric(player, "discipline"); }) +
+      compareMultiRowHtml("Sureklilik", selected, function (player) { return radarMetric(player, "durability"); }) +
       compareMultiRowHtml("Potansiyel", selected, function (player) { return radarMetric(player, "potential"); }) +
       compareMultiRowHtml("Veri guveni", selected, function (player) { return radarMetric(player, "dataConfidence"); }) +
+      compareMultiRowHtml("Piyasa EUR", selected, function (player) { return Number(player.marketValueEur || 0); }) +
+      compareMultiRowHtml("Mac", selected, function (player) { return playerStats(player).appearances; }) +
+      compareMultiRowHtml("Dakika", selected, function (player) { return playerStats(player).minutesPlayed; }) +
+      compareMultiRowHtml("Gol", selected, function (player) { return playerStats(player).goals; }) +
+      compareMultiRowHtml("Asist", selected, function (player) { return playerStats(player).assists; }) +
       playerRadarChartHtml(selected[0], selected[1], selected.map(function (player) { return player.name; }).join(" / ")) +
       '<p class="compare-note">FutbolRadar yorumu: lider oyuncu metrik bazinda yesil vurgulanir; 3. oyuncu radar grafigine hazir veri olarak tutulur.</p>' +
       "</article>"
