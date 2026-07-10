@@ -2,7 +2,7 @@ const {
   DEFAULT_TIMEOUT_MS,
   normalizeText,
   withTimeout
-} = require("../_utils");
+} = require("../../api/_utils");
 
 const source = "FutbolRadar API-Football Live API";
 const DEFAULT_BASE_URL = "https://v3.football.api-sports.io";

@@ -246,7 +246,9 @@ function checkSeoAndLinks() {
 }
 
 async function callEndpoint(name, url = `/api/${name}`) {
-  const moduleUrl = pathToFileURL(path.join(root, "api", `${name}.js`)).href;
+  const directPath = path.join(root, "api", `${name}.js`);
+  const modulePath = fs.existsSync(directPath) ? directPath : path.join(root, "api", "[...route].js");
+  const moduleUrl = pathToFileURL(modulePath).href;
   const { default: handler } = await import(`${moduleUrl}?qa=${Date.now()}-${Math.random()}`);
   let payload = null;
   const response = {

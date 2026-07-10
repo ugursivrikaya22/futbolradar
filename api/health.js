@@ -6,8 +6,8 @@ const {
   rejectUnsupportedMethod,
   sendSuccess
 } = require("./_utils");
-const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig } = require("./providers");
-const { getConfig } = require("./providers/footballProvider");
+const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig } = require("../services/providers");
+const { getConfig } = require("../services/providers/footballProvider");
 
 function presentEnvNames(names) {
   return names.filter((name) => Boolean(process.env[name]));

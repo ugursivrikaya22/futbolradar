@@ -1,4 +1,4 @@
-const { getProvider, mockProvider } = require("./providers");
+const { getProvider, mockProvider } = require("../services/providers");
 const { mergeProviderTransfers } = require("../services/playerService");
 const {
   DEFAULT_TIMEOUT_MS,

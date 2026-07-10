@@ -1,4 +1,4 @@
-const { getProvider, mockProvider } = require("./providers");
+const { getProvider, mockProvider } = require("../services/providers");
 const {
   DEFAULT_TIMEOUT_MS,
   getQuery,

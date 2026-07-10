@@ -4,8 +4,8 @@ const players = require("../../data/players.json");
 const momentum = require("../../data/momentum.json");
 const signals = require("../../data/signals.json");
 const analyses = require("../../data/analyses.json");
-const { normalizeText } = require("../_utils");
-const { normalizePlayer: normalizePlayerRecord } = require("../../services/playerService");
+const { normalizeText } = require("../../api/_utils");
+const { normalizePlayer: normalizePlayerRecord } = require("../playerService");
 
 const source = "FutbolRadar Mock API";
 

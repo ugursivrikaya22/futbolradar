@@ -1,4 +1,4 @@
-const { getProvider } = require("./providers");
+const { getProvider } = require("../services/providers");
 const {
   DEFAULT_TIMEOUT_MS,
   getQuery,

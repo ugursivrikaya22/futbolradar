@@ -5,7 +5,7 @@ const {
   DEFAULT_TIMEOUT_MS,
   firstPresentEnv,
   withTimeout
-} = require("../_utils");
+} = require("../../api/_utils");
 
 const source = "FutbolRadar Football-Data Live API";
 

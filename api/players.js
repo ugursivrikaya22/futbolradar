@@ -1,4 +1,4 @@
-const { getProvider, mockProvider } = require("./providers");
+const { getProvider, mockProvider } = require("../services/providers");
 const { mergeProviderPlayers } = require("../services/playerService");
 const { enrichPlayerRating } = require("../services/ratingService");
 const {
