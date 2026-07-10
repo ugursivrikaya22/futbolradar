@@ -237,8 +237,28 @@ const legalPages = [
   }
 ];
 
+function cardDescription(card) {
+  const key = String(card).toLowerCase();
+  if (key.includes("gol") || key.includes("bitiricilik")) {
+    return "Gol tehdidi, xG, sut hacmi ve ceza sahasi etkisi birlikte okunur.";
+  }
+  if (key.includes("yaraticilik") || key.includes("pas")) {
+    return "Kilit pas, xA, asist ve top kullanimi oyuncunun uretim rolunu aciklar.";
+  }
+  if (key.includes("savunma") || key.includes("disiplin")) {
+    return "Savunma katkisi, kart yuku ve sureklilik skoru birlikte degerlendirilir.";
+  }
+  if (key.includes("transfer") || key.includes("guncel takim")) {
+    return "Guncel takim, eski kulup ve transfer gecmisi ayrimi korunarak gosterilir.";
+  }
+  if (key.includes("potansiyel") || key.includes("yas")) {
+    return "Yas profili, gelisim alani ve potansiyel rating ayni kartta okunur.";
+  }
+  return "AI rating, form ve radar alt skorlari bu segmentteki oyunculari siralamak icin kullanilir.";
+}
+
 function cardsHtml(cards) {
-  return cards.map((card) => `<article class="card"><span class="card-kicker">Radar</span><h2>${card}</h2><p>Bu başlık FutbolRadar veri katmanıyla ilişkilidir ve ilgili analiz ekranlarına iç link verir.</p></article>`).join("");
+  return cards.map((card) => `<article class="card"><span class="card-kicker">Radar</span><h2>${card}</h2><p>${cardDescription(card)}</p></article>`).join("");
 }
 
 function pageHtml(page) {

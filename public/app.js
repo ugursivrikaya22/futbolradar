@@ -241,6 +241,22 @@
     return '<div class="tag-row">' + (Array.isArray(tags) ? tags.map(tagHtml).join("") : "") + "</div>";
   }
 
+  function playerInitials(player) {
+    var name = String(player && player.name || "FR").trim();
+    return name.split(/\s+/).slice(0, 2).map(function (part) {
+      return part.charAt(0);
+    }).join("").toUpperCase() || "FR";
+  }
+
+  function playerAvatarHtml(player, size) {
+    var className = "player-avatar" + (size ? " " + size : "");
+    if (player && player.photo) {
+      return '<span class="' + escapeHtml(className) + '"><img src="' + escapeHtml(player.photo) + '" alt="" loading="lazy" /></span>';
+    }
+
+    return '<span class="' + escapeHtml(className) + '">' + escapeHtml(playerInitials(player)) + "</span>";
+  }
+
   function badgesHtml(badges) {
     if (!Array.isArray(badges) || !badges.length) {
       return "";
@@ -466,9 +482,10 @@
     );
   }
 
-  function playerRadarChartHtml(left, right, title) {
+  function playerRadarChartHtml(left, right, title, third) {
     var leftRows = playerRadarRows(left);
     var rightRows = right ? playerRadarRows(right) : null;
+    var thirdRows = third ? playerRadarRows(third) : null;
     var grids = [0.25, 0.5, 0.75, 1].map(function (scale) {
       return '<polygon class="radar-grid-ring" points="' + radarGridPoints(leftRows, scale) + '"></polygon>';
     }).join("");
@@ -482,12 +499,14 @@
       radarAxisHtml(leftRows) +
       '<polygon class="radar-area radar-area-left" points="' + radarPoints(leftRows, 1) + '"></polygon>' +
       (rightRows ? '<polygon class="radar-area radar-area-right" points="' + radarPoints(rightRows, 1) + '"></polygon>' : "") +
+      (thirdRows ? '<polygon class="radar-area radar-area-third" points="' + radarPoints(thirdRows, 1) + '"></polygon>' : "") +
       '<circle class="radar-center" cx="120" cy="120" r="4"></circle>' +
       "</svg>" +
       "</div>" +
       '<div class="radar-chart-legend">' +
       radarLegendHtml(left, "left") +
       (right ? radarLegendHtml(right, "right") : "") +
+      (third ? radarLegendHtml(third, "third") : "") +
       "</div>" +
       "</section>"
     );
@@ -543,8 +562,28 @@
     return player.marketValue || null;
   }
 
-  function statusBadge(label, variant) {
-    return '<span class="status-badge ' + escapeHtml(variant || "neutral") + '">' + escapeHtml(label) + "</span>";
+  function statusExplanation(status, kind) {
+    var normalized = normalizeSearchText(status);
+    if (normalized === "verified" || normalized === "manually_verified" || normalized === "manual") {
+      return kind === "rating" ? "Rating manuel kontrolle korunuyor." : "Oyuncu kaydi manuel kontrol edildi.";
+    }
+    if (normalized === "provider") {
+      return "Alan provider verisiyle eslesmeye hazir.";
+    }
+    if (normalized === "estimated") {
+      return "Alan model tarafindan tahmini uretiliyor.";
+    }
+    if (normalized === "stale" || normalized === "mock_needs_verification" || normalized === "manual-review") {
+      return "Bu kayit icin guncelleme veya manuel kontrol onerilir.";
+    }
+    if (normalized === "pending" || normalized === "transfer_needs_monitoring") {
+      return "Bu kayit izleme listesinde.";
+    }
+    return "Veri durumu kaydi.";
+  }
+
+  function statusBadge(label, variant, title) {
+    return '<span class="status-badge ' + escapeHtml(variant || "neutral") + '" title="' + escapeHtml(title || label) + '">' + escapeHtml(label) + "</span>";
   }
 
   function statusLabel(status, kind) {
@@ -599,7 +638,7 @@
   }
 
   function statusBadgeHtml(status, kind) {
-    return statusBadge(statusLabel(status, kind), statusVariant(status));
+    return statusBadge(statusLabel(status, kind), statusVariant(status), statusExplanation(status, kind));
   }
 
   function playerRatingTags(player) {
@@ -1244,6 +1283,53 @@
     );
   }
 
+  function renderPlayerHomeCard(player) {
+    var team = playerCurrentTeam(player);
+
+    return (
+      '<article class="player-card" data-card="player-radar" data-player="' + escapeHtml(player.id) + '">' +
+      '<header><div class="player-card-title">' + playerAvatarHtml(player) + '<div><h3>' + escapeHtml(player.name) + "</h3><span>" + escapeHtml(team) + " - " + escapeHtml(player.position) + '</span></div></div><strong class="rating">' + escapeHtml(player.aiRating) + "</strong></header>" +
+      '<span class="trend">Trend: ' + escapeHtml(player.trend) + "</span>" +
+      badgesHtml(playerBadges(player)) +
+      playerMetricsHtml(player, true) +
+      playerRadarHtml(player, true) +
+      tagsHtml([
+        { label: "Gol " + (player.goals == null ? "-" : player.goals), variant: "green" },
+        { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
+      ].concat(playerRatingTags(player))) +
+      formDotsHtml(player.form) +
+      "</article>"
+    );
+  }
+
+  function renderPlayerPageCard(player) {
+    var team = playerCurrentTeam(player);
+
+    return (
+      '<article class="card player-detail-card" data-card="player" data-player="' + escapeHtml(player.id) + '">' +
+      '<div class="card-head"><div class="player-card-title">' + playerAvatarHtml(player) + '<div><span class="card-kicker">' + escapeHtml(team) + " - " + escapeHtml(player.position) + "</span><h2>" + escapeHtml(player.name) + '</h2></div></div><strong class="big-value">' + escapeHtml(displayValue(player.overallRating || player.aiRating || player.rating)) + "</strong></div>" +
+      '<p class="player-summary">' + escapeHtml(playerInsight(player)) + "</p>" +
+      playerStatusRowHtml(player) +
+      playerMetaGridHtml(player) +
+      playerQualityWarningHtml(player) +
+      badgesHtml(playerBadges(player)) +
+      playerMetricsHtml(player) +
+      formDotsHtml(player.form) +
+      barRowHtml("Etki", player.impact, player.impact) +
+      playerRadarHtml(player) +
+      tagsHtml([
+        { label: "Gol " + (player.goals == null ? "-" : player.goals), variant: "green" },
+        { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
+      ].concat(player.tags || [], playerRatingTags(player))) +
+      '<div class="player-actions">' +
+      '<a class="detail-link" href="/oyuncular/' + escapeHtml(player.id) + '.html">Detay</a>' +
+      '<button class="detail-link" type="button" data-compare-add="' + escapeHtml(player.id) + '">Karsilastirmaya ekle</button>' +
+      '<button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Radar kartini paylas</button>' +
+      "</div>" +
+      "</article>"
+    );
+  }
+
   function updatePlayerDetailSchema(player) {
     var schema = document.querySelector('script[type="application/ld+json"]');
     var team = playerCurrentTeam(player);
@@ -1397,6 +1483,16 @@
       '<header class="profile-hero"><div><span>Güncel takım: ' + escapeHtml(team) + " · " + escapeHtml(player.league || "Lig bilgisi yakında") + "</span><h1>" + escapeHtml(player.name) + "</h1><p>" + escapeHtml(playerInsight(player)) + "</p></div><strong>" + escapeHtml(displayValue(player.overallRating || player.aiRating || player.rating)) + "</strong></header>" +
       badgesHtml(playerBadges(player)) +
       tagsHtml(transferTags.concat(playerRatingTags(player))) +
+      profileSectionHtml("Profil Ozeti", [
+        profileItemHtml("Guncel takim", team),
+        profileItemHtml("Mevki", player.position),
+        profileItemHtml("Yas", age),
+        profileItemHtml("Uyruk", player.nationality),
+        profileItemHtml("Piyasa degeri", marketValue, "Piyasa degeri yakinda"),
+        profileItemHtml("Veri durumu", playerDataStatusLabel(player), "Yakinda"),
+        profileItemHtml("Transfer kaydi", playerHasTransferHistory(player) ? player.transferHistory.length + " kayit" : "Yakinda"),
+        profileItemHtml("Rating durumu", statusLabel(player.ratingStatus, "rating"), "Yakinda")
+      ]) +
       profileSectionHtml("Rating Modeli", [
         profileItemHtml("Overall", player.overallRating || player.aiRating || player.rating),
         profileItemHtml("Potansiyel", player.potentialRating),
@@ -1925,6 +2021,8 @@
           summaryTarget.dataset.state = "ready";
         }
 
+        initPlayerCompareTray(players);
+
         state.signal = PLAYER_FILTER_COPY[canonicalPlayerFilter(query.get("filter"))] ? canonicalPlayerFilter(query.get("filter")) : "all";
 
         if (searchInput && query.get("search")) {
@@ -2200,6 +2298,105 @@
     });
   }
 
+  var COMPARE_STORAGE_KEY = "futbolradar.compare.players";
+
+  function readCompareSelection() {
+    try {
+      var raw = window.localStorage ? window.localStorage.getItem(COMPARE_STORAGE_KEY) : "";
+      var parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed.filter(Boolean).slice(0, 3) : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function writeCompareSelection(ids) {
+    try {
+      if (window.localStorage) {
+        window.localStorage.setItem(COMPARE_STORAGE_KEY, JSON.stringify(ids.slice(0, 3)));
+      }
+    } catch (error) {}
+  }
+
+  function renderCompareTray(tray, players, ids) {
+    var selected = ids.map(function (id) {
+      return players.find(function (player) { return player.id === id; });
+    }).filter(Boolean);
+
+    if (!tray) {
+      return;
+    }
+
+    if (!selected.length) {
+      tray.hidden = true;
+      tray.innerHTML = "";
+      return;
+    }
+
+    tray.hidden = false;
+    var compareHref = "./oyuncu-karsilastir.html?players=" + selected.map(function (player) {
+      return encodeURIComponent(player.id);
+    }).join(",");
+
+    tray.innerHTML =
+      '<div><span>Karsilastirma listesi</span><strong>' + selected.length + "/3 oyuncu secildi</strong></div>" +
+      '<div class="compare-tray-players">' +
+      selected.map(function (player) {
+        return '<button type="button" data-compare-remove="' + escapeHtml(player.id) + '">' + escapeHtml(player.name) + "<span>×</span></button>";
+      }).join("") +
+      "</div>" +
+      '<div class="compare-tray-actions">' +
+      '<a class="detail-link" href="' + escapeHtml(compareHref) + '">Karsilastir</a>' +
+      '<button class="detail-link ghost" type="button" data-compare-clear>Temizle</button>' +
+      "</div>";
+  }
+
+  function initPlayerCompareTray(players) {
+    var tray = document.querySelector("[data-compare-tray]");
+    if (!tray || tray.dataset.bound === "true") {
+      if (tray) {
+        renderCompareTray(tray, players, readCompareSelection());
+      }
+      return;
+    }
+
+    tray.dataset.bound = "true";
+    renderCompareTray(tray, players, readCompareSelection());
+
+    document.addEventListener("click", function (event) {
+      var addButton = event.target.closest("[data-compare-add]");
+      var removeButton = event.target.closest("[data-compare-remove]");
+      var clearButton = event.target.closest("[data-compare-clear]");
+      var ids = readCompareSelection();
+
+      if (addButton) {
+        event.preventDefault();
+        var id = addButton.getAttribute("data-compare-add");
+        if (ids.indexOf(id) === -1) {
+          if (ids.length >= 3) {
+            ids.shift();
+          }
+          ids.push(id);
+        }
+        writeCompareSelection(ids);
+        renderCompareTray(tray, players, ids);
+        return;
+      }
+
+      if (removeButton) {
+        ids = ids.filter(function (id) { return id !== removeButton.getAttribute("data-compare-remove"); });
+        writeCompareSelection(ids);
+        renderCompareTray(tray, players, ids);
+        return;
+      }
+
+      if (clearButton) {
+        writeCompareSelection([]);
+        renderCompareTray(tray, players, []);
+      }
+    });
+  }
+
   function compareRowHtml(label, left, right) {
     var leftNumber = Number(left);
     var rightNumber = Number(right);
@@ -2338,8 +2535,8 @@
       compareMultiRowHtml("Dakika", selected, function (player) { return playerStats(player).minutesPlayed; }) +
       compareMultiRowHtml("Gol", selected, function (player) { return playerStats(player).goals; }) +
       compareMultiRowHtml("Asist", selected, function (player) { return playerStats(player).assists; }) +
-      playerRadarChartHtml(selected[0], selected[1], selected.map(function (player) { return player.name; }).join(" / ")) +
-      '<p class="compare-note">FutbolRadar yorumu: lider oyuncu metrik bazinda yesil vurgulanir; 3. oyuncu radar grafigine hazir veri olarak tutulur.</p>' +
+      playerRadarChartHtml(selected[0], selected[1], selected.map(function (player) { return player.name; }).join(" / "), selected[2]) +
+      '<p class="compare-note">FutbolRadar yorumu: lider oyuncu metrik bazinda yesil vurgulanir; uc oyunculu secimde tum radar alanlari ayni grafikte okunur.</p>' +
       "</article>"
     );
   }
