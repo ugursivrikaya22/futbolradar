@@ -39,6 +39,10 @@ const pages = [
   "asist-kralligi.html",
   "derbi-radari.html",
   "haftanin-maclari.html",
+  "mac-merkezi.html",
+  "oyuncu-liderleri.html",
+  "takim-trendleri.html",
+  "futbol-radar-rehberi.html",
   "galatasaray-oyuncu-radari.html",
   "fenerbahce-oyuncu-radari.html",
   "besiktas-oyuncu-radari.html",
@@ -152,7 +156,10 @@ const cssFeatureMarkers = [
   "home-rivalry-wall",
   "intent-card-grid",
   "intent-player-card",
-  "intent-link-grid"
+  "intent-link-grid",
+  "home-explore-lab",
+  "explore-lab-grid",
+  "explore-lab-card"
 ];
 const failures = [];
 
@@ -378,10 +385,15 @@ function checkSeoAndLinks() {
       expect(html.includes("home-match-command"), `${page}: missing match command traffic block`);
       expect(html.includes("home-player-leagues"), `${page}: missing player league traffic block`);
       expect(html.includes("home-rivalry-wall"), `${page}: missing rivalry wall traffic block`);
+      expect(html.includes("home-explore-lab"), `${page}: missing homepage explore lab`);
       expect(html.includes("gol-kralligi.html"), `${page}: missing goal ranking route`);
       expect(html.includes("asist-kralligi.html"), `${page}: missing assist ranking route`);
       expect(html.includes("derbi-radari.html"), `${page}: missing derby route`);
       expect(html.includes("haftanin-maclari.html"), `${page}: missing weekly matches route`);
+      expect(html.includes("mac-merkezi.html"), `${page}: missing match center route`);
+      expect(html.includes("oyuncu-liderleri.html"), `${page}: missing player leaders route`);
+      expect(html.includes("takim-trendleri.html"), `${page}: missing team trends route`);
+      expect(html.includes("futbol-radar-rehberi.html"), `${page}: missing radar guide route`);
       expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison traffic link`);
       expect(html.includes("super-lig-fikstur.html"), `${page}: missing fixture traffic link`);
       expect(html.includes("karsilastirma/kerem-akturkoglu-vs-mauro-icardi.html"), `${page}: missing static comparison route`);

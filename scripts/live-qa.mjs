@@ -27,6 +27,10 @@ const pages = [
   "/asist-kralligi.html",
   "/derbi-radari.html",
   "/haftanin-maclari.html",
+  "/mac-merkezi.html",
+  "/oyuncu-liderleri.html",
+  "/takim-trendleri.html",
+  "/futbol-radar-rehberi.html",
   "/players/position/forvet.html",
   "/players/league/super-lig.html",
   "/oyuncular/forvetler.html",
@@ -150,7 +154,10 @@ const cssFeatureMarkers = [
   "home-rivalry-wall",
   "intent-card-grid",
   "intent-player-card",
-  "intent-link-grid"
+  "intent-link-grid",
+  "home-explore-lab",
+  "explore-lab-grid",
+  "explore-lab-card"
 ];
 const suspiciousCodes = new Set([0x00c2, 0x00c3, 0x00c4, 0x00c5]);
 const failures = [];
