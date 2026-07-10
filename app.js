@@ -1345,54 +1345,6 @@
 
     return (
       '<article class="player-card" data-card="player-radar" data-player="' + escapeHtml(player.id) + '">' +
-      '<header><div><h3>' + escapeHtml(player.name) + "</h3><span>" + escapeHtml(team) + " · " + escapeHtml(player.position) + '</span></div><strong class="rating">' + escapeHtml(player.aiRating) + "</strong></header>" +
-      '<span class="trend">Trend: ' + escapeHtml(player.trend) + "</span>" +
-      badgesHtml(playerBadges(player)) +
-      playerMetricsHtml(player, true) +
-      playerRadarHtml(player, true) +
-      tagsHtml([
-        { label: "Gol " + (player.goals == null ? "-" : player.goals), variant: "green" },
-        { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
-      ].concat(playerRatingTags(player))) +
-      formDotsHtml(player.form) +
-      '<div class="player-actions compact"><a class="detail-link" href="' + escapeHtml(playerProfileHref(player.id)) + '">Profil</a><a class="detail-link ghost" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Kiyasla</a></div>' +
-      "</article>"
-    );
-  }
-
-  function renderPlayerPageCard(player) {
-    var team = playerCurrentTeam(player);
-
-    return (
-      '<article class="card player-detail-card" data-card="player" data-player="' + escapeHtml(player.id) + '">' +
-      '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(team) + " · " + escapeHtml(player.position) + "</span><h2>" + escapeHtml(player.name) + '</h2></div><strong class="big-value">' + escapeHtml(displayValue(player.overallRating || player.aiRating || player.rating)) + "</strong></div>" +
-      '<p class="player-summary">' + escapeHtml(playerInsight(player)) + "</p>" +
-      playerStatusRowHtml(player) +
-      playerMetaGridHtml(player) +
-      playerQualityWarningHtml(player) +
-      badgesHtml(playerBadges(player)) +
-      playerMetricsHtml(player) +
-      formDotsHtml(player.form) +
-      barRowHtml("Etki", player.impact, player.impact) +
-      playerRadarHtml(player) +
-      tagsHtml([
-        { label: "Gol " + (player.goals == null ? "-" : player.goals), variant: "green" },
-        { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
-      ].concat(player.tags || [], playerRatingTags(player))) +
-      '<div class="player-actions">' +
-      '<a class="detail-link" href="' + escapeHtml(playerProfileHref(player.id)) + '">Detay</a>' +
-      '<a class="detail-link" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Karşılaştır</a>' +
-      '<button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Radar kartını paylaş</button>' +
-      "</div>" +
-      "</article>"
-    );
-  }
-
-  function renderPlayerHomeCard(player) {
-    var team = playerCurrentTeam(player);
-
-    return (
-      '<article class="player-card" data-card="player-radar" data-player="' + escapeHtml(player.id) + '">' +
       '<header><div class="player-card-title">' + playerAvatarHtml(player) + '<div><h3>' + escapeHtml(player.name) + "</h3><span>" + escapeHtml(team) + " - " + escapeHtml(player.position) + '</span></div></div><strong class="rating">' + escapeHtml(player.aiRating) + "</strong></header>" +
       '<span class="trend">Trend: ' + escapeHtml(player.trend) + "</span>" +
       badgesHtml(playerBadges(player)) +
