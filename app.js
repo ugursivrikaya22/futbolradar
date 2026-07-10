@@ -3592,6 +3592,82 @@
     });
   }
 
+  function pickTeamSpotlightPlayer(players, scorer, usedIds) {
+    var sorted = (Array.isArray(players) ? players : [])
+      .filter(function (player) { return player && player.id; })
+      .slice()
+      .sort(function (a, b) { return Number(scorer(b) || 0) - Number(scorer(a) || 0); });
+
+    if (!sorted.length) {
+      return null;
+    }
+
+    var picked = sorted.find(function (player) { return !usedIds.has(player.id); }) || sorted[0];
+    usedIds.add(picked.id);
+    return picked;
+  }
+
+  function teamPlayerSpotlightCardHtml(item) {
+    if (!item || !item.player) {
+      return "";
+    }
+
+    var player = item.player;
+    var stats = playerStats(player);
+
+    return (
+      '<article class="team-player-spotlight-card" data-card="team-player-spotlight" data-player="' + escapeHtml(player.id) + '">' +
+      '<span>' + escapeHtml(item.label) + "</span>" +
+      '<div class="team-player-spotlight-main">' +
+      "<strong>" + escapeHtml(player.name) + "</strong>" +
+      "<em>" + escapeHtml(displayValue(player.position)) + " - " + escapeHtml(playerCurrentTeam(player)) + "</em>" +
+      "</div>" +
+      '<b>' + escapeHtml(displayValue(item.value)) + "</b>" +
+      "<p>" + escapeHtml(item.note) + "</p>" +
+      '<div class="team-player-spotlight-meta"><small>Gol ' + escapeHtml(displayValue(stats.goals || 0)) + '</small><small>Asist ' + escapeHtml(displayValue(stats.assists || 0)) + '</small><small>AI ' + escapeHtml(displayValue(playerAiScore(player))) + "</small></div>" +
+      '<div class="team-player-spotlight-actions"><a href="' + escapeHtml(playerProfileHref(player.id)) + '">Profil</a><a href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Kiyasla</a></div>' +
+      "</article>"
+    );
+  }
+
+  function teamPlayerSpotlightHtml(team, players) {
+    var squad = Array.isArray(players) ? players : [];
+    var usedIds = new Set();
+
+    if (!squad.length) {
+      return "";
+    }
+
+    var leader = pickTeamSpotlightPlayer(squad, playerAiScore, usedIds);
+    var scorer = pickTeamSpotlightPlayer(squad, function (player) {
+      return playerScore(player, "threatScore") + playerStats(player).goals * 2 + playerStats(player).shotsPerGame;
+    }, usedIds);
+    var creator = pickTeamSpotlightPlayer(squad, function (player) {
+      return playerScore(player, "creativityScore") + playerStats(player).assists * 2 + playerStats(player).keyPasses;
+    }, usedIds);
+    var presser = pickTeamSpotlightPlayer(squad, function (player) {
+      return playerScore(player, "pressingScore") + playerStats(player).pressures / 5 + playerStats(player).tacklesPerGame;
+    }, usedIds);
+
+    var cards = [
+      leader ? { label: "Kadro lideri", player: leader, value: "AI " + displayValue(playerAiScore(leader)), note: "Takim icinde overall ve form etkisi en yuksek oyuncu." } : null,
+      scorer ? { label: "Gol tehdidi", player: scorer, value: displayValue(playerScore(scorer, "threatScore")), note: "Sut hacmi, xG ve gol katkisi bu rolde one cikar." } : null,
+      creator ? { label: "Yaratici merkez", player: creator, value: displayValue(playerScore(creator, "creativityScore")), note: "Kilit pas, asist ve oyun kurma etkisi takip edilir." } : null,
+      presser ? { label: "Pres gucu", player: presser, value: displayValue(playerScore(presser, "pressingScore")), note: "Baski, top kazanma ve merkez direnci icin izlenir." } : null
+    ].filter(Boolean);
+
+    if (!cards.length) {
+      return "";
+    }
+
+    return (
+      '<section class="profile-section team-player-spotlight">' +
+      '<div class="profile-section-head"><h2>Oyuncu etki vitrini</h2><span>' + escapeHtml(team.name) + " icin otomatik secilen radar rolleri</span></div>" +
+      '<div class="team-player-spotlight-grid">' + cards.map(teamPlayerSpotlightCardHtml).join("") + "</div>" +
+      "</section>"
+    );
+  }
+
   function renderTeamDetail(team, squad) {
     if (!team) {
       return "";
@@ -3614,6 +3690,7 @@
       barRowHtml("Savunma", defense, defense) +
       formDotsHtml(team.form) +
       tagsHtml(team.tags) +
+      teamPlayerSpotlightHtml(team, players) +
       '<section class="profile-section"><div class="profile-section-head"><h2>Kadro liderleri</h2><span>AI ratinge gore ilk 6 oyuncu</span></div><div class="squad-grid">' + (topPlayers.length ? topPlayers.map(renderSquadPlayer).join("") : '<article class="data-empty compact"><strong>Kadro verisi bekleniyor</strong><span>Bu takim icin dogrulanmis oyuncu listesi geldiginde burada gosterilecek.</span></article>') + "</div></section>" +
       '<div class="player-actions"><a class="detail-link" href="./oyuncu-radari.html?team=' + encodeURIComponent(team.name) + '">Oyuncu radarini ac</a><a class="detail-link ghost" href="./momentum.html">Momentum tablosu</a></div>' +
       "</article>"

@@ -3327,6 +3327,104 @@ h1 {
         gap: 12px;
       }
 
+      .team-player-spotlight {
+        margin-top: 18px;
+      }
+
+      .team-player-spotlight-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .team-player-spotlight-card {
+        display: grid;
+        min-width: 0;
+        gap: 10px;
+        border: 1px solid rgba(128, 255, 155, 0.16);
+        border-radius: var(--radius);
+        padding: 14px;
+        background:
+          radial-gradient(circle at 96% 4%, rgba(77, 229, 255, 0.12), transparent 34%),
+          rgba(15, 23, 42, 0.5);
+        box-shadow: var(--shadow);
+      }
+
+      .team-player-spotlight-card > span {
+        color: var(--cyan);
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+
+      .team-player-spotlight-main {
+        display: grid;
+        gap: 4px;
+        min-width: 0;
+      }
+
+      .team-player-spotlight-main strong {
+        color: var(--text);
+        font-size: 1rem;
+      }
+
+      .team-player-spotlight-main em,
+      .team-player-spotlight-card p,
+      .team-player-spotlight-meta small {
+        color: var(--muted);
+      }
+
+      .team-player-spotlight-main em {
+        font-size: 0.8rem;
+        font-style: normal;
+        line-height: 1.4;
+      }
+
+      .team-player-spotlight-card b {
+        color: var(--green);
+        font-size: 1.18rem;
+      }
+
+      .team-player-spotlight-card p {
+        min-height: 44px;
+        margin: 0;
+        font-size: 0.82rem;
+        line-height: 1.45;
+      }
+
+      .team-player-spotlight-meta,
+      .team-player-spotlight-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+      }
+
+      .team-player-spotlight-meta small {
+        display: inline-flex;
+        min-height: 26px;
+        align-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 999px;
+        padding: 0 8px;
+        background: rgba(255, 255, 255, 0.04);
+        font-size: 0.72rem;
+        font-weight: 850;
+      }
+
+      .team-player-spotlight-actions a {
+        display: inline-flex;
+        min-height: 30px;
+        align-items: center;
+        border: 1px solid rgba(77, 229, 255, 0.16);
+        border-radius: 999px;
+        padding: 0 10px;
+        background: rgba(77, 229, 255, 0.06);
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 900;
+      }
+
       .squad-player-card {
         display: grid;
         gap: 8px;
@@ -3752,6 +3850,10 @@ h1 {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .team-player-spotlight-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         .transfer-toolbar {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -3928,6 +4030,10 @@ h1 {
         }
 
         .landing-insights-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .team-player-spotlight-grid {
           grid-template-columns: 1fr;
         }
 
