@@ -140,7 +140,9 @@ const cssFeatureMarkers = [
   "home-team-corridor",
   "home-agenda-hub",
   "home-agenda-card",
-  "home-agenda-actions"
+  "home-agenda-actions",
+  "home-radar-ticker",
+  "radar-ticker-track"
 ];
 const failures = [];
 
@@ -356,6 +358,7 @@ function checkSeoAndLinks() {
 
     if (page === "index.html") {
       expect(html.includes("traffic-hub"), `${page}: missing live traffic hub`);
+      expect(html.includes("home-radar-ticker"), `${page}: missing radar ticker`);
       expect(html.includes("home-search-section"), `${page}: missing home search section`);
       expect(html.includes("data-home-search"), `${page}: missing home search hook`);
       expect(html.includes("home-directory"), `${page}: missing homepage directory`);

@@ -1136,6 +1136,82 @@ h1 {
         white-space: nowrap;
       }
 
+      .home-radar-ticker {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 12px;
+        align-items: center;
+        border: 1px solid rgba(128, 255, 155, 0.18);
+        border-radius: var(--radius);
+        padding: 12px;
+        background:
+          linear-gradient(90deg, rgba(128, 255, 155, 0.08), rgba(77, 229, 255, 0.035)),
+          rgba(255, 255, 255, 0.026);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .radar-ticker-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        min-height: 40px;
+        border: 1px solid rgba(128, 255, 155, 0.22);
+        border-radius: 999px;
+        padding: 0 13px;
+        color: var(--green);
+        font-size: 0.82rem;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .radar-ticker-track {
+        display: flex;
+        gap: 10px;
+        min-width: 0;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        scrollbar-width: thin;
+      }
+
+      .radar-ticker-track a {
+        min-width: 182px;
+        min-height: 54px;
+        display: grid;
+        gap: 4px;
+        align-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          background 180ms ease;
+      }
+
+      .radar-ticker-track a:hover,
+      .radar-ticker-track a:focus-visible {
+        transform: translateY(-1px);
+        border-color: rgba(128, 255, 155, 0.42);
+        background: rgba(128, 255, 155, 0.07);
+        outline: 0;
+      }
+
+      .radar-ticker-track span {
+        color: var(--cyan);
+        font-size: 0.72rem;
+        font-weight: 850;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .radar-ticker-track b {
+        overflow-wrap: anywhere;
+        font-size: 0.88rem;
+      }
+
       .traffic-hub {
         padding-top: 24px;
       }
@@ -5205,7 +5281,8 @@ h1 {
         .hero,
         .radar-layout,
         .traffic-hub-shell,
-        .home-search-shell {
+        .home-search-shell,
+        .home-radar-ticker {
           grid-template-columns: 1fr;
         }
 
@@ -5489,6 +5566,14 @@ h1 {
         .home-search-shell,
         .home-search-results {
           padding: 16px;
+        }
+
+        .radar-ticker-label {
+          width: fit-content;
+        }
+
+        .radar-ticker-track a {
+          min-width: 170px;
         }
 
         .traffic-mini-link,
