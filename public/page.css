@@ -2364,6 +2364,107 @@ h1 {
         content: "";
       }
 
+      .team-detail-lead {
+        max-width: 720px;
+        margin: 8px 0 0;
+        color: #c9d8d5;
+        font-size: 0.95rem;
+        line-height: 1.65;
+      }
+
+      .team-radar-snapshot {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 10px;
+        margin: 14px 0;
+      }
+
+      .team-radar-snapshot article,
+      .team-signal-card {
+        min-width: 0;
+        border: 1px solid rgba(77, 229, 255, 0.14);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.035);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+      }
+
+      .team-radar-snapshot article {
+        padding: 12px;
+      }
+
+      .team-radar-snapshot span,
+      .team-signal-card span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .team-radar-snapshot strong {
+        display: block;
+        margin: 6px 0 9px;
+        color: var(--text);
+        font-size: 1.12rem;
+      }
+
+      .team-radar-snapshot i {
+        display: block;
+        height: 6px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .team-radar-snapshot i::before {
+        display: block;
+        width: var(--value, 0%);
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--green), var(--cyan));
+        content: "";
+      }
+
+      .team-signal-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin: 14px 0;
+      }
+
+      .team-signal-card {
+        display: grid;
+        gap: 8px;
+        align-content: start;
+        padding: 14px;
+      }
+
+      .team-signal-card h3 {
+        margin: 0;
+        color: var(--text);
+        font-size: 1rem;
+      }
+
+      .team-signal-card strong {
+        color: var(--green);
+        font-size: 1.1rem;
+      }
+
+      .team-signal-card p {
+        margin: 0;
+        color: #c4d4d1;
+        font-size: 0.84rem;
+        line-height: 1.55;
+      }
+
+      .team-signal-card a {
+        width: fit-content;
+        color: var(--accent);
+        font-size: 0.82rem;
+        font-weight: 900;
+      }
+
       .profile-section {
         width: 100%;
         min-width: 0;
@@ -2734,6 +2835,25 @@ h1 {
       .squad-player-card {
         display: grid;
         gap: 8px;
+      }
+
+      .squad-player-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .squad-player-actions a {
+        display: inline-flex;
+        min-height: 30px;
+        align-items: center;
+        border: 1px solid rgba(77, 229, 255, 0.16);
+        border-radius: 999px;
+        padding: 0 10px;
+        background: rgba(77, 229, 255, 0.06);
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 900;
       }
 
       .squad-player-card a,
@@ -3114,6 +3234,8 @@ h1 {
         }
 
         .profile-radar-snapshot,
+        .team-radar-snapshot,
+        .team-signal-grid,
         .transfer-summary-grid,
         .transfer-radar-summary {
           grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3341,6 +3463,8 @@ h1 {
         }
 
         .profile-radar-snapshot,
+        .team-radar-snapshot,
+        .team-signal-grid,
         .transfer-summary-grid,
         .transfer-radar-summary,
         .transfer-toolbar,

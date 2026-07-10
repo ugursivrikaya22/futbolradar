@@ -3076,9 +3076,115 @@
       '<article class="squad-player-card" data-card="squad-player" data-player="' + escapeHtml(player.id) + '">' +
       "<strong>" + escapeHtml(player.name) + "</strong>" +
       "<span>" + escapeHtml(displayValue(player.position)) + " Â· " + escapeHtml(displayValue(player.computedAge || player.age)) + "</span>" +
-      '<a href="/oyuncular/' + escapeHtml(player.id) + '.html">Oyuncu profili</a>' +
+      '<div class="squad-player-actions"><a href="/oyuncular/' + escapeHtml(player.id) + '.html">Oyuncu profili</a><a href="/oyuncu-karsilastir.html?p1=' + escapeHtml(player.id) + '">Karsilastir</a></div>' +
       "</article>"
     );
+  }
+
+  function updateTeamDetailMeta(team, players) {
+    if (!team) {
+      return;
+    }
+
+    var title = team.name + " Takim Radari | Momentum ve Kadro Analizi | FutbolRadar";
+    var description = team.name + " takim detayi; momentum " + displayValue(team.momentum || team.rating) + ", hucum-savunma dengesi, son form ve " + displayValue((players || []).length || team.squadCount) + " oyunculuk kadro radari.";
+    var h1 = document.querySelector(".hero h1");
+    var lead = document.querySelector(".hero .lead");
+    var meta = document.querySelector(".hero-meta");
+
+    document.title = title;
+    setMetaContent('meta[name="description"]', description);
+    setMetaContent('meta[property="og:title"]', title);
+    setMetaContent('meta[property="og:description"]', description);
+    setMetaContent('meta[name="twitter:title"]', title);
+    setMetaContent('meta[name="twitter:description"]', description);
+
+    if (h1) {
+      h1.textContent = team.name + " Takim Radari";
+    }
+
+    if (lead) {
+      lead.textContent = description;
+    }
+
+    if (meta) {
+      meta.textContent = displayValue(team.league) + " - Momentum " + displayValue(team.momentum || team.rating);
+    }
+  }
+
+  function teamInsight(team) {
+    var attack = Number(team.attackRating || team.attack || 0);
+    var defense = Number(team.defenseRating || team.defense || 0);
+    var momentum = Number(team.momentum || team.rating || 0);
+
+    if (momentum >= 78 && attack >= defense) {
+      return "Momentum yuksek; hucum uretimi ve son form takimi one tasiyor.";
+    }
+
+    if (defense > attack) {
+      return "Savunma dengesi hucumdan daha guclu; mac planinda risk kontrolu one cikiyor.";
+    }
+
+    if (momentum < 68) {
+      return "Momentum izleme bandinda; form ve kadro etkisi birlikte takip edilmeli.";
+    }
+
+    return "Takim profili dengeli; hucum, savunma ve kadro etkisi birlikte okunmali.";
+  }
+
+  function teamRadarSnapshotHtml(team, players) {
+    var attack = Number(team.attackRating || team.attack || 0);
+    var defense = Number(team.defenseRating || team.defense || 0);
+    var squad = Array.isArray(players) ? players : [];
+    var avgRating = squad.length
+      ? Math.round(squad.reduce(function (sum, player) { return sum + playerAiScore(player); }, 0) / squad.length)
+      : Number(team.rating || team.momentum || 0);
+    var rows = [
+      ["Momentum", team.momentum || team.rating],
+      ["Form", Math.round(Number(team.formScore || 0) * 10) || team.momentum],
+      ["Hucum", attack],
+      ["Savunma", defense],
+      ["Kadro", avgRating],
+      ["Gol trendi", attack >= 78 ? 82 : attack]
+    ];
+
+    return '<section class="team-radar-snapshot">' + rows.map(function (row) {
+      var value = clampPercent(row[1]);
+      return '<article><span>' + escapeHtml(row[0]) + '</span><strong>' + escapeHtml(displayValue(value)) + '</strong><i style="--value:' + escapeHtml(value) + '%"></i></article>';
+    }).join("") + "</section>";
+  }
+
+  function teamSignalCardsHtml(team, players) {
+    var squad = Array.isArray(players) ? players : [];
+    var leader = squad.slice().sort(function (a, b) { return playerAiScore(b) - playerAiScore(a); })[0];
+    var scorer = squad.slice().sort(function (a, b) { return Number(b.goals || 0) - Number(a.goals || 0); })[0];
+    var creator = squad.slice().sort(function (a, b) { return playerScore(b, "creativityScore") - playerScore(a, "creativityScore"); })[0];
+    var cards = [
+      { label: "Takim yorumu", title: "Radar yorumu", value: displayValue(team.momentum || team.rating), text: teamInsight(team), href: "./momentum.html" },
+      leader ? { label: "Kadro lideri", title: leader.name, value: "AI " + displayValue(playerAiScore(leader)), text: playerCurrentTeam(leader) + " - " + displayValue(leader.position), href: "/oyuncular/" + encodeURIComponent(leader.id) + ".html" } : null,
+      scorer ? { label: "Gol lideri", title: scorer.name, value: displayValue(scorer.goals || 0) + " gol", text: "Gol tehdidi " + displayValue(playerScore(scorer, "threatScore")), href: "/oyuncular/" + encodeURIComponent(scorer.id) + ".html" } : null,
+      creator ? { label: "Yaraticilik", title: creator.name, value: displayValue(playerScore(creator, "creativityScore")), text: "Pas ve xA etkisi yuksek oyuncu", href: "/oyuncu-karsilastir.html?p1=" + encodeURIComponent(creator.id) } : null
+    ].filter(Boolean);
+
+    return '<section class="team-signal-grid">' + cards.map(function (card) {
+      return '<article class="team-signal-card"><span>' + escapeHtml(card.label) + "</span><h3>" + escapeHtml(card.title) + "</h3><strong>" + escapeHtml(card.value) + "</strong><p>" + escapeHtml(card.text) + '</p><a href="' + escapeHtml(card.href) + '">Detay</a></article>';
+    }).join("") + "</section>";
+  }
+
+  function filterSquadForTeam(team, squad) {
+    if (!team || !Array.isArray(squad)) {
+      return [];
+    }
+
+    var teamName = normalizeSearchText(team.name);
+    var teamId = normalizeSearchText(team.id || team.providerId);
+
+    return squad.filter(function (player) {
+      var playerTeam = normalizeSearchText(playerCurrentTeam(player));
+      var playerTeamId = normalizeSearchText(player.teamId || player.currentTeamId || player.clubId);
+
+      return (teamName && playerTeam === teamName) || (teamId && playerTeamId === teamId);
+    });
   }
 
   function renderTeamDetail(team, squad) {
@@ -3086,18 +3192,25 @@
       return "";
     }
 
-    var players = Array.isArray(squad) ? squad : [];
+    var players = filterSquadForTeam(team, squad);
     var attack = team.attackRating || team.attack;
     var defense = team.defenseRating || team.defense;
+    var topPlayers = players.slice().sort(function (a, b) { return playerAiScore(b) - playerAiScore(a); }).slice(0, 6);
+
+    updateTeamDetailMeta(team, players);
 
     return (
       '<article class="team-detail-card card" data-card="team-detail" data-team="' + escapeHtml(team.id || team.name) + '">' +
-      '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(displayValue(team.league)) + "</span><h2>" + escapeHtml(team.name) + '</h2></div><strong class="big-value">' + escapeHtml(displayValue(team.momentum || team.rating)) + "</strong></div>" +
+      '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(displayValue(team.league)) + "</span><h2>" + escapeHtml(team.name) + '</h2><p class="team-detail-lead">' + escapeHtml(teamInsight(team)) + '</p></div><strong class="big-value">' + escapeHtml(displayValue(team.momentum || team.rating)) + "</strong></div>" +
       '<div class="metric-grid compact"><span>Kadro <b>' + escapeHtml(displayValue(team.squadCount || players.length)) + '</b></span><span>Stadyum <b>' + escapeHtml(displayValue(team.venue)) + '</b></span><span>Teknik ekip <b>' + escapeHtml(displayValue(team.coach)) + "</b></span></div>" +
+      teamRadarSnapshotHtml(team, players) +
+      teamSignalCardsHtml(team, players) +
       barRowHtml("Hucum", attack, attack) +
       barRowHtml("Savunma", defense, defense) +
+      formDotsHtml(team.form) +
       tagsHtml(team.tags) +
-      '<section class="profile-section"><h2>Kadro</h2><div class="squad-grid">' + (players.length ? players.map(renderSquadPlayer).join("") : '<article class="data-empty compact"><strong>Kadro verisi bekleniyor</strong><span>Bu takÄ±m iÃ§in doÄŸrulanmÄ±ÅŸ oyuncu listesi geldiÄŸinde burada gÃ¶sterilecek.</span></article>') + "</div></section>" +
+      '<section class="profile-section"><div class="profile-section-head"><h2>Kadro liderleri</h2><span>AI ratinge gore ilk 6 oyuncu</span></div><div class="squad-grid">' + (topPlayers.length ? topPlayers.map(renderSquadPlayer).join("") : '<article class="data-empty compact"><strong>Kadro verisi bekleniyor</strong><span>Bu takim icin dogrulanmis oyuncu listesi geldiginde burada gosterilecek.</span></article>') + "</div></section>" +
+      '<div class="player-actions"><a class="detail-link" href="./oyuncu-radari.html?team=' + encodeURIComponent(team.name) + '">Oyuncu radarini ac</a><a class="detail-link ghost" href="./momentum.html">Momentum tablosu</a></div>' +
       "</article>"
     );
   }
