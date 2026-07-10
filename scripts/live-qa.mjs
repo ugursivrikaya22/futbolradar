@@ -130,7 +130,11 @@ const cssFeatureMarkers = [
   "home-search-card",
   "home-search-results",
   "home-directory",
-  "home-directory-panel"
+  "home-directory-panel",
+  "home-intelligence-board",
+  "home-leader-row",
+  "home-flow-list",
+  "home-team-corridor"
 ];
 const suspiciousCodes = new Set([0x00c2, 0x00c3, 0x00c4, 0x00c5]);
 const failures = [];
