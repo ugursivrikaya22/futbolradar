@@ -8,6 +8,10 @@ Deploy this directory as the Vercel project root:
 
 The root must contain `index.html`, `page.css`, `app.js`, `api/`, `data/`, `sitemap.xml`, `robots.txt`, and `.env.example`.
 
+The active Production domain `www.futbolradar.com` is attached to the Vercel
+project named `futbolradar`. Do not publish the production domain from the
+duplicate projects `futbolradar-5l9r` or `futbolradar-ana-sayfas-n-ba-tan`.
+
 ## Vercel settings
 
 - Framework Preset: Other
