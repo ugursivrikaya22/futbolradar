@@ -1143,7 +1143,11 @@
       '<div class="stat-line"><span>Gol beklentisi</span><b>' + escapeHtml(displayValue(match.goalExpectation)) + "</b></div>" +
       "</div>" +
       tagsHtml(match.tags) +
+      '<div class="player-actions match-actions">' +
       '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Detay</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.homeTeam })) + '">Ev radar</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.awayTeam })) + '">Dep. radar</a>' +
+      "</div>" +
       "</article>"
     );
   }
@@ -1167,6 +1171,10 @@
         { label: "Risk " + String(risk).toLowerCase(), variant: "soft" }
       ]) +
       '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">MaÃ§ detayÄ±</a>' +
+      '<div class="player-actions match-actions">' +
+      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.homeTeam })) + '">Ev radar</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.awayTeam })) + '">Dep. radar</a>' +
+      "</div>" +
       "</article>"
     );
   }
