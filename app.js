@@ -3263,15 +3263,144 @@
     }).join("");
   }
 
+  function matchRawTitle(match) {
+    return displayValue(match.homeTeam) + " - " + displayValue(match.awayTeam);
+  }
+
+  function normalizedMetricPercent(value, formMetric) {
+    var normalizedText = normalizeSearchText(value);
+    var number = typeof value === "number" ? value : parseFloat(String(value == null ? "" : value).replace(",", "."));
+    if (!Number.isFinite(number)) {
+      if (normalizedText.indexOf("yuksek") !== -1 || normalizedText.indexOf("orta+") !== -1) {
+        return 82;
+      }
+
+      if (normalizedText.indexOf("orta") !== -1 || normalizedText.indexOf("dengeli") !== -1) {
+        return 62;
+      }
+
+      if (normalizedText.indexOf("dusuk") !== -1) {
+        return 38;
+      }
+
+      return 0;
+    }
+
+    if (formMetric && number <= 10) {
+      return clampPercent(Math.round(number * 10));
+    }
+
+    return clampPercent(Math.round(number));
+  }
+
+  function matchDetailInsight(match) {
+    var homeMomentum = Number(matchMetric(match, "homeMomentum") || 0);
+    var awayMomentum = Number(matchMetric(match, "awayMomentum") || 0);
+    var tempo = Number(match.tempo || 0);
+    var difference = Math.abs(homeMomentum - awayMomentum);
+    var risk = normalizeSearchText(match.risk);
+
+    if (difference >= 12) {
+      return (homeMomentum > awayMomentum ? displayValue(match.homeTeam) : displayValue(match.awayTeam)) + " momentum tarafinda belirgin avantaja sahip.";
+    }
+
+    if (tempo >= 75) {
+      return "Tempo yuksek; gecis oyunlari ve gol potansiyeli one cikiyor.";
+    }
+
+    if (risk.indexOf("yuksek") !== -1) {
+      return "Risk seviyesi yuksek; skor kadar momentum kirilimlari da takip edilmeli.";
+    }
+
+    return "Dengeli mac profili; form, momentum ve gol beklentisi birlikte okunmali.";
+  }
+
+  function updateMatchDetailMeta(match) {
+    if (!match) {
+      return;
+    }
+
+    var titleBase = matchRawTitle(match);
+    var title = titleBase + " Mac Analizi | Momentum ve AI Tahmin | FutbolRadar";
+    var description = titleBase + " mac detayi; skor, form, momentum, gol potansiyeli, risk ve AI tahmin sinyallerini tek ekranda gosterir.";
+    var h1 = document.querySelector(".hero h1");
+    var lead = document.querySelector(".hero .lead");
+
+    document.title = title;
+    setMetaContent('meta[name="description"]', description);
+    setMetaContent('meta[property="og:title"]', title);
+    setMetaContent('meta[property="og:description"]', description);
+    setMetaContent('meta[name="twitter:title"]', title);
+    setMetaContent('meta[name="twitter:description"]', description);
+
+    if (h1) {
+      h1.textContent = titleBase + " Mac Analizi";
+    }
+
+    if (lead) {
+      lead.textContent = description;
+    }
+  }
+
+  function matchRadarSnapshotHtml(match) {
+    var rows = [
+      ["Ev form", normalizedMetricPercent(match.homeForm, true)],
+      ["Dep. form", normalizedMetricPercent(match.awayForm, true)],
+      ["Ev momentum", normalizedMetricPercent(matchMetric(match, "homeMomentum"))],
+      ["Dep. momentum", normalizedMetricPercent(matchMetric(match, "awayMomentum"))],
+      ["Tempo", normalizedMetricPercent(match.tempo)],
+      ["Gol", normalizedMetricPercent(match.goalExpectation || match.goalPotential, true)]
+    ];
+
+    return '<section class="match-radar-snapshot">' + rows.map(function (row) {
+      var value = clampPercent(row[1]);
+      return '<article><span>' + escapeHtml(row[0]) + '</span><strong>' + escapeHtml(displayValue(value)) + '</strong><i style="--value:' + escapeHtml(value) + '%"></i></article>';
+    }).join("") + "</section>";
+  }
+
+  function matchSignalCardsHtml(match) {
+    var homeMomentum = Number(matchMetric(match, "homeMomentum") || 0);
+    var awayMomentum = Number(matchMetric(match, "awayMomentum") || 0);
+    var leader = homeMomentum >= awayMomentum ? match.homeTeam : match.awayTeam;
+    var cards = [
+      { label: "AI tahmin", title: displayValue(match.aiPrediction || match.prediction && match.prediction.label), text: "Model risk: " + displayValue(match.risk || match.prediction && match.prediction.risk), href: "./bugunun-maclari.html" },
+      { label: "Momentum", title: displayValue(leader), text: "Avantaj farki " + displayValue(Math.abs(homeMomentum - awayMomentum)), href: "./momentum.html" },
+      { label: "Gol potansiyeli", title: displayValue(match.goalPotential || match.goalExpectation), text: "Tempo " + displayValue(match.tempo), href: "./canli-skor.html" },
+      { label: "Radar yorumu", title: "Mac okumasi", text: matchDetailInsight(match), href: "./analizler.html" }
+    ];
+
+    return '<section class="match-signal-grid">' + cards.map(function (card) {
+      return '<article class="match-signal-card"><span>' + escapeHtml(card.label) + "</span><h3>" + escapeHtml(card.title) + "</h3><p>" + escapeHtml(card.text) + '</p><a href="' + escapeHtml(card.href) + '">Detay</a></article>';
+    }).join("") + "</section>";
+  }
+
+  function matchTeamLinksHtml(match) {
+    var home = displayValue(match.homeTeam);
+    var away = displayValue(match.awayTeam);
+
+    return (
+      '<section class="match-team-links">' +
+      '<a href="./takim-detay.html?team=' + encodeURIComponent(home) + '"><span>Ev sahibi radar</span><strong>' + escapeHtml(home) + '</strong></a>' +
+      '<a href="./takim-detay.html?team=' + encodeURIComponent(away) + '"><span>Deplasman radar</span><strong>' + escapeHtml(away) + '</strong></a>' +
+      "</section>"
+    );
+  }
+
   function renderMatchDetail(detail) {
     if (!detail) {
       return "";
     }
 
+    updateMatchDetailMeta(detail);
+
     return (
       '<article class="match-detail-card card" data-card="match-detail" data-match="' + escapeHtml(detail.id) + '">' +
       '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(displayValue(detail.league)) + " Â· " + escapeHtml(statusTr(detail.status)) + "</span><h2>" + matchTitle(detail) + '</h2></div><strong class="big-value">' + escapeHtml(matchScoreText(detail.score)) + "</strong></div>" +
       '<div class="metric-grid compact"><span>Saat <b>' + escapeHtml(displayValue(detail.time || detail.kickoff)) + '</b></span><span>Durum <b>' + escapeHtml(statusTr(detail.status)) + '</b></span><span>Model <b>' + escapeHtml(displayValue(detail.prediction && (detail.prediction.label || detail.prediction.advice))) + "</b></span></div>" +
+      '<p class="match-detail-lead">' + escapeHtml(matchDetailInsight(detail)) + '</p>' +
+      matchRadarSnapshotHtml(detail) +
+      matchSignalCardsHtml(detail) +
+      matchTeamLinksHtml(detail) +
       '<section class="profile-section"><h2>Kadrolar</h2>' + renderTimelineList(detail.lineups, "Kadro verisi bekleniyor") + "</section>" +
       '<section class="profile-section"><h2>MaÃ§ OlaylarÄ±</h2>' + renderTimelineList(detail.events, "Olay verisi bekleniyor") + "</section>" +
       '<section class="profile-section"><h2>Ä°statistikler</h2>' + renderStatisticsList(detail.statistics) + "</section>" +

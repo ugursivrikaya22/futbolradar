@@ -2465,6 +2465,122 @@ h1 {
         font-weight: 900;
       }
 
+      .match-detail-lead {
+        max-width: 780px;
+        margin: 12px 0 0;
+        color: #c9d8d5;
+        font-size: 0.95rem;
+        line-height: 1.65;
+      }
+
+      .match-radar-snapshot {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 10px;
+        margin: 14px 0;
+      }
+
+      .match-radar-snapshot article,
+      .match-signal-card,
+      .match-team-links a {
+        min-width: 0;
+        border: 1px solid rgba(77, 229, 255, 0.14);
+        border-radius: var(--radius);
+        background: rgba(255, 255, 255, 0.035);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+      }
+
+      .match-radar-snapshot article {
+        padding: 12px;
+      }
+
+      .match-radar-snapshot span,
+      .match-signal-card span,
+      .match-team-links span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 900;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .match-radar-snapshot strong {
+        display: block;
+        margin: 6px 0 9px;
+        color: var(--text);
+        font-size: 1.12rem;
+      }
+
+      .match-radar-snapshot i {
+        display: block;
+        height: 6px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .match-radar-snapshot i::before {
+        display: block;
+        width: var(--value, 0%);
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--green), var(--cyan));
+        content: "";
+      }
+
+      .match-signal-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin: 14px 0;
+      }
+
+      .match-signal-card {
+        display: grid;
+        gap: 8px;
+        align-content: start;
+        padding: 14px;
+      }
+
+      .match-signal-card h3 {
+        margin: 0;
+        color: var(--green);
+        font-size: 1.05rem;
+      }
+
+      .match-signal-card p {
+        margin: 0;
+        color: #c4d4d1;
+        font-size: 0.84rem;
+        line-height: 1.55;
+      }
+
+      .match-signal-card a {
+        width: fit-content;
+        color: var(--accent);
+        font-size: 0.82rem;
+        font-weight: 900;
+      }
+
+      .match-team-links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin: 14px 0;
+      }
+
+      .match-team-links a {
+        display: grid;
+        gap: 7px;
+        padding: 14px;
+      }
+
+      .match-team-links strong {
+        color: var(--text);
+        font-size: 1.05rem;
+      }
+
       .profile-section {
         width: 100%;
         min-width: 0;
@@ -3236,6 +3352,8 @@ h1 {
         .profile-radar-snapshot,
         .team-radar-snapshot,
         .team-signal-grid,
+        .match-radar-snapshot,
+        .match-signal-grid,
         .transfer-summary-grid,
         .transfer-radar-summary {
           grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3465,6 +3583,9 @@ h1 {
         .profile-radar-snapshot,
         .team-radar-snapshot,
         .team-signal-grid,
+        .match-radar-snapshot,
+        .match-signal-grid,
+        .match-team-links,
         .transfer-summary-grid,
         .transfer-radar-summary,
         .transfer-toolbar,
