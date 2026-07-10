@@ -3096,12 +3096,113 @@
     );
   }
 
+  function topPlayerIds(players, getter, limit, filter) {
+    return (Array.isArray(players) ? players : [])
+      .filter(function (player) { return !filter || filter(player); })
+      .slice()
+      .sort(function (a, b) { return Number(getter(b) || 0) - Number(getter(a) || 0); })
+      .map(function (player) { return player.id; })
+      .filter(Boolean)
+      .slice(0, limit || 3);
+  }
+
+  function normalizeComparePresetIds(ids, players) {
+    var available = new Set((players || []).map(function (player) { return player.id; }));
+    return (Array.isArray(ids) ? ids : [])
+      .filter(function (id, index, list) { return id && available.has(id) && list.indexOf(id) === index; })
+      .slice(0, 3);
+  }
+
+  function comparePresetDefinitions(players) {
+    var list = Array.isArray(players) ? players : [];
+    var presets = [
+      {
+        key: "goal-threat",
+        title: "Gol tehdidi",
+        note: "xG, sut hacmi ve bitiricilik etkisi",
+        ids: topPlayerIds(list, function (player) { return playerScore(player, "threatScore") + playerStats(player).goals * 2; }, 3)
+      },
+      {
+        key: "creative-core",
+        title: "Yaraticilik",
+        note: "Kilit pas, xA ve pas radari",
+        ids: topPlayerIds(list, function (player) { return playerScore(player, "creativityScore") + playerStats(player).assists * 2; }, 3)
+      },
+      {
+        key: "press-power",
+        title: "Pres gucu",
+        note: "Baski, top kazanma ve merkez direnci",
+        ids: topPlayerIds(list, function (player) { return playerScore(player, "pressingScore") + playerStats(player).pressures / 4; }, 3)
+      },
+      {
+        key: "young-upside",
+        title: "Genc yetenek",
+        note: "Yas, potansiyel ve form ivmesi",
+        ids: topPlayerIds(list, function (player) { return radarMetric(player, "potential") + playerScore(player, "formChange") * 3; }, 3, function (player) { return Number(playerAge(player) || 99) <= 27; })
+      },
+      {
+        key: "transfer-watch",
+        title: "Transfer takibi",
+        note: "Guncel takim ve transfer riski izlenenler",
+        ids: topPlayerIds(list, function (player) {
+          return (playerNeedsDataRefresh(player) ? 40 : 0) + Number(player.marketValueEur || 0) / 1000000 + radarMetric(player, "dataConfidence");
+        }, 3, function (player) { return playerHasTransferHistory(player); })
+      }
+    ];
+
+    return presets.map(function (preset) {
+      return Object.assign({}, preset, { ids: normalizeComparePresetIds(preset.ids, list) });
+    }).filter(function (preset) { return preset.ids.length >= 2; });
+  }
+
+  function renderComparePresets(target, presets, players) {
+    if (!target) {
+      return;
+    }
+
+    if (!presets.length) {
+      target.innerHTML = '<article class="data-empty compact"><strong>Hazir kiyas bulunamadi</strong><span>Oyuncu verisi cogaldikca bu alan otomatik dolacak.</span></article>';
+      return;
+    }
+
+    target.innerHTML =
+      '<div class="compare-presets-head"><div><span>Hazir kiyaslar</span><strong>Tek tikla radar eslesmesi ac</strong></div><p>Oyuncular veri metriklerine gore otomatik gruplanir.</p></div>' +
+      '<div class="compare-preset-grid">' +
+      presets.map(function (preset) {
+        var names = preset.ids.map(function (id) {
+          var player = players.find(function (item) { return item.id === id; });
+          return player ? player.name : id;
+        }).join(" vs ");
+        return (
+          '<button class="compare-preset-card" type="button" data-compare-preset="' + escapeHtml(preset.key) + '" data-player-ids="' + escapeHtml(preset.ids.join(",")) + '">' +
+          '<span>' + escapeHtml(preset.title) + '</span>' +
+          '<strong>' + escapeHtml(names) + '</strong>' +
+          '<em>' + escapeHtml(preset.note) + '</em>' +
+          "</button>"
+        );
+      }).join("") +
+      "</div>";
+  }
+
+  function markActiveComparePreset(target, selectedIds) {
+    if (!target) {
+      return;
+    }
+
+    var selectedKey = (selectedIds || []).slice().sort().join(",");
+    target.querySelectorAll("[data-player-ids]").forEach(function (button) {
+      var presetKey = button.getAttribute("data-player-ids").split(",").sort().join(",");
+      button.classList.toggle("is-active", selectedKey === presetKey);
+    });
+  }
+
   function initPlayerCompare(target) {
     if (!target) {
       return;
     }
 
     var selects = Array.from(document.querySelectorAll("[data-compare-player]"));
+    var presetTarget = document.querySelector("[data-compare-presets]");
     var query = new URLSearchParams(window.location.search);
 
     target.dataset.state = "loading";
@@ -3116,6 +3217,7 @@
         return '<option value="' + escapeHtml(player.id) + '">' + escapeHtml(player.name) + " · " + escapeHtml(playerCurrentTeam(player)) + "</option>";
       }).join("");
 
+      var presets = comparePresetDefinitions(players);
       var requestedIds = String(query.get("players") || "").split(",").filter(Boolean);
       if (!requestedIds.length) {
         requestedIds = [query.get("p1"), query.get("p2"), query.get("p3")].filter(Boolean);
@@ -3132,6 +3234,8 @@
       if (selects[0] && selects[1] && selects[0].value === selects[1].value && players.length > 1) {
         selects[1].value = players.find(function (player) { return player.id !== selects[0].value; }).id;
       }
+
+      renderComparePresets(presetTarget, presets, players);
 
       function render() {
         var selectedIds = selects.map(function (select) { return select && select.value; }).filter(Boolean);
@@ -3152,6 +3256,7 @@
         params.delete("p3");
         window.history.replaceState({}, "", window.location.pathname + "?" + params.toString());
         updatePlayerCompareMeta(selected);
+        markActiveComparePreset(presetTarget, selected.map(function (player) { return player.id; }));
         setContent(target, renderPlayerComparisonSet(selected));
         return;
 
@@ -3179,6 +3284,23 @@
       selects.forEach(function (select) {
         select.addEventListener("change", render);
       });
+
+      if (presetTarget) {
+        presetTarget.addEventListener("click", function (event) {
+          var button = event.target.closest("[data-player-ids]");
+          if (!button) {
+            return;
+          }
+
+          var ids = button.getAttribute("data-player-ids").split(",").filter(Boolean);
+          selects.forEach(function (select, index) {
+            if (select) {
+              select.value = ids[index] || "";
+            }
+          });
+          render();
+        });
+      }
 
       render();
     }).catch(function () {

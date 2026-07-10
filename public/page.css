@@ -2008,6 +2008,89 @@ h1 {
         box-shadow: var(--shadow);
       }
 
+      .compare-presets {
+        display: grid;
+        gap: 12px;
+        margin: 0 0 18px;
+      }
+
+      .compare-presets-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: end;
+      }
+
+      .compare-presets-head span {
+        display: block;
+        color: var(--green);
+        font-size: 0.76rem;
+        font-weight: 900;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .compare-presets-head strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 1.02rem;
+      }
+
+      .compare-presets-head p {
+        max-width: 420px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.86rem;
+        text-align: right;
+      }
+
+      .compare-preset-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .compare-preset-card {
+        min-height: 142px;
+        border: 1px solid rgba(77, 229, 255, 0.14);
+        border-radius: var(--radius);
+        padding: 13px;
+        color: var(--text);
+        text-align: left;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.022)),
+          rgba(255, 255, 255, 0.035);
+        cursor: pointer;
+        transition: border-color 160ms ease, transform 160ms ease, background 160ms ease;
+      }
+
+      .compare-preset-card:hover,
+      .compare-preset-card:focus-visible,
+      .compare-preset-card.is-active {
+        border-color: rgba(128, 255, 155, 0.45);
+        background:
+          linear-gradient(145deg, rgba(128, 255, 155, 0.1), rgba(77, 229, 255, 0.055)),
+          rgba(255, 255, 255, 0.04);
+        transform: translateY(-1px);
+        outline: none;
+      }
+
+      .compare-preset-card span,
+      .compare-preset-card em {
+        display: block;
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-style: normal;
+        font-weight: 850;
+      }
+
+      .compare-preset-card strong {
+        display: block;
+        margin: 9px 0;
+        font-size: 0.92rem;
+        line-height: 1.25;
+      }
+
       .compare-grid {
         display: grid;
         gap: 14px;
@@ -3383,6 +3466,10 @@ h1 {
           grid-template-columns: 1fr;
         }
 
+        .compare-preset-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         .compare-player-row {
           grid-template-columns: 1fr;
         }
@@ -3563,6 +3650,24 @@ h1 {
         .compare-card,
         .compare-row {
           grid-template-columns: 1fr;
+        }
+
+        .compare-presets-head {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .compare-presets-head p {
+          max-width: none;
+          text-align: left;
+        }
+
+        .compare-preset-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .compare-preset-card {
+          min-height: 120px;
         }
 
         .compare-player.right,
