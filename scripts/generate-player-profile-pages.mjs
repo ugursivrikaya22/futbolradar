@@ -45,6 +45,10 @@ function playerPositionGroup(player) {
   return "diger";
 }
 
+function comparisonSlug(leftId, rightId) {
+  return [leftId, rightId].sort().join("-vs-");
+}
+
 function comparePeerScore(primary, candidate) {
   if (!primary || !candidate || primary.id === candidate.id) return -1;
 
@@ -93,7 +97,7 @@ function staticCompareLinks(player) {
   const links = uniqueCompareCandidates(baseLinks.concat(fallbackLinks)).slice(0, 4);
 
   return links.map((item) => {
-    const href = `../oyuncu-karsilastir.html?players=${encodeURIComponent(player.id)},${encodeURIComponent(item.player.id)}`;
+    const href = `../karsilastirma/${comparisonSlug(player.id, item.player.id)}.html`;
     return `<a class="static-profile-link-card" href="${escapeHtml(href)}"><span>${escapeHtml(item.label)}</span><strong>${escapeHtml(player.name)} vs ${escapeHtml(item.player.name)}</strong><em>${escapeHtml(item.note)}</em></a>`;
   }).join("\n        ");
 }

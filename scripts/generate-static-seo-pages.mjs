@@ -370,7 +370,20 @@ function writePage(page) {
   fs.writeFileSync(path.join(root, "public", page.file), html, "utf8");
 }
 
+function generatedComparisonPages() {
+  const dir = path.join(root, "karsilastirma");
+  if (!fs.existsSync(dir)) {
+    return [];
+  }
+
+  return fs.readdirSync(dir)
+    .filter((file) => file.endsWith(".html"))
+    .sort()
+    .map((file) => `karsilastirma/${file}`);
+}
+
 function sitemapXml(files) {
+  const comparisonPages = generatedComparisonPages();
   const core = [
     "index.html",
     "bugunun-maclari.html",
@@ -399,6 +412,7 @@ function sitemapXml(files) {
     "oyuncular/ugurcan-cakir.html",
     "oyuncular/abdulkerim-bardakci.html",
     "oyuncular/semih-kilicsoy.html",
+    ...comparisonPages,
     "momentum.html",
     "analizler.html",
     ...files
@@ -408,7 +422,7 @@ function sitemapXml(files) {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${unique.map((file) => {
   const loc = file === "index.html" ? `${domain}/` : `${domain}/${file}`;
-  const priority = file === "index.html" ? "1.0" : file.includes("oyuncular/") ? "0.7" : "0.8";
+  const priority = file === "index.html" ? "1.0" : file.includes("karsilastirma/") ? "0.65" : file.includes("oyuncular/") ? "0.7" : "0.8";
   return `  <url>
     <loc>${loc}</loc>
     <lastmod>${today}</lastmod>

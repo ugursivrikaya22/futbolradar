@@ -6,6 +6,11 @@ const root = process.cwd();
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const playerProfilePages = players.map((player) => `/oyuncular/${player.id}.html`);
 const playerRewritePages = players.map((player) => `/oyuncular/${player.id}`);
+const comparisonPagesDir = path.join(root, "karsilastirma");
+const playerComparisonPages = fs.existsSync(comparisonPagesDir)
+  ? fs.readdirSync(comparisonPagesDir).filter((file) => file.endsWith(".html")).sort().map((file) => `/karsilastirma/${file}`)
+  : [];
+const playerComparisonRewritePages = playerComparisonPages.map((page) => page.replace(/\.html$/, ""));
 const pages = [
   "/",
   "/puan-durumu.html",
@@ -25,6 +30,7 @@ const pages = [
   "/oyuncular/genc-yetenekler.html",
   "/oyuncular/en-iyi-oyuncular.html",
   ...playerProfilePages,
+  ...playerComparisonPages,
   "/canli-skor.html",
   "/bugunun-maclari.html",
   "/momentum.html",
@@ -37,7 +43,8 @@ const rewritePages = [
   "/oyuncular/orta-sahalar",
   "/oyuncular/genc-yetenekler",
   "/oyuncular/en-iyi-oyuncular",
-  ...playerRewritePages
+  ...playerRewritePages,
+  ...playerComparisonRewritePages
 ];
 const endpoints = ["/api/matches", "/api/standings", "/api/teams", "/api/players", "/api/momentum", "/api/signals", "/api/analyses", "/api/health"];
 const staticAssets = ["/sitemap.xml", "/robots.txt", "/page.css", "/app.js", "/site.js", "/site.webmanifest", "/assets/og-image.svg"];
@@ -79,6 +86,8 @@ const cssFeatureMarkers = [
   "profile-compare-grid",
   "static-profile-links",
   "static-profile-link-card",
+  "static-comparison-summary",
+  "comparison-mini-card",
   "compare-insight-card",
   "team-player-spotlight-card",
   "team-card-player",

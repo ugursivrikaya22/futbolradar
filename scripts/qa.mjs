@@ -8,6 +8,10 @@ const require = createRequire(import.meta.url);
 const { validatePlayerData } = require("../services/playerService.js");
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const playerProfilePages = players.map((player) => `oyuncular/${player.id}.html`);
+const comparisonPagesDir = path.join(root, "karsilastirma");
+const playerComparisonPages = fs.existsSync(comparisonPagesDir)
+  ? fs.readdirSync(comparisonPagesDir).filter((file) => file.endsWith(".html")).sort().map((file) => `karsilastirma/${file}`)
+  : [];
 const pages = [
   "index.html",
   "puan-durumu.html",
@@ -52,6 +56,7 @@ const pages = [
   "oyuncular/genc-yetenekler.html",
   "oyuncular/en-iyi-oyuncular.html",
   ...playerProfilePages,
+  ...playerComparisonPages,
   "canli-skor.html",
   "bugunun-maclari.html",
   "momentum.html",
@@ -85,6 +90,8 @@ const cssFeatureMarkers = [
   "profile-compare-grid",
   "static-profile-links",
   "static-profile-link-card",
+  "static-comparison-summary",
+  "comparison-mini-card",
   "compare-insight-card",
   "team-player-spotlight-card",
   "team-card-player",
@@ -309,7 +316,13 @@ function checkSeoAndLinks() {
 
     if (playerProfilePages.includes(page)) {
       expect(html.includes("static-profile-links"), `${page}: missing static profile comparison links`);
-      expect(html.includes("oyuncu-karsilastir.html?players="), `${page}: missing static comparison href`);
+      expect(html.includes("../karsilastirma/"), `${page}: missing static comparison page href`);
+    }
+
+    if (playerComparisonPages.includes(page)) {
+      expect(html.includes("static-comparison-summary"), `${page}: missing static comparison summary`);
+      expect(html.includes('data-api-target="player-compare"'), `${page}: missing dynamic comparison hook`);
+      expect(html.includes("data-compare-seed"), `${page}: missing comparison seed`);
     }
 
     for (const match of html.matchAll(/(?:href|src)="([^"]+)"/g)) {

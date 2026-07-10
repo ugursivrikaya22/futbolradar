@@ -3593,6 +3593,7 @@
     var selects = Array.from(document.querySelectorAll("[data-compare-player]"));
     var presetTarget = document.querySelector("[data-compare-presets]");
     var query = new URLSearchParams(window.location.search);
+    var seedIds = String(target.getAttribute("data-compare-seed") || "").split(",").filter(Boolean);
 
     target.dataset.state = "loading";
 
@@ -3611,6 +3612,9 @@
       var hasPlayersQuery = Boolean(query.get("players"));
       if (!requestedIds.length) {
         requestedIds = [query.get("p1"), query.get("p2"), query.get("p3")].filter(Boolean);
+      }
+      if (!requestedIds.length && seedIds.length) {
+        requestedIds = seedIds;
       }
       var hasSingleSeed = !hasPlayersQuery && requestedIds.length === 1;
 
@@ -3635,6 +3639,33 @@
       }
 
       renderComparePresets(presetTarget, presets, players);
+
+      if (!selects.length) {
+        var seededIds = requestedIds.filter(function (id, index) { return requestedIds.indexOf(id) === index; });
+        var seeded = seededIds.map(function (id) {
+          return players.find(function (player) { return player.id === id; });
+        }).filter(Boolean);
+
+        if (seeded.length === 1) {
+          var seededPeer = bestComparePeer(seeded[0], players);
+          if (seededPeer) {
+            seeded.push(seededPeer);
+          }
+        }
+
+        if (seeded.length < 2) {
+          setEmpty(target, "Karsilastirma hazirlanamadi", "Bu statik karsilastirma icin yeterli oyuncu verisi bulunamadi.");
+          return;
+        }
+
+        seeded = seeded.filter(function (player, index) {
+          return seeded.findIndex(function (item) { return item.id === player.id; }) === index;
+        }).slice(0, 3);
+        updatePlayerCompareMeta(seeded);
+        markActiveComparePreset(presetTarget, seeded.map(function (player) { return player.id; }));
+        setContent(target, renderPlayerComparisonSet(seeded));
+        return;
+      }
 
       function render() {
         var selectedIds = selects.map(function (select) { return select && select.value; }).filter(Boolean);
