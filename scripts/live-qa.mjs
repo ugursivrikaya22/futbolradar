@@ -10,6 +10,7 @@ const pages = [
   "/",
   "/puan-durumu.html",
   "/takimlar.html",
+  "/takim-detay.html",
   "/oyuncu-radari.html",
   "/oyuncu-karsilastir.html",
   "/oyuncu-detay.html",
@@ -56,6 +57,7 @@ const appFeatureMarkers = [
   "scoutingSnapshotHtml",
   "playerWatchChecklistHtml",
   "compareInsightCardsHtml",
+  "teamPlayerSpotlightHtml",
   "comparePresetDefinitions",
   "renderLandingInsights",
   "player-signal-actions"
@@ -64,6 +66,7 @@ const cssFeatureMarkers = [
   "scouting-summary-grid",
   "watch-check-card",
   "compare-insight-card",
+  "team-player-spotlight-card",
   "compare-preset-card",
   "landing-insight-card",
   "player-signal-actions"
