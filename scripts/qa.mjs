@@ -113,6 +113,20 @@ function checkVercelFunctionLimit() {
   expect(fs.existsSync(path.join(root, "services", "providers", "mockProvider.js")), "services/providers/mockProvider.js missing");
 }
 
+function checkPublicMirrors() {
+  for (const file of ["page.css", "app.js", "site.js", "site.webmanifest"]) {
+    const rootFile = path.join(root, file);
+    const publicFile = path.join(root, "public", file);
+    if (!fs.existsSync(rootFile) || !fs.existsSync(publicFile)) {
+      continue;
+    }
+
+    const rootContent = fs.readFileSync(rootFile, "utf8");
+    const publicContent = fs.readFileSync(publicFile, "utf8");
+    expect(rootContent === publicContent, `public/${file} must match ${file} for Vercel public output`);
+  }
+}
+
 function checkJavaScriptSyntax() {
   for (const file of walk(root, (full) => full.endsWith(".js"))) {
     try {
@@ -404,6 +418,7 @@ async function checkApi() {
 }
 
 checkVercelFunctionLimit();
+checkPublicMirrors();
 checkJavaScriptSyntax();
 checkJson();
 checkSeoAndLinks();
