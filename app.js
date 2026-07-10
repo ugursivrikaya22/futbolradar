@@ -1179,6 +1179,11 @@
       "<p>" + escapeHtml(displayValue(match.summary)) + "</p>" +
       barRowHtml("Tempo", match.tempo, match.tempo) +
       tagsHtml(match.liveTags || match.tags) +
+      '<div class="player-actions match-actions">' +
+      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Mac detayi</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.homeTeam })) + '">Ev sahibi radar</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.awayTeam })) + '">Deplasman radar</a>' +
+      "</div>" +
       "</article>"
     );
   }
