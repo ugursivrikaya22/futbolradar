@@ -3384,6 +3384,33 @@
       .slice(0, 3);
   }
 
+  function comparePeerScore(primary, candidate) {
+    if (!primary || !candidate || primary.id === candidate.id) {
+      return -1;
+    }
+
+    var primaryGroup = playerPositionGroup(primary);
+    var candidateGroup = playerPositionGroup(candidate);
+    var ratingDelta = Math.abs(Number(playerAiScore(primary) || 0) - Number(playerAiScore(candidate) || 0));
+    var marketDelta = Math.abs(Number(primary.marketValueEur || 0) - Number(candidate.marketValueEur || 0)) / 1000000;
+
+    return (
+      (primaryGroup === candidateGroup ? 48 : 0) +
+      (normalizeSearchText(primary.league) === normalizeSearchText(candidate.league) ? 18 : 0) +
+      (normalizeSearchText(playerCurrentTeam(primary)) !== normalizeSearchText(playerCurrentTeam(candidate)) ? 10 : 0) +
+      Math.max(0, 26 - ratingDelta) +
+      Math.max(0, 12 - marketDelta / 3) +
+      Math.min(10, radarMetric(candidate, "dataConfidence") / 10)
+    );
+  }
+
+  function bestComparePeer(primary, players) {
+    return (Array.isArray(players) ? players : [])
+      .filter(function (candidate) { return candidate && primary && candidate.id !== primary.id; })
+      .slice()
+      .sort(function (a, b) { return comparePeerScore(primary, b) - comparePeerScore(primary, a); })[0] || null;
+  }
+
   function comparePresetDefinitions(players) {
     var list = Array.isArray(players) ? players : [];
     var presets = [
@@ -3467,10 +3494,33 @@
     });
   }
 
+  function ensureCompareGuide() {
+    var toolbar = document.querySelector(".compare-toolbar");
+    if (!toolbar || document.querySelector(".compare-guide")) {
+      return;
+    }
+
+    toolbar.insertAdjacentHTML("beforebegin",
+      '<section class="compare-guide" aria-label="Karsilastirma rehberi">' +
+      '<article class="compare-guide-card"><span>1</span><strong>Rol benzerligini oku</strong><p>Forvet, kanat, orta saha ve kaleci profillerini ayni metrik setiyle degil, rol etkisiyle birlikte yorumla.</p></article>' +
+      '<article class="compare-guide-card"><span>2</span><strong>Fark yaratan metrigi bul</strong><p>Overall tek basina yeterli degil; gol tehdidi, yaraticilik, pres ve potansiyel farklarini birlikte izle.</p></article>' +
+      '<article class="compare-guide-card"><span>3</span><strong>Transfer verisini kontrol et</strong><p>Guncel takim, piyasa degeri, veri guveni ve transfer gecmisi oyuncu kararini daha net hale getirir.</p></article>' +
+      '</section>' +
+      '<section class="compare-quick-links" aria-label="Populer oyuncu karsilastirmalari">' +
+      '<a href="./oyuncu-karsilastir.html?p1=kerem-akturkoglu">Kerem icin akilli eslesme</a>' +
+      '<a href="./oyuncu-karsilastir.html?players=mauro-icardi,edin-dzeko">Icardi vs Dzeko</a>' +
+      '<a href="./oyuncu-karsilastir.html?players=ugurcan-cakir,abdulkerim-bardakci">Savunma guveni</a>' +
+      '<a href="./oyuncu-radari.html?filter=gol-tehdidi">Gol tehdidi filtresine don</a>' +
+      '</section>'
+    );
+  }
+
   function initPlayerCompare(target) {
     if (!target) {
       return;
     }
+
+    ensureCompareGuide();
 
     var selects = Array.from(document.querySelectorAll("[data-compare-player]"));
     var presetTarget = document.querySelector("[data-compare-presets]");
@@ -3490,9 +3540,11 @@
 
       var presets = comparePresetDefinitions(players);
       var requestedIds = String(query.get("players") || "").split(",").filter(Boolean);
+      var hasPlayersQuery = Boolean(query.get("players"));
       if (!requestedIds.length) {
         requestedIds = [query.get("p1"), query.get("p2"), query.get("p3")].filter(Boolean);
       }
+      var hasSingleSeed = !hasPlayersQuery && requestedIds.length === 1;
 
       selects.forEach(function (select, index) {
         var requestedId = requestedIds[index] || query.get(index === 0 ? "p1" : index === 1 ? "p2" : "p3");
@@ -3501,6 +3553,14 @@
         select.innerHTML = (index > 1 ? '<option value="">Opsiyonel 3. oyuncu</option>' : "") + options;
         select.value = exists ? requestedId : (index > 1 ? "" : fallback);
       });
+
+      if (hasSingleSeed && selects[0] && selects[1]) {
+        var primary = players.find(function (player) { return player.id === selects[0].value; });
+        var peer = bestComparePeer(primary, players);
+        if (peer) {
+          selects[1].value = peer.id;
+        }
+      }
 
       if (selects[0] && selects[1] && selects[0].value === selects[1].value && players.length > 1) {
         selects[1].value = players.find(function (player) { return player.id !== selects[0].value; }).id;

@@ -64,6 +64,8 @@ const appFeatureMarkers = [
   "featured-match-actions",
   "playerScoutingSummary",
   "playerPositionGroup",
+  "bestComparePeer",
+  "ensureCompareGuide",
   "comparePresetDefinitions",
   "renderLandingInsights",
   "player-signal-actions"
@@ -76,6 +78,8 @@ const cssFeatureMarkers = [
   "team-card-player",
   "match-action-card",
   "featured-match-actions",
+  "compare-guide",
+  "compare-quick-links",
   "compare-preset-card",
   "landing-insight-card",
   "player-signal-actions",
