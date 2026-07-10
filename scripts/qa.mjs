@@ -43,6 +43,7 @@ const pages = [
   "oyuncu-liderleri.html",
   "takim-trendleri.html",
   "futbol-radar-rehberi.html",
+  "gunun-radar-bulteni.html",
   "galatasaray-oyuncu-radari.html",
   "fenerbahce-oyuncu-radari.html",
   "besiktas-oyuncu-radari.html",
@@ -162,7 +163,12 @@ const cssFeatureMarkers = [
   "explore-lab-card",
   "intent-stack-grid",
   "intent-stack-card",
-  "intent-chip-row"
+  "intent-chip-row",
+  "home-daily-brief",
+  "daily-brief-shell",
+  "daily-brief-card",
+  "brief-command-grid",
+  "brief-command-card"
 ];
 const failures = [];
 
@@ -389,6 +395,7 @@ function checkSeoAndLinks() {
       expect(html.includes("home-player-leagues"), `${page}: missing player league traffic block`);
       expect(html.includes("home-rivalry-wall"), `${page}: missing rivalry wall traffic block`);
       expect(html.includes("home-explore-lab"), `${page}: missing homepage explore lab`);
+      expect(html.includes("home-daily-brief"), `${page}: missing daily radar brief`);
       expect(html.includes("gol-kralligi.html"), `${page}: missing goal ranking route`);
       expect(html.includes("asist-kralligi.html"), `${page}: missing assist ranking route`);
       expect(html.includes("derbi-radari.html"), `${page}: missing derby route`);
@@ -397,6 +404,7 @@ function checkSeoAndLinks() {
       expect(html.includes("oyuncu-liderleri.html"), `${page}: missing player leaders route`);
       expect(html.includes("takim-trendleri.html"), `${page}: missing team trends route`);
       expect(html.includes("futbol-radar-rehberi.html"), `${page}: missing radar guide route`);
+      expect(html.includes("gunun-radar-bulteni.html"), `${page}: missing daily brief route`);
       expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison traffic link`);
       expect(html.includes("super-lig-fikstur.html"), `${page}: missing fixture traffic link`);
       expect(html.includes("karsilastirma/kerem-akturkoglu-vs-mauro-icardi.html"), `${page}: missing static comparison route`);

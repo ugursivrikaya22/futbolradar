@@ -31,6 +31,7 @@ const pages = [
   "/oyuncu-liderleri.html",
   "/takim-trendleri.html",
   "/futbol-radar-rehberi.html",
+  "/gunun-radar-bulteni.html",
   "/players/position/forvet.html",
   "/players/league/super-lig.html",
   "/oyuncular/forvetler.html",
@@ -160,7 +161,12 @@ const cssFeatureMarkers = [
   "explore-lab-card",
   "intent-stack-grid",
   "intent-stack-card",
-  "intent-chip-row"
+  "intent-chip-row",
+  "home-daily-brief",
+  "daily-brief-shell",
+  "daily-brief-card",
+  "brief-command-grid",
+  "brief-command-card"
 ];
 const suspiciousCodes = new Set([0x00c2, 0x00c3, 0x00c4, 0x00c5]);
 const failures = [];

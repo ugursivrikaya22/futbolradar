@@ -2471,6 +2471,125 @@ h1 {
         outline: 0;
       }
 
+      .home-daily-brief,
+      .brief-flow-section {
+        padding-top: 22px;
+      }
+
+      .daily-brief-shell,
+      .brief-command-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background:
+          radial-gradient(circle at 95% 4%, rgba(128, 255, 155, 0.13), transparent 34%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.058), rgba(255, 255, 255, 0.024)),
+          var(--panel);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .daily-brief-shell {
+        display: grid;
+        grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+        gap: 18px;
+        padding: 20px;
+      }
+
+      .daily-brief-lead {
+        display: grid;
+        align-content: center;
+        gap: 12px;
+      }
+
+      .daily-brief-lead h2 {
+        margin: 0;
+        font-size: clamp(1.55rem, 3vw, 2.35rem);
+        line-height: 1.02;
+      }
+
+      .daily-brief-lead p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .daily-brief-link {
+        width: fit-content;
+        color: var(--green);
+        font-size: 0.88rem;
+        font-weight: 850;
+      }
+
+      .daily-brief-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .daily-brief-card {
+        min-width: 0;
+        display: grid;
+        gap: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.11);
+        border-radius: 8px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.036);
+        color: var(--text);
+      }
+
+      .daily-brief-card span,
+      .brief-command-card > span {
+        color: var(--cyan);
+        font-size: 0.72rem;
+        font-weight: 850;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .daily-brief-card strong {
+        line-height: 1.16;
+      }
+
+      .daily-brief-card em {
+        color: var(--muted);
+        font-size: 0.84rem;
+        font-style: normal;
+        line-height: 1.45;
+      }
+
+      .brief-command-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .brief-command-card {
+        display: grid;
+        gap: 12px;
+        min-height: 226px;
+        padding: 18px;
+      }
+
+      .brief-command-card h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        line-height: 1.12;
+      }
+
+      .brief-command-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .brief-command-card a {
+        align-self: end;
+        width: fit-content;
+        color: var(--green);
+        font-size: 0.86rem;
+        font-weight: 850;
+      }
+
       .matches-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -6468,6 +6587,8 @@ h1 {
   .intent-card-grid,
   .intent-link-grid,
   .intent-stack-grid,
+  .daily-brief-grid,
+  .brief-command-grid,
   .home-lockin-grid,
   .home-rank-grid,
   .explore-lab-grid,
@@ -6566,6 +6687,8 @@ h1 {
   .intent-card-grid,
   .intent-link-grid,
   .intent-stack-grid,
+  .daily-brief-grid,
+  .brief-command-grid,
   .home-lockin-grid,
   .home-rank-grid,
   .explore-lab-grid,
@@ -6576,6 +6699,8 @@ h1 {
   .intent-player-card,
   .intent-link-grid a,
   .intent-stack-card,
+  .daily-brief-card,
+  .brief-command-card,
   .home-lockin-card,
   .home-rank-card,
   .explore-lab-card,
@@ -6590,5 +6715,10 @@ h1 {
 
   .intent-player-card {
     min-height: 0;
+  }
+
+  .daily-brief-shell {
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 16px !important;
   }
 }
