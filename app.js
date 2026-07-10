@@ -94,7 +94,7 @@
     var timer = controller
       ? window.setTimeout(function () { controller.abort(); }, FETCH_TIMEOUT_MS)
       : null;
-    var options = { cache: "no-store" };
+    var options = { cache: "default" };
 
     if (controller) {
       options.signal = controller.signal;
@@ -166,9 +166,9 @@
       if (config.api) {
         cache[name] = fetchJson(getApiUrl(config))
           .then(function (result) {
-          if (config.reportSource) {
-            updateUpdatedAtLabel(result.updatedAt);
-          }
+            if (config.reportSource) {
+              updateUpdatedAtLabel(result.updatedAt);
+            }
             return result.data;
           })
           .catch(fallback);
