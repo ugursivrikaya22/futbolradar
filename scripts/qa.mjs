@@ -59,6 +59,7 @@ const pages = [
 ];
 const endpoints = ["matches", "standings", "teams", "players", "player-detail", "player-compare", "player-rankings", "transfers", "squad", "match-detail", "momentum", "signals", "analyses", "health"];
 const skipDirs = new Set([".git", ".agents", ".codex", "node_modules", "work", "outputs"]);
+const VERCEL_HOBBY_FUNCTION_LIMIT = 12;
 const failures = [];
 
 function walk(dir, predicate, out = []) {
@@ -82,6 +83,34 @@ function expect(condition, message) {
   if (!condition) {
     failures.push(message);
   }
+}
+
+function apiFunctionFiles() {
+  const apiDir = path.join(root, "api");
+  return walk(apiDir, (full) => {
+    return full.endsWith(".js") && !path.basename(full).startsWith("_");
+  }).map((full) => path.relative(root, full).replace(/\\/g, "/"));
+}
+
+function checkVercelFunctionLimit() {
+  const functionFiles = apiFunctionFiles();
+  if (functionFiles.length > VERCEL_HOBBY_FUNCTION_LIMIT) {
+    console.warn(
+      `Vercel Hobby function warning: ${functionFiles.length}/${VERCEL_HOBBY_FUNCTION_LIMIT} API functions detected. ` +
+      "Move helper/provider files outside api/ or route new API handlers through api/[...route].js."
+    );
+  }
+
+  const nestedApiFiles = functionFiles.filter((file) => path.dirname(file) !== "api");
+  if (nestedApiFiles.length) {
+    console.warn(
+      `Vercel API warning: nested api/*.js files can be deployed as functions: ${nestedApiFiles.join(", ")}`
+    );
+  }
+
+  expect(!fs.existsSync(path.join(root, "api", "providers")), "api/providers must stay outside api/ to avoid Vercel function limit");
+  expect(fs.existsSync(path.join(root, "services", "providers", "index.js")), "services/providers/index.js missing");
+  expect(fs.existsSync(path.join(root, "services", "providers", "mockProvider.js")), "services/providers/mockProvider.js missing");
 }
 
 function checkJavaScriptSyntax() {
@@ -374,6 +403,7 @@ async function checkApi() {
   expect(keremApi && Array.isArray(keremApi.formerTeams) && keremApi.formerTeams.includes("Galatasaray"), "api players: Kerem formerTeams must include Galatasaray");
 }
 
+checkVercelFunctionLimit();
 checkJavaScriptSyntax();
 checkJson();
 checkSeoAndLinks();

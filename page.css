@@ -3049,15 +3049,34 @@ h1 {
 @media (max-width: 760px) {
   .home-page .container,
   .subpage .container {
-    width: auto !important;
-    max-width: none !important;
+    width: calc(100vw - 24px) !important;
+    inline-size: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+    max-inline-size: calc(100vw - 24px) !important;
     margin-left: 12px !important;
     margin-right: 12px !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 
   .hero,
   .radar-layout {
     grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: hidden;
+  }
+
+  .hero > *,
+  .hero-copy,
+  .hero-metrics {
+    width: 100%;
+    inline-size: 100%;
+    max-width: 100%;
+    max-inline-size: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 
   .hero-actions,
@@ -3067,10 +3086,39 @@ h1 {
   .metric-tile,
   .source-strip {
     max-width: 100%;
+    max-inline-size: 100%;
     min-width: 0;
   }
 
   .hero-actions .button {
     width: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  body.home-page .hero {
+    width: calc(100vw - 24px) !important;
+    inline-size: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+    max-inline-size: calc(100vw - 24px) !important;
+    min-width: 0 !important;
+  }
+
+  body.home-page .hero > div,
+  body.home-page .hero-copy,
+  body.home-page .hero-actions,
+  body.home-page .hero-actions .button,
+  body.home-page .hero-metrics,
+  body.home-page .metric-tile {
+    width: 100% !important;
+    inline-size: 100% !important;
+    max-width: 100% !important;
+    max-inline-size: 100% !important;
+    min-width: 0 !important;
+  }
+
+  body.home-page .hero-copy {
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
   }
 }
