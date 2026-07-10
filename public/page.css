@@ -2207,6 +2207,121 @@ h1 {
         font-weight: 950;
       }
 
+      .profile-hero-pro {
+        position: relative;
+        align-items: stretch;
+        border: 1px solid rgba(128, 255, 155, 0.2);
+        border-radius: var(--radius);
+        padding: 18px;
+        background:
+          radial-gradient(circle at 8% 12%, rgba(128, 255, 155, 0.16), transparent 28%),
+          linear-gradient(135deg, rgba(77, 229, 255, 0.08), rgba(255, 255, 255, 0.025)),
+          rgba(0, 0, 0, 0.18);
+      }
+
+      .profile-identity {
+        display: flex;
+        min-width: 0;
+        gap: 14px;
+      }
+
+      .profile-identity > div {
+        min-width: 0;
+      }
+
+      .profile-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .profile-score-card {
+        display: grid;
+        min-width: 172px;
+        align-content: center;
+        gap: 6px;
+        border: 1px solid rgba(128, 255, 155, 0.24);
+        border-radius: var(--radius);
+        padding: 14px;
+        background: rgba(0, 0, 0, 0.22);
+      }
+
+      .profile-score-card span {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .profile-score-card strong {
+        display: block;
+        width: auto;
+        height: auto;
+        border: 0;
+        border-radius: 0;
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
+        color: var(--green);
+        font-size: 2.5rem;
+        line-height: 1;
+      }
+
+      .profile-score-card p,
+      .profile-score-card em {
+        margin: 0;
+        color: #c5d5d2;
+        font-size: 0.86rem;
+        font-style: normal;
+      }
+
+      .profile-radar-snapshot {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .profile-radar-snapshot article {
+        min-width: 0;
+        border: 1px solid rgba(77, 229, 255, 0.14);
+        border-radius: var(--radius);
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.035);
+      }
+
+      .profile-radar-snapshot span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .profile-radar-snapshot strong {
+        display: block;
+        margin: 6px 0 9px;
+        color: var(--text);
+        font-size: 1.12rem;
+      }
+
+      .profile-radar-snapshot i {
+        display: block;
+        height: 6px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .profile-radar-snapshot i::before {
+        display: block;
+        width: var(--value, 0%);
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--green), var(--cyan));
+        content: "";
+      }
+
       .profile-section {
         width: 100%;
         min-width: 0;
@@ -2311,13 +2426,33 @@ h1 {
         overflow: hidden;
       }
 
+      .transfer-summary-grid,
+      .transfer-radar-summary {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin: 0 0 14px;
+      }
+
       .transfer-timeline {
+        position: relative;
         display: grid;
         gap: 10px;
         min-width: 0;
       }
 
+      .transfer-timeline::before {
+        position: absolute;
+        top: 8px;
+        bottom: 8px;
+        left: 118px;
+        width: 1px;
+        background: linear-gradient(180deg, rgba(128, 255, 155, 0.42), rgba(77, 229, 255, 0.08));
+        content: "";
+      }
+
       .transfer-event {
+        position: relative;
         display: grid;
         grid-template-columns: minmax(110px, 0.28fr) minmax(0, 1fr);
         gap: 12px;
@@ -2329,6 +2464,19 @@ h1 {
         background:
           linear-gradient(90deg, rgba(77, 229, 255, 0.055), transparent),
           rgba(0, 0, 0, 0.18);
+      }
+
+      .transfer-event::before {
+        position: absolute;
+        top: 18px;
+        left: 113px;
+        width: 11px;
+        height: 11px;
+        border: 2px solid var(--green);
+        border-radius: 999px;
+        background: #07100f;
+        box-shadow: 0 0 14px rgba(128, 255, 155, 0.28);
+        content: "";
       }
 
       .transfer-date {
@@ -2409,6 +2557,78 @@ h1 {
         background: rgba(255, 255, 255, 0.045);
         font-size: 0.8rem;
         font-weight: 850;
+      }
+
+      .transfer-toolbar {
+        display: grid;
+        grid-template-columns: 1.5fr repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        align-items: end;
+        margin: 18px 0;
+      }
+
+      .transfer-filter-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .transfer-filter-chips button {
+        min-height: 38px;
+        border: 1px solid rgba(134, 255, 218, 0.18);
+        border-radius: 999px;
+        padding: 0 12px;
+        color: #dce8e5;
+        background: rgba(255, 255, 255, 0.045);
+        font: inherit;
+        font-size: 0.82rem;
+        font-weight: 850;
+        cursor: pointer;
+      }
+
+      .transfer-filter-chips button.is-active {
+        border-color: rgba(128, 255, 155, 0.44);
+        color: #06110f;
+        background: linear-gradient(135deg, var(--green), var(--cyan));
+      }
+
+      .transfer-radar-card {
+        display: grid;
+        gap: 13px;
+        min-width: 0;
+        border: 1px solid rgba(77, 229, 255, 0.16);
+        border-radius: var(--radius);
+        padding: 15px;
+        background:
+          radial-gradient(circle at 92% 4%, rgba(77, 229, 255, 0.12), transparent 30%),
+          rgba(255, 255, 255, 0.035);
+        box-shadow: var(--shadow);
+      }
+
+      .transfer-radar-card header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .transfer-radar-card header strong {
+        color: var(--green);
+        font-size: 1.1rem;
+        white-space: nowrap;
+      }
+
+      .transfer-route-large {
+        border: 1px solid rgba(128, 255, 155, 0.16);
+        border-radius: var(--radius);
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.18);
+      }
+
+      .transfer-radar-meta {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
       }
 
       .reliability-grid {
@@ -2832,6 +3052,20 @@ h1 {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .profile-radar-snapshot,
+        .transfer-summary-grid,
+        .transfer-radar-summary {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .transfer-toolbar {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .transfer-filter-chips {
+          grid-column: 1 / -1;
+        }
+
         .reliability-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -2990,6 +3224,10 @@ h1 {
           display: grid;
         }
 
+        .profile-identity {
+          flex-direction: column;
+        }
+
         .player-profile-card {
           width: 100%;
           max-width: calc(100vw - 60px);
@@ -3041,6 +3279,14 @@ h1 {
           grid-template-columns: 1fr;
         }
 
+        .profile-radar-snapshot,
+        .transfer-summary-grid,
+        .transfer-radar-summary,
+        .transfer-toolbar,
+        .transfer-radar-meta {
+          grid-template-columns: 1fr;
+        }
+
         .profile-section-head {
           display: grid;
         }
@@ -3051,6 +3297,11 @@ h1 {
 
         .transfer-event {
           grid-template-columns: 1fr;
+        }
+
+        .transfer-timeline::before,
+        .transfer-event::before {
+          display: none;
         }
 
         .transfer-date {

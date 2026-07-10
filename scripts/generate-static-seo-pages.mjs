@@ -261,6 +261,40 @@ function cardsHtml(cards) {
   return cards.map((card) => `<article class="card"><span class="card-kicker">Radar</span><h2>${card}</h2><p>${cardDescription(card)}</p></article>`).join("");
 }
 
+function landingControlsHtml(page) {
+  if (page.landing !== "transfer-radari") {
+    return "";
+  }
+
+  return `<section class="transfer-toolbar" aria-label="Transfer radar filtreleri">
+        <div class="transfer-filter-chips" role="group" aria-label="Hizli transfer filtreleri">
+          <button type="button" data-transfer-filter="all" class="is-active" aria-pressed="true">Tum transferler</button>
+          <button type="button" data-transfer-filter="son-hareket" aria-pressed="false">Son hareket</button>
+          <button type="button" data-transfer-filter="eski-kulup" aria-pressed="false">Eski kulup ayrimi</button>
+          <button type="button" data-transfer-filter="riskli-transfer" aria-pressed="false">Riskli takip</button>
+          <button type="button" data-transfer-filter="yukselen-deger" aria-pressed="false">Yukselen deger</button>
+        </div>
+        <div class="filter-group">
+          <label for="transfer-team-filter">Guncel takim</label>
+          <select id="transfer-team-filter" data-transfer-team-filter></select>
+        </div>
+        <div class="filter-group">
+          <label for="transfer-status-filter">Veri durumu</label>
+          <select id="transfer-status-filter" data-transfer-status-filter></select>
+        </div>
+        <div class="filter-group">
+          <label for="transfer-sort">Sirala</label>
+          <select id="transfer-sort" data-transfer-sort>
+            <option value="updated">Son guncelleme</option>
+            <option value="market">Piyasa degeri</option>
+            <option value="rating">AI rating</option>
+            <option value="team">Takim</option>
+          </select>
+        </div>
+      </section>
+      <section class="transfer-radar-summary" data-transfer-summary aria-label="Transfer radar ozeti"></section>`;
+}
+
 function pageHtml(page) {
   const url = `${domain}/${page.file}`;
   return `<!doctype html>
@@ -303,7 +337,7 @@ ${nav}
           <span class="hero-meta">Veriler periyodik olarak güncellenir</span>
         </div>
       </section>
-      ${page.landing ? `<section class="grid three">${cardsHtml(page.cards)}</section>
+      ${page.landing ? `<section class="grid three">${cardsHtml(page.cards)}</section>${landingControlsHtml(page)}
       <section class="player-filter-note"><span data-landing-count>Oyuncu listesi hazirlaniyor</span></section>
       <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${page.landing}">
         <article class="data-empty" data-card="empty-state"><strong>Oyuncular yukleniyor</strong><span>Scouting kartlari veri katmanindan okunuyor.</span></article>

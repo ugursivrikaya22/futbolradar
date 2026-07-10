@@ -694,6 +694,52 @@
     );
   }
 
+  function playerProfileHeroHtml(player, team) {
+    var score = displayValue(player.overallRating || player.aiRating || player.rating);
+    var age = playerAge(player);
+    var market = playerMarketValue(player) || "Piyasa degeri yakinda";
+
+    return (
+      '<header class="profile-hero profile-hero-pro">' +
+      '<div class="profile-identity">' +
+      playerAvatarHtml(player, "large") +
+      '<div><span>Guncel takim: ' + escapeHtml(team) + " - " + escapeHtml(player.league || "Lig bilgisi yakinda") + "</span>" +
+      "<h1>" + escapeHtml(player.name) + "</h1>" +
+      "<p>" + escapeHtml(playerInsight(player)) + "</p>" +
+      '<div class="profile-hero-actions">' +
+      '<a class="detail-link" href="/oyuncu-karsilastir.html?p1=' + escapeHtml(player.id) + '">Karsilastir</a>' +
+      '<a class="detail-link ghost" href="/oyuncu-radari.html?team=' + encodeURIComponent(team) + '">Takim filtresi</a>' +
+      '<button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Paylas</button>' +
+      "</div></div></div>" +
+      '<aside class="profile-score-card" aria-label="Oyuncu radar ozeti">' +
+      "<span>Overall</span><strong>" + escapeHtml(score) + "</strong>" +
+      "<p>" + escapeHtml(player.position || "Mevki yakinda") + " - Yas " + escapeHtml(displayValue(age)) + "</p>" +
+      "<em>" + escapeHtml(market) + "</em>" +
+      "</aside>" +
+      "</header>"
+    );
+  }
+
+  function profileRadarSnapshotHtml(player) {
+    var rows = [
+      ["Overall", playerAiScore(player)],
+      ["Form", radarMetric(player, "form")],
+      ["Potansiyel", radarMetric(player, "potential")],
+      ["Gol tehdidi", playerScore(player, "threatScore")],
+      ["Yaraticilik", playerScore(player, "creativityScore")],
+      ["Veri guveni", radarMetric(player, "dataConfidence")]
+    ];
+
+    return (
+      '<section class="profile-radar-snapshot" aria-label="Radar hizli ozeti">' +
+      rows.map(function (row) {
+        var value = Math.max(0, Math.min(100, Number(row[1]) || 0));
+        return '<article><span>' + escapeHtml(row[0]) + '</span><strong>' + escapeHtml(displayValue(value)) + '</strong><i style="--value:' + escapeHtml(value) + '%"></i></article>';
+      }).join("") +
+      "</section>"
+    );
+  }
+
   function playerFormerTeams(player) {
     return Array.isArray(player && player.formerTeams) && player.formerTeams.length ? player.formerTeams.join(", ") : null;
   }
@@ -773,6 +819,31 @@
     return transfer.feeLabel && transfer.feeLabel !== "Free" && transfer.feeLabel !== "Academy" ? transfer.feeLabel : null;
   }
 
+  function latestTransferEvent(player) {
+    var history = Array.isArray(player && player.transferHistory) ? player.transferHistory.slice() : [];
+    if (!history.length) {
+      return null;
+    }
+
+    return history.sort(function (a, b) {
+      return String(b.date || b.season || "").localeCompare(String(a.date || a.season || ""));
+    })[0];
+  }
+
+  function transferSummaryHtml(player) {
+    var latest = latestTransferEvent(player);
+    var formerCount = Array.isArray(player && player.formerTeams) ? player.formerTeams.length : 0;
+
+    return (
+      '<div class="transfer-summary-grid">' +
+      compactMetricHtml("Guncel takim", playerCurrentTeam(player)) +
+      compactMetricHtml("Eski kulup", formerCount ? formerCount + " kulup" : "Yakinda") +
+      compactMetricHtml("Son hareket", latest ? (formatProfileDate(latest.date) || latest.season || "Yakinda") : "Yakinda") +
+      compactMetricHtml("Piyasa", playerMarketValue(player) || "Yakinda") +
+      "</div>"
+    );
+  }
+
   function transferTimelineHtml(player) {
     var history = Array.isArray(player && player.transferHistory) ? player.transferHistory.slice() : [];
     if (!history.length) {
@@ -787,6 +858,7 @@
       '<section class="profile-section transfer-section"><div class="profile-section-head"><h2>Transfer Geçmişi</h2>' +
       (player.transferUpdatedAt ? '<span>Transfer bilgisi son güncelleme: ' + escapeHtml(formatProfileDate(player.transferUpdatedAt)) + "</span>" : "") +
       "</div>" +
+      transferSummaryHtml(player) +
       '<div class="transfer-timeline">' +
       history.map(function (transfer) {
         var fee = transferFeeLabel(transfer);
@@ -1397,6 +1469,59 @@
     updatePlayerDetailSchema(player);
   }
 
+  function setMetaContent(selector, value) {
+    var element = document.querySelector(selector);
+    if (element) {
+      element.setAttribute("content", value);
+    }
+  }
+
+  function updatePlayerCompareMeta(players) {
+    var selected = Array.isArray(players) ? players.filter(Boolean).slice(0, 3) : [];
+    if (selected.length < 2) {
+      return;
+    }
+
+    var names = selected.map(function (player) { return player.name; });
+    var titleBase = names.join(" vs ");
+    var title = titleBase + " Karsilastirmasi | FutbolRadar";
+    var description = titleBase + " oyuncu karsilastirmasi; AI rating, form, gol tehdidi, yaraticilik, pres gucu, piyasa degeri ve transfer verileriyle okunur.";
+    var h1 = document.querySelector(".hero h1");
+    var lead = document.querySelector(".hero .lead");
+    var meta = document.querySelector(".hero-meta");
+    var schema = document.querySelector('script[type="application/ld+json"]');
+
+    document.title = title;
+    setMetaContent('meta[name="description"]', description);
+    setMetaContent('meta[property="og:title"]', title);
+    setMetaContent('meta[property="og:description"]', description);
+    setMetaContent('meta[name="twitter:title"]', title);
+    setMetaContent('meta[name="twitter:description"]', description);
+
+    if (h1) {
+      h1.textContent = titleBase + " Karsilastirmasi";
+    }
+
+    if (lead) {
+      lead.textContent = description;
+    }
+
+    if (meta) {
+      meta.textContent = selected.length + " oyunculu radar karsilastirmasi";
+    }
+
+    if (schema) {
+      schema.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: title,
+        url: window.location.href,
+        description: description,
+        inLanguage: "tr-TR"
+      });
+    }
+  }
+
   function similarPlayerScore(player, candidate) {
     var score = 0;
 
@@ -1480,9 +1605,10 @@
 
     return (
       '<article class="player-profile-card" data-card="player-detail" data-player="' + escapeHtml(player.id) + '">' +
-      '<header class="profile-hero"><div><span>Güncel takım: ' + escapeHtml(team) + " · " + escapeHtml(player.league || "Lig bilgisi yakında") + "</span><h1>" + escapeHtml(player.name) + "</h1><p>" + escapeHtml(playerInsight(player)) + "</p></div><strong>" + escapeHtml(displayValue(player.overallRating || player.aiRating || player.rating)) + "</strong></header>" +
+      playerProfileHeroHtml(player, team) +
       badgesHtml(playerBadges(player)) +
       tagsHtml(transferTags.concat(playerRatingTags(player))) +
+      profileRadarSnapshotHtml(player) +
       profileSectionHtml("Profil Ozeti", [
         profileItemHtml("Guncel takim", team),
         profileItemHtml("Mevki", player.position),
@@ -2241,6 +2367,176 @@
       });
   }
 
+  function transferRiskLabel(player) {
+    if (playerNeedsDataRefresh(player)) {
+      return "Takip gerekli";
+    }
+
+    if (normalizeSearchText(player.dataStatus) === "manually_verified") {
+      return "Dogrulandi";
+    }
+
+    return "Standart takip";
+  }
+
+  function transferRadarMatches(player, filter) {
+    var latest = latestTransferEvent(player);
+    var market = Number(player.marketValueEur || 0);
+    var formerCount = Array.isArray(player.formerTeams) ? player.formerTeams.length : 0;
+
+    if (filter === "riskli-transfer") {
+      return playerNeedsDataRefresh(player);
+    }
+
+    if (filter === "yukselen-deger") {
+      return market >= 20000000 || Number(player.potentialRating || 0) >= 85 || Number(player.formChange || 0) > 4;
+    }
+
+    if (filter === "eski-kulup") {
+      return formerCount >= 2;
+    }
+
+    if (filter === "son-hareket") {
+      return Boolean(latest);
+    }
+
+    return playerHasTransferHistory(player);
+  }
+
+  function renderTransferRadarStats(players) {
+    var list = Array.isArray(players) ? players : [];
+    var risk = list.filter(playerNeedsDataRefresh).length;
+    var highValue = list.filter(function (player) { return Number(player.marketValueEur || 0) >= 20000000; }).length;
+    var verified = list.filter(function (player) { return normalizeSearchText(player.dataStatus) === "manually_verified"; }).length;
+
+    return (
+      compactMetricHtml("Transfer kaydi", list.length) +
+      compactMetricHtml("Riskli takip", risk) +
+      compactMetricHtml("20M+ piyasa", highValue) +
+      compactMetricHtml("Dogrulanmis", verified)
+    );
+  }
+
+  function renderTransferRadarCard(player) {
+    var latest = latestTransferEvent(player);
+    var fromTeam = latest && latest.fromTeam ? latest.fromTeam : "Eski kulup yakinda";
+    var toTeam = latest && latest.toTeam ? latest.toTeam : playerCurrentTeam(player);
+    var teams = Array.isArray(player.formerTeams) ? player.formerTeams.slice(0, 4) : [];
+
+    return (
+      '<article class="transfer-radar-card" data-card="transfer-player" data-player="' + escapeHtml(player.id) + '">' +
+      '<header><div class="player-card-title">' + playerAvatarHtml(player) + '<div><span class="card-kicker">' + escapeHtml(player.league || "Lig yakinda") + "</span><h2>" + escapeHtml(player.name) + "</h2></div></div>" +
+      '<strong>' + escapeHtml(displayValue(playerMarketValue(player) || "Yakinda")) + "</strong></header>" +
+      '<div class="transfer-route transfer-route-large"><b>' + escapeHtml(fromTeam) + "</b><em>-></em><b>" + escapeHtml(toTeam) + "</b></div>" +
+      '<div class="transfer-radar-meta">' +
+      compactMetricHtml("Guncel takim", playerCurrentTeam(player)) +
+      compactMetricHtml("Son hareket", latest ? (formatProfileDate(latest.date) || latest.season || "Yakinda") : "Yakinda") +
+      compactMetricHtml("Transfer tipi", transferTypeLabel(latest) || "Yakinda") +
+      compactMetricHtml("Risk", transferRiskLabel(player)) +
+      "</div>" +
+      (teams.length ? '<div class="former-team-list">' + teams.map(function (team) { return '<span class="former-team-chip">' + escapeHtml(team) + "</span>"; }).join("") + "</div>" : "") +
+      '<div class="player-status-row">' + statusBadgeHtml(player.dataStatus, "data") + statusBadgeHtml(player.ratingStatus, "rating") + "</div>" +
+      '<div class="player-actions"><a class="detail-link" href="/oyuncular/' + escapeHtml(player.id) + '.html">Profili ac</a><a class="detail-link ghost" href="/oyuncu-karsilastir.html?p1=' + escapeHtml(player.id) + '">Karsilastir</a></div>' +
+      "</article>"
+    );
+  }
+
+  function initTransferRadarLanding(target, config, count) {
+    var filterButtons = Array.from(document.querySelectorAll("[data-transfer-filter]"));
+    var teamSelect = document.querySelector("[data-transfer-team-filter]");
+    var statusSelect = document.querySelector("[data-transfer-status-filter]");
+    var sortSelect = document.querySelector("[data-transfer-sort]");
+    var summary = document.querySelector("[data-transfer-summary]");
+    var query = new URLSearchParams(window.location.search);
+    var state = {
+      filter: query.get("filter") || "all",
+      team: query.get("team") || "",
+      status: query.get("status") || "",
+      sort: query.get("sort") || "updated"
+    };
+
+    target.dataset.state = "loading";
+
+    loadData("players")
+      .then(function (players) {
+        var base = players.filter(config.match);
+        populatePlayerSelect(teamSelect, uniqueSortedBy(base, playerCurrentTeam), "Tum takimlar");
+        populatePlayerSelect(statusSelect, uniqueSorted(base, "dataStatus"), "Tum veri durumlari");
+
+        if (teamSelect) teamSelect.value = state.team;
+        if (statusSelect) statusSelect.value = state.status;
+        if (sortSelect) sortSelect.value = state.sort;
+
+        function syncButtons() {
+          filterButtons.forEach(function (button) {
+            var active = (button.getAttribute("data-transfer-filter") || "all") === state.filter;
+            button.classList.toggle("is-active", active);
+            button.setAttribute("aria-pressed", active ? "true" : "false");
+          });
+        }
+
+        function updateQuery() {
+          var params = new URLSearchParams(window.location.search);
+          [["filter", state.filter === "all" ? "" : state.filter], ["team", state.team], ["status", state.status], ["sort", state.sort === "updated" ? "" : state.sort]].forEach(function (item) {
+            if (item[1]) params.set(item[0], item[1]);
+            else params.delete(item[0]);
+          });
+          var queryString = params.toString();
+          window.history.replaceState({}, "", window.location.pathname + (queryString ? "?" + queryString : ""));
+        }
+
+        function render() {
+          state.team = teamSelect ? teamSelect.value : state.team;
+          state.status = statusSelect ? statusSelect.value : state.status;
+          state.sort = sortSelect ? sortSelect.value : state.sort;
+
+          var filtered = base.filter(function (player) {
+            return transferRadarMatches(player, state.filter) &&
+              (!state.team || playerCurrentTeam(player) === state.team) &&
+              (!state.status || player.dataStatus === state.status);
+          });
+
+          filtered = sortPlayers(filtered, state.sort || "updated");
+
+          if (summary) {
+            summary.innerHTML = renderTransferRadarStats(filtered);
+          }
+
+          if (count) {
+            count.textContent = filtered.length + " transfer kaydi listeleniyor";
+          }
+
+          syncButtons();
+          updateQuery();
+
+          if (!filtered.length) {
+            setEmpty(target, "Transfer kaydi bulunamadi", "Bu filtre icin kayit yok. Filtreleri genislet.");
+            return;
+          }
+
+          setContent(target, filtered.map(renderTransferRadarCard).join(""));
+        }
+
+        filterButtons.forEach(function (button) {
+          button.addEventListener("click", function () {
+            state.filter = button.getAttribute("data-transfer-filter") || "all";
+            render();
+          });
+        });
+
+        [teamSelect, statusSelect, sortSelect].forEach(function (select) {
+          if (select) {
+            select.addEventListener("change", render);
+          }
+        });
+
+        render();
+      })
+      .catch(function () {
+        setEmpty(target, "Transfer Radari yuklenemedi", "Oyuncu veri katmani gecici olarak okunamiyor.");
+      });
+  }
+
   function initPlayerSeoLanding(target) {
     if (!target) {
       return;
@@ -2249,6 +2545,11 @@
     var slug = target.getAttribute("data-player-landing") || "";
     var config = PLAYER_LANDING_CONFIG[slug] || PLAYER_LANDING_CONFIG["en-iyi-oyuncular"];
     var count = document.querySelector("[data-landing-count]");
+
+    if (slug === "transfer-radari") {
+      initTransferRadarLanding(target, config, count);
+      return;
+    }
 
     target.dataset.state = "loading";
 
@@ -2596,6 +2897,7 @@
         params.delete("p2");
         params.delete("p3");
         window.history.replaceState({}, "", window.location.pathname + "?" + params.toString());
+        updatePlayerCompareMeta(selected);
         setContent(target, renderPlayerComparisonSet(selected));
         return;
 
