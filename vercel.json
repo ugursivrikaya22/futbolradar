@@ -1,4 +1,12 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "ignoreCommand": "node scripts/vercel-continue-build.mjs",
+  "installCommand": "",
+  "outputDirectory": ".",
+  "git": {
+    "deploymentEnabled": true
+  },
   "cleanUrls": false,
   "trailingSlash": false,
   "redirects": [

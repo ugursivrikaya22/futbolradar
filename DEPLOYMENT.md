@@ -11,18 +11,34 @@ The root must contain `index.html`, `page.css`, `app.js`, `api/`, `data/`, `site
 ## Vercel settings
 
 - Framework Preset: Other
-- Build Command: leave empty
-- Output Directory: leave empty
+- Build Command: `npm run build`
+- Output Directory: `.`
 - Install Command: leave empty
+- Ignored Build Step: leave empty in the dashboard; `vercel.json` forces builds to continue
+- Production Branch: `main`
+- Git deployments: enabled
 
-`vercel.json` keeps `.html` URLs stable:
+`vercel.json` keeps `.html` URLs stable and overrides stale dashboard settings
+that can block a deployment before it starts:
 
 ```json
 {
+  "buildCommand": "npm run build",
+  "ignoreCommand": "node scripts/vercel-continue-build.mjs",
+  "installCommand": "",
+  "outputDirectory": ".",
+  "git": {
+    "deploymentEnabled": true
+  },
   "cleanUrls": false,
   "trailingSlash": false
 }
 ```
+
+Vercel's Ignored Build Step treats exit code `0` as "skip this deployment" and
+exit code `1` as "continue building". The `scripts/vercel-continue-build.mjs`
+helper exits with `1` on purpose so Production commits are not marked Blocked
+because of an old dashboard ignore command.
 
 ## Environment variables
 
