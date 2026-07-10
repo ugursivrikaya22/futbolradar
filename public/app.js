@@ -1304,18 +1304,39 @@
     );
   }
 
-  function renderTeamPageCard(team) {
+  function teamCardLeaderHtml(player) {
+    if (!player) {
+      return "";
+    }
+
+    var stats = playerStats(player);
+
+    return (
+      '<div class="team-card-player" data-card="team-player-leader" data-player="' + escapeHtml(player.id) + '">' +
+      '<span>Kadro lideri</span>' +
+      "<strong>" + escapeHtml(player.name) + " - AI " + escapeHtml(displayValue(playerAiScore(player))) + "</strong>" +
+      "<em>" + escapeHtml(displayValue(player.position)) + " - Gol " + escapeHtml(displayValue(stats.goals || 0)) + " / Asist " + escapeHtml(displayValue(stats.assists || 0)) + "</em>" +
+      '<a href="' + escapeHtml(playerProfileHref(player.id)) + '">Oyuncu profilini ac</a>' +
+      "</div>"
+    );
+  }
+
+  function renderTeamPageCard(team, squad) {
     var attack = team.attackRating || team.attack;
     var defense = team.defenseRating || team.defense;
+    var players = filterSquadForTeam(team, squad || []);
+    var leader = players.slice().sort(function (a, b) { return playerAiScore(b) - playerAiScore(a); })[0];
+
     return (
       '<article class="card" id="' + escapeHtml(team.id) + '" data-card="team" data-team="' + escapeHtml(team.id) + '">' +
       '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(team.league) + "</span><h2>" + escapeHtml(team.name) + '</h2></div><strong class="big-value">' + escapeHtml(team.momentum) + "</strong></div>" +
       formDotsHtml(team.form) +
       barRowHtml("Hucum", attack, attack) +
       barRowHtml("Savunma", defense, defense) +
-      '<div class="metric-grid compact"><span>Lig: <b>' + escapeHtml(displayValue(team.league)) + '</b></span><span>Kadro: <b>' + escapeHtml(displayValue(team.squadCount)) + '</b></span></div>' +
+      '<div class="metric-grid compact"><span>Lig: <b>' + escapeHtml(displayValue(team.league)) + '</b></span><span>Kadro: <b>' + escapeHtml(displayValue(players.length || team.squadCount)) + '</b></span></div>' +
       tagsHtml(team.tags) +
-      '<a class="detail-link" href="' + escapeHtml(teamDetailHref(team)) + '">TakÄ±m detayÄ±</a>' +
+      teamCardLeaderHtml(leader) +
+      '<div class="team-card-actions"><a class="detail-link" href="' + escapeHtml(teamDetailHref(team)) + '">Takim detayi</a><a class="detail-link ghost" href="./oyuncu-radari.html?team=' + encodeURIComponent(team.name) + '">Oyuncu radari</a></div>' +
       "</article>"
     );
   }
@@ -3697,6 +3718,32 @@
     );
   }
 
+  function initTeamsPage(target) {
+    if (!target) {
+      return;
+    }
+
+    target.dataset.state = "loading";
+    loadData("teams")
+      .then(function (teams) {
+        return loadData("squad").catch(function () { return []; }).then(function (squad) {
+          return { teams: teams || [], squad: squad || [] };
+        });
+      })
+      .then(function (payload) {
+        var teams = sortedByRank(payload.teams);
+        if (!teams.length) {
+          setEmpty(target, "Takim verisi bulunamadi", "Takim kartlari icin gosterilecek kayit yok.");
+          return;
+        }
+
+        setContent(target, teams.map(function (team) { return renderTeamPageCard(team, payload.squad); }).join(""));
+      })
+      .catch(function () {
+        setEmpty(target, "Takim verisi yuklenemedi", "Takim ve oyuncu veri katmani gecici olarak okunamiyor.");
+      });
+  }
+
   function initTeamDetail(target) {
     if (!target) {
       return;
@@ -3964,14 +4011,8 @@
       "Takım radari yüklenemedi"
     );
 
-    renderInto(
-      document.querySelector('[data-api-target="teams-page"]'),
-      "teams",
-      function (teams) {
-        return sortedByRank(teams).map(renderTeamPageCard).join("");
-      },
-      "Takım verisi yüklenemedi"
-    );
+    initTeamsPage(document.querySelector('[data-api-target="teams-page"]'));
+
 
     renderInto(
       document.querySelector('[data-api-target="standings"]'),

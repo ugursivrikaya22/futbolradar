@@ -58,6 +58,7 @@ const appFeatureMarkers = [
   "playerWatchChecklistHtml",
   "compareInsightCardsHtml",
   "teamPlayerSpotlightHtml",
+  "teamCardLeaderHtml",
   "comparePresetDefinitions",
   "renderLandingInsights",
   "player-signal-actions"
@@ -67,6 +68,7 @@ const cssFeatureMarkers = [
   "watch-check-card",
   "compare-insight-card",
   "team-player-spotlight-card",
+  "team-card-player",
   "compare-preset-card",
   "landing-insight-card",
   "player-signal-actions"

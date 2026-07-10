@@ -3425,6 +3425,46 @@ h1 {
         font-weight: 900;
       }
 
+      .team-card-player {
+        display: grid;
+        gap: 6px;
+        min-width: 0;
+        border: 1px solid rgba(128, 255, 155, 0.14);
+        border-radius: 8px;
+        padding: 12px;
+        background: rgba(128, 255, 155, 0.055);
+      }
+
+      .team-card-player span {
+        color: var(--cyan);
+        font-size: 0.72rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .team-card-player strong {
+        color: var(--text);
+        font-size: 0.92rem;
+      }
+
+      .team-card-player em {
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-style: normal;
+      }
+
+      .team-card-player a {
+        color: var(--green);
+        font-size: 0.8rem;
+        font-weight: 900;
+      }
+
+      .team-card-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
       .squad-player-card {
         display: grid;
         gap: 8px;
