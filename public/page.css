@@ -1529,11 +1529,39 @@ h1 {
         font-size: 0.94rem;
       }
 
+      .player-radar-hero {
+        position: relative;
+      }
+
+      .player-quick-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        margin: -28px 0 18px;
+      }
+
+      .player-quick-links a {
+        display: inline-flex;
+        min-height: 36px;
+        align-items: center;
+        border: 1px solid rgba(128, 255, 155, 0.2);
+        border-radius: 999px;
+        padding: 0 12px;
+        color: var(--green);
+        background: rgba(128, 255, 155, 0.075);
+        font-size: 0.82rem;
+        font-weight: 900;
+      }
+
       .player-summary-metrics {
         display: grid;
         grid-template-columns: repeat(5, minmax(0, 1fr));
         gap: 12px;
-        margin: -28px 0 18px;
+        margin: 0 0 18px;
+      }
+
+      .player-radar-metrics {
+        width: 100%;
       }
 
       .player-summary-metric {
@@ -1569,10 +1597,41 @@ h1 {
         margin-top: 0;
       }
 
+      .player-filter-panel {
+        box-shadow: var(--shadow);
+      }
+
+      .player-trust-note {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+        margin: -4px 0 18px;
+        border: 1px solid rgba(128, 255, 155, 0.16);
+        border-radius: var(--radius);
+        padding: 13px 15px;
+        background: rgba(128, 255, 155, 0.055);
+      }
+
+      .player-trust-note strong {
+        color: var(--green);
+        white-space: nowrap;
+      }
+
+      .player-trust-note span {
+        color: var(--muted);
+        font-size: 0.86rem;
+        line-height: 1.55;
+      }
+
       .player-card,
       .article-card {
         min-height: 218px;
         padding: 18px;
+      }
+
+      .player-card-header {
+        gap: 14px;
       }
 
       .rating {
@@ -1585,6 +1644,15 @@ h1 {
         font-weight: 950;
         text-align: center;
         background: rgba(128, 255, 155, 0.08);
+      }
+
+      .player-rating-badge {
+        min-width: 64px;
+        border: 1px solid rgba(128, 255, 155, 0.32);
+        border-radius: var(--radius);
+        padding: 8px 10px;
+        background: rgba(128, 255, 155, 0.08);
+        text-align: center;
       }
 
       .trend {
@@ -1673,6 +1741,45 @@ h1 {
         flex-wrap: wrap;
         gap: 7px;
         margin: 0 0 12px;
+      }
+
+      .player-status-badge {
+        white-space: nowrap;
+      }
+
+      .player-card-scout-note {
+        display: grid;
+        gap: 6px;
+        margin: 0 0 14px;
+        border: 1px solid rgba(77, 229, 255, 0.14);
+        border-radius: 8px;
+        padding: 10px 12px;
+        background: rgba(77, 229, 255, 0.055);
+      }
+
+      .player-card-scout-note span {
+        color: var(--cyan);
+        font-size: 0.72rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .player-card-scout-note strong {
+        color: var(--text);
+        font-size: 0.88rem;
+      }
+
+      .radar-mini-bars {
+        display: grid;
+        gap: 8px;
+      }
+
+      .radar-mini-bar {
+        min-width: 0;
+      }
+
+      .player-empty-state {
+        grid-column: 1 / -1;
       }
 
       .player-card-meta-grid {
@@ -4120,6 +4227,10 @@ h1 {
         .landing-insights-head p {
           max-width: none;
           text-align: left;
+        }
+
+        .player-trust-note {
+          grid-template-columns: 1fr;
         }
 
         .landing-insights-grid {

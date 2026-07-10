@@ -68,6 +68,8 @@ const appFeatureMarkers = [
   "teamCardLeaderHtml",
   "matchActionPanelHtml",
   "featured-match-actions",
+  "playerScoutingSummary",
+  "playerPositionGroup",
   "comparePresetDefinitions",
   "renderLandingInsights",
   "player-signal-actions"
@@ -82,7 +84,17 @@ const cssFeatureMarkers = [
   "featured-match-actions",
   "compare-preset-card",
   "landing-insight-card",
-  "player-signal-actions"
+  "player-signal-actions",
+  "player-radar-hero",
+  "player-radar-metrics",
+  "player-filter-panel",
+  "player-rating-badge",
+  "radar-mini-bars",
+  "radar-mini-bar",
+  "player-status-badge",
+  "player-empty-state",
+  "player-trust-note",
+  "player-quick-links"
 ];
 const failures = [];
 

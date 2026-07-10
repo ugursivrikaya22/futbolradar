@@ -3,23 +3,23 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Oyuncu Performans Radarları | AI Rating, Gol Tehdidi ve Form Analizi | FutbolRadar</title>
-    <meta name="description" content="FutbolRadar oyuncu performans radarları; AI rating, gol tehdidi, yaratıcılık, pres gücü, xG, xA ve form trendlerine göre futbolcuları analiz eder." />
+    <title>Oyuncu Radar | AI Rating, Form ve Transfer Analizi | FutbolRadar</title>
+    <meta name="description" content="FutbolRadar Oyuncu Radar ile oyunculari AI Rating, form, pozisyon, piyasa degeri, transfer gecmisi ve veri guvenilirligiyle analiz et." />
     <link rel="canonical" href="https://www.futbolradar.com/oyuncu-radari.html" />
     <meta name="robots" content="index,follow" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
-    <meta property="og:title" content="Oyuncu Performans Radarları | AI Rating ve Form Analizi" />
-    <meta property="og:description" content="AI rating, gol tehdidi, yaratıcılık, pres gücü, xG, xA ve form trendlerine göre futbolcuları analiz et." />
+    <meta property="og:title" content="Oyuncu Radar | AI Rating, Form ve Transfer Analizi" />
+    <meta property="og:description" content="Oyunculari AI Rating, pozisyon, form, piyasa degeri, transfer gecmisi ve veri guvenilirligiyle analiz et." />
     <meta property="og:url" content="https://www.futbolradar.com/oyuncu-radari.html" />
     <meta property="og:image" content="https://www.futbolradar.com/assets/og-image.svg" />
     <meta property="og:image:type" content="image/svg+xml" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Oyuncu Performans Radarları | AI Rating ve Form Analizi" />
-    <meta name="twitter:description" content="AI rating, gol tehdidi, yaratıcılık, pres gücü, xG, xA ve form trendlerine göre futbolcuları analiz et." />
+    <meta name="twitter:title" content="Oyuncu Radar | AI Rating, Form ve Transfer Analizi" />
+    <meta name="twitter:description" content="Oyunculari AI Rating, pozisyon, form, piyasa degeri, transfer gecmisi ve veri guvenilirligiyle analiz et." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
     <script type="application/ld+json">
       {
@@ -65,24 +65,32 @@
 </nav>
     </header>
     <main class="container">
-      <section class="hero">
+      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><span>Oyuncu Radar</span></nav>
+      <section class="hero player-radar-hero">
         <div class="hero-row">
           <div>
             <span class="eyebrow">Oyuncu performans radarları</span>
             <h1 data-player-filter-title>Oyuncu Radar</h1>
-            <p class="lead" data-player-filter-lead>FutbolRadar oyuncu performans ekranı; AI rating, gol tehdidi, yaratıcılık, pres gücü, xG, xA ve radar profillerine göre oyuncuları analiz eder.</p>
+            <p class="lead" data-player-filter-lead>Oyunculari AI Rating, pozisyon profili, form, potansiyel, piyasa degeri ve transfer gecmisiyle analiz et.</p>
           </div>
           <span class="hero-meta">Son güncelleme: 07 Temmuz 2026 · 23:55</span>
         </div>
       </section>
-      <section class="player-summary-metrics" data-player-summary-metrics data-state="loading" aria-label="Oyuncu radar ozeti">
+      <section class="player-quick-links" aria-label="Oyuncu Radar hizli aksiyonlar">
+        <a href="./oyuncular/en-iyi-oyuncular.html">En iyi oyuncular</a>
+        <a href="./en-iyi-forvetler.html">En iyi forvetler</a>
+        <a href="./genc-yetenekler.html">Genc yetenekler</a>
+        <a href="./transfer-radari.html">Transfer Radar</a>
+        <a href="./oyuncu-karsilastir.html">2 oyuncu karsilastir</a>
+      </section>
+      <section class="player-summary-metrics player-radar-metrics" data-player-summary-metrics data-state="loading" aria-label="Oyuncu radar ozeti">
         <article class="player-summary-metric">
           <span>Oyuncular</span>
           <strong>...</strong>
           <em>radar hazirlaniyor</em>
         </article>
       </section>
-      <section class="player-toolbar" aria-label="Oyuncu filtreleri">
+      <section class="player-toolbar player-filter-panel" aria-label="Oyuncu filtreleri">
         <div class="filter-group">
           <label for="player-search-filter">Oyuncu ara</label>
           <input id="player-search-filter" type="search" placeholder="Oyuncu, takim, mevki" data-player-search-filter />
@@ -124,6 +132,7 @@
           <label for="player-rating-filter">Overall</label>
           <select id="player-rating-filter" data-player-rating-filter>
             <option value="">Tüm ratingler</option>
+            <option value="75">75+</option>
             <option value="80">80+</option>
             <option value="85">85+</option>
             <option value="90">90+</option>
@@ -178,6 +187,10 @@
       </section>
       <section class="player-filter-note" data-player-filter-description>
         Tüm oyuncular; AI rating, rol metrikleri, son 5 maç formu ve radar skorlarıyla karşılaştırılır.
+      </section>
+      <section class="player-trust-note" aria-label="Oyuncu verisi guven notu">
+        <strong>Veri guveni</strong>
+        <span>Dogrulandi, manuel kontrol, API verisi, tahmini ve guncelleme gerekli durumlari kartlarda ayri badge olarak gosterilir. Canli veri gecici alinamazsa son dogrulanmis kayitlar korunur.</span>
       </section>
       <section class="compare-tray" data-compare-tray hidden aria-label="Karşılaştırma listesi"></section>
       <section class="grid" id="player-radar-page" data-api-section="player-radar" data-api-target="players-page">
