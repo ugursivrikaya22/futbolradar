@@ -27,22 +27,19 @@ function buildDiagnostics(config) {
     provider: config.provider,
     baseUrlConfigured: Boolean(config.baseUrl),
     baseUrlEnvConfigured: Boolean(baseUrlEnvNamesPresent.length),
-    baseUrlEnvNamesPresent,
-    acceptedBaseUrlEnvNames: BASE_URL_ENV_NAMES,
-    apiKeyConfigured: liveProviderConfigured,
-    apiKeyEnvNamesPresent,
-    acceptedApiKeyEnvNames: API_KEY_ENV_NAMES,
+    baseUrlEnvCount: baseUrlEnvNamesPresent.length,
+    credentialConfigured: liveProviderConfigured,
+    credentialEnvCount: apiKeyEnvNamesPresent.length,
     competitionCodeConfigured: Boolean(config.competitionCode),
     competitionCodeEnvConfigured: Boolean(competitionEnvNamesPresent.length),
-    competitionEnvNamesPresent,
-    acceptedCompetitionEnvNames: COMPETITION_CODE_ENV_NAMES,
+    competitionEnvCount: competitionEnvNamesPresent.length,
     defaultCompetitionCode: "TSL",
     liveProviderResources,
     mockOnlyResources: ["teams", "players", "momentum", "signals", "analyses"],
-    missingRequiredEnv: liveProviderConfigured ? [] : ["one accepted API key env name"],
+    missingRequiredEnv: liveProviderConfigured ? [] : ["live credential"],
     nextAction: liveProviderConfigured
       ? "Live provider matches ve standings icin secilir; provider hata verirse frontend statik yedek veriye duser."
-      : "Production ortaminda kabul edilen API key env isimlerinden biri gorunmuyor; matches ve standings Mock API kullanir.",
+      : "Production ortaminda live credential gorunmuyor; matches ve standings Mock API kullanir.",
     vercelEnv: process.env.VERCEL_ENV || "",
     nodeEnv: process.env.NODE_ENV || ""
   };

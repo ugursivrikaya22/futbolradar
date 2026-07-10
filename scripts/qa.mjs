@@ -335,9 +335,13 @@ async function checkApi() {
       expect(["mock", "live-ready"].includes(diagnostics.mode), "health: mode mismatch");
       expect(Boolean(diagnostics.providerSource), "health: missing providerSource");
       expect(Boolean(diagnostics.nextAction), "health: missing nextAction");
-      expect(Array.isArray(diagnostics.acceptedApiKeyEnvNames), "health: missing accepted API key env names");
+      expect(typeof diagnostics.credentialEnvCount === "number", "health: missing credential env count");
+      expect(typeof diagnostics.baseUrlEnvCount === "number", "health: missing base URL env count");
+      expect(typeof diagnostics.competitionEnvCount === "number", "health: missing competition env count");
       expect(Array.isArray(diagnostics.liveProviderResources), "health: missing live provider resources");
       expect(!JSON.stringify(diagnostics).includes("X-Auth-Token"), "health: should not expose auth header markers");
+      expect(!JSON.stringify(diagnostics).includes("FOOTBALL_API_KEY"), "health: should not expose API key env names");
+      expect(!JSON.stringify(diagnostics).includes("apiKey"), "health: should not expose API key field names");
     }
   }
 
