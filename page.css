@@ -1136,6 +1136,191 @@ h1 {
         white-space: nowrap;
       }
 
+      .traffic-hub {
+        padding-top: 24px;
+      }
+
+      .traffic-hub-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 330px;
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      .traffic-hub-head,
+      .traffic-routes,
+      .traffic-card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.064), rgba(255, 255, 255, 0.026)),
+          var(--panel);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .traffic-hub-head {
+        grid-column: 1 / -1;
+        display: grid;
+        gap: 10px;
+        padding: 22px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .traffic-hub-head::after {
+        content: "";
+        position: absolute;
+        right: -120px;
+        top: -120px;
+        width: 280px;
+        height: 280px;
+        border: 1px solid rgba(77, 229, 255, 0.2);
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(77, 229, 255, 0.15), transparent 66%);
+        pointer-events: none;
+      }
+
+      .traffic-hub-head h2 {
+        max-width: 820px;
+        margin: 0;
+        font-size: clamp(1.9rem, 3vw, 3.1rem);
+        line-height: 1.02;
+      }
+
+      .traffic-hub-head p {
+        max-width: 720px;
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .traffic-hub-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .traffic-card {
+        min-height: 202px;
+        display: grid;
+        align-content: space-between;
+        gap: 14px;
+        padding: 18px;
+        color: var(--text);
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          background 180ms ease;
+      }
+
+      .traffic-card:hover,
+      .traffic-card:focus-visible,
+      .traffic-route-chip:hover,
+      .traffic-route-chip:focus-visible {
+        transform: translateY(-2px);
+        border-color: rgba(128, 255, 155, 0.42);
+        outline: 0;
+      }
+
+      .traffic-card.is-live {
+        background:
+          linear-gradient(145deg, rgba(128, 255, 155, 0.13), rgba(77, 229, 255, 0.07)),
+          var(--panel);
+      }
+
+      .traffic-card-kicker,
+      .traffic-routes-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--cyan);
+        font-size: 0.74rem;
+        font-weight: 850;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .live-pulse {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--green);
+        box-shadow: 0 0 0 0 rgba(128, 255, 155, 0.65);
+        animation: livePulse 1.7s ease-out infinite;
+      }
+
+      @keyframes livePulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(128, 255, 155, 0.55);
+        }
+        70% {
+          box-shadow: 0 0 0 11px rgba(128, 255, 155, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(128, 255, 155, 0);
+        }
+      }
+
+      .traffic-card strong {
+        font-size: 1.2rem;
+        line-height: 1.1;
+      }
+
+      .traffic-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .traffic-card b {
+        display: inline-flex;
+        width: fit-content;
+        min-height: 32px;
+        align-items: center;
+        border: 1px solid rgba(128, 255, 155, 0.28);
+        border-radius: 999px;
+        padding: 0 11px;
+        color: var(--green);
+        font-size: 0.82rem;
+      }
+
+      .traffic-routes {
+        display: grid;
+        gap: 18px;
+        align-content: start;
+        padding: 18px;
+      }
+
+      .traffic-routes strong {
+        display: block;
+        margin-top: 9px;
+        font-size: 1.18rem;
+        line-height: 1.12;
+      }
+
+      .traffic-route-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .traffic-route-chip {
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        padding: 0 11px;
+        background: rgba(255, 255, 255, 0.044);
+        color: var(--soft);
+        font-size: 0.82rem;
+        font-weight: 760;
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          color 180ms ease;
+      }
+
       .matches-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4401,12 +4586,14 @@ h1 {
         }
 
         .hero,
-        .radar-layout {
+        .radar-layout,
+        .traffic-hub-shell {
           grid-template-columns: 1fr;
         }
 
         .matches-grid,
-        .signals-grid {
+        .signals-grid,
+        .traffic-hub-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
@@ -4651,6 +4838,7 @@ h1 {
         .prediction-grid,
         .matches-grid,
         .signals-grid,
+        .traffic-hub-grid,
         .teams-grid,
         .players-grid,
         .articles-grid,
@@ -4658,6 +4846,16 @@ h1 {
         .fixture-team-grid,
         .source-strip {
           grid-template-columns: 1fr;
+        }
+
+        .traffic-hub-head,
+        .traffic-card,
+        .traffic-routes {
+          padding: 16px;
+        }
+
+        .traffic-card {
+          min-height: 176px;
         }
 
         .fixture-round-head,

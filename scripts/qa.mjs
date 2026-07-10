@@ -118,7 +118,11 @@ const cssFeatureMarkers = [
   "player-status-badge",
   "player-empty-state",
   "player-trust-note",
-  "player-quick-links"
+  "player-quick-links",
+  "traffic-hub",
+  "traffic-card",
+  "traffic-route-chip",
+  "live-pulse"
 ];
 const failures = [];
 
@@ -330,6 +334,12 @@ function checkSeoAndLinks() {
     if (playerProfilePages.includes(page)) {
       expect(html.includes("static-profile-links"), `${page}: missing static profile comparison links`);
       expect(html.includes("../karsilastirma/"), `${page}: missing static comparison page href`);
+    }
+
+    if (page === "index.html") {
+      expect(html.includes("traffic-hub"), `${page}: missing live traffic hub`);
+      expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison traffic link`);
+      expect(html.includes("super-lig-fikstur.html"), `${page}: missing fixture traffic link`);
     }
 
     if (page === "oyuncu-radari.html") {

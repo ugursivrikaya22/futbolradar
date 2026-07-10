@@ -1275,6 +1275,7 @@
       '<div class="match-empty-actions">' +
       '<a class="detail-link" href="./super-lig-fikstur.html">Super Lig fiksturunu ac</a>' +
       '<a class="detail-link ghost" href="./puan-durumu.html">Puan durumuna git</a>' +
+      '<a class="detail-link ghost" href="./oyuncu-radari.html">Oyuncu radarini ac</a>' +
       "</div>" +
       "</article>"
     );

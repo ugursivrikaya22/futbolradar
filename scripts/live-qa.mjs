@@ -115,7 +115,11 @@ const cssFeatureMarkers = [
   "player-status-badge",
   "player-empty-state",
   "player-trust-note",
-  "player-quick-links"
+  "player-quick-links",
+  "traffic-hub",
+  "traffic-card",
+  "traffic-route-chip",
+  "live-pulse"
 ];
 const suspiciousCodes = new Set([0x00c2, 0x00c3, 0x00c4, 0x00c5]);
 const failures = [];

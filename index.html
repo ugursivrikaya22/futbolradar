@@ -96,16 +96,16 @@
             </div>
             <div class="hero-metrics" aria-label="FutbolRadar özet metrikleri">
               <div class="metric-tile">
-                <strong>28</strong>
-                <span>Bugün izlenen maç</span>
+                <strong>Canlı</strong>
+                <span>Maç, fikstür ve puan durumu merkezi</span>
               </div>
               <div class="metric-tile">
-                <strong>%74</strong>
-                <span>Momentum eşleşme oranı</span>
+                <strong>6</strong>
+                <span>Oyuncu radar profili</span>
               </div>
               <div class="metric-tile">
-                <strong>12 dk</strong>
-                <span>Sinyal yenileme aralığı</span>
+                <strong>20+</strong>
+                <span>Analiz, kıyas ve takım rotası</span>
               </div>
             </div>
           </div>
@@ -116,6 +116,72 @@
               <span>JSON veri katmani okunuyor.</span>
             </div>
           </article>
+        </section>
+
+        <section class="container section traffic-hub" id="canli-futbol-merkezi" aria-labelledby="traffic-hub-title">
+          <div class="traffic-hub-shell">
+            <div class="traffic-hub-head">
+              <span class="section-kicker">Canlı Futbol Merkezi</span>
+              <h2 id="traffic-hub-title">Maç, fikstür, puan durumu ve oyuncu radarına tek ekrandan gir.</h2>
+              <p>FutbolRadar ana akışı; bugün maç yoksa bile seni sezon fikstürü, takım formu, oyuncu kıyasları ve radar analizlerine hızlı taşır.</p>
+            </div>
+
+            <div class="traffic-hub-grid" aria-label="FutbolRadar hızlı trafik rotaları">
+              <a class="traffic-card is-live" href="./bugunun-maclari.html">
+                <span class="traffic-card-kicker"><i class="live-pulse" aria-hidden="true"></i> Maç Merkezi</span>
+                <strong>Bugünkü Maçlar</strong>
+                <p>Günlük maç listesi, AI tahmin, gol potansiyeli ve risk kartları.</p>
+                <b>Maçları aç</b>
+              </a>
+              <a class="traffic-card" href="./canli-skor.html">
+                <span class="traffic-card-kicker">Skor Akışı</span>
+                <strong>Canlı Skor</strong>
+                <p>Aktif maç geldiğinde skor, tempo ve maç içi sinyal akışı.</p>
+                <b>Skor ekranı</b>
+              </a>
+              <a class="traffic-card" href="./super-lig-fikstur.html">
+                <span class="traffic-card-kicker">Sezon Takvimi</span>
+                <strong>Süper Lig Fikstürü</strong>
+                <p>Hafta hafta maç programı, takım rotaları ve maç detay geçişleri.</p>
+                <b>Fikstürü gör</b>
+              </a>
+              <a class="traffic-card" href="./puan-durumu.html">
+                <span class="traffic-card-kicker">Lig Tablosu</span>
+                <strong>Puan Durumu</strong>
+                <p>Sıralama, form, momentum ve takım radarlarına hızlı geçiş.</p>
+                <b>Tabloyu aç</b>
+              </a>
+              <a class="traffic-card" href="./oyuncu-karsilastirmalari.html">
+                <span class="traffic-card-kicker">Popüler Kıyas</span>
+                <strong>Oyuncu Karşılaştırmaları</strong>
+                <p>Derbi, gol tehdidi, genç yetenek ve rol bazlı kıyas sayfaları.</p>
+                <b>Kıyasları incele</b>
+              </a>
+              <a class="traffic-card" href="./transfer-radari.html">
+                <span class="traffic-card-kicker">Transfer Akışı</span>
+                <strong>Transfer Radar</strong>
+                <p>Güncel takım, eski kulüp, transfer geçmişi ve veri güvenilirliği.</p>
+                <b>Transferleri aç</b>
+              </a>
+            </div>
+
+            <aside class="traffic-routes" aria-label="Popüler FutbolRadar rotaları">
+              <div>
+                <span class="traffic-routes-label">Popüler aramalar</span>
+                <strong>Tek tıkla derin sayfalara geç</strong>
+              </div>
+              <div class="traffic-route-list">
+                <a class="traffic-route-chip" href="./en-iyi-super-lig-oyunculari.html">En iyi oyuncular</a>
+                <a class="traffic-route-chip" href="./en-iyi-forvetler.html">Forvet radar</a>
+                <a class="traffic-route-chip" href="./oyuncu-radari.html?filter=gol-tehdidi">Gol tehdidi</a>
+                <a class="traffic-route-chip" href="./oyuncu-radari.html?filter=yukselen">Yükselen oyuncular</a>
+                <a class="traffic-route-chip" href="./galatasaray-oyuncu-radari.html">Galatasaray radar</a>
+                <a class="traffic-route-chip" href="./fenerbahce-oyuncu-radari.html">Fenerbahçe radar</a>
+                <a class="traffic-route-chip" href="./momentum.html">Momentum sıralaması</a>
+                <a class="traffic-route-chip" href="./analizler.html">Analizler</a>
+              </div>
+            </aside>
+          </div>
         </section>
 
         <section class="container section section-matches" id="bugunun-maclari-preview" data-api-section="today-matches">
