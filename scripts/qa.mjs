@@ -94,12 +94,11 @@ function apiFunctionFiles() {
 
 function checkVercelFunctionLimit() {
   const functionFiles = apiFunctionFiles();
-  if (functionFiles.length > VERCEL_HOBBY_FUNCTION_LIMIT) {
-    console.warn(
-      `Vercel Hobby function warning: ${functionFiles.length}/${VERCEL_HOBBY_FUNCTION_LIMIT} API functions detected. ` +
-      "Move helper/provider files outside api/ or route new API handlers through api/[...route].js."
-    );
-  }
+  expect(
+    functionFiles.length <= VERCEL_HOBBY_FUNCTION_LIMIT,
+    `Vercel Hobby function limit exceeded: ${functionFiles.length}/${VERCEL_HOBBY_FUNCTION_LIMIT}. ` +
+    "Move helper/provider files outside api/ or route new API handlers through api/[...route].js."
+  );
 
   const nestedApiFiles = functionFiles.filter((file) => path.dirname(file) !== "api");
   if (nestedApiFiles.length) {
