@@ -119,7 +119,11 @@ const cssFeatureMarkers = [
   "traffic-hub",
   "traffic-card",
   "traffic-route-chip",
-  "live-pulse"
+  "live-pulse",
+  "traffic-deep-links",
+  "traffic-player-card",
+  "traffic-mini-link",
+  "traffic-fixture-note"
 ];
 const suspiciousCodes = new Set([0x00c2, 0x00c3, 0x00c4, 0x00c5]);
 const failures = [];

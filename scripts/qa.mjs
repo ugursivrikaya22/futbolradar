@@ -122,7 +122,11 @@ const cssFeatureMarkers = [
   "traffic-hub",
   "traffic-card",
   "traffic-route-chip",
-  "live-pulse"
+  "live-pulse",
+  "traffic-deep-links",
+  "traffic-player-card",
+  "traffic-mini-link",
+  "traffic-fixture-note"
 ];
 const failures = [];
 
@@ -338,8 +342,10 @@ function checkSeoAndLinks() {
 
     if (page === "index.html") {
       expect(html.includes("traffic-hub"), `${page}: missing live traffic hub`);
+      expect(html.includes("traffic-deep-links"), `${page}: missing deep traffic links`);
       expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison traffic link`);
       expect(html.includes("super-lig-fikstur.html"), `${page}: missing fixture traffic link`);
+      expect(html.includes("karsilastirma/kerem-akturkoglu-vs-mauro-icardi.html"), `${page}: missing static comparison route`);
     }
 
     if (page === "oyuncu-radari.html") {
