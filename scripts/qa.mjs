@@ -60,6 +60,28 @@ const pages = [
 const endpoints = ["matches", "standings", "teams", "players", "player-detail", "player-compare", "player-rankings", "transfers", "squad", "match-detail", "momentum", "signals", "analyses", "health"];
 const skipDirs = new Set([".git", ".agents", ".codex", "node_modules", "work", "outputs"]);
 const VERCEL_HOBBY_FUNCTION_LIMIT = 12;
+const appFeatureMarkers = [
+  "scoutingSnapshotHtml",
+  "playerWatchChecklistHtml",
+  "compareInsightCardsHtml",
+  "teamPlayerSpotlightHtml",
+  "teamCardLeaderHtml",
+  "matchActionPanelHtml",
+  "comparePresetDefinitions",
+  "renderLandingInsights",
+  "player-signal-actions"
+];
+const cssFeatureMarkers = [
+  "scouting-summary-grid",
+  "watch-check-card",
+  "compare-insight-card",
+  "team-player-spotlight-card",
+  "team-card-player",
+  "match-action-card",
+  "compare-preset-card",
+  "landing-insight-card",
+  "player-signal-actions"
+];
 const failures = [];
 
 function walk(dir, predicate, out = []) {
@@ -123,6 +145,19 @@ function checkPublicMirrors() {
     const rootContent = fs.readFileSync(rootFile, "utf8");
     const publicContent = fs.readFileSync(publicFile, "utf8");
     expect(rootContent === publicContent, `public/${file} must match ${file} for Vercel public output`);
+  }
+}
+
+function checkFeatureMarkers() {
+  const appJs = fs.readFileSync(path.join(root, "app.js"), "utf8");
+  const pageCss = fs.readFileSync(path.join(root, "page.css"), "utf8");
+
+  for (const marker of appFeatureMarkers) {
+    expect(appJs.includes(marker), `app.js: missing feature marker ${marker}`);
+  }
+
+  for (const marker of cssFeatureMarkers) {
+    expect(pageCss.includes(marker), `page.css: missing feature marker ${marker}`);
   }
 }
 
@@ -422,6 +457,7 @@ async function checkApi() {
 
 checkVercelFunctionLimit();
 checkPublicMirrors();
+checkFeatureMarkers();
 checkJavaScriptSyntax();
 checkJson();
 checkSeoAndLinks();
