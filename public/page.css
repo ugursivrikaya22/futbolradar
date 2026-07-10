@@ -1887,6 +1887,104 @@ h1 {
         font-weight: 800;
       }
 
+      .landing-insights {
+        display: grid;
+        gap: 14px;
+        margin: -18px 0 20px;
+      }
+
+      .landing-insights-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: end;
+      }
+
+      .landing-insights-head span {
+        display: block;
+        color: var(--green);
+        font-size: 0.76rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .landing-insights-head strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 1.08rem;
+      }
+
+      .landing-insights-head p {
+        max-width: 460px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+        text-align: right;
+      }
+
+      .landing-insights-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .landing-insight-card {
+        min-height: 156px;
+        border: 1px solid rgba(77, 229, 255, 0.14);
+        border-radius: var(--radius);
+        padding: 15px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.024)),
+          rgba(255, 255, 255, 0.035);
+        box-shadow: 0 16px 45px rgba(0, 0, 0, 0.18);
+      }
+
+      .landing-insight-card.action {
+        border-color: rgba(128, 255, 155, 0.24);
+        background:
+          linear-gradient(145deg, rgba(128, 255, 155, 0.09), rgba(77, 229, 255, 0.045)),
+          rgba(255, 255, 255, 0.035);
+      }
+
+      .landing-insight-card span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .landing-insight-card strong {
+        display: block;
+        margin: 9px 0 6px;
+        font-size: 1.02rem;
+        line-height: 1.2;
+      }
+
+      .landing-insight-card b {
+        display: inline-flex;
+        border: 1px solid rgba(128, 255, 155, 0.2);
+        border-radius: 999px;
+        padding: 4px 8px;
+        color: var(--green);
+        background: rgba(128, 255, 155, 0.08);
+        font-size: 0.75rem;
+      }
+
+      .landing-insight-card p {
+        margin: 10px 0 0;
+        color: #c7d6d4;
+        font-size: 0.84rem;
+      }
+
+      .landing-insight-card a {
+        display: inline-flex;
+        margin-top: 12px;
+        color: var(--cyan);
+        font-size: 0.82rem;
+        font-weight: 900;
+      }
+
       .fixture-overview {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -3457,6 +3555,10 @@ h1 {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .landing-insights-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         .fixture-overview,
         .fixture-team-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3660,6 +3762,20 @@ h1 {
         .compare-presets-head p {
           max-width: none;
           text-align: left;
+        }
+
+        .landing-insights-head {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .landing-insights-head p {
+          max-width: none;
+          text-align: left;
+        }
+
+        .landing-insights-grid {
+          grid-template-columns: 1fr;
         }
 
         .compare-preset-grid {

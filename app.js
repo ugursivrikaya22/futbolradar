@@ -2770,6 +2770,85 @@
       });
   }
 
+  function landingFocusConfig(slug) {
+    var map = {
+      forvetler: { label: "Gol tehdidi", getter: function (player) { return playerScore(player, "threatScore"); }, note: "Ceza sahasi etkisi ve bitiricilik" },
+      "en-iyi-forvetler": { label: "Gol tehdidi", getter: function (player) { return playerScore(player, "threatScore"); }, note: "Ceza sahasi etkisi ve bitiricilik" },
+      kaleciler: { label: "Form", getter: function (player) { return radarMetric(player, "form"); }, note: "Kurtaris formu ve sureklilik" },
+      "en-iyi-kaleciler": { label: "Form", getter: function (player) { return radarMetric(player, "form"); }, note: "Kurtaris formu ve sureklilik" },
+      defanslar: { label: "Savunma", getter: function (player) { return radarMetric(player, "defense"); }, note: "Pozisyon alma ve top kazanma" },
+      "en-iyi-defanslar": { label: "Savunma", getter: function (player) { return radarMetric(player, "defense"); }, note: "Pozisyon alma ve top kazanma" },
+      "orta-sahalar": { label: "Yaraticilik", getter: function (player) { return playerScore(player, "creativityScore"); }, note: "Pas, xA ve oyun baglantisi" },
+      "en-iyi-orta-sahalar": { label: "Yaraticilik", getter: function (player) { return playerScore(player, "creativityScore"); }, note: "Pas, xA ve oyun baglantisi" },
+      "genc-yetenekler": { label: "Potansiyel", getter: function (player) { return radarMetric(player, "potential"); }, note: "Yas, tavan ve form ivmesi" },
+      "yukselen-oyuncular": { label: "Form ivmesi", getter: function (player) { return Number(player.formChange || 0) * 10 + radarMetric(player, "form"); }, note: "Son donem yukselis sinyali" },
+      "en-iyi-oyuncular": { label: "Overall", getter: playerAiScore, note: "Genel rating ve radar etkisi" },
+      "en-iyi-super-lig-oyunculari": { label: "Overall", getter: playerAiScore, note: "Super Lig genel rating liderleri" }
+    };
+
+    return map[slug] || map["en-iyi-oyuncular"];
+  }
+
+  function bestByMetric(players, getter) {
+    return (players || []).slice().sort(function (a, b) {
+      return Number(getter(b) || 0) - Number(getter(a) || 0);
+    })[0] || null;
+  }
+
+  function landingInsightCard(label, player, value, text, href) {
+    if (!player) {
+      return "";
+    }
+
+    return (
+      '<article class="landing-insight-card">' +
+      '<span>' + escapeHtml(label) + '</span>' +
+      '<strong>' + escapeHtml(player.name) + '</strong>' +
+      '<b>' + escapeHtml(value) + '</b>' +
+      '<p>' + escapeHtml(text) + '</p>' +
+      (href ? '<a href="' + escapeHtml(href) + '">Incele</a>' : "") +
+      "</article>"
+    );
+  }
+
+  function renderLandingInsights(slug, config, players) {
+    var filtered = Array.isArray(players) ? players : [];
+    var focus = landingFocusConfig(slug);
+    var overallLeader = bestByMetric(filtered, playerAiScore);
+    var focusLeader = bestByMetric(filtered, focus.getter);
+    var rising = bestByMetric(filtered, function (player) { return Number(player.formChange || 0) * 10 + radarMetric(player, "form"); });
+    var compareIds = filtered.slice(0, 3).map(function (player) { return player.id; });
+    var compareHref = compareIds.length >= 2 ? playerCompareHref("?players=" + compareIds.map(encodeURIComponent).join(",")) : "";
+    var cards = [
+      landingInsightCard("Segment lideri", overallLeader, "AI " + displayValue(overallLeader && playerAiScore(overallLeader)), "Overall rating ve radar etkisinde one cikiyor.", overallLeader && playerProfileHref(overallLeader.id)),
+      landingInsightCard(focus.label + " lideri", focusLeader, displayValue(focusLeader && focus.getter(focusLeader)), focus.note, focusLeader && playerProfileHref(focusLeader.id)),
+      landingInsightCard("Yukselen sinyal", rising, "Form " + displayValue(rising && radarMetric(rising, "form")), "Form ivmesi ve son mac etkisi takip edilmeli.", rising && playerProfileHref(rising.id))
+    ].filter(Boolean);
+
+    return (
+      '<section class="landing-insights" data-landing-insights>' +
+      '<div class="landing-insights-head"><div><span>Kimler one cikiyor?</span><strong>' + escapeHtml(config.title) + ' radar ozeti</strong></div><p>Bu blok segmentteki oyunculari overall, odak metrik ve form ivmesine gore hizli okutur.</p></div>' +
+      '<div class="landing-insights-grid">' + cards.join("") +
+      (compareHref ? '<article class="landing-insight-card action"><span>Hazir kiyas</span><strong>Ilk 3 oyuncuyu yan yana ac</strong><b>' + escapeHtml(compareIds.length) + ' oyuncu</b><p>Radar grafigi, rating farklari ve metrik liderlerini tek ekranda gor.</p><a href="' + escapeHtml(compareHref) + '">Karsilastir</a></article>' : "") +
+      "</div></section>"
+    );
+  }
+
+  function updateLandingInsights(target, slug, config, players) {
+    if (!target || !target.parentNode) {
+      return;
+    }
+
+    var existing = target.parentNode.querySelector("[data-landing-insights]");
+    var html = renderLandingInsights(slug, config, players);
+    if (existing) {
+      existing.outerHTML = html;
+      return;
+    }
+
+    target.insertAdjacentHTML("beforebegin", html);
+  }
+
   function initPlayerSeoLanding(target) {
     if (!target) {
       return;
@@ -2801,6 +2880,7 @@
           return;
         }
 
+        updateLandingInsights(target, slug, config, filtered);
         setContent(target, filtered.map(renderPlayerPageCard).join(""));
       })
       .catch(function () {
