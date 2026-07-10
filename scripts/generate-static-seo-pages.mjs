@@ -295,6 +295,14 @@ function landingControlsHtml(page) {
       <section class="transfer-radar-summary" data-transfer-summary aria-label="Transfer radar ozeti"></section>`;
 }
 
+function landingDescriptionHtml(page) {
+  if (page.landing !== "transfer-radari") {
+    return "";
+  }
+
+  return `\n      <section class="player-filter-note" data-transfer-filter-description>${page.lead}</section>`;
+}
+
 function pageHtml(page) {
   const url = `${domain}/${page.file}`;
   return `<!doctype html>
@@ -337,7 +345,7 @@ ${nav}
           <span class="hero-meta">Veriler periyodik olarak güncellenir</span>
         </div>
       </section>
-      ${page.landing ? `<section class="grid three">${cardsHtml(page.cards)}</section>${landingControlsHtml(page)}
+      ${page.landing ? `<section class="grid three">${cardsHtml(page.cards)}</section>${landingControlsHtml(page)}${landingDescriptionHtml(page)}
       <section class="player-filter-note"><span data-landing-count>Oyuncu listesi hazirlaniyor</span></section>
       <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${page.landing}">
         <article class="data-empty" data-card="empty-state"><strong>Oyuncular yukleniyor</strong><span>Scouting kartlari veri katmanindan okunuyor.</span></article>

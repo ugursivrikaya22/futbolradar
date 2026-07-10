@@ -2142,6 +2142,48 @@ h1 {
         font-size: 0.9rem;
       }
 
+      .comparison-share-panel {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 14px;
+        align-items: center;
+        border: 1px solid rgba(77, 229, 255, 0.18);
+        border-radius: var(--radius);
+        padding: 14px;
+        background:
+          linear-gradient(90deg, rgba(77, 229, 255, 0.08), rgba(128, 255, 155, 0.045)),
+          rgba(255, 255, 255, 0.035);
+      }
+
+      .comparison-share-panel span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .comparison-share-panel strong {
+        display: block;
+        margin: 5px 0;
+        color: var(--green);
+        font-size: 1.06rem;
+      }
+
+      .comparison-share-panel p {
+        margin: 0;
+        color: #c5d5d2;
+        font-size: 0.88rem;
+      }
+
+      .compare-share-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
       .player-profile-shell {
         display: grid;
         gap: 14px;
@@ -2889,6 +2931,17 @@ h1 {
         font-weight: 850;
       }
 
+      .similar-player-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 8px;
+      }
+
+      .similar-player-actions a {
+        margin-top: 0;
+      }
+
       .radar-chart-placeholder {
         grid-column: 1 / -1;
         display: grid;
@@ -3046,6 +3099,14 @@ h1 {
 
         .compare-player-row {
           grid-template-columns: 1fr;
+        }
+
+        .comparison-share-panel {
+          grid-template-columns: 1fr;
+        }
+
+        .compare-share-actions {
+          justify-content: flex-start;
         }
 
         .profile-grid {

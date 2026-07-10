@@ -1522,6 +1522,28 @@
     }
   }
 
+  function comparisonSharePanelHtml(players) {
+    var selected = Array.isArray(players) ? players.filter(Boolean).slice(0, 3) : [];
+    if (selected.length < 2) {
+      return "";
+    }
+
+    var names = selected.map(function (player) { return player.name; }).join(" vs ");
+    var href = "/oyuncu-karsilastir.html?players=" + selected.map(function (player) {
+      return encodeURIComponent(player.id);
+    }).join(",");
+
+    return (
+      '<section class="comparison-share-panel">' +
+      '<div><span>Paylasilabilir karsilastirma</span><strong>' + escapeHtml(names) + "</strong><p>Bu link; secili oyunculari, radar grafigini ve metrik satirlarini ayni ekranda acar.</p></div>" +
+      '<div class="compare-share-actions">' +
+      '<a class="detail-link" href="' + escapeHtml(href) + '">Kanonik link</a>' +
+      '<button class="detail-link ghost" type="button" data-share-url="' + escapeHtml(href) + '" data-share-label="Karsilastirma linkini kopyala">Linki kopyala</button>' +
+      "</div>" +
+      "</section>"
+    );
+  }
+
   function similarPlayerScore(player, candidate) {
     var score = 0;
 
@@ -1566,7 +1588,10 @@
           "<span>" + escapeHtml(team) + " · " + escapeHtml(candidate.position) + "</span>" +
           "<strong>" + escapeHtml(candidate.name) + "</strong>" +
           "<b>AI " + escapeHtml(displayValue(candidate.aiRating || candidate.rating)) + "</b>" +
-          '<a href="/oyuncular/' + escapeHtml(candidate.id) + '.html">Profili aç</a>' +
+          '<div class="similar-player-actions">' +
+          '<a href="/oyuncular/' + escapeHtml(candidate.id) + '.html">Profili ac</a>' +
+          '<a href="/oyuncu-karsilastir.html?players=' + escapeHtml(player.id) + "," + escapeHtml(candidate.id) + '">Karsilastir</a>' +
+          "</div>" +
           "</article>"
         );
       }).join("") +
@@ -2403,6 +2428,74 @@
     return playerHasTransferHistory(player);
   }
 
+  var TRANSFER_FILTER_COPY = {
+    all: {
+      title: "Transfer Radari",
+      label: "Tum transferler",
+      description: "Oyuncularin guncel takim, eski kulup, son transfer hareketi, piyasa degeri ve veri guvenilirligi birlikte izlenir."
+    },
+    "son-hareket": {
+      title: "Son Transfer Hareketleri",
+      label: "Son hareket",
+      description: "Transfer gecmisinde son hareketi bulunan oyuncular; tarih, eski takim ve yeni takim ayrimiyla listelenir."
+    },
+    "eski-kulup": {
+      title: "Eski Kulup Ayrimi Olan Oyuncular",
+      label: "Eski kulup ayrimi",
+      description: "Eski kulup bilgisi guncel takimdan ayrilan oyuncular, transfer yanlislarini azaltmak icin one cikarilir."
+    },
+    "riskli-transfer": {
+      title: "Riskli Transfer Takibi",
+      label: "Riskli takip",
+      description: "Manuel kontrol veya guncelleme gerektiren transfer kayitlari, veri guvenilirligi acisindan takip listesine alinir."
+    },
+    "yukselen-deger": {
+      title: "Yukselen Deger Transfer Radari",
+      label: "Yukselen deger",
+      description: "Yuksek piyasa degeri, potansiyel rating ve form artisi tasiyan oyuncular transfer radari icinde one cikarilir."
+    }
+  };
+
+  function normalizeTransferFilter(filter) {
+    return TRANSFER_FILTER_COPY[filter] ? filter : "all";
+  }
+
+  function updateTransferRadarMeta(state, count) {
+    var filter = normalizeTransferFilter(state && state.filter);
+    var copy = TRANSFER_FILTER_COPY[filter] || TRANSFER_FILTER_COPY.all;
+    var team = state && state.team ? " | " + state.team : "";
+    var status = state && state.status ? " | " + statusLabel(state.status, "data") : "";
+    var title = copy.title + team + status + " | FutbolRadar";
+    var description = copy.description + " Listelenen kayit: " + displayValue(count) + ".";
+    var h1 = document.querySelector(".hero h1");
+    var lead = document.querySelector(".hero .lead");
+    var meta = document.querySelector(".hero-meta");
+    var filterDescription = document.querySelector("[data-transfer-filter-description]");
+
+    document.title = title;
+    setMetaContent('meta[name="description"]', description);
+    setMetaContent('meta[property="og:title"]', title);
+    setMetaContent('meta[property="og:description"]', description);
+    setMetaContent('meta[name="twitter:title"]', title);
+    setMetaContent('meta[name="twitter:description"]', description);
+
+    if (h1) {
+      h1.textContent = copy.title;
+    }
+
+    if (lead) {
+      lead.textContent = copy.description;
+    }
+
+    if (meta) {
+      meta.textContent = copy.label + " - " + displayValue(count) + " kayit";
+    }
+
+    if (filterDescription) {
+      filterDescription.textContent = copy.description;
+    }
+  }
+
   function renderTransferRadarStats(players) {
     var list = Array.isArray(players) ? players : [];
     var risk = list.filter(playerNeedsDataRefresh).length;
@@ -2449,7 +2542,7 @@
     var summary = document.querySelector("[data-transfer-summary]");
     var query = new URLSearchParams(window.location.search);
     var state = {
-      filter: query.get("filter") || "all",
+      filter: normalizeTransferFilter(query.get("filter") || "all"),
       team: query.get("team") || "",
       status: query.get("status") || "",
       sort: query.get("sort") || "updated"
@@ -2506,6 +2599,7 @@
             count.textContent = filtered.length + " transfer kaydi listeleniyor";
           }
 
+          updateTransferRadarMeta(state, filtered.length);
           syncButtons();
           updateQuery();
 
@@ -2519,7 +2613,7 @@
 
         filterButtons.forEach(function (button) {
           button.addEventListener("click", function () {
-            state.filter = button.getAttribute("data-transfer-filter") || "all";
+            state.filter = normalizeTransferFilter(button.getAttribute("data-transfer-filter") || "all");
             render();
           });
         });
@@ -2577,6 +2671,26 @@
 
   function initPlayerSharing() {
     document.addEventListener("click", function (event) {
+      var urlButton = event.target.closest("[data-share-url]");
+      if (urlButton) {
+        var sharePath = urlButton.getAttribute("data-share-url") || window.location.pathname + window.location.search;
+        var shareUrl = new URL(sharePath, window.location.origin).toString();
+        var shareTitle = urlButton.getAttribute("data-share-label") || document.title || "FutbolRadar";
+
+        if (navigator.share) {
+          navigator.share({ title: shareTitle, url: shareUrl }).catch(function () {});
+        } else if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(shareUrl).then(function () {
+            var previous = urlButton.textContent;
+            urlButton.textContent = "Link kopyalandi";
+            window.setTimeout(function () {
+              urlButton.textContent = previous;
+            }, 1600);
+          }).catch(function () {});
+        }
+        return;
+      }
+
       var button = event.target.closest("[data-share-player]");
       if (!button) {
         return;
@@ -2820,6 +2934,7 @@
 
     return (
       '<article class="compare-card compare-card-multi">' +
+      comparisonSharePanelHtml(selected) +
       '<div class="compare-player-row">' + selected.map(comparePlayerSummaryHtml).join("") + "</div>" +
       compareWinnerSummaryHtml(selected) +
       compareMultiRowHtml("Overall", selected, function (player) { return player.overallRating || player.aiRating || player.rating; }) +
