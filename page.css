@@ -3280,6 +3280,51 @@ h1 {
         margin-top: 14px;
       }
 
+      .static-profile-links {
+        display: grid;
+        gap: 12px;
+        margin: 18px 0;
+        border: 1px solid rgba(77, 229, 255, 0.14);
+        border-radius: var(--radius);
+        padding: 16px;
+        background:
+          linear-gradient(180deg, rgba(77, 229, 255, 0.052), rgba(128, 255, 155, 0.024)),
+          var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .static-profile-link-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .static-profile-link-card {
+        display: grid;
+        min-width: 0;
+        gap: 7px;
+        border: 1px solid rgba(128, 255, 155, 0.14);
+        border-radius: var(--radius);
+        padding: 12px;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.035);
+      }
+
+      .static-profile-link-card span,
+      .static-profile-link-card em {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-style: normal;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .static-profile-link-card strong {
+        color: var(--green);
+        font-size: 0.92rem;
+        line-height: 1.24;
+      }
+
       .profile-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4134,6 +4179,10 @@ h1 {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .static-profile-link-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         .compare-guide {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
@@ -4175,6 +4224,7 @@ h1 {
         .scouting-summary-grid,
         .watch-checklist-grid,
         .profile-compare-grid,
+        .static-profile-link-grid,
         .team-radar-snapshot,
         .team-signal-grid,
         .match-radar-snapshot,

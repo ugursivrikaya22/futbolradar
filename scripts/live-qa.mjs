@@ -77,6 +77,8 @@ const cssFeatureMarkers = [
   "watch-check-card",
   "profile-compare-card",
   "profile-compare-grid",
+  "static-profile-links",
+  "static-profile-link-card",
   "compare-insight-card",
   "team-player-spotlight-card",
   "team-card-player",

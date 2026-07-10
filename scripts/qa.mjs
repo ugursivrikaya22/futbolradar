@@ -83,6 +83,8 @@ const cssFeatureMarkers = [
   "watch-check-card",
   "profile-compare-card",
   "profile-compare-grid",
+  "static-profile-links",
+  "static-profile-link-card",
   "compare-insight-card",
   "team-player-spotlight-card",
   "team-card-player",
@@ -304,6 +306,11 @@ function checkSeoAndLinks() {
 
     if (title) titles.set(title, (titles.get(title) || 0) + 1);
     if (description) descriptions.set(description, (descriptions.get(description) || 0) + 1);
+
+    if (playerProfilePages.includes(page)) {
+      expect(html.includes("static-profile-links"), `${page}: missing static profile comparison links`);
+      expect(html.includes("oyuncu-karsilastir.html?players="), `${page}: missing static comparison href`);
+    }
 
     for (const match of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
       const target = match[1];

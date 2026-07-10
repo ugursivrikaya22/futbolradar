@@ -27,6 +27,77 @@ function playerDescription(player) {
   return `${player.name}; güncel takım ${team}, mevki ${player.position}. Transfer geçmişi, overall rating ${player.overallRating || player.aiRating || player.rating}, potansiyel ${player.potentialRating || "yakında"} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
 }
 
+function playerCurrentTeam(player) {
+  return player.currentTeam || player.team || "Takim bilgisi yakinda";
+}
+
+function playerRating(player) {
+  return Number(player.overallRating || player.aiRating || player.rating || 0);
+}
+
+function playerPositionGroup(player) {
+  const source = `${player.positionGroup || ""} ${player.position || ""}`.toLocaleLowerCase("tr-TR");
+
+  if (source.includes("kaleci") || source.includes("goal")) return "kaleci";
+  if (source.includes("def") || source.includes("stoper") || source.includes("bek") || source.includes("savun")) return "defans";
+  if (source.includes("orta") || source.includes("mid")) return "orta saha";
+  if (source.includes("wing") || source.includes("kanat") || source.includes("forvet") || source.includes("santrfor") || source.includes("striker")) return "forvet";
+  return "diger";
+}
+
+function comparePeerScore(primary, candidate) {
+  if (!primary || !candidate || primary.id === candidate.id) return -1;
+
+  const sameRole = playerPositionGroup(primary) === playerPositionGroup(candidate) ? 44 : 0;
+  const sameLeague = primary.league && candidate.league && primary.league === candidate.league ? 16 : 0;
+  const differentTeam = playerCurrentTeam(primary) !== playerCurrentTeam(candidate) ? 10 : 0;
+  const ratingCloseness = Math.max(0, 26 - Math.abs(playerRating(primary) - playerRating(candidate)));
+  const marketDelta = Math.abs(Number(primary.marketValueEur || 0) - Number(candidate.marketValueEur || 0)) / 1000000;
+  const marketCloseness = Math.max(0, 12 - marketDelta / 3);
+
+  return sameRole + sameLeague + differentTeam + ratingCloseness + marketCloseness;
+}
+
+function uniqueCompareCandidates(list) {
+  const used = new Set();
+  return list.filter((item) => {
+    if (!item || !item.player || used.has(item.player.id)) return false;
+    used.add(item.player.id);
+    return true;
+  });
+}
+
+function staticCompareLinks(player) {
+  const candidates = players.filter((candidate) => candidate.id !== player.id);
+  const bestPeer = candidates.slice().sort((a, b) => comparePeerScore(player, b) - comparePeerScore(player, a))[0];
+  const sameRole = candidates
+    .filter((candidate) => playerPositionGroup(candidate) === playerPositionGroup(player))
+    .sort((a, b) => playerRating(b) - playerRating(a))[0];
+  const closeRating = candidates
+    .slice()
+    .sort((a, b) => Math.abs(playerRating(player) - playerRating(a)) - Math.abs(playerRating(player) - playerRating(b)))[0];
+  const transferRead = candidates
+    .filter((candidate) => Array.isArray(candidate.transferHistory) && candidate.transferHistory.length)
+    .sort((a, b) => Number(b.marketValueEur || 0) - Number(a.marketValueEur || 0))[0];
+
+  const baseLinks = uniqueCompareCandidates([
+    { label: "Akilli eslesme", player: bestPeer, note: "Rol, rating ve piyasa yakinligi" },
+    { label: "Ayni rol kiyas", player: sameRole, note: `${playerPositionGroup(player)} profili` },
+    { label: "Rating sinavi", player: closeRating, note: "Overall farkini oku" },
+    { label: "Transfer okuma", player: transferRead, note: "Guncel takim ve piyasa degeri" }
+  ]);
+  const fallbackLinks = candidates
+    .slice()
+    .sort((a, b) => playerRating(b) - playerRating(a))
+    .map((candidate) => ({ label: "Radar alternatifi", player: candidate, note: "Profil trafigi ve kiyas akisi" }));
+  const links = uniqueCompareCandidates(baseLinks.concat(fallbackLinks)).slice(0, 4);
+
+  return links.map((item) => {
+    const href = `../oyuncu-karsilastir.html?players=${encodeURIComponent(player.id)},${encodeURIComponent(item.player.id)}`;
+    return `<a class="static-profile-link-card" href="${escapeHtml(href)}"><span>${escapeHtml(item.label)}</span><strong>${escapeHtml(player.name)} vs ${escapeHtml(item.player.name)}</strong><em>${escapeHtml(item.note)}</em></a>`;
+  }).join("\n        ");
+}
+
 function relatedLinks(currentId) {
   const links = [
     ["Forvetler", "./forvetler.html"],
@@ -129,6 +200,12 @@ function pageHtml(player) {
           <strong>${escapeHtml(player.name)} profili hazırlanıyor</strong>
           <span>Oyuncu performans kartı yükleniyor.</span>
         </article>
+      </section>
+      <section class="static-profile-links" aria-label="Statik oyuncu karsilastirma baglantilari">
+        <div class="profile-section-head"><h2>Hazir Kiyas Linkleri</h2><span>Arama motorlari ve hizli gezinme icin</span></div>
+        <div class="static-profile-link-grid">
+        ${staticCompareLinks(player)}
+        </div>
       </section>
       <section class="popular-links" aria-label="İlgili oyuncu bağlantıları">
         <span>İlgili oyuncu radarları</span>
