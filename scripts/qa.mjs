@@ -75,6 +75,7 @@ const appFeatureMarkers = [
   "teamPlayerSpotlightHtml",
   "teamCardLeaderHtml",
   "matchActionPanelHtml",
+  "matchEmptyStateHtml",
   "featured-match-actions",
   "playerScoutingSummary",
   "playerPositionGroup",
@@ -99,6 +100,7 @@ const cssFeatureMarkers = [
   "team-player-spotlight-card",
   "team-card-player",
   "match-action-card",
+  "match-empty-actions",
   "featured-match-actions",
   "compare-guide",
   "compare-quick-links",
@@ -276,6 +278,12 @@ function checkJson() {
 
   const serializedPlayers = JSON.stringify(players);
   expect(!serializedPlayers.includes("?"), "players: mojibake marker '?' found after transfer update");
+
+  const matches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
+  expect(Array.isArray(matches), "matches: data/matches.json must be an array");
+  matches.forEach((match, index) => {
+    expect(Boolean(match.kickoff || match.date || match.utcDate), `matches: row ${index} must include kickoff/date; time-only rows are not allowed`);
+  });
 }
 
 function pageUrl(page) {

@@ -1163,7 +1163,7 @@
     }) || matches[0];
 
     if (!match) {
-      return "";
+      return matchEmptyStateHtml("Bugun radar maci yok", "Bugune ait dogrulanmis radar maci bulunmuyor. Temsili derbi veya yabanci lig maci gosterilmeyecek.", true);
     }
 
     var homeMomentum = matchMetric(match, "homeMomentum");
@@ -1262,6 +1262,19 @@
       '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Mac detayi</a>' +
       '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.homeTeam })) + '">Ev sahibi radar</a>' +
       '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.awayTeam })) + '">Deplasman radar</a>' +
+      "</div>" +
+      "</article>"
+    );
+  }
+
+  function matchEmptyStateHtml(title, text, compact) {
+    return (
+      '<article class="data-empty' + (compact ? " compact" : "") + '" data-card="empty-state">' +
+      "<strong>" + escapeHtml(title || "Bugun dogrulanmis mac yok") + "</strong>" +
+      "<span>" + escapeHtml(text || "Bugunun mac listesi resmi veriyle dogrulaninca burada gorunecek.") + "</span>" +
+      '<div class="match-empty-actions">' +
+      '<a class="detail-link" href="./super-lig-fikstur.html">Super Lig fiksturunu ac</a>' +
+      '<a class="detail-link ghost" href="./puan-durumu.html">Puan durumuna git</a>' +
       "</div>" +
       "</article>"
     );
@@ -4256,6 +4269,10 @@
       document.querySelector('[data-api-target="today-matches"]'),
       "matches",
       function (matches) {
+        if (!Array.isArray(matches) || !matches.length) {
+          return matchEmptyStateHtml("Bugun dogrulanmis mac yok", "FutbolRadar artik temsili mac gostermiyor. Resmi gunluk mac verisi geldiginde bu alan otomatik dolacak.");
+        }
+
         return matches.map(renderHomeMatch).join("");
       },
       "Bugunun maçları yüklenemedi"
@@ -4265,6 +4282,10 @@
       document.querySelector('[data-api-target="matches-page"]'),
       "matches",
       function (matches) {
+        if (!Array.isArray(matches) || !matches.length) {
+          return matchEmptyStateHtml("Bugun dogrulanmis mac yok", "Bugunun mac listesinde dogrulanmis karsilasma bulunmuyor. Yeni mac verisi geldiginde kartlar burada gorunecek.");
+        }
+
         return matches.map(renderMatchPageCard).join("");
       },
       "Maç listesi yüklenemedi"
@@ -4274,7 +4295,12 @@
       document.querySelector('[data-api-target="live-score"]'),
       "matches",
       function (matches) {
-        return matches.filter(function (match) { return match.live; }).map(renderLiveMatch).join("");
+        var liveMatches = Array.isArray(matches) ? matches.filter(function (match) { return match.live; }) : [];
+        if (!liveMatches.length) {
+          return matchEmptyStateHtml("Su an canli mac yok", "Canli skor kartlari sadece dogrulanmis aktif mac geldigi zaman gosterilir.");
+        }
+
+        return liveMatches.map(renderLiveMatch).join("");
       },
       "Canli skor verisi yüklenemedi"
     );

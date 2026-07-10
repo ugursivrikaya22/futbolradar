@@ -201,6 +201,30 @@ function byLeague(items, league) {
   return items.filter((item) => normalizeText(item.league) === wanted);
 }
 
+function todayInTimeZone(timeZone) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+}
+
+function matchDateOnly(match) {
+  const value = match && (match.kickoff || match.date || match.utcDate);
+  if (!value) {
+    return "";
+  }
+
+  return String(value).slice(0, 10);
+}
+
+function byMatchDate(items, date) {
+  const targetDate = date || todayInTimeZone("Europe/Istanbul");
+
+  return items.filter((item) => matchDateOnly(item) === targetDate);
+}
+
 function byTeam(items, team) {
   if (!team) {
     return items;
@@ -249,7 +273,9 @@ function normalizeTransferRow(player, transfer, index) {
 }
 
 async function getMatches(query) {
-  const data = byLeague(matches.map(normalizeMatch), query && query.league);
+  const normalized = matches.map(normalizeMatch);
+  const byDate = byMatchDate(normalized, query && query.date);
+  const data = byLeague(byDate, query && query.league);
   return data;
 }
 

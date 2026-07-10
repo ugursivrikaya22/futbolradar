@@ -346,7 +346,7 @@ function normalizeLiveAnalysis(item) {
 async function getMatches(query) {
   const competitionCode = resolveCompetitionCode(query);
   const dateFrom = query && query.date ? toDateOnly(query.date) : toDateOnly();
-  const dateTo = query && query.date ? dateFrom : addDays(dateFrom, 7);
+  const dateTo = dateFrom;
   const payload = await providerFetch(`/competitions/${competitionCode}/matches`, { dateFrom, dateTo });
   return (payload.matches || payload.data || []).map(normalizeLiveMatch);
 }
