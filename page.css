@@ -1816,6 +1816,16 @@ h1 {
         margin-top: 14px;
       }
 
+      .player-actions.compact {
+        margin-top: 12px;
+      }
+
+      .player-actions.compact .detail-link {
+        min-height: 32px;
+        padding: 0 10px;
+        font-size: 0.78rem;
+      }
+
       .match-actions .detail-link {
         margin-top: 0;
       }
@@ -1857,6 +1867,23 @@ h1 {
         color: var(--green);
         font-size: 0.82rem;
         font-weight: 850;
+      }
+
+      .player-signal-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .player-signal-actions a {
+        display: inline-flex;
+        min-height: 30px;
+        align-items: center;
+        border: 1px solid rgba(128, 255, 155, 0.18);
+        border-radius: 999px;
+        padding: 6px 9px;
+        background: rgba(255, 255, 255, 0.04);
       }
 
       .popular-links {

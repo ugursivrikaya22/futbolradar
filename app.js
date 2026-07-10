@@ -1355,6 +1355,7 @@
         { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
       ].concat(playerRatingTags(player))) +
       formDotsHtml(player.form) +
+      '<div class="player-actions compact"><a class="detail-link" href="' + escapeHtml(playerProfileHref(player.id)) + '">Profil</a><a class="detail-link ghost" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Kiyasla</a></div>' +
       "</article>"
     );
   }
@@ -1402,6 +1403,7 @@
         { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
       ].concat(playerRatingTags(player))) +
       formDotsHtml(player.form) +
+      '<div class="player-actions compact"><a class="detail-link" href="' + escapeHtml(playerProfileHref(player.id)) + '">Profil</a><a class="detail-link ghost" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Kiyasla</a></div>' +
       "</article>"
     );
   }
@@ -1925,7 +1927,11 @@
       '<strong class="signal-value">' + escapeHtml(displayValue(value)) + "</strong>" +
       "<p>" + escapeHtml(team) + " · " + escapeHtml(player.position) + "</p>" +
       '<p class="signal-note">' + escapeHtml(playerInsight(player)) + "</p>" +
-      '<a href="' + escapeHtml(href) + '">Oyuncu radarına git</a>' +
+      '<div class="player-signal-actions">' +
+      '<a href="' + escapeHtml(href) + '">Liste</a>' +
+      '<a href="' + escapeHtml(playerProfileHref(player.id)) + '">Profil</a>' +
+      '<a href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Kiyas</a>' +
+      "</div>" +
       "</article>"
     );
   }
