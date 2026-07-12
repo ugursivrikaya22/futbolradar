@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Transfer İzleme Listesi | Güncel Takım Takibi | FutbolRadar</title>
+    <meta name="description" content="Transfer izleme listesi; kulüp durumu takipte olan oyuncuları, son transfer hareketlerini, eski kulüp ayrımını ve veri güvenilirliği uyarılarını listeler." />
+    <link rel="canonical" href="https://www.futbolradar.com/transfer-izleme.html" />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content="FutbolRadar" />
+    <meta property="og:url" content="https://www.futbolradar.com/transfer-izleme.html" />
+    <meta property="og:title" content="Transfer İzleme Listesi | Güncel Takım Takibi | FutbolRadar" />
+    <meta property="og:description" content="Kulüp durumu takipte olan oyuncular, son transfer hareketleri, eski kulüp ayrımı ve güncellik uyarıları FutbolRadar transfer izleme ekranında." />
+    <meta property="og:image" content="https://www.futbolradar.com/assets/og-image.svg" />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Transfer İzleme Listesi | FutbolRadar" />
+    <meta name="twitter:description" content="Takım durumu takipte olan oyuncuları ve transfer geçmişi güncellik sinyallerini tek ekranda oku." />
+    <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="stylesheet" href="./page.css" />
+  </head>
+  <body class="subpage">
+    <header class="topbar">
+      <nav class="container nav" aria-label="Ana menü">
+        <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
+        <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
+        <div class="nav-menu" id="primary-menu">
+          <div class="nav-links"><a href="./bugunun-maclari.html">Bugünkü Maçlar</a><a href="./canli-skor.html">Canlı Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takimlar.html">Takımlar</a><a href="./oyuncu-radari.html">Oyuncu Radar</a><a href="./momentum.html">Momentum</a></div>
+          <a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container">
+      <nav class="breadcrumb" aria-label="Sayfa yolu">
+        <a href="./index.html">Ana Sayfa</a>
+        <span>/</span>
+        <a href="./transfer-radari.html">Transfer Radar</a>
+        <span>/</span>
+        <span>Transfer İzleme</span>
+      </nav>
+
+      <section class="hero">
+        <div class="hero-row">
+          <div>
+            <span class="eyebrow">Transfer takip merkezi</span>
+            <h1>Transfer İzleme Listesi</h1>
+            <p class="lead">Kulüp durumu takipte olan, manuel kontrol isteyen veya son transfer notu bulunan oyuncuları tek ekranda izle.</p>
+          </div>
+          <span class="hero-meta">Takipte kayıtlar ve son hareketler</span>
+        </div>
+      </section>
+
+      <section class="grid three">
+        <article class="card">
+          <span class="card-kicker">Takip</span>
+          <h2>Kulüp durumu</h2>
+          <p>Son bilinen takım ile kesin güncel takım iddiası ayrılır; takipteki kayıtlar net etiketlenir.</p>
+        </article>
+        <article class="card">
+          <span class="card-kicker">Transfer</span>
+          <h2>Son hareket</h2>
+          <p>Oyuncunun eski kulübü, yeni kulübü, tarih notu ve transfer tipi aynı kartta okunur.</p>
+        </article>
+        <article class="card">
+          <span class="card-kicker">Güven</span>
+          <h2>Manuel kontrol</h2>
+          <p>Transfer sezonunda güncelleme isteyen profiller radar listesinin üstünde tutulur.</p>
+        </article>
+      </section>
+
+      <section class="transfer-toolbar" aria-label="Transfer izleme filtreleri">
+        <div class="transfer-filter-chips" role="group" aria-label="Hızlı transfer filtreleri">
+          <button type="button" data-transfer-filter="izleme-listesi" class="is-active" aria-pressed="true">Takipte kayıtlar</button>
+          <button type="button" data-transfer-filter="riskli-transfer" aria-pressed="false">Riskli takip</button>
+          <button type="button" data-transfer-filter="son-hareket" aria-pressed="false">Son hareket</button>
+          <button type="button" data-transfer-filter="eski-kulup" aria-pressed="false">Eski kulüp ayrımı</button>
+          <button type="button" data-transfer-filter="yukselen-deger" aria-pressed="false">Yükselen değer</button>
+        </div>
+        <div class="filter-group">
+          <label for="transfer-watch-team-filter">Takım</label>
+          <select id="transfer-watch-team-filter" data-transfer-team-filter></select>
+        </div>
+        <div class="filter-group">
+          <label for="transfer-watch-status-filter">Kayıt durumu</label>
+          <select id="transfer-watch-status-filter" data-transfer-status-filter></select>
+        </div>
+        <div class="filter-group">
+          <label for="transfer-watch-sort">Sırala</label>
+          <select id="transfer-watch-sort" data-transfer-sort>
+            <option value="updated">Son güncelleme</option>
+            <option value="market">Piyasa değeri</option>
+            <option value="rating">AI rating</option>
+            <option value="team">Takım</option>
+          </select>
+        </div>
+      </section>
+
+      <section class="transfer-radar-summary" data-transfer-summary aria-label="Transfer izleme özeti"></section>
+      <section class="player-filter-note" data-transfer-filter-description>Kulüp durumu takipte olan, manuel kontrol isteyen veya son transfer notu bulunan oyuncuları tek ekranda izle.</section>
+      <section class="player-filter-note"><span data-landing-count>Transfer izleme listesi hazırlanıyor</span></section>
+
+      <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="transfer-izleme" data-transfer-default-filter="izleme-listesi">
+        <article class="data-empty" data-card="empty-state"><strong>Transfer izleme listesi yükleniyor</strong><span>Oyuncu kayıtları veri katmanından okunuyor.</span></article>
+      </section>
+
+      <section class="source-strip" aria-label="İlgili transfer bağlantıları">
+        <div><span>Öne çıkan profil</span><b><a href="./oyuncular/edin-dzeko.html">Dzeko transfer durumu</a></b></div>
+        <div><span>Genel ekran</span><b><a href="./transfer-radari.html">Transfer Radar</a></b></div>
+        <div><span>Oyuncu havuzu</span><b><a href="./oyuncu-radari.html">Oyuncu Radar</a></b></div>
+      </section>
+    </main>
+
+    <footer class="footer"><div class="container footer-links">FutbolRadar · <a href="./hakkinda.html">Hakkında</a> · <a href="./veri-notu.html">Veri Notu</a> · <a href="./iletisim.html">İletişim</a> · <a href="./gizlilik.html">Gizlilik</a> · <a href="./kullanim-sartlari.html">Kullanım Şartları</a></div></footer>
+    <script src="./site.js" defer></script>
+    <script src="./app.js" defer></script>
+  </body>
+</html>

@@ -2301,6 +2301,14 @@
       match: function (player) {
         return Array.isArray(player.transferHistory) && player.transferHistory.length;
       }
+    },
+    "transfer-izleme": {
+      title: "Transfer Izleme Listesi",
+      defaultFilter: "izleme-listesi",
+      defaultSort: "updated",
+      match: function (player) {
+        return playerNeedsDataRefresh(player) || (Array.isArray(player.transferHistory) && player.transferHistory.length);
+      }
     }
   };
 
@@ -2848,6 +2856,10 @@
     var market = Number(player.marketValueEur || 0);
     var formerCount = Array.isArray(player.formerTeams) ? player.formerTeams.length : 0;
 
+    if (filter === "izleme-listesi") {
+      return playerNeedsDataRefresh(player) || Boolean(latest && latest.note);
+    }
+
     if (filter === "riskli-transfer") {
       return playerNeedsDataRefresh(player);
     }
@@ -2872,6 +2884,11 @@
       title: "Transfer Radari",
       label: "Tum transferler",
       description: "Oyuncularin guncel takim, eski kulup, son transfer hareketi, piyasa degeri ve veri guvenilirligi birlikte izlenir."
+    },
+    "izleme-listesi": {
+      title: "Transfer Izleme Listesi",
+      label: "Takipte kayitlar",
+      description: "Kulup durumu takipte olan, manuel kontrol isteyen veya son transfer notu bulunan oyuncular tek listede izlenir."
     },
     "son-hareket": {
       title: "Son Transfer Hareketleri",
@@ -2980,11 +2997,13 @@
     var sortSelect = document.querySelector("[data-transfer-sort]");
     var summary = document.querySelector("[data-transfer-summary]");
     var query = new URLSearchParams(window.location.search);
+    var defaultFilter = target.getAttribute("data-transfer-default-filter") || config.defaultFilter || "all";
+    var defaultSort = target.getAttribute("data-transfer-default-sort") || config.defaultSort || "updated";
     var state = {
-      filter: normalizeTransferFilter(query.get("filter") || "all"),
+      filter: normalizeTransferFilter(query.get("filter") || defaultFilter),
       team: query.get("team") || "",
       status: query.get("status") || "",
-      sort: query.get("sort") || "updated"
+      sort: query.get("sort") || defaultSort
     };
 
     target.dataset.state = "loading";
@@ -3009,7 +3028,7 @@
 
         function updateQuery() {
           var params = new URLSearchParams(window.location.search);
-          [["filter", state.filter === "all" ? "" : state.filter], ["team", state.team], ["status", state.status], ["sort", state.sort === "updated" ? "" : state.sort]].forEach(function (item) {
+          [["filter", state.filter === defaultFilter ? "" : state.filter], ["team", state.team], ["status", state.status], ["sort", state.sort === defaultSort ? "" : state.sort]].forEach(function (item) {
             if (item[1]) params.set(item[0], item[1]);
             else params.delete(item[0]);
           });
@@ -3158,7 +3177,7 @@
     var config = PLAYER_LANDING_CONFIG[slug] || PLAYER_LANDING_CONFIG["en-iyi-oyuncular"];
     var count = document.querySelector("[data-landing-count]");
 
-    if (slug === "transfer-radari") {
+    if (slug === "transfer-radari" || slug === "transfer-izleme") {
       initTransferRadarLanding(target, config, count);
       return;
     }
