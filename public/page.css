@@ -1743,6 +1743,184 @@ h1 {
         color: var(--green);
       }
 
+      .home-daily-route {
+        padding-top: 20px;
+      }
+
+      .home-daily-route-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      .home-daily-route-list {
+        position: relative;
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .home-daily-route-list::before {
+        content: "";
+        position: absolute;
+        inset: 18px auto 18px 23px;
+        width: 2px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, var(--green), rgba(77, 229, 255, 0.22));
+        opacity: 0.58;
+      }
+
+      .home-daily-route-list li {
+        position: relative;
+        min-width: 0;
+      }
+
+      .home-daily-route-list a {
+        display: grid;
+        grid-template-columns: 48px minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        min-width: 0;
+        border: 1px solid rgba(77, 229, 255, 0.15);
+        border-radius: var(--radius);
+        padding: 13px;
+        color: var(--text);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.056), rgba(255, 255, 255, 0.024)),
+          rgba(255, 255, 255, 0.035);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          background 180ms ease;
+      }
+
+      .home-daily-route-list a:hover,
+      .home-daily-route-list a:focus-visible {
+        transform: translateY(-2px);
+        border-color: rgba(128, 255, 155, 0.36);
+        background: rgba(128, 255, 155, 0.065);
+        outline: 0;
+      }
+
+      .home-daily-route-list span {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border: 1px solid rgba(128, 255, 155, 0.3);
+        border-radius: 999px;
+        color: #06110f;
+        background: linear-gradient(135deg, var(--green), var(--cyan));
+        font-size: 0.76rem;
+        font-weight: 950;
+      }
+
+      .home-daily-route-list div {
+        display: grid;
+        gap: 5px;
+        min-width: 0;
+      }
+
+      .home-daily-route-list strong {
+        color: var(--text);
+        font-size: 1rem;
+        line-height: 1.15;
+        overflow-wrap: anywhere;
+      }
+
+      .home-daily-route-list p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.45;
+      }
+
+      .home-daily-route-list b {
+        display: inline-flex;
+        min-height: 28px;
+        align-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        padding: 4px 9px;
+        color: var(--soft);
+        background: rgba(255, 255, 255, 0.04);
+        font-size: 0.76rem;
+        white-space: nowrap;
+      }
+
+      .home-daily-route-note {
+        display: grid;
+        align-content: start;
+        gap: 14px;
+        min-width: 0;
+        border: 1px solid rgba(128, 255, 155, 0.17);
+        border-radius: var(--radius);
+        padding: 18px;
+        background:
+          radial-gradient(circle at 90% 0%, rgba(128, 255, 155, 0.12), transparent 32%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.026)),
+          var(--panel);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .home-daily-route-note > span {
+        color: var(--cyan);
+        font-size: 0.73rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .home-daily-route-note h3 {
+        margin: 0;
+        color: var(--text);
+        font-size: clamp(1.4rem, 2.4vw, 2.1rem);
+        line-height: 1;
+      }
+
+      .home-daily-route-note p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .home-daily-route-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .home-daily-route-metrics strong {
+        display: grid;
+        gap: 5px;
+        min-width: 0;
+        border: 1px solid rgba(255, 255, 255, 0.09);
+        border-radius: 8px;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.18);
+      }
+
+      .home-daily-route-metrics b {
+        color: var(--green);
+        font-size: 1.2rem;
+      }
+
+      .home-daily-route-metrics em {
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-style: normal;
+        font-weight: 850;
+      }
+
       .home-directory {
         padding-top: 20px;
       }
@@ -6138,6 +6316,7 @@ h1 {
         .traffic-hub-shell,
         .home-search-shell,
         .home-transfer-watch-shell,
+        .home-daily-route-shell,
         .home-radar-ticker {
           grid-template-columns: 1fr;
         }
@@ -6402,6 +6581,23 @@ h1 {
           grid-column: 1 / -1;
         }
 
+        .home-daily-route-list::before {
+          left: 18px;
+        }
+
+        .home-daily-route-list a {
+          grid-template-columns: 38px minmax(0, 1fr);
+        }
+
+        .home-daily-route-list b {
+          grid-column: 2;
+          justify-self: start;
+        }
+
+        .home-daily-route-metrics {
+          grid-template-columns: 1fr;
+        }
+
         .comparison-hub-grid {
           grid-template-columns: 1fr;
         }
@@ -6433,6 +6629,7 @@ h1 {
         .home-lockin-grid,
         .home-rank-grid,
         .home-transfer-watch-shell,
+        .home-daily-route-shell,
         .rivalry-route-grid,
         .home-search-results,
         .home-directory-grid,
