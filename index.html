@@ -201,6 +201,24 @@
           </div>
         </section>
 
+        <section class="container section home-transfer-watch" id="transfer-izleme-paneli" aria-labelledby="home-transfer-watch-title">
+          <div class="section-head">
+            <div class="section-title">
+              <span class="section-kicker">Transfer İzleme</span>
+              <h2 id="home-transfer-watch-title">Kulüp durumu takipte olan oyuncular ana akışta.</h2>
+              <p>Transfer sıcaklığı, son bilinen takım, güncelleme riski ve takip sebebi ana sayfadan okunur.</p>
+            </div>
+            <a class="section-link" href="./transfer-izleme.html">İzleme listesini aç</a>
+          </div>
+
+          <div class="home-transfer-watch-shell" data-api-section="home-transfer-watch" data-api-target="home-transfer-watch">
+            <article class="data-empty" data-card="empty-state">
+              <strong>Transfer izleme paneli yükleniyor</strong>
+              <span>Oyuncu kayıtları veri katmanından okunuyor.</span>
+            </article>
+          </div>
+        </section>
+
         <section class="container section home-search-section" id="futbolradar-hizli-arama" aria-labelledby="home-search-title">
           <div class="home-search-shell">
             <div class="home-search-copy">
@@ -211,7 +229,7 @@
             <label class="home-search-box" for="home-radar-search">
               <span>Radar araması</span>
               <input id="home-radar-search" data-home-search type="search" placeholder="Oyuncu, takım, filtre veya kıyas ara" autocomplete="off" />
-              <b data-home-search-count>16 rota</b>
+              <b data-home-search-count>17 rota</b>
             </label>
           </div>
 
@@ -232,6 +250,7 @@
             <a class="home-search-card" data-home-search-item data-search-text="gedson fernandes sebastian szymanski karşılaştırma kiyas pres yaraticilik" href="./karsilastirma/gedson-fernandes-vs-sebastian-szymanski.html"><span>Kıyas</span><strong>Gedson vs Szymanski</strong><em>Pres ve yaratıcılık kıyası</em></a>
             <a class="home-search-card" data-home-search-item data-search-text="süper lig super lig fikstur fikstür hafta maç programı" href="./super-lig-fikstur.html"><span>Maç</span><strong>Süper Lig Fikstürü</strong><em>Hafta ve sezon takibi</em></a>
             <a class="home-search-card" data-home-search-item data-search-text="puan durumu siralama sıralama lig tablo momentum" href="./puan-durumu.html"><span>Lig</span><strong>Puan Durumu</strong><em>Tablo, form ve momentum</em></a>
+            <a class="home-search-card" data-home-search-item data-search-text="transfer izleme dzeko takipte takım durumu sıcaklık güncelleme riski" href="./transfer-izleme.html"><span>Transfer</span><strong>Transfer İzleme</strong><em>Takipte kayıtlar ve sıcaklık skoru</em></a>
           </div>
           <p class="home-search-empty" data-home-search-empty hidden>Bu arama için rota yok. Oyuncu Radar veya Analizler sayfasından geniş listeye bakabilirsin.</p>
         </section>

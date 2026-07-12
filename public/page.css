@@ -1538,6 +1538,211 @@ h1 {
         text-align: center;
       }
 
+      .home-transfer-watch {
+        padding-top: 20px;
+      }
+
+      .home-transfer-watch-shell {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr);
+        gap: 14px;
+        align-items: stretch;
+      }
+
+      .home-transfer-feature,
+      .home-transfer-side {
+        min-width: 0;
+        border: 1px solid rgba(77, 229, 255, 0.16);
+        border-radius: var(--radius);
+        background:
+          radial-gradient(circle at 92% 0%, rgba(77, 229, 255, 0.12), transparent 33%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.026)),
+          var(--panel);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .home-transfer-feature {
+        display: grid;
+        gap: 14px;
+        padding: 18px;
+      }
+
+      .home-transfer-player {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        min-width: 0;
+      }
+
+      .home-transfer-player > div {
+        min-width: 0;
+        display: grid;
+        gap: 7px;
+      }
+
+      .home-transfer-player span,
+      .home-transfer-score span {
+        color: var(--cyan);
+        font-size: 0.73rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .home-transfer-player h3 {
+        margin: 0;
+        color: var(--text);
+        font-size: clamp(1.45rem, 2.2vw, 2.2rem);
+        line-height: 0.98;
+        overflow-wrap: anywhere;
+      }
+
+      .home-transfer-player p {
+        margin: 0;
+        max-width: 68ch;
+        color: var(--muted);
+        font-size: 0.93rem;
+        line-height: 1.55;
+      }
+
+      .home-transfer-score {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        gap: 10px;
+        align-items: center;
+        min-width: 0;
+        border: 1px solid rgba(128, 255, 155, 0.17);
+        border-radius: var(--radius);
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.2);
+      }
+
+      .home-transfer-score strong {
+        color: var(--green);
+        font-size: 2rem;
+        line-height: 1;
+      }
+
+      .home-transfer-score em {
+        display: inline-flex;
+        min-height: 28px;
+        align-items: center;
+        border: 1px solid rgba(128, 255, 155, 0.22);
+        border-radius: 999px;
+        padding: 5px 10px;
+        color: #dfffea;
+        background: rgba(128, 255, 155, 0.08);
+        font-size: 0.78rem;
+        font-style: normal;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .home-transfer-score i {
+        grid-column: 1 / -1;
+        position: relative;
+        height: 8px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.09);
+      }
+
+      .home-transfer-score i b {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: var(--value);
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--green), var(--cyan));
+      }
+
+      .home-transfer-route {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius);
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.035);
+      }
+
+      .home-transfer-route b {
+        color: var(--text);
+        overflow-wrap: anywhere;
+      }
+
+      .home-transfer-route em {
+        color: var(--green);
+        font-style: normal;
+        font-weight: 950;
+      }
+
+      .home-transfer-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+      }
+
+      .home-transfer-side {
+        display: grid;
+        gap: 12px;
+        padding: 16px;
+      }
+
+      .home-transfer-metrics {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .home-transfer-list {
+        display: grid;
+        gap: 9px;
+      }
+
+      .home-transfer-row {
+        display: grid;
+        grid-template-columns: minmax(82px, auto) minmax(0, 1fr) auto;
+        gap: 9px;
+        align-items: center;
+        min-width: 0;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 10px;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.038);
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          background 180ms ease;
+      }
+
+      .home-transfer-row:hover,
+      .home-transfer-row:focus-visible {
+        transform: translateY(-2px);
+        border-color: rgba(128, 255, 155, 0.34);
+        background: rgba(128, 255, 155, 0.07);
+        outline: 0;
+      }
+
+      .home-transfer-row span {
+        color: var(--cyan);
+        font-size: 0.74rem;
+        font-weight: 900;
+      }
+
+      .home-transfer-row strong {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .home-transfer-row b {
+        color: var(--green);
+      }
+
       .home-directory {
         padding-top: 20px;
       }
@@ -5932,6 +6137,7 @@ h1 {
         .radar-layout,
         .traffic-hub-shell,
         .home-search-shell,
+        .home-transfer-watch-shell,
         .home-radar-ticker {
           grid-template-columns: 1fr;
         }
@@ -6172,6 +6378,30 @@ h1 {
           margin-top: -22px;
         }
 
+        .home-transfer-player {
+          align-items: flex-start;
+        }
+
+        .home-transfer-score {
+          grid-template-columns: 1fr;
+        }
+
+        .home-transfer-score em {
+          justify-self: start;
+        }
+
+        .home-transfer-metrics {
+          grid-template-columns: 1fr;
+        }
+
+        .home-transfer-row {
+          grid-template-columns: minmax(0, 1fr) auto;
+        }
+
+        .home-transfer-row span {
+          grid-column: 1 / -1;
+        }
+
         .comparison-hub-grid {
           grid-template-columns: 1fr;
         }
@@ -6202,6 +6432,7 @@ h1 {
         .traffic-stack-grid,
         .home-lockin-grid,
         .home-rank-grid,
+        .home-transfer-watch-shell,
         .rivalry-route-grid,
         .home-search-results,
         .home-directory-grid,

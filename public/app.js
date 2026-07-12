@@ -3081,6 +3081,60 @@
     );
   }
 
+  function renderHomeTransferWatch(players) {
+    var list = Array.isArray(players) ? players.filter(function (player) {
+      var latest = latestTransferEvent(player);
+      return playerNeedsDataRefresh(player) || Boolean(latest && latest.note);
+    }).sort(function (a, b) {
+      return transferHeatScore(b) - transferHeatScore(a);
+    }) : [];
+
+    if (!list.length) {
+      return '<article class="data-empty compact"><strong>Takipte transfer kaydı yok</strong><span>Transfer riski oluştuğunda bu panel otomatik dolar.</span></article>';
+    }
+
+    var leader = list[0];
+    var latest = latestTransferEvent(leader);
+    var heat = transferHeatScore(leader);
+    var hotCount = list.filter(function (player) { return transferHeatScore(player) >= 65; }).length;
+    var riskCount = list.filter(playerNeedsDataRefresh).length;
+    var updated = list
+      .map(function (player) { return player.transferUpdatedAt || player.lastUpdated || ""; })
+      .filter(Boolean)
+      .sort(function (a, b) { return String(b).localeCompare(String(a)); })[0];
+    var miniRows = list.slice(0, 4).map(function (player) {
+      var playerHeat = transferHeatScore(player);
+      return (
+        '<a class="home-transfer-row" href="' + escapeHtml(playerProfileHref(player.id)) + '">' +
+        '<span>' + escapeHtml(transferHeatLabel(playerHeat)) + '</span>' +
+        '<strong>' + escapeHtml(player.name) + '</strong>' +
+        '<b>' + escapeHtml(playerHeat) + '</b>' +
+        '</a>'
+      );
+    }).join("");
+
+    return (
+      '<article class="home-transfer-feature" data-card="home-transfer-watch" data-player="' + escapeHtml(leader.id) + '">' +
+      '<div class="home-transfer-player">' +
+      playerAvatarHtml(leader, "large") +
+      '<div><span>En sıcak takip profili</span><h3>' + escapeHtml(leader.name) + '</h3><p>' + escapeHtml(transferWatchReason(leader)) + '</p></div>' +
+      '</div>' +
+      '<div class="home-transfer-score"><span>Transfer sıcaklığı</span><strong>' + escapeHtml(heat) + '</strong><em>' + escapeHtml(transferHeatLabel(heat)) + '</em><i style="--value:' + escapeHtml(heat) + '%"><b></b></i></div>' +
+      '<div class="home-transfer-route"><b>' + escapeHtml(latest && latest.fromTeam ? latest.fromTeam : "Eski kulüp yakında") + '</b><em>→</em><b>' + escapeHtml(latest && latest.toTeam ? latest.toTeam : playerCurrentTeam(leader)) + '</b></div>' +
+      '<div class="home-transfer-actions"><a class="detail-link" href="' + escapeHtml(playerProfileHref(leader.id)) + '">Profili aç</a><a class="detail-link ghost" href="./transfer-izleme.html">Tüm takip listesi</a></div>' +
+      '</article>' +
+      '<aside class="home-transfer-side" aria-label="Transfer izleme özeti">' +
+      '<div class="home-transfer-metrics">' +
+      compactMetricHtml("Takipte", list.length) +
+      compactMetricHtml("Sıcak", hotCount) +
+      compactMetricHtml("Risk", riskCount) +
+      compactMetricHtml("Son güncelleme", formatProfileDate(updated) || "Yakında") +
+      '</div>' +
+      '<div class="home-transfer-list">' + miniRows + '</div>' +
+      '</aside>'
+    );
+  }
+
   function initTransferRadarLanding(target, config, count) {
     var filterButtons = Array.from(document.querySelectorAll("[data-transfer-filter]"));
     var teamSelect = document.querySelector("[data-transfer-team-filter]");
@@ -4545,6 +4599,13 @@
       "players",
       renderPlayerSignals,
       "Oyuncu sinyalleri yüklenemedi"
+    );
+
+    renderInto(
+      document.querySelector('[data-api-target="home-transfer-watch"]'),
+      "players",
+      renderHomeTransferWatch,
+      "Transfer izleme paneli yüklenemedi"
     );
 
     initPlayerFilters(document.querySelector('[data-api-target="players-page"]'));
