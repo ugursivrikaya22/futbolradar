@@ -280,6 +280,23 @@ function checkJson() {
     const vercelConfig = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
     const rewrites = new Map((vercelConfig.rewrites || []).map((rewrite) => [rewrite.source, rewrite.destination]));
     const redirects = new Map((vercelConfig.redirects || []).map((redirect) => [redirect.source, redirect.destination]));
+    const redirectRules = vercelConfig.redirects || [];
+    [
+      "futbolradar.com",
+      "futbolradar.com.tr",
+      "www.futbolradar.com.tr"
+    ].forEach((host) => {
+      expect(
+        redirectRules.some((redirect) => {
+          return redirect.source === "/:path*" &&
+            redirect.destination === "https://www.futbolradar.com/:path*" &&
+            redirect.permanent === true &&
+            Array.isArray(redirect.has) &&
+            redirect.has.some((condition) => condition.type === "host" && condition.value === host);
+        }),
+        `vercel canonical host redirect missing ${host}`
+      );
+    });
     [
       "forvetler",
       "kaleciler",
@@ -305,6 +322,15 @@ function checkJson() {
       redirects.get("/oyuncular/edina-dzeko.html") === "/oyuncular/edin-dzeko.html",
       "vercel redirect missing /oyuncular/edina-dzeko.html"
     );
+    for (const redirect of redirectRules) {
+      const destination = redirect.destination || "";
+      if (!destination.startsWith("/") || destination.includes(":path*")) {
+        continue;
+      }
+
+      const target = destination.replace(/^\/+/, "");
+      expect(fs.existsSync(path.join(root, target)), `vercel redirect target missing ${destination}`);
+    }
   } catch (error) {
     failures.push(`vercel config parse failed: ${error.message}`);
   }
