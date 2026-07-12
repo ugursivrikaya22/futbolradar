@@ -3952,6 +3952,105 @@ h1 {
         font-weight: 800;
       }
 
+      .route-chain {
+        display: grid;
+        grid-template-columns: minmax(220px, 0.82fr) minmax(0, 1.45fr);
+        gap: 16px;
+        align-items: stretch;
+        margin: 0 0 54px;
+      }
+
+      .route-chain-head,
+      .route-chain-card {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(77, 229, 255, 0.16);
+        border-radius: var(--radius);
+        background:
+          linear-gradient(135deg, rgba(128, 255, 155, 0.09), rgba(77, 229, 255, 0.035)),
+          rgba(255, 255, 255, 0.04);
+        box-shadow: 0 22px 60px rgba(0, 0, 0, 0.22);
+      }
+
+      .route-chain-head {
+        padding: 20px;
+      }
+
+      .route-chain-head span,
+      .route-chain-card span {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        border: 1px solid rgba(128, 255, 155, 0.22);
+        border-radius: 999px;
+        padding: 6px 9px;
+        color: var(--green);
+        background: rgba(128, 255, 155, 0.075);
+        font-size: 0.72rem;
+        font-weight: 950;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .route-chain-head h2 {
+        margin: 16px 0 9px;
+        color: var(--text);
+        font-size: clamp(1.25rem, 2.4vw, 2rem);
+        line-height: 1.05;
+      }
+
+      .route-chain-head p,
+      .route-chain-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.65;
+      }
+
+      .route-chain-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .route-chain-card {
+        display: flex;
+        min-height: 172px;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+        color: var(--text);
+      }
+
+      .route-chain-card::after {
+        content: "";
+        position: absolute;
+        inset: auto 16px 14px 16px;
+        height: 1px;
+        background: linear-gradient(90deg, rgba(128, 255, 155, 0.55), transparent);
+        opacity: 0.7;
+      }
+
+      .route-chain-card strong {
+        color: var(--text);
+        font-size: 1rem;
+        line-height: 1.2;
+      }
+
+      .route-chain-card:hover,
+      .route-chain-card:focus-visible {
+        transform: translateY(-2px);
+        border-color: rgba(128, 255, 155, 0.36);
+        background:
+          linear-gradient(135deg, rgba(128, 255, 155, 0.13), rgba(77, 229, 255, 0.06)),
+          rgba(255, 255, 255, 0.055);
+      }
+
+      .route-chain-card.is-next {
+        border-color: rgba(128, 255, 155, 0.34);
+      }
+
       .landing-insights {
         display: grid;
         gap: 14px;
@@ -6635,6 +6734,8 @@ h1 {
         .home-directory-grid,
         .home-intelligence-grid,
         .home-agenda-grid,
+        .route-chain,
+        .route-chain-grid,
         .teams-grid,
         .players-grid,
         .articles-grid,
