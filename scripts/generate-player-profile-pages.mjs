@@ -22,9 +22,38 @@ function stripTags(value) {
   return String(value ?? "").replace(/<[^>]*>/g, "").trim();
 }
 
-function playerDescription(player) {
+function playerNeedsTransferReview(player) {
+  return ["transfer_needs_monitoring", "manual-review"].includes(String(player.dataStatus || ""));
+}
+
+function playerSeoTeamLabel(player) {
+  if (playerNeedsTransferReview(player)) {
+    return "Transfer Durumu Takipte";
+  }
+
+  return player.currentTeam || player.team || "Takım bilgisi yakında";
+}
+
+function playerTeamEyebrow(player) {
   const team = player.currentTeam || player.team || "Takım bilgisi yakında";
-  return `${player.name}; güncel takım ${team}, mevki ${player.position}. Transfer geçmişi, overall rating ${player.overallRating || player.aiRating || player.rating}, potansiyel ${player.potentialRating || "yakında"} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
+  if (playerNeedsTransferReview(player)) {
+    return `Takım durumu takipte: ${team}`;
+  }
+
+  return `Güncel takım: ${team}`;
+}
+
+function playerTeamMetaPhrase(player) {
+  const team = player.currentTeam || player.team || "Takım bilgisi yakında";
+  if (playerNeedsTransferReview(player)) {
+    return `son bilinen takım ${team}, transfer durumu takipte`;
+  }
+
+  return `güncel takım ${team}`;
+}
+
+function playerDescription(player) {
+  return `${player.name}; ${playerTeamMetaPhrase(player)}, mevki ${player.position}. Transfer geçmişi, overall rating ${player.overallRating || player.aiRating || player.rating}, potansiyel ${player.potentialRating || "yakında"} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
 }
 
 function playerCurrentTeam(player) {
@@ -120,9 +149,11 @@ function relatedLinks(currentId) {
 
 function pageHtml(player) {
   const team = player.currentTeam || player.team || "Takım bilgisi yakında";
+  const seoTeam = playerSeoTeamLabel(player);
   const age = player.computedAge || player.age || "Yaş yakında";
-  const title = `${player.name} Oyuncu Profili | ${team} | FutbolRadar`;
+  const title = `${player.name} Oyuncu Profili | ${seoTeam} | FutbolRadar`;
   const description = playerDescription(player);
+  const lead = playerNeedsTransferReview(player) ? description : player.summary || description;
   const canonical = `https://www.futbolradar.com/oyuncular/${player.id}.html`;
   const overall = player.overallRating || player.aiRating || player.rating || "-";
 
@@ -192,9 +223,9 @@ function pageHtml(player) {
       <section class="hero">
         <div class="hero-row">
           <div>
-            <span class="eyebrow">Güncel takım: ${escapeHtml(team)}</span>
+            <span class="eyebrow">${escapeHtml(playerTeamEyebrow(player))}</span>
             <h1>${escapeHtml(player.name)}</h1>
-            <p class="lead">${escapeHtml(player.summary || description)}</p>
+            <p class="lead">${escapeHtml(lead)}</p>
           </div>
           <span class="hero-meta">Overall ${escapeHtml(overall)} · ${escapeHtml(player.position)} · ${escapeHtml(age)}</span>
         </div>

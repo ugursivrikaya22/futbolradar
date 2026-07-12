@@ -607,6 +607,34 @@
     return (player && (player.currentTeam || player.team)) || "Takım bilgisi güncelleniyor";
   }
 
+  function playerNeedsTransferReview(player) {
+    var status = normalizeSearchText(player && player.dataStatus);
+    return status === "transfer_needs_monitoring" || status === "manual-review";
+  }
+
+  function playerTeamDisplay(player) {
+    var team = playerCurrentTeam(player);
+    return playerNeedsTransferReview(player) ? team + " (takipte)" : team;
+  }
+
+  function playerTeamInfoLabel(player) {
+    return playerNeedsTransferReview(player) ? "Takım durumu" : "Güncel takım";
+  }
+
+  function playerTeamEyebrow(player) {
+    var team = playerCurrentTeam(player);
+    return (playerNeedsTransferReview(player) ? "Takım durumu takipte: " : "Güncel takım: ") + team;
+  }
+
+  function playerSeoTeamLabel(player) {
+    return playerNeedsTransferReview(player) ? "Transfer Durumu Takipte" : playerCurrentTeam(player);
+  }
+
+  function playerTeamMetaPhrase(player) {
+    var team = playerCurrentTeam(player);
+    return playerNeedsTransferReview(player) ? "son bilinen takım " + team + ", transfer durumu takipte" : "güncel takım " + team;
+  }
+
   function playerAge(player) {
     return (player && (player.computedAge || calculateAgeFromBirthDate(player.birthDate) || player.age)) || null;
   }
@@ -794,7 +822,7 @@
   function playerMetaGridHtml(player) {
     return (
       '<div class="player-card-meta-grid">' +
-      compactMetricHtml("Guncel takim", playerCurrentTeam(player)) +
+      compactMetricHtml(playerTeamInfoLabel(player), playerTeamDisplay(player)) +
       compactMetricHtml("Mevki", player.position) +
       compactMetricHtml("Yas", playerAge(player)) +
       compactMetricHtml("Uyruk", player.nationality) +
@@ -808,12 +836,13 @@
     var score = displayValue(player.overallRating || player.aiRating || player.rating);
     var age = playerAge(player);
     var market = playerMarketValue(player) || "Piyasa degeri yakinda";
+    var teamLine = playerTeamEyebrow(player) + " - " + (player.league || "Lig bilgisi yakinda");
 
     return (
       '<header class="profile-hero profile-hero-pro">' +
       '<div class="profile-identity">' +
       playerAvatarHtml(player, "large") +
-      '<div><span>Guncel takim: ' + escapeHtml(team) + " - " + escapeHtml(player.league || "Lig bilgisi yakinda") + "</span>" +
+      '<div><span>' + escapeHtml(teamLine) + "</span>" +
       "<h1>" + escapeHtml(player.name) + "</h1>" +
       "<p>" + escapeHtml(playerInsight(player)) + "</p>" +
       '<div class="profile-hero-actions">' +
@@ -946,7 +975,7 @@
 
     return (
       '<div class="transfer-summary-grid">' +
-      compactMetricHtml("Guncel takim", playerCurrentTeam(player)) +
+      compactMetricHtml(playerTeamInfoLabel(player), playerTeamDisplay(player)) +
       compactMetricHtml("Eski kulup", formerCount ? formerCount + " kulup" : "Yakinda") +
       compactMetricHtml("Son hareket", latest ? (formatProfileDate(latest.date) || latest.season || "Yakinda") : "Yakinda") +
       compactMetricHtml("Piyasa", playerMarketValue(player) || "Yakinda") +
@@ -1472,7 +1501,7 @@
   }
 
   function renderPlayerHomeCard(player) {
-    var team = playerCurrentTeam(player);
+    var team = playerTeamDisplay(player);
     var position = displayValue(player.position, "Mevki bekleniyor");
 
     return (
@@ -1493,7 +1522,7 @@
   }
 
   function renderPlayerPageCard(player) {
-    var team = playerCurrentTeam(player);
+    var team = playerTeamDisplay(player);
     var rating = displayValue(player.overallRating || player.aiRating || player.rating);
     var position = displayValue(player.position, "Mevki bekleniyor");
     var role = playerPositionGroupLabel(playerPositionGroup(player));
@@ -1557,9 +1586,9 @@
   }
 
   function updatePlayerDetailMeta(player) {
-    var team = playerCurrentTeam(player);
+    var team = playerSeoTeamLabel(player);
     var title = player.name + " Oyuncu Profili | " + team + " | FutbolRadar";
-    var description = player.name + " oyuncu profili; güncel takım " + team + ", transfer geçmişi, AI rating, gol tehdidi, yaratıcılık ve form radarları.";
+    var description = player.name + " oyuncu profili; " + playerTeamMetaPhrase(player) + ", transfer geçmişi, AI rating, gol tehdidi, yaratıcılık ve form radarları.";
     var descriptionMeta = document.querySelector('meta[name="description"]');
     var ogTitle = document.querySelector('meta[property="og:title"]');
     var ogDescription = document.querySelector('meta[property="og:description"]');
@@ -1703,7 +1732,7 @@
       '<section class="profile-section similar-players"><h2>Benzer Oyuncular</h2>' +
       '<div class="similar-player-grid">' +
       similar.map(function (candidate) {
-        var team = playerCurrentTeam(candidate);
+        var team = playerTeamDisplay(candidate);
 
         return (
           '<article class="similar-player-card" data-card="similar-player" data-player="' + escapeHtml(candidate.id) + '">' +
@@ -1733,7 +1762,7 @@
       '<article class="profile-compare-card" data-card="profile-compare" data-player="' + escapeHtml(candidate.id) + '">' +
       '<span>' + escapeHtml(label) + '</span>' +
       '<strong>' + escapeHtml(candidate.name) + '</strong>' +
-      '<b>' + escapeHtml(playerCurrentTeam(candidate)) + " - " + escapeHtml(role) + '</b>' +
+      '<b>' + escapeHtml(playerTeamDisplay(candidate)) + " - " + escapeHtml(role) + '</b>' +
       '<p>' + escapeHtml(note || playerInsight(candidate)) + '</p>' +
       '<div class="profile-compare-actions">' +
       '<a href="' + escapeHtml(href) + '">Kiyasla</a>' +
@@ -1868,7 +1897,7 @@
 
   function playerUsageNote(player) {
     var role = playerScoutingRole(player);
-    var team = playerCurrentTeam(player);
+    var team = playerTeamDisplay(player);
 
     if (role.indexOf("gol") !== -1) {
       return team + " icin ceza sahasi bitiriciligi ve son vurus kalitesi one cikar.";
@@ -1977,6 +2006,8 @@
     }
 
     var team = playerCurrentTeam(player);
+    var visibleTeam = playerTeamDisplay(player);
+    var teamLabel = playerTeamInfoLabel(player);
     var age = playerAge(player);
     var marketValue = playerMarketValue(player);
     var transferTags = player.dataStatus === "manually_verified" ? [{ label: "Transfer doğrulandı", variant: "green" }] : [];
@@ -1993,7 +2024,7 @@
       playerWatchChecklistHtml(player) +
       profileCompareHubHtml(player, players) +
       profileSectionHtml("Profil Ozeti", [
-        profileItemHtml("Guncel takim", team),
+        profileItemHtml(teamLabel, visibleTeam),
         profileItemHtml("Mevki", player.position),
         profileItemHtml("Yas", age),
         profileItemHtml("Uyruk", player.nationality),
@@ -2031,7 +2062,7 @@
         profileItemHtml("Süreklilik", player.continuityScore, "Yakında")
       ]) +
       profileSectionHtml("Kariyer", [
-        profileItemHtml("Güncel takım", team),
+        profileItemHtml(teamLabel, visibleTeam),
         profileItemHtml("Eski kulüpler", playerFormerTeams(player), "Yakında"),
         profileItemHtml("Piyasa değeri", marketValue, "Piyasa değeri yakında"),
         profileItemHtml("Sözleşme", player.contractUntil, "Yakında"),
@@ -2930,7 +2961,7 @@
       '<strong>' + escapeHtml(displayValue(playerMarketValue(player) || "Yakinda")) + "</strong></header>" +
       '<div class="transfer-route transfer-route-large"><b>' + escapeHtml(fromTeam) + "</b><em>-></em><b>" + escapeHtml(toTeam) + "</b></div>" +
       '<div class="transfer-radar-meta">' +
-      compactMetricHtml("Guncel takim", playerCurrentTeam(player)) +
+      compactMetricHtml(playerTeamInfoLabel(player), playerTeamDisplay(player)) +
       compactMetricHtml("Son hareket", latest ? (formatProfileDate(latest.date) || latest.season || "Yakinda") : "Yakinda") +
       compactMetricHtml("Transfer tipi", transferTypeLabel(latest) || "Yakinda") +
       compactMetricHtml("Risk", transferRiskLabel(player)) +
@@ -3351,8 +3382,8 @@
       return "";
     }
 
-    var leftTeam = playerCurrentTeam(left);
-    var rightTeam = playerCurrentTeam(right);
+    var leftTeam = playerTeamDisplay(left);
+    var rightTeam = playerTeamDisplay(right);
 
     return (
       '<article class="compare-card">' +
@@ -3371,7 +3402,7 @@
   function comparePlayerSummaryHtml(player) {
     return (
       '<div class="compare-player">' +
-      "<span>" + escapeHtml(playerCurrentTeam(player)) + " - " + escapeHtml(player.position) + "</span>" +
+      "<span>" + escapeHtml(playerTeamDisplay(player)) + " - " + escapeHtml(player.position) + "</span>" +
       "<h2>" + escapeHtml(player.name) + "</h2>" +
       "<p>Yas " + escapeHtml(displayValue(playerAge(player))) + " - " + escapeHtml(displayValue(playerMarketValue(player))) + "</p>" +
       '<strong class="rating">' + escapeHtml(displayValue(player.overallRating || player.aiRating || player.rating)) + "</strong>" +
@@ -3662,7 +3693,7 @@
       }
 
       var options = players.map(function (player) {
-        return '<option value="' + escapeHtml(player.id) + '">' + escapeHtml(player.name) + " · " + escapeHtml(playerCurrentTeam(player)) + "</option>";
+        return '<option value="' + escapeHtml(player.id) + '">' + escapeHtml(player.name) + " · " + escapeHtml(playerTeamDisplay(player)) + "</option>";
       }).join("");
 
       var presets = comparePresetDefinitions(players);
@@ -3964,7 +3995,7 @@
       '<span>' + escapeHtml(item.label) + "</span>" +
       '<div class="team-player-spotlight-main">' +
       "<strong>" + escapeHtml(player.name) + "</strong>" +
-      "<em>" + escapeHtml(displayValue(player.position)) + " - " + escapeHtml(playerCurrentTeam(player)) + "</em>" +
+      "<em>" + escapeHtml(displayValue(player.position)) + " - " + escapeHtml(playerTeamDisplay(player)) + "</em>" +
       "</div>" +
       '<b>' + escapeHtml(displayValue(item.value)) + "</b>" +
       "<p>" + escapeHtml(item.note) + "</p>" +

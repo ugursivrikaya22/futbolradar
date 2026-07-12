@@ -27,6 +27,15 @@ function playerCurrentTeam(player) {
   return player.currentTeam || player.team || "Takim bilgisi yakinda";
 }
 
+function playerNeedsTransferReview(player) {
+  return ["transfer_needs_monitoring", "manual-review"].includes(String(player.dataStatus || ""));
+}
+
+function playerTeamDisplay(player) {
+  const team = playerCurrentTeam(player);
+  return playerNeedsTransferReview(player) ? `${team} (takipte)` : team;
+}
+
 function playerRating(player) {
   return Number(player.overallRating || player.aiRating || player.rating || 0);
 }
@@ -165,7 +174,7 @@ function playerMiniCard(player) {
     <span>${escapeHtml(player.position || "Mevki yakinda")}</span>
     <h2>${escapeHtml(player.name)}</h2>
     <dl>
-      <div><dt>Takim</dt><dd>${escapeHtml(playerCurrentTeam(player))}</dd></div>
+      <div><dt>Takim</dt><dd>${escapeHtml(playerTeamDisplay(player))}</dd></div>
       <div><dt>Lig</dt><dd>${escapeHtml(player.league || "Lig yakinda")}</dd></div>
       <div><dt>Overall</dt><dd>${escapeHtml(playerRating(player) || "Yakinda")}</dd></div>
       <div><dt>Piyasa</dt><dd>${escapeHtml(playerMarket(player))}</dd></div>
@@ -248,7 +257,7 @@ function pageHtml(pair) {
             <h1>${escapeHtml(left.name)} vs ${escapeHtml(right.name)}</h1>
             <p class="lead">${escapeHtml(description)}</p>
           </div>
-          <span class="hero-meta">${escapeHtml(playerCurrentTeam(left))} - ${escapeHtml(playerCurrentTeam(right))}</span>
+          <span class="hero-meta">${escapeHtml(playerTeamDisplay(left))} - ${escapeHtml(playerTeamDisplay(right))}</span>
         </div>
       </section>
 
