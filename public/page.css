@@ -5315,6 +5315,80 @@ h1 {
         background: rgba(0, 0, 0, 0.18);
       }
 
+      .transfer-watch-brief {
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+        border: 1px solid rgba(128, 255, 155, 0.18);
+        border-radius: var(--radius);
+        padding: 12px;
+        background:
+          linear-gradient(135deg, rgba(128, 255, 155, 0.09), rgba(77, 229, 255, 0.055)),
+          rgba(0, 0, 0, 0.2);
+      }
+
+      .transfer-watch-brief > div {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .transfer-watch-brief span {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 950;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+
+      .transfer-watch-brief strong {
+        color: var(--green);
+        font-size: 1.45rem;
+        line-height: 1;
+      }
+
+      .transfer-watch-brief em {
+        display: inline-flex;
+        min-height: 26px;
+        align-items: center;
+        border: 1px solid rgba(128, 255, 155, 0.18);
+        border-radius: 999px;
+        padding: 4px 9px;
+        color: #dfffea;
+        background: rgba(128, 255, 155, 0.08);
+        font-size: 0.76rem;
+        font-style: normal;
+        font-weight: 900;
+        white-space: nowrap;
+      }
+
+      .transfer-watch-brief i {
+        position: relative;
+        display: block;
+        height: 7px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .transfer-watch-brief i b {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: var(--value);
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--green), var(--cyan));
+        box-shadow: 0 0 20px rgba(128, 255, 155, 0.28);
+      }
+
+      .transfer-watch-brief p {
+        margin: 0;
+        color: #c8d9d5;
+        font-size: 0.84rem;
+        line-height: 1.5;
+      }
+
       .transfer-radar-meta {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));

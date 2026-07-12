@@ -2851,6 +2851,87 @@
     return "Standart takip";
   }
 
+  function transferHeatScore(player) {
+    var latest = latestTransferEvent(player);
+    var score = 22;
+    var market = Number(player && player.marketValueEur || 0);
+    var potential = Number(player && player.potentialRating || 0);
+    var formChange = Number(player && player.formChange || 0);
+    var historyCount = Array.isArray(player && player.transferHistory) ? player.transferHistory.length : 0;
+
+    if (playerNeedsDataRefresh(player)) {
+      score += 30;
+    }
+
+    if (latest && latest.note) {
+      score += 12;
+    }
+
+    if (latest && latest.date) {
+      var movedAt = new Date(String(latest.date).slice(0, 10) + "T00:00:00Z");
+      if (!Number.isNaN(movedAt.getTime())) {
+        var days = Math.max(0, Math.floor((Date.now() - movedAt.getTime()) / 86400000));
+        score += days <= 45 ? 18 : days <= 180 ? 10 : 4;
+      }
+    }
+
+    if (market >= 20000000) {
+      score += 14;
+    } else if (market >= 5000000) {
+      score += 8;
+    }
+
+    if (potential >= 85) {
+      score += 8;
+    }
+
+    if (formChange > 4) {
+      score += 6;
+    }
+
+    score += Math.min(8, historyCount * 2);
+    return Math.max(0, Math.min(99, Math.round(score)));
+  }
+
+  function transferHeatLabel(score) {
+    if (score >= 82) {
+      return "Çok sıcak";
+    }
+
+    if (score >= 65) {
+      return "Sıcak takip";
+    }
+
+    if (score >= 45) {
+      return "İzlemede";
+    }
+
+    return "Düşük sinyal";
+  }
+
+  function transferWatchReason(player) {
+    var latest = latestTransferEvent(player);
+    var status = normalizeSearchText(player && player.dataStatus);
+
+    if (status === "transfer_needs_monitoring") {
+      return "Kulüp durumu transfer takibinde.";
+    }
+
+    if (status === "manual-review" || status === "stale" || status === "mock_needs_verification") {
+      return "Kayıt manuel kontrol istiyor.";
+    }
+
+    if (latest && latest.note) {
+      return latest.note;
+    }
+
+    if (Array.isArray(player && player.formerTeams) && player.formerTeams.length >= 3) {
+      return "Eski kulüp geçmişi yoğun; güncel takım ayrımı izlenmeli.";
+    }
+
+    return "Transfer geçmişi ve piyasa sinyali izleniyor.";
+  }
+
   function transferRadarMatches(player, filter) {
     var latest = latestTransferEvent(player);
     var market = Number(player.marketValueEur || 0);
@@ -2955,11 +3036,13 @@
   function renderTransferRadarStats(players) {
     var list = Array.isArray(players) ? players : [];
     var risk = list.filter(playerNeedsDataRefresh).length;
+    var hot = list.filter(function (player) { return transferHeatScore(player) >= 65; }).length;
     var highValue = list.filter(function (player) { return Number(player.marketValueEur || 0) >= 20000000; }).length;
     var verified = list.filter(function (player) { return normalizeSearchText(player.dataStatus) === "manually_verified"; }).length;
 
     return (
       compactMetricHtml("Transfer kaydi", list.length) +
+      compactMetricHtml("Sicak takip", hot) +
       compactMetricHtml("Riskli takip", risk) +
       compactMetricHtml("20M+ piyasa", highValue) +
       compactMetricHtml("Dogrulanmis", verified)
@@ -2971,17 +3054,25 @@
     var fromTeam = latest && latest.fromTeam ? latest.fromTeam : "Eski kulup yakinda";
     var toTeam = latest && latest.toTeam ? latest.toTeam : playerCurrentTeam(player);
     var teams = Array.isArray(player.formerTeams) ? player.formerTeams.slice(0, 4) : [];
+    var heat = transferHeatScore(player);
+    var heatLabel = transferHeatLabel(heat);
+    var reason = transferWatchReason(player);
 
     return (
       '<article class="transfer-radar-card" data-card="transfer-player" data-player="' + escapeHtml(player.id) + '">' +
       '<header><div class="player-card-title">' + playerAvatarHtml(player) + '<div><span class="card-kicker">' + escapeHtml(player.league || "Lig yakinda") + "</span><h2>" + escapeHtml(player.name) + "</h2></div></div>" +
       '<strong>' + escapeHtml(displayValue(playerMarketValue(player) || "Yakinda")) + "</strong></header>" +
+      '<div class="transfer-watch-brief">' +
+      '<div><span>Transfer sicakligi</span><strong>' + escapeHtml(heat) + '</strong><em>' + escapeHtml(heatLabel) + '</em></div>' +
+      '<i style="--value:' + escapeHtml(heat) + '%"><b></b></i>' +
+      '<p>' + escapeHtml(reason) + '</p>' +
+      '</div>' +
       '<div class="transfer-route transfer-route-large"><b>' + escapeHtml(fromTeam) + "</b><em>-></em><b>" + escapeHtml(toTeam) + "</b></div>" +
       '<div class="transfer-radar-meta">' +
-      compactMetricHtml(playerTeamInfoLabel(player), playerTeamDisplay(player)) +
+      compactMetricHtml("Son bilinen", playerTeamDisplay(player)) +
       compactMetricHtml("Son hareket", latest ? (formatProfileDate(latest.date) || latest.season || "Yakinda") : "Yakinda") +
+      compactMetricHtml("Guncelleme riski", transferRiskLabel(player)) +
       compactMetricHtml("Transfer tipi", transferTypeLabel(latest) || "Yakinda") +
-      compactMetricHtml("Risk", transferRiskLabel(player)) +
       "</div>" +
       (teams.length ? '<div class="former-team-list">' + teams.map(function (team) { return '<span class="former-team-chip">' + escapeHtml(team) + "</span>"; }).join("") + "</div>" : "") +
       '<div class="player-status-row">' + statusBadgeHtml(player.dataStatus, "data") + statusBadgeHtml(player.ratingStatus, "rating") + "</div>" +
