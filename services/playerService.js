@@ -89,25 +89,25 @@ function normalizeStats(player) {
   const stats = player.stats && typeof player.stats === "object" ? player.stats : {};
 
   return {
-    appearances: normalizeNumber(stats.appearances ?? player.appearances, 0),
-    goals: normalizeNumber(stats.goals ?? player.goals, 0),
-    assists: normalizeNumber(stats.assists ?? player.assists, 0),
-    minutesPlayed: normalizeNumber(stats.minutesPlayed ?? player.minutesPlayed ?? player.minutes, 0),
-    minutes: normalizeNumber(stats.minutes ?? stats.minutesPlayed ?? player.minutes ?? player.minutesPlayed, 0),
-    yellowCards: normalizeNumber(stats.yellowCards ?? player.yellowCards, 0),
-    redCards: normalizeNumber(stats.redCards ?? player.redCards, 0),
+    appearances: normalizeNumber(stats.appearances ?? player.appearances, null),
+    goals: normalizeNumber(stats.goals ?? player.goals, null),
+    assists: normalizeNumber(stats.assists ?? player.assists, null),
+    minutesPlayed: normalizeNumber(stats.minutesPlayed ?? player.minutesPlayed ?? player.minutes, null),
+    minutes: normalizeNumber(stats.minutes ?? stats.minutesPlayed ?? player.minutes ?? player.minutesPlayed, null),
+    yellowCards: normalizeNumber(stats.yellowCards ?? player.yellowCards, null),
+    redCards: normalizeNumber(stats.redCards ?? player.redCards, null),
     passAccuracy: normalizeNumber(stats.passAccuracy ?? player.passAccuracy, null),
     shotsPerGame: normalizeNumber(stats.shotsPerGame ?? player.shotsPerGame, null),
     tacklesPerGame: normalizeNumber(stats.tacklesPerGame ?? player.tacklesPerGame, null),
     interceptionsPerGame: normalizeNumber(stats.interceptionsPerGame ?? player.interceptionsPerGame, null),
-    shots: normalizeNumber(stats.shots ?? player.shots, 0),
-    keyPasses: normalizeNumber(stats.keyPasses ?? player.keyPasses, 0),
-    xg: normalizeNumber(stats.xg ?? player.xg, 0),
-    xa: normalizeNumber(stats.xa ?? player.xa, 0),
-    duelsWon: normalizeNumber(stats.duelsWon ?? player.duelsWon ?? player.duels, 0),
-    pressures: normalizeNumber(stats.pressures ?? player.pressures ?? player.press, 0),
-    cleanSheets: normalizeNumber(stats.cleanSheets ?? player.cleanSheets, 0),
-    goalsConceded: normalizeNumber(stats.goalsConceded ?? player.goalsConceded, 0)
+    shots: normalizeNumber(stats.shots ?? player.shots, null),
+    keyPasses: normalizeNumber(stats.keyPasses ?? player.keyPasses, null),
+    xg: normalizeNumber(stats.xg ?? player.xg, null),
+    xa: normalizeNumber(stats.xa ?? player.xa, null),
+    duelsWon: normalizeNumber(stats.duelsWon ?? player.duelsWon ?? player.duels, null),
+    pressures: normalizeNumber(stats.pressures ?? player.pressures ?? player.press, null),
+    cleanSheets: normalizeNumber(stats.cleanSheets ?? player.cleanSheets, null),
+    goalsConceded: normalizeNumber(stats.goalsConceded ?? player.goalsConceded, null)
   };
 }
 
@@ -126,7 +126,7 @@ function normalizeSource(player) {
     fetchedAt,
     lastVerifiedAt,
     staleAfter: source.staleAfter || player.staleAfter || null,
-    confidence: source.confidence || player.confidence || null,
+    confidence: source.confidence ?? player.confidence ?? null,
     isFallback: source.isFallback === true || player.isFallback === true,
     lastSyncedAt: source.lastSyncedAt || player.lastSyncedAt || fetchedAt,
     note: source.note || player.sourceNote || DEFAULT_SOURCE_NOTE
@@ -204,7 +204,7 @@ function normalizePlayer(player, options) {
   const marketValue = player.marketValue || formatMarketValueEur(player.marketValueEur);
   const formerTeams = normalizeArray(player.formerTeams).filter((team) => normalizeText(team) !== normalizeText(currentTeam));
   const stats = normalizeStats(player);
-  const rawRating = player.rating || player.aiRating || player.overallRating || null;
+  const rawRating = player.rating ?? player.aiRating ?? player.overallRating ?? null;
   const minutesPlayed = stats.minutesPlayed;
   const positionGroup = player.positionGroup || resolvePositionGroup(player.position);
   const source = normalizeSource({
@@ -224,7 +224,7 @@ function normalizePlayer(player, options) {
     transferHistory: normalizeTransferHistory(player.transferHistory),
     birthDate: player.birthDate || null,
     computedAge,
-    age: computedAge || player.age || null,
+    age: computedAge ?? player.age ?? null,
     height,
     heightCm: player.heightCm || null,
     marketValue,
@@ -241,14 +241,14 @@ function normalizePlayer(player, options) {
     fetchedAt: source.fetchedAt || null,
     lastVerifiedAt: source.lastVerifiedAt || null,
     staleAfter: source.staleAfter || null,
-    confidence: source.confidence || null,
+    confidence: source.confidence ?? null,
     isFallback: source.isFallback === true,
     lastSyncedAt: source.lastSyncedAt || source.fetchedAt || null,
     source,
     positionGroup,
     stats,
     minutesPlayed,
-    minutes: player.minutes || minutesPlayed,
+    minutes: player.minutes ?? minutesPlayed,
     appearances: stats.appearances,
     goals: stats.goals,
     assists: stats.assists,
@@ -263,12 +263,12 @@ function normalizePlayer(player, options) {
     xg: stats.xg,
     xa: stats.xa,
     duelsWon: stats.duelsWon,
-    duels: player.duels || stats.duelsWon,
+    duels: player.duels ?? stats.duelsWon,
     pressures: stats.pressures,
-    press: player.press || stats.pressures,
+    press: player.press ?? stats.pressures,
     rating: rawRating,
-    aiRating: player.aiRating || rawRating,
-    overallRating: player.overallRating || rawRating
+    aiRating: player.aiRating ?? rawRating,
+    overallRating: player.overallRating ?? rawRating
   };
 
   const radar = normalizeRadar(player, base, options && options.context);
@@ -277,7 +277,7 @@ function normalizePlayer(player, options) {
 
   return {
     ...base,
-    rating: base.rating || rating,
+    rating: base.rating ?? rating,
     aiRating: rating,
     overallRating: rating,
     radar: {
@@ -293,8 +293,10 @@ function normalizePlayer(player, options) {
     similarPlayers: normalizeSimilarPlayers(player.similarPlayers),
     dataConflict: player.dataConflict || null,
     transferConflict: player.transferConflict || null,
+    isStale: Boolean(source.staleAfter && Date.parse(source.staleAfter) < Date.parse(atDate || new Date().toISOString())),
     needsReview: Boolean(
       player.needsReview ||
+      (source.staleAfter && Date.parse(source.staleAfter) < Date.parse(atDate || new Date().toISOString())) ||
       ["stale", "pending", "manual-review", "needs-review", "mock_needs_verification", "transfer_needs_monitoring"].includes(base.dataStatus)
     )
   };
@@ -653,9 +655,46 @@ function validatePlayerData(rawPlayers, options) {
 
 function updatePlayerTransfer(rawPlayers, update, now) {
   const list = Array.isArray(rawPlayers) ? rawPlayers : players;
+  if (!update || typeof update !== "object") {
+    throw new Error("Transfer guncellemesi nesne formatinda olmali.");
+  }
+
   const playerSlug = update.playerSlug || update.id || update.slug;
   const wanted = slug(playerSlug);
   const updatedAt = now || new Date().toISOString().slice(0, 10);
+
+  if (!wanted) {
+    throw new Error("Transfer guncellemesi icin playerSlug veya id gerekli.");
+  }
+
+  const target = list.find((player) => (player.id || player.slug || slug(player.name)) === wanted);
+  if (!target) {
+    throw new Error(`Oyuncu bulunamadi: ${wanted}`);
+  }
+
+  const nextTeam = update.toTeam || update.currentTeam;
+  if (!nextTeam || !String(nextTeam).trim()) {
+    throw new Error("Transfer guncellemesi icin toTeam gerekli.");
+  }
+
+  const transferDate = String(update.date || updatedAt).slice(0, 10);
+  if (Number.isNaN(Date.parse(`${transferDate}T00:00:00Z`))) {
+    throw new Error("Transfer tarihi gecerli bir YYYY-MM-DD tarihi olmali.");
+  }
+
+  const targetCurrentTeam = target.currentTeam || target.team || "";
+  if (update.fromTeam && normalizeText(update.fromTeam) !== normalizeText(targetCurrentTeam) && update.allowConflict !== true) {
+    throw new Error(`Transfer eski takimi currentTeam ile uyusmuyor: ${update.fromTeam} / ${targetCurrentTeam}`);
+  }
+
+  const latestTransferDate = normalizeArray(target.transferHistory)
+    .map((transfer) => String(transfer.date || "").slice(0, 10))
+    .filter(Boolean)
+    .sort()
+    .at(-1);
+  if (latestTransferDate && transferDate < latestTransferDate && update.allowHistorical !== true) {
+    throw new Error(`Transfer tarihi son kayittan eski: ${transferDate} < ${latestTransferDate}`);
+  }
 
   return list.map((player) => {
     const id = player.id || player.slug || slug(player.name);
@@ -663,11 +702,11 @@ function updatePlayerTransfer(rawPlayers, update, now) {
       return player;
     }
 
-    const currentTeam = update.toTeam || update.currentTeam;
+    const currentTeam = nextTeam;
     const previousTeam = update.fromTeam || player.currentTeam || player.team || "";
     const formerTeams = normalizeArray(player.formerTeams).concat(previousTeam).filter(Boolean);
     const transfer = {
-      date: update.date || updatedAt,
+      date: transferDate,
       fromTeam: previousTeam || null,
       toTeam: currentTeam,
       type: update.type || update.transferType || inferTransferType(update),

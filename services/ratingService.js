@@ -16,8 +16,12 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, number));
 }
 
+function hasNumber(value) {
+  return value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value));
+}
+
 function average(values, fallback) {
-  const safe = values.map(Number).filter((value) => Number.isFinite(value));
+  const safe = values.filter(hasNumber).map(Number);
   if (!safe.length) {
     return fallback;
   }
@@ -26,16 +30,20 @@ function average(values, fallback) {
 }
 
 function score(value, max) {
+  if (!hasNumber(value) || !hasNumber(max) || Number(max) === 0) {
+    return null;
+  }
+
   return clamp((Number(value) / Number(max || 1)) * 100, 0, 100);
 }
 
 function numberFrom(player, keys, fallback) {
-  const key = keys.find((item) => Number.isFinite(Number(player[item])));
+  const key = keys.find((item) => hasNumber(player[item]));
   return key ? Number(player[key]) : fallback;
 }
 
 function statValue(player, key, fallback) {
-  if (player.stats && Number.isFinite(Number(player.stats[key]))) {
+  if (player.stats && hasNumber(player.stats[key])) {
     return Number(player.stats[key]);
   }
 
@@ -117,16 +125,21 @@ function formScore(player) {
 }
 
 function disciplineScore(player) {
-  const yellow = statValue(player, "yellowCards", 0);
-  const red = statValue(player, "redCards", 0);
-  const appearances = Math.max(1, statValue(player, "appearances", 12));
+  const yellow = statValue(player, "yellowCards", null);
+  const red = statValue(player, "redCards", null);
+  const appearancesValue = statValue(player, "appearances", null);
+  if (![yellow, red, appearancesValue].every(hasNumber)) {
+    return 65;
+  }
+
+  const appearances = Math.max(1, appearancesValue);
   const cardLoad = (yellow / appearances) * 30 + red * 18;
   return clamp(100 - cardLoad, 0, 100);
 }
 
 function durabilityScore(player) {
-  const minutes = statValue(player, "minutesPlayed", Number(player.minutes || 0));
-  const appearances = statValue(player, "appearances", 0);
+  const minutes = statValue(player, "minutesPlayed", hasNumber(player.minutes) ? Number(player.minutes) : null);
+  const appearances = statValue(player, "appearances", null);
   const minutesScore = score(minutes, 900);
   const appearanceScore = score(appearances, 20);
   const stamina = Number(player.staminaRating);
@@ -159,16 +172,16 @@ function dataConfidenceScore(player) {
 function computePlayerRadar(player, context) {
   const group = positionGroup(player.position);
   const stats = player.stats || {};
-  const goals = statValue(player, "goals", 0);
-  const assists = statValue(player, "assists", 0);
-  const shots = Number(player.shots || stats.shots || 0);
-  const keyPasses = Number(player.keyPasses || stats.keyPasses || 0);
-  const xg = Number(player.xg || stats.xg || 0);
-  const xa = Number(player.xa || stats.xa || 0);
-  const tackles = Number(player.tacklesPerGame || stats.tacklesPerGame || 0);
-  const interceptions = Number(player.interceptionsPerGame || stats.interceptionsPerGame || 0);
-  const cleanSheets = Number(player.cleanSheets || stats.cleanSheets || 0);
-  const goalsConceded = Number(player.goalsConceded || stats.goalsConceded || 0);
+  const goals = statValue(player, "goals", null);
+  const assists = statValue(player, "assists", null);
+  const shots = numberFrom({ value: player.shots ?? stats.shots }, ["value"], null);
+  const keyPasses = numberFrom({ value: player.keyPasses ?? stats.keyPasses }, ["value"], null);
+  const xg = numberFrom({ value: player.xg ?? stats.xg }, ["value"], null);
+  const xa = numberFrom({ value: player.xa ?? stats.xa }, ["value"], null);
+  const tackles = numberFrom({ value: player.tacklesPerGame ?? stats.tacklesPerGame }, ["value"], null);
+  const interceptions = numberFrom({ value: player.interceptionsPerGame ?? stats.interceptionsPerGame }, ["value"], null);
+  const cleanSheets = numberFrom({ value: player.cleanSheets ?? stats.cleanSheets }, ["value"], null);
+  const goalsConceded = numberFrom({ value: player.goalsConceded ?? stats.goalsConceded }, ["value"], null);
   const existingRadar = player.radar && typeof player.radar === "object" ? player.radar : {};
 
   const attack = clamp(average([
@@ -200,7 +213,7 @@ function computePlayerRadar(player, context) {
     score(tackles, group === "defender" || group === "midfielder" ? 2.6 : 1.4),
     score(interceptions, group === "defender" ? 2.2 : 1.2),
     group === "goalkeeper" ? score(cleanSheets, 10) : null,
-    group === "goalkeeper" ? clamp(100 - goalsConceded * 8, 0, 100) : null,
+    group === "goalkeeper" && hasNumber(goalsConceded) ? clamp(100 - goalsConceded * 8, 0, 100) : null,
     context && context.teamDefense
   ], group === "forward" || group === "winger" ? 48 : 62), 0, 100);
 

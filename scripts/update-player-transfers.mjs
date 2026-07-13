@@ -90,7 +90,13 @@ try {
   process.exit(1);
 }
 
-const nextPlayers = updatePlayerTransfer(players, update);
+let nextPlayers;
+try {
+  nextPlayers = updatePlayerTransfer(players, update);
+} catch (error) {
+  console.error(`Transfer update rejected: ${error.message}`);
+  process.exit(1);
+}
 const result = validatePlayerData(nextPlayers);
 
 if (!result.ok) {

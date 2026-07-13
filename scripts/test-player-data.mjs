@@ -41,4 +41,41 @@ assert.equal(movedKerem.transferHistory.at(-1).toTeam, "Test Spor");
 assert.equal(movedKerem.lastUpdatedAt, "2026-07-13");
 assert.ok(validatePlayerData(moved, { enforceKnownTransfers: false }).ok, "transfer update must preserve a valid player collection");
 
+assert.throws(
+  () => updatePlayerTransfer(players, { playerSlug: "missing-player", toTeam: "Test Spor" }, "2026-07-13"),
+  /Oyuncu bulunamadi/,
+  "missing players must not result in a silent successful transfer"
+);
+assert.throws(
+  () => updatePlayerTransfer(players, {
+    playerSlug: "kerem-akturkoglu",
+    fromTeam: "Yanlis Takim",
+    toTeam: "Test Spor",
+    date: "2026-07-13"
+  }, "2026-07-13"),
+  /currentTeam ile uyusmuyor/,
+  "conflicting source clubs must require an explicit override"
+);
+assert.throws(
+  () => updatePlayerTransfer(players, {
+    playerSlug: "kerem-akturkoglu",
+    toTeam: "Test Spor",
+    date: "2020-01-01"
+  }, "2026-07-13"),
+  /son kayittan eski/,
+  "backdated transfers must not silently replace the current club"
+);
+
+const incomplete = normalizePlayer({
+  id: "incomplete-player",
+  name: "Eksik Oyuncu",
+  currentTeam: "Test SK",
+  position: "Forvet",
+  staleAfter: "2026-01-01T00:00:00Z"
+}, { atDate: "2026-07-13" });
+assert.equal(incomplete.stats.goals, null, "missing goals must stay unknown");
+assert.equal(incomplete.stats.minutesPlayed, null, "missing minutes must stay unknown");
+assert.equal(incomplete.isStale, true, "expired player records must be marked stale");
+assert.equal(incomplete.needsReview, true, "expired player records must require review");
+
 console.log("FutbolRadar player data tests passed");
