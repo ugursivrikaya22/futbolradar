@@ -113,13 +113,22 @@ function normalizeStats(player) {
 
 function normalizeSource(player) {
   const source = player.source && typeof player.source === "object" ? player.source : {};
+  const lastUpdatedAt = player.lastUpdatedAt || player.lastUpdated || null;
+  const fetchedAt = source.fetchedAt || player.fetchedAt || player.lastSyncedAt || lastUpdatedAt;
+  const lastVerifiedAt = source.lastVerifiedAt || player.lastVerifiedAt || player.verifiedAt || null;
 
   return {
     provider: source.provider || player.providerName || "FutbolRadar Player Data Layer",
     providerId: source.providerId || player.providerId || null,
+    sourceUrl: source.sourceUrl || player.sourceUrl || null,
     status: source.status || player.dataStatus || "mock_needs_verification",
     ratingStatus: source.ratingStatus || player.ratingStatus || "estimated",
-    lastSyncedAt: source.lastSyncedAt || player.lastSyncedAt || new Date().toISOString(),
+    fetchedAt,
+    lastVerifiedAt,
+    staleAfter: source.staleAfter || player.staleAfter || null,
+    confidence: source.confidence || player.confidence || null,
+    isFallback: source.isFallback === true || player.isFallback === true,
+    lastSyncedAt: source.lastSyncedAt || player.lastSyncedAt || fetchedAt,
     note: source.note || player.sourceNote || DEFAULT_SOURCE_NOTE
   };
 }
@@ -189,6 +198,7 @@ function normalizePlayer(player, options) {
   const atDate = options && options.atDate ? options.atDate : undefined;
   const id = player.id || player.slug || slug(player.name);
   const currentTeam = player.currentTeam || player.team || "";
+  const currentTeamId = player.currentTeamId || player.teamId || (currentTeam ? slug(currentTeam) : null);
   const computedAge = calculateAge(player.birthDate, atDate);
   const height = player.height || (player.heightCm ? `${player.heightCm} cm` : null);
   const marketValue = player.marketValue || formatMarketValueEur(player.marketValueEur);
@@ -208,6 +218,7 @@ function normalizePlayer(player, options) {
     slug: player.slug || id,
     fullName: player.fullName || player.name,
     currentTeam,
+    currentTeamId,
     team: currentTeam,
     formerTeams,
     transferHistory: normalizeTransferHistory(player.transferHistory),
@@ -224,9 +235,15 @@ function normalizePlayer(player, options) {
     sourceNote: player.sourceNote || DEFAULT_SOURCE_NOTE,
     providerName: player.providerName || "FutbolRadar Player Data Layer",
     providerId: player.providerId || `mock-${id}`,
-    lastUpdated: player.lastUpdated || new Date().toISOString().slice(0, 10),
-    transferUpdatedAt: player.transferUpdatedAt || player.lastUpdated || new Date().toISOString().slice(0, 10),
-    lastSyncedAt: player.lastSyncedAt || new Date().toISOString(),
+    lastUpdatedAt: player.lastUpdatedAt || player.lastUpdated || source.lastVerifiedAt || source.fetchedAt || null,
+    lastUpdated: player.lastUpdated || String(player.lastUpdatedAt || source.lastVerifiedAt || source.fetchedAt || "").slice(0, 10) || null,
+    transferUpdatedAt: player.transferUpdatedAt || player.lastUpdatedAt || player.lastUpdated || null,
+    fetchedAt: source.fetchedAt || null,
+    lastVerifiedAt: source.lastVerifiedAt || null,
+    staleAfter: source.staleAfter || null,
+    confidence: source.confidence || null,
+    isFallback: source.isFallback === true,
+    lastSyncedAt: source.lastSyncedAt || source.fetchedAt || null,
     source,
     positionGroup,
     stats,
@@ -275,7 +292,11 @@ function normalizePlayer(player, options) {
     weaknesses: deriveWeaknesses(base, radar),
     similarPlayers: normalizeSimilarPlayers(player.similarPlayers),
     dataConflict: player.dataConflict || null,
-    transferConflict: player.transferConflict || null
+    transferConflict: player.transferConflict || null,
+    needsReview: Boolean(
+      player.needsReview ||
+      ["stale", "pending", "manual-review", "needs-review", "mock_needs_verification", "transfer_needs_monitoring"].includes(base.dataStatus)
+    )
   };
 }
 
@@ -385,7 +406,7 @@ function mergePlayerWithProvider(localPlayer, providerPlayer, providerName) {
     providerSnapshot: {
       provider: providerName || provider.providerName || "provider",
       providerId: provider.providerId || provider.id || null,
-      lastSyncedAt: provider.lastSyncedAt || new Date().toISOString()
+      lastSyncedAt: provider.lastSyncedAt || provider.fetchedAt || null
     }
   };
 
@@ -441,7 +462,9 @@ function mergePlayerWithProvider(localPlayer, providerPlayer, providerName) {
   merged.formerTeams = Array.from(new Set(normalizeArray(local.formerTeams).concat(normalizeArray(provider.formerTeams))))
     .filter((team) => normalizeText(team) !== normalizeText(merged.currentTeam));
   merged.transferHistory = mergeTransferHistory(local.transferHistory, provider.transferHistory);
-  merged.lastSyncedAt = provider.lastSyncedAt || new Date().toISOString();
+  merged.lastSyncedAt = provider.lastSyncedAt || provider.fetchedAt || merged.lastSyncedAt || null;
+  merged.lastUpdatedAt = provider.lastUpdatedAt || provider.lastUpdated || provider.lastVerifiedAt || merged.lastUpdatedAt || merged.lastUpdated || null;
+  merged.lastUpdated = String(merged.lastUpdatedAt || merged.lastUpdated || "").slice(0, 10) || null;
 
   const latest = merged.transferHistory[merged.transferHistory.length - 1];
   if (latest && latest.toTeam && normalizeText(latest.toTeam) !== normalizeText(merged.currentTeam)) {
@@ -491,7 +514,7 @@ function mergeProviderTransfers(localTransfers, providerTransfers) {
   return merged.sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
 }
 
-function validatePlayerData(rawPlayers) {
+function validatePlayerData(rawPlayers, options) {
   const errors = [];
   const warnings = [];
   const seenIds = new Set();
@@ -519,6 +542,10 @@ function validatePlayerData(rawPlayers) {
       errors.push(`${label}: currentTeam eksik.`);
     }
 
+    if (player.currentTeamId && player.currentTeamId !== slug(player.currentTeam)) {
+      errors.push(`${label}: currentTeamId currentTeam ile uyumlu olmali.`);
+    }
+
     if (!player.position) {
       errors.push(`${label}: position eksik.`);
     }
@@ -541,7 +568,7 @@ function validatePlayerData(rawPlayers) {
       errors.push(`${label}: birthDate geçersiz.`);
     }
 
-    if (!player.lastUpdated) {
+    if (!player.lastUpdatedAt && !player.lastUpdated) {
       warnings.push(`${label}: lastUpdated eksik.`);
     }
 
@@ -604,19 +631,21 @@ function validatePlayerData(rawPlayers) {
     }
   });
 
-  const kerem = list.find((player) => player.id === "kerem-akturkoglu");
-  if (!kerem || normalizeText(kerem.currentTeam) !== normalizeText("Fenerbahce")) {
-    errors.push("Kerem Akturkoglu: currentTeam Fenerbahce olmali.");
-  }
+  if (!options || options.enforceKnownTransfers !== false) {
+    const kerem = list.find((player) => player.id === "kerem-akturkoglu");
+    if (!kerem || normalizeText(kerem.currentTeam) !== normalizeText("Fenerbahce")) {
+      errors.push("Kerem Akturkoglu: currentTeam Fenerbahce olmali.");
+    }
 
-  const ugurcan = list.find((player) => player.id === "ugurcan-cakir");
-  if (!ugurcan || normalizeText(ugurcan.currentTeam) !== normalizeText("Galatasaray")) {
-    errors.push("Ugurcan Cakir: currentTeam Galatasaray olmali.");
-  }
+    const ugurcan = list.find((player) => player.id === "ugurcan-cakir");
+    if (!ugurcan || normalizeText(ugurcan.currentTeam) !== normalizeText("Galatasaray")) {
+      errors.push("Ugurcan Cakir: currentTeam Galatasaray olmali.");
+    }
 
-  const dzeko = list.find((player) => player.id === "edin-dzeko");
-  if (!dzeko || normalizeText(dzeko.currentTeam).indexOf(normalizeText("Schalke")) === -1 || normalizeText(dzeko.league).indexOf(normalizeText("Bundesliga")) === -1) {
-    errors.push("Edin Dzeko: currentTeam Schalke 04 ve league 2. Bundesliga olmali.");
+    const dzeko = list.find((player) => player.id === "edin-dzeko");
+    if (!dzeko || normalizeText(dzeko.currentTeam).indexOf(normalizeText("Schalke")) === -1 || normalizeText(dzeko.league).indexOf(normalizeText("Bundesliga")) === -1) {
+      errors.push("Edin Dzeko: currentTeam Schalke 04 ve league 2. Bundesliga olmali.");
+    }
   }
 
   return { ok: errors.length === 0, errors, warnings };
@@ -637,7 +666,7 @@ function updatePlayerTransfer(rawPlayers, update, now) {
     const currentTeam = update.toTeam || update.currentTeam;
     const previousTeam = update.fromTeam || player.currentTeam || player.team || "";
     const formerTeams = normalizeArray(player.formerTeams).concat(previousTeam).filter(Boolean);
-    const transferHistory = normalizeArray(player.transferHistory).concat({
+    const transfer = {
       date: update.date || updatedAt,
       fromTeam: previousTeam || null,
       toTeam: currentTeam,
@@ -646,18 +675,22 @@ function updatePlayerTransfer(rawPlayers, update, now) {
       feeLabel: update.feeLabel || formatMarketValueEur(update.feeEur) || "Bilinmiyor",
       source: update.source || "manual",
       note: update.note || ""
-    });
+    };
+    const transferHistory = mergeTransferHistory(player.transferHistory, [transfer]);
 
     return {
       ...player,
       currentTeam,
+      currentTeamId: update.currentTeamId || slug(currentTeam),
       team: currentTeam,
       league: update.league || player.league,
       contractUntil: update.contractUntil || player.contractUntil,
       formerTeams: Array.from(new Set(formerTeams.filter((team) => normalizeText(team) !== normalizeText(currentTeam)))),
       transferHistory,
       transferUpdatedAt: updatedAt,
+      lastUpdatedAt: updatedAt,
       lastUpdated: updatedAt,
+      lastSyncedAt: updatedAt,
       dataStatus: update.dataStatus || "manually_verified"
     };
   });
