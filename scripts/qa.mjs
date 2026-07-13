@@ -73,7 +73,7 @@ const pages = [
   "analizler.html"
 ];
 const endpoints = ["matches", "standings", "teams", "players", "player-detail", "player-compare", "player-rankings", "transfers", "squad", "match-detail", "momentum", "signals", "analyses", "health"];
-const skipDirs = new Set([".git", ".agents", ".codex", "node_modules", "work", "outputs"]);
+const skipDirs = new Set([".git", ".agents", ".codex", ".vercel", "node_modules", "work", "outputs"]);
 const VERCEL_HOBBY_FUNCTION_LIMIT = 12;
 const appFeatureMarkers = [
   "scoutingSnapshotHtml",
@@ -548,6 +548,40 @@ function checkClientSecrets() {
   }
 }
 
+function checkPublicCopyAndAccessibility() {
+  const publicFiles = walk(root, (full) => {
+    return full.endsWith(".html") || path.basename(full) === "app.js";
+  });
+  const forbiddenCopy = [
+    "JSON veri",
+    "API verisi",
+    "API uyumlu",
+    "Provider ID",
+    "gerçek oyuncu API",
+    "gercek oyuncu API"
+  ];
+
+  for (const file of publicFiles) {
+    const content = fs.readFileSync(file, "utf8");
+    for (const marker of forbiddenCopy) {
+      expect(!content.toLocaleLowerCase("tr-TR").includes(marker.toLocaleLowerCase("tr-TR")),
+        `public copy leaks internal wording '${marker}' in ${path.relative(root, file)}`);
+    }
+
+    if (file.endsWith(".html")) {
+      for (const image of content.matchAll(/<img\b[^>]*>/gi)) {
+        expect(/\balt\s*=/.test(image[0]), `${path.relative(root, file)}: image missing alt text`);
+      }
+      for (const button of content.matchAll(/<button\b[^>]*>/gi)) {
+        expect(/\btype\s*=/.test(button[0]), `${path.relative(root, file)}: button missing type`);
+      }
+    }
+  }
+
+  const css = fs.readFileSync(path.join(root, "page.css"), "utf8");
+  expect(css.includes(":focus-visible"), "page.css: visible keyboard focus style missing");
+}
+
 async function callEndpoint(name, url = `/api/${name}`) {
   const directPath = path.join(root, "api", `${name}.js`);
   const modulePath = fs.existsSync(directPath) ? directPath : path.join(root, "api", "[...route].js");
@@ -712,6 +746,7 @@ checkJavaScriptSyntax();
 checkJson();
 checkSeoAndLinks();
 checkClientSecrets();
+checkPublicCopyAndAccessibility();
 await checkApi();
 
 if (failures.length) {

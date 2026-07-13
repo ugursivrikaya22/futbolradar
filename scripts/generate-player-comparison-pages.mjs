@@ -185,8 +185,8 @@ function playerMiniCard(player) {
 
 function pageHtml(pair) {
   const { left, right, slug, reasons } = pair;
-  const title = `${left.name} vs ${right.name} | Oyuncu Karsilastirmasi | FutbolRadar`;
-  const description = `${left.name} ve ${right.name} oyuncu karsilastirmasi; AI rating, form, gol tehdidi, yaraticilik, pres gucu, piyasa degeri ve transfer bilgileriyle FutbolRadar'da analiz edilir.`;
+  const title = `${left.name} vs ${right.name} | Oyuncu Karşılaştırması | FutbolRadar`;
+  const description = `${left.name} ve ${right.name} oyuncu karşılaştırması; AI rating, form, gol tehdidi, yaratıcılık, pres gücü, piyasa değeri ve transfer bilgileriyle FutbolRadar'da analiz edilir.`;
   const canonical = `${domain}/karsilastirma/${slug}.html`;
   const insights = comparisonInsight(left, right);
 
@@ -232,7 +232,7 @@ function pageHtml(pair) {
             "@type": "BreadcrumbList",
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: `${domain}/` },
-              { "@type": "ListItem", position: 2, name: "Oyuncu Karsilastirmalari", item: `${domain}/oyuncu-karsilastirmalari.html` },
+              { "@type": "ListItem", position: 2, name: "Oyuncu Karşılaştırmaları", item: `${domain}/oyuncu-karsilastirmalari.html` },
               { "@type": "ListItem", position: 3, name: `${left.name} vs ${right.name}`, item: canonical }
             ]
           }
@@ -247,9 +247,9 @@ function pageHtml(pair) {
     <header class="topbar">
       <nav class="container nav" aria-label="Ana menu">
         <a class="brand" href="../index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
-        <button class="nav-toggle" type="button" aria-label="Menuyu ac" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
+        <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
         <div class="nav-menu" id="primary-menu">
-          <div class="nav-links"><a href="../bugunun-maclari.html">Bugunku Maclar</a><a href="../canli-skor.html">Canli Skor</a><a href="../puan-durumu.html">Puan Durumu</a><a href="../takimlar.html">Takimlar</a><a href="../oyuncu-radari.html">Oyuncu Radar</a><a href="../momentum.html">Momentum</a></div>
+          <div class="nav-links"><a href="../bugunun-maclari.html">Bugünkü Maçlar</a><a href="../canli-skor.html">Canlı Skor</a><a href="../puan-durumu.html">Puan Durumu</a><a href="../takimlar.html">Takımlar</a><a href="../oyuncu-radari.html">Oyuncu Radarı</a><a href="../momentum.html">Momentum</a></div>
           <a class="cta" href="../index.html#radar-sinyalleri">Radar Sinyalleri</a>
         </div>
       </nav>
@@ -258,14 +258,14 @@ function pageHtml(pair) {
       <nav class="breadcrumb" aria-label="Sayfa yolu">
         <a href="../index.html">Ana Sayfa</a>
         <span>/</span>
-        <a href="../oyuncu-karsilastir.html">Oyuncu Karsilastirma</a>
+        <a href="../oyuncu-karsilastir.html">Oyuncu Karşılaştırma</a>
         <span>/</span>
         <span>${escapeHtml(left.name)} vs ${escapeHtml(right.name)}</span>
       </nav>
       <section class="hero comparison-hero">
         <div class="hero-row">
           <div>
-            <span class="eyebrow">Oyuncu karsilastirma radari</span>
+            <span class="eyebrow">Oyuncu karşılaştırma radarı</span>
             <h1>${escapeHtml(left.name)} vs ${escapeHtml(right.name)}</h1>
             <p class="lead">${escapeHtml(description)}</p>
           </div>
@@ -273,11 +273,11 @@ function pageHtml(pair) {
         </div>
       </section>
 
-      <section class="static-comparison-summary" aria-label="Statik karsilastirma ozeti">
+      <section class="static-comparison-summary" aria-label="Statik karşılaştırma özeti">
         ${playerMiniCard(left)}
         <article class="comparison-mini-card comparison-mini-card-accent">
           <span>Radar Notu</span>
-          <h2>Kiyas Ozeti</h2>
+          <h2>Kıyas Özeti</h2>
           <ul>
             ${insights.map((item) => `<li>${escapeHtml(item)}</li>`).join("\n            ")}
           </ul>
@@ -288,20 +288,20 @@ function pageHtml(pair) {
 
       <section class="compare-grid" data-api-target="player-compare" data-compare-seed="${escapeHtml(left.id)},${escapeHtml(right.id)}">
         <article class="data-empty" data-card="empty-state">
-          <strong>Karsilastirma yukleniyor</strong>
-          <span>Oyuncu radar metrikleri hazirlaniyor.</span>
+          <strong>Karşılaştırma yükleniyor</strong>
+          <span>Oyuncu radar metrikleri hazırlanıyor.</span>
         </article>
       </section>
 
-      <section class="comparison-seo-links" aria-label="Ilgili karsilastirma linkleri">
+      <section class="comparison-seo-links" aria-label="İlgili karşılaştırma bağlantıları">
         <span>Devam et</span>
         <a href="../oyuncular/${escapeHtml(left.id)}.html">${escapeHtml(left.name)} profili</a>
         <a href="../oyuncular/${escapeHtml(right.id)}.html">${escapeHtml(right.name)} profili</a>
-        <a href="../oyuncu-radari.html">Oyuncu Radar</a>
+        <a href="../oyuncu-radari.html">Oyuncu Radarı</a>
         <a href="../oyuncu-karsilastir.html?players=${escapeHtml(left.id)},${escapeHtml(right.id)}">Interaktif kiyas</a>
       </section>
     </main>
-    <footer class="footer"><div class="container footer-links">FutbolRadar - Oyuncu karsilastirmalari - <a href="../hakkinda.html">Hakkinda</a> - <a href="../veri-notu.html">Veri Notu</a> - <a href="../iletisim.html">Iletisim</a></div></footer>
+    <footer class="footer"><div class="container footer-links">FutbolRadar · Oyuncu karşılaştırmaları · <a href="../hakkinda.html">Hakkında</a> · <a href="../veri-notu.html">Veri Notu</a> · <a href="../iletisim.html">İletişim</a></div></footer>
     <script src="../site.js" defer></script>
     <script src="../app.js" defer></script>
   </body>
@@ -325,8 +325,8 @@ function comparisonIndexCard(pair) {
 }
 
 function comparisonIndexHtml(pairs) {
-  const title = "Oyuncu Karsilastirmalari | Statik Kiyaslar | FutbolRadar";
-  const description = "FutbolRadar oyuncu karsilastirmalari; Super Lig oyuncularini AI rating, form, rol etkisi, piyasa degeri ve transfer sinyalleriyle yan yana inceler.";
+  const title = "Oyuncu Karşılaştırmaları | Statik Kıyaslar | FutbolRadar";
+  const description = "FutbolRadar oyuncu karşılaştırmaları; Süper Lig oyuncularını AI rating, form, rol etkisi, piyasa değeri ve transfer sinyalleriyle yan yana inceler.";
   const canonical = `${domain}/oyuncu-karsilastirmalari.html`;
   const topPairs = pairs.slice(0, 20);
 
@@ -379,37 +379,37 @@ function comparisonIndexHtml(pairs) {
     <header class="topbar">
       <nav class="container nav" aria-label="Ana menu">
         <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
-        <button class="nav-toggle" type="button" aria-label="Menuyu ac" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
+        <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
         <div class="nav-menu" id="primary-menu">
-          <div class="nav-links"><a href="./bugunun-maclari.html">Bugunku Maclar</a><a href="./canli-skor.html">Canli Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takimlar.html">Takimlar</a><a href="./oyuncu-radari.html">Oyuncu Radar</a><a href="./momentum.html">Momentum</a></div>
+          <div class="nav-links"><a href="./bugunun-maclari.html">Bugünkü Maçlar</a><a href="./canli-skor.html">Canlı Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takimlar.html">Takımlar</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./momentum.html">Momentum</a></div>
           <a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a>
         </div>
       </nav>
     </header>
     <main class="container comparison-index-page">
-      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><a href="./oyuncu-radari.html">Oyuncu Radar</a><span>/</span><span>Oyuncu Karsilastirmalari</span></nav>
+      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><a href="./oyuncu-radari.html">Oyuncu Radarı</a><span>/</span><span>Oyuncu Karşılaştırmaları</span></nav>
       <section class="hero">
         <div class="hero-row">
           <div>
-            <span class="eyebrow">Statik oyuncu karsilastirma merkezi</span>
-            <h1>Oyuncu Karsilastirmalari</h1>
+            <span class="eyebrow">Oyuncu karşılaştırma merkezi</span>
+            <h1>Oyuncu Karşılaştırmaları</h1>
             <p class="lead">${escapeHtml(description)}</p>
           </div>
-          <span class="hero-meta">${escapeHtml(topPairs.length)} hazir kiyas</span>
+          <span class="hero-meta">${escapeHtml(topPairs.length)} hazır kıyas</span>
         </div>
       </section>
-      <section class="comparison-index-grid" aria-label="Hazir oyuncu karsilastirmalari">
+      <section class="comparison-index-grid" aria-label="Hazır oyuncu karşılaştırmaları">
         ${topPairs.map(comparisonIndexCard).join("\n        ")}
       </section>
-      <section class="comparison-seo-links" aria-label="Oyuncu karsilastirma gezinme">
+      <section class="comparison-seo-links" aria-label="Oyuncu karşılaştırma gezinme">
         <span>Devam et</span>
-        <a href="./oyuncu-radari.html">Oyuncu Radar</a>
-        <a href="./oyuncu-karsilastir.html">Interaktif kiyas</a>
+        <a href="./oyuncu-radari.html">Oyuncu Radarı</a>
+        <a href="./oyuncu-karsilastir.html">İnteraktif kıyas</a>
         <a href="./oyuncular/en-iyi-oyuncular.html">En iyi oyuncular</a>
         <a href="./transfer-radari.html">Transfer Radar</a>
       </section>
     </main>
-    <footer class="footer"><div class="container footer-links">FutbolRadar - Oyuncu karsilastirmalari - <a href="./hakkinda.html">Hakkinda</a> - <a href="./veri-notu.html">Veri Notu</a> - <a href="./iletisim.html">Iletisim</a></div></footer>
+    <footer class="footer"><div class="container footer-links">FutbolRadar · Oyuncu karşılaştırmaları · <a href="./hakkinda.html">Hakkında</a> · <a href="./veri-notu.html">Veri Notu</a> · <a href="./iletisim.html">İletişim</a></div></footer>
     <script src="./site.js" defer></script>
     <script src="./app.js" defer></script>
   </body>

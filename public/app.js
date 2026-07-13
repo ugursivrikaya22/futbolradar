@@ -893,7 +893,7 @@
 
   function transferStatusBadgeHtml(player) {
     var count = playerHasTransferHistory(player) ? player.transferHistory.length : 0;
-    return statusBadge(count ? "Transfer: " + count + " kayit" : "Transfer yakinda", count ? "verified" : "pending");
+    return statusBadge(count ? "Transfer: " + count + " kayıt" : "Transfer yakında", count ? "verified" : "pending");
   }
 
   function playerStatusRowHtml(player) {
@@ -911,7 +911,7 @@
       return "";
     }
 
-    return '<p class="data-quality-warning">Bu oyuncu icin veri guncellemesi onerilir.</p>';
+    return '<p class="data-quality-warning">Bu oyuncu için veri güncellemesi önerilir.</p>';
   }
 
   function playerMetaGridHtml(player) {
@@ -921,7 +921,7 @@
       compactMetricHtml("Mevki", player.position) +
       compactMetricHtml("Yas", playerAge(player)) +
       compactMetricHtml("Uyruk", player.nationality) +
-      compactMetricHtml("Piyasa", playerMarketValue(player) || "Yakinda") +
+      compactMetricHtml("Piyasa", playerMarketValue(player) || "Yakında") +
       compactMetricHtml("Lig", player.league) +
       "</div>"
     );
@@ -930,7 +930,7 @@
   function playerProfileHeroHtml(player, team) {
     var score = displayValue(player.overallRating || player.aiRating || player.rating);
     var age = playerAge(player);
-    var market = playerMarketValue(player) || "Piyasa degeri yakinda";
+    var market = playerMarketValue(player) || "Piyasa değeri yakında";
     var teamLine = playerTeamEyebrow(player) + " - " + (player.league || "Lig bilgisi yakinda");
 
     return (
@@ -941,11 +941,11 @@
       "<h1>" + escapeHtml(player.name) + "</h1>" +
       "<p>" + escapeHtml(playerInsight(player)) + "</p>" +
       '<div class="profile-hero-actions">' +
-      '<a class="detail-link" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Karsilastir</a>' +
-      '<a class="detail-link ghost" href="' + escapeHtml(siteHref("oyuncu-radari.html?team=" + encodeURIComponent(team))) + '">Takim filtresi</a>' +
-      '<button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Paylas</button>' +
+      '<a class="detail-link" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Karşılaştır</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(siteHref("oyuncu-radari.html?team=" + encodeURIComponent(team))) + '">Takım filtresi</a>' +
+      '<button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Paylaş</button>' +
       "</div></div></div>" +
-      '<aside class="profile-score-card" aria-label="Oyuncu radar ozeti">' +
+      '<aside class="profile-score-card" aria-label="Oyuncu radarı özeti">' +
       "<span>Overall</span><strong>" + escapeHtml(score) + "</strong>" +
       "<p>" + escapeHtml(player.position || "Mevki yakinda") + " - Yas " + escapeHtml(displayValue(age)) + "</p>" +
       "<em>" + escapeHtml(market) + "</em>" +
@@ -1409,7 +1409,7 @@
         { label: "Gol potansiyeli " + String(goalPotential).toLowerCase(), variant: match.goalPotential === "Yüksek" ? "green" : "" },
         { label: "Risk " + String(risk).toLowerCase(), variant: "soft" }
       ]) +
-      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">MaÃ§ detayÄ±</a>' +
+      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Maç detayı</a>' +
       '<div class="player-actions match-actions">' +
       '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.homeTeam })) + '">Ev radar</a>' +
       '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.awayTeam })) + '">Dep. radar</a>' +
@@ -1438,12 +1438,12 @@
   function matchEmptyStateHtml(title, text, compact) {
     return (
       '<article class="data-empty' + (compact ? " compact" : "") + '" data-card="empty-state">' +
-      "<strong>" + escapeHtml(title || "Bugun dogrulanmis mac yok") + "</strong>" +
-      "<span>" + escapeHtml(text || "Bugunun mac listesi resmi veriyle dogrulaninca burada gorunecek.") + "</span>" +
+      "<strong>" + escapeHtml(title || "Bugün doğrulanmış maç yok") + "</strong>" +
+      "<span>" + escapeHtml(text || "Bugünün maç listesi resmi veriyle doğrulanınca burada görünecek.") + "</span>" +
       '<div class="match-empty-actions">' +
-      '<a class="detail-link" href="./super-lig-fikstur.html">Super Lig fiksturunu ac</a>' +
+      '<a class="detail-link" href="./super-lig-fikstur.html">Süper Lig fikstürünü aç</a>' +
       '<a class="detail-link ghost" href="./puan-durumu.html">Puan durumuna git</a>' +
-      '<a class="detail-link ghost" href="./oyuncu-radari.html">Oyuncu radarini ac</a>' +
+      '<a class="detail-link ghost" href="./oyuncu-radari.html">Oyuncu radarını aç</a>' +
       "</div>" +
       "</article>"
     );
@@ -1502,7 +1502,7 @@
           dateLabel: match.dateLabel || round.dateRange
         });
       }).join("")
-      : '<article class="data-empty compact" data-card="empty-state"><strong>Hafta eşleşmeleri bekleniyor</strong><span>Bu haftanın maçları resmi ve doğrulanabilir kaynakta netleştiğinde JSON veri katmanına işlenecek.</span></article>';
+      : '<article class="data-empty compact" data-card="empty-state"><strong>Hafta eşleşmeleri bekleniyor</strong><span>Bu haftanın maçları resmi ve doğrulanabilir kaynakta netleştiğinde burada gösterilecek.</span></article>';
 
     return (
       '<section class="fixture-round-card" data-card="fixture-round" data-round="' + escapeHtml(round.round) + '">' +
@@ -1549,7 +1549,7 @@
       '<header><div><h3>' + escapeHtml(team.name) + "</h3><span>Son 5 maç formu</span></div>" +
       '<strong class="momentum-number">' + escapeHtml(team.momentum) + "</strong></header>" +
       formDotsHtml(team.form) +
-      barRowHtml("Hucum", attack, attack) +
+       barRowHtml("Hücum", attack, attack) +
       barRowHtml("Savunma", defense, defense) +
       '<a class="detail-link" href="' + escapeHtml(teamDetailHref(team)) + '">Detay</a>' +
       "</article>"
@@ -1568,7 +1568,7 @@
       '<span>Kadro lideri</span>' +
       "<strong>" + escapeHtml(player.name) + " - AI " + escapeHtml(displayValue(playerAiScore(player))) + "</strong>" +
       "<em>" + escapeHtml(displayValue(player.position)) + " - Gol " + escapeHtml(displayValue(stats.goals)) + " / Asist " + escapeHtml(displayValue(stats.assists)) + "</em>" +
-      '<a href="' + escapeHtml(playerProfileHref(player.id)) + '">Oyuncu profilini ac</a>' +
+       '<a href="' + escapeHtml(playerProfileHref(player.id)) + '">Oyuncu profilini aç</a>' +
       "</div>"
     );
   }
@@ -1588,7 +1588,7 @@
       '<div class="metric-grid compact"><span>Lig: <b>' + escapeHtml(displayValue(team.league)) + '</b></span><span>Kadro: <b>' + escapeHtml(displayValue(players.length || team.squadCount)) + '</b></span></div>' +
       tagsHtml(team.tags) +
       teamCardLeaderHtml(leader) +
-      '<div class="team-card-actions"><a class="detail-link" href="' + escapeHtml(teamDetailHref(team)) + '">Takim detayi</a><a class="detail-link ghost" href="./oyuncu-radari.html?team=' + encodeURIComponent(team.name) + '">Oyuncu radari</a></div>' +
+       '<div class="team-card-actions"><a class="detail-link" href="' + escapeHtml(teamDetailHref(team)) + '">Takım detayı</a><a class="detail-link ghost" href="./oyuncu-radari.html?team=' + encodeURIComponent(team.name) + '">Oyuncu radarı</a></div>' +
       "</article>"
     );
   }
@@ -1629,7 +1629,7 @@
         { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
       ].concat(playerRatingTags(player))) +
       formDotsHtml(player.form) +
-      '<div class="player-actions compact"><a class="detail-link" href="' + escapeHtml(playerProfileHref(player.id)) + '">Profil</a><a class="detail-link ghost" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Kiyasla</a></div>' +
+       '<div class="player-actions compact"><a class="detail-link" href="' + escapeHtml(playerProfileHref(player.id)) + '">Profil</a><a class="detail-link ghost" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Kıyasla</a></div>' +
       "</article>"
     );
   }
@@ -1647,7 +1647,7 @@
       playerStatusRowHtml(player) +
       playerMetaGridHtml(player) +
       playerQualityWarningHtml(player) +
-      '<div class="player-card-scout-note"><span>' + escapeHtml(playerHasTransferHistory(player) ? "Transfer gecmisi var" : "Transfer gecmisi yakinda") + '</span><strong>' + escapeHtml(playerScoutingSummary(player)) + "</strong></div>" +
+       '<div class="player-card-scout-note"><span>' + escapeHtml(playerHasTransferHistory(player) ? "Transfer geçmişi var" : "Transfer geçmişi yakında") + '</span><strong>' + escapeHtml(playerScoutingSummary(player)) + "</strong></div>" +
       badgesHtml(playerBadges(player)) +
       playerMetricsHtml(player) +
       formDotsHtml(player.form) +
@@ -1659,7 +1659,7 @@
       ].concat(player.tags || [], playerRatingTags(player))) +
       '<div class="player-actions">' +
       '<a class="detail-link" href="' + escapeHtml(playerProfileHref(player.id)) + '">Detay</a>' +
-      '<a class="detail-link" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '" data-compare-add="' + escapeHtml(player.id) + '">Karsilastirmaya ekle</a>' +
+       '<a class="detail-link" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '" data-compare-add="' + escapeHtml(player.id) + '">Karşılaştırmaya ekle</a>' +
       '<button class="detail-link ghost" type="button" data-share-player="' + escapeHtml(player.id) + '">Radar kartini paylas</button>' +
       "</div>" +
       "</article>"
@@ -1934,7 +1934,7 @@
     var list = Array.isArray(items) ? items.filter(Boolean) : [];
 
     if (!list.length) {
-      return '<section class="profile-section"><h2>' + escapeHtml(title) + '</h2><article class="data-empty compact"><strong>' + escapeHtml(emptyText || "Veri yakinda") + '</strong><span>Bu alan gercek oyuncu API verisiyle genisletilecek.</span></article></section>';
+      return '<section class="profile-section"><h2>' + escapeHtml(title) + '</h2><article class="data-empty compact"><strong>' + escapeHtml(emptyText || "Veri yakında") + '</strong><span>Bu bölüm için doğrulanmış kayıt bulunmuyor.</span></article></section>';
     }
 
     return (

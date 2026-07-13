@@ -202,7 +202,7 @@ function pageHtml(player) {
             "@type": "BreadcrumbList",
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: "https://www.futbolradar.com/" },
-              { "@type": "ListItem", position: 2, name: "Oyuncu Radar", item: "https://www.futbolradar.com/oyuncu-radari.html" },
+              { "@type": "ListItem", position: 2, name: "Oyuncu Radarı", item: "https://www.futbolradar.com/oyuncu-radari.html" },
               { "@type": "ListItem", position: 3, name: player.name, item: canonical }
             ]
           }
@@ -219,7 +219,7 @@ function pageHtml(player) {
         <a class="brand" href="../index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
         <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
         <div class="nav-menu" id="primary-menu">
-          <div class="nav-links"><a href="../bugunun-maclari.html">Bugünkü Maçlar</a><a href="../canli-skor.html">Canlı Skor</a><a href="../puan-durumu.html">Puan Durumu</a><a href="../takimlar.html">Takımlar</a><a href="../oyuncu-radari.html">Oyuncu Radar</a><a href="../momentum.html">Momentum</a></div>
+          <div class="nav-links"><a href="../bugunun-maclari.html">Bugünkü Maçlar</a><a href="../canli-skor.html">Canlı Skor</a><a href="../puan-durumu.html">Puan Durumu</a><a href="../takimlar.html">Takımlar</a><a href="../oyuncu-radari.html">Oyuncu Radarı</a><a href="../momentum.html">Momentum</a></div>
           <a class="cta" href="../index.html#radar-sinyalleri">Radar Sinyalleri</a>
         </div>
       </nav>
@@ -228,7 +228,7 @@ function pageHtml(player) {
       <nav class="breadcrumb" aria-label="Sayfa yolu">
         <a href="../index.html">Ana Sayfa</a>
         <span>/</span>
-        <a href="../oyuncu-radari.html">Oyuncu Radar</a>
+        <a href="../oyuncu-radari.html">Oyuncu Radarı</a>
         <span>/</span>
         <span>${escapeHtml(player.name)}</span>
       </nav>
