@@ -4051,6 +4051,75 @@ h1 {
         border-color: rgba(128, 255, 155, 0.34);
       }
 
+      .search-trap {
+        display: grid;
+        grid-template-columns: minmax(210px, 0.72fr) minmax(0, 1.55fr);
+        gap: 14px;
+        align-items: stretch;
+        margin: -34px 0 54px;
+        border: 1px solid rgba(128, 255, 155, 0.13);
+        border-radius: var(--radius);
+        padding: 14px;
+        background:
+          linear-gradient(135deg, rgba(77, 229, 255, 0.055), rgba(128, 255, 155, 0.035)),
+          rgba(255, 255, 255, 0.028);
+      }
+
+      .search-trap-head {
+        display: grid;
+        align-content: center;
+        gap: 8px;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 6px 14px 6px 4px;
+      }
+
+      .search-trap-head span,
+      .search-trap-links span {
+        color: var(--green);
+        font-size: 0.72rem;
+        font-weight: 950;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .search-trap-head strong {
+        color: var(--text);
+        font-size: 1.02rem;
+        line-height: 1.25;
+      }
+
+      .search-trap-links {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .search-trap-links a {
+        display: grid;
+        min-height: 70px;
+        align-content: center;
+        gap: 5px;
+        border: 1px solid rgba(77, 229, 255, 0.14);
+        border-radius: 12px;
+        padding: 11px 12px;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .search-trap-links a:hover,
+      .search-trap-links a:focus-visible {
+        transform: translateY(-1px);
+        border-color: rgba(128, 255, 155, 0.3);
+        background: rgba(128, 255, 155, 0.07);
+      }
+
+      .search-trap-links b {
+        color: var(--soft);
+        font-size: 0.88rem;
+        line-height: 1.2;
+      }
+
       .landing-insights {
         display: grid;
         gap: 14px;
@@ -6736,6 +6805,8 @@ h1 {
         .home-agenda-grid,
         .route-chain,
         .route-chain-grid,
+        .search-trap,
+        .search-trap-links,
         .teams-grid,
         .players-grid,
         .articles-grid,
@@ -6758,6 +6829,16 @@ h1 {
         .home-search-shell,
         .home-search-results {
           padding: 16px;
+        }
+
+        .search-trap {
+          margin-top: -26px;
+        }
+
+        .search-trap-head {
+          border-right: 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 4px 2px 14px;
         }
 
         .radar-ticker-label {
