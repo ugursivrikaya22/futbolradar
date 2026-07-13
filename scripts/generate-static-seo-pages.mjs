@@ -416,6 +416,15 @@ function sitemapXml(files) {
     ...comparisonPages,
     "momentum.html",
     "analizler.html",
+    "gol-kralligi.html",
+    "asist-kralligi.html",
+    "derbi-radari.html",
+    "haftanin-maclari.html",
+    "mac-merkezi.html",
+    "oyuncu-liderleri.html",
+    "takim-trendleri.html",
+    "futbol-radar-rehberi.html",
+    "gunun-radar-bulteni.html",
     ...files
   ];
   const unique = [...new Set(core)];
