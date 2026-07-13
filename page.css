@@ -2970,6 +2970,127 @@ h1 {
         outline: 0;
       }
 
+      .daily-command-grid,
+      .daily-pulse-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .daily-command-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .daily-pulse-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .daily-command-card,
+      .daily-pulse-card {
+        position: relative;
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid rgba(77, 229, 255, 0.15);
+        border-radius: var(--radius);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.056), rgba(255, 255, 255, 0.024)),
+          var(--panel);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .daily-command-card {
+        display: grid;
+        min-height: 232px;
+        align-content: start;
+        gap: 12px;
+        padding: 18px;
+        color: var(--text);
+      }
+
+      .daily-command-card.is-hot {
+        border-color: rgba(128, 255, 155, 0.34);
+        background:
+          radial-gradient(circle at 90% 8%, rgba(128, 255, 155, 0.16), transparent 35%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.026)),
+          var(--panel);
+      }
+
+      .daily-command-card span,
+      .daily-pulse-card span {
+        width: fit-content;
+        border: 1px solid rgba(128, 255, 155, 0.2);
+        border-radius: 999px;
+        padding: 6px 9px;
+        color: var(--green);
+        background: rgba(128, 255, 155, 0.065);
+        font-size: 0.72rem;
+        font-weight: 950;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .daily-command-card strong,
+      .daily-pulse-card strong {
+        color: var(--text);
+        font-size: 1.08rem;
+        line-height: 1.18;
+      }
+
+      .daily-command-card p,
+      .daily-pulse-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.58;
+      }
+
+      .daily-command-card em {
+        align-self: end;
+        width: fit-content;
+        margin-top: auto;
+        border-top: 1px solid rgba(128, 255, 155, 0.22);
+        padding-top: 9px;
+        color: var(--cyan);
+        font-size: 0.78rem;
+        font-style: normal;
+        font-weight: 900;
+      }
+
+      .daily-pulse-card {
+        display: grid;
+        gap: 12px;
+        padding: 18px;
+      }
+
+      .daily-pulse-card div {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .daily-pulse-card a {
+        display: inline-flex;
+        min-height: 34px;
+        align-items: center;
+        border: 1px solid rgba(77, 229, 255, 0.16);
+        border-radius: 999px;
+        padding: 0 10px;
+        color: var(--soft);
+        background: rgba(255, 255, 255, 0.04);
+        font-size: 0.8rem;
+        font-weight: 850;
+      }
+
+      .daily-command-card:hover,
+      .daily-command-card:focus-visible,
+      .daily-pulse-card a:hover,
+      .daily-pulse-card a:focus-visible {
+        transform: translateY(-2px);
+        border-color: rgba(128, 255, 155, 0.38);
+        background: rgba(128, 255, 155, 0.07);
+        outline: 0;
+      }
+
       .home-daily-brief,
       .brief-flow-section {
         padding-top: 22px;
@@ -6921,6 +7042,8 @@ h1 {
         .home-directory-grid,
         .home-intelligence-grid,
         .home-agenda-grid,
+        .daily-command-grid,
+        .daily-pulse-grid,
         .route-chain,
         .route-chain-grid,
         .search-trap,
