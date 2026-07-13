@@ -262,6 +262,17 @@
     }
 
     input.addEventListener("input", render);
+    document.querySelectorAll("[data-home-hot-query]").forEach(function (button) {
+      button.addEventListener("click", function () {
+        input.value = button.getAttribute("data-home-hot-query") || "";
+        render();
+        input.focus();
+        var section = document.getElementById("futbolradar-hizli-arama");
+        if (section && section.scrollIntoView) {
+          section.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    });
     render();
   }
 

@@ -1538,6 +1538,122 @@ h1 {
         text-align: center;
       }
 
+      .home-hot-routes {
+        padding-top: 0;
+      }
+
+      .home-hot-shell {
+        display: grid;
+        grid-template-columns: minmax(230px, 0.72fr) minmax(0, 1fr) minmax(280px, 0.88fr);
+        gap: 14px;
+        align-items: stretch;
+        border: 1px solid rgba(128, 255, 155, 0.14);
+        border-radius: var(--radius);
+        padding: 16px;
+        background:
+          radial-gradient(circle at 8% 10%, rgba(128, 255, 155, 0.12), transparent 32%),
+          linear-gradient(135deg, rgba(77, 229, 255, 0.065), rgba(255, 255, 255, 0.025)),
+          var(--panel);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .home-hot-head {
+        display: grid;
+        align-content: center;
+        gap: 10px;
+      }
+
+      .home-hot-head h2 {
+        margin: 0;
+        color: var(--text);
+        font-size: clamp(1.35rem, 2.2vw, 2.15rem);
+        line-height: 1.04;
+      }
+
+      .home-hot-head p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.6;
+      }
+
+      .home-hot-query-grid,
+      .home-hot-direct {
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .home-hot-query-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .home-hot-query-grid button,
+      .home-hot-direct a {
+        min-width: 0;
+        border: 1px solid rgba(77, 229, 255, 0.16);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        transition:
+          transform 180ms ease,
+          border-color 180ms ease,
+          background 180ms ease;
+      }
+
+      .home-hot-query-grid button {
+        display: grid;
+        min-height: 68px;
+        align-content: center;
+        gap: 5px;
+        padding: 10px 12px;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .home-hot-query-grid span,
+      .home-hot-direct span {
+        color: var(--green);
+        font-size: 0.7rem;
+        font-weight: 950;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .home-hot-query-grid b,
+      .home-hot-direct b {
+        color: var(--soft);
+        font-size: 0.92rem;
+        line-height: 1.18;
+      }
+
+      .home-hot-direct a {
+        display: grid;
+        min-height: 76px;
+        align-content: center;
+        gap: 5px;
+        padding: 11px 12px;
+      }
+
+      .home-hot-direct em {
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-style: normal;
+        line-height: 1.35;
+      }
+
+      .home-hot-query-grid button:hover,
+      .home-hot-query-grid button:focus-visible,
+      .home-hot-direct a:hover,
+      .home-hot-direct a:focus-visible {
+        transform: translateY(-2px);
+        border-color: rgba(128, 255, 155, 0.38);
+        background: rgba(128, 255, 155, 0.07);
+        outline: 0;
+      }
+
       .home-transfer-watch {
         padding-top: 20px;
       }
@@ -6483,6 +6599,7 @@ h1 {
         .radar-layout,
         .traffic-hub-shell,
         .home-search-shell,
+        .home-hot-shell,
         .home-transfer-watch-shell,
         .home-daily-route-shell,
         .home-radar-ticker {
@@ -6798,6 +6915,7 @@ h1 {
         .home-rank-grid,
         .home-transfer-watch-shell,
         .home-daily-route-shell,
+        .home-hot-shell,
         .rivalry-route-grid,
         .home-search-results,
         .home-directory-grid,
