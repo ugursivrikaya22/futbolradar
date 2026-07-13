@@ -1,11 +1,12 @@
 const { getProvider } = require("../services/providers");
 const {
   DEFAULT_TIMEOUT_MS,
+  enforceRateLimit,
   getQuery,
-  rateLimitHint,
   rejectUnsupportedMethod,
   sendError,
   sendSuccess,
+  setCachePolicy,
   validateAnalyses,
   validateOrSend,
   withTimeout
@@ -16,7 +17,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  rateLimitHint(req);
+  setCachePolicy(res, "analyses");
+  if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
   const provider = getProvider("analyses");

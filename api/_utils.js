@@ -1,5 +1,22 @@
 const BROWSER_CACHE_CONTROL = "public, max-age=0";
-const CDN_CACHE_CONTROL = "public, s-maxage=300, stale-while-revalidate=600";
+const CACHE_POLICIES = Object.freeze({
+  default: { maxAge: 300, stale: 600 },
+  matches: { maxAge: 60, stale: 180 },
+  "match-detail": { maxAge: 30, stale: 120 },
+  standings: { maxAge: 300, stale: 900 },
+  teams: { maxAge: 1800, stale: 7200 },
+  players: { maxAge: 3600, stale: 21600 },
+  squad: { maxAge: 300, stale: 900 },
+  transfers: { maxAge: 300, stale: 900 },
+  momentum: { maxAge: 300, stale: 900 },
+  signals: { maxAge: 120, stale: 600 },
+  analyses: { maxAge: 3600, stale: 21600 },
+  health: { noStore: true }
+});
+const QUERY_VALUE_MAX_LENGTH = 160;
+const QUERY_PARAM_MAX_COUNT = 24;
+const RATE_LIMIT_STORE_MAX_SIZE = 2000;
+const rateLimitStore = new Map();
 const DEFAULT_SOURCE = "FutbolRadar API";
 const DEFAULT_TIMEOUT_MS = 5000;
 const API_KEY_ENV_NAMES = [
@@ -24,10 +41,27 @@ const COMPETITION_CODE_ENV_NAMES = [
   "COMPETITION_CODE"
 ];
 
+function cacheControlFor(policyName) {
+  const policy = CACHE_POLICIES[policyName] || CACHE_POLICIES.default;
+  if (policy.noStore) {
+    return { browser: "no-store", cdn: "no-store" };
+  }
+
+  return {
+    browser: BROWSER_CACHE_CONTROL,
+    cdn: `public, s-maxage=${policy.maxAge}, stale-while-revalidate=${policy.stale}`
+  };
+}
+
+function setCachePolicy(res, policyName) {
+  res.__futbolRadarCachePolicy = CACHE_POLICIES[policyName] ? policyName : "default";
+}
+
 function setCacheHeaders(res) {
-  res.setHeader("Cache-Control", BROWSER_CACHE_CONTROL);
-  res.setHeader("CDN-Cache-Control", CDN_CACHE_CONTROL);
-  res.setHeader("Vercel-CDN-Cache-Control", CDN_CACHE_CONTROL);
+  const headers = cacheControlFor(res.__futbolRadarCachePolicy || "default");
+  res.setHeader("Cache-Control", headers.browser);
+  res.setHeader("CDN-Cache-Control", headers.cdn);
+  res.setHeader("Vercel-CDN-Cache-Control", headers.cdn);
 }
 
 function sendJson(res, statusCode, payload) {
@@ -42,11 +76,47 @@ function sendJson(res, statusCode, payload) {
   return res.end(JSON.stringify(payload));
 }
 
+function normalizeTimestamp(value) {
+  if (!value) {
+    return null;
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
+function resolveUpdatedAt(data, updatedAt) {
+  const explicit = normalizeTimestamp(updatedAt);
+  if (explicit) {
+    return explicit;
+  }
+
+  const records = Array.isArray(data) ? data : data && typeof data === "object" ? [data] : [];
+  const timestampFields = [
+    "lastVerifiedAt",
+    "verifiedAt",
+    "fetchedAt",
+    "lastSyncedAt",
+    "transferUpdatedAt",
+    "lastUpdatedAt",
+    "lastUpdated",
+    "updatedAt"
+  ];
+  const timestamps = records.flatMap((record) => timestampFields.map((field) => normalizeTimestamp(record && record[field]))).filter(Boolean);
+
+  if (!timestamps.length) {
+    return null;
+  }
+
+  return timestamps.sort((left, right) => Date.parse(right) - Date.parse(left))[0];
+}
+
 function successResponse(data, source, updatedAt) {
   return {
     ok: true,
     source: source || DEFAULT_SOURCE,
-    updatedAt: updatedAt || new Date().toISOString(),
+    updatedAt: resolveUpdatedAt(data, updatedAt),
+    responseAt: new Date().toISOString(),
     data
   };
 }
@@ -55,7 +125,8 @@ function errorResponse(message, code, source) {
   return {
     ok: false,
     source: source || DEFAULT_SOURCE,
-    updatedAt: new Date().toISOString(),
+    updatedAt: null,
+    responseAt: new Date().toISOString(),
     error: {
       code: code || "API_ERROR",
       message: message || "Veri alinamadi."
@@ -103,13 +174,20 @@ function safeDataNormalize(value, fallback) {
   return fallback;
 }
 
+function sanitizeQuery(query) {
+  return Object.fromEntries(Object.entries(query || {}).slice(0, QUERY_PARAM_MAX_COUNT).map(([key, rawValue]) => {
+    const value = Array.isArray(rawValue) ? rawValue[0] : rawValue;
+    return [String(key).slice(0, 64), String(value == null ? "" : value).slice(0, QUERY_VALUE_MAX_LENGTH)];
+  }));
+}
+
 function getQuery(req) {
   if (req.query) {
-    return req.query;
+    return sanitizeQuery(req.query);
   }
 
   const url = new URL(req.url || "/", "http://localhost");
-  return Object.fromEntries(url.searchParams.entries());
+  return sanitizeQuery(Object.fromEntries(url.searchParams.entries()));
 }
 
 function normalizeText(value) {
@@ -271,12 +349,47 @@ function rateLimitHint(req) {
   };
 }
 
+function enforceRateLimit(req, res, options) {
+  const now = Date.now();
+  const windowMs = Math.max(1000, Number(options && options.windowMs) || 60000);
+  const limit = Math.max(1, Math.min(1000, Number(options && options.limit) || 120));
+  const pathname = new URL(req.url || "/api", "http://localhost").pathname;
+  const key = `${pathname}:${getClientIp(req)}`;
+  const current = rateLimitStore.get(key);
+  const entry = !current || current.resetAt <= now ? { count: 0, resetAt: now + windowMs } : current;
+  entry.count += 1;
+  rateLimitStore.set(key, entry);
+
+  if (rateLimitStore.size > RATE_LIMIT_STORE_MAX_SIZE) {
+    for (const [storedKey, stored] of rateLimitStore) {
+      if (stored.resetAt <= now || rateLimitStore.size > RATE_LIMIT_STORE_MAX_SIZE) {
+        rateLimitStore.delete(storedKey);
+      }
+    }
+  }
+
+  res.setHeader("X-RateLimit-Limit", String(limit));
+  res.setHeader("X-RateLimit-Remaining", String(Math.max(0, limit - entry.count)));
+  res.setHeader("X-RateLimit-Reset", String(Math.ceil(entry.resetAt / 1000)));
+
+  if (entry.count > limit) {
+    res.setHeader("Retry-After", String(Math.max(1, Math.ceil((entry.resetAt - now) / 1000))));
+    sendError(res, 429, "Cok fazla istek gonderildi. Kisa bir sure sonra tekrar dene.", "RATE_LIMITED");
+    return true;
+  }
+
+  return false;
+}
+
 module.exports = {
   DEFAULT_SOURCE,
   DEFAULT_TIMEOUT_MS,
   API_KEY_ENV_NAMES,
   BASE_URL_ENV_NAMES,
   COMPETITION_CODE_ENV_NAMES,
+  CACHE_POLICIES,
+  cacheControlFor,
+  enforceRateLimit,
   errorResponse,
   firstPresentEnv,
   getQuery,
@@ -284,11 +397,14 @@ module.exports = {
   normalizeText,
   rateLimitHint,
   rejectUnsupportedMethod,
+  resolveUpdatedAt,
   safeDataNormalize,
   safeJsonParse,
+  sanitizeQuery,
   sendError,
   sendJson,
   sendSuccess,
+  setCachePolicy,
   setCacheHeaders,
   successResponse,
   validateAnalyses,

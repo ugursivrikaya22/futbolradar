@@ -58,19 +58,16 @@ async function providerFetch(path, params) {
     }
   }).then(async (response) => {
     if (!response.ok) {
-      let message = `Live provider HTTP ${response.status} dondu.`;
-      try {
-        const payload = await response.json();
-        message = payload.message || payload.error || message;
-      } catch (error) {
-        // Provider body may be empty or non-JSON.
-      }
-
       const code = response.status === 401 || response.status === 403
         ? "PROVIDER_AUTH_ERROR"
         : response.status === 429
           ? "PROVIDER_RATE_LIMIT"
           : "PROVIDER_HTTP_ERROR";
+      const message = code === "PROVIDER_AUTH_ERROR"
+        ? "Live provider kimlik dogrulamasi basarisiz."
+        : code === "PROVIDER_RATE_LIMIT"
+          ? "Live provider istek limiti doldu."
+          : `Live provider istegi basarisiz oldu (HTTP ${response.status}).`;
       throw new ProviderError(code, message);
     }
 
@@ -141,6 +138,35 @@ function scoreObject(score) {
   };
 }
 
+function firstDefined(...values) {
+  return values.find((value) => value !== undefined && value !== null && value !== "") ?? null;
+}
+
+function numberOrNull(value) {
+  const candidate = firstDefined(value);
+  if (candidate === null) {
+    return null;
+  }
+
+  const number = Number(candidate);
+  return Number.isFinite(number) ? number : null;
+}
+
+function stampProviderData(records, resource, staleAfterMs) {
+  const fetchedAt = new Date().toISOString();
+  const staleAfter = new Date(Date.parse(fetchedAt) + staleAfterMs).toISOString();
+  return records.map((record) => ({
+    ...record,
+    source: "football-data",
+    providerName: "football-data",
+    fetchedAt,
+    staleAfter,
+    dataStatus: "provider",
+    needsReview: false,
+    resource
+  }));
+}
+
 function normalizeLiveMatch(item) {
   const kickoff = item.utcDate || item.kickoff || item.date || item.time || "";
   const score = scoreObject(item.score);
@@ -177,22 +203,27 @@ function normalizeLiveMatch(item) {
 
 function normalizeLiveStanding(item) {
   const team = item.team || {};
-  const goalDifference = item.goalDifference == null ? (Number(item.goalsFor || 0) - Number(item.goalsAgainst || 0)) : item.goalDifference;
+  const goalsFor = numberOrNull(item.goalsFor);
+  const goalsAgainst = numberOrNull(item.goalsAgainst);
+  const explicitGoalDifference = numberOrNull(item.goalDifference);
+  const goalDifference = explicitGoalDifference === null && goalsFor !== null && goalsAgainst !== null
+    ? goalsFor - goalsAgainst
+    : explicitGoalDifference;
 
   return {
     id: String(team.id || item.teamId || team.name || item.team || ""),
-    rank: item.position || item.rank,
+    rank: numberOrNull(firstDefined(item.position, item.rank)),
     team: teamName(team) || item.team || item.name || "",
     name: teamName(team) || item.name || item.team || "",
     league: item.league || "",
-    played: item.playedGames || item.played || item.matchesPlayed || 0,
-    won: item.won || 0,
-    drawn: item.draw || item.drawn || 0,
-    lost: item.lost || 0,
-    goalsFor: item.goalsFor || 0,
-    goalsAgainst: item.goalsAgainst || 0,
+    played: numberOrNull(firstDefined(item.playedGames, item.played, item.matchesPlayed)),
+    won: numberOrNull(item.won),
+    drawn: numberOrNull(firstDefined(item.draw, item.drawn)),
+    lost: numberOrNull(item.lost),
+    goalsFor,
+    goalsAgainst,
     goalDifference,
-    points: item.points || 0,
+    points: numberOrNull(item.points),
     average: goalDifference,
     momentum: null,
     formScore: null,
@@ -209,12 +240,12 @@ function normalizeLiveTeam(item) {
     played: item.played,
     points: item.points,
     average: item.average,
-    momentum: item.momentum || item.rating,
-    rating: item.rating || item.momentum,
-    formScore: item.formScore || item.rating,
+    momentum: firstDefined(item.momentum, item.rating),
+    rating: firstDefined(item.rating, item.momentum),
+    formScore: firstDefined(item.formScore, item.rating),
     form: item.form || [],
-    attack: item.attack || item.attackRating || 0,
-    defense: item.defense || item.defenseRating || 0,
+    attack: firstDefined(item.attack, item.attackRating),
+    defense: firstDefined(item.defense, item.defenseRating),
     goalTrend: item.goalTrend || ""
   };
 }
@@ -229,15 +260,15 @@ function normalizeLivePlayer(item) {
   const passes = statistics.passes || {};
   const shots = statistics.shots || {};
   const tackles = statistics.tackles || {};
-  const rating = item.rating || games.rating || item.aiRating || null;
-  const minutesPlayed = item.minutesPlayed || item.minutes || games.minutes || item.playedMinutes || 0;
-  const overallRating = item.overallRating || item.overall || item.aiRating || rating;
+  const rating = numberOrNull(firstDefined(item.rating, games.rating, item.aiRating));
+  const minutesPlayed = numberOrNull(firstDefined(item.minutesPlayed, item.minutes, games.minutes, item.playedMinutes));
+  const overallRating = numberOrNull(firstDefined(item.overallRating, item.overall, item.aiRating, rating));
 
   return {
     id: String(player.id || item.playerId || item.id || item.name || ""),
     providerId: String(player.id || item.playerId || item.id || ""),
     providerName: "football-data",
-    lastSyncedAt: new Date().toISOString(),
+    lastSyncedAt: firstDefined(item.lastSyncedAt, item.fetchedAt),
     name: player.name || item.name || "",
     height: player.height || item.height || null,
     weight: player.weight || item.weight || null,
@@ -249,7 +280,7 @@ function normalizeLivePlayer(item) {
     preferredFoot: player.preferredFoot || item.preferredFoot || null,
     marketValue: player.marketValue || item.marketValue || null,
     contractUntil: player.contractUntil || item.contractUntil || null,
-    appearances: item.appearances || games.appearences || games.appearances || 0,
+    appearances: numberOrNull(firstDefined(item.appearances, games.appearences, games.appearances)),
     aiRating: item.aiRating || overallRating,
     rating,
     overallRating,
@@ -267,13 +298,13 @@ function normalizeLivePlayer(item) {
     formRating: item.formRating || item.formScore || overallRating,
     trend: item.trend || "",
     trendDirection: item.trendDirection || item.trendState || "",
-    impact: item.impact || rating || 0,
-    goals: item.goals || goals.total || 0,
-    assists: item.assists || goals.assists || 0,
+    impact: numberOrNull(firstDefined(item.impact, rating)),
+    goals: numberOrNull(firstDefined(item.goals, goals.total)),
+    assists: numberOrNull(firstDefined(item.assists, goals.assists)),
     minutesPlayed,
-    minutes: item.minutes || minutesPlayed,
-    yellowCards: item.yellowCards || cards.yellow || 0,
-    redCards: item.redCards || cards.red || 0,
+    minutes: firstDefined(item.minutes, minutesPlayed),
+    yellowCards: numberOrNull(firstDefined(item.yellowCards, cards.yellow)),
+    redCards: numberOrNull(firstDefined(item.redCards, cards.red)),
     passAccuracy: item.passAccuracy || passes.accuracy || null,
     shotsPerGame: item.shotsPerGame || null,
     tacklesPerGame: item.tacklesPerGame || null,
@@ -294,7 +325,7 @@ function normalizeLivePlayer(item) {
     continuityScore: item.continuityScore,
     tempoScore: item.tempoScore,
     summary: item.summary || "",
-    lastUpdated: item.lastUpdated || new Date().toISOString().slice(0, 10),
+    lastUpdated: firstDefined(item.lastUpdated, item.lastUpdatedAt),
     radar: item.radar || {
       finishing: item.finishing || item.threatScore,
       creativity: item.creativity || item.creativityScore,
@@ -348,7 +379,7 @@ async function getMatches(query) {
   const dateFrom = query && query.date ? toDateOnly(query.date) : toDateOnly();
   const dateTo = dateFrom;
   const payload = await providerFetch(`/competitions/${competitionCode}/matches`, { dateFrom, dateTo });
-  return (payload.matches || payload.data || []).map(normalizeLiveMatch);
+  return stampProviderData((payload.matches || payload.data || []).map(normalizeLiveMatch), "matches", 5 * 60 * 1000);
 }
 
 async function getStandings(query) {
@@ -357,7 +388,9 @@ async function getStandings(query) {
   const table = Array.isArray(payload.standings)
     ? payload.standings.find((standing) => standing.type === "TOTAL") || payload.standings[0]
     : null;
-  return table && Array.isArray(table.table) ? table.table.map(normalizeLiveStanding) : [];
+  return table && Array.isArray(table.table)
+    ? stampProviderData(table.table.map(normalizeLiveStanding), "standings", 60 * 60 * 1000)
+    : [];
 }
 
 async function getTeams(query) {

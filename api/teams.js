@@ -1,10 +1,11 @@
 const { getProvider, mockProvider } = require("../services/providers");
 const {
   DEFAULT_TIMEOUT_MS,
+  enforceRateLimit,
   getQuery,
-  rateLimitHint,
   rejectUnsupportedMethod,
   sendSuccess,
+  setCachePolicy,
   validateOrSend,
   validateTeams,
   withTimeout
@@ -15,7 +16,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  rateLimitHint(req);
+  setCachePolicy(res, "teams");
+  if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
   const provider = getProvider("teams");
@@ -29,8 +31,8 @@ module.exports = async function handler(req, res) {
       if (Array.isArray(providerData) && providerData.length) {
         data = providerData.map((team) => ({
           ...team,
-          momentum: team.momentum == null ? 0 : team.momentum,
-          rating: team.rating == null ? team.momentum || 0 : team.rating
+          momentum: team.momentum == null ? null : team.momentum,
+          rating: team.rating == null ? (team.momentum == null ? null : team.momentum) : team.rating
         }));
         source = provider.source;
       }

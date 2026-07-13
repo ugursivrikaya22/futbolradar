@@ -3,11 +3,12 @@ const matches = require("../data/matches.json");
 const { computeLeagueMomentum } = require("../services/momentumService");
 const {
   DEFAULT_TIMEOUT_MS,
+  enforceRateLimit,
   getQuery,
-  rateLimitHint,
   rejectUnsupportedMethod,
   sendError,
   sendSuccess,
+  setCachePolicy,
   validateMomentum,
   validateOrSend,
   withTimeout
@@ -18,7 +19,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  rateLimitHint(req);
+  setCachePolicy(res, "momentum");
+  if (enforceRateLimit(req, res)) return;
 
   getQuery(req);
   let data = [];

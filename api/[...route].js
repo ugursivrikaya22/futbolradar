@@ -3,12 +3,13 @@ const { mergeProviderPlayers } = require("../services/playerService");
 const { enrichPlayerRating } = require("../services/ratingService");
 const {
   DEFAULT_TIMEOUT_MS,
+  enforceRateLimit,
   getQuery,
   normalizeText,
-  rateLimitHint,
   rejectUnsupportedMethod,
   sendError,
   sendSuccess,
+  setCachePolicy,
   withTimeout
 } = require("./_utils");
 
@@ -139,10 +140,11 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  rateLimitHint(req);
+  const route = routeName(req);
+  setCachePolicy(res, "players");
+  if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
-  const route = routeName(req);
 
   if (route === "player-detail") {
     return handlePlayerDetail(req, res, query);

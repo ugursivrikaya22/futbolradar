@@ -2,10 +2,11 @@ const { getProvider, mockProvider } = require("../services/providers");
 const { mergeProviderTransfers } = require("../services/playerService");
 const {
   DEFAULT_TIMEOUT_MS,
+  enforceRateLimit,
   getQuery,
-  rateLimitHint,
   rejectUnsupportedMethod,
   sendSuccess,
+  setCachePolicy,
   validateOrSend,
   validateTransfers,
   withTimeout
@@ -16,7 +17,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  rateLimitHint(req);
+  setCachePolicy(res, "transfers");
+  if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
   const provider = getProvider("transfers");

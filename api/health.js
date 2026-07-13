@@ -2,9 +2,11 @@ const {
   API_KEY_ENV_NAMES,
   BASE_URL_ENV_NAMES,
   COMPETITION_CODE_ENV_NAMES,
+  enforceRateLimit,
   getQuery,
   rejectUnsupportedMethod,
-  sendSuccess
+  sendSuccess,
+  setCachePolicy
 } = require("./_utils");
 const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig } = require("../services/providers");
 const { getConfig } = require("../services/providers/footballProvider");
@@ -49,6 +51,9 @@ module.exports = async function handler(req, res) {
   if (rejectUnsupportedMethod(req, res)) {
     return;
   }
+
+  setCachePolicy(res, "health");
+  if (enforceRateLimit(req, res, { limit: 30 })) return;
 
   getQuery(req);
 

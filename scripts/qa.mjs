@@ -281,6 +281,11 @@ function checkJson() {
     const rewrites = new Map((vercelConfig.rewrites || []).map((rewrite) => [rewrite.source, rewrite.destination]));
     const redirects = new Map((vercelConfig.redirects || []).map((redirect) => [redirect.source, redirect.destination]));
     const redirectRules = vercelConfig.redirects || [];
+    const globalHeaders = (vercelConfig.headers || []).find((rule) => rule.source === "/(.*)");
+    const headerMap = new Map(((globalHeaders && globalHeaders.headers) || []).map((header) => [header.key, header.value]));
+    expect(headerMap.has("Content-Security-Policy"), "vercel security headers missing Content-Security-Policy");
+    expect(String(headerMap.get("Content-Security-Policy") || "").includes("object-src 'none'"), "vercel CSP must block object sources");
+    expect(String(headerMap.get("Content-Security-Policy") || "").includes("connect-src 'self'"), "vercel CSP must restrict API connections");
     [
       "futbolradar.com",
       "futbolradar.com.tr",
@@ -392,7 +397,7 @@ function checkSeoAndLinks() {
     expect(canonical === expectedUrl, `${page}: canonical mismatch`);
     expect(ogUrl === expectedUrl, `${page}: og:url mismatch`);
     expect(ogImage === "https://www.futbolradar.com/assets/og-image.svg", `${page}: og:image mismatch`);
-    expect(robots === "index,follow", `${page}: robots must be index,follow`);
+    expect(["index,follow", "noindex,follow"].includes(robots), `${page}: robots directive is invalid`);
     expect(Boolean(ogTitle), `${page}: missing og:title`);
     expect(Boolean(ogDescription), `${page}: missing og:description`);
     expect(twitterCard === "summary_large_image", `${page}: twitter card mismatch`);
@@ -406,6 +411,9 @@ function checkSeoAndLinks() {
     if (playerProfilePages.includes(page)) {
       expect(html.includes("static-profile-links"), `${page}: missing static profile comparison links`);
       expect(html.includes("../karsilastirma/"), `${page}: missing static comparison page href`);
+      expect(html.includes('"@type": "Person"'), `${page}: missing Person schema`);
+      expect(html.includes('"@type": "SportsTeam"'), `${page}: missing SportsTeam schema`);
+      expect(html.includes('"@type": "BreadcrumbList"'), `${page}: missing breadcrumb schema`);
     }
 
     if (page === "index.html") {
@@ -455,6 +463,8 @@ function checkSeoAndLinks() {
       expect(html.includes("static-comparison-summary"), `${page}: missing static comparison summary`);
       expect(html.includes('data-api-target="player-compare"'), `${page}: missing dynamic comparison hook`);
       expect(html.includes("data-compare-seed"), `${page}: missing comparison seed`);
+      expect(html.includes('"@type": "Article"'), `${page}: missing Article schema`);
+      expect(html.includes('"@type": "BreadcrumbList"'), `${page}: missing breadcrumb schema`);
     }
 
     for (const match of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
@@ -485,7 +495,27 @@ function checkSeoAndLinks() {
 
   const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
   for (const page of pages) {
-    expect(sitemap.includes(`<loc>${pageUrl(page)}</loc>`), `sitemap missing ${pageUrl(page)}`);
+    const html = fs.readFileSync(path.join(root, page), "utf8");
+    const robots = (html.match(/<meta\s+name="robots"\s+content="([^"]+)"/i) || [])[1] || "";
+    if (robots === "noindex,follow") {
+      expect(!sitemap.includes(`<loc>${pageUrl(page)}</loc>`), `sitemap must exclude noindex page ${pageUrl(page)}`);
+    } else {
+      expect(sitemap.includes(`<loc>${pageUrl(page)}</loc>`), `sitemap missing ${pageUrl(page)}`);
+    }
+
+    if ([
+      "en-iyi-super-lig-oyunculari.html",
+      "en-iyi-forvetler.html",
+      "en-iyi-orta-sahalar.html",
+      "en-iyi-defanslar.html",
+      "en-iyi-kaleciler.html",
+      "yukselen-oyuncular.html",
+      "genc-yetenekler.html",
+      "transfer-radari.html"
+    ].includes(page)) {
+      expect(html.includes('data-card="player"'), `${page}: missing prerendered player cards`);
+      expect(!html.includes("Oyuncular yukleniyor"), `${page}: client-only loading placeholder must not be indexed`);
+    }
   }
 
   const robots = fs.readFileSync(path.join(root, "robots.txt"), "utf8");
@@ -494,6 +524,28 @@ function checkSeoAndLinks() {
   expect(fs.existsSync(path.join(root, "public", "assets", "og-image.svg")), "missing public/assets/og-image.svg");
   expect(fs.existsSync(path.join(root, "site.webmanifest")), "missing site.webmanifest");
   expect(fs.existsSync(path.join(root, "public", "site.webmanifest")), "missing public/site.webmanifest");
+}
+
+function checkClientSecrets() {
+  const forbiddenMarkers = [
+    "FOOTBALL_API_KEY",
+    "FOOTBALL_DATA_API_KEY",
+    "APIFOOTBALL_API_KEY",
+    "X-Auth-Token",
+    "x-apisports-key"
+  ];
+  const clientFiles = [
+    path.join(root, "app.js"),
+    path.join(root, "site.js"),
+    ...walk(root, (full) => full.endsWith(".html") && !full.includes(`${path.sep}node_modules${path.sep}`))
+  ];
+
+  for (const file of clientFiles) {
+    const content = fs.readFileSync(file, "utf8");
+    for (const marker of forbiddenMarkers) {
+      expect(!content.includes(marker), `client secret marker '${marker}' leaked into ${path.relative(root, file)}`);
+    }
+  }
 }
 
 async function callEndpoint(name, url = `/api/${name}`) {
@@ -526,18 +578,42 @@ async function callEndpoint(name, url = `/api/${name}`) {
 }
 
 async function checkApi() {
+  const cacheHeaders = {
+    matches: "public, s-maxage=60, stale-while-revalidate=180",
+    standings: "public, s-maxage=300, stale-while-revalidate=900",
+    teams: "public, s-maxage=1800, stale-while-revalidate=7200",
+    players: "public, s-maxage=3600, stale-while-revalidate=21600",
+    "player-detail": "public, s-maxage=3600, stale-while-revalidate=21600",
+    "player-compare": "public, s-maxage=3600, stale-while-revalidate=21600",
+    "player-rankings": "public, s-maxage=3600, stale-while-revalidate=21600",
+    transfers: "public, s-maxage=300, stale-while-revalidate=900",
+    squad: "public, s-maxage=300, stale-while-revalidate=900",
+    "match-detail": "public, s-maxage=30, stale-while-revalidate=120",
+    momentum: "public, s-maxage=300, stale-while-revalidate=900",
+    signals: "public, s-maxage=120, stale-while-revalidate=600",
+    analyses: "public, s-maxage=3600, stale-while-revalidate=21600",
+    health: "no-store"
+  };
+
   for (const endpoint of endpoints) {
     const { payload, response } = await callEndpoint(endpoint);
     expect(response.statusCode === 200 || response.statusCode === undefined, `${endpoint}: non-200 status`);
     expect(payload && typeof payload.ok === "boolean", `${endpoint}: missing ok boolean`);
     expect(payload && payload.source, `${endpoint}: missing source`);
-    expect(payload && payload.updatedAt, `${endpoint}: missing updatedAt`);
+    expect(payload && Object.prototype.hasOwnProperty.call(payload, "updatedAt"), `${endpoint}: missing updatedAt`);
+    expect(payload && payload.responseAt && !Number.isNaN(Date.parse(payload.responseAt)), `${endpoint}: invalid responseAt`);
+    if (payload && payload.updatedAt !== null) {
+      expect(!Number.isNaN(Date.parse(payload.updatedAt)), `${endpoint}: invalid updatedAt`);
+    }
     expect(payload && Array.isArray(payload.data), `${endpoint}: data must be array`);
-    expect(response.headers["cache-control"] === "public, max-age=0", `${endpoint}: browser cache header mismatch`);
+    const expectedBrowserCache = endpoint === "health" ? "no-store" : "public, max-age=0";
+    expect(response.headers["cache-control"] === expectedBrowserCache, `${endpoint}: browser cache header mismatch`);
     expect(
-      response.headers["cdn-cache-control"] === "public, s-maxage=300, stale-while-revalidate=600",
+      response.headers["cdn-cache-control"] === cacheHeaders[endpoint],
       `${endpoint}: CDN cache header mismatch`
     );
+    expect(Boolean(response.headers["x-ratelimit-limit"]), `${endpoint}: rate limit header missing`);
+    expect(Boolean(response.headers["x-ratelimit-remaining"]), `${endpoint}: rate limit remaining header missing`);
 
     if (endpoint === "health") {
       const diagnostics = payload.data[0] || {};
@@ -635,6 +711,7 @@ checkFeatureMarkers();
 checkJavaScriptSyntax();
 checkJson();
 checkSeoAndLinks();
+checkClientSecrets();
 await checkApi();
 
 if (failures.length) {

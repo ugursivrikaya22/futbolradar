@@ -68,6 +68,13 @@ function mapHttpError(status) {
   return "PROVIDER_HTTP_ERROR";
 }
 
+function publicErrorMessage(code, status) {
+  if (code === "PROVIDER_AUTH_ERROR") return "Live provider kimlik dogrulamasi basarisiz.";
+  if (code === "PROVIDER_RATE_LIMIT") return "Live provider istek limiti doldu.";
+  if (code === "PROVIDER_NOT_FOUND") return "Live provider istenen kaydi bulamadi.";
+  return `Live provider istegi basarisiz oldu (HTTP ${status}).`;
+}
+
 function apiErrors(payload) {
   if (!payload || !payload.errors) {
     return [];
@@ -107,17 +114,17 @@ async function providerFetch(path, params) {
     }
 
     if (!response.ok) {
-      const providerMessage = payload && (payload.message || payload.error);
+      const code = mapHttpError(response.status);
       throw new ProviderError(
-        mapHttpError(response.status),
-        providerMessage || `API-Football HTTP ${response.status} dondu.`,
+        code,
+        publicErrorMessage(code, response.status),
         response.status
       );
     }
 
     const errors = apiErrors(payload);
     if (errors.length) {
-      throw new ProviderError("PROVIDER_RESPONSE_ERROR", String(errors[0]));
+      throw new ProviderError("PROVIDER_RESPONSE_ERROR", "Live provider kontrollu bir veri hatasi dondu.");
     }
 
     return payload || {};
@@ -146,6 +153,35 @@ function teamName(team) {
 
 function scoreValue(score) {
   return score === undefined || score === null ? null : score;
+}
+
+function firstDefined(...values) {
+  return values.find((value) => value !== undefined && value !== null && value !== "") ?? null;
+}
+
+function numberOrNull(value) {
+  const candidate = firstDefined(value);
+  if (candidate === null) {
+    return null;
+  }
+
+  const number = Number(candidate);
+  return Number.isFinite(number) ? number : null;
+}
+
+function stampProviderData(records, resource, staleAfterMs) {
+  const fetchedAt = new Date().toISOString();
+  const staleAfter = new Date(Date.parse(fetchedAt) + staleAfterMs).toISOString();
+  return records.map((record) => ({
+    ...record,
+    source: "api-football",
+    providerName: "api-football",
+    fetchedAt,
+    staleAfter,
+    dataStatus: "provider",
+    needsReview: false,
+    resource
+  }));
 }
 
 function normalizeStatus(status) {
@@ -201,19 +237,19 @@ function normalizeStandingRow(row, leagueName) {
   return {
     id: String(team.id || team.name || ""),
     providerId: team.id ? String(team.id) : "",
-    rank: row.rank || 0,
+    rank: numberOrNull(row.rank),
     team: teamName(team),
     name: teamName(team),
     league: leagueName || "",
-    played: row.all && row.all.played || 0,
-    won: row.all && row.all.win || 0,
-    drawn: row.all && row.all.draw || 0,
-    lost: row.all && row.all.lose || 0,
-    goalsFor: row.all && row.all.goals && row.all.goals.for || 0,
-    goalsAgainst: row.all && row.all.goals && row.all.goals.against || 0,
-    goalDifference: row.goalsDiff || 0,
-    points: row.points || 0,
-    average: row.goalsDiff || 0,
+    played: numberOrNull(row.all && row.all.played),
+    won: numberOrNull(row.all && row.all.win),
+    drawn: numberOrNull(row.all && row.all.draw),
+    lost: numberOrNull(row.all && row.all.lose),
+    goalsFor: numberOrNull(row.all && row.all.goals && row.all.goals.for),
+    goalsAgainst: numberOrNull(row.all && row.all.goals && row.all.goals.against),
+    goalDifference: numberOrNull(row.goalsDiff),
+    points: numberOrNull(row.points),
+    average: numberOrNull(row.goalsDiff),
     momentum: null,
     formScore: null,
     form: row.form ? String(row.form).split("").slice(-5) : [],
@@ -234,7 +270,7 @@ function normalizeTeam(item) {
     country: team.country || "",
     venue: venue.name || null,
     coach: null,
-    squadCount: 0,
+    squadCount: null,
     momentum: null,
     rating: null,
     attackRating: null,
@@ -271,7 +307,12 @@ function normalizePlayer(item) {
   const goals = statistics.goals || {};
   const cards = statistics.cards || {};
   const rating = games.rating == null ? null : Number(games.rating);
-  const minutes = games.minutes || 0;
+  const minutes = numberOrNull(games.minutes);
+  const appearances = numberOrNull(firstDefined(games.appearences, games.appearances));
+  const playerGoals = numberOrNull(goals.total);
+  const assists = numberOrNull(goals.assists);
+  const yellowCards = numberOrNull(cards.yellow);
+  const redCards = numberOrNull(cards.red);
 
   return {
     id: String(player.id || player.name || ""),
@@ -292,20 +333,20 @@ function normalizePlayer(item) {
     marketValueEur: null,
     photo: player.photo || null,
     stats: {
-      appearances: games.appearences || games.appearances || 0,
+      appearances,
       minutes,
-      goals: goals.total || 0,
-      assists: goals.assists || 0,
-      yellowCards: cards.yellow || 0,
-      redCards: cards.red || 0
+      goals: playerGoals,
+      assists,
+      yellowCards,
+      redCards
     },
-    appearances: games.appearences || games.appearances || 0,
+    appearances,
     minutesPlayed: minutes,
     minutes,
-    goals: goals.total || 0,
-    assists: goals.assists || 0,
-    yellowCards: cards.yellow || 0,
-    redCards: cards.red || 0,
+    goals: playerGoals,
+    assists,
+    yellowCards,
+    redCards,
     rating,
     aiRating: rating,
     overallRating: rating,
@@ -314,7 +355,7 @@ function normalizePlayer(item) {
     ratingStatus: rating == null ? "pending" : "provider",
     transferUpdatedAt: null,
     source: "api-football",
-    lastSyncedAt: new Date().toISOString()
+    lastSyncedAt: firstDefined(item.lastSyncedAt, item.fetchedAt)
   };
 }
 
@@ -357,7 +398,7 @@ async function getFixtures(query) {
   const league = fixtureId ? resolveLeague(query && query.league) : ensureLeagueForData(query);
   const season = resolveSeason(query && query.season);
   const payload = await providerFetch("/fixtures", { id: fixtureId, league, season, date: query && query.date });
-  return responseItems(payload).map(normalizeFixture);
+  return stampProviderData(responseItems(payload).map(normalizeFixture), "matches", 5 * 60 * 1000);
 }
 
 async function getMatches(query) {
@@ -370,7 +411,7 @@ async function getStandings(query) {
   const payload = await providerFetch("/standings", { league, season });
   const leaguePayload = responseItems(payload)[0] && responseItems(payload)[0].league || {};
   const table = Array.isArray(leaguePayload.standings) ? leaguePayload.standings[0] || [] : [];
-  return table.map((row) => normalizeStandingRow(row, leaguePayload.name));
+  return stampProviderData(table.map((row) => normalizeStandingRow(row, leaguePayload.name)), "standings", 60 * 60 * 1000);
 }
 
 async function getTeams(query) {
@@ -382,7 +423,7 @@ async function getTeams(query) {
     id: query && (query.teamId || query.id),
     country: query && query.country || getConfig().country
   }));
-  return responseItems(payload).map(normalizeTeam);
+  return stampProviderData(responseItems(payload).map(normalizeTeam), "teams", 24 * 60 * 60 * 1000);
 }
 
 async function getSquad(query) {
@@ -395,7 +436,7 @@ async function getSquad(query) {
   const item = responseItems(payload)[0] || {};
   const team = item.team || {};
   const squad = Array.isArray(item.players) ? item.players : [];
-  return squad.map((player) => normalizeSquadPlayer(player, team));
+  return stampProviderData(squad.map((player) => normalizeSquadPlayer(player, team)), "squad", 6 * 60 * 60 * 1000);
 }
 
 async function getPlayers(query) {
@@ -408,7 +449,7 @@ async function getPlayers(query) {
     search: query && query.search,
     page: query && query.page
   }));
-  return responseItems(payload).map(normalizePlayer);
+  return stampProviderData(responseItems(payload).map(normalizePlayer), "players", 24 * 60 * 60 * 1000);
 }
 
 async function getPlayerById(query) {
@@ -424,13 +465,13 @@ async function getPlayerTransfers(query) {
   }
 
   const payload = await providerFetch("/transfers", compactParams({ player: playerId, team: teamId }));
-  return responseItems(payload).flatMap(normalizeTransfer);
+  return stampProviderData(responseItems(payload).flatMap(normalizeTransfer), "transfers", 6 * 60 * 60 * 1000);
 }
 
 async function getTopScorers(query) {
   const league = ensureLeagueForData(query);
   const payload = await providerFetch("/players/topscorers", { league, season: resolveSeason(query && query.season) });
-  return responseItems(payload).map(normalizePlayer);
+  return stampProviderData(responseItems(payload).map(normalizePlayer), "players", 6 * 60 * 60 * 1000);
 }
 
 async function getInjuries(query) {
@@ -512,7 +553,8 @@ async function getMatchDetail(query) {
     statistics,
     prediction: predictions[0] || null,
     source: "api-football",
-    updatedAt: new Date().toISOString()
+    fetchedAt: new Date().toISOString(),
+    staleAfter: new Date(Date.now() + 2 * 60 * 1000).toISOString()
   };
 }
 

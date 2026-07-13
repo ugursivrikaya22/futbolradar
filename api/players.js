@@ -3,11 +3,12 @@ const { mergeProviderPlayers } = require("../services/playerService");
 const { enrichPlayerRating } = require("../services/ratingService");
 const {
   DEFAULT_TIMEOUT_MS,
+  enforceRateLimit,
   getQuery,
   normalizeText,
-  rateLimitHint,
   rejectUnsupportedMethod,
   sendSuccess,
+  setCachePolicy,
   validateOrSend,
   validatePlayers,
   withTimeout
@@ -134,7 +135,7 @@ function applyPlayerFilters(players, query) {
   data.sort(sorters[sort] || sorters.rating);
 
   if (Number.isFinite(limit) && limit > 0) {
-    data = data.slice(0, limit);
+    data = data.slice(0, Math.min(limit, 100));
   }
 
   return data;
@@ -145,7 +146,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  rateLimitHint(req);
+  setCachePolicy(res, "players");
+  if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
   const provider = getProvider("players");

@@ -1,10 +1,11 @@
 const { getProvider, mockProvider } = require("../services/providers");
 const {
   DEFAULT_TIMEOUT_MS,
+  enforceRateLimit,
   getQuery,
-  rateLimitHint,
   rejectUnsupportedMethod,
   sendSuccess,
+  setCachePolicy,
   validateOrSend,
   validateSquad,
   withTimeout
@@ -15,7 +16,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  rateLimitHint(req);
+  setCachePolicy(res, "squad");
+  if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
   const provider = getProvider("squad");

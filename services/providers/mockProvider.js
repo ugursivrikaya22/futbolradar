@@ -9,6 +9,10 @@ const { normalizePlayer: normalizePlayerRecord } = require("../playerService");
 
 const source = "FutbolRadar Mock API";
 
+function firstDefined(...values) {
+  return values.find((value) => value !== undefined && value !== null && value !== "") ?? null;
+}
+
 function slug(value) {
   return normalizeText(value).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
@@ -44,7 +48,7 @@ function normalizeMatchDetail(match) {
     ],
     prediction: normalized.aiPrediction ? { label: normalized.aiPrediction, risk: normalized.risk || null } : null,
     source: "mock",
-    updatedAt: new Date().toISOString()
+    updatedAt: firstDefined(normalized.updatedAt, normalized.fetchedAt, normalized.lastUpdatedAt)
   };
 }
 
@@ -85,8 +89,8 @@ function normalizeTeam(team) {
 
 function normalizePlayer(player) {
   const normalized = normalizePlayerRecord(player);
-  const rating = normalized.rating || normalized.aiRating || normalized.overallRating || 0;
-  const minutesPlayed = normalized.minutesPlayed || normalized.minutes || 0;
+  const rating = firstDefined(normalized.rating, normalized.aiRating, normalized.overallRating);
+  const minutesPlayed = firstDefined(normalized.minutesPlayed, normalized.minutes);
 
   return {
     ...normalized,
@@ -113,13 +117,13 @@ function normalizePlayer(player) {
     computedAge: normalized.computedAge || null,
     secondaryPosition: normalized.secondaryPosition || "",
     heightCm: normalized.heightCm || null,
-    appearances: normalized.appearances || 0,
-    goals: normalized.goals || 0,
-    assists: normalized.assists || 0,
+    appearances: firstDefined(normalized.appearances, normalized.stats && normalized.stats.appearances),
+    goals: firstDefined(normalized.goals, normalized.stats && normalized.stats.goals),
+    assists: firstDefined(normalized.assists, normalized.stats && normalized.stats.assists),
     minutesPlayed,
     minutes: normalized.minutes || minutesPlayed,
-    yellowCards: normalized.yellowCards || 0,
-    redCards: normalized.redCards || 0,
+    yellowCards: firstDefined(normalized.yellowCards, normalized.stats && normalized.stats.yellowCards),
+    redCards: firstDefined(normalized.redCards, normalized.stats && normalized.stats.redCards),
     passAccuracy: normalized.passAccuracy || null,
     shotsPerGame: normalized.shotsPerGame || null,
     tacklesPerGame: normalized.tacklesPerGame || null,
@@ -141,8 +145,8 @@ function normalizePlayer(player) {
     formRating: normalized.formRating || rating,
     providerId: normalized.providerId || `mock-${slug(`${normalized.name}-${normalized.currentTeam || normalized.team}`)}`,
     providerName: normalized.providerName || "FutbolRadar Mock",
-    lastSyncedAt: normalized.lastSyncedAt || "2026-07-09T08:00:00+03:00",
-    lastUpdated: normalized.lastUpdated || String(normalized.lastSyncedAt || "2026-07-09T08:00:00+03:00").slice(0, 10),
+    lastSyncedAt: firstDefined(normalized.lastSyncedAt, normalized.fetchedAt),
+    lastUpdated: firstDefined(normalized.lastUpdated, normalized.lastUpdatedAt),
     radar: normalized.radar || {
       finishing: normalized.threatScore || rating,
       creativity: normalized.creativityScore || rating,

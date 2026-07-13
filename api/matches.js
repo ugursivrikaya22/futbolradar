@@ -1,11 +1,12 @@
 const { getProvider } = require("../services/providers");
 const {
   DEFAULT_TIMEOUT_MS,
+  enforceRateLimit,
   getQuery,
-  rateLimitHint,
   rejectUnsupportedMethod,
   sendError,
   sendSuccess,
+  setCachePolicy,
   validateDateParam,
   validateMatches,
   validateOrSend,
@@ -17,7 +18,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  rateLimitHint(req);
+  setCachePolicy(res, "matches");
+  if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
   const dateError = validateDateParam(query.date);
