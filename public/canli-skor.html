@@ -58,14 +58,27 @@
             <h1>Canlı Skor</h1>
             <p class="lead">Skor, dakika, maç temposu, baskı yönü ve momentum değişimini tek ekranda oku.</p>
           </div>
-          <span class="hero-meta">Son güncelleme: 07 Temmuz 2026 · 23:55</span>
+          <span class="hero-meta">Son kontrol: 13 Temmuz 2026 08:00 TSİ</span>
         </div>
       </section>
-      <section class="grid" id="live-score-page" data-api-section="live-score" data-api-target="live-score">
-        <article class="data-empty" data-card="empty-state">
-          <strong>Canlı skor yükleniyor</strong>
-          <span>Canlı maç kartları JSON veri katmanından okunuyor.</span>
-        </article>
+      <section class="grid" id="live-score-page" data-api-section="live-score" data-api-target="live-score" data-static-fallback="true">
+        <!-- prerender:live-score:start -->
+<article class="card match-card static-match-card" data-card="fixture-preview" data-match="tff-tsl-2026-r01-genclerbirligi-fenerbahce">
+    <div class="card-head"><span class="card-kicker">Canlı maç yok · 14-17 Ağustos 2026</span><strong class="big-value">1. Hafta</strong></div>
+    <h2>Gençlerbirliği - Fenerbahçe</h2>
+    <p>Şu an doğrulanmış canlı Süper Lig maçı bulunmuyor. Sezonun onaylı ilk eşleşmelerini aşağıdan inceleyebilirsin.</p>
+    <div class="match-teams"><div class="team-line"><span>Gençlerbirliği</span><span>Radar Bekleniyor</span></div><div class="team-line"><span>Fenerbahçe</span><span>Radar 79/100</span></div></div>
+    <div class="tag-row"><span class="tag green">Yüksek güven</span><span class="tag soft">Fikstür eşleşmesi</span></div>
+    <a class="detail-link" href="./mac/genclerbirligi-fenerbahce-2026-2027-r01.html">Maç öncesi analizi aç</a>
+  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="tff-tsl-2026-r01-kasimpasa-trabzonspor">
+    <div class="card-head"><span class="card-kicker">Canlı maç yok · 14-17 Ağustos 2026</span><strong class="big-value">1. Hafta</strong></div>
+    <h2>Kasımpaşa - Trabzonspor</h2>
+    <p>Şu an doğrulanmış canlı Süper Lig maçı bulunmuyor. Sezonun onaylı ilk eşleşmelerini aşağıdan inceleyebilirsin.</p>
+    <div class="match-teams"><div class="team-line"><span>Kasımpaşa</span><span>Radar Bekleniyor</span></div><div class="team-line"><span>Trabzonspor</span><span>Radar 68/100</span></div></div>
+    <div class="tag-row"><span class="tag green">Yüksek güven</span><span class="tag soft">Fikstür eşleşmesi</span></div>
+    <a class="detail-link" href="./mac/kasimpasa-trabzonspor-2026-2027-r01.html">Maç öncesi analizi aç</a>
+  </article>
+<!-- prerender:live-score:end -->
       </section>
       <section class="source-strip" aria-label="Veri bilgisi">
         <div><span>Model kapsamı</span><b>Dakika, skor, tempo, baskı ve momentum</b></div>

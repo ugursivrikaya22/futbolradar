@@ -58,24 +58,22 @@
             <h1>Momentum</h1>
             <p class="lead">Takımların güncel ivmesini form, tempo, gol eğilimi ve risk sinyalleriyle sırala.</p>
           </div>
-          <span class="hero-meta">Son güncelleme: 07 Temmuz 2026 · 23:55</span>
+          <span class="hero-meta">Son kontrol: 09 Temmuz 2026 23:20 TSİ</span>
         </div>
       </section>
       <section class="data-panel" id="momentum-page" data-api-section="momentum">
         <div class="panel-title"><h2>Takım Momentum Sıralaması</h2><span>AI maç önü sinyalleri</span></div>
         <div class="table-row header"><span>#</span><span>Takim</span><span>Mom</span><span>Hucum</span><span>Savunma</span><span>Trend</span></div>
-        <div class="table-body" data-api-target="momentum">
-          <article class="data-empty" data-card="empty-state">
-            <strong>Momentum tablosu yükleniyor</strong>
-            <span>Momentum sıralaması JSON veri katmanından okunuyor.</span>
-          </article>
+        <div class="table-body" data-api-target="momentum" data-static-fallback="true">
+          <!-- prerender:momentum:start -->
+<div class="table-row" data-card="momentum" data-team="Galatasaray"><span>1</span><b>Galatasaray</b><span>82</span><span>8.4</span><span>Yüksek</span><span>Orta</span></div><div class="table-row" data-card="momentum" data-team="Fenerbahçe"><span>2</span><b>Fenerbahçe</b><span>76</span><span>7.9</span><span>Yüksek</span><span>Orta</span></div><div class="table-row" data-card="momentum" data-team="Samsunspor"><span>3</span><b>Samsunspor</b><span>71</span><span>7.5</span><span>Orta</span><span>Düşük</span></div><div class="table-row" data-card="momentum" data-team="Beşiktaş"><span>4</span><b>Beşiktaş</b><span>69</span><span>7.1</span><span>Orta</span><span>Orta</span></div><div class="table-row" data-card="momentum" data-team="Trabzonspor"><span>5</span><b>Trabzonspor</b><span>64</span><span>6.8</span><span>Orta</span><span>Orta</span></div>
+<!-- prerender:momentum:end -->
         </div>
       </section>
-      <section class="grid three tight" id="momentum-signals" data-api-section="momentum-signals" data-api-target="momentum-signals">
-        <article class="data-empty" data-card="empty-state">
-          <strong>Momentum sinyalleri yükleniyor</strong>
-          <span>Sinyal kartları JSON veri katmanından okunuyor.</span>
-        </article>
+      <section class="grid three tight" id="momentum-signals" data-api-section="momentum-signals" data-api-target="momentum-signals" data-static-fallback="true">
+        <!-- prerender:momentum-signals:start -->
+<article class="card" data-card="momentum-signal"><span class="card-kicker">Model referansı</span><h2>Takım radarları sezon öncesi karşılaştırma modunda.</h2><p>Resmî maçlar başladığında form ve momentum bileşenleri yeni sonuçlarla güncellenir.</p></article><article class="card" data-card="momentum-signal"><span class="card-kicker">Maç öncesi radar</span><h2>Onaylı eşleşmeler için kalıcı analiz sayfaları hazır.</h2><p>Her sayfada eksik bilgi ayrı belirtilir; doğrulanmayan kadro veya skor eklenmez.</p></article><article class="card" data-card="momentum-signal"><span class="card-kicker">Oyuncu takibi</span><h2>Oyuncu profilleri transfer geçmişi ve form alanlarıyla güncelleniyor.</h2><p>Güncel takım bilgisi, eski kulüplerden ayrı tutulur ve eksik alanlar açıkça belirtilir.</p></article>
+<!-- prerender:momentum-signals:end -->
       </section>
       <section class="source-strip" aria-label="Veri bilgisi">
         <div><span>Model kapsamı</span><b>Momentum, form puanı, risk ve gol sinyali</b></div>

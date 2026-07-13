@@ -24,18 +24,45 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "Mauro Icardi",
-        "nationality": "Arjantin",
-        "height": "181 cm",
-        "memberOf": {
-                "@type": "SportsTeam",
-                "name": "Galatasaray",
-                "sport": "Football"
-        },
-        "jobTitle": "Santrfor",
-        "url": "https://www.futbolradar.com/oyuncular/mauro-icardi.html",
-        "description": "Mauro Icardi; güncel takım Galatasaray, mevki Santrfor. Transfer geçmişi, overall rating 84, potansiyel 89 ve radar metrikleriyle FutbolRadar'da analiz edilir."
+        "@graph": [
+                {
+                        "@type": "Person",
+                        "name": "Mauro Icardi",
+                        "nationality": "Arjantin",
+                        "height": "181 cm",
+                        "memberOf": {
+                                "@type": "SportsTeam",
+                                "name": "Galatasaray",
+                                "sport": "Football"
+                        },
+                        "jobTitle": "Santrfor",
+                        "url": "https://www.futbolradar.com/oyuncular/mauro-icardi.html",
+                        "description": "Mauro Icardi; güncel takım Galatasaray, mevki Santrfor. Transfer geçmişi, overall rating 84, potansiyel 89 ve radar metrikleriyle FutbolRadar'da analiz edilir."
+                },
+                {
+                        "@type": "BreadcrumbList",
+                        "itemListElement": [
+                                {
+                                        "@type": "ListItem",
+                                        "position": 1,
+                                        "name": "Ana Sayfa",
+                                        "item": "https://www.futbolradar.com/"
+                                },
+                                {
+                                        "@type": "ListItem",
+                                        "position": 2,
+                                        "name": "Oyuncu Radar",
+                                        "item": "https://www.futbolradar.com/oyuncu-radari.html"
+                                },
+                                {
+                                        "@type": "ListItem",
+                                        "position": 3,
+                                        "name": "Mauro Icardi",
+                                        "item": "https://www.futbolradar.com/oyuncular/mauro-icardi.html"
+                                }
+                        ]
+                }
+        ]
 }
     </script>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
@@ -71,12 +98,13 @@
           <span class="hero-meta">Overall 84 · Santrfor · 33</span>
         </div>
       </section>
-      <section class="player-profile-shell" data-api-target="player-detail" data-player-id="mauro-icardi">
-        <article class="data-empty" data-card="empty-state">
-          <strong>Mauro Icardi profili hazırlanıyor</strong>
-          <span>Oyuncu performans kartı yükleniyor.</span>
-        </article>
-      </section>
+      <section class="profile-section profile-content-prerender" aria-label="Mauro Icardi performans ozeti">
+    <div class="metric-grid profile-metrics"><span>Overall <b>84</b></span><span>Form <b>86</b></span><span>Gol <b>9</b></span><span>Asist <b>3</b></span><span>Dakika <b>536</b></span><span>Piyasa <b>3.2M EUR</b></span></div>
+    <div class="profile-section-head"><h2>Oyuncu ozeti</h2><span>Galatasaray · Santrfor · 33 yas</span></div>
+    <p>Ceza sahası içi bitiricilik ve doğru koşu zamanlamasıyla yüksek gol tehdidi üretir.</p>
+    <div class="radar-mini-bars"><span>finishing <b>92</b></span><span>creativity <b>57</b></span><span>pressing <b>64</b></span><span>tempo <b>76</b></span><span>consistency <b>88</b></span></div>
+    <div class="tag-row"><span class="tag green">Guncel takim: Galatasaray</span><span class="tag soft">Süper Lig</span></div>
+  </section>
       <section class="static-profile-links" aria-label="Statik oyuncu karsilastirma baglantilari">
         <div class="profile-section-head"><h2>Hazir Kiyas Linkleri</h2><span>Arama motorlari ve hizli gezinme icin</span></div>
         <div class="static-profile-link-grid">

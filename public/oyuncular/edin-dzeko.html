@@ -24,18 +24,45 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "Edin Dzeko",
-        "nationality": "Bosna Hersek",
-        "height": "193 cm",
-        "memberOf": {
-                "@type": "SportsTeam",
-                "name": "Schalke 04",
-                "sport": "Football"
-        },
-        "jobTitle": "Santrfor",
-        "url": "https://www.futbolradar.com/oyuncular/edin-dzeko.html",
-        "description": "Edin Dzeko; son bilinen takım Schalke 04, transfer durumu takipte, mevki Santrfor. Transfer geçmişi, overall rating 81, potansiyel 85 ve radar metrikleriyle FutbolRadar'da analiz edilir."
+        "@graph": [
+                {
+                        "@type": "Person",
+                        "name": "Edin Dzeko",
+                        "nationality": "Bosna Hersek",
+                        "height": "193 cm",
+                        "memberOf": {
+                                "@type": "SportsTeam",
+                                "name": "Schalke 04",
+                                "sport": "Football"
+                        },
+                        "jobTitle": "Santrfor",
+                        "url": "https://www.futbolradar.com/oyuncular/edin-dzeko.html",
+                        "description": "Edin Dzeko; son bilinen takım Schalke 04, transfer durumu takipte, mevki Santrfor. Transfer geçmişi, overall rating 81, potansiyel 85 ve radar metrikleriyle FutbolRadar'da analiz edilir."
+                },
+                {
+                        "@type": "BreadcrumbList",
+                        "itemListElement": [
+                                {
+                                        "@type": "ListItem",
+                                        "position": 1,
+                                        "name": "Ana Sayfa",
+                                        "item": "https://www.futbolradar.com/"
+                                },
+                                {
+                                        "@type": "ListItem",
+                                        "position": 2,
+                                        "name": "Oyuncu Radar",
+                                        "item": "https://www.futbolradar.com/oyuncu-radari.html"
+                                },
+                                {
+                                        "@type": "ListItem",
+                                        "position": 3,
+                                        "name": "Edin Dzeko",
+                                        "item": "https://www.futbolradar.com/oyuncular/edin-dzeko.html"
+                                }
+                        ]
+                }
+        ]
 }
     </script>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
@@ -71,19 +98,20 @@
           <span class="hero-meta">Overall 81 · Santrfor · 40</span>
         </div>
       </section>
-      <section class="player-profile-shell" data-api-target="player-detail" data-player-id="edin-dzeko">
-        <article class="data-empty" data-card="empty-state">
-          <strong>Edin Dzeko profili hazırlanıyor</strong>
-          <span>Oyuncu performans kartı yükleniyor.</span>
-        </article>
-      </section>
+      <section class="profile-section profile-content-prerender" aria-label="Edin Dzeko performans ozeti">
+    <div class="metric-grid profile-metrics"><span>Overall <b>81</b></span><span>Form <b>83</b></span><span>Gol <b>6</b></span><span>Asist <b>6</b></span><span>Dakika <b>598</b></span><span>Piyasa <b>2.5M EUR</b></span></div>
+    <div class="profile-section-head"><h2>Oyuncu ozeti</h2><span>Schalke 04 · Santrfor · 40 yas</span></div>
+    <p>Sırtı dönük oyun, bağlantı pasları ve final aksiyonu dengesiyle hücum merkezi olur.</p>
+    <div class="radar-mini-bars"><span>finishing <b>84</b></span><span>creativity <b>82</b></span><span>pressing <b>68</b></span><span>tempo <b>72</b></span><span>consistency <b>85</b></span></div>
+    <div class="tag-row"><span class="tag green">Guncel takim: Schalke 04</span><span class="tag soft">2. Bundesliga</span></div>
+  </section>
       <section class="static-profile-links" aria-label="Statik oyuncu karsilastirma baglantilari">
         <div class="profile-section-head"><h2>Hazir Kiyas Linkleri</h2><span>Arama motorlari ve hizli gezinme icin</span></div>
         <div class="static-profile-link-grid">
         <a class="static-profile-link-card" href="../karsilastirma/edin-dzeko-vs-mauro-icardi.html"><span>Akilli eslesme</span><strong>Edin Dzeko vs Mauro Icardi</strong><em>Rol, rating ve piyasa yakinligi</em></a>
-        <a class="static-profile-link-card" href="../karsilastirma/edin-dzeko-vs-kerem-akturkoglu.html"><span>Rating sinavi</span><strong>Edin Dzeko vs Kerem Aktürkoğlu</strong><em>Overall farkini oku</em></a>
+        <a class="static-profile-link-card" href="../karsilastirma/edin-dzeko-vs-sebastian-szymanski.html"><span>Rating sinavi</span><strong>Edin Dzeko vs Sebastian Szymanski</strong><em>Overall farkini oku</em></a>
         <a class="static-profile-link-card" href="../karsilastirma/edin-dzeko-vs-ugurcan-cakir.html"><span>Transfer okuma</span><strong>Edin Dzeko vs Uğurcan Çakır</strong><em>Guncel takim ve piyasa degeri</em></a>
-        <a class="static-profile-link-card" href="../karsilastirma/edin-dzeko-vs-sebastian-szymanski.html"><span>Radar alternatifi</span><strong>Edin Dzeko vs Sebastian Szymanski</strong><em>Profil trafigi ve kiyas akisi</em></a>
+        <a class="static-profile-link-card" href="../karsilastirma/edin-dzeko-vs-kerem-akturkoglu.html"><span>Radar alternatifi</span><strong>Edin Dzeko vs Kerem Aktürkoğlu</strong><em>Profil trafigi ve kiyas akisi</em></a>
         </div>
       </section>
       <section class="popular-links" aria-label="İlgili oyuncu bağlantıları">

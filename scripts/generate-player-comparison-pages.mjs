@@ -216,15 +216,27 @@ function pageHtml(pair) {
     <script type="application/ld+json">
       ${JSON.stringify({
         "@context": "https://schema.org",
-        "@type": "Article",
-        headline: title,
-        description: stripTags(description),
-        mainEntityOfPage: canonical,
-        publisher: {
-          "@type": "Organization",
-          name: "FutbolRadar"
-        },
-        about: [left.name, right.name]
+        "@graph": [
+          {
+            "@type": "Article",
+            headline: title,
+            description: stripTags(description),
+            mainEntityOfPage: canonical,
+            publisher: {
+              "@type": "Organization",
+              name: "FutbolRadar"
+            },
+            about: [left.name, right.name]
+          },
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: `${domain}/` },
+              { "@type": "ListItem", position: 2, name: "Oyuncu Karsilastirmalari", item: `${domain}/oyuncu-karsilastirmalari.html` },
+              { "@type": "ListItem", position: 3, name: `${left.name} vs ${right.name}`, item: canonical }
+            ]
+          }
+        ]
       }, null, 8)}
     </script>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
@@ -409,6 +421,15 @@ fs.mkdirSync(outDir, { recursive: true });
 fs.mkdirSync(publicOutDir, { recursive: true });
 
 const pairs = buildPairs();
+const expectedFiles = new Set(pairs.map((pair) => `${pair.slug}.html`));
+for (const directory of [outDir, publicOutDir]) {
+  for (const file of fs.readdirSync(directory)) {
+    if (file.endsWith(".html") && !expectedFiles.has(file)) {
+      fs.unlinkSync(path.join(directory, file));
+    }
+  }
+}
+
 for (const pair of pairs) {
   const html = pageHtml(pair);
   fs.writeFileSync(path.join(outDir, `${pair.slug}.html`), html, "utf8");
@@ -418,5 +439,15 @@ for (const pair of pairs) {
 const indexHtml = comparisonIndexHtml(pairs);
 fs.writeFileSync(path.join(root, "oyuncu-karsilastirmalari.html"), indexHtml, "utf8");
 fs.writeFileSync(path.join(root, "public", "oyuncu-karsilastirmalari.html"), indexHtml, "utf8");
+
+for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
+  if (!fs.existsSync(sitemapPath)) continue;
+  const current = fs.readFileSync(sitemapPath, "utf8");
+  const retained = (current.match(/  <url>[\s\S]*?  <\/url>/g) || [])
+    .filter((entry) => !entry.includes(`${domain}/karsilastirma/`));
+  const entries = pairs.map((pair) => `  <url>\n    <loc>${domain}/karsilastirma/${pair.slug}.html</loc>\n    <lastmod>2026-07-13</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.65</priority>\n  </url>`);
+  const content = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${retained.concat(entries).join("\n")}\n</urlset>\n`;
+  fs.writeFileSync(sitemapPath, content, "utf8");
+}
 
 console.log(`Generated ${pairs.length} static player comparison pages and index`);

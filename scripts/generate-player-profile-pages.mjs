@@ -183,18 +183,30 @@ function pageHtml(player) {
     <script type="application/ld+json">
       ${JSON.stringify({
         "@context": "https://schema.org",
-        "@type": "Person",
-        name: player.name,
-        nationality: player.nationality,
-        height: player.height,
-        memberOf: {
-          "@type": "SportsTeam",
-          name: team,
-          sport: "Football"
-        },
-        jobTitle: player.position,
-        url: canonical,
-        description: stripTags(description)
+        "@graph": [
+          {
+            "@type": "Person",
+            name: player.name,
+            nationality: player.nationality,
+            height: player.height,
+            memberOf: {
+              "@type": "SportsTeam",
+              name: team,
+              sport: "Football"
+            },
+            jobTitle: player.position,
+            url: canonical,
+            description: stripTags(description)
+          },
+          {
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: "https://www.futbolradar.com/" },
+              { "@type": "ListItem", position: 2, name: "Oyuncu Radar", item: "https://www.futbolradar.com/oyuncu-radari.html" },
+              { "@type": "ListItem", position: 3, name: player.name, item: canonical }
+            ]
+          }
+        ]
       }, null, 8)}
     </script>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />

@@ -24,18 +24,45 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "Semih Kılıçsoy",
-        "nationality": "Türkiye",
-        "height": "178 cm",
-        "memberOf": {
-                "@type": "SportsTeam",
-                "name": "Beşiktaş",
-                "sport": "Football"
-        },
-        "jobTitle": "Forvet",
-        "url": "https://www.futbolradar.com/oyuncular/semih-kilicsoy.html",
-        "description": "Semih Kılıçsoy; güncel takım Beşiktaş, mevki Forvet. Transfer geçmişi, overall rating 79, potansiyel 88 ve radar metrikleriyle FutbolRadar'da analiz edilir."
+        "@graph": [
+                {
+                        "@type": "Person",
+                        "name": "Semih Kılıçsoy",
+                        "nationality": "Türkiye",
+                        "height": "178 cm",
+                        "memberOf": {
+                                "@type": "SportsTeam",
+                                "name": "Beşiktaş",
+                                "sport": "Football"
+                        },
+                        "jobTitle": "Forvet",
+                        "url": "https://www.futbolradar.com/oyuncular/semih-kilicsoy.html",
+                        "description": "Semih Kılıçsoy; güncel takım Beşiktaş, mevki Forvet. Transfer geçmişi, overall rating 79, potansiyel 88 ve radar metrikleriyle FutbolRadar'da analiz edilir."
+                },
+                {
+                        "@type": "BreadcrumbList",
+                        "itemListElement": [
+                                {
+                                        "@type": "ListItem",
+                                        "position": 1,
+                                        "name": "Ana Sayfa",
+                                        "item": "https://www.futbolradar.com/"
+                                },
+                                {
+                                        "@type": "ListItem",
+                                        "position": 2,
+                                        "name": "Oyuncu Radar",
+                                        "item": "https://www.futbolradar.com/oyuncu-radari.html"
+                                },
+                                {
+                                        "@type": "ListItem",
+                                        "position": 3,
+                                        "name": "Semih Kılıçsoy",
+                                        "item": "https://www.futbolradar.com/oyuncular/semih-kilicsoy.html"
+                                }
+                        ]
+                }
+        ]
 }
     </script>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
@@ -71,18 +98,19 @@
           <span class="hero-meta">Overall 79 · Forvet · 20</span>
         </div>
       </section>
-      <section class="player-profile-shell" data-api-target="player-detail" data-player-id="semih-kilicsoy">
-        <article class="data-empty" data-card="empty-state">
-          <strong>Semih Kılıçsoy profili hazırlanıyor</strong>
-          <span>Oyuncu performans kartı yükleniyor.</span>
-        </article>
-      </section>
+      <section class="profile-section profile-content-prerender" aria-label="Semih Kılıçsoy performans ozeti">
+    <div class="metric-grid profile-metrics"><span>Overall <b>79</b></span><span>Form <b>79</b></span><span>Gol <b>7</b></span><span>Asist <b>2</b></span><span>Dakika <b>624</b></span><span>Piyasa <b>12M EUR</b></span></div>
+    <div class="profile-section-head"><h2>Oyuncu ozeti</h2><span>Beşiktaş · Forvet · 20 yas</span></div>
+    <p>Yaşına göre yüksek gol tehdidi, hareketlilik ve gelişim potansiyeli sunar.</p>
+    <div class="radar-mini-bars"><span>finishing <b>84</b></span><span>creativity <b>56</b></span><span>pressing <b>68</b></span><span>tempo <b>82</b></span><span>consistency <b>76</b></span></div>
+    <div class="tag-row"><span class="tag green">Guncel takim: Beşiktaş</span><span class="tag soft">Süper Lig</span></div>
+  </section>
       <section class="static-profile-links" aria-label="Statik oyuncu karsilastirma baglantilari">
         <div class="profile-section-head"><h2>Hazir Kiyas Linkleri</h2><span>Arama motorlari ve hizli gezinme icin</span></div>
         <div class="static-profile-link-grid">
         <a class="static-profile-link-card" href="../karsilastirma/kerem-akturkoglu-vs-semih-kilicsoy.html"><span>Akilli eslesme</span><strong>Semih Kılıçsoy vs Kerem Aktürkoğlu</strong><em>Rol, rating ve piyasa yakinligi</em></a>
         <a class="static-profile-link-card" href="../karsilastirma/mauro-icardi-vs-semih-kilicsoy.html"><span>Ayni rol kiyas</span><strong>Semih Kılıçsoy vs Mauro Icardi</strong><em>forvet profili</em></a>
-        <a class="static-profile-link-card" href="../karsilastirma/sebastian-szymanski-vs-semih-kilicsoy.html"><span>Rating sinavi</span><strong>Semih Kılıçsoy vs Sebastian Szymanski</strong><em>Overall farkini oku</em></a>
+        <a class="static-profile-link-card" href="../karsilastirma/abdulkerim-bardakci-vs-semih-kilicsoy.html"><span>Rating sinavi</span><strong>Semih Kılıçsoy vs Abdülkerim Bardakcı</strong><em>Overall farkini oku</em></a>
         <a class="static-profile-link-card" href="../karsilastirma/semih-kilicsoy-vs-ugurcan-cakir.html"><span>Transfer okuma</span><strong>Semih Kılıçsoy vs Uğurcan Çakır</strong><em>Guncel takim ve piyasa degeri</em></a>
         </div>
       </section>
