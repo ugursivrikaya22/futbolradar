@@ -91,6 +91,33 @@ function staticMatchCard(match, variant) {
   </article>`;
 }
 
+function emptyMatchState(variant) {
+  const isFeatured = variant === "featured";
+  const isLive = variant === "live";
+  const title = isFeatured
+    ? "Günün radar maçı bekleniyor"
+    : isLive
+      ? "Şu anda canlı maç yok"
+      : "Bugün doğrulanmış maç yok";
+  const text = isFeatured
+    ? "Bugünün doğrulanmış maçları geldiğinde form, momentum ve maç önü sinyalleri burada açılacak."
+    : isLive
+      ? "Canlı maç başladığında skor, tempo ve maç içi sinyaller bu alanda görünecek."
+      : "Bugünün maç listesi doğrulandığında burada gösterilecek. Sezon eşleşmelerini fikstür sayfasından inceleyebilirsin.";
+  const tag = isLive ? "Canlı akış bekleniyor" : "Günlük maç akışı bekleniyor";
+  const element = isFeatured ? "div" : "article";
+
+  return `<${element} class="data-empty${isFeatured ? " compact" : ""}" data-card="empty-state">
+    <strong>${escapeHtml(title)}</strong>
+    <span>${escapeHtml(text)}</span>
+    <div class="match-empty-actions">
+      <a class="detail-link" href="./super-lig-fikstur.html">Süper Lig fikstürünü aç</a>
+      <a class="detail-link ghost" href="./puan-durumu.html">Puan durumuna git</a>
+      <span class="tag soft">${escapeHtml(tag)}</span>
+    </div>
+  </${element}>`;
+}
+
 function homeFeature(match) {
   const radar = radarFor(match);
   const homeScore = radar.home.score === null ? "Bekleniyor" : `${radar.home.score}/100`;
@@ -214,15 +241,14 @@ function writePage(file, slots, freshness) {
 }
 
 const confirmed = allFixtures();
-const highlighted = confirmed.find((match) => match.homeTeam === "Galatasaray") || confirmed[0];
 const topFixtures = confirmed.slice(0, 3);
 const topTeams = teams.slice().sort((left, right) => Number(right.momentum) - Number(left.momentum));
 const topPlayers = players.slice().sort((left, right) => Number(right.overallRating || 0) - Number(left.overallRating || 0));
 
 writePage("index.html", {
-  "featured-match": homeFeature(highlighted),
+  "featured-match": emptyMatchState("featured"),
   "home-transfer-watch": transferWatch(),
-  "today-matches": topFixtures.map((match) => staticMatchCard(match)).join(""),
+  "today-matches": emptyMatchState("today"),
   "radar-signals": signalCards(),
   "team-radar": topTeams.slice(0, 4).map(staticTeamCard).join(""),
   "home-standings": staticHomeStandingRows(),
@@ -232,11 +258,11 @@ writePage("index.html", {
 }, fixtureFreshness);
 
 writePage("bugunun-maclari.html", {
-  "matches-page": topFixtures.map((match) => staticMatchCard(match)).join("")
+  "matches-page": emptyMatchState("today")
 }, fixtureFreshness);
 
 writePage("canli-skor.html", {
-  "live-score": topFixtures.slice(0, 2).map((match) => staticMatchCard(match, "live")).join("")
+  "live-score": emptyMatchState("live")
 }, fixtureFreshness);
 
 writePage("puan-durumu.html", {

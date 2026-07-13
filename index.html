@@ -47,6 +47,12 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
     <link rel="stylesheet" href="./page.css" />
+    <script data-futbolradar-ga4>
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+    window.gtag("js", new Date());
+    window.gtag("config", "G-XXXXXXXXXX", { anonymize_ip: true });
+  </script>
   </head>
   <body class="home-page">
     <div class="shell">
@@ -112,10 +118,15 @@
 
           <article class="glass-card match-card" id="featured-radar-match" data-api-section="featured-match" data-api-target="featured-match" data-static-fallback="true" aria-label="Gunun Radar Maci">
             <!-- prerender:featured-match:start -->
-<div class="match-top"><span class="status-dot">Fikstürden öne çıkan</span><span class="match-date">1. Hafta · 14-17 Ağustos 2026</span></div>
-    <div class="versus"><div class="club"><b>Galatasaray</b><span>Radar: 83/100</span></div><span class="vs-pill">VS</span><div class="club"><b>Çorum FK</b><span>Radar: Bekleniyor</span></div></div>
-    <div class="prediction-grid"><div class="prediction"><span>Fikstür durumu</span><b>Son kontrol tamamlandı</b></div><div class="prediction"><span>Son kontrol</span><b>13 Temmuz 2026 08:00 TSİ</b></div><div class="prediction"><span>Radar güveni</span><b>Yüksek güven</b></div></div>
-    <div class="player-actions match-actions featured-match-actions"><a class="detail-link" href="./mac/galatasaray-corum-fk-2026-2027-r01.html">Maç öncesi analizi aç</a><a class="detail-link ghost" href="./super-lig-fikstur.html">Tüm fikstüre git</a></div>
+<div class="data-empty compact" data-card="empty-state">
+    <strong>Günün radar maçı bekleniyor</strong>
+    <span>Bugünün doğrulanmış maçları geldiğinde form, momentum ve maç önü sinyalleri burada açılacak.</span>
+    <div class="match-empty-actions">
+      <a class="detail-link" href="./super-lig-fikstur.html">Süper Lig fikstürünü aç</a>
+      <a class="detail-link ghost" href="./puan-durumu.html">Puan durumuna git</a>
+      <span class="tag soft">Günlük maç akışı bekleniyor</span>
+    </div>
+  </div>
 <!-- prerender:featured-match:end -->
           </article>
         </section>
@@ -754,27 +765,14 @@
 
           <div class="matches-grid" id="today-matches-grid" data-api-target="today-matches" data-static-fallback="true">
             <!-- prerender:today-matches:start -->
-<article class="card match-card static-match-card" data-card="fixture-preview" data-match="tff-tsl-2026-r01-genclerbirligi-fenerbahce">
-    <div class="card-head"><span class="card-kicker">1. Hafta · 14-17 Ağustos 2026</span><strong class="big-value">1. Hafta</strong></div>
-    <h2>Gençlerbirliği - Fenerbahçe</h2>
-    <p>Eşleşme onaylandı; kesin tarih, saat ve kadro bilgisi geldiğinde aynı sayfa güncellenecek.</p>
-    <div class="match-teams"><div class="team-line"><span>Gençlerbirliği</span><span>Radar Bekleniyor</span></div><div class="team-line"><span>Fenerbahçe</span><span>Radar 79/100</span></div></div>
-    <div class="tag-row"><span class="tag green">Yüksek güven</span><span class="tag soft">Fikstür eşleşmesi</span></div>
-    <a class="detail-link" href="./mac/genclerbirligi-fenerbahce-2026-2027-r01.html">Maç öncesi analizi aç</a>
-  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="tff-tsl-2026-r01-kasimpasa-trabzonspor">
-    <div class="card-head"><span class="card-kicker">1. Hafta · 14-17 Ağustos 2026</span><strong class="big-value">1. Hafta</strong></div>
-    <h2>Kasımpaşa - Trabzonspor</h2>
-    <p>Eşleşme onaylandı; kesin tarih, saat ve kadro bilgisi geldiğinde aynı sayfa güncellenecek.</p>
-    <div class="match-teams"><div class="team-line"><span>Kasımpaşa</span><span>Radar Bekleniyor</span></div><div class="team-line"><span>Trabzonspor</span><span>Radar 68/100</span></div></div>
-    <div class="tag-row"><span class="tag green">Yüksek güven</span><span class="tag soft">Fikstür eşleşmesi</span></div>
-    <a class="detail-link" href="./mac/kasimpasa-trabzonspor-2026-2027-r01.html">Maç öncesi analizi aç</a>
-  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="tff-tsl-2026-r01-besiktas-eyupspor">
-    <div class="card-head"><span class="card-kicker">1. Hafta · 14-17 Ağustos 2026</span><strong class="big-value">1. Hafta</strong></div>
-    <h2>Beşiktaş - Eyüpspor</h2>
-    <p>Eşleşme onaylandı; kesin tarih, saat ve kadro bilgisi geldiğinde aynı sayfa güncellenecek.</p>
-    <div class="match-teams"><div class="team-line"><span>Beşiktaş</span><span>Radar 72/100</span></div><div class="team-line"><span>Eyüpspor</span><span>Radar Bekleniyor</span></div></div>
-    <div class="tag-row"><span class="tag green">Yüksek güven</span><span class="tag soft">Fikstür eşleşmesi</span></div>
-    <a class="detail-link" href="./mac/besiktas-eyupspor-2026-2027-r01.html">Maç öncesi analizi aç</a>
+<article class="data-empty" data-card="empty-state">
+    <strong>Bugün doğrulanmış maç yok</strong>
+    <span>Bugünün maç listesi doğrulandığında burada gösterilecek. Sezon eşleşmelerini fikstür sayfasından inceleyebilirsin.</span>
+    <div class="match-empty-actions">
+      <a class="detail-link" href="./super-lig-fikstur.html">Süper Lig fikstürünü aç</a>
+      <a class="detail-link ghost" href="./puan-durumu.html">Puan durumuna git</a>
+      <span class="tag soft">Günlük maç akışı bekleniyor</span>
+    </div>
   </article>
 <!-- prerender:today-matches:end -->
           </div>

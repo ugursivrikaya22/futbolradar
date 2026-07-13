@@ -526,6 +526,15 @@ function checkSeoAndLinks() {
   expect(fs.existsSync(path.join(root, "public", "site.webmanifest")), "missing public/site.webmanifest");
 }
 
+function checkAnalyticsTag() {
+  const htmlFiles = walk(root, (full) => full.endsWith(".html"));
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, "utf8");
+    expect(html.includes("data-futbolradar-ga4"), `${path.relative(root, file)}: GA4 tag missing`);
+    expect(html.includes("window.gtag"), `${path.relative(root, file)}: gtag bootstrap missing`);
+  }
+}
+
 function checkClientSecrets() {
   const forbiddenMarkers = [
     "FOOTBALL_API_KEY",
@@ -741,6 +750,7 @@ async function checkApi() {
 
 checkVercelFunctionLimit();
 checkPublicMirrors();
+checkAnalyticsTag();
 checkFeatureMarkers();
 checkJavaScriptSyntax();
 checkJson();

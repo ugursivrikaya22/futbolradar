@@ -24,6 +24,12 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
     <link rel="stylesheet" href="./page.css" />
+    <script data-futbolradar-ga4>
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+    window.gtag("js", new Date());
+    window.gtag("config", "G-XXXXXXXXXX", { anonymize_ip: true });
+  </script>
   </head>
   <body class="subpage">
     <header class="topbar">
@@ -63,20 +69,14 @@
       </section>
       <section class="grid" id="live-score-page" data-api-section="live-score" data-api-target="live-score" data-static-fallback="true">
         <!-- prerender:live-score:start -->
-<article class="card match-card static-match-card" data-card="fixture-preview" data-match="tff-tsl-2026-r01-genclerbirligi-fenerbahce">
-    <div class="card-head"><span class="card-kicker">Canlı maç yok · 14-17 Ağustos 2026</span><strong class="big-value">1. Hafta</strong></div>
-    <h2>Gençlerbirliği - Fenerbahçe</h2>
-    <p>Şu an doğrulanmış canlı Süper Lig maçı bulunmuyor. Sezonun onaylı ilk eşleşmelerini aşağıdan inceleyebilirsin.</p>
-    <div class="match-teams"><div class="team-line"><span>Gençlerbirliği</span><span>Radar Bekleniyor</span></div><div class="team-line"><span>Fenerbahçe</span><span>Radar 79/100</span></div></div>
-    <div class="tag-row"><span class="tag green">Yüksek güven</span><span class="tag soft">Fikstür eşleşmesi</span></div>
-    <a class="detail-link" href="./mac/genclerbirligi-fenerbahce-2026-2027-r01.html">Maç öncesi analizi aç</a>
-  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="tff-tsl-2026-r01-kasimpasa-trabzonspor">
-    <div class="card-head"><span class="card-kicker">Canlı maç yok · 14-17 Ağustos 2026</span><strong class="big-value">1. Hafta</strong></div>
-    <h2>Kasımpaşa - Trabzonspor</h2>
-    <p>Şu an doğrulanmış canlı Süper Lig maçı bulunmuyor. Sezonun onaylı ilk eşleşmelerini aşağıdan inceleyebilirsin.</p>
-    <div class="match-teams"><div class="team-line"><span>Kasımpaşa</span><span>Radar Bekleniyor</span></div><div class="team-line"><span>Trabzonspor</span><span>Radar 68/100</span></div></div>
-    <div class="tag-row"><span class="tag green">Yüksek güven</span><span class="tag soft">Fikstür eşleşmesi</span></div>
-    <a class="detail-link" href="./mac/kasimpasa-trabzonspor-2026-2027-r01.html">Maç öncesi analizi aç</a>
+<article class="data-empty" data-card="empty-state">
+    <strong>Şu anda canlı maç yok</strong>
+    <span>Canlı maç başladığında skor, tempo ve maç içi sinyaller bu alanda görünecek.</span>
+    <div class="match-empty-actions">
+      <a class="detail-link" href="./super-lig-fikstur.html">Süper Lig fikstürünü aç</a>
+      <a class="detail-link ghost" href="./puan-durumu.html">Puan durumuna git</a>
+      <span class="tag soft">Canlı akış bekleniyor</span>
+    </div>
   </article>
 <!-- prerender:live-score:end -->
       </section>

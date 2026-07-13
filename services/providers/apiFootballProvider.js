@@ -143,6 +143,15 @@ function resolveSeason(value) {
   return value || config.season || "2026";
 }
 
+function todayInIstanbul() {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Istanbul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+}
+
 function responseItems(payload) {
   return Array.isArray(payload && payload.response) ? payload.response : [];
 }
@@ -395,9 +404,19 @@ function ensureLeagueForData(params) {
 
 async function getFixtures(query) {
   const fixtureId = query && (query.fixtureId || query.id);
-  const league = fixtureId ? resolveLeague(query && query.league) : ensureLeagueForData(query);
+  const league = resolveLeague(query && query.league);
   const season = resolveSeason(query && query.season);
-  const payload = await providerFetch("/fixtures", { id: fixtureId, league, season, date: query && query.date });
+  const date = query && query.date || (!fixtureId ? todayInIstanbul() : undefined);
+
+  // API-Football supports a date-only fixture query. Leaving league empty here
+  // is intentional: it lets the live matches page cover every competition.
+  // Standings and league-specific resources still require a league id.
+  const payload = await providerFetch("/fixtures", {
+    id: fixtureId,
+    league: league || undefined,
+    season: league || fixtureId ? season : undefined,
+    date
+  });
   return stampProviderData(responseItems(payload).map(normalizeFixture), "matches", 5 * 60 * 1000);
 }
 

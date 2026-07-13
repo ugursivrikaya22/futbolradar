@@ -1232,7 +1232,7 @@
       tempo: "form",
       "Bitiricilik": "attack",
       "Pres": "defense",
-      "SÃ¼reklilik": "durability",
+      "Süreklilik": "durability",
       "Tempo": "form"
     };
     var resolved = radar[key] != null ? key : aliases[key] || aliases[label] || key;
@@ -1292,13 +1292,13 @@
   function statusTr(status) {
     var normalized = String(status || "").toUpperCase();
     var labels = {
-      SCHEDULED: "PlanlandÄ±",
-      LIVE: "CanlÄ±",
-      IN_PLAY: "CanlÄ±",
-      PAUSED: "Devre arasÄ±",
+      SCHEDULED: "Planlandı",
+      LIVE: "Canlı",
+      IN_PLAY: "Canlı",
+      PAUSED: "Devre arası",
       FINISHED: "Bitti",
       POSTPONED: "Ertelendi",
-      CANCELLED: "Ä°ptal"
+      CANCELLED: "İptal"
     };
     return labels[normalized] || displayValue(status);
   }
@@ -2194,7 +2194,7 @@
         profileItemHtml("Araya girme / maç", player.interceptionsPerGame, "Veri yok")
       ]) +
       '<section class="profile-section"><h2>Radar Profili</h2>' + playerRadarChartHtml(player, null, player.name + " radar profili") + playerRadarHtml(player) + "</section>" +
-      '<section class="profile-section"><h2>AI Rating Notu</h2><p class="profile-note">' + escapeHtml(player.ratingExplanation || "Bu rating; dakika, gol/asist, form, disiplin ve veri gÃ¼venilirliÄŸi bileÅŸenlerinden hesaplanÄ±r.") + "</p></section>" +
+      '<section class="profile-section"><h2>AI Rating Notu</h2><p class="profile-note">' + escapeHtml(player.ratingExplanation || "Bu rating; dakika, gol/asist, form, disiplin ve veri güvenilirliği bileşenlerinden hesaplanır.") + "</p></section>" +
       scoutingListSectionHtml("Guclu Yonler", player.strengths, "Guclu yonler yakinda") +
       scoutingListSectionHtml("Gelisim Alanlari", player.weaknesses, "Gelisim alani sinyali yok") +
       transferTimelineHtml(player) +
@@ -2258,7 +2258,7 @@
   }
 
   function renderRadarSignal(signal) {
-    var severityLabels = { low: "DÃ¼ÅŸÃ¼k", medium: "Orta", high: "YÃ¼ksek" };
+    var severityLabels = { low: "Düşük", medium: "Orta", high: "Yüksek" };
     return (
       '<article class="signal-card" data-card="radar-signal" data-signal="' + escapeHtml(signal.id) + '">' +
       '<span class="signal-label">' + escapeHtml(signal.label) + "</span>" +
@@ -4143,7 +4143,7 @@
     return (
       '<article class="squad-player-card" data-card="squad-player" data-player="' + escapeHtml(player.id) + '">' +
       "<strong>" + escapeHtml(player.name) + "</strong>" +
-      "<span>" + escapeHtml(displayValue(player.position)) + " Â· " + escapeHtml(displayValue(player.computedAge || player.age)) + "</span>" +
+      "<span>" + escapeHtml(displayValue(player.position)) + " · " + escapeHtml(displayValue(player.computedAge || player.age)) + "</span>" +
       '<div class="squad-player-actions"><a href="' + escapeHtml(playerProfileHref(player.id)) + '">Oyuncu profili</a><a href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Karsilastir</a></div>' +
       "</article>"
     );
@@ -4403,23 +4403,23 @@
       }) || teams[0];
 
       if (!team) {
-        setEmpty(target, "TakÄ±m bulunamadÄ±", "Bu takÄ±m iÃ§in gÃ¶sterilecek kayÄ±t yok.");
+        setEmpty(target, "Takım bulunamadı", "Bu takım için gösterilecek kayıt yok.");
         return;
       }
 
       setContent(target, renderTeamDetail(team, squad));
     }).catch(function () {
-      setEmpty(target, "TakÄ±m detayÄ± yÃ¼klenemedi", "TakÄ±m ve kadro verisi geÃ§ici olarak okunamÄ±yor.");
+      setEmpty(target, "Takım detayı yüklenemedi", "Takım ve kadro verisi geçici olarak okunamıyor.");
     });
   }
 
   function renderTimelineList(items, emptyTitle) {
     if (!Array.isArray(items) || !items.length) {
-      return '<article class="data-empty compact"><strong>' + escapeHtml(emptyTitle) + '</strong><span>Bu alan iÃ§in doÄŸrulanmÄ±ÅŸ veri yok.</span></article>';
+      return '<article class="data-empty compact"><strong>' + escapeHtml(emptyTitle) + '</strong><span>Bu alan için doğrulanmış veri yok.</span></article>';
     }
 
     return items.map(function (item) {
-      var label = item.time && item.team ? item.time + " Â· " + item.team.name : item.type || item.detail || item.player && item.player.name || "KayÄ±t";
+      var label = item.time && item.team ? item.time + " · " + item.team.name : item.type || item.detail || item.player && item.player.name || "Kayıt";
       var text = item.value || item.comments || item.detail || item.assist && item.assist.name || "";
       return '<article class="timeline-row"><strong>' + escapeHtml(label) + '</strong><span>' + escapeHtml(displayValue(text)) + "</span></article>";
     }).join("");
@@ -4427,11 +4427,11 @@
 
   function renderStatisticsList(items) {
     if (!Array.isArray(items) || !items.length) {
-      return '<article class="data-empty compact"><strong>Ä°statistik bekleniyor</strong><span>MaÃ§ istatistikleri geldiÄŸinde burada gÃ¶sterilecek.</span></article>';
+      return '<article class="data-empty compact"><strong>İstatistik bekleniyor</strong><span>Maç istatistikleri geldiğinde burada gösterilecek.</span></article>';
     }
 
     return items.map(function (item) {
-      return '<article class="timeline-row"><strong>' + escapeHtml(item.team && item.team.name || item.team || "TakÄ±m") + '</strong><span>' + escapeHtml(displayValue(item.type)) + ": " + escapeHtml(displayValue(item.value)) + "</span></article>";
+      return '<article class="timeline-row"><strong>' + escapeHtml(item.team && item.team.name || item.team || "Takım") + '</strong><span>' + escapeHtml(displayValue(item.type)) + ": " + escapeHtml(displayValue(item.value)) + "</span></article>";
     }).join("");
   }
 
@@ -4587,7 +4587,7 @@
 
     return (
       '<article class="match-detail-card card" data-card="match-detail" data-match="' + escapeHtml(detail.id) + '">' +
-      '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(displayValue(detail.league)) + " Â· " + escapeHtml(statusTr(detail.status)) + "</span><h2>" + matchTitle(detail) + '</h2></div><strong class="big-value">' + escapeHtml(matchScoreText(detail.score)) + "</strong></div>" +
+      '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(displayValue(detail.league)) + " · " + escapeHtml(statusTr(detail.status)) + "</span><h2>" + matchTitle(detail) + '</h2></div><strong class="big-value">' + escapeHtml(matchScoreText(detail.score)) + "</strong></div>" +
       '<div class="metric-grid compact"><span>Saat <b>' + escapeHtml(displayValue(detail.time || detail.kickoff)) + '</b></span><span>Durum <b>' + escapeHtml(statusTr(detail.status)) + '</b></span><span>Model <b>' + escapeHtml(displayValue(detail.prediction && (detail.prediction.label || detail.prediction.advice))) + "</b></span></div>" +
       '<p class="match-detail-lead">' + escapeHtml(matchDetailInsight(detail)) + '</p>' +
       matchRadarSnapshotHtml(detail) +
@@ -4595,8 +4595,8 @@
       matchTeamLinksHtml(detail) +
       matchActionPanelHtml(detail) +
       '<section class="profile-section"><h2>Kadrolar</h2>' + renderTimelineList(detail.lineups, "Kadro verisi bekleniyor") + "</section>" +
-      '<section class="profile-section"><h2>MaÃ§ OlaylarÄ±</h2>' + renderTimelineList(detail.events, "Olay verisi bekleniyor") + "</section>" +
-      '<section class="profile-section"><h2>Ä°statistikler</h2>' + renderStatisticsList(detail.statistics) + "</section>" +
+      '<section class="profile-section"><h2>Maç Olayları</h2>' + renderTimelineList(detail.events, "Olay verisi bekleniyor") + "</section>" +
+      '<section class="profile-section"><h2>İstatistikler</h2>' + renderStatisticsList(detail.statistics) + "</section>" +
       "</article>"
     );
   }
@@ -4616,7 +4616,7 @@
           target.dataset.state = "fallback";
           return;
         }
-        setEmpty(target, "MaÃ§ bulunamadÄ±", "Bu maÃ§ iÃ§in detay verisi yok.");
+        setEmpty(target, "Maç bulunamadı", "Bu maç için detay verisi yok.");
         return;
       }
 
@@ -4627,7 +4627,7 @@
         target.dataset.state = "fallback";
         return;
       }
-      setEmpty(target, "MaÃ§ detayÄ± yÃ¼klenemedi", "MaÃ§ merkezi verisi geÃ§ici olarak okunamÄ±yor.");
+      setEmpty(target, "Maç detayı yüklenemedi", "Maç merkezi verisi geçici olarak okunamıyor.");
     });
   }
 
