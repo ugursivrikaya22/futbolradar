@@ -3,7 +3,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const publicDir = path.join(root, "public");
-for (const file of ["page.css", "app.js", "site.js", "site.webmanifest"]) {
+for (const file of ["page.css", "app.js", "site.js", "site.webmanifest", "404.html"]) {
   fs.copyFileSync(path.join(root, file), path.join(publicDir, file));
 }
 console.log("Synced public assets");

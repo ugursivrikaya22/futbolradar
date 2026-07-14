@@ -13,6 +13,7 @@ const playerComparisonPages = fs.existsSync(comparisonPagesDir)
   ? fs.readdirSync(comparisonPagesDir).filter((file) => file.endsWith(".html")).sort().map((file) => `karsilastirma/${file}`)
   : [];
 const pages = [
+  "404.html",
   "index.html",
   "puan-durumu.html",
   "takimlar.html",
@@ -465,6 +466,12 @@ function checkSeoAndLinks() {
       expect(html.includes("data-compare-seed"), `${page}: missing comparison seed`);
       expect(html.includes('"@type": "Article"'), `${page}: missing Article schema`);
       expect(html.includes('"@type": "BreadcrumbList"'), `${page}: missing breadcrumb schema`);
+    }
+
+    if (page === "404.html") {
+      expect(robots === "noindex,follow", `${page}: must be noindex,follow`);
+      expect(html.includes("mac-merkezi.html"), `${page}: missing match center recovery link`);
+      expect(html.includes("oyuncu-radari.html"), `${page}: missing player radar recovery link`);
     }
 
     for (const match of html.matchAll(/(?:href|src)="([^"]+)"/g)) {

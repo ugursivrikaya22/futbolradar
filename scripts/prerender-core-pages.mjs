@@ -79,7 +79,7 @@ function staticMatchCard(match, variant) {
   const label = variant === "live" ? "Canlı maç yok" : match.roundLabel;
   const lead = variant === "live"
     ? "Şu an doğrulanmış canlı Süper Lig maçı bulunmuyor. Sezonun onaylı ilk eşleşmelerini aşağıdan inceleyebilirsin."
-    : "Eşleşme onaylandı; kesin tarih, saat ve kadro bilgisi geldiğinde aynı sayfa güncellenecek.";
+    : "Eşleşme fikstürde yer alıyor; tarih, saat ve kadro bilgileri açıklandıkça bu sayfa güncellenecek.";
 
   return `<article class="card match-card static-match-card" data-card="fixture-preview" data-match="${escapeHtml(match.id)}">
     <div class="card-head"><span class="card-kicker">${escapeHtml(label)} · ${escapeHtml(match.dateRange)}</span><strong class="big-value">${escapeHtml(match.roundLabel)}</strong></div>
@@ -225,6 +225,21 @@ function updateMetaLabels(html, freshness) {
     .replace(/<span class="data-stamp">Son güncelleme:[^<]*<\/span>/g, `<span class="data-stamp">${escapeHtml(label)}</span>`);
 }
 
+const noindexShellPages = new Set([
+  "takim-detay.html",
+  "oyuncu-detay.html",
+  "mac-detay.html",
+  "oyuncu-karsilastir.html"
+]);
+
+function updateRobotsDirective(html, file) {
+  const directive = noindexShellPages.has(file) ? "noindex,follow" : "index,follow";
+  return html.replace(
+    /<meta\s+name="robots"\s+content="(?:index,follow|noindex,follow)"\s*\/>/i,
+    `<meta name="robots" content="${directive}" />`
+  );
+}
+
 function writePage(file, slots, freshness) {
   const sourcePath = path.join(root, file);
   if (!fs.existsSync(sourcePath)) {
@@ -236,6 +251,7 @@ function writePage(file, slots, freshness) {
     html = replaceSlot(html, target, content);
   });
   html = updateMetaLabels(html, freshness);
+  html = updateRobotsDirective(html, file);
   fs.writeFileSync(sourcePath, html, "utf8");
   fs.writeFileSync(path.join(root, "public", file), html, "utf8");
 }
@@ -287,7 +303,15 @@ writePage("mac-detay.html", {
 }, fixtureFreshness);
 
 writePage("super-lig-fikstur.html", {
-  "super-lig-fixtures": `<section class="fixture-overview">${(fixtures.watchList || []).map((item) => `<article class="metric-tile"><strong>${escapeHtml(item.value)}</strong><span>${escapeHtml(item.label)}</span></article>`).join("")}</section><section class="fixture-note card"><span class="card-kicker">${escapeHtml(fixtures.league)} · ${escapeHtml(fixtures.season)}</span><h2>İlk iki haftanın eşleşmeleri açıklandı</h2><p>Tarih ve saat ataması kesinleşen karşılaşmalar aynı kalıcı maç sayfalarında güncellenecek.</p></section><section class="fixture-rounds">${fixtureRounds()}</section>`
+  "super-lig-fixtures": `<section class="fixture-overview">${(fixtures.watchList || []).map((item) => `<article class="metric-tile"><strong>${escapeHtml(item.value)}</strong><span>${escapeHtml(item.label)}</span></article>`).join("")}</section><section class="fixture-note card"><span class="card-kicker">${escapeHtml(fixtures.league)} · ${escapeHtml(fixtures.season)}</span><h2>İlk iki haftanın eşleşmeleri açıklandı</h2><p>Tarih ve saat bilgileri açıklandıkça ilgili maç sayfaları güncellenecek.</p></section><section class="fixture-rounds">${fixtureRounds()}</section>`
 }, fixtureFreshness);
+
+for (const file of noindexShellPages) {
+  const sourcePath = path.join(root, file);
+  if (!fs.existsSync(sourcePath)) continue;
+  const html = updateRobotsDirective(fs.readFileSync(sourcePath, "utf8"), file);
+  fs.writeFileSync(sourcePath, html, "utf8");
+  fs.writeFileSync(path.join(root, "public", file), html, "utf8");
+}
 
 console.log("Prerendered critical page fallbacks");
