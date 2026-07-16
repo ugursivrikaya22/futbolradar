@@ -6,6 +6,7 @@ const utils = require("../api/_utils");
 const footballData = require("../services/providers/footballProvider");
 const apiFootball = require("../services/providers/apiFootballProvider");
 const providers = require("../services/providers");
+const competitionCatalog = require("../services/competitionCatalog");
 
 function fakeResponse() {
   return {
@@ -96,6 +97,25 @@ function testUnknownProviderValues() {
   assert.equal(apiFootballPlayer.lastSyncedAt, null);
 }
 
+function testCompetitionCatalog() {
+  assert.equal(competitionCatalog.competitions.length, 8);
+  assert.equal(competitionCatalog.providerLeagueValue("premier-league", "api-football"), 39);
+  assert.equal(competitionCatalog.providerLeagueValue("sampiyonlar-ligi", "football-data"), "CL");
+  assert.equal(competitionCatalog.providerLeagueValue("avrupa-ligi", "api-football"), 3);
+  assert.equal(competitionCatalog.providerLeagueValue("avrupa-ligi", "football-data"), null);
+  assert.equal(competitionCatalog.providerLeagueValue("all", "api-football"), "");
+
+  const liveFixture = apiFootball.normalizeFixture({
+    fixture: { id: 10, date: "2026-07-16T20:00:00+03:00", status: { short: "2H" } },
+    league: { name: "UEFA Champions League" },
+    teams: { home: { name: "Ev" }, away: { name: "Deplasman" } },
+    goals: { home: 1, away: 0 }
+  });
+  assert.equal(liveFixture.status, "LIVE");
+  assert.equal(liveFixture.live, true);
+  assert.equal(liveFixture.providerStatus, "2H");
+}
+
 function testMissingKeyFallback() {
   const envNames = [
     ...utils.API_KEY_ENV_NAMES,
@@ -125,6 +145,7 @@ testCachePolicies();
 testRateLimit();
 testResponseFreshness();
 testUnknownProviderValues();
+testCompetitionCatalog();
 testMissingKeyFallback();
 
 console.log("FutbolRadar API resilience tests passed");

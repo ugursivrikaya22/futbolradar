@@ -1303,6 +1303,33 @@
     return labels[normalized] || displayValue(status);
   }
 
+  function isLiveMatch(match) {
+    if (!match) {
+      return false;
+    }
+
+    if (match.live === true) {
+      return true;
+    }
+
+    var status = String(match.status || match.providerStatus || "").toUpperCase();
+    return ["LIVE", "IN_PLAY", "PAUSED", "1H", "HT", "2H", "ET", "BT", "P"].includes(status);
+  }
+
+  function initCompetitionFilters() {
+    var selected = new URLSearchParams(window.location.search).get("league") || "all";
+    document.querySelectorAll("[data-competition-filter]").forEach(function (link) {
+      var value = link.getAttribute("data-competition-filter") || "all";
+      var active = value === selected || (selected === "" && value === "all");
+      link.classList.toggle("is-active", active);
+      if (active) {
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+  }
+
   function matchMetric(match, key) {
     if (match[key] !== undefined && match[key] !== null && match[key] !== "") {
       return match[key];
@@ -1419,12 +1446,13 @@
   }
 
   function renderLiveMatch(match) {
+    var hasTempo = match.tempo !== undefined && match.tempo !== null && match.tempo !== "";
     return (
       '<article class="card match-card" data-card="live-match" data-match="' + escapeHtml(match.id) + '">' +
-      '<div class="card-head"><span class="card-kicker">' + escapeHtml(match.time) + " · " + escapeHtml(match.league) + '</span><strong class="big-value">' + escapeHtml(matchScoreText(match.score)) + "</strong></div>" +
+      '<div class="card-head"><span class="card-kicker"><i class="live-pulse" aria-hidden="true"></i> ' + escapeHtml(statusTr(match.status)) + " · " + escapeHtml(match.time) + " · " + escapeHtml(match.league) + '</span><strong class="big-value">' + escapeHtml(matchScoreText(match.score)) + "</strong></div>" +
       "<h2>" + matchTitle(match) + "</h2>" +
-      "<p>" + escapeHtml(displayValue(match.summary)) + "</p>" +
-      barRowHtml("Tempo", match.tempo, match.tempo) +
+      "<p>" + escapeHtml(match.summary || "Maç skoru ve olay akışı canlı olarak takip ediliyor.") + "</p>" +
+      (hasTempo ? barRowHtml("Tempo", match.tempo, match.tempo) : "") +
       tagsHtml(match.liveTags || match.tags) +
       '<div class="player-actions match-actions">' +
       '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Mac detayi</a>' +
@@ -4635,6 +4663,7 @@
     initHomeSearch();
     initPlayerSharing();
     initAnalytics();
+    initCompetitionFilters();
 
     renderInto(
       document.querySelector('[data-api-target="featured-match"]'),
@@ -4673,7 +4702,7 @@
       document.querySelector('[data-api-target="live-score"]'),
       "matches",
       function (matches) {
-        var liveMatches = Array.isArray(matches) ? matches.filter(function (match) { return match.live; }) : [];
+        var liveMatches = Array.isArray(matches) ? matches.filter(isLiveMatch) : [];
         if (!liveMatches.length) {
           return "";
         }

@@ -224,6 +224,8 @@ function normalizeFixture(item) {
     homeTeam: teamName(homeTeam),
     awayTeam: teamName(awayTeam),
     status: normalizeStatus(fixture.status || {}),
+    providerStatus: fixture.status && fixture.status.short || null,
+    live: normalizeStatus(fixture.status || {}) === "LIVE",
     score: {
       home: scoreValue(goals.home),
       away: scoreValue(goals.away)

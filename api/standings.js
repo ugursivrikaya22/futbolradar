@@ -1,4 +1,5 @@
 const { getProvider } = require("../services/providers");
+const { providerLeagueValue } = require("../services/competitionCatalog");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -22,10 +23,22 @@ module.exports = async function handler(req, res) {
 
   const query = getQuery(req);
   const provider = getProvider("standings");
+  const providerQuery = {
+    ...query,
+    league: providerLeagueValue(query.league, provider.name)
+  };
+  if (query.league && providerQuery.league === null) {
+    return sendError(
+      res,
+      200,
+      "Seçilen turnuvanın puan durumu mevcut veri sağlayıcısında desteklenmiyor.",
+      "COMPETITION_NOT_SUPPORTED"
+    );
+  }
   let data = [];
 
   try {
-    data = await withTimeout(provider.getStandings(query), DEFAULT_TIMEOUT_MS);
+    data = await withTimeout(provider.getStandings(providerQuery), DEFAULT_TIMEOUT_MS);
   } catch (error) {
     return sendError(
       res,

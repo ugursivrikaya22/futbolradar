@@ -375,10 +375,12 @@ function normalizeLiveAnalysis(item) {
 }
 
 async function getMatches(query) {
-  const competitionCode = resolveCompetitionCode(query);
+  const requestedCompetition = query && query.league ? String(query.league).trim() : "";
   const dateFrom = query && query.date ? toDateOnly(query.date) : toDateOnly();
   const dateTo = dateFrom;
-  const payload = await providerFetch(`/competitions/${competitionCode}/matches`, { dateFrom, dateTo });
+  const payload = requestedCompetition
+    ? await providerFetch(`/competitions/${resolveCompetitionCode(query)}/matches`, { dateFrom, dateTo })
+    : await providerFetch("/matches", { dateFrom, dateTo });
   return stampProviderData((payload.matches || payload.data || []).map(normalizeLiveMatch), "matches", 5 * 60 * 1000);
 }
 

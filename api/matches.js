@@ -1,4 +1,5 @@
 const { getProvider } = require("../services/providers");
+const { providerLeagueValue } = require("../services/competitionCatalog");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -28,10 +29,22 @@ module.exports = async function handler(req, res) {
   }
 
   const provider = getProvider("matches");
+  const providerQuery = {
+    ...query,
+    league: providerLeagueValue(query.league, provider.name)
+  };
+  if (query.league && providerQuery.league === null) {
+    return sendError(
+      res,
+      200,
+      "Seçilen turnuva mevcut canlı veri sağlayıcısında desteklenmiyor.",
+      "COMPETITION_NOT_SUPPORTED"
+    );
+  }
   let data = [];
 
   try {
-    data = await withTimeout(provider.getMatches(query), DEFAULT_TIMEOUT_MS);
+    data = await withTimeout(provider.getMatches(providerQuery), DEFAULT_TIMEOUT_MS);
   } catch (error) {
     return sendError(
       res,

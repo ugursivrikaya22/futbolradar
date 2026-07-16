@@ -3,23 +3,23 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Bugünkü Maçlar | FutbolRadar</title>
-    <meta name="description" content="FutbolRadar bugünkü maçlar ekranı; saat, lig, form puanı, momentum ve AI tahmin görünümü." />
+    <title>Bugünkü Maçlar: Türkiye ve Avrupa Fikstürü | FutbolRadar</title>
+    <meta name="description" content="Süper Lig ve Avrupa'nın beş büyük ligi ile Şampiyonlar Ligi ve Avrupa Ligi günün maç programını saat ve skor bilgileriyle incele." />
     <link rel="canonical" href="https://www.futbolradar.com/bugunun-maclari.html" />
     <meta name="robots" content="index,follow" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
-    <meta property="og:title" content="Bugünkü Maçlar | FutbolRadar" />
-    <meta property="og:description" content="Bugünkü maçları form, momentum ve AI tahmin sinyalleriyle takip et." />
+    <meta property="og:title" content="Bugünkü Maçlar: Türkiye ve Avrupa | FutbolRadar" />
+    <meta property="og:description" content="Bugünün Türkiye, İngiltere, İspanya, İtalya, Almanya, Fransa ve UEFA maçlarını tek listede incele." />
     <meta property="og:url" content="https://www.futbolradar.com/bugunun-maclari.html" />
     <meta property="og:image" content="https://www.futbolradar.com/assets/og-image.svg" />
     <meta property="og:image:type" content="image/svg+xml" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Bugünkü Maçlar | FutbolRadar" />
-    <meta name="twitter:description" content="Bugünkü maçları form, momentum ve AI tahmin sinyalleriyle takip et." />
+    <meta name="twitter:title" content="Bugünkü Maçlar: Türkiye ve Avrupa | FutbolRadar" />
+    <meta name="twitter:description" content="Bugünün Türkiye, İngiltere, İspanya, İtalya, Almanya, Fransa ve UEFA maçlarını tek listede incele." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
@@ -62,9 +62,26 @@
           <div>
             <span class="eyebrow">Maç merkezi</span>
             <h1>Bugünkü Maçlar</h1>
-            <p class="lead">Günün maçlarını saat, lig, form puanı, momentum ve AI tahmin sinyalleriyle takip et.</p>
+            <p class="lead">Altı büyük yerel lig ile Şampiyonlar Ligi ve Avrupa Ligi'nin gün içindeki maçlarını tek akışta incele.</p>
           </div>
           <span class="hero-meta">Son kontrol: 13 Temmuz 2026 08:00 TSİ</span>
+        </div>
+      </section>
+      <section class="competition-switcher" aria-labelledby="today-competition-title" data-competition-nav>
+        <div class="competition-switcher-copy">
+          <span>Lig seç</span>
+          <strong id="today-competition-title">Bugünün maçlarını lige göre süz</strong>
+        </div>
+        <div class="competition-chip-row" aria-label="Bugünün maç ligleri">
+          <a href="./bugunun-maclari.html" data-competition-filter="all">Tüm maçlar</a>
+          <a href="./bugunun-maclari.html?league=super-lig" data-competition-filter="super-lig">Süper Lig</a>
+          <a href="./bugunun-maclari.html?league=premier-league" data-competition-filter="premier-league">Premier League</a>
+          <a href="./bugunun-maclari.html?league=la-liga" data-competition-filter="la-liga">La Liga</a>
+          <a href="./bugunun-maclari.html?league=serie-a" data-competition-filter="serie-a">Serie A</a>
+          <a href="./bugunun-maclari.html?league=bundesliga" data-competition-filter="bundesliga">Bundesliga</a>
+          <a href="./bugunun-maclari.html?league=ligue-1" data-competition-filter="ligue-1">Ligue 1</a>
+          <a href="./bugunun-maclari.html?league=sampiyonlar-ligi" data-competition-filter="sampiyonlar-ligi">Şampiyonlar Ligi</a>
+          <a href="./bugunun-maclari.html?league=avrupa-ligi" data-competition-filter="avrupa-ligi">Avrupa Ligi</a>
         </div>
       </section>
       <section class="grid" id="today-matches-page" data-api-section="today-matches" data-api-target="matches-page" data-static-fallback="true">

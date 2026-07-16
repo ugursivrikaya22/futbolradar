@@ -191,6 +191,88 @@ h1 {
   padding-bottom: 24px;
 }
 
+.competition-switcher {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.35fr) minmax(0, 1.65fr);
+  gap: 18px;
+  align-items: center;
+  margin: 0 0 20px;
+  border: 1px solid rgba(77, 229, 255, 0.18);
+  border-radius: var(--radius);
+  padding: 16px;
+  background: rgba(8, 18, 24, 0.78);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.home-competition-switcher {
+  margin-top: 18px;
+}
+
+.competition-switcher-copy {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.competition-switcher-copy span {
+  color: var(--cyan);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.competition-switcher-copy strong {
+  font-size: 0.94rem;
+  line-height: 1.35;
+}
+
+.competition-chip-row {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 2px 2px 7px;
+  scrollbar-width: thin;
+}
+
+.competition-chip-row a {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(134, 255, 218, 0.18);
+  border-radius: 999px;
+  padding: 0 13px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.competition-chip-row a:hover,
+.competition-chip-row a:focus-visible,
+.competition-chip-row a.is-active {
+  border-color: rgba(128, 255, 155, 0.48);
+  color: var(--green);
+  background: rgba(128, 255, 155, 0.1);
+  outline: 0;
+}
+
+@media (max-width: 720px) {
+  .competition-switcher {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .competition-chip-row {
+    margin-inline: -2px;
+  }
+}
+
 .card {
   min-width: 0;
   max-width: 100%;
