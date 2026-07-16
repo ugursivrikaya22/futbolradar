@@ -11,12 +11,17 @@ for (const file of [
   "404.html",
   "index.html",
   "canli-skor.html",
-  "bugunun-maclari.html"
+  "bugunun-maclari.html",
+  "istatistik-merkezi.html"
 ]) {
   fs.copyFileSync(path.join(root, file), path.join(publicDir, file));
 }
-fs.copyFileSync(
-  path.join(root, "data", "competitions.json"),
-  path.join(publicDir, "data", "competitions.json")
-);
+for (const file of [
+  "competitions.json",
+  "players.json",
+  "teams.json",
+  "transfers.json"
+]) {
+  fs.copyFileSync(path.join(root, "data", file), path.join(publicDir, "data", file));
+}
 console.log("Synced public assets");

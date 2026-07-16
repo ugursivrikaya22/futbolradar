@@ -28,6 +28,7 @@ const pages = [
   "/derbi-radari.html",
   "/haftanin-maclari.html",
   "/mac-merkezi.html",
+  "/istatistik-merkezi.html",
   "/oyuncu-liderleri.html",
   "/takim-trendleri.html",
   "/futbol-radar-rehberi.html",

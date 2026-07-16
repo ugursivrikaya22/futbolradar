@@ -41,6 +41,7 @@ const pages = [
   "derbi-radari.html",
   "haftanin-maclari.html",
   "mac-merkezi.html",
+  "istatistik-merkezi.html",
   "oyuncu-liderleri.html",
   "takim-trendleri.html",
   "futbol-radar-rehberi.html",
@@ -95,7 +96,8 @@ const appFeatureMarkers = [
   "renderLandingInsights",
   "player-signal-actions",
   "initHomeSearch",
-  "data-home-search"
+  "data-home-search",
+  "initStatisticsHub"
 ];
 const cssFeatureMarkers = [
   "scouting-summary-grid",
@@ -169,7 +171,10 @@ const cssFeatureMarkers = [
   "daily-brief-shell",
   "daily-brief-card",
   "brief-command-grid",
-  "brief-command-card"
+  "brief-command-card",
+  "stats-summary",
+  "stats-panel-grid",
+  "stats-coverage-grid"
 ];
 const failures = [];
 

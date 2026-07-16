@@ -279,15 +279,15 @@ function landingControlsHtml(page) {
           <select id="transfer-team-filter" data-transfer-team-filter></select>
         </div>
         <div class="filter-group">
-          <label for="transfer-status-filter">Veri durumu</label>
+          <label for="transfer-status-filter">Transfer durumu</label>
           <select id="transfer-status-filter" data-transfer-status-filter></select>
         </div>
         <div class="filter-group">
           <label for="transfer-sort">Sirala</label>
           <select id="transfer-sort" data-transfer-sort>
-            <option value="updated">Son guncelleme</option>
-            <option value="market">Piyasa degeri</option>
-            <option value="rating">AI rating</option>
+            <option value="updated">En yeni</option>
+            <option value="market">Bonservis bedeli</option>
+            <option value="rating">Oyuncu adi</option>
             <option value="team">Takim</option>
           </select>
         </div>
@@ -417,6 +417,7 @@ function sitemapXml(files) {
     "derbi-radari.html",
     "haftanin-maclari.html",
     "mac-merkezi.html",
+    "istatistik-merkezi.html",
     "oyuncu-liderleri.html",
     "takim-trendleri.html",
     "futbol-radar-rehberi.html",

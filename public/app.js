@@ -10,6 +10,7 @@
     standings: { api: "standings", fallback: "teams", reportSource: true },
     teams: { api: "teams", fallback: "teams", reportSource: true },
     players: { api: "players", fallback: "players", reportSource: true },
+    transfers: { api: "transfers", fallback: "transfers", reportSource: false },
     squad: { api: "squad", fallback: "players", reportSource: true },
     matchDetail: { api: "match-detail", fallback: "matches", reportSource: true },
     momentum: { api: "momentum", fallback: "momentum", reportSource: true },
@@ -1601,6 +1602,24 @@
     );
   }
 
+  function teamRecentTransfersHtml(team, limit) {
+    var transfers = Array.isArray(team && team.recentTransfers) ? team.recentTransfers.slice(0, limit || 4) : [];
+    if (!transfers.length) return "";
+
+    return (
+      '<div class="team-recent-transfers"><div class="team-recent-transfers-head"><span>Son transferler</span><a href="./transfer-radari.html?team=' + encodeURIComponent(team.name) + '">Tümünü gör</a></div>' +
+      transfers.map(function (transfer) {
+        var incoming = transfer.direction !== "out";
+        var club = incoming ? transfer.fromTeam : transfer.toTeam;
+        return (
+          '<div class="team-transfer-row"><span class="team-transfer-direction ' + (incoming ? "incoming" : "outgoing") + '">' + (incoming ? "Geldi" : "Ayrıldı") + '</span>' +
+          '<strong>' + escapeHtml(transfer.playerName) + '</strong><em>' + escapeHtml(club || "Kulüp açıklanmadı") + '</em><b>' + escapeHtml(formatProfileDate(transfer.date) || "Yakında") + '</b></div>'
+        );
+      }).join("") +
+      '</div>'
+    );
+  }
+
   function renderTeamPageCard(team, squad) {
     var attack = team.attackRating || team.attack;
     var defense = team.defenseRating || team.defense;
@@ -1615,6 +1634,7 @@
       barRowHtml("Savunma", defense, defense) +
       '<div class="metric-grid compact"><span>Lig: <b>' + escapeHtml(displayValue(team.league)) + '</b></span><span>Kadro: <b>' + escapeHtml(displayValue(players.length || team.squadCount)) + '</b></span></div>' +
       tagsHtml(team.tags) +
+      teamRecentTransfersHtml(team, 3) +
       teamCardLeaderHtml(leader) +
        '<div class="team-card-actions"><a class="detail-link" href="' + escapeHtml(teamDetailHref(team)) + '">Takım detayı</a><a class="detail-link ghost" href="./oyuncu-radari.html?team=' + encodeURIComponent(team.name) + '">Oyuncu radarı</a></div>' +
       "</article>"
@@ -3105,32 +3125,32 @@
     all: {
       title: "Transfer Radari",
       label: "Tum transferler",
-      description: "Oyuncularin guncel takim, eski kulup, son transfer hareketi, piyasa degeri ve veri guvenilirligi birlikte izlenir."
+      description: "Kesinleşen transferler tarih, önceki kulüp, yeni kulüp ve açıklanan bonservis bilgisiyle birlikte izlenir."
     },
     "izleme-listesi": {
       title: "Transfer Izleme Listesi",
       label: "Takipte kayitlar",
-      description: "Kulup durumu takipte olan, manuel kontrol isteyen veya son transfer notu bulunan oyuncular tek listede izlenir."
+      description: "Son kulüp açıklamaları ve doğrulanan transfer hareketleri tek listede izlenir."
     },
     "son-hareket": {
       title: "Son Transfer Hareketleri",
       label: "Son hareket",
-      description: "Transfer gecmisinde son hareketi bulunan oyuncular; tarih, eski takim ve yeni takim ayrimiyla listelenir."
+      description: "Son transfer hareketleri tarih, önceki takım ve yeni takım ayrımıyla listelenir."
     },
     "eski-kulup": {
       title: "Eski Kulup Ayrimi Olan Oyuncular",
       label: "Eski kulup ayrimi",
-      description: "Eski kulup bilgisi guncel takimdan ayrilan oyuncular, transfer yanlislarini azaltmak icin one cikarilir."
+      description: "Önceki kulübü açıklanan transferler, takım değişimini net göstermek için öne çıkarılır."
     },
     "riskli-transfer": {
       title: "Riskli Transfer Takibi",
       label: "Riskli takip",
-      description: "Manuel kontrol veya guncelleme gerektiren transfer kayitlari, veri guvenilirligi acisindan takip listesine alinir."
+      description: "Henüz kesinleşmeyen veya ek kontrol gerektiren kayıtlar ayrı takip listesine alınır."
     },
     "yukselen-deger": {
       title: "Yukselen Deger Transfer Radari",
       label: "Yukselen deger",
-      description: "Yuksek piyasa degeri, potansiyel rating ve form artisi tasiyan oyuncular transfer radari icinde one cikarilir."
+      description: "Açıklanan bonservis bedeli 10 milyon avro ve üzerindeki transferler öne çıkarılır."
     }
   };
 
@@ -3142,7 +3162,7 @@
     var filter = normalizeTransferFilter(state && state.filter);
     var copy = TRANSFER_FILTER_COPY[filter] || TRANSFER_FILTER_COPY.all;
     var team = state && state.team ? " | " + state.team : "";
-    var status = state && state.status ? " | " + statusLabel(state.status, "data") : "";
+    var status = state && state.status ? " | " + transferRecordStatusLabel(state.status) : "";
     var title = copy.title + team + status + " | FutbolRadar";
     var description = copy.description + " Listelenen kayit: " + displayValue(count) + ".";
     var h1 = document.querySelector(".hero h1");
@@ -3222,6 +3242,111 @@
     );
   }
 
+  function transferRecordStatusLabel(status) {
+    var normalized = normalizeSearchText(status);
+    if (normalized === "confirmed") return "Kesinleşti";
+    if (normalized === "pending") return "Takipte";
+    if (normalized === "rumour" || normalized === "rumor") return "İddia";
+    return status || "Takipte";
+  }
+
+  function transferRecordFee(record) {
+    if (record && record.fee) return record.fee;
+    if (Number(record && record.feeEur) > 0) return playerMarketValue({ marketValueEur: record.feeEur });
+    if (Number(record && record.feeEur) === 0) return "Bedelsiz";
+    return "Açıklanmadı";
+  }
+
+  function transferRecordMatches(record, filter) {
+    var status = normalizeSearchText(record && record.status);
+    var fromTeam = normalizeSearchText(record && record.fromTeam);
+    if (filter === "riskli-transfer") return status !== "confirmed";
+    if (filter === "yukselen-deger") return Number(record && record.feeEur || 0) >= 10000000;
+    if (filter === "eski-kulup") return Boolean(fromTeam && fromTeam !== "serbest oyuncu");
+    return true;
+  }
+
+  function sortTransferRecords(records, sortKey) {
+    var sorters = {
+      updated: function (a, b) { return String(b.date || "").localeCompare(String(a.date || "")); },
+      market: function (a, b) { return Number(b.feeEur || 0) - Number(a.feeEur || 0); },
+      team: function (a, b) { return String(a.toTeam || "").localeCompare(String(b.toTeam || ""), "tr"); },
+      rating: function (a, b) { return String(a.playerName || "").localeCompare(String(b.playerName || ""), "tr"); }
+    };
+    return records.slice().sort(sorters[sortKey] || sorters.updated);
+  }
+
+  function renderTransferFeedStats(records) {
+    var list = Array.isArray(records) ? records : [];
+    var confirmed = list.filter(function (record) { return normalizeSearchText(record.status) === "confirmed"; }).length;
+    var clubs = new Set(list.map(function (record) { return record.toTeam; }).filter(Boolean)).size;
+    var knownFees = list.filter(function (record) { return Number(record.feeEur || 0) > 0; }).length;
+    var latest = list.map(function (record) { return record.date || ""; }).sort().at(-1);
+    return (
+      compactMetricHtml("Transfer", list.length) +
+      compactMetricHtml("Kesinleşen", confirmed) +
+      compactMetricHtml("Kulüp", clubs) +
+      compactMetricHtml("Bedeli açıklanan", knownFees) +
+      compactMetricHtml("Son hareket", formatProfileDate(latest) || "Yakında")
+    );
+  }
+
+  function renderTransferFeedCard(record) {
+    var sourceUrl = safeImageUrl(record && record.sourceUrl);
+    var sourceAction = sourceUrl
+      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a>'
+      : "";
+    return (
+      '<article class="transfer-radar-card" data-card="transfer-record" data-transfer="' + escapeHtml(record.id || record.playerId) + '">' +
+      '<header><div class="player-card-title"><div><span class="card-kicker">' + escapeHtml(record.league || "Lig bilgisi yakında") + ' · ' + escapeHtml(transferRecordStatusLabel(record.status)) + '</span><h2>' + escapeHtml(record.playerName) + '</h2></div></div><strong>' + escapeHtml(formatProfileDate(record.date) || record.season || "Yakında") + '</strong></header>' +
+      '<div class="transfer-route transfer-route-large"><b>' + escapeHtml(record.fromTeam || "Önceki kulüp bilinmiyor") + '</b><em>→</em><b>' + escapeHtml(record.toTeam || "Yeni kulüp bilinmiyor") + '</b></div>' +
+      '<div class="transfer-radar-meta">' +
+      compactMetricHtml("Mevki", record.position || "Bilinmiyor") +
+      compactMetricHtml("Transfer tipi", record.type || "Açıklanmadı") +
+      compactMetricHtml("Bonservis", transferRecordFee(record)) +
+      compactMetricHtml("Sezon", record.season || "Yakında") +
+      '</div>' +
+      (record.note ? '<p class="transfer-note">' + escapeHtml(record.note) + '</p>' : "") +
+      '<div class="player-status-row"><span class="status-badge ' + (normalizeSearchText(record.status) === "confirmed" ? "verified" : "pending") + '">' + escapeHtml(transferRecordStatusLabel(record.status)) + '</span></div>' +
+      '<div class="player-actions">' + sourceAction + '<a class="detail-link ghost" href="' + escapeHtml(siteHref("takimlar.html?team=" + encodeURIComponent(record.toTeam || ""))) + '">Takımı incele</a></div>' +
+      '</article>'
+    );
+  }
+
+  function renderHomeTransferFeed(records) {
+    var list = sortTransferRecords(Array.isArray(records) ? records : [], "updated");
+    if (!list.length) {
+      return '<article class="data-empty compact"><strong>Kesinleşen transfer bulunamadı</strong><span>Yeni kulüp açıklamaları geldiğinde bu alan güncellenir.</span></article>';
+    }
+
+    var leader = list[0];
+    var sourceUrl = safeImageUrl(leader.sourceUrl);
+    var miniRows = list.slice(1, 5).map(function (record) {
+      return (
+        '<a class="home-transfer-row" href="./transfer-radari.html?team=' + encodeURIComponent(record.toTeam || "") + '">' +
+        '<span>' + escapeHtml(formatProfileDate(record.date) || "Yakında") + '</span>' +
+        '<strong>' + escapeHtml(record.playerName) + '</strong>' +
+        '<b>' + escapeHtml(record.toTeam) + '</b>' +
+        '</a>'
+      );
+    }).join("");
+
+    return (
+      '<article class="home-transfer-feature" data-card="home-transfer-watch" data-transfer="' + escapeHtml(leader.id) + '">' +
+      '<div class="home-transfer-player"><div><span>Son kesinleşen transfer</span><h3>' + escapeHtml(leader.playerName) + '</h3><p>' + escapeHtml(leader.type || "Transfer") + ' · ' + escapeHtml(formatProfileDate(leader.date) || leader.season) + '</p></div></div>' +
+      '<div class="home-transfer-route"><b>' + escapeHtml(leader.fromTeam) + '</b><em>→</em><b>' + escapeHtml(leader.toTeam) + '</b></div>' +
+      '<div class="home-transfer-actions">' +
+      (sourceUrl ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a>' : "") +
+      '<a class="detail-link ghost" href="./transfer-radari.html">Tüm transferler</a></div>' +
+      '</article>' +
+      '<aside class="home-transfer-side" aria-label="Son transferler"><div class="home-transfer-metrics">' +
+      compactMetricHtml("Kesinleşen", list.filter(function (record) { return normalizeSearchText(record.status) === "confirmed"; }).length) +
+      compactMetricHtml("Kulüp", new Set(list.map(function (record) { return record.toTeam; }).filter(Boolean)).size) +
+      compactMetricHtml("Son kontrol", formatProfileDate(leader.lastVerifiedAt || leader.date) || "Yakında") +
+      '</div><div class="home-transfer-list">' + miniRows + '</div></aside>'
+    );
+  }
+
   function renderHomeTransferWatch(players) {
     var list = Array.isArray(players) ? players.filter(function (player) {
       var latest = latestTransferEvent(player);
@@ -3294,11 +3419,11 @@
 
     target.dataset.state = "loading";
 
-    loadData("players")
-      .then(function (players) {
-        var base = players.filter(config.match);
-        populatePlayerSelect(teamSelect, uniqueSortedBy(base, playerCurrentTeam), "Tum takimlar");
-        populatePlayerSelect(statusSelect, uniqueSorted(base, "dataStatus"), "Tum veri durumlari");
+    loadData("transfers")
+      .then(function (records) {
+        var base = Array.isArray(records) ? records : [];
+        populatePlayerSelect(teamSelect, uniqueSorted(base, "toTeam"), "Tüm takımlar");
+        populatePlayerSelect(statusSelect, uniqueSorted(base, "status"), "Tüm transfer durumları", transferRecordStatusLabel);
 
         if (teamSelect) teamSelect.value = state.team;
         if (statusSelect) statusSelect.value = state.status;
@@ -3327,16 +3452,16 @@
           state.status = statusSelect ? statusSelect.value : state.status;
           state.sort = sortSelect ? sortSelect.value : state.sort;
 
-          var filtered = base.filter(function (player) {
-            return transferRadarMatches(player, state.filter) &&
-              (!state.team || playerCurrentTeam(player) === state.team) &&
-              (!state.status || player.dataStatus === state.status);
+          var filtered = base.filter(function (record) {
+            return transferRecordMatches(record, state.filter) &&
+              (!state.team || record.toTeam === state.team) &&
+              (!state.status || record.status === state.status);
           });
 
-          filtered = sortPlayers(filtered, state.sort || "updated");
+          filtered = sortTransferRecords(filtered, state.sort || "updated");
 
           if (summary) {
-            summary.innerHTML = renderTransferRadarStats(filtered);
+            summary.innerHTML = renderTransferFeedStats(filtered);
           }
 
           if (count) {
@@ -3352,7 +3477,7 @@
             return;
           }
 
-          setContent(target, filtered.map(renderTransferRadarCard).join(""));
+          setContent(target, filtered.map(renderTransferFeedCard).join(""));
         }
 
         filterButtons.forEach(function (button) {
@@ -3371,7 +3496,7 @@
         render();
       })
       .catch(function () {
-        setEmpty(target, "Transfer Radari yuklenemedi", "Oyuncu veri katmani gecici olarak okunamiyor.");
+        setEmpty(target, "Transfer Radarı yüklenemedi", "Kesinleşen transfer kayıtları geçici olarak okunamıyor.");
       });
   }
 
@@ -4382,6 +4507,7 @@
       barRowHtml("Savunma", defense, defense) +
       formDotsHtml(team.form) +
       tagsHtml(team.tags) +
+      teamRecentTransfersHtml(team, 6) +
       teamPlayerSpotlightHtml(team, players) +
       '<section class="profile-section"><div class="profile-section-head"><h2>Kadro liderleri</h2><span>AI ratinge gore ilk 6 oyuncu</span></div><div class="squad-grid">' + (topPlayers.length ? topPlayers.map(renderSquadPlayer).join("") : '<article class="data-empty compact"><strong>Kadro verisi bekleniyor</strong><span>Bu takim icin dogrulanmis oyuncu listesi geldiginde burada gosterilecek.</span></article>') + "</div></section>" +
       '<div class="player-actions"><a class="detail-link" href="./oyuncu-radari.html?team=' + encodeURIComponent(team.name) + '">Oyuncu radarini ac</a><a class="detail-link ghost" href="./momentum.html">Momentum tablosu</a></div>' +
@@ -4659,6 +4785,207 @@
     });
   }
 
+  function statisticNumber(value) {
+    if (value === null || value === undefined || value === "") {
+      return null;
+    }
+
+    var number = Number(value);
+    return Number.isFinite(number) ? number : null;
+  }
+
+  function statisticMetric(player, key) {
+    var stats = playerStats(player || {});
+    var direct = statisticNumber(player && player[key]);
+    if (direct !== null) {
+      return direct;
+    }
+    return statisticNumber(stats && stats[key]);
+  }
+
+  function statisticLeaders(items, valueGetter, limit) {
+    return (Array.isArray(items) ? items : [])
+      .map(function (item) {
+        return { item: item, value: statisticNumber(valueGetter(item)) };
+      })
+      .filter(function (entry) { return entry.value !== null; })
+      .sort(function (left, right) { return right.value - left.value; })
+      .slice(0, limit || 5);
+  }
+
+  function statisticValue(value, suffix, decimals) {
+    if (value === null || value === undefined || !Number.isFinite(Number(value))) {
+      return "Veri yok";
+    }
+    var number = Number(value);
+    var formatted = decimals == null ? String(number) : number.toFixed(decimals);
+    return formatted + (suffix || "");
+  }
+
+  function statisticLeaderList(entries, type, suffix, decimals) {
+    if (!entries.length) {
+      return '<div class="stats-empty"><strong>İstatistik bekleniyor</strong><span>Bu metrik için yeterli veri bulunmuyor.</span></div>';
+    }
+
+    return '<ol class="stats-leader-list">' + entries.map(function (entry, index) {
+      var item = entry.item || {};
+      var name = type === "team" ? displayValue(item.name || item.team) : displayValue(item.name);
+      var meta = type === "team"
+        ? displayValue(item.league)
+        : displayValue(playerCurrentTeam(item)) + " · " + displayValue(item.position);
+      var href = type === "team"
+        ? siteHref("takim-detay.html?team=" + encodeURIComponent(name))
+        : playerProfileHref(item.id || item.slug || "");
+
+      return '<li><a href="' + escapeHtml(href) + '">' +
+        '<span class="stats-rank">' + (index + 1) + '</span>' +
+        '<span class="stats-leader-name"><strong>' + escapeHtml(name) + '</strong><small>' + escapeHtml(meta) + '</small></span>' +
+        '<b>' + escapeHtml(statisticValue(entry.value, suffix, decimals)) + '</b>' +
+        '</a></li>';
+    }).join("") + '</ol>';
+  }
+
+  function statisticPanel(title, eyebrow, entries, type, suffix, decimals) {
+    return '<article class="stats-panel" data-card="statistics-panel">' +
+      '<header><div><span>' + escapeHtml(eyebrow) + '</span><h3>' + escapeHtml(title) + '</h3></div><em>' + entries.length + ' kayıt</em></header>' +
+      statisticLeaderList(entries, type, suffix, decimals) +
+      '</article>';
+  }
+
+  function statisticsSummaryHtml(players, teams, matches, transfers) {
+    var competitions = new Set();
+    [players, teams, matches].forEach(function (list) {
+      (Array.isArray(list) ? list : []).forEach(function (item) {
+        if (item && item.league) competitions.add(item.league);
+      });
+    });
+    var confirmedTransfers = (Array.isArray(transfers) ? transfers : []).filter(function (item) {
+      return item && item.status === "confirmed";
+    }).length;
+
+    return '<section class="stats-summary" aria-label="İstatistik kapsamı">' +
+      '<article><span>Oyuncu profili</span><strong>' + players.length + '</strong><small>Detaylı performans kaydı</small></article>' +
+      '<article><span>Takım radarı</span><strong>' + teams.length + '</strong><small>Form ve güç metriği</small></article>' +
+      '<article><span>Maç akışı</span><strong>' + matches.length + '</strong><small>Program ve skor kaydı</small></article>' +
+      '<article><span>Lig kapsamı</span><strong>' + competitions.size + '</strong><small>Aktif veri havuzu</small></article>' +
+      '<article><span>Kesinleşen transfer</span><strong>' + confirmedTransfers + '</strong><small>Doğrulanan hareket</small></article>' +
+      '</section>';
+  }
+
+  function statisticsMatchOverview(matches) {
+    var list = Array.isArray(matches) ? matches : [];
+    if (!list.length) {
+      return '<article class="data-empty compact"><strong>Günün maç verisi bekleniyor</strong><span>Canlı veya programlanmış maçlar geldiğinde skor, gol ve lig sayaçları burada açılacak.</span><a class="detail-link" href="' + siteHref("bugunun-maclari.html") + '">Maç programına git</a></article>';
+    }
+    var live = list.filter(isLiveMatch).length;
+    var finished = list.filter(function (match) { return String(match && match.status || "").toUpperCase() === "FINISHED"; }).length;
+    var scheduled = list.filter(function (match) {
+      return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].indexOf(String(match && match.status || "").toUpperCase()) !== -1;
+    }).length;
+    var goals = list.reduce(function (total, match) {
+      var home = statisticNumber(match && match.score && match.score.home);
+      var away = statisticNumber(match && match.score && match.score.away);
+      return total + (home === null ? 0 : home) + (away === null ? 0 : away);
+    }, 0);
+    var leagues = new Set(list.map(function (match) { return match && match.league; }).filter(Boolean)).size;
+
+    return '<div class="stats-match-grid">' +
+      '<article><span>Canlı</span><strong>' + live + '</strong><a href="' + siteHref("canli-skor.html") + '">Canlı skora git</a></article>' +
+      '<article><span>Başlamadı</span><strong>' + scheduled + '</strong><a href="' + siteHref("bugunun-maclari.html") + '">Programı aç</a></article>' +
+      '<article><span>Tamamlandı</span><strong>' + finished + '</strong><small>Akıştaki sonuçlar</small></article>' +
+      '<article><span>Toplam gol</span><strong>' + goals + '</strong><small>Skoru bulunan maçlar</small></article>' +
+      '<article><span>Lig</span><strong>' + leagues + '</strong><small>Maç akışındaki ligler</small></article>' +
+      '</div>';
+  }
+
+  function statisticsCoverageHtml(players) {
+    var list = Array.isArray(players) ? players : [];
+    var metrics = ["goals", "assists", "minutesPlayed", "xg", "xa", "passAccuracy", "shotsPerGame", "tacklesPerGame"];
+    return '<div class="stats-coverage-grid">' + metrics.map(function (metric) {
+      var count = list.filter(function (player) { return statisticMetric(player, metric) !== null; }).length;
+      var ratio = list.length ? Math.round((count / list.length) * 100) : 0;
+      var labels = {
+        goals: "Gol", assists: "Asist", minutesPlayed: "Dakika", xg: "xG", xa: "xA",
+        passAccuracy: "Pas isabeti", shotsPerGame: "Şut / maç", tacklesPerGame: "Müdahale / maç"
+      };
+      return '<article><div><span>' + escapeHtml(labels[metric] || metric) + '</span><b>' + ratio + '%</b></div>' +
+        '<div class="stats-coverage-track"><i style="--value:' + clampPercent(ratio) + '%"></i></div>' +
+        '<small>' + count + ' / ' + list.length + ' oyuncu</small></article>';
+    }).join("") + '</div>';
+  }
+
+  function renderStatisticsHub(players, teams, matches, transfers) {
+    var playerList = Array.isArray(players) ? players : [];
+    var teamList = Array.isArray(teams) ? teams : [];
+    var matchList = Array.isArray(matches) ? matches : [];
+    var transferList = Array.isArray(transfers) ? transfers : [];
+
+    return statisticsSummaryHtml(playerList, teamList, matchList, transferList) +
+      '<section class="stats-group" data-stat-group="players">' +
+        '<div class="stats-group-head"><div><span>Oyuncu İstatistikleri</span><h2>Skor, üretim ve performans liderleri</h2></div><a href="' + siteHref("oyuncu-radari.html") + '">Tüm oyuncuları aç</a></div>' +
+        '<div class="stats-panel-grid">' +
+          statisticPanel("Gol liderleri", "Skor", statisticLeaders(playerList, function (player) { return statisticMetric(player, "goals"); }), "player") +
+          statisticPanel("Asist liderleri", "Üretim", statisticLeaders(playerList, function (player) { return statisticMetric(player, "assists"); }), "player") +
+          statisticPanel("AI rating", "Genel etki", statisticLeaders(playerList, function (player) { return playerAiScore(player); }), "player") +
+          statisticPanel("xG liderleri", "Gol beklentisi", statisticLeaders(playerList, function (player) { return statisticMetric(player, "xg"); }), "player", "", 1) +
+          statisticPanel("Pas isabeti", "Dağıtım", statisticLeaders(playerList, function (player) { return statisticMetric(player, "passAccuracy"); }), "player", "%") +
+          statisticPanel("Pres gücü", "Top rakipteyken", statisticLeaders(playerList, function (player) { return statisticMetric(player, "pressingScore"); }), "player") +
+        '</div>' +
+      '</section>' +
+      '<section class="stats-group" data-stat-group="teams">' +
+        '<div class="stats-group-head"><div><span>Takım İstatistikleri</span><h2>Puan, form ve güç liderleri</h2></div><a href="' + siteHref("takimlar.html") + '">Tüm takımları aç</a></div>' +
+        '<div class="stats-panel-grid">' +
+          statisticPanel("Puan liderleri", "Lig tablosu", statisticLeaders(teamList, function (team) { return team.points; }), "team") +
+          statisticPanel("Hücum puanı", "Üretim gücü", statisticLeaders(teamList, function (team) { return team.attack; }), "team") +
+          statisticPanel("Savunma puanı", "Direnç", statisticLeaders(teamList, function (team) { return team.defense; }), "team") +
+          statisticPanel("Momentum", "Son dönem", statisticLeaders(teamList, function (team) { return team.momentum; }), "team", "%") +
+          statisticPanel("Form puanı", "Son 5 maç", statisticLeaders(teamList, function (team) { return team.formScore; }), "team", "", 1) +
+        '</div>' +
+      '</section>' +
+      '<section class="stats-group" data-stat-group="matches">' +
+        '<div class="stats-group-head"><div><span>Maç İstatistikleri</span><h2>Günün maç akışı özeti</h2></div><a href="' + siteHref("mac-merkezi.html") + '">Maç merkezini aç</a></div>' +
+        statisticsMatchOverview(matchList) +
+      '</section>' +
+      '<section class="stats-group" data-stat-group="coverage">' +
+        '<div class="stats-group-head"><div><span>Veri Kapsamı</span><h2>Hangi metrikte ne kadar kayıt var?</h2></div><a href="' + siteHref("veri-notu.html") + '">Metodolojiyi oku</a></div>' +
+        '<p class="stats-coverage-note">Yüzdeler mevcut oyuncu havuzundaki dolu alanları gösterir. Eksik değerler tahmin edilmez ve lider sıralamasına alınmaz.</p>' +
+        statisticsCoverageHtml(playerList) +
+      '</section>';
+  }
+
+  function initStatisticsHub(target) {
+    if (!target) return;
+    var fallback = target.innerHTML;
+    target.dataset.state = "loading";
+
+    Promise.all([loadData("players"), loadData("teams"), loadData("matches"), loadData("transfers")]).then(function (sets) {
+      setContent(target, renderStatisticsHub(sets[0], sets[1], sets[2], sets[3]));
+
+      var buttons = Array.from(document.querySelectorAll("[data-stat-view]"));
+      var groups = Array.from(target.querySelectorAll("[data-stat-group]"));
+      buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          var view = button.dataset.statView || "all";
+          buttons.forEach(function (item) {
+            var active = item === button;
+            item.classList.toggle("is-active", active);
+            item.setAttribute("aria-pressed", String(active));
+          });
+          groups.forEach(function (group) {
+            group.hidden = view !== "all" && group.dataset.statGroup !== view;
+          });
+        });
+      });
+    }).catch(function () {
+      if (fallback) {
+        target.innerHTML = fallback;
+        target.dataset.state = "fallback";
+        return;
+      }
+      setEmpty(target, "İstatistikler yüklenemedi", "Performans verileri geçici olarak okunamıyor.");
+    });
+  }
+
   function initDataLayer() {
     initHomeSearch();
     initPlayerSharing();
@@ -4769,8 +5096,8 @@
 
     renderInto(
       document.querySelector('[data-api-target="home-transfer-watch"]'),
-      "players",
-      renderHomeTransferWatch,
+      "transfers",
+      renderHomeTransferFeed,
       "Transfer izleme paneli yüklenemedi"
     );
 
@@ -4780,6 +5107,7 @@
     initPlayerSeoLanding(document.querySelector('[data-api-target="player-seo-landing"]'));
     initTeamDetail(document.querySelector('[data-api-target="team-detail"]'));
     initMatchDetail(document.querySelector('[data-api-target="match-detail"]'));
+    initStatisticsHub(document.querySelector('[data-api-target="statistics-hub"]'));
 
     renderInto(
       document.querySelector('[data-api-target="super-lig-fixtures"]'),

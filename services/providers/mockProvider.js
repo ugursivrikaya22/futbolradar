@@ -1,6 +1,7 @@
 const matches = require("../../data/matches.json");
 const teams = require("../../data/teams.json");
 const players = require("../../data/players.json");
+const transfers = require("../../data/transfers.json");
 const momentum = require("../../data/momentum.json");
 const signals = require("../../data/signals.json");
 const analyses = require("../../data/analyses.json");
@@ -276,6 +277,33 @@ function normalizeTransferRow(player, transfer, index) {
   };
 }
 
+function normalizeCuratedTransfer(transfer, index) {
+  return {
+    ...transfer,
+    id: transfer.id || `${transfer.playerId || slug(transfer.playerName)}-${transfer.date || index}-${slug(transfer.toTeam)}`,
+    playerId: transfer.playerId || slug(transfer.playerName),
+    season: transfer.season || (transfer.date ? `${String(transfer.date).slice(0, 4)}/${String(Number(String(transfer.date).slice(2, 4)) + 1).padStart(2, "0")}` : null),
+    fee: transfer.fee || null,
+    feeEur: transfer.feeEur == null ? null : Number(transfer.feeEur),
+    marketValueEur: transfer.marketValueEur == null ? null : Number(transfer.marketValueEur),
+    status: transfer.status || "confirmed",
+    confidence: transfer.confidence == null ? null : Number(transfer.confidence),
+    source: transfer.sourceName || transfer.source || "FutbolRadar transfer takibi",
+    sourceName: transfer.sourceName || transfer.source || "FutbolRadar transfer takibi",
+    sourceUrl: transfer.sourceUrl || null,
+    lastVerifiedAt: transfer.lastVerifiedAt || null
+  };
+}
+
+function transferRecordKey(transfer) {
+  return [
+    normalizeText(transfer.playerId || transfer.playerName),
+    String(transfer.date || transfer.season || ""),
+    normalizeText(transfer.fromTeam),
+    normalizeText(transfer.toTeam)
+  ].join("|");
+}
+
 async function getMatches(query) {
   const normalized = matches.map(normalizeMatch);
   const byDate = byMatchDate(normalized, query && query.date);
@@ -361,19 +389,35 @@ async function getPlayers(query) {
 }
 
 async function getPlayerTransfers(query) {
-  let data = players.map(normalizePlayer);
+  const curated = transfers.map(normalizeCuratedTransfer);
+  const playerHistory = players.map(normalizePlayer).flatMap((player) => {
+    return (player.transferHistory || []).map((transfer, index) => normalizeTransferRow(player, transfer, index));
+  });
+  const includeHistory = query && String(query.includeHistory || "").toLowerCase() === "true";
+  const seen = new Set();
+  let data = (includeHistory ? curated.concat(playerHistory) : curated).filter((transfer) => {
+    const key = transferRecordKey(transfer);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 
   if (query && query.playerId) {
     const wanted = normalizeText(query.playerId);
-    data = data.filter((player) => normalizeText(player.id).includes(wanted) || normalizeText(player.providerId).includes(wanted));
+    data = data.filter((transfer) => normalizeText(transfer.playerId).includes(wanted));
   }
 
-  data = byTeam(data, query && query.team);
-  data = bySearch(data, query && query.search);
+  if (query && query.team) {
+    const wanted = normalizeText(query.team);
+    data = data.filter((transfer) => normalizeText(transfer.fromTeam).includes(wanted) || normalizeText(transfer.toTeam).includes(wanted));
+  }
 
-  return data.flatMap((player) => {
-    return (player.transferHistory || []).map((transfer, index) => normalizeTransferRow(player, transfer, index));
-  });
+  if (query && query.search) {
+    const wanted = normalizeText(query.search);
+    data = data.filter((transfer) => [transfer.playerName, transfer.fromTeam, transfer.toTeam].some((value) => normalizeText(value).includes(wanted)));
+  }
+
+  return data.sort((left, right) => String(right.date || "").localeCompare(String(left.date || "")));
 }
 
 async function getMomentum(query) {

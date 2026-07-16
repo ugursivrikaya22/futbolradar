@@ -648,6 +648,11 @@ function validatePlayerData(rawPlayers, options) {
     if (!dzeko || normalizeText(dzeko.currentTeam).indexOf(normalizeText("Schalke")) === -1 || normalizeText(dzeko.league).indexOf(normalizeText("Bundesliga")) === -1) {
       errors.push("Edin Dzeko: currentTeam Schalke 04 ve league 2. Bundesliga olmali.");
     }
+
+    const icardi = list.find((player) => player.id === "mauro-icardi");
+    if (!icardi || normalizeText(icardi.currentTeam) !== normalizeText("Serbest oyuncu")) {
+      errors.push("Mauro Icardi: ayrilik sonrasi currentTeam Serbest oyuncu olmali.");
+    }
   }
 
   return { ok: errors.length === 0, errors, warnings };

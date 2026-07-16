@@ -12,6 +12,7 @@ const analyses = JSON.parse(fs.readFileSync(path.join(root, "data", "analyses.js
 const freshnessData = JSON.parse(fs.readFileSync(path.join(root, "data", "freshness.json"), "utf8"));
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
@@ -173,12 +174,13 @@ function fixtureRounds() {
 }
 
 function transferWatch() {
-  const selected = players.filter((player) => Array.isArray(player.transferHistory) && player.transferHistory.length).slice(0, 3);
+  const selected = transfers.slice().sort((left, right) => String(right.date || "").localeCompare(String(left.date || ""))).slice(0, 5);
   if (!selected.length) {
-    return '<article class="data-empty"><strong>İzlenecek transfer kaydı yok</strong><span>Yeni doğrulanmış transferler geldiğinde bu alan güncellenir.</span></article>';
+    return '<article class="data-empty"><strong>Kesinleşen transfer bulunamadı</strong><span>Yeni kulüp açıklamaları geldiğinde bu alan güncellenir.</span></article>';
   }
 
-  return `<article class="home-transfer-feature" data-card="home-transfer-watch"><div class="home-transfer-player"><div><span>Transfer takibi</span><h3>${escapeHtml(selected[0].name)}</h3><p>${escapeHtml(selected[0].currentTeam || selected[0].team)} · ${escapeHtml(selected[0].position)}</p></div></div><div class="home-transfer-actions"><a class="detail-link" href="./oyuncular/${escapeHtml(selected[0].id)}.html">Profili aç</a><a class="detail-link ghost" href="./transfer-izleme.html">Takip listesi</a></div></article><aside class="home-transfer-side"><div class="home-transfer-list">${selected.map((player) => `<a class="home-transfer-row" href="./oyuncular/${escapeHtml(player.id)}.html"><span>${escapeHtml(player.name)}</span><strong>${escapeHtml(player.currentTeam || player.team)}</strong><b>${escapeHtml(formatMarketValueEur(player.marketValueEur) || "Takipte")}</b></a>`).join("")}</div></aside>`;
+  const leader = selected[0];
+  return `<article class="home-transfer-feature" data-card="home-transfer-watch"><div class="home-transfer-player"><div><span>Son kesinleşen transfer</span><h3>${escapeHtml(leader.playerName)}</h3><p>${escapeHtml(leader.type || "Transfer")} · ${escapeHtml(leader.date)}</p></div></div><div class="home-transfer-route"><b>${escapeHtml(leader.fromTeam)}</b><em>→</em><b>${escapeHtml(leader.toTeam)}</b></div><div class="home-transfer-actions"><a class="detail-link" href="${escapeHtml(leader.sourceUrl)}" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./transfer-radari.html">Tüm transferler</a></div></article><aside class="home-transfer-side"><div class="home-transfer-list">${selected.slice(1).map((transfer) => `<a class="home-transfer-row" href="./transfer-radari.html?team=${encodeURIComponent(transfer.toTeam || "")}"><span>${escapeHtml(transfer.date)}</span><strong>${escapeHtml(transfer.playerName)}</strong><b>${escapeHtml(transfer.toTeam)}</b></a>`).join("")}</div></aside>`;
 }
 
 function replaceSlot(html, target, content) {
