@@ -31,15 +31,20 @@ module.exports = async function handler(req, res) {
   const provider = getProvider("matches");
   const providerQuery = {
     ...query,
+    requestedCompetition: query.league || "",
     league: providerLeagueValue(query.league, provider.name)
   };
   if (query.league && providerQuery.league === null) {
+    if (provider.name === "football") {
+      providerQuery.league = "";
+    } else {
     return sendError(
       res,
       200,
       "Seçilen turnuva mevcut canlı veri sağlayıcısında desteklenmiyor.",
       "COMPETITION_NOT_SUPPORTED"
     );
+    }
   }
   let data = [];
 

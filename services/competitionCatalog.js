@@ -22,10 +22,31 @@ function findCompetition(value) {
     return [
       competition.id,
       competition.name,
+      ...(competition.aliases || []),
       providers.apiFootball,
       providers.footballData
     ].some((candidate) => normalizeKey(candidate) === key);
   }) || null;
+}
+
+function matchesCompetition(value, competitionValue) {
+  const competition = typeof competitionValue === "object"
+    ? competitionValue
+    : findCompetition(competitionValue);
+  const key = normalizeKey(value);
+
+  if (!competition || !key) {
+    return false;
+  }
+
+  const providers = competition.providers || {};
+  return [
+    competition.id,
+    competition.name,
+    ...(competition.aliases || []),
+    providers.apiFootball,
+    providers.footballData
+  ].some((candidate) => normalizeKey(candidate) === key);
 }
 
 function providerLeagueValue(value, providerName) {
@@ -53,6 +74,7 @@ function providerLeagueValue(value, providerName) {
 module.exports = {
   competitions,
   findCompetition,
+  matchesCompetition,
   normalizeKey,
   providerLeagueValue
 };

@@ -1318,16 +1318,153 @@
   }
 
   function initCompetitionFilters() {
-    var selected = new URLSearchParams(window.location.search).get("league") || "all";
+    var currentParams = new URLSearchParams(window.location.search);
+    var selected = currentParams.get("league") || "all";
     document.querySelectorAll("[data-competition-filter]").forEach(function (link) {
       var value = link.getAttribute("data-competition-filter") || "all";
       var active = value === selected || (selected === "" && value === "all");
+      var nextParams = new URLSearchParams(currentParams);
+      if (value === "all") {
+        nextParams.delete("league");
+      } else {
+        nextParams.set("league", value);
+      }
+      var query = nextParams.toString();
+      link.href = window.location.pathname.split("/").pop() + (query ? "?" + query : "");
       link.classList.toggle("is-active", active);
       if (active) {
         link.setAttribute("aria-current", "page");
       } else {
         link.removeAttribute("aria-current");
       }
+    });
+  }
+
+  function todayInIstanbul() {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Istanbul",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).format(new Date());
+  }
+
+  function shiftDate(value, days) {
+    var date = new Date(String(value) + "T12:00:00Z");
+    if (Number.isNaN(date.getTime())) {
+      return todayInIstanbul();
+    }
+    date.setUTCDate(date.getUTCDate() + days);
+    return date.toISOString().slice(0, 10);
+  }
+
+  function formatMatchDate(value) {
+    var date = new Date(String(value) + "T12:00:00Z");
+    if (Number.isNaN(date.getTime())) {
+      return "Seçilen gün";
+    }
+    return new Intl.DateTimeFormat("tr-TR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: "Europe/Istanbul"
+    }).format(date);
+  }
+
+  function matchExplorerHref(date, status) {
+    var params = new URLSearchParams(window.location.search);
+    var today = todayInIstanbul();
+
+    if (date && date !== today) {
+      params.set("date", date);
+    } else {
+      params.delete("date");
+    }
+
+    if (status && status !== "all") {
+      params.set("status", status);
+    } else {
+      params.delete("status");
+    }
+
+    var query = params.toString();
+    return window.location.pathname.split("/").pop() + (query ? "?" + query : "");
+  }
+
+  function initMatchExplorer() {
+    var explorer = document.querySelector("[data-match-explorer]");
+    if (!explorer) {
+      return;
+    }
+
+    var params = new URLSearchParams(window.location.search);
+    var selectedDate = params.get("date") || todayInIstanbul();
+    var selectedStatus = params.get("status") || "all";
+    var input = explorer.querySelector("[data-match-date-input]");
+    var label = explorer.querySelector("[data-match-date-label]");
+    var previous = explorer.querySelector("[data-match-date-prev]");
+    var next = explorer.querySelector("[data-match-date-next]");
+    var today = explorer.querySelector("[data-match-date-today]");
+    var pageTitle = document.querySelector("[data-match-page-title]");
+    var competitionTitle = document.querySelector("[data-match-competition-title]");
+
+    if (input) {
+      input.value = selectedDate;
+      input.addEventListener("change", function () {
+        window.location.href = matchExplorerHref(input.value || todayInIstanbul(), selectedStatus);
+      });
+    }
+    if (label) {
+      label.textContent = formatMatchDate(selectedDate);
+    }
+    if (pageTitle && selectedDate !== todayInIstanbul()) {
+      pageTitle.textContent = formatMatchDate(selectedDate) + " Maçları";
+    }
+    if (competitionTitle && selectedDate !== todayInIstanbul()) {
+      competitionTitle.textContent = "Seçilen günün maçlarını lige göre süz";
+    }
+    if (previous) {
+      previous.href = matchExplorerHref(shiftDate(selectedDate, -1), selectedStatus);
+    }
+    if (next) {
+      next.href = matchExplorerHref(shiftDate(selectedDate, 1), selectedStatus);
+    }
+    if (today) {
+      today.href = matchExplorerHref(todayInIstanbul(), selectedStatus);
+      today.classList.toggle("is-active", selectedDate === todayInIstanbul());
+    }
+
+    explorer.querySelectorAll("[data-match-status]").forEach(function (link) {
+      var value = link.getAttribute("data-match-status") || "all";
+      link.href = matchExplorerHref(selectedDate, value);
+      link.classList.toggle("is-active", value === selectedStatus);
+      if (value === selectedStatus) {
+        link.setAttribute("aria-current", "page");
+      } else {
+        link.removeAttribute("aria-current");
+      }
+    });
+  }
+
+  function filterMatchesByStatus(matches) {
+    var filter = new URLSearchParams(window.location.search).get("status") || "all";
+    if (filter === "all") {
+      return matches;
+    }
+
+    return matches.filter(function (match) {
+      var status = String(match.status || match.providerStatus || "").toUpperCase();
+      if (filter === "live") {
+        return isLiveMatch(match);
+      }
+      if (filter === "finished") {
+        return ["FINISHED", "FT", "AET", "PEN"].includes(status);
+      }
+      if (filter === "upcoming") {
+        return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(status);
+      }
+      return true;
     });
   }
 
@@ -1421,22 +1558,30 @@
 
   function renderMatchPageCard(match) {
     var momentum = matchMetric(match, "homeMomentum");
-    var goalPotential = displayValue(match.goalPotential);
-    var risk = displayValue(match.risk);
+    var scoreText = matchScoreText(match.score);
+    var headlineValue = scoreText !== "-" ? scoreText : statusTr(match.status);
+    var optionalSignals = [];
+
+    if (match.goalPotential) {
+      optionalSignals.push({ label: "Gol potansiyeli " + String(match.goalPotential).toLowerCase(), variant: match.goalPotential === "Yüksek" ? "green" : "" });
+    }
+    if (match.risk) {
+      optionalSignals.push({ label: "Risk " + String(match.risk).toLowerCase(), variant: "soft" });
+    }
+    if (match.aiPrediction) {
+      optionalSignals.push({ label: "AI tahmin " + match.aiPrediction, variant: "soft" });
+    }
 
     return (
       '<article class="card match-card" data-card="today-match" data-match="' + escapeHtml(match.id) + '">' +
-      '<div class="card-head"><span class="card-kicker">' + escapeHtml(match.time) + " · " + escapeHtml(match.league) + '</span><strong class="big-value">' + escapeHtml(displayValue(match.aiPrediction)) + "</strong></div>" +
+      '<div class="card-head"><span class="card-kicker">' + escapeHtml(match.time) + " · " + escapeHtml(match.league) + " · " + escapeHtml(statusTr(match.status)) + '</span><strong class="big-value match-score-value">' + escapeHtml(headlineValue) + "</strong></div>" +
       "<h2>" + matchTitle(match) + "</h2>" +
       '<div class="match-teams">' +
-      '<div class="team-line"><span>' + escapeHtml(match.homeTeam) + "</span><span>Form " + escapeHtml(displayValue(match.homeForm)) + "</span></div>" +
-      '<div class="team-line"><span>' + escapeHtml(match.awayTeam) + "</span><span>Form " + escapeHtml(displayValue(match.awayForm)) + "</span></div>" +
+      '<div class="team-line"><span>' + escapeHtml(match.homeTeam) + "</span>" + (match.homeForm == null ? "" : "<span>Form " + escapeHtml(match.homeForm) + "</span>") + "</div>" +
+      '<div class="team-line"><span>' + escapeHtml(match.awayTeam) + "</span>" + (match.awayForm == null ? "" : "<span>Form " + escapeHtml(match.awayForm) + "</span>") + "</div>" +
       "</div>" +
-      barRowHtml("Momentum", displayValue(momentum), momentum) +
-      tagsHtml([
-        { label: "Gol potansiyeli " + String(goalPotential).toLowerCase(), variant: match.goalPotential === "Yüksek" ? "green" : "" },
-        { label: "Risk " + String(risk).toLowerCase(), variant: "soft" }
-      ]) +
+      (momentum == null ? "" : barRowHtml("Momentum", momentum, momentum)) +
+      tagsHtml(optionalSignals) +
       '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Maç detayı</a>' +
       '<div class="player-actions match-actions">' +
       '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.homeTeam })) + '">Ev radar</a>' +
@@ -5087,6 +5232,7 @@
     initPlayerSharing();
     initAnalytics();
     initCompetitionFilters();
+    initMatchExplorer();
 
     renderInto(
       document.querySelector('[data-api-target="featured-match"]'),
@@ -5112,11 +5258,17 @@
       document.querySelector('[data-api-target="matches-page"]'),
       "matches",
       function (matches) {
-        if (!Array.isArray(matches) || !matches.length) {
-          return "";
+        var filteredMatches = Array.isArray(matches) ? filterMatchesByStatus(matches) : [];
+        if (!filteredMatches.length) {
+          var params = new URLSearchParams(window.location.search);
+          var selectedDate = params.get("date") || todayInIstanbul();
+          return matchEmptyStateHtml(
+            "Bu ölçütlerde doğrulanmış maç yok",
+            formatMatchDate(selectedDate) + " için seçilen lig ve durum filtresinde maç bulunamadı. Başka bir gün veya filtre seçebilirsin."
+          );
         }
 
-        return matches.map(renderMatchPageCard).join("");
+        return filteredMatches.map(renderMatchPageCard).join("");
       },
       "Maç listesi yüklenemedi"
     );

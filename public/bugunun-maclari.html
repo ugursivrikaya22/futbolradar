@@ -61,16 +61,37 @@
         <div class="hero-row">
           <div>
             <span class="eyebrow">Maç merkezi</span>
-            <h1>Bugünkü Maçlar</h1>
+            <h1 data-match-page-title>Bugünkü Maçlar</h1>
             <p class="lead">Altı büyük yerel lig ile Şampiyonlar Ligi ve Avrupa Ligi'nin gün içindeki maçlarını tek akışta incele.</p>
           </div>
           <span class="hero-meta">Son kontrol: 13 Temmuz 2026 08:00 TSİ</span>
         </div>
       </section>
+      <section class="match-explorer" data-match-explorer aria-label="Maç tarihi ve durum filtreleri">
+        <div class="match-date-nav">
+          <a class="match-nav-button" href="./bugunun-maclari.html" data-match-date-prev aria-label="Önceki gün">←</a>
+          <div class="match-date-current">
+            <span>Maç tarihi</span>
+            <strong data-match-date-label>Bugün</strong>
+          </div>
+          <a class="match-nav-button" href="./bugunun-maclari.html" data-match-date-next aria-label="Sonraki gün">→</a>
+          <a class="match-today-button" href="./bugunun-maclari.html" data-match-date-today>Bugün</a>
+          <label class="match-date-picker">
+            <span>Tarih seç</span>
+            <input type="date" data-match-date-input aria-label="Maç tarihi seç" />
+          </label>
+        </div>
+        <div class="match-status-filters" aria-label="Maç durumu">
+          <a href="./bugunun-maclari.html" data-match-status="all">Tümü</a>
+          <a href="./bugunun-maclari.html?status=live" data-match-status="live">Canlı</a>
+          <a href="./bugunun-maclari.html?status=finished" data-match-status="finished">Biten</a>
+          <a href="./bugunun-maclari.html?status=upcoming" data-match-status="upcoming">Yaklaşan</a>
+        </div>
+      </section>
       <section class="competition-switcher" aria-labelledby="today-competition-title" data-competition-nav>
         <div class="competition-switcher-copy">
           <span>Lig seç</span>
-          <strong id="today-competition-title">Bugünün maçlarını lige göre süz</strong>
+          <strong id="today-competition-title" data-match-competition-title>Bugünün maçlarını lige göre süz</strong>
         </div>
         <div class="competition-chip-row" aria-label="Bugünün maç ligleri">
           <a href="./bugunun-maclari.html" data-competition-filter="all">Tüm maçlar</a>

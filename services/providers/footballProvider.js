@@ -6,6 +6,7 @@ const {
   firstPresentEnv,
   withTimeout
 } = require("../../api/_utils");
+const { findCompetition, matchesCompetition } = require("../competitionCatalog");
 
 const source = "FutbolRadar Football-Data Live API";
 
@@ -376,12 +377,30 @@ function normalizeLiveAnalysis(item) {
 
 async function getMatches(query) {
   const requestedCompetition = query && query.league ? String(query.league).trim() : "";
+  const competition = findCompetition(query && (query.requestedCompetition || query.league));
   const dateFrom = query && query.date ? toDateOnly(query.date) : toDateOnly();
   const dateTo = dateFrom;
-  const payload = requestedCompetition
-    ? await providerFetch(`/competitions/${resolveCompetitionCode(query)}/matches`, { dateFrom, dateTo })
-    : await providerFetch("/matches", { dateFrom, dateTo });
-  return stampProviderData((payload.matches || payload.data || []).map(normalizeLiveMatch), "matches", 5 * 60 * 1000);
+  let payload;
+
+  if (requestedCompetition) {
+    try {
+      payload = await providerFetch(`/competitions/${resolveCompetitionCode(query)}/matches`, { dateFrom, dateTo });
+    } catch (error) {
+      if (!competition || !["PROVIDER_AUTH_ERROR", "PROVIDER_HTTP_ERROR"].includes(error.code)) {
+        throw error;
+      }
+      payload = await providerFetch("/matches", { dateFrom, dateTo });
+    }
+  } else {
+    payload = await providerFetch("/matches", { dateFrom, dateTo });
+  }
+
+  let matches = (payload.matches || payload.data || []).map(normalizeLiveMatch);
+  if (competition) {
+    matches = matches.filter((match) => matchesCompetition(match.league, competition));
+  }
+
+  return stampProviderData(matches, "matches", 5 * 60 * 1000);
 }
 
 async function getStandings(query) {

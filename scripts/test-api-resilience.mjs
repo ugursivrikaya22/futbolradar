@@ -105,6 +105,9 @@ function testCompetitionCatalog() {
   assert.equal(competitionCatalog.providerLeagueValue("avrupa-ligi", "api-football"), 3);
   assert.equal(competitionCatalog.providerLeagueValue("avrupa-ligi", "football-data"), null);
   assert.equal(competitionCatalog.providerLeagueValue("all", "api-football"), "");
+  assert.equal(competitionCatalog.matchesCompetition("UEFA Champions League", "sampiyonlar-ligi"), true);
+  assert.equal(competitionCatalog.matchesCompetition("English Premier League", "premier-league"), true);
+  assert.equal(competitionCatalog.matchesCompetition("Campeonato Brasileiro Série A", "serie-a"), false);
 
   const liveFixture = apiFootball.normalizeFixture({
     fixture: { id: 10, date: "2026-07-16T20:00:00+03:00", status: { short: "2H" } },
@@ -155,6 +158,44 @@ async function testPlayerLeagueSlugFallback() {
   assert.ok(response.payload.data.every((player) => player.league === "Süper Lig"));
 }
 
+async function testFootballDataCompetitionFallback() {
+  const previousFetch = global.fetch;
+  const previousKey = process.env.FOOTBALL_API_KEY;
+  const previousBaseUrl = process.env.FOOTBALL_API_BASE_URL;
+
+  try {
+    process.env.FOOTBALL_API_KEY = "test-key";
+    process.env.FOOTBALL_API_BASE_URL = "https://provider.test/v4";
+    global.fetch = async (url) => {
+      const requestUrl = String(url);
+      if (requestUrl.includes("/competitions/PL/matches")) {
+        return { ok: false, status: 403, json: async () => ({}) };
+      }
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          matches: [
+            { id: 1, utcDate: "2026-05-24T15:00:00Z", status: "FINISHED", competition: { name: "Premier League" }, homeTeam: { name: "Home" }, awayTeam: { name: "Away" }, score: { fullTime: { home: 2, away: 1 } } },
+            { id: 2, utcDate: "2026-05-24T18:00:00Z", status: "FINISHED", competition: { name: "Campeonato Brasileiro Série A" }, homeTeam: { name: "Other" }, awayTeam: { name: "Club" }, score: { fullTime: { home: 0, away: 0 } } }
+          ]
+        })
+      };
+    };
+
+    const matches = await footballData.getMatches({ date: "2026-05-24", league: "PL", requestedCompetition: "premier-league" });
+    assert.equal(matches.length, 1);
+    assert.equal(matches[0].league, "Premier League");
+    assert.deepEqual(matches[0].score, { home: 2, away: 1 });
+  } finally {
+    global.fetch = previousFetch;
+    if (previousKey === undefined) delete process.env.FOOTBALL_API_KEY;
+    else process.env.FOOTBALL_API_KEY = previousKey;
+    if (previousBaseUrl === undefined) delete process.env.FOOTBALL_API_BASE_URL;
+    else process.env.FOOTBALL_API_BASE_URL = previousBaseUrl;
+  }
+}
+
 testQuerySanitizing();
 testCachePolicies();
 testRateLimit();
@@ -163,5 +204,6 @@ testUnknownProviderValues();
 testCompetitionCatalog();
 testMissingKeyFallback();
 await testPlayerLeagueSlugFallback();
+await testFootballDataCompetitionFallback();
 
 console.log("FutbolRadar API resilience tests passed");
