@@ -60,6 +60,16 @@ const rewritePages = [
   ...playerComparisonRewritePages
 ];
 const endpoints = ["/api/matches", "/api/standings", "/api/teams", "/api/players", "/api/momentum", "/api/signals", "/api/analyses", "/api/health"];
+const apiCacheHeaders = {
+  "/api/matches": "public, s-maxage=60, stale-while-revalidate=180",
+  "/api/standings": "public, s-maxage=300, stale-while-revalidate=900",
+  "/api/teams": "public, s-maxage=1800, stale-while-revalidate=7200",
+  "/api/players": "public, s-maxage=3600, stale-while-revalidate=21600",
+  "/api/momentum": "public, s-maxage=300, stale-while-revalidate=900",
+  "/api/signals": "public, s-maxage=120, stale-while-revalidate=600",
+  "/api/analyses": "public, s-maxage=3600, stale-while-revalidate=21600",
+  "/api/health": "no-store"
+};
 const staticAssets = ["/sitemap.xml", "/robots.txt", "/page.css", "/app.js", "/site.js", "/site.webmanifest", "/assets/og-image.svg"];
 const secretMarkers = [
   "X-Auth-Token",
@@ -313,11 +323,12 @@ async function checkApi() {
     expect(response.status === 200, `${endpoint}: expected 200, got ${response.status}`);
     expect(payload && typeof payload.ok === "boolean", `${endpoint}: missing ok boolean`);
     expect(payload && payload.source, `${endpoint}: missing source`);
-    expect(payload && payload.updatedAt, `${endpoint}: missing updatedAt`);
+    expect(payload && Object.prototype.hasOwnProperty.call(payload, "updatedAt"), `${endpoint}: missing updatedAt`);
     expect(payload && Array.isArray(payload.data), `${endpoint}: data must be array`);
-    expect(response.headers.get("cache-control") === "public, max-age=0", `${endpoint}: browser cache header mismatch`);
+    const expectedBrowserCache = endpoint === "/api/health" ? "no-store" : "public, max-age=0";
+    expect(response.headers.get("cache-control") === expectedBrowserCache, `${endpoint}: browser cache header mismatch`);
     expect(
-      response.headers.get("cdn-cache-control") === "public, s-maxage=300, stale-while-revalidate=600",
+      response.headers.get("cdn-cache-control") === apiCacheHeaders[endpoint],
       `${endpoint}: CDN cache header mismatch`
     );
     expect(!hasSecretLeak(text), `${endpoint}: secret marker found`);
