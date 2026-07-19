@@ -48,6 +48,7 @@ function transferCard(transfer) {
     <div class="transfer-route transfer-route-large"><b>${escapeHtml(transfer.fromTeam || "Önceki kulüp bilinmiyor")}</b><em>→</em><b>${escapeHtml(transfer.toTeam || "Yeni kulüp bilinmiyor")}</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>${escapeHtml(transfer.position || "Bilinmiyor")}</b></article><article><span>Transfer tipi</span><b>${escapeHtml(transfer.type || "Açıklanmadı")}</b></article><article><span>Bonservis</span><b>${escapeHtml(fee)}</b></article><article><span>Sezon</span><b>${escapeHtml(transfer.season || "Yakında")}</b></article></div>
     ${transfer.note ? `<p class="transfer-note">${escapeHtml(transfer.note)}</p>` : ""}
+    <p class="transfer-verification">Son kontrol: ${escapeHtml(new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(transfer.lastVerifiedAt || `${transfer.date}T12:00:00Z`)))}</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions">${sourceAction}<a class="detail-link ghost" href="./takimlar.html?team=${encodeURIComponent(transfer.toTeam || "")}">Takımı incele</a></div>
   </article>`;

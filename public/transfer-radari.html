@@ -3,27 +3,27 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Transfer Radari | Guncel Takim ve Eski Kulup Takibi | FutbolRadar</title>
-    <meta name="description" content="Transfer radari; oyuncularin guncel takim, eski kulup, transfer gecmisi, veri durumu ve piyasa degeri alanlarini izler." />
+    <title>Transfer Radarı | Güncel Gelen ve Giden Oyuncular | FutbolRadar</title>
+    <meta name="description" content="Transfer Radarı ile Süper Lig takımlarına gelen ve giden oyuncuları, bonservis bilgilerini ve doğrulama tarihlerini takip edin." />
     <link rel="canonical" href="https://www.futbolradar.com/transfer-radari.html" />
     <meta name="robots" content="index,follow" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:url" content="https://www.futbolradar.com/transfer-radari.html" />
-    <meta property="og:title" content="Transfer Radari | Guncel Takim ve Eski Kulup Takibi | FutbolRadar" />
-    <meta property="og:description" content="Transfer radari; oyuncularin guncel takim, eski kulup, transfer gecmisi, veri durumu ve piyasa degeri alanlarini izler." />
+    <meta property="og:title" content="Transfer Radarı | Güncel Gelen ve Giden Oyuncular | FutbolRadar" />
+    <meta property="og:description" content="Transfer Radarı ile Süper Lig takımlarına gelen ve giden oyuncuları, bonservis bilgilerini ve doğrulama tarihlerini takip edin." />
     <meta property="og:image" content="https://www.futbolradar.com/assets/og-image.svg" />
     <meta property="og:image:type" content="image/svg+xml" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Transfer Radari | Guncel Takim ve Eski Kulup Takibi | FutbolRadar" />
-    <meta name="twitter:description" content="Transfer radari; oyuncularin guncel takim, eski kulup, transfer gecmisi, veri durumu ve piyasa degeri alanlarini izler." />
+    <meta name="twitter:title" content="Transfer Radarı | Güncel Gelen ve Giden Oyuncular | FutbolRadar" />
+    <meta name="twitter:description" content="Transfer Radarı ile Süper Lig takımlarına gelen ve giden oyuncuları, bonservis bilgilerini ve doğrulama tarihlerini takip edin." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
-    <link rel="stylesheet" href="./page.css?v=20260719-1" />
+    <link rel="stylesheet" href="./page.css" />
     <script data-futbolradar-ga4>
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
@@ -48,46 +48,55 @@
         <div class="hero-row">
           <div>
             <span class="eyebrow">FutbolRadar analiz</span>
-            <h1>Transfer Radari</h1>
-            <p class="lead">Oyuncu transfer gecmisini, guncel takimi ve veri guvenilirligini tek ekranda oku.</p>
+            <h1>Transfer Radarı</h1>
+            <p class="lead">Süper Lig'e gelen ve ligden ayrılan oyuncuları; tarih, kulüp ve bonservis ayrımıyla takip et.</p>
           </div>
           <span class="hero-meta">Veriler periyodik olarak güncellenir</span>
         </div>
       </section>
-      <section class="grid three"><article class="card"><span class="card-kicker">Radar</span><h2>Guncel takim</h2><p>Guncel takim, eski kulup ve transfer gecmisi ayrimi korunarak gosterilir.</p></article><article class="card"><span class="card-kicker">Radar</span><h2>Transfer gecmisi</h2><p>Guncel takim, eski kulup ve transfer gecmisi ayrimi korunarak gosterilir.</p></article><article class="card"><span class="card-kicker">Radar</span><h2>Veri guveni</h2><p>AI rating, form ve radar alt skorlari bu segmentteki oyunculari siralamak icin kullanilir.</p></article></section><section class="transfer-toolbar" aria-label="Transfer radar filtreleri">
-        <div class="transfer-filter-chips" role="group" aria-label="Hizli transfer filtreleri">
-          <button type="button" data-transfer-filter="all" class="is-active" aria-pressed="true">Tum transferler</button>
+      <section class="grid three"><article class="card"><span class="card-kicker">Radar</span><h2>Güncel takım</h2><p>Guncel takim, eski kulup ve transfer gecmisi ayrimi korunarak gosterilir.</p></article><article class="card"><span class="card-kicker">Radar</span><h2>Transfer geçmişi</h2><p>Guncel takim, eski kulup ve transfer gecmisi ayrimi korunarak gosterilir.</p></article><article class="card"><span class="card-kicker">Radar</span><h2>Veri güveni</h2><p>AI rating, form ve radar alt skorlari bu segmentteki oyunculari siralamak icin kullanilir.</p></article></section><section class="transfer-toolbar" aria-label="Transfer Radarı filtreleri">
+        <div class="transfer-filter-chips" role="group" aria-label="Hızlı transfer filtreleri">
+          <button type="button" data-transfer-filter="all" class="is-active" aria-pressed="true">Tüm transferler</button>
           <button type="button" data-transfer-filter="son-hareket" aria-pressed="false">Son hareket</button>
-          <button type="button" data-transfer-filter="eski-kulup" aria-pressed="false">Eski kulup ayrimi</button>
+          <button type="button" data-transfer-filter="eski-kulup" aria-pressed="false">Eski kulüp ayrımı</button>
           <button type="button" data-transfer-filter="riskli-transfer" aria-pressed="false">Riskli takip</button>
-          <button type="button" data-transfer-filter="yukselen-deger" aria-pressed="false">Yukselen deger</button>
+          <button type="button" data-transfer-filter="yukselen-deger" aria-pressed="false">Yükselen değer</button>
         </div>
         <div class="filter-group">
-          <label for="transfer-team-filter">Guncel takim</label>
+          <label for="transfer-team-filter">Takım</label>
           <select id="transfer-team-filter" data-transfer-team-filter></select>
+        </div>
+        <div class="filter-group">
+          <label for="transfer-direction-filter">Hareket yönü</label>
+          <select id="transfer-direction-filter" data-transfer-direction-filter disabled>
+            <option value="">Tüm hareketler</option>
+            <option value="in">Gelenler</option>
+            <option value="out">Gidenler</option>
+          </select>
         </div>
         <div class="filter-group">
           <label for="transfer-status-filter">Transfer durumu</label>
           <select id="transfer-status-filter" data-transfer-status-filter></select>
         </div>
         <div class="filter-group">
-          <label for="transfer-sort">Sirala</label>
+          <label for="transfer-sort">Sırala</label>
           <select id="transfer-sort" data-transfer-sort>
             <option value="updated">En yeni</option>
             <option value="market">Bonservis bedeli</option>
-            <option value="rating">Oyuncu adi</option>
-            <option value="team">Takim</option>
+            <option value="rating">Oyuncu adı</option>
+            <option value="team">Takım</option>
           </select>
         </div>
       </section>
-      <section class="transfer-radar-summary" data-transfer-summary aria-label="Transfer radar ozeti"></section>
-      <section class="player-filter-note" data-transfer-filter-description>Oyuncu transfer gecmisini, guncel takimi ve veri guvenilirligini tek ekranda oku.</section>
+      <section class="transfer-radar-summary" data-transfer-summary aria-label="Transfer Radarı özeti"></section>
+      <section class="player-filter-note" data-transfer-filter-description>Süper Lig'e gelen ve ligden ayrılan oyuncuları; tarih, kulüp ve bonservis ayrımıyla takip et.</section>
       <section class="player-filter-note"><span data-landing-count>19 transfer kaydı</span></section>
       <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="transfer-radari"><article class="transfer-radar-card" data-card="transfer-record" data-transfer="cenk-ozkacar-trabzonspor-2026">
     <header><div class="player-card-title"><div><span class="card-kicker">Süper Lig · Kesinleşti</span><h2>Cenk Özkaçar</h2></div></div><strong>18 Tem 2026</strong></header>
     <div class="transfer-route transfer-route-large"><b>Valencia</b><em>→</em><b>Trabzonspor</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Stoper</b></article><article><span>Transfer tipi</span><b>Bonservis</b></article><article><span>Bonservis</span><b>Açıklanmadı</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Trabzonspor, Valencia ve oyuncuyla kesin transfer için anlaşmaya varıldığını açıkladı.</p>
+    <p class="transfer-verification">Son kontrol: 19 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.trabzonspor.org.tr/tr/haberler/kamuoyuna-duyuru-62-18-07-2026" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Trabzonspor">Takımı incele</a></div>
   </article>
@@ -96,6 +105,7 @@
     <div class="transfer-route transfer-route-large"><b>Arsenal</b><em>→</em><b>Beşiktaş</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Sol kanat</b></article><article><span>Transfer tipi</span><b>Bonservis</b></article><article><span>Bonservis</span><b>€18.0M</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Beşiktaş transferi ve üç yıl artı bir yıl opsiyonlu sözleşmeyi KAP&#39;a bildirdi.</p>
+    <p class="transfer-verification">Son kontrol: 16 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.bjk.com.tr/tr/haber/94734/besiktasimiza-hos-geldin-leandro-trossard.html" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Be%C5%9Fikta%C5%9F">Takımı incele</a></div>
   </article>
@@ -104,6 +114,7 @@
     <div class="transfer-route transfer-route-large"><b>Burnley</b><em>→</em><b>Galatasaray</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Ön libero</b></article><article><span>Transfer tipi</span><b>Bonservis</b></article><article><span>Bonservis</span><b>Açıklanmadı</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Galatasaray, oyuncuyla anlaşmaya varıldığını KAP&#39;a bildirdi.</p>
+    <p class="transfer-verification">Son kontrol: 16 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.galatasaray.org/haber/futbol/galatasaraya-hos-geldin-lesley-ugochukwu/60601" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Galatasaray">Takımı incele</a></div>
   </article>
@@ -112,6 +123,7 @@
     <div class="transfer-route transfer-route-large"><b>Galatasaray</b><em>→</em><b>Serbest oyuncu</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Santrfor</b></article><article><span>Transfer tipi</span><b>Sözleşme sonu</b></article><article><span>Bonservis</span><b>Bedelsiz</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Galatasaray ile sözleşmesi sona eren Icardi&#39;nin yeni kulübü henüz kesinleşmedi.</p>
+    <p class="transfer-verification">Son kontrol: 19 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.mackolik.com/futbol/haber/galatasarayda-mauro-icardi-ile-yollar-ayrildi/fddd0203-5c71-4af6-adf2-6321e56427e5" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Serbest%20oyuncu">Takımı incele</a></div>
   </article>
@@ -120,6 +132,7 @@
     <div class="transfer-route transfer-route-large"><b>Atletico Madrid</b><em>→</em><b>Eyüpspor</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Kaleci</b></article><article><span>Transfer tipi</span><b>Bonservis</b></article><article><span>Bonservis</span><b>Açıklanmadı</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Eyüpspor, Rumen kaleciyi kadrosuna kattığını kulüp kanallarından duyurdu.</p>
+    <p class="transfer-verification">Son kontrol: 19 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.trtspor.com.tr/haber/futbol/fenerbahceden-dev-hamle-greenwood-geliyor-32059848" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Ey%C3%BCpspor">Takımı incele</a></div>
   </article>
@@ -128,6 +141,7 @@
     <div class="transfer-route transfer-route-large"><b>Olympique Marsilya</b><em>→</em><b>Fenerbahçe</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Sağ kanat</b></article><article><span>Transfer tipi</span><b>Bonservis</b></article><article><span>Bonservis</span><b>€39.0M</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Fenerbahçe, oyuncuyla dört yıllık sözleşme imzaladı; açıklanan bonservis bedeli 39 milyon avro.</p>
+    <p class="transfer-verification">Son kontrol: 19 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.trtspor.com.tr/haber/futbol/fenerbahceden-kap-bildirimi-32151564" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Fenerbah%C3%A7e">Takımı incele</a></div>
   </article>
@@ -136,6 +150,7 @@
     <div class="transfer-route transfer-route-large"><b>KVC Westerlo</b><em>→</em><b>Başakşehir FK</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Stoper</b></article><article><span>Transfer tipi</span><b>Bonservis</b></article><article><span>Bonservis</span><b>Açıklanmadı</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Başakşehir, oyuncuyla dört yıllık sözleşme imzalandığını açıkladı.</p>
+    <p class="transfer-verification">Son kontrol: 19 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://ibfk.com.tr/haberler/hos-geldin-emin-bayram" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Ba%C5%9Fak%C5%9Fehir%20FK">Takımı incele</a></div>
   </article>
@@ -144,6 +159,7 @@
     <div class="transfer-route transfer-route-large"><b>Serbest oyuncu</b><em>→</em><b>Beşiktaş</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Merkez orta saha</b></article><article><span>Transfer tipi</span><b>Serbest transfer</b></article><article><span>Bonservis</span><b>Bedelsiz</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Beşiktaş, serbest statüdeki oyuncuyla 3+1 yıllık sözleşme imzaladı.</p>
+    <p class="transfer-verification">Son kontrol: 16 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.bjk.com.tr/tr/haber/94700/besiktasimiza-hos-geldin-salih-ozcan.html" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Be%C5%9Fikta%C5%9F">Takımı incele</a></div>
   </article>
@@ -152,6 +168,7 @@
     <div class="transfer-route transfer-route-large"><b>Bayern Münih</b><em>→</em><b>Beşiktaş</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Kaleci</b></article><article><span>Transfer tipi</span><b>Bonservis</b></article><article><span>Bonservis</span><b>Açıklanmadı</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Beşiktaş, Bayern Münih ile anlaşarak oyuncuyla üç yıllık sözleşme imzaladı.</p>
+    <p class="transfer-verification">Son kontrol: 16 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://bjk.com.tr/tr/haber/94690/besiktasimiza-hos-geldin-alexander-nubel.html" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Be%C5%9Fikta%C5%9F">Takımı incele</a></div>
   </article>
@@ -160,6 +177,7 @@
     <div class="transfer-route transfer-route-large"><b>Başakşehir FK</b><em>→</em><b>Beşiktaş</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Kaleci</b></article><article><span>Transfer tipi</span><b>Bonservis</b></article><article><span>Bonservis</span><b>Açıklanmadı</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Beşiktaş, Başakşehir FK ile anlaşarak oyuncuyla dört yıllık sözleşme imzaladı.</p>
+    <p class="transfer-verification">Son kontrol: 16 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.bjk.com.tr/tr/haber/94689/besiktasimiza-hos-geldin-dogan-alemdar.html" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Be%C5%9Fikta%C5%9F">Takımı incele</a></div>
   </article>
@@ -168,6 +186,7 @@
     <div class="transfer-route transfer-route-large"><b>Manchester City</b><em>→</em><b>Fenerbahçe</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Stoper</b></article><article><span>Transfer tipi</span><b>Bonservis</b></article><article><span>Bonservis</span><b>Açıklanmadı</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Manchester City, Nathan Aké&#39;nin Fenerbahçe&#39;ye kalıcı transferini duyurdu.</p>
+    <p class="transfer-verification">Son kontrol: 19 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.mancity.com/news/mens/nathan-ake-leaves-city-for-fenerbahce-63918750/" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Fenerbah%C3%A7e">Takımı incele</a></div>
   </article>
@@ -176,6 +195,7 @@
     <div class="transfer-route transfer-route-large"><b>Manchester United</b><em>→</em><b>Trabzonspor</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Kaleci</b></article><article><span>Transfer tipi</span><b>Kiralık</b></article><article><span>Bonservis</span><b>Bedelsiz kiralama</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Trabzonspor, oyuncuyu 2026/27 sezonu için bedelsiz geçici transfer etti.</p>
+    <p class="transfer-verification">Son kontrol: 16 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.trabzonspor.org.tr/tr/haberler/kamuoyuna-duyuru-57-03-07-2026" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Trabzonspor">Takımı incele</a></div>
   </article>
@@ -184,6 +204,7 @@
     <div class="transfer-route transfer-route-large"><b>Trabzonspor</b><em>→</em><b>Basel</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Sol kanat</b></article><article><span>Transfer tipi</span><b>Kiralık</b></article><article><span>Bonservis</span><b>€3.75M satın alma opsiyonu</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Oyuncu, zorunlu olmayan 3,75 milyon avroluk satın alma opsiyonuyla Basel&#39;e kiralandı.</p>
+    <p class="transfer-verification">Son kontrol: 19 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.trabzonspor.org.tr/tr" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Basel">Takımı incele</a></div>
   </article>
@@ -192,6 +213,7 @@
     <div class="transfer-route transfer-route-large"><b>Serbest oyuncu</b><em>→</em><b>Trabzonspor</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Stoper</b></article><article><span>Transfer tipi</span><b>Serbest transfer</b></article><article><span>Bonservis</span><b>Bedelsiz</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Trabzonspor, serbest statüdeki oyuncuyla kulüp opsiyonlu 2+1 yıllık anlaşma yaptı.</p>
+    <p class="transfer-verification">Son kontrol: 19 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.trabzonspor.org.tr/tr/haberler/kamuoyuna-duyuru-55-01-07-2026" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Trabzonspor">Takımı incele</a></div>
   </article>
@@ -200,6 +222,7 @@
     <div class="transfer-route transfer-route-large"><b>Génération Foot</b><em>→</em><b>Fenerbahçe</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Sol kanat</b></article><article><span>Transfer tipi</span><b>Bonservis</b></article><article><span>Bonservis</span><b>Açıklanmadı</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Fenerbahçe, genç oyuncuyu kadrosuna kattığını açıkladı.</p>
+    <p class="transfer-verification">Son kontrol: 16 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.aa.com.tr/tr/spor/fenerbahce-18-yasindaki-futbolcu-amara-dioufu-transfer-etti/3976842" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Fenerbah%C3%A7e">Takımı incele</a></div>
   </article>
@@ -208,6 +231,7 @@
     <div class="transfer-route transfer-route-large"><b>Trabzonspor</b><em>→</em><b>Başakşehir FK</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Sağ kanat</b></article><article><span>Transfer tipi</span><b>Serbest transfer</b></article><article><span>Bonservis</span><b>Bedelsiz</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Başakşehir, Edin Vişça ile bir yıllık sözleşme imzalandığını açıkladı.</p>
+    <p class="transfer-verification">Son kontrol: 19 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://ibfk.com.tr/haberler/evine-hos-geldin-evlat" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Ba%C5%9Fak%C5%9Fehir%20FK">Takımı incele</a></div>
   </article>
@@ -216,6 +240,7 @@
     <div class="transfer-route transfer-route-large"><b>Mallorca</b><em>→</em><b>Fenerbahçe</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Santrfor</b></article><article><span>Transfer tipi</span><b>Bonservis</b></article><article><span>Bonservis</span><b>Açıklanmadı</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Fenerbahçe, Mallorca ile anlaşarak oyuncuyla üç yıllık sözleşme imzaladı.</p>
+    <p class="transfer-verification">Son kontrol: 16 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.trtspor.com.tr/haber/futbol/vedat-muric-resmen-fenerbahcede-31766061" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Fenerbah%C3%A7e">Takımı incele</a></div>
   </article>
@@ -224,6 +249,7 @@
     <div class="transfer-route transfer-route-large"><b>Serbest oyuncu</b><em>→</em><b>Trabzonspor</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>On numara</b></article><article><span>Transfer tipi</span><b>Serbest transfer</b></article><article><span>Bonservis</span><b>Bedelsiz</b></article><article><span>Sezon</span><b>2026/27</b></article></div>
     <p class="transfer-note">Trabzonspor, serbest statüdeki oyuncuyla üç yıllık anlaşma sağlandığını açıkladı.</p>
+    <p class="transfer-verification">Son kontrol: 19 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://www.trabzonspor.org.tr/news/kamuoyuna-duyuru-47-05-06-2026" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Trabzonspor">Takımı incele</a></div>
   </article>
@@ -232,6 +258,7 @@
     <div class="transfer-route transfer-route-large"><b>Al-Ittihad</b><em>→</em><b>Fenerbahçe</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>Merkez orta saha</b></article><article><span>Transfer tipi</span><b>Bonservis</b></article><article><span>Bonservis</span><b>Açıklanmadı</b></article><article><span>Sezon</span><b>2025/26</b></article></div>
     <p class="transfer-note">Fenerbahçe, Al-Ittihad ve oyuncuyla 2,5 yıllık anlaşmaya varıldığını KAP&#39;a bildirdi.</p>
+    <p class="transfer-verification">Son kontrol: 16 Tem 2026</p>
     <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
     <div class="player-actions"><a class="detail-link" href="https://media.fenerbahce.org/getmedia/9052eb3d-138d-4f7c-a9c4-b06b76645a47/20260204-N-Golo-Kante-Transferi-Hakkinda.pdf" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./takimlar.html?team=Fenerbah%C3%A7e">Takımı incele</a></div>
   </article></section>
@@ -244,6 +271,6 @@
 
     <footer class="footer"><div class="container footer-links">FutbolRadar · <a href="./hakkinda.html">Hakkında</a> · <a href="./veri-notu.html">Veri Notu</a> · <a href="./iletisim.html">İletişim</a> · <a href="./gizlilik.html">Gizlilik</a> · <a href="./kullanim-sartlari.html">Kullanım Şartları</a></div></footer>
     <script src="./site.js" defer></script>
-    <script src="./app.js?v=20260719-1" defer></script>
+    <script src="./app.js" defer></script>
   </body>
 </html>

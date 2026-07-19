@@ -520,6 +520,10 @@ function checkSeoAndLinks() {
       const expectedCard = page === "transfer-radari.html" ? 'data-card="transfer-record"' : 'data-card="player"';
       expect(html.includes(expectedCard), `${page}: missing prerendered content cards`);
       expect(!html.includes("Oyuncular yukleniyor"), `${page}: client-only loading placeholder must not be indexed`);
+      if (page === "transfer-radari.html") {
+        expect(html.includes("data-transfer-direction-filter"), `${page}: missing incoming/outgoing transfer filter`);
+        expect(html.includes("transfer-verification"), `${page}: missing transfer verification timestamp`);
+      }
     }
   }
 

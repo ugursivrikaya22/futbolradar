@@ -35,16 +35,12 @@ module.exports = async function handler(req, res) {
     league: providerLeagueValue(query.league, provider.name)
   };
   if (query.league && providerQuery.league === null) {
-    if (provider.name === "football") {
-      providerQuery.league = "";
-    } else {
     return sendError(
       res,
       200,
-      "Seçilen turnuva mevcut canlı veri sağlayıcısında desteklenmiyor.",
+      "Seçilen turnuva mevcut canlı veri sağlayıcısında desteklenmiyor; yedek veri denenecek.",
       "COMPETITION_NOT_SUPPORTED"
     );
-    }
   }
   let data = [];
 

@@ -177,11 +177,11 @@ const playerSeoPages = [
   {
     file: "transfer-radari.html",
     landing: "transfer-radari",
-    title: "Transfer Radari | Guncel Takim ve Eski Kulup Takibi | FutbolRadar",
-    description: "Transfer radari; oyuncularin guncel takim, eski kulup, transfer gecmisi, veri durumu ve piyasa degeri alanlarini izler.",
-    h1: "Transfer Radari",
-    lead: "Oyuncu transfer gecmisini, guncel takimi ve veri guvenilirligini tek ekranda oku.",
-    cards: ["Guncel takim", "Transfer gecmisi", "Veri guveni"]
+    title: "Transfer Radarı | Güncel Gelen ve Giden Oyuncular | FutbolRadar",
+    description: "Transfer Radarı ile Süper Lig takımlarına gelen ve giden oyuncuları, bonservis bilgilerini ve doğrulama tarihlerini takip edin.",
+    h1: "Transfer Radarı",
+    lead: "Süper Lig'e gelen ve ligden ayrılan oyuncuları; tarih, kulüp ve bonservis ayrımıyla takip et.",
+    cards: ["Güncel takım", "Transfer geçmişi", "Veri güveni"]
   },
   {
     file: "genc-yetenekler.html",
@@ -248,7 +248,7 @@ function cardDescription(card) {
   if (key.includes("savunma") || key.includes("disiplin")) {
     return "Savunma katkisi, kart yuku ve sureklilik skoru birlikte degerlendirilir.";
   }
-  if (key.includes("transfer") || key.includes("guncel takim")) {
+  if (key.includes("transfer") || key.includes("guncel takim") || key.includes("güncel takım")) {
     return "Guncel takim, eski kulup ve transfer gecmisi ayrimi korunarak gosterilir.";
   }
   if (key.includes("potansiyel") || key.includes("yas")) {
@@ -266,33 +266,41 @@ function landingControlsHtml(page) {
     return "";
   }
 
-  return `<section class="transfer-toolbar" aria-label="Transfer radar filtreleri">
-        <div class="transfer-filter-chips" role="group" aria-label="Hizli transfer filtreleri">
-          <button type="button" data-transfer-filter="all" class="is-active" aria-pressed="true">Tum transferler</button>
+  return `<section class="transfer-toolbar" aria-label="Transfer Radarı filtreleri">
+        <div class="transfer-filter-chips" role="group" aria-label="Hızlı transfer filtreleri">
+          <button type="button" data-transfer-filter="all" class="is-active" aria-pressed="true">Tüm transferler</button>
           <button type="button" data-transfer-filter="son-hareket" aria-pressed="false">Son hareket</button>
-          <button type="button" data-transfer-filter="eski-kulup" aria-pressed="false">Eski kulup ayrimi</button>
+          <button type="button" data-transfer-filter="eski-kulup" aria-pressed="false">Eski kulüp ayrımı</button>
           <button type="button" data-transfer-filter="riskli-transfer" aria-pressed="false">Riskli takip</button>
-          <button type="button" data-transfer-filter="yukselen-deger" aria-pressed="false">Yukselen deger</button>
+          <button type="button" data-transfer-filter="yukselen-deger" aria-pressed="false">Yükselen değer</button>
         </div>
         <div class="filter-group">
-          <label for="transfer-team-filter">Guncel takim</label>
+          <label for="transfer-team-filter">Takım</label>
           <select id="transfer-team-filter" data-transfer-team-filter></select>
+        </div>
+        <div class="filter-group">
+          <label for="transfer-direction-filter">Hareket yönü</label>
+          <select id="transfer-direction-filter" data-transfer-direction-filter disabled>
+            <option value="">Tüm hareketler</option>
+            <option value="in">Gelenler</option>
+            <option value="out">Gidenler</option>
+          </select>
         </div>
         <div class="filter-group">
           <label for="transfer-status-filter">Transfer durumu</label>
           <select id="transfer-status-filter" data-transfer-status-filter></select>
         </div>
         <div class="filter-group">
-          <label for="transfer-sort">Sirala</label>
+          <label for="transfer-sort">Sırala</label>
           <select id="transfer-sort" data-transfer-sort>
             <option value="updated">En yeni</option>
             <option value="market">Bonservis bedeli</option>
-            <option value="rating">Oyuncu adi</option>
-            <option value="team">Takim</option>
+            <option value="rating">Oyuncu adı</option>
+            <option value="team">Takım</option>
           </select>
         </div>
       </section>
-      <section class="transfer-radar-summary" data-transfer-summary aria-label="Transfer radar ozeti"></section>`;
+      <section class="transfer-radar-summary" data-transfer-summary aria-label="Transfer Radarı özeti"></section>`;
 }
 
 function landingDescriptionHtml(page) {

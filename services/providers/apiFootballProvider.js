@@ -3,6 +3,7 @@ const {
   normalizeText,
   withTimeout
 } = require("../../api/_utils");
+const { competitions, matchesCompetition } = require("../competitionCatalog");
 
 const source = "FutbolRadar API-Football Live API";
 const DEFAULT_BASE_URL = "https://v3.football.api-sports.io";
@@ -243,6 +244,12 @@ function normalizeFixture(item) {
   };
 }
 
+function filterSupportedCompetitions(matches) {
+  return (Array.isArray(matches) ? matches : []).filter((match) =>
+    competitions.some((competition) => matchesCompetition(match.league, competition))
+  );
+}
+
 function normalizeStandingRow(row, leagueName) {
   const team = row.team || {};
   return {
@@ -419,7 +426,9 @@ async function getFixtures(query) {
     season: league || fixtureId ? season : undefined,
     date
   });
-  return stampProviderData(responseItems(payload).map(normalizeFixture), "matches", 5 * 60 * 1000);
+  const matches = responseItems(payload).map(normalizeFixture);
+  const supportedMatches = league ? matches : filterSupportedCompetitions(matches);
+  return stampProviderData(supportedMatches, "matches", 5 * 60 * 1000);
 }
 
 async function getMatches(query) {
@@ -611,6 +620,7 @@ module.exports = {
   getPredictions,
   getMatchDetail,
   normalizeFixture,
+  filterSupportedCompetitions,
   normalizeStandingRow,
   normalizeTeam,
   normalizePlayer,

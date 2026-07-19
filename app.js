@@ -3269,12 +3269,12 @@
 
   var TRANSFER_FILTER_COPY = {
     all: {
-      title: "Transfer Radari",
-      label: "Tum transferler",
+      title: "Transfer Radarı",
+      label: "Tüm transferler",
       description: "Kesinleşen transferler tarih, önceki kulüp, yeni kulüp ve açıklanan bonservis bilgisiyle birlikte izlenir."
     },
     "izleme-listesi": {
-      title: "Transfer Izleme Listesi",
+      title: "Transfer İzleme Listesi",
       label: "Takipte kayitlar",
       description: "Son kulüp açıklamaları ve doğrulanan transfer hareketleri tek listede izlenir."
     },
@@ -3284,8 +3284,8 @@
       description: "Son transfer hareketleri tarih, önceki takım ve yeni takım ayrımıyla listelenir."
     },
     "eski-kulup": {
-      title: "Eski Kulup Ayrimi Olan Oyuncular",
-      label: "Eski kulup ayrimi",
+      title: "Eski Kulüp Ayrımı Olan Oyuncular",
+      label: "Eski kulüp ayrımı",
       description: "Önceki kulübü açıklanan transferler, takım değişimini net göstermek için öne çıkarılır."
     },
     "riskli-transfer": {
@@ -3294,8 +3294,8 @@
       description: "Henüz kesinleşmeyen veya ek kontrol gerektiren kayıtlar ayrı takip listesine alınır."
     },
     "yukselen-deger": {
-      title: "Yukselen Deger Transfer Radari",
-      label: "Yukselen deger",
+      title: "Yükselen Değer Transfer Radarı",
+      label: "Yükselen değer",
       description: "Açıklanan bonservis bedeli 10 milyon avro ve üzerindeki transferler öne çıkarılır."
     }
   };
@@ -3308,8 +3308,9 @@
     var filter = normalizeTransferFilter(state && state.filter);
     var copy = TRANSFER_FILTER_COPY[filter] || TRANSFER_FILTER_COPY.all;
     var team = state && state.team ? " | " + state.team : "";
+    var direction = state && state.direction === "in" ? " | Gelenler" : state && state.direction === "out" ? " | Gidenler" : "";
     var status = state && state.status ? " | " + transferRecordStatusLabel(state.status) : "";
-    var title = copy.title + team + status + " | FutbolRadar";
+    var title = copy.title + team + direction + status + " | FutbolRadar";
     var description = copy.description + " Listelenen kayit: " + displayValue(count) + ".";
     var h1 = document.querySelector(".hero h1");
     var lead = document.querySelector(".hero .lead");
@@ -3332,7 +3333,7 @@
     }
 
     if (meta) {
-      meta.textContent = copy.label + " - " + displayValue(count) + " kayit";
+      meta.textContent = copy.label + " - " + displayValue(count) + " kayıt";
     }
 
     if (filterDescription) {
@@ -3396,6 +3397,15 @@
     return status || "Takipte";
   }
 
+  function transferRecordTeamOptions(records) {
+    var teams = [];
+    (Array.isArray(records) ? records : []).forEach(function (record) {
+      if (record.fromTeam) teams.push({ team: record.fromTeam });
+      if (record.toTeam) teams.push({ team: record.toTeam });
+    });
+    return uniqueSorted(teams, "team");
+  }
+
   function transferRecordFee(record) {
     if (record && record.fee) return record.fee;
     if (Number(record && record.feeEur) > 0) return playerMarketValue({ marketValueEur: record.feeEur });
@@ -3453,6 +3463,7 @@
       compactMetricHtml("Sezon", record.season || "Yakında") +
       '</div>' +
       (record.note ? '<p class="transfer-note">' + escapeHtml(record.note) + '</p>' : "") +
+      '<p class="transfer-verification">Son kontrol: ' + escapeHtml(formatProfileDate(record.lastVerifiedAt || record.date) || "Yakında") + '</p>' +
       '<div class="player-status-row"><span class="status-badge ' + (normalizeSearchText(record.status) === "confirmed" ? "verified" : "pending") + '">' + escapeHtml(transferRecordStatusLabel(record.status)) + '</span></div>' +
       '<div class="player-actions">' + sourceAction + '<a class="detail-link ghost" href="' + escapeHtml(siteHref("takimlar.html?team=" + encodeURIComponent(record.toTeam || ""))) + '">Takımı incele</a></div>' +
       '</article>'
@@ -3550,6 +3561,7 @@
   function initTransferRadarLanding(target, config, count) {
     var filterButtons = Array.from(document.querySelectorAll("[data-transfer-filter]"));
     var teamSelect = document.querySelector("[data-transfer-team-filter]");
+    var directionSelect = document.querySelector("[data-transfer-direction-filter]");
     var statusSelect = document.querySelector("[data-transfer-status-filter]");
     var sortSelect = document.querySelector("[data-transfer-sort]");
     var summary = document.querySelector("[data-transfer-summary]");
@@ -3559,6 +3571,7 @@
     var state = {
       filter: normalizeTransferFilter(query.get("filter") || defaultFilter),
       team: query.get("team") || "",
+      direction: query.get("direction") || "",
       status: query.get("status") || "",
       sort: query.get("sort") || defaultSort
     };
@@ -3568,10 +3581,11 @@
     loadData("transfers")
       .then(function (records) {
         var base = Array.isArray(records) ? records : [];
-        populatePlayerSelect(teamSelect, uniqueSorted(base, "toTeam"), "Tüm takımlar");
+        populatePlayerSelect(teamSelect, transferRecordTeamOptions(base), "Tüm takımlar");
         populatePlayerSelect(statusSelect, uniqueSorted(base, "status"), "Tüm transfer durumları", transferRecordStatusLabel);
 
         if (teamSelect) teamSelect.value = state.team;
+        if (directionSelect) directionSelect.value = state.direction;
         if (statusSelect) statusSelect.value = state.status;
         if (sortSelect) sortSelect.value = state.sort;
 
@@ -3585,7 +3599,7 @@
 
         function updateQuery() {
           var params = new URLSearchParams(window.location.search);
-          [["filter", state.filter === defaultFilter ? "" : state.filter], ["team", state.team], ["status", state.status], ["sort", state.sort === defaultSort ? "" : state.sort]].forEach(function (item) {
+          [["filter", state.filter === defaultFilter ? "" : state.filter], ["team", state.team], ["direction", state.direction], ["status", state.status], ["sort", state.sort === defaultSort ? "" : state.sort]].forEach(function (item) {
             if (item[1]) params.set(item[0], item[1]);
             else params.delete(item[0]);
           });
@@ -3595,12 +3609,23 @@
 
         function render() {
           state.team = teamSelect ? teamSelect.value : state.team;
+          state.direction = directionSelect ? directionSelect.value : state.direction;
           state.status = statusSelect ? statusSelect.value : state.status;
           state.sort = sortSelect ? sortSelect.value : state.sort;
 
+          if (!state.team) state.direction = "";
+          if (directionSelect) {
+            directionSelect.disabled = !state.team;
+            directionSelect.value = state.direction;
+          }
+
           var filtered = base.filter(function (record) {
+            var teamMatches = !state.team ||
+              (state.direction === "in" ? record.toTeam === state.team :
+                state.direction === "out" ? record.fromTeam === state.team :
+                  record.toTeam === state.team || record.fromTeam === state.team);
             return transferRecordMatches(record, state.filter) &&
-              (!state.team || record.toTeam === state.team) &&
+              teamMatches &&
               (!state.status || record.status === state.status);
           });
 
@@ -3611,7 +3636,7 @@
           }
 
           if (count) {
-            count.textContent = filtered.length + " transfer kaydi listeleniyor";
+            count.textContent = filtered.length + " transfer kaydı listeleniyor";
           }
 
           updateTransferRadarMeta(state, filtered.length);
@@ -3633,7 +3658,7 @@
           });
         });
 
-        [teamSelect, statusSelect, sortSelect].forEach(function (select) {
+        [teamSelect, directionSelect, statusSelect, sortSelect].forEach(function (select) {
           if (select) {
             select.addEventListener("change", render);
           }

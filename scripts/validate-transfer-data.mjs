@@ -4,6 +4,8 @@ import path from "node:path";
 const root = process.cwd();
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
+const playersPayload = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+const players = Array.isArray(playersPayload) ? playersPayload : playersPayload.data || playersPayload.players || [];
 const errors = [];
 const warnings = [];
 const ids = new Set();
@@ -20,6 +22,15 @@ function validUrl(value) {
   } catch {
     return false;
   }
+}
+
+function normalizeText(value) {
+  return String(value || "")
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 }
 
 for (const [index, transfer] of transfers.entries()) {
@@ -49,6 +60,48 @@ for (const team of teams) {
       return recent.direction === "out" ? transfer.fromTeam === team.name : transfer.toTeam === team.name;
     });
     if (!matching) warnings.push(`${team.name}: ${recent.playerName} son transfer kaydı ana transfer listesinde bulunamadı.`);
+  }
+}
+
+for (const transfer of transfers) {
+  const relatedTeams = [
+    { name: transfer.fromTeam, direction: "out" },
+    { name: transfer.toTeam, direction: "in" }
+  ];
+
+  for (const related of relatedTeams) {
+    const team = teams.find((item) => normalizeText(item.name) === normalizeText(related.name));
+    if (!team) continue;
+
+    const matching = (team.recentTransfers || []).find((recent) =>
+      recent.playerName === transfer.playerName &&
+      recent.date === transfer.date &&
+      recent.direction === related.direction
+    );
+    if (!matching) {
+      errors.push(`${team.name}: ${transfer.playerName} ${related.direction} hareketi recentTransfers listesinde eksik.`);
+    }
+  }
+}
+
+const latestTransfersByPlayer = new Map();
+for (const transfer of transfers.slice().sort((a, b) => String(a.date).localeCompare(String(b.date)))) {
+  if (transfer.playerId) latestTransfersByPlayer.set(transfer.playerId, transfer);
+}
+
+for (const player of players) {
+  const transfer = latestTransfersByPlayer.get(player.id);
+  if (!transfer) continue;
+
+  const currentTeam = player.currentTeam || player.team;
+  if (normalizeText(currentTeam) !== normalizeText(transfer.toTeam)) {
+    errors.push(`${player.name}: currentTeam (${currentTeam}) son transferdeki yeni kulup (${transfer.toTeam}) ile uyusmuyor.`);
+  }
+
+  const history = Array.isArray(player.transferHistory) ? player.transferHistory : [];
+  const matchingHistory = history.find((item) => item.date === transfer.date && normalizeText(item.toTeam) === normalizeText(transfer.toTeam));
+  if (!matchingHistory) {
+    errors.push(`${player.name}: ana transfer kaydi oyuncunun transferHistory listesinde eksik.`);
   }
 }
 

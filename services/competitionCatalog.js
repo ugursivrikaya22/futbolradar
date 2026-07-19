@@ -64,7 +64,7 @@ function providerLeagueValue(value, providerName) {
     return competition.providers.apiFootball || "";
   }
 
-  if (providerName === "football-data") {
+  if (providerName === "football-data" || providerName === "football") {
     return competition.providers.footballData;
   }
 

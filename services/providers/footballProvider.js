@@ -448,7 +448,7 @@ async function getAnalyses(query) {
 }
 
 module.exports = {
-  name: "football",
+  name: "football-data",
   source,
   ProviderError,
   getConfig,
