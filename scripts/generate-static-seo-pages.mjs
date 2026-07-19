@@ -348,7 +348,7 @@ ${nav}
       ${page.landing ? `<section class="grid three">${cardsHtml(page.cards)}</section>${landingControlsHtml(page)}${landingDescriptionHtml(page)}
       <section class="player-filter-note"><span data-landing-count>Oyuncu listesi hazirlaniyor</span></section>
       <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${page.landing}">
-        <article class="data-empty" data-card="empty-state"><strong>Oyuncular yukleniyor</strong><span>Scouting kartlari veri katmanindan okunuyor.</span></article>
+        <article class="data-empty" data-card="empty-state"><strong>Oyuncular yükleniyor</strong><span>Doğrulanmış oyuncu profilleri hazırlanıyor.</span></article>
       </section>` : `<section class="grid three">${cardsHtml(page.cards)}</section>`}
       <section class="source-strip" aria-label="İlgili bağlantılar">
         <div><span>İlgili ekran</span><b><a href="./oyuncu-radari.html">Oyuncu Radarı</a></b></div>

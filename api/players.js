@@ -1,6 +1,7 @@
 const { getProvider, mockProvider } = require("../services/providers");
 const { mergeProviderPlayers } = require("../services/playerService");
 const { enrichPlayerRating } = require("../services/ratingService");
+const { findCompetition, providerLeagueValue } = require("../services/competitionCatalog");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -151,7 +152,16 @@ module.exports = async function handler(req, res) {
 
   const query = getQuery(req);
   const provider = getProvider("players");
-  const localData = await mockProvider.getPlayers(query);
+  const competition = findCompetition(query.league);
+  const localQuery = {
+    ...query,
+    league: competition ? competition.name : query.league
+  };
+  const providerQuery = {
+    ...query,
+    league: providerLeagueValue(query.league, provider.name) || query.league
+  };
+  const localData = await mockProvider.getPlayers(localQuery);
   let data = [];
   let source = provider.source;
 
@@ -160,7 +170,7 @@ module.exports = async function handler(req, res) {
       data = localData;
       source = mockProvider.source;
     } else {
-      const providerData = await withTimeout(provider.getPlayers(query), DEFAULT_TIMEOUT_MS);
+      const providerData = await withTimeout(provider.getPlayers(providerQuery), DEFAULT_TIMEOUT_MS);
       data = Array.isArray(providerData) && providerData.length
         ? mergeProviderPlayers(localData, providerData, provider.name)
         : localData;
@@ -175,7 +185,7 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  data = applyPlayerFilters(data.map((player) => enrichPlayerRating(player)), query);
+  data = applyPlayerFilters(data.map((player) => enrichPlayerRating(player)), localQuery);
 
   return sendSuccess(res, data, source);
 };

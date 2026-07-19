@@ -7,6 +7,7 @@ const footballData = require("../services/providers/footballProvider");
 const apiFootball = require("../services/providers/apiFootballProvider");
 const providers = require("../services/providers");
 const competitionCatalog = require("../services/competitionCatalog");
+const playersHandler = require("../api/players");
 
 function fakeResponse() {
   return {
@@ -140,6 +141,20 @@ function testMissingKeyFallback() {
   }
 }
 
+async function testPlayerLeagueSlugFallback() {
+  const response = fakeResponse();
+  await playersHandler({
+    method: "GET",
+    url: "/api/players?league=super-lig",
+    headers: { "x-forwarded-for": "203.0.113.81" }
+  }, response);
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.payload.ok, true);
+  assert.ok(Array.isArray(response.payload.data));
+  assert.ok(response.payload.data.length > 0);
+  assert.ok(response.payload.data.every((player) => player.league === "Süper Lig"));
+}
+
 testQuerySanitizing();
 testCachePolicies();
 testRateLimit();
@@ -147,5 +162,6 @@ testResponseFreshness();
 testUnknownProviderValues();
 testCompetitionCatalog();
 testMissingKeyFallback();
+await testPlayerLeagueSlugFallback();
 
 console.log("FutbolRadar API resilience tests passed");

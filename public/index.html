@@ -3,11 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>FutbolRadar | Canlı Skor, Momentum ve AI Futbol Analizi</title>
-    <meta
-      name="description"
-      content="FutbolRadar; canlı skor, son 5 maç formu, gol eğilimi, takım momentumu ve AI maç analiziyle futbolu veriye dayalı okumanı sağlar."
-    />
+    <title>FutbolRadar | Canlı Skor, Maç ve Oyuncu İstatistikleri</title>
+    <meta name="description" content="Türkiye ve Avrupa liglerinde canlı skorları, günün maçlarını, puan durumunu, takım formunu, oyuncu istatistiklerini ve transferleri FutbolRadar ile takip et." />
     <link rel="canonical" href="https://www.futbolradar.com/" />
     <meta name="robots" content="index,follow" />
     <meta name="theme-color" content="#060b10" />
@@ -15,108 +12,69 @@
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:url" content="https://www.futbolradar.com/" />
-    <meta property="og:title" content="FutbolRadar | Momentum ve AI Futbol Analizi" />
-    <meta
-      property="og:description"
-      content="Canlı skor, form, gol eğilimi, takım momentumu ve AI maç analiziyle maçları skordan önce oku."
-    />
+    <meta property="og:title" content="FutbolRadar | Canlı Skor ve Futbol İstatistikleri" />
+    <meta property="og:description" content="Canlı skor, maç programı, puan durumu, oyuncu performansı ve transfer hareketlerini tek merkezde incele." />
+    <meta property="og:image" content="https://www.futbolradar.com/assets/og-image.svg" />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FutbolRadar | Canlı Skor ve Futbol İstatistikleri" />
+    <meta name="twitter:description" content="Canlı skor, maç programı, puan durumu, oyuncu performansı ve transfer hareketlerini tek merkezde incele." />
+    <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="stylesheet" href="./page.css" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
         "name": "FutbolRadar",
         "url": "https://www.futbolradar.com/",
-        "description": "Canlı skor, form, momentum ve AI futbol analizi platformu.",
-        "publisher": {
-          "@type": "Organization",
-          "name": "FutbolRadar",
-          "url": "https://www.futbolradar.com/",
-          "logo": "https://www.futbolradar.com/favicon.svg"
-        },
+        "description": "Canlı skor, maç programı, futbol istatistikleri ve oyuncu analiz platformu.",
+        "publisher": {"@type":"Organization","name":"FutbolRadar","url":"https://www.futbolradar.com/","logo":"https://www.futbolradar.com/favicon.svg"},
+        "potentialAction": {"@type":"SearchAction","target":"https://www.futbolradar.com/oyuncu-radari.html?search={search_term_string}","query-input":"required name=search_term_string"},
         "inLanguage": "tr-TR"
       }
     </script>
-    <meta property="og:image" content="https://www.futbolradar.com/assets/og-image.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="FutbolRadar | Momentum ve AI Futbol Analizi" />
-    <meta name="twitter:description" content="Canlı skor, form, gol eğilimi, takım momentumu ve AI maç analiziyle maçları skordan önce oku." />
-    <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
-    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
-    <link rel="manifest" href="./site.webmanifest" />
-    <link rel="stylesheet" href="./page.css" />
     <script data-futbolradar-ga4>
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
-    window.gtag("js", new Date());
-    window.gtag("config", "G-XXXXXXXXXX", { anonymize_ip: true });
-  </script>
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+      window.gtag("js", new Date());
+      window.gtag("config", "G-XXXXXXXXXX", { anonymize_ip: true });
+    </script>
   </head>
   <body class="home-page">
     <div class="shell">
       <header class="topbar">
         <nav class="container nav" aria-label="Ana menü">
-  <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa">
-    <span class="brand-mark">FR</span>
-    <span>FutbolRadar</span>
-  </a>
-  <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu">
-    <span class="nav-toggle-bar"></span>
-    <span class="nav-toggle-bar"></span>
-    <span class="nav-toggle-bar"></span>
-  </button>
-  <div class="nav-menu" id="primary-menu">
-    <div class="nav-links">
-      <a href="./bugunun-maclari.html">Bugünkü Maçlar</a>
-      <a href="./canli-skor.html">Canlı Skor</a>
-      <a href="./puan-durumu.html">Puan Durumu</a>
-      <a href="./takimlar.html">Takımlar</a>
-      <a href="./oyuncu-radari.html">Oyuncu Radarı</a>
-      <a href="./momentum.html">Momentum</a>
-    </div>
-    <a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a>
-  </div>
-</nav>
+          <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
+          <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
+          <div class="nav-menu" id="primary-menu">
+            <div class="nav-links"><a href="./bugunun-maclari.html">Bugünkü Maçlar</a><a href="./canli-skor.html">Canlı Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takimlar.html">Takımlar</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./momentum.html">Momentum</a></div>
+            <a class="cta" href="./istatistik-merkezi.html">İstatistikler</a>
+          </div>
+        </nav>
       </header>
 
       <main>
         <section class="container hero" id="hero-canli-skor">
           <div>
-            <span class="eyebrow">Canlı skor + form + AI analiz</span>
-            <h1>
-              <span>Maçları</span>
-              <span>skordan önce</span>
-              <span>form ve</span>
-              <span>momentumla oku.</span>
-            </h1>
-            <p class="hero-copy">
-              FutbolRadar; canlı skor, son 5 maç formu, gol eğilimi, takım momentumu ve AI maç
-              analiziyle futbolu veriye dayalı okumanı sağlar.
-            </p>
+            <span class="eyebrow">Canlı maçlar · Form · Oyuncu radarı</span>
+            <h1><span>Futbolu</span><span>skordan daha</span><span>derin oku.</span></h1>
+            <p class="hero-copy">Türkiye ve Avrupa liglerindeki maçları, puan durumunu, takım formunu ve oyuncu performansını tek merkezde takip et.</p>
             <div class="hero-actions">
               <a class="button primary" href="./bugunun-maclari.html">Bugünkü Maçları Gör</a>
-              <a class="button secondary" href="./momentum.html">Momentum Tablosu</a>
-              <a class="button secondary" href="./super-lig-fikstur.html">Süper Lig Fikstürü</a>
+              <a class="button secondary" href="./canli-skor.html">Canlı Skoru Aç</a>
+              <a class="button secondary" href="./istatistik-merkezi.html">İstatistik Merkezi</a>
             </div>
-            <div class="hero-metrics" aria-label="FutbolRadar özet metrikleri">
-              <div class="metric-tile">
-                <strong>Canlı</strong>
-                <span>Maç, fikstür ve puan durumu merkezi</span>
-              </div>
-              <div class="metric-tile">
-                <strong>6</strong>
-                <span>Oyuncu radar profili</span>
-              </div>
-              <div class="metric-tile">
-                <strong>20+</strong>
-                <span>Analiz, kıyas ve takım rotası</span>
-              </div>
+            <div class="hero-metrics" aria-label="FutbolRadar kapsamı">
+              <div class="metric-tile"><strong>8</strong><span>Yerel lig ve UEFA turnuvası</span></div>
+              <div class="metric-tile"><strong>360°</strong><span>Maç, takım ve oyuncu görünümü</span></div>
+              <div class="metric-tile"><strong>Tek ekran</strong><span>Skor, form, transfer ve analiz</span></div>
             </div>
           </div>
-
-          <article class="glass-card match-card" id="featured-radar-match" data-api-section="featured-match" data-api-target="featured-match" data-static-fallback="true" aria-label="Gunun Radar Maci">
+          <article class="glass-card match-card" id="featured-radar-match" data-api-section="featured-match" data-api-target="featured-match" data-static-fallback="true" aria-label="Günün radar maçı">
             <!-- prerender:featured-match:start -->
 <div class="data-empty compact" data-card="empty-state">
     <strong>Günün radar maçı bekleniyor</strong>
@@ -131,661 +89,11 @@
           </article>
         </section>
 
-        <section class="container home-radar-ticker" id="radar-akis-seridi" aria-label="FutbolRadar canlı akış kısa yolları">
-          <div class="radar-ticker-label">
-            <span class="live-pulse" aria-hidden="true"></span>
-            <strong>Radar Akışı</strong>
+        <section class="container section section-matches" id="bugunun-maclari-preview" data-api-section="today-matches" aria-labelledby="today-title">
+          <div class="section-head"><div class="section-title"><span class="section-kicker">Maç Merkezi</span><h2 id="today-title">Bugünün maçları</h2><p>Süper Lig, Avrupa'nın beş büyük ligi, Şampiyonlar Ligi ve Avrupa Ligi tek akışta.</p></div><a class="section-link" href="./bugunun-maclari.html">Tüm programı aç</a></div>
+          <div class="competition-chip-row home-competition-row" aria-label="Lig kısa yolları">
+            <a href="./bugunun-maclari.html">Tümü</a><a href="./bugunun-maclari.html?league=super-lig">Süper Lig</a><a href="./bugunun-maclari.html?league=premier-league">Premier League</a><a href="./bugunun-maclari.html?league=la-liga">La Liga</a><a href="./bugunun-maclari.html?league=serie-a">Serie A</a><a href="./bugunun-maclari.html?league=bundesliga">Bundesliga</a><a href="./bugunun-maclari.html?league=ligue-1">Ligue 1</a><a href="./bugunun-maclari.html?league=sampiyonlar-ligi">Şampiyonlar Ligi</a><a href="./bugunun-maclari.html?league=avrupa-ligi">Avrupa Ligi</a>
           </div>
-          <div class="radar-ticker-track">
-            <a href="./bugunun-maclari.html"><span>Maç Merkezi</span><b>Bugünkü kartlar</b></a>
-            <a href="./super-lig-fikstur.html"><span>Fikstür</span><b>1. hafta takibi</b></a>
-            <a href="./oyuncu-radari.html?filter=gol-tehdidi"><span>Gol Tehdidi</span><b>Icardi hattı</b></a>
-            <a href="./oyuncu-radari.html?filter=pres-gucu"><span>Pres Gücü</span><b>Gedson lider</b></a>
-            <a href="./karsilastirma/kerem-akturkoglu-vs-mauro-icardi.html"><span>Derbi Kıyas</span><b>Kerem vs Icardi</b></a>
-            <a href="./transfer-radari.html"><span>Transfer</span><b>Güncel takım kontrolü</b></a>
-            <a href="./transfer-izleme.html"><span>İzleme</span><b>Takipte transferler</b></a>
-            <a href="./analizler.html"><span>Analiz</span><b>Form ve momentum</b></a>
-          </div>
-        </section>
-
-        <section class="container section traffic-hub" id="canli-futbol-merkezi" aria-labelledby="traffic-hub-title">
-          <div class="traffic-hub-shell">
-            <div class="traffic-hub-head">
-              <span class="section-kicker">Canlı Futbol Merkezi</span>
-              <h2 id="traffic-hub-title">Maç, fikstür, puan durumu ve oyuncu radarına tek ekrandan gir.</h2>
-              <p>FutbolRadar ana akışı; bugün maç yoksa bile seni sezon fikstürü, takım formu, oyuncu kıyasları ve radar analizlerine hızlı taşır.</p>
-            </div>
-
-            <div class="traffic-hub-grid" aria-label="FutbolRadar hızlı trafik rotaları">
-              <a class="traffic-card is-live" href="./bugunun-maclari.html">
-                <span class="traffic-card-kicker"><i class="live-pulse" aria-hidden="true"></i> Maç Merkezi</span>
-                <strong>Bugünkü Maçlar</strong>
-                <p>Günlük maç listesi, AI tahmin, gol potansiyeli ve risk kartları.</p>
-                <b>Maçları aç</b>
-              </a>
-              <a class="traffic-card" href="./canli-skor.html">
-                <span class="traffic-card-kicker">Skor Akışı</span>
-                <strong>Canlı Skor</strong>
-                <p>Aktif maç geldiğinde skor, tempo ve maç içi sinyal akışı.</p>
-                <b>Skor ekranı</b>
-              </a>
-              <a class="traffic-card" href="./super-lig-fikstur.html">
-                <span class="traffic-card-kicker">Sezon Takvimi</span>
-                <strong>Süper Lig Fikstürü</strong>
-                <p>Hafta hafta maç programı, takım rotaları ve maç detay geçişleri.</p>
-                <b>Fikstürü gör</b>
-              </a>
-              <a class="traffic-card" href="./puan-durumu.html">
-                <span class="traffic-card-kicker">Lig Tablosu</span>
-                <strong>Puan Durumu</strong>
-                <p>Sıralama, form, momentum ve takım radarlarına hızlı geçiş.</p>
-                <b>Tabloyu aç</b>
-              </a>
-              <a class="traffic-card" href="./oyuncu-karsilastirmalari.html">
-                <span class="traffic-card-kicker">Popüler Kıyas</span>
-                <strong>Oyuncu Karşılaştırmaları</strong>
-                <p>Derbi, gol tehdidi, genç yetenek ve rol bazlı kıyas sayfaları.</p>
-                <b>Kıyasları incele</b>
-              </a>
-              <a class="traffic-card" href="./transfer-izleme.html">
-                <span class="traffic-card-kicker">Transfer İzleme</span>
-                <strong>Takipte Oyuncular</strong>
-                <p>Kulüp durumu takipte olan profiller, son hareketler ve eski kulüp ayrımı.</p>
-                <b>İzleme listesini aç</b>
-              </a>
-            </div>
-
-            <aside class="traffic-routes" aria-label="Popüler FutbolRadar rotaları">
-              <div>
-                <span class="traffic-routes-label">Popüler aramalar</span>
-                <strong>Tek tıkla derin sayfalara geç</strong>
-              </div>
-              <div class="traffic-route-list">
-                <a class="traffic-route-chip" href="./en-iyi-super-lig-oyunculari.html">En iyi oyuncular</a>
-                <a class="traffic-route-chip" href="./en-iyi-forvetler.html">Forvet radar</a>
-                <a class="traffic-route-chip" href="./oyuncu-radari.html?filter=gol-tehdidi">Gol tehdidi</a>
-                <a class="traffic-route-chip" href="./oyuncu-radari.html?filter=yukselen">Yükselen oyuncular</a>
-                <a class="traffic-route-chip" href="./galatasaray-oyuncu-radari.html">Galatasaray radar</a>
-                <a class="traffic-route-chip" href="./fenerbahce-oyuncu-radari.html">Fenerbahçe radar</a>
-                <a class="traffic-route-chip" href="./momentum.html">Momentum sıralaması</a>
-                <a class="traffic-route-chip" href="./analizler.html">Analizler</a>
-              </div>
-            </aside>
-          </div>
-        </section>
-
-        <section class="container section home-transfer-watch" id="transfer-izleme-paneli" aria-labelledby="home-transfer-watch-title">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Son Transferler</span>
-              <h2 id="home-transfer-watch-title">Son kesinleşen transferler tek akışta.</h2>
-              <p>Önceki kulüp, yeni takım, transfer tipi ve açıklanan bonservis bilgisi ana sayfadan okunur.</p>
-            </div>
-            <a class="section-link" href="./transfer-radari.html">Tüm transferleri aç</a>
-          </div>
-
-          <div class="home-transfer-watch-shell" data-api-section="home-transfer-watch" data-api-target="home-transfer-watch" data-static-fallback="true">
-            <!-- prerender:home-transfer-watch:start -->
-<article class="home-transfer-feature" data-card="home-transfer-watch"><div class="home-transfer-player"><div><span>Son kesinleşen transfer</span><h3>Mauro Icardi</h3><p>Sözleşme sonu · 2026-07-15</p></div></div><div class="home-transfer-route"><b>Galatasaray</b><em>→</em><b>Serbest oyuncu</b></div><div class="home-transfer-actions"><a class="detail-link" href="https://www.mackolik.com/futbol/haber/galatasarayda-mauro-icardi-ile-yollar-ayrildi/fddd0203-5c71-4af6-adf2-6321e56427e5" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./transfer-radari.html">Tüm transferler</a></div></article><aside class="home-transfer-side"><div class="home-transfer-list"><a class="home-transfer-row" href="./transfer-radari.html?team=Galatasaray"><span>2026-07-15</span><strong>Lesley Ugochukwu</strong><b>Galatasaray</b></a><a class="home-transfer-row" href="./transfer-radari.html?team=Be%C5%9Fikta%C5%9F"><span>2026-07-15</span><strong>Leandro Trossard</strong><b>Beşiktaş</b></a><a class="home-transfer-row" href="./transfer-radari.html?team=Be%C5%9Fikta%C5%9F"><span>2026-07-09</span><strong>Salih Özcan</strong><b>Beşiktaş</b></a><a class="home-transfer-row" href="./transfer-radari.html?team=Be%C5%9Fikta%C5%9F"><span>2026-07-08</span><strong>Alexander Nübel</strong><b>Beşiktaş</b></a></div></aside>
-<!-- prerender:home-transfer-watch:end -->
-          </div>
-        </section>
-
-        <section class="container section home-daily-route" id="gunun-5-radar-rotasi" aria-labelledby="home-daily-route-title">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Günün 5 Radar Rotası</span>
-              <h2 id="home-daily-route-title">FutbolRadar’da bugünü 5 ekranda oku.</h2>
-              <p>Maç programından oyuncu kıyasına kadar, sitede kaybolmadan derinleşmek için günlük okuma rotası.</p>
-            </div>
-            <a class="section-link" href="./gunun-radar-bulteni.html">Günün bültenini aç</a>
-          </div>
-
-          <div class="home-daily-route-shell">
-            <ol class="home-daily-route-list" aria-label="Günün önerilen FutbolRadar rotası">
-              <li>
-                <a href="./super-lig-fikstur.html">
-                  <span>01</span>
-                  <div><strong>Fikstür panosunu aç</strong><p>Haftanın maç programını ve takım eşleşmelerini hızlıca tara.</p></div>
-                  <b>2 dk</b>
-                </a>
-              </li>
-              <li>
-                <a href="./bugunun-maclari.html">
-                  <span>02</span>
-                  <div><strong>Bugünkü maçları kontrol et</strong><p>Maç varsa tahmin, gol potansiyeli ve risk kartlarına geç.</p></div>
-                  <b>3 dk</b>
-                </a>
-              </li>
-              <li>
-                <a href="./transfer-izleme.html">
-                  <span>03</span>
-                  <div><strong>Transfer sıcaklığını oku</strong><p>Takipteki oyuncuları, son bilinen kulüp ve güncelleme riskiyle izle.</p></div>
-                  <b>3 dk</b>
-                </a>
-              </li>
-              <li>
-                <a href="./oyuncu-karsilastirmalari.html">
-                  <span>04</span>
-                  <div><strong>Oyuncu kıyasına gir</strong><p>Gol tehdidi, pres, yaratıcılık ve rating farklarını yan yana oku.</p></div>
-                  <b>4 dk</b>
-                </a>
-              </li>
-              <li>
-                <a href="./analizler.html">
-                  <span>05</span>
-                  <div><strong>Analizle kapat</strong><p>Form, momentum ve takım eğilimi yazılarıyla radar okumasını tamamla.</p></div>
-                  <b>5 dk</b>
-                </a>
-              </li>
-            </ol>
-
-            <aside class="home-daily-route-note">
-              <span>Akış hedefi</span>
-              <h3>Tek ziyaret, çok sayfa.</h3>
-              <p>Bu rota kullanıcıyı maç, transfer, oyuncu ve analiz sayfaları arasında doğal biçimde gezdirir. Her adım başka bir derin sayfaya kapı açar.</p>
-              <div class="home-daily-route-metrics">
-                <strong><b>5</b><em>ana rota</em></strong>
-                <strong><b>15+</b><em>dakika okuma</em></strong>
-                <strong><b>4</b><em>modül geçişi</em></strong>
-              </div>
-              <a class="detail-link" href="./futbol-radar-rehberi.html">Radar rehberini oku</a>
-            </aside>
-          </div>
-        </section>
-
-        <section class="container section home-search-section" id="futbolradar-hizli-arama" aria-labelledby="home-search-title">
-          <div class="home-search-shell">
-            <div class="home-search-copy">
-              <span class="section-kicker">FutbolRadar Hızlı Arama</span>
-              <h2 id="home-search-title">Oyuncu, takım, kıyas ve analiz sayfasını saniyede bul.</h2>
-              <p>Kerem, Icardi, Galatasaray, gol tehdidi, forvet veya momentum yaz; FutbolRadar içindeki doğru sayfaya tek dokunuşla git.</p>
-            </div>
-            <label class="home-search-box" for="home-radar-search">
-              <span>Radar araması</span>
-              <input id="home-radar-search" data-home-search type="search" placeholder="Oyuncu, takım, filtre veya kıyas ara" autocomplete="off" />
-              <b data-home-search-count>18 rota</b>
-            </label>
-          </div>
-
-          <div class="home-search-results" aria-live="polite">
-            <a class="home-search-card" data-home-search-item data-search-text="mauro icardi serbest oyuncu santrfor gol tehdidi oyuncu profili" href="./oyuncular/mauro-icardi.html"><span>Oyuncu</span><strong>Mauro Icardi</strong><em>Serbest oyuncu · Gol tehdidi</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="kerem akturkoglu kerem aktürkoğlu fenerbahce fenerbahçe sol kanat yaraticilik yaratıcılık" href="./oyuncular/kerem-akturkoglu.html"><span>Oyuncu</span><strong>Kerem Aktürkoğlu</strong><em>Fenerbahçe · Yaratıcılık</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="sebastian szymanski fenerbahce fenerbahçe on numara pres yaraticilik" href="./oyuncular/sebastian-szymanski.html"><span>Oyuncu</span><strong>Sebastian Szymanski</strong><em>Pres · Yaratıcılık</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="ugurcan cakir uğurcan çakır galatasaray kaleci profil" href="./oyuncular/ugurcan-cakir.html"><span>Oyuncu</span><strong>Uğurcan Çakır</strong><em>Galatasaray · Kaleci</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="galatasaray takim takım form oyuncu radar momentum" href="./galatasaray-oyuncu-radari.html"><span>Takım</span><strong>Galatasaray Radar</strong><em>Oyuncu ve form rotaları</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="fenerbahce fenerbahçe takim takım form oyuncu radar momentum" href="./fenerbahce-oyuncu-radari.html"><span>Takım</span><strong>Fenerbahçe Radar</strong><em>Oyuncu ve form rotaları</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="besiktas beşiktaş takim takım form oyuncu radar" href="./besiktas-oyuncu-radari.html"><span>Takım</span><strong>Beşiktaş Radar</strong><em>Oyuncu ve form rotaları</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="trabzonspor takim takım form oyuncu radar" href="./trabzonspor-oyuncu-radari.html"><span>Takım</span><strong>Trabzonspor Radar</strong><em>Oyuncu ve form rotaları</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="gol tehdidi forvet oyuncu filtre xg şut" href="./oyuncu-radari.html?filter=gol-tehdidi"><span>Filtre</span><strong>Gol Tehdidi</strong><em>xG, şut ve ceza sahası etkisi</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="yaraticilik yaratıcılık pas xa kilit pas oyuncu filtre" href="./oyuncu-radari.html?filter=yaraticilik"><span>Filtre</span><strong>Yaratıcılık</strong><em>xA, kilit pas ve oyun kurulum</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="pres gücü pres gucu baski tempo oyuncu filtre" href="./oyuncu-radari.html?filter=pres-gucu"><span>Filtre</span><strong>Pres Gücü</strong><em>Baskı, tempo ve top kazanım</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="yukselen yükselen oyuncular form trend genç yetenek" href="./oyuncu-radari.html?filter=yukselen"><span>Filtre</span><strong>Yükselen Oyuncular</strong><em>Form trendi pozitif isimler</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="mauro icardi kerem akturkoglu karşılaştırma kiyas kıyas" href="./karsilastirma/kerem-akturkoglu-vs-mauro-icardi.html"><span>Kıyas</span><strong>Kerem vs Icardi</strong><em>Kanat üretimi ve bitiricilik</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="gedson fernandes sebastian szymanski karşılaştırma kiyas pres yaraticilik" href="./karsilastirma/gedson-fernandes-vs-sebastian-szymanski.html"><span>Kıyas</span><strong>Gedson vs Szymanski</strong><em>Pres ve yaratıcılık kıyası</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="süper lig super lig fikstur fikstür hafta maç programı" href="./super-lig-fikstur.html"><span>Maç</span><strong>Süper Lig Fikstürü</strong><em>Hafta ve sezon takibi</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="puan durumu siralama sıralama lig tablo momentum" href="./puan-durumu.html"><span>Lig</span><strong>Puan Durumu</strong><em>Tablo, form ve momentum</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="transfer izleme dzeko takipte takım durumu sıcaklık güncelleme riski" href="./transfer-izleme.html"><span>Transfer</span><strong>Transfer İzleme</strong><em>Takipte kayıtlar ve sıcaklık skoru</em></a>
-            <a class="home-search-card" data-home-search-item data-search-text="günün 5 radar rotası günlük akış rehber fikstür transfer oyuncu kıyas analiz" href="./index.html#gunun-5-radar-rotasi"><span>Akış</span><strong>Günün 5 Radar Rotası</strong><em>Fikstürden analize günlük okuma yolu</em></a>
-          </div>
-          <p class="home-search-empty" data-home-search-empty hidden>Bu arama için rota yok. Oyuncu Radarı veya Analizler sayfasından geniş listeye bakabilirsin.</p>
-        </section>
-
-        <section class="container section home-hot-routes" id="sicak-radar-rotalari" aria-labelledby="home-hot-title">
-          <div class="home-hot-shell">
-            <div class="home-hot-head">
-              <span class="section-kicker">Sıcak Radar Rotaları</span>
-              <h2 id="home-hot-title">En çok aranan niyetlere tek dokunuş.</h2>
-              <p>Arama kutusunu otomatik çalıştıran hızlı butonlar ve doğrudan derin sayfaya açılan yüksek trafik rotaları.</p>
-            </div>
-            <div class="home-hot-query-grid" aria-label="Aramayı çalıştır">
-              <button type="button" data-home-hot-query="gol tehdidi"><span>Arat</span><b>Gol tehdidi</b></button>
-              <button type="button" data-home-hot-query="yükselen"><span>Arat</span><b>Yükselen oyuncu</b></button>
-              <button type="button" data-home-hot-query="transfer"><span>Arat</span><b>Transfer</b></button>
-              <button type="button" data-home-hot-query="puan durumu"><span>Arat</span><b>Puan durumu</b></button>
-              <button type="button" data-home-hot-query="kıyas"><span>Arat</span><b>Oyuncu kıyası</b></button>
-              <button type="button" data-home-hot-query="fikstür"><span>Arat</span><b>Fikstür</b></button>
-            </div>
-            <div class="home-hot-direct" aria-label="Doğrudan sıcak sayfalar">
-              <a href="./bugunun-maclari.html"><span>Canlı niyet</span><b>Bugünkü maçlar</b><em>Form, momentum ve maç akışı</em></a>
-              <a href="./oyuncu-karsilastirmalari.html"><span>Profil niyeti</span><b>Oyuncu kıyas merkezi</b><em>Hazır karşılaştırma rotaları</em></a>
-              <a href="./gunun-radar-bulteni.html"><span>Okuma niyeti</span><b>Günün radar bülteni</b><em>Maç, oyuncu ve risk özeti</em></a>
-              <a href="./derbi-radari.html"><span>Derbi niyeti</span><b>Derbi radar</b><em>Büyük maç form farkı</em></a>
-            </div>
-          </div>
-        </section>
-
-        <section class="container section home-directory" id="radar-kategori-haritasi" aria-labelledby="home-directory-title">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Radar Kategori Haritası</span>
-              <h2 id="home-directory-title">FutbolRadar içinde en hızlı gezilecek sayfalar.</h2>
-              <p>Maç, oyuncu, takım ve analiz sayfalarını kategori kategori aç; kullanıcı tek sayfada kaybolmadan derinleşsin.</p>
-            </div>
-          </div>
-
-          <div class="home-directory-grid">
-            <article class="home-directory-panel">
-              <h3>Maç Merkezi</h3>
-              <a href="./bugunun-maclari.html">Bugünkü maçlar</a>
-              <a href="./canli-skor.html">Canlı skor</a>
-              <a href="./super-lig-fikstur.html">Süper Lig fikstürü</a>
-              <a href="./bugunku-mac-tahminleri.html">Bugünkü maç tahminleri</a>
-              <a href="./mac-detay.html">Maç detay merkezi</a>
-            </article>
-            <article class="home-directory-panel">
-              <h3>Oyuncu Radarı</h3>
-              <a href="./oyuncu-radari.html">Tüm oyuncular</a>
-              <a href="./en-iyi-super-lig-oyunculari.html">En iyi Süper Lig oyuncuları</a>
-              <a href="./en-iyi-forvetler.html">En iyi forvetler</a>
-              <a href="./genc-yetenekler.html">Genç yetenekler</a>
-              <a href="./oyuncu-karsilastirmalari.html">Oyuncu karşılaştırmaları</a>
-            </article>
-            <article class="home-directory-panel">
-              <h3>Takım ve Form</h3>
-              <a href="./takimlar.html">Takımlar</a>
-              <a href="./puan-durumu.html">Puan durumu</a>
-              <a href="./momentum.html">Momentum tablosu</a>
-              <a href="./super-lig-form-durumu.html">Süper Lig form durumu</a>
-              <a href="./super-lig-momentum-siralamasi.html">Momentum sıralaması</a>
-            </article>
-            <article class="home-directory-panel">
-              <h3>Analiz ve Transfer</h3>
-              <a href="./analizler.html">FutbolRadar analizleri</a>
-              <a href="./transfer-radari.html">Transfer radar</a>
-              <a href="./transfer-izleme.html">Transfer izleme listesi</a>
-              <a href="./veri-notu.html">Veri notu</a>
-              <a href="./hakkinda.html">FutbolRadar hakkında</a>
-              <a href="./iletisim.html">İletişim</a>
-            </article>
-          </div>
-        </section>
-
-        <section class="container section home-intelligence-board" id="radar-karar-paneli" aria-labelledby="home-intelligence-title">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Radar Karar Paneli</span>
-              <h2 id="home-intelligence-title">Maça, takıma ve oyuncuya hangi açıdan bakacağını seç.</h2>
-              <p>Gol tehdidi, yaratıcılık, pres gücü, maç günü rutini ve büyük takım koridorları tek ekranda toplanır.</p>
-            </div>
-          </div>
-
-          <div class="home-intelligence-grid">
-            <article class="home-leaderboard-panel">
-              <header class="home-panel-head">
-                <span>Oyuncu liderleri</span>
-                <strong>Radar skorları</strong>
-              </header>
-              <div class="home-leaderboard-list">
-                <a class="home-leader-row" href="./oyuncu-radari.html?filter=gol-tehdidi"><span>Gol tehdidi</span><strong>Mauro Icardi</strong><b>94</b></a>
-                <a class="home-leader-row" href="./oyuncu-radari.html?filter=yaraticilik"><span>Yaratıcılık</span><strong>S. Szymanski</strong><b>92</b></a>
-                <a class="home-leader-row" href="./oyuncu-radari.html?filter=pres-gucu"><span>Pres gücü</span><strong>Gedson Fernandes</strong><b>94</b></a>
-                <a class="home-leader-row" href="./oyuncu-radari.html?filter=yukselen"><span>Yükselen</span><strong>Kerem Aktürkoğlu</strong><b>+5</b></a>
-              </div>
-            </article>
-
-            <article class="home-flow-panel">
-              <header class="home-panel-head">
-                <span>Maç günü akışı</span>
-                <strong>5 adımlı okuma rotası</strong>
-              </header>
-              <ol class="home-flow-list">
-                <li><a href="./super-lig-fikstur.html"><span>01</span><strong>Fikstürü aç</strong><em>Hafta programını kontrol et</em></a></li>
-                <li><a href="./momentum.html"><span>02</span><strong>Momentum bak</strong><em>Takım yönünü oku</em></a></li>
-                <li><a href="./oyuncu-radari.html"><span>03</span><strong>Oyuncu seç</strong><em>Rol ve form sinyali yakala</em></a></li>
-                <li><a href="./oyuncu-karsilastirmalari.html"><span>04</span><strong>Kıyas yap</strong><em>Rakip rolleri karşılaştır</em></a></li>
-                <li><a href="./analizler.html"><span>05</span><strong>Analizi oku</strong><em>Form ve risk yorumuna geç</em></a></li>
-              </ol>
-            </article>
-
-            <article class="home-team-corridor">
-              <header class="home-panel-head">
-                <span>Takım koridoru</span>
-                <strong>4 büyük hızlı geçiş</strong>
-              </header>
-              <div class="home-team-grid">
-                <a href="./galatasaray-oyuncu-radari.html"><span>GS</span><strong>Galatasaray</strong><em>Oyuncu radar</em></a>
-                <a href="./fenerbahce-oyuncu-radari.html"><span>FB</span><strong>Fenerbahçe</strong><em>Oyuncu radar</em></a>
-                <a href="./besiktas-oyuncu-radari.html"><span>BJK</span><strong>Beşiktaş</strong><em>Oyuncu radar</em></a>
-                <a href="./trabzonspor-oyuncu-radari.html"><span>TS</span><strong>Trabzonspor</strong><em>Oyuncu radar</em></a>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="container section home-agenda-hub" id="futbol-gundem-koridorlari" aria-labelledby="home-agenda-title">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Futbol Gündem Koridorları</span>
-              <h2 id="home-agenda-title">Derbi, golcü, pres, transfer ve genç yetenek rotaları.</h2>
-              <p>FutbolRadar ana sayfası, haber akışı gibi dağılmadan gündemi veri okuma yollarına böler.</p>
-            </div>
-          </div>
-
-          <div class="home-agenda-grid">
-            <article class="home-agenda-card">
-              <span>Derbi okuması</span>
-              <strong>Galatasaray - Fenerbahçe radar hattı</strong>
-              <p>Form, oyuncu etkisi, momentum ve kanat üretimi üzerinden iki büyük takımın veri rotasına gir.</p>
-              <div class="home-agenda-actions">
-                <a href="./galatasaray-form-durumu.html">GS form</a>
-                <a href="./fenerbahce-form-durumu.html">FB form</a>
-                <a href="./karsilastirma/kerem-akturkoglu-vs-mauro-icardi.html">Kerem vs Icardi</a>
-              </div>
-            </article>
-            <article class="home-agenda-card">
-              <span>Golcü kıyası</span>
-              <strong>Bitiricilik ve ceza sahası tehdidi</strong>
-              <p>Icardi, Dzeko ve Semih profillerini gol tehdidi, form ve rol metrikleriyle karşılaştır.</p>
-              <div class="home-agenda-actions">
-                <a href="./oyuncular/mauro-icardi.html">Icardi</a>
-                <a href="./oyuncular/edin-dzeko.html">Dzeko</a>
-                <a href="./en-iyi-forvetler.html">Forvetler</a>
-              </div>
-            </article>
-            <article class="home-agenda-card">
-              <span>Orta saha savaşı</span>
-              <strong>Pres, tempo ve yaratıcılık dengesi</strong>
-              <p>Gedson ve Szymanski hattında pres gücü, yaratıcılık ve pas etkisini tek rotada oku.</p>
-              <div class="home-agenda-actions">
-                <a href="./oyuncular/gedson-fernandes.html">Gedson</a>
-                <a href="./oyuncular/sebastian-szymanski.html">Szymanski</a>
-                <a href="./karsilastirma/gedson-fernandes-vs-sebastian-szymanski.html">Kıyas</a>
-              </div>
-            </article>
-            <article class="home-agenda-card">
-              <span>Savunma güveni</span>
-              <strong>Kaleci ve stoper etkisi</strong>
-              <p>Uğurcan Çakır ve Abdülkerim Bardakcı profilleriyle savunma bloğunun veri tarafına geç.</p>
-              <div class="home-agenda-actions">
-                <a href="./oyuncular/ugurcan-cakir.html">Uğurcan</a>
-                <a href="./oyuncular/abdulkerim-bardakci.html">Abdülkerim</a>
-                <a href="./en-iyi-defanslar.html">Defanslar</a>
-              </div>
-            </article>
-            <article class="home-agenda-card">
-              <span>Transfer güveni</span>
-              <strong>Güncel takım ve eski kulüp ayrımı</strong>
-              <p>Transfer geçmişi, güncel takım bilgisi ve veri güvenilirliği notlarını tek ekranda takip et.</p>
-              <div class="home-agenda-actions">
-                <a href="./transfer-radari.html">Transfer radar</a>
-                <a href="./veri-notu.html">Veri notu</a>
-                <a href="./oyuncu-radari.html">Oyuncular</a>
-              </div>
-            </article>
-            <article class="home-agenda-card">
-              <span>Genç yetenek</span>
-              <strong>Potansiyel ve yükseliş sinyali</strong>
-              <p>Genç oyuncu radarını form artışı, gol tehdidi ve rol uyumu üzerinden incele.</p>
-              <div class="home-agenda-actions">
-                <a href="./genc-yetenekler.html">Genç yetenekler</a>
-                <a href="./oyuncular/semih-kilicsoy.html">Semih</a>
-                <a href="./oyuncu-radari.html?filter=yukselen">Yükselenler</a>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="container section traffic-deep-links" id="populer-futbol-radari" aria-labelledby="traffic-deep-title">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Popüler Radar Akışı</span>
-              <h2 id="traffic-deep-title">Oyuncu profili, kıyas ve hafta takibini tek bakışta aç.</h2>
-              <p>Arama niyeti yüksek oyuncu sayfaları, hazır karşılaştırmalar ve Süper Lig sezon rotaları ana sayfadan erişilebilir.</p>
-            </div>
-          </div>
-
-          <div class="traffic-stack-grid">
-            <article class="traffic-panel">
-              <header class="traffic-panel-head">
-                <span>Oyuncu Spotlight</span>
-                <strong>Profil ve radar sayfaları</strong>
-              </header>
-              <div class="traffic-player-list">
-                <a class="traffic-player-card" href="./oyuncular/mauro-icardi.html">
-                  <span>Mauro Icardi</span>
-                  <strong>Galatasaray · Santrfor</strong>
-                  <em>AI Rating 87 · Gol tehdidi 94</em>
-                </a>
-                <a class="traffic-player-card" href="./oyuncular/kerem-akturkoglu.html">
-                  <span>Kerem Aktürkoğlu</span>
-                  <strong>Fenerbahçe · Sol kanat</strong>
-                  <em>AI Rating 84 · Yaratıcılık 86</em>
-                </a>
-                <a class="traffic-player-card" href="./oyuncular/sebastian-szymanski.html">
-                  <span>Sebastian Szymanski</span>
-                  <strong>Fenerbahçe · 10 numara</strong>
-                  <em>Yaratıcılık 92 · Pres 88</em>
-                </a>
-                <a class="traffic-player-card" href="./oyuncular/semih-kilicsoy.html">
-                  <span>Semih Kılıçsoy</span>
-                  <strong>Beşiktaş · Forvet</strong>
-                  <em>Genç yetenek · Gol tehdidi 86</em>
-                </a>
-              </div>
-            </article>
-
-            <article class="traffic-panel">
-              <header class="traffic-panel-head">
-                <span>Popüler Kıyaslar</span>
-                <strong>Hazır oyuncu karşılaştırmaları</strong>
-              </header>
-              <div class="traffic-mini-links">
-                <a class="traffic-mini-link" href="./karsilastirma/kerem-akturkoglu-vs-mauro-icardi.html"><span>Kerem Aktürkoğlu</span><b>vs</b><span>Mauro Icardi</span></a>
-                <a class="traffic-mini-link" href="./karsilastirma/edin-dzeko-vs-mauro-icardi.html"><span>Edin Dzeko</span><b>vs</b><span>Mauro Icardi</span></a>
-                <a class="traffic-mini-link" href="./karsilastirma/gedson-fernandes-vs-sebastian-szymanski.html"><span>Gedson Fernandes</span><b>vs</b><span>S. Szymanski</span></a>
-                <a class="traffic-mini-link" href="./karsilastirma/mauro-icardi-vs-ugurcan-cakir.html"><span>Mauro Icardi</span><b>vs</b><span>Uğurcan Çakır</span></a>
-              </div>
-              <a class="traffic-panel-cta" href="./oyuncu-karsilastirmalari.html">Tüm kıyas merkezini aç</a>
-            </article>
-
-            <article class="traffic-panel">
-              <header class="traffic-panel-head">
-                <span>Süper Lig Hafta Takibi</span>
-                <strong>Fikstür, takım ve momentum rotaları</strong>
-              </header>
-              <div class="traffic-fixture-note">
-                <span>1. Hafta</span>
-                <strong>14-17 Ağustos 2026</strong>
-                <p>Takvim bilgileri kesinleştikçe maç kartları burada açılacak. Şimdilik sezon fikstürü, takım radarları ve momentum sıralaması açık.</p>
-              </div>
-              <div class="traffic-team-strip">
-                <a href="./galatasaray-form-durumu.html">Galatasaray form</a>
-                <a href="./fenerbahce-form-durumu.html">Fenerbahçe form</a>
-                <a href="./besiktas-form-durumu.html">Beşiktaş form</a>
-                <a href="./trabzonspor-form-durumu.html">Trabzonspor form</a>
-                <a href="./super-lig-fikstur.html">Fikstür merkezi</a>
-                <a href="./super-lig-momentum-siralamasi.html">Momentum</a>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="container section home-match-command" id="mac-gunu-komuta-merkezi" aria-labelledby="match-command-title">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Maç Günü Komuta Merkezi</span>
-              <h2 id="match-command-title">Günün fikstüründen derbi radarına kadar her rota tek ekranda.</h2>
-              <p>Kullanıcı maça bakıp çıkmasın; tahmin, form, oyuncu kıyası ve takım sayfası arasında hızlıca derinleşsin.</p>
-            </div>
-          </div>
-
-          <div class="home-lockin-grid">
-            <a class="home-lockin-card is-hot" href="./bugunku-mac-tahminleri.html">
-              <span>Bugün</span>
-              <strong>Bugünkü maç tahminleri</strong>
-              <p>AI tahmin, gol potansiyeli, risk ve momentum sinyallerini maç önü panelinde oku.</p>
-              <b>Tahmin merkezine git</b>
-            </a>
-            <a class="home-lockin-card" href="./haftanin-maclari.html">
-              <span>Hafta</span>
-              <strong>Haftanın maçları</strong>
-              <p>Hafta programı, dikkat çeken eşleşmeler ve takip edilmesi gereken takım formları.</p>
-              <b>Haftayı aç</b>
-            </a>
-            <a class="home-lockin-card" href="./derbi-radari.html">
-              <span>Derbi</span>
-              <strong>Derbi radarı</strong>
-              <p>Galatasaray, Fenerbahçe, Beşiktaş ve Trabzonspor rekabetini veri koridorlarında gez.</p>
-              <b>Derbi rotası</b>
-            </a>
-            <a class="home-lockin-card" href="./canli-skor.html">
-              <span>Canlı</span>
-              <strong>Skor ve momentum ekranı</strong>
-              <p>Skor, tempo, canlı sinyal ve maç içi risk akışını tek panelden takip et.</p>
-              <b>Canlı ekrana geç</b>
-            </a>
-          </div>
-        </section>
-
-        <section class="container section home-player-leagues" id="oyuncu-ligleri" aria-labelledby="player-leagues-title">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Oyuncu Ligleri</span>
-              <h2 id="player-leagues-title">Gol, asist, genç yetenek ve savunma listeleriyle çıkışı zorlaştır.</h2>
-              <p>Oyuncu radarını tek liste olmaktan çıkarıp arama niyeti yüksek mini liglere böl.</p>
-            </div>
-          </div>
-
-          <div class="home-rank-grid">
-            <article class="home-rank-card">
-              <span>Gol tehdidi</span>
-              <h3>Gol krallığı radarı</h3>
-              <ol>
-                <li><a href="./oyuncular/mauro-icardi.html"><strong>Mauro Icardi</strong><b>94</b></a></li>
-                <li><a href="./oyuncular/edin-dzeko.html"><strong>Edin Dzeko</strong><b>90</b></a></li>
-                <li><a href="./oyuncular/semih-kilicsoy.html"><strong>Semih Kılıçsoy</strong><b>86</b></a></li>
-              </ol>
-              <a class="home-rank-cta" href="./gol-kralligi.html">Gol listesini aç</a>
-            </article>
-            <article class="home-rank-card">
-              <span>Yaratıcılık</span>
-              <h3>Asist krallığı radarı</h3>
-              <ol>
-                <li><a href="./oyuncular/sebastian-szymanski.html"><strong>S. Szymanski</strong><b>92</b></a></li>
-                <li><a href="./oyuncular/kerem-akturkoglu.html"><strong>Kerem Aktürkoğlu</strong><b>86</b></a></li>
-                <li><a href="./oyuncular/gedson-fernandes.html"><strong>Gedson Fernandes</strong><b>79</b></a></li>
-              </ol>
-              <a class="home-rank-cta" href="./asist-kralligi.html">Asist listesini aç</a>
-            </article>
-            <article class="home-rank-card">
-              <span>Potansiyel</span>
-              <h3>Genç yetenek rotası</h3>
-              <ol>
-                <li><a href="./oyuncular/semih-kilicsoy.html"><strong>Semih Kılıçsoy</strong><b>88</b></a></li>
-                <li><a href="./genc-yetenekler.html"><strong>Yükselen oyuncular</strong><b>+5</b></a></li>
-                <li><a href="./oyuncu-radari.html?filter=yukselen"><strong>Form trendi</strong><b>↑</b></a></li>
-              </ol>
-              <a class="home-rank-cta" href="./genc-yetenekler.html">Gençleri incele</a>
-            </article>
-          </div>
-        </section>
-
-        <section class="container section home-rivalry-wall" id="rekabet-duvari" aria-labelledby="rivalry-wall-title">
-          <div class="rivalry-wall-shell">
-            <div class="rivalry-copy">
-              <span class="section-kicker">Rekabet Duvarı</span>
-              <h2 id="rivalry-wall-title">Büyük takım taraftarını takım sayfasından oyuncu kıyasına sürükle.</h2>
-              <p>Her rota bir sonraki tıklamayı hazırlar: form durumu, oyuncu radarı, momentum ve derbi kıyası.</p>
-            </div>
-            <div class="rivalry-route-grid">
-              <a href="./galatasaray-form-durumu.html"><span>GS</span><strong>Galatasaray form</strong><em>Momentum ve oyuncu etkisi</em></a>
-              <a href="./fenerbahce-form-durumu.html"><span>FB</span><strong>Fenerbahçe form</strong><em>Hücum ve pres sinyali</em></a>
-              <a href="./besiktas-form-durumu.html"><span>BJK</span><strong>Beşiktaş form</strong><em>Genç yetenek ve risk</em></a>
-              <a href="./trabzonspor-form-durumu.html"><span>TS</span><strong>Trabzonspor form</strong><em>Kaleci ve savunma gücü</em></a>
-              <a href="./karsilastirma/kerem-akturkoglu-vs-mauro-icardi.html"><span>VS</span><strong>Kerem vs Icardi</strong><em>Derbi oyuncu kıyası</em></a>
-              <a href="./karsilastirma/gedson-fernandes-vs-sebastian-szymanski.html"><span>VS</span><strong>Gedson vs Szymanski</strong><em>Pres ve yaratıcılık</em></a>
-            </div>
-          </div>
-        </section>
-
-        <section class="container section home-explore-lab" id="radar-kesif-laboratuvari" aria-labelledby="explore-lab-title">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Radar Keşif Laboratuvarı</span>
-              <h2 id="explore-lab-title">Maçtan oyuncuya, takımdan rehbere uzanan trafik halkası.</h2>
-              <p>FutbolRadar artık sadece tek ekran değil; kullanıcıyı maç, oyuncu, takım ve analiz rehberi arasında gezdiren yoğun bir keşif ağı.</p>
-            </div>
-          </div>
-
-          <div class="explore-lab-grid">
-            <a class="explore-lab-card" href="./istatistik-merkezi.html">
-              <span>İstatistik Merkezi</span>
-              <strong>Oyuncu, takım ve maç verileri tek ekranda</strong>
-              <p>Gol, asist, xG, rating, form, momentum ve maç akışını lider tablolarıyla karşılaştır.</p>
-              <b>İstatistikleri aç</b>
-            </a>
-            <a class="explore-lab-card" href="./mac-merkezi.html">
-              <span>Maç Merkezi</span>
-              <strong>Bugün, hafta ve derbi rotalarını tek yerde topla</strong>
-              <p>Fikstür, tahmin, canlı skor ve momentum bağlantılarıyla maç günü için ana kontrol ekranı.</p>
-              <b>Maç merkezini aç</b>
-            </a>
-            <a class="explore-lab-card" href="./oyuncu-liderleri.html">
-              <span>Oyuncu Liderleri</span>
-              <strong>Gol, asist, pres ve potansiyel listeleri</strong>
-              <p>Oyuncu arayan kullanıcıyı tek profilden karşılaştırma ve radar listelerine taşıyan sayfa.</p>
-              <b>Liderleri incele</b>
-            </a>
-            <a class="explore-lab-card" href="./takim-trendleri.html">
-              <span>Takım Trendleri</span>
-              <strong>Form, hücum, savunma ve momentum koridoru</strong>
-              <p>Takım taraftarını form sayfasından momentum tablosuna, oradan oyuncu radarına bağlar.</p>
-              <b>Takım trendlerini gör</b>
-            </a>
-            <a class="explore-lab-card" href="./futbol-radar-rehberi.html">
-              <span>Radar Rehberi</span>
-              <strong>Form, momentum ve gol eğilimi nasıl okunur?</strong>
-              <p>Arama trafiği için kalıcı analiz rehberi; yeni kullanıcıya FutbolRadar mantığını anlatır.</p>
-              <b>Rehberi oku</b>
-            </a>
-          </div>
-        </section>
-
-        <section class="container section home-daily-brief" id="gunun-radar-bulteni" aria-labelledby="daily-brief-title">
-          <div class="daily-brief-shell">
-            <div class="daily-brief-lead">
-              <span class="section-kicker">Günün Radar Bülteni</span>
-              <h2 id="daily-brief-title">Bugün hangi maça, takıma ve oyuncuya bakmalı?</h2>
-              <p>Tek ekranda maç önceliği, yükselen oyuncu, takım trendi ve takip rotası. Kullanıcı skorla yetinmesin, bültene girip analiz akışında kalsın.</p>
-              <a class="daily-brief-link" href="./gunun-radar-bulteni.html">Bültenin tamamını aç</a>
-            </div>
-            <div class="daily-brief-grid">
-              <a class="daily-brief-card" href="./mac-merkezi.html"><span>Maç Önceliği</span><strong>Fikstür + tahmin + momentum akışı</strong><em>Günün maçlarını analiz rotasına bağla.</em></a>
-              <a class="daily-brief-card" href="./oyuncu-liderleri.html"><span>Oyuncu Sinyali</span><strong>Gol tehdidi ve yaratıcılık liderleri</strong><em>Profil, filtre ve kıyas sayfalarına geç.</em></a>
-              <a class="daily-brief-card" href="./takim-trendleri.html"><span>Takım Trendi</span><strong>Formu yükselen ve düşen takımlar</strong><em>Momentum, puan durumu ve takım radarına bağlan.</em></a>
-              <a class="daily-brief-card" href="./futbol-radar-rehberi.html"><span>Okuma Rehberi</span><strong>Form ve momentum nasıl yorumlanır?</strong><em>Yeni gelen kullanıcıyı ürün diline alıştır.</em></a>
-            </div>
-          </div>
-        </section>
-
-        <section class="container section section-matches" id="bugunun-maclari-preview" data-api-section="today-matches">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Bugünün Maçları</span>
-              <h2>Canlı akış, form puanı ve AI tahmin aynı kartta.</h2>
-              <p>Maç öncesi güç dengesi, gol eğilimi ve momentum tek bakışta okunur.</p>
-            </div>
-            <span class="data-stamp">Son kontrol: 13 Temmuz 2026 08:00 TSİ</span>
-          </div>
-
-          <div class="competition-switcher home-competition-switcher" aria-label="Kapsanan ligler">
-            <div class="competition-switcher-copy">
-              <span>8 turnuva</span>
-              <strong>Türkiye ve Avrupa maç merkezi</strong>
-            </div>
-            <div class="competition-chip-row">
-              <a href="./bugunun-maclari.html?league=super-lig">Süper Lig</a>
-              <a href="./bugunun-maclari.html?league=premier-league">Premier League</a>
-              <a href="./bugunun-maclari.html?league=la-liga">La Liga</a>
-              <a href="./bugunun-maclari.html?league=serie-a">Serie A</a>
-              <a href="./bugunun-maclari.html?league=bundesliga">Bundesliga</a>
-              <a href="./bugunun-maclari.html?league=ligue-1">Ligue 1</a>
-              <a href="./bugunun-maclari.html?league=sampiyonlar-ligi">Şampiyonlar Ligi</a>
-              <a href="./bugunun-maclari.html?league=avrupa-ligi">Avrupa Ligi</a>
-            </div>
-          </div>
-
           <div class="matches-grid" id="today-matches-grid" data-api-target="today-matches" data-static-fallback="true">
             <!-- prerender:today-matches:start -->
 <article class="data-empty" data-card="empty-state">
@@ -801,89 +109,62 @@
           </div>
         </section>
 
-        <section class="container section section-radar-signals" id="radar-sinyalleri" data-api-section="radar-signals">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Radar Sinyalleri</span>
-              <h2>Form, gol ve risk hareketlerini yakala.</h2>
-            </div>
-          </div>
-          <div class="signals-grid" id="radar-signals-grid" data-api-target="radar-signals" data-static-fallback="true">
-            <!-- prerender:radar-signals:start -->
+        <section class="container section radar-layout" id="radar-sinyalleri" aria-labelledby="radar-title">
+          <div>
+            <div class="section-head"><div class="section-title"><span class="section-kicker">Radar Sinyalleri</span><h2 id="radar-title">Form ve momentum görünümü</h2><p>Takımların son dönem hareketini ve öne çıkan maç sinyallerini birlikte oku.</p></div><a class="section-link" href="./momentum.html">Momentum tablosu</a></div>
+            <div class="signals-grid" id="radar-signals-grid" data-api-section="radar-signals" data-api-target="radar-signals" data-static-fallback="true">
+              <!-- prerender:radar-signals:start -->
 <article class="signal-card" data-card="radar-signal" data-signal="fixture-opening-week"><span class="signal-label">Fikstür onayı</span><h3>Süper Lig&#039;in ilk iki haftasının eşleşmeleri açıklandı.</h3><strong class="signal-value">18 maç</strong><p>Eşleşmeler maç öncesi radar sayfalarına işlendi; kesin saat atamaları ayrıca takip edilecek.</p></article><article class="signal-card" data-card="radar-signal" data-signal="season-countdown"><span class="signal-label">Sezon başlangıcı</span><h3>2026-2027 Süper Lig sezonu 14 Ağustos&#039;ta başlıyor.</h3><strong class="signal-value">14 Ağustos</strong><p>Sezon açılışına kadar fikstür, kadro ve oyuncu profil güncellemeleri öne çıkarılır.</p></article><article class="signal-card" data-card="radar-signal" data-signal="squad-confirmation"><span class="signal-label">Kadro etkisi</span><h3>İlk hafta eksik listeleri için kulüp doğrulamaları bekleniyor.</h3><strong class="signal-value">Takipte</strong><p>Resmî sakatlık, ceza ve ilk 11 bilgisi gelmeden eksik oyuncu puanı üretilmez.</p></article>
 <!-- prerender:radar-signals:end -->
-          </div>
-        </section>
-
-        <section class="container section section-team-radar" id="takim-radar" data-api-section="team-radar">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Süper Lig Takım Radar</span>
-              <h2>Takım formunu hücum, savunma ve momentumla karşılaştır.</h2>
             </div>
-            <span class="data-stamp" id="puan-durumu-preview">Puan durumu görünümü · İlk 5</span>
           </div>
-
-          <div class="radar-layout">
-            <div class="teams-grid" id="team-radar-grid" data-api-target="team-radar" data-static-fallback="true">
-              <!-- prerender:team-radar:start -->
-<article class="team-card" data-card="team-radar" data-team="galatasaray"><header><div><h3>Galatasaray</h3><span>Sezon öncesi referans</span></div><strong class="momentum-number">82</strong></header><div class="form-dots"><span class="form-dot win">G</span><span class="form-dot win">G</span><span class="form-dot draw">B</span><span class="form-dot win">G</span><span class="form-dot win">G</span></div><div class="metric-grid compact"><span>Hücum <b>88</b></span><span>Savunma <b>76</b></span></div><a class="detail-link" href="./takim-detay.html?team=galatasaray">Takım radarını aç</a></article><article class="team-card" data-card="team-radar" data-team="fenerbahce"><header><div><h3>Fenerbahçe</h3><span>Sezon öncesi referans</span></div><strong class="momentum-number">76</strong></header><div class="form-dots"><span class="form-dot win">G</span><span class="form-dot draw">B</span><span class="form-dot win">G</span><span class="form-dot win">G</span><span class="form-dot loss">M</span></div><div class="metric-grid compact"><span>Hücum <b>84</b></span><span>Savunma <b>71</b></span></div><a class="detail-link" href="./takim-detay.html?team=fenerbahce">Takım radarını aç</a></article><article class="team-card" data-card="team-radar" data-team="samsunspor"><header><div><h3>Samsunspor</h3><span>Sezon öncesi referans</span></div><strong class="momentum-number">71</strong></header><div class="form-dots"><span class="form-dot win">G</span><span class="form-dot win">G</span><span class="form-dot draw">B</span><span class="form-dot win">G</span><span class="form-dot loss">M</span></div><div class="metric-grid compact"><span>Hücum <b>74</b></span><span>Savunma <b>67</b></span></div><a class="detail-link" href="./takim-detay.html?team=samsunspor">Takım radarını aç</a></article><article class="team-card" data-card="team-radar" data-team="besiktas"><header><div><h3>Beşiktaş</h3><span>Sezon öncesi referans</span></div><strong class="momentum-number">69</strong></header><div class="form-dots"><span class="form-dot draw">B</span><span class="form-dot win">G</span><span class="form-dot loss">M</span><span class="form-dot win">G</span><span class="form-dot draw">B</span></div><div class="metric-grid compact"><span>Hücum <b>72</b></span><span>Savunma <b>68</b></span></div><a class="detail-link" href="./takim-detay.html?team=besiktas">Takım radarını aç</a></article>
-<!-- prerender:team-radar:end -->
-            </div>
-
-            <aside class="standings" aria-label="Puan durumu">
-              <header>
-                <h3>Puan Durumu</h3>
-                <p>Form ve momentum ağırlıklı görünüm</p>
-              </header>
-              <div id="home-standings-list" data-api-target="home-standings" data-static-fallback="true">
-                <!-- prerender:home-standings:start -->
+          <aside class="standings glass-card" aria-labelledby="standings-title">
+            <div class="card-head"><div><span class="card-kicker">Lig Tablosu</span><h2 id="standings-title">Puan durumu</h2></div><a class="detail-link" href="./puan-durumu.html">Tam tablo</a></div>
+            <div id="home-standings-list" data-api-target="home-standings" data-static-fallback="true">
+              <!-- prerender:home-standings:start -->
 <div class="standing-row" data-card="standing-row" data-team="galatasaray"><span>1</span><b>Galatasaray</b><span>61 P</span><span>82 M</span></div><div class="standing-row" data-card="standing-row" data-team="fenerbahce"><span>2</span><b>Fenerbahçe</b><span>59 P</span><span>76 M</span></div><div class="standing-row" data-card="standing-row" data-team="besiktas"><span>3</span><b>Beşiktaş</b><span>52 P</span><span>69 M</span></div><div class="standing-row" data-card="standing-row" data-team="trabzonspor"><span>4</span><b>Trabzonspor</b><span>49 P</span><span>64 M</span></div><div class="standing-row" data-card="standing-row" data-team="samsunspor"><span>5</span><b>Samsunspor</b><span>46 P</span><span>71 M</span></div>
 <!-- prerender:home-standings:end -->
-              </div>
-            </aside>
+            </div>
+          </aside>
+        </section>
+
+        <section class="container section home-statistics-entry" aria-labelledby="stats-home-title">
+          <div class="section-head"><div class="section-title"><span class="section-kicker">İstatistik Merkezi</span><h2 id="stats-home-title">Rakamları karşılaştır, liderleri bul.</h2><p>Gol, asist, rating, pas, pres, takım gücü ve maç akışı istatistiklerini filtreleyerek incele.</p></div><a class="button primary" href="./istatistik-merkezi.html">Merkezi aç</a></div>
+          <div class="stats-route-grid">
+            <a href="./gol-kralligi.html"><span>Gol</span><strong>Gol krallığı</strong></a>
+            <a href="./asist-kralligi.html"><span>Üretim</span><strong>Asist liderleri</strong></a>
+            <a href="./oyuncu-liderleri.html"><span>Performans</span><strong>Oyuncu liderleri</strong></a>
+            <a href="./takimlar.html"><span>Takım</span><strong>Takım istatistikleri</strong></a>
+            <a href="./mac-merkezi.html"><span>Maç</span><strong>Maç merkezi</strong></a>
+            <a href="./oyuncu-karsilastirmalari.html"><span>Kıyas</span><strong>Oyuncu karşılaştır</strong></a>
           </div>
         </section>
 
-        <section class="container section section-player-radar" id="oyuncu-radar-preview" data-api-section="player-radar">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Oyuncu Performans Radarları</span>
-              <h2>Oyuncu etkisini rating, xG, xA ve rol metrikleriyle oku.</h2>
-            </div>
-          </div>
-
+        <section class="container section section-player-radar" id="oyuncu-radar-preview" data-api-section="player-radar" aria-labelledby="players-title">
+          <div class="section-head"><div class="section-title"><span class="section-kicker">Oyuncu Radarı</span><h2 id="players-title">Formda ve yükselişte olan oyuncular</h2><p>Rating, gol tehdidi, yaratıcılık ve pres gücüyle öne çıkan profilleri keşfet.</p></div><a class="section-link" href="./oyuncu-radari.html">Tüm oyuncuları aç</a></div>
           <div class="players-grid" id="player-radar-grid" data-api-target="player-radar" data-static-fallback="true">
             <!-- prerender:player-radar:start -->
 <article class="card player-detail-card" data-card="player" data-player="mauro-icardi"><div class="card-head"><div><span class="card-kicker">Serbest oyuncu · Santrfor</span><h2>Mauro Icardi</h2></div><strong class="big-value player-rating-badge">84</strong></div><div class="metric-grid compact"><span>Yaş <b>33</b></span><span>Dakika <b>536</b></span><span>Piyasa <b>3.2M EUR</b></span></div><p>Ceza sahası içi bitiricilik ve doğru koşu zamanlamasıyla yüksek gol tehdidi üretir.</p><a class="detail-link" href="./oyuncular/mauro-icardi.html">Oyuncu profilini aç</a></article><article class="card player-detail-card" data-card="player" data-player="kerem-akturkoglu"><div class="card-head"><div><span class="card-kicker">Fenerbahçe · Sol kanat</span><h2>Kerem Aktürkoğlu</h2></div><strong class="big-value player-rating-badge">82</strong></div><div class="metric-grid compact"><span>Yaş <b>27</b></span><span>Dakika <b>512</b></span><span>Piyasa <b>22.5M EUR</b></span></div><p>Kanat üretimi, dikine taşıma ve geçiş hücumlarında hız etkisiyle öne çıkar.</p><a class="detail-link" href="./oyuncular/kerem-akturkoglu.html">Oyuncu profilini aç</a></article><article class="card player-detail-card" data-card="player" data-player="edin-dzeko"><div class="card-head"><div><span class="card-kicker">Schalke 04 · Santrfor</span><h2>Edin Dzeko</h2></div><strong class="big-value player-rating-badge">81</strong></div><div class="metric-grid compact"><span>Yaş <b>40</b></span><span>Dakika <b>598</b></span><span>Piyasa <b>2.5M EUR</b></span></div><p>Sırtı dönük oyun, bağlantı pasları ve final aksiyonu dengesiyle hücum merkezi olur.</p><a class="detail-link" href="./oyuncular/edin-dzeko.html">Oyuncu profilini aç</a></article>
 <!-- prerender:player-radar:end -->
           </div>
-        </section>
-
-        <section class="container section section-player-signals" id="bugunun-oyuncu-radar-sinyalleri" data-api-section="player-signals">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Bugünün Radar Sinyalleri</span>
-              <h2>Oyuncu tarafında öne çıkan form, tehdit ve pres hareketleri.</h2>
-              <p>FutbolRadar, oyuncu verilerini AI rating, gol tehdidi, yaratıcılık, pres gücü ve form trendine göre öne çıkarır.</p>
-            </div>
-          </div>
-
-          <div class="player-signals-grid" data-api-target="player-signals" data-static-fallback="true">
+          <div class="player-signals-grid" data-api-section="player-signals" data-api-target="player-signals" data-static-fallback="true">
             <!-- prerender:player-signals:start -->
 <article class="card player-signal-card"><span class="card-kicker">AI rating</span><h3>Mauro Icardi</h3><strong>84</strong><p>Serbest oyuncu · Santrfor</p><a href="./oyuncular/mauro-icardi.html">Profili aç</a></article><article class="card player-signal-card"><span class="card-kicker">Gol tehdidi</span><h3>Mauro Icardi</h3><strong>94</strong><p>Serbest oyuncu · Santrfor</p><a href="./oyuncular/mauro-icardi.html">Profili aç</a></article><article class="card player-signal-card"><span class="card-kicker">Yaratıcılık</span><h3>Sebastian Szymanski</h3><strong>92</strong><p>Fenerbahçe · 10 numara</p><a href="./oyuncular/sebastian-szymanski.html">Profili aç</a></article>
 <!-- prerender:player-signals:end -->
           </div>
         </section>
 
-        <section class="container section" id="analizler" data-api-section="analysis">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">FutbolRadar Analizleri</span>
-              <h2>FutbolRadar Analizleri</h2>
-            </div>
+        <section class="container section home-transfer-watch" id="transfer-izleme-paneli" aria-labelledby="transfer-title">
+          <div class="section-head"><div class="section-title"><span class="section-kicker">Transfer Radarı</span><h2 id="transfer-title">Kesinleşen takım hareketleri</h2><p>Güncel takım, eski kulüp ve transfer tarihi doğrulanan oyuncuları takip et.</p></div><a class="section-link" href="./transfer-radari.html">Tüm transferler</a></div>
+          <div class="home-transfer-watch-shell" data-api-section="home-transfer-watch" data-api-target="home-transfer-watch" data-static-fallback="true">
+            <!-- prerender:home-transfer-watch:start -->
+<article class="home-transfer-feature" data-card="home-transfer-watch"><div class="home-transfer-player"><div><span>Son kesinleşen transfer</span><h3>Mauro Icardi</h3><p>Sözleşme sonu · 2026-07-15</p></div></div><div class="home-transfer-route"><b>Galatasaray</b><em>→</em><b>Serbest oyuncu</b></div><div class="home-transfer-actions"><a class="detail-link" href="https://www.mackolik.com/futbol/haber/galatasarayda-mauro-icardi-ile-yollar-ayrildi/fddd0203-5c71-4af6-adf2-6321e56427e5" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./transfer-radari.html">Tüm transferler</a></div></article><aside class="home-transfer-side"><div class="home-transfer-list"><a class="home-transfer-row" href="./transfer-radari.html?team=Galatasaray"><span>2026-07-15</span><strong>Lesley Ugochukwu</strong><b>Galatasaray</b></a><a class="home-transfer-row" href="./transfer-radari.html?team=Be%C5%9Fikta%C5%9F"><span>2026-07-15</span><strong>Leandro Trossard</strong><b>Beşiktaş</b></a><a class="home-transfer-row" href="./transfer-radari.html?team=Be%C5%9Fikta%C5%9F"><span>2026-07-09</span><strong>Salih Özcan</strong><b>Beşiktaş</b></a><a class="home-transfer-row" href="./transfer-radari.html?team=Be%C5%9Fikta%C5%9F"><span>2026-07-08</span><strong>Alexander Nübel</strong><b>Beşiktaş</b></a></div></aside>
+<!-- prerender:home-transfer-watch:end -->
           </div>
+        </section>
 
+        <section class="container section section-analyses" aria-labelledby="analysis-title">
+          <div class="section-head"><div class="section-title"><span class="section-kicker">FutbolRadar Analizleri</span><h2 id="analysis-title">Formu ve maçı doğru bağlamda oku.</h2><p>Kısa rehberler, takım trendleri ve oyuncu performansını anlamlandıran analizler.</p></div><a class="section-link" href="./analizler.html">Tüm analizler</a></div>
           <div class="articles-grid" id="analysis-preview-grid" data-api-target="analysis-preview" data-static-fallback="true">
             <!-- prerender:analysis-preview:start -->
 <article class="article-card" data-card="analysis" id="super-lig-form-durumu-preview"><div><h3>Süper Lig form durumu sezon başında nasıl okunur?</h3><p>Son 5 maç verisi oluşmadan form puanı kesin görünmez; fikstür, kadro sürekliliği ve önceki sezon trendi ayrı değerlendirilir.</p></div><a href="./analizler.html#super-lig-form-durumu">Analizi aç</a></article><article class="article-card" data-card="analysis" id="mac-oncesi-radar-puani-preview"><div><h3>Maç öncesi radar puanı hangi bileşenlerden oluşur?</h3><p>Form, hücum, savunma, saha etkisi, kadro eksikleri ve kilit oyuncu formu yalnızca mevcut kayıtlar üzerinden ağırlıklandırılır.</p></div><a href="./futbol-radar-rehberi.html">Analizi aç</a></article><article class="article-card" data-card="analysis" id="fikstur-ve-kadro-etkisi-preview"><div><h3>Fikstür ve kadro etkisi ne anlatır?</h3><p>Tarih, saat veya eksik oyuncu bilgisi doğrulanmamışsa model bu alanı puana katmaz; güven seviyesi buna göre düşer.</p></div><a href="./super-lig-fikstur.html">Analizi aç</a></article>
@@ -891,36 +172,16 @@
           </div>
         </section>
 
-        <section class="container section" id="super-lig-veri-rehberi">
-          <div class="section-head">
-            <div class="section-title">
-              <span class="section-kicker">Super Lig veri rehberi</span>
-              <h2>Form, momentum ve oyuncu radar sayfalarina hizli gecis.</h2>
-            </div>
-          </div>
-          <div class="articles-grid">
-            <article class="article-card"><div><h3>Super Lig Form Durumu</h3><p>Takimlari son 5 mac formu ve momentumla karsilastir.</p></div><a href="./super-lig-form-durumu.html">Formu incele</a></article>
-            <article class="article-card"><div><h3>Super Lig Momentum Siralamasi</h3><p>Momentum, hucum ve savunma sinyallerini tek tabloda oku.</p></div><a href="./super-lig-momentum-siralamasi.html">Momentum sayfasi</a></article>
-            <article class="article-card"><div><h3>Bugunku Mac Tahminleri</h3><p>Mac onu AI tahmin, gol potansiyeli ve risk kartlarina git.</p></div><a href="./bugunku-mac-tahminleri.html">Tahminleri ac</a></article>
-            <article class="article-card"><div><h3>Süper Lig Oyuncu Radarı</h3><p>Oyuncuları AI rating, mevki ve form sinyaline göre sırala.</p></div><a href="./super-lig-oyuncu-radari.html">Oyuncuları gör</a></article>
-          </div>
-        </section>
-
-        <section class="container source-strip" aria-label="Guncelleme bilgisi">
-          <div>
-            <span>Son güncelleme</span>
-            <b>07 Temmuz 2026 · 22:55 TSİ</b>
-          </div>
-          <div>
-            <span>Model kapsamı</span>
-            <b>Form, gol eğilimi, hücum, savunma, tempo ve risk sinyalleri</b>
-          </div>
+        <section class="container source-strip" aria-label="Güncelleme bilgisi">
+          <div><span>Son güncelleme</span><b>İçerikler periyodik olarak yenilenir</b></div>
+          <div><span>Turnuva kapsamı</span><b>Süper Lig, Avrupa'nın beş büyük ligi ve UEFA kupaları</b></div>
+          <div><span>Analiz kapsamı</span><b>Skor, form, oyuncu, takım ve transfer</b></div>
         </section>
       </main>
 
-      <footer class="footer"><div class="container footer-links">FutbolRadar · Canlı skor, momentum ve AI futbol analizi · <a href="./hakkinda.html">Hakkında</a> · <a href="./veri-notu.html">Veri Notu</a> · <a href="./iletisim.html">İletişim</a> · <a href="./gizlilik.html">Gizlilik</a> · <a href="./kullanim-sartlari.html">Kullanım Şartları</a></div></footer>
+      <footer class="footer"><div class="container footer-links">FutbolRadar · Canlı skor ve futbol istatistikleri · <a href="./hakkinda.html">Hakkında</a> · <a href="./veri-notu.html">Veri Notu</a> · <a href="./iletisim.html">İletişim</a> · <a href="./gizlilik.html">Gizlilik</a> · <a href="./kullanim-sartlari.html">Kullanım Şartları</a></div></footer>
     </div>
-      <script src="./site.js" defer></script>
-      <script src="./app.js" defer></script>
+    <script src="./site.js" defer></script>
+    <script src="./app.js" defer></script>
   </body>
 </html>

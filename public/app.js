@@ -79,7 +79,7 @@
   function getApiUrl(config) {
     var url = API_ROOT + config.api;
 
-    if (config.api === "matches" || config.api === "match-detail" || config.api === "squad" || config.api === "teams") {
+    if (config.api === "matches" || config.api === "match-detail" || config.api === "squad" || config.api === "teams" || config.api === "players") {
       var params = new URLSearchParams(window.location.search);
       var apiParams = new URLSearchParams();
 
@@ -91,7 +91,7 @@
         apiParams.set("league", params.get("league"));
       }
 
-      ["id", "fixtureId", "teamId", "team", "search", "season"].forEach(function (key) {
+      ["id", "fixtureId", "teamId", "team", "search", "season", "page", "position", "minRating"].forEach(function (key) {
         if (params.get(key)) {
           apiParams.set(key, params.get(key));
         }
@@ -376,7 +376,7 @@
           target.dataset.state = "fallback";
           return;
         }
-        setEmpty(target, emptyTitle || "Veri yüklenemedi", "Veri katmanı su anda okunamıyor. Sayfa diger bölümleriyle açik kalir.");
+        setEmpty(target, emptyTitle || "Veri yüklenemedi", "Bu bölüm geçici olarak kullanılamıyor. Sayfanın diğer alanlarını incelemeye devam edebilirsin.");
       });
   }
 
@@ -4537,7 +4537,7 @@
         setContent(target, teams.map(function (team) { return renderTeamPageCard(team, payload.squad); }).join(""));
       })
       .catch(function () {
-        setEmpty(target, "Takim verisi yuklenemedi", "Takim ve oyuncu veri katmani gecici olarak okunamiyor.");
+        setEmpty(target, "Takım verisi yüklenemedi", "Takım ve oyuncu bilgileri geçici olarak kullanılamıyor.");
       });
   }
 
@@ -4953,29 +4953,125 @@
       '</section>';
   }
 
+  function uniqueStatisticOptions(values) {
+    return Array.from(new Set(values.filter(Boolean))).sort(function (left, right) {
+      return String(left).localeCompare(String(right), "tr");
+    });
+  }
+
+  function fillStatisticSelect(select, values, emptyLabel) {
+    if (!select) return;
+    var selected = select.value;
+    select.innerHTML = '<option value="">' + escapeHtml(emptyLabel) + '</option>' + values.map(function (value) {
+      return '<option value="' + escapeHtml(value) + '">' + escapeHtml(value) + '</option>';
+    }).join("");
+    if (values.indexOf(selected) !== -1) select.value = selected;
+  }
+
+  function statisticFilterValue(item, key) {
+    if (!item) return "";
+    if (key === "league") return item.league || item.competition || "";
+    if (key === "team") return playerCurrentTeam(item) || item.name || item.team || "";
+    if (key === "position") return item.position || item.positionGroup || "";
+    return "";
+  }
+
+  function statisticTextMatches(value, wanted) {
+    return !wanted || normalizeSearchText(value) === normalizeSearchText(wanted);
+  }
+
+  function filteredStatisticsData(sets, filters) {
+    var players = (sets[0] || []).filter(function (player) {
+      var rating = statisticNumber(playerAiScore(player));
+      var minutes = statisticMetric(player, "minutesPlayed");
+      return statisticTextMatches(statisticFilterValue(player, "league"), filters.league) &&
+        statisticTextMatches(statisticFilterValue(player, "team"), filters.team) &&
+        statisticTextMatches(statisticFilterValue(player, "position"), filters.position) &&
+        (!filters.rating || (rating !== null && rating >= Number(filters.rating))) &&
+        (!filters.minutes || (minutes !== null && minutes >= Number(filters.minutes)));
+    });
+    var teams = (sets[1] || []).filter(function (team) {
+      return statisticTextMatches(statisticFilterValue(team, "league"), filters.league) &&
+        statisticTextMatches(statisticFilterValue(team, "team"), filters.team);
+    });
+    var matches = (sets[2] || []).filter(function (match) {
+      var teamMatches = !filters.team || [match.homeTeam, match.awayTeam].some(function (team) {
+        return statisticTextMatches(team, filters.team);
+      });
+      return statisticTextMatches(statisticFilterValue(match, "league"), filters.league) && teamMatches;
+    });
+    var transfers = (sets[3] || []).filter(function (transfer) {
+      return !filters.team || [transfer.fromTeam, transfer.toTeam, transfer.currentTeam].some(function (team) {
+        return statisticTextMatches(team, filters.team);
+      });
+    });
+    return [players, teams, matches, transfers];
+  }
+
   function initStatisticsHub(target) {
     if (!target) return;
     var fallback = target.innerHTML;
     target.dataset.state = "loading";
 
     Promise.all([loadData("players"), loadData("teams"), loadData("matches"), loadData("transfers")]).then(function (sets) {
-      setContent(target, renderStatisticsHub(sets[0], sets[1], sets[2], sets[3]));
-
       var buttons = Array.from(document.querySelectorAll("[data-stat-view]"));
-      var groups = Array.from(target.querySelectorAll("[data-stat-group]"));
+      var selects = Array.from(document.querySelectorAll("[data-stat-filter]"));
+      var reset = document.querySelector("[data-stat-reset]");
+      var resultCount = document.querySelector("[data-stat-result-count]");
+      var activeView = "all";
+      var query = new URLSearchParams(window.location.search);
+      var filterKeys = ["league", "team", "position", "rating", "minutes"];
+
+      fillStatisticSelect(document.querySelector('[data-stat-filter="league"]'), uniqueStatisticOptions([].concat(sets[0], sets[1], sets[2]).map(function (item) { return statisticFilterValue(item, "league"); })), "Tüm ligler");
+      fillStatisticSelect(document.querySelector('[data-stat-filter="team"]'), uniqueStatisticOptions([].concat(sets[0], sets[1]).map(function (item) { return statisticFilterValue(item, "team"); })), "Tüm takımlar");
+      fillStatisticSelect(document.querySelector('[data-stat-filter="position"]'), uniqueStatisticOptions((sets[0] || []).map(function (item) { return statisticFilterValue(item, "position"); })), "Tüm mevkiler");
+
+      selects.forEach(function (select) {
+        var key = select.dataset.statFilter;
+        if (query.get(key)) select.value = query.get(key);
+      });
+
+      function renderFiltered() {
+        var filters = {};
+        selects.forEach(function (select) { filters[select.dataset.statFilter] = select.value; });
+        var filtered = filteredStatisticsData(sets, filters);
+        setContent(target, renderStatisticsHub(filtered[0], filtered[1], filtered[2], filtered[3]));
+        target.querySelectorAll("[data-stat-group]").forEach(function (group) {
+          group.hidden = activeView !== "all" && group.dataset.statGroup !== activeView;
+        });
+        if (resultCount) {
+          resultCount.textContent = filtered[0].length + " oyuncu · " + filtered[1].length + " takım · " + filtered[2].length + " maç";
+        }
+        var nextQuery = new URLSearchParams(window.location.search);
+        filterKeys.forEach(function (key) {
+          if (filters[key]) nextQuery.set(key, filters[key]);
+          else nextQuery.delete(key);
+        });
+        var nextUrl = window.location.pathname + (nextQuery.toString() ? "?" + nextQuery.toString() : "") + window.location.hash;
+        window.history.replaceState({}, "", nextUrl);
+      }
+
       buttons.forEach(function (button) {
         button.addEventListener("click", function () {
-          var view = button.dataset.statView || "all";
+          activeView = button.dataset.statView || "all";
           buttons.forEach(function (item) {
             var active = item === button;
             item.classList.toggle("is-active", active);
             item.setAttribute("aria-pressed", String(active));
           });
-          groups.forEach(function (group) {
-            group.hidden = view !== "all" && group.dataset.statGroup !== view;
+          target.querySelectorAll("[data-stat-group]").forEach(function (group) {
+            group.hidden = activeView !== "all" && group.dataset.statGroup !== activeView;
           });
         });
       });
+      selects.forEach(function (select) { select.addEventListener("change", renderFiltered); });
+      if (reset) {
+        reset.addEventListener("click", function () {
+          selects.forEach(function (select) { select.value = ""; });
+          renderFiltered();
+        });
+      }
+      renderFiltered();
     }).catch(function () {
       if (fallback) {
         target.innerHTML = fallback;

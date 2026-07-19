@@ -7895,6 +7895,81 @@ h1 {
   outline: none;
 }
 
+.stats-filter-bar {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
+  gap: 10px;
+  align-items: end;
+  margin: 0 0 24px;
+  padding: 14px;
+  border: 1px solid rgba(124, 232, 201, 0.16);
+  border-radius: 8px;
+  background: rgba(8, 19, 25, 0.86);
+}
+
+.stats-filter-bar label {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.stats-filter-bar label > span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.stats-filter-bar select,
+.stats-filter-bar button {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  background: #0a171d;
+  font: inherit;
+}
+
+.stats-filter-bar select {
+  padding: 0 34px 0 11px;
+}
+
+.stats-filter-bar button {
+  padding: 0 14px;
+  color: var(--green);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.stats-filter-bar select:focus-visible,
+.stats-filter-bar button:focus-visible {
+  border-color: var(--green);
+  outline: 2px solid rgba(134, 255, 218, 0.22);
+  outline-offset: 2px;
+}
+
+.stats-filter-result {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.home-competition-row {
+  margin: 0 0 18px;
+  padding-bottom: 5px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.home-statistics-entry .section-head {
+  align-items: end;
+}
+
+.section-player-radar .player-signals-grid {
+  margin-top: 16px;
+}
+
 .statistics-hub,
 .stats-group {
   display: grid;
@@ -8164,6 +8239,10 @@ h1 {
 }
 
 @media (max-width: 1060px) {
+  .stats-filter-bar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .stats-summary,
   .stats-match-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -8177,6 +8256,14 @@ h1 {
 }
 
 @media (max-width: 760px) {
+  .stats-filter-bar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stats-filter-result {
+    grid-column: 1;
+  }
+
   .stats-toolbar {
     top: 68px;
     margin-inline: 0;

@@ -423,31 +423,23 @@ function checkSeoAndLinks() {
     }
 
     if (page === "index.html") {
-      expect(html.includes("traffic-hub"), `${page}: missing live traffic hub`);
-      expect(html.includes("home-radar-ticker"), `${page}: missing radar ticker`);
-      expect(html.includes("home-search-section"), `${page}: missing home search section`);
-      expect(html.includes("data-home-search"), `${page}: missing home search hook`);
-      expect(html.includes("home-directory"), `${page}: missing homepage directory`);
-      expect(html.includes("home-intelligence-board"), `${page}: missing homepage intelligence board`);
-      expect(html.includes("home-agenda-hub"), `${page}: missing homepage agenda hub`);
-      expect(html.includes("traffic-deep-links"), `${page}: missing deep traffic links`);
-      expect(html.includes("home-match-command"), `${page}: missing match command traffic block`);
-      expect(html.includes("home-player-leagues"), `${page}: missing player league traffic block`);
-      expect(html.includes("home-rivalry-wall"), `${page}: missing rivalry wall traffic block`);
-      expect(html.includes("home-explore-lab"), `${page}: missing homepage explore lab`);
-      expect(html.includes("home-daily-brief"), `${page}: missing daily radar brief`);
+      expect(html.includes('data-api-target="featured-match"'), `${page}: missing featured match`);
+      expect(html.includes('data-api-target="today-matches"'), `${page}: missing today matches`);
+      expect(html.includes('data-api-target="radar-signals"'), `${page}: missing radar signals`);
+      expect(html.includes('data-api-target="home-standings"'), `${page}: missing standings summary`);
+      expect(html.includes('data-api-target="player-radar"'), `${page}: missing player radar`);
+      expect(html.includes('data-api-target="home-transfer-watch"'), `${page}: missing transfer watch`);
+      expect(html.includes('data-api-target="analysis-preview"'), `${page}: missing analysis preview`);
+      expect(html.includes("istatistik-merkezi.html"), `${page}: missing statistics center route`);
       expect(html.includes("gol-kralligi.html"), `${page}: missing goal ranking route`);
       expect(html.includes("asist-kralligi.html"), `${page}: missing assist ranking route`);
-      expect(html.includes("derbi-radari.html"), `${page}: missing derby route`);
-      expect(html.includes("haftanin-maclari.html"), `${page}: missing weekly matches route`);
       expect(html.includes("mac-merkezi.html"), `${page}: missing match center route`);
       expect(html.includes("oyuncu-liderleri.html"), `${page}: missing player leaders route`);
-      expect(html.includes("takim-trendleri.html"), `${page}: missing team trends route`);
-      expect(html.includes("futbol-radar-rehberi.html"), `${page}: missing radar guide route`);
-      expect(html.includes("gunun-radar-bulteni.html"), `${page}: missing daily brief route`);
       expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison traffic link`);
       expect(html.includes("super-lig-fikstur.html"), `${page}: missing fixture traffic link`);
-      expect(html.includes("karsilastirma/kerem-akturkoglu-vs-mauro-icardi.html"), `${page}: missing static comparison route`);
+      expect(html.includes("premier-league"), `${page}: missing Premier League route`);
+      expect(html.includes("sampiyonlar-ligi"), `${page}: missing Champions League route`);
+      expect(html.includes("avrupa-ligi"), `${page}: missing Europa League route`);
     }
 
     if (page === "oyuncu-radari.html") {
