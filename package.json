@@ -6,7 +6,7 @@
     "build": "node scripts/generate-player-profile-pages.mjs && node scripts/generate-static-seo-pages.mjs && node scripts/generate-match-pages.mjs && node scripts/generate-player-comparison-pages.mjs && node scripts/prerender-core-pages.mjs && node scripts/prerender-player-content.mjs && node scripts/sync-public-assets.mjs && node scripts/inject-ga4.mjs && node scripts/_noop-build-step.mjs \"Vercel build\"",
     "lint": "node scripts/qa.mjs",
     "qa": "node scripts/qa.mjs",
-    "test": "node scripts/test-match-radar.mjs && node scripts/test-player-data.mjs && node scripts/test-api-resilience.mjs",
+    "test": "node scripts/test-match-radar.mjs && node scripts/test-player-data.mjs && node scripts/validate-transfer-data.mjs && node scripts/test-api-resilience.mjs",
     "qa:live": "node --use-system-ca scripts/live-qa.mjs",
     "fetch": "node scripts/fetch-thesportsdb.mjs",
     "data": "node scripts/build-data.mjs",
@@ -18,6 +18,7 @@
     "generate:players": "node scripts/generate-player-profile-pages.mjs",
     "generate:comparisons": "node scripts/generate-player-comparison-pages.mjs",
     "validate:players": "node scripts/validate-player-data.mjs",
+    "validate:transfers": "node scripts/validate-transfer-data.mjs",
     "transfer:update": "node scripts/update-player-transfers.mjs"
   }
 }

@@ -135,7 +135,8 @@
     var timer = controller
       ? window.setTimeout(function () { controller.abort(); }, FETCH_TIMEOUT_MS)
       : null;
-    var options = { cache: "default" };
+    // Revalidate dynamic JSON so transfer and match updates do not remain stale in the browser cache.
+    var options = { cache: "no-cache" };
 
     if (controller) {
       options.signal = controller.signal;

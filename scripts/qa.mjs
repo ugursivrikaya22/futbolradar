@@ -517,7 +517,8 @@ function checkSeoAndLinks() {
       "genc-yetenekler.html",
       "transfer-radari.html"
     ].includes(page)) {
-      expect(html.includes('data-card="player"'), `${page}: missing prerendered player cards`);
+      const expectedCard = page === "transfer-radari.html" ? 'data-card="transfer-record"' : 'data-card="player"';
+      expect(html.includes(expectedCard), `${page}: missing prerendered content cards`);
       expect(!html.includes("Oyuncular yukleniyor"), `${page}: client-only loading placeholder must not be indexed`);
     }
   }
