@@ -9738,6 +9738,30 @@ h1 {
   padding: 34px 0 10px;
 }
 
+/* Radar ticker yerleşimi */
+.ticker-zone {
+  padding-top: 16px;
+}
+
+.ticker-zone .radar-ticker-track {
+  -webkit-mask-image: linear-gradient(90deg, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, #000 90%, transparent);
+}
+
+.hero-chip-row {
+  margin-top: 16px;
+}
+
+.home-match-command-metrics .live-pulse {
+  margin-right: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-pulse {
+    animation: none;
+  }
+}
+
 /* Veri güven notu */
 .data-trust-note {
   margin: 26px auto 40px;
@@ -9858,10 +9882,15 @@ h1 {
 
 .popular-card .popular-card-league {
   color: var(--soft);
-  font-size: 0.78rem;
+  font-size: 0.74rem;
   font-weight: 800;
   letter-spacing: 0.03em;
   text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.popular-card .popular-card-top {
+  flex-wrap: wrap;
 }
 
 /* Ev / deplasman + logo + büyük skor satırı */
@@ -9890,9 +9919,10 @@ h1 {
 }
 
 .popular-card .popular-side strong {
-  font-size: 0.98rem;
+  font-size: 0.92rem;
   font-weight: 850;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .popular-card .popular-score {
@@ -9908,6 +9938,18 @@ h1 {
   color: var(--muted);
   font-size: 0.9rem;
   font-weight: 800;
+}
+
+.popular-card h3 {
+  margin: 0;
+  font-size: 1.18rem;
+  overflow-wrap: anywhere;
+}
+
+.popular-card > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .popular-card .popular-meta {

@@ -99,7 +99,7 @@ function emptyMatchState(variant) {
   if (isFeatured) {
     return `<div class="home-match-command">
       <div class="home-match-command-head"><div><span>Bugünün maç merkezi</span><strong>Program kontrol ediliyor</strong></div><a href="./bugunun-maclari.html">Tümünü aç</a></div>
-      <div class="home-match-command-metrics" aria-label="Bugünün maç özeti"><a href="./canli-skor.html"><span>Canlı</span><b class="live-number">0</b></a><a href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>0</b></a><a href="./bugunun-maclari.html?status=finished"><span>Tamamlanan</span><b>0</b></a><a href="./bugunun-maclari.html"><span>Aktif lig</span><b>0</b></a></div>
+      <div class="home-match-command-metrics" aria-label="Bugünün maç özeti"><a href="./canli-skor.html"><span><span class="live-pulse" aria-hidden="true"></span> Canlı</span><b class="live-number">0</b></a><a href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>0</b></a><a href="./bugunun-maclari.html?status=finished"><span>Tamamlanan</span><b>0</b></a><a href="./bugunun-maclari.html"><span>Aktif lig</span><b>0</b></a></div>
       <div class="home-match-command-empty"><strong>Maç programı yükleniyor.</strong><span>Bugünün doğrulanmış karşılaşmaları burada listelenecek.</span></div>
       <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./bugunun-maclari.html">Maç programı</a><a class="button secondary" href="./canli-skor.html">Canlı skor</a></div>
     </div>`;
@@ -280,6 +280,56 @@ const topFixtures = confirmed.slice(0, 3);
 const topTeams = teams.slice().sort((left, right) => Number(right.momentum) - Number(left.momentum));
 
 const BIG_TEAM_IDS = ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"];
+const BIG_TEAM_NAMES = new Set(["Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor"]);
+const TR_MONTHS = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+
+function seasonStartLabel() {
+  const raw = String(fixtures.seasonStart || "");
+  const parts = raw.split("-");
+  if (parts.length !== 3) return raw;
+  return `${Number(parts[2])} ${TR_MONTHS[Number(parts[1]) - 1] || ""}`;
+}
+
+function radarTicker() {
+  const items = [];
+  if (fixtures.seasonStart) {
+    items.push(`<a href="./super-lig-fikstur.html" data-season-start="${escapeHtml(fixtures.seasonStart)}"><span>Geri sayım</span><b>Süper Lig ${escapeHtml(fixtures.season)} sezonu ${escapeHtml(seasonStartLabel())}'ta başlıyor</b></a>`);
+  }
+  for (const item of news.slice(0, 3)) {
+    items.push(`<a href="./haberler.html"><span>${escapeHtml(item.category || "Gündem")}</span><b>${escapeHtml(item.title)}</b></a>`);
+  }
+  const latestTransfers = transfers.slice().sort((left, right) => String(right.date || "").localeCompare(String(left.date || ""))).slice(0, 2);
+  for (const transfer of latestTransfers) {
+    items.push(`<a href="./transfer-radari.html"><span>Transfer</span><b>${escapeHtml(transfer.playerName)} → ${escapeHtml(transfer.toTeam)}</b></a>`);
+  }
+  for (const watch of (fixtures.watchList || []).slice(0, 1)) {
+    items.push(`<a href="./super-lig-fikstur.html"><span>Fikstür</span><b>${escapeHtml(watch.label)}: ${escapeHtml(watch.value)}</b></a>`);
+  }
+  if (!items.length) {
+    return `<span class="radar-ticker-label"><span class="live-pulse" aria-hidden="true"></span>Radar Akışı</span><div class="radar-ticker-track"><a href="./haberler.html"><span>Gündem</span><b>Doğrulanmış gelişmeler burada akacak</b></a></div>`;
+  }
+  return `<span class="radar-ticker-label"><span class="live-pulse" aria-hidden="true"></span>Radar Akışı</span><div class="radar-ticker-track">${items.join("")}</div>`;
+}
+
+function fixturePopularCard(match) {
+  const homeInitial = String(match.homeTeam || "?").charAt(0).toLocaleUpperCase("tr-TR");
+  const awayInitial = String(match.awayTeam || "?").charAt(0).toLocaleUpperCase("tr-TR");
+  return `<article class="popular-card" data-card="fixture-popular"><div class="popular-card-top"><span class="popular-card-league">Süper Lig · ${escapeHtml(match.roundLabel || "Fikstür")}</span><span class="status-badge upcoming">${escapeHtml(match.dateRange || "Tarih bekleniyor")}</span></div><div class="popular-fixture"><div class="popular-side"><span class="logo-fallback" style="width:46px;height:46px" aria-hidden="true">${escapeHtml(homeInitial)}</span><strong>${escapeHtml(match.homeTeam)}</strong></div><div class="popular-score"><span class="vs">VS</span></div><div class="popular-side"><span class="logo-fallback" style="width:46px;height:46px" aria-hidden="true">${escapeHtml(awayInitial)}</span><strong>${escapeHtml(match.awayTeam)}</strong></div></div><div class="popular-card-foot"><a class="cta-button small" href="./mac/${escapeHtml(matchSlug(match))}.html">Maç radarını aç</a></div></article>`;
+}
+
+function fixtureShowcase() {
+  const opening = confirmed.filter((match) => match.round === 1);
+  const prioritized = [
+    ...opening.filter((match) => BIG_TEAM_NAMES.has(match.homeTeam) || BIG_TEAM_NAMES.has(match.awayTeam)),
+    ...opening.filter((match) => !BIG_TEAM_NAMES.has(match.homeTeam) && !BIG_TEAM_NAMES.has(match.awayTeam))
+  ].slice(0, 3);
+  if (!prioritized.length) {
+    return emptyMatchState("today");
+  }
+
+  const ctaCard = `<article class="popular-card" data-card="fixture-cta"><div class="popular-card-top"><span class="popular-card-league">Süper Lig · ${escapeHtml(fixtures.season)}</span><span class="status-badge upcoming" data-season-start="${escapeHtml(fixtures.seasonStart || "")}">Sezon yaklaşıyor</span></div><h3>Sezon ${escapeHtml(seasonStartLabel())}'ta başlıyor</h3><p>Bugün doğrulanmış maç yok; açılış haftasının maç önü radar analizleri hazır.</p><div class="popular-card-foot"><a class="cta-button small" href="./super-lig-fikstur.html">Sezon fikstürü</a><a class="deep-link-button" href="./bugunun-maclari.html">Maç merkezi</a></div></article>`;
+  return prioritized.map(fixturePopularCard).join("") + ctaCard;
+}
 
 function bigTeamCards() {
   const displayValue = (value) => (value === null || value === undefined || value === "" ? "—" : value);
@@ -299,8 +349,9 @@ const topPlayers = players.slice().sort((left, right) => Number(right.overallRat
 
 writePage("index.html", {
   "featured-match": emptyMatchState("featured"),
+  "radar-ticker": radarTicker(),
   "home-transfer-watch": transferWatch(),
-  "today-matches": emptyMatchState("today"),
+  "today-matches": fixtureShowcase(),
   "home-big-teams": bigTeamCards(),
   "radar-signals": signalCards(),
   "team-radar": topTeams.slice(0, 4).map(staticTeamCard).join(""),

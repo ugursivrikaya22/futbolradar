@@ -383,6 +383,83 @@
     }
   }
 
+  function initSeasonCountdown() {
+    var elements = document.querySelectorAll("[data-season-start]");
+    if (!elements.length) {
+      return;
+    }
+
+    elements.forEach(function (el) {
+      var raw = el.getAttribute("data-season-start");
+      if (!raw) {
+        return;
+      }
+
+      var startDate = new Date(raw + "T00:00:00+03:00");
+      if (isNaN(startDate.getTime())) {
+        return;
+      }
+
+      var days = Math.ceil((startDate.getTime() - Date.now()) / 86400000);
+      if (days <= 0) {
+        return;
+      }
+
+      var target = el.querySelector("b") || el;
+      target.textContent = "Süper Lig'e " + days + " gün";
+    });
+  }
+
+  function animateCommandCounters(root) {
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    root.querySelectorAll(".home-match-command-metrics b").forEach(function (el) {
+      if (el.dataset.counted === "true") {
+        return;
+      }
+
+      var target = parseInt(el.textContent, 10);
+      el.dataset.counted = "true";
+      if (!isFinite(target) || target <= 0) {
+        return;
+      }
+
+      var current = 0;
+      var step = Math.max(1, Math.ceil(target / 24));
+      el.textContent = "0";
+      var tick = function () {
+        current = Math.min(target, current + step);
+        el.textContent = String(current);
+        if (current < target) {
+          requestAnimationFrame(tick);
+        }
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
+  function initCommandCounters() {
+    var host = document.querySelector('[data-api-target="featured-match"]');
+    if (!host) {
+      return;
+    }
+
+    animateCommandCounters(host);
+    if (typeof MutationObserver === "undefined") {
+      return;
+    }
+
+    var observer = new MutationObserver(function () {
+      host.querySelectorAll(".home-match-command-metrics b").forEach(function (el) {
+        delete el.dataset.counted;
+      });
+      animateCommandCounters(host);
+    });
+    observer.observe(host, { childList: true });
+  }
+
   function initAnalytics() {
     document.addEventListener("click", function (event) {
       var element = event.target && event.target.closest ? event.target.closest("a, button") : null;
@@ -1592,7 +1669,7 @@
       '<div class="home-match-command">' +
       '<div class="home-match-command-head"><div><span>Bugünün maç merkezi</span><strong>' + escapeHtml(formatMatchDate(todayInIstanbul())) + '</strong></div><a href="./bugunun-maclari.html">Tümünü aç</a></div>' +
       '<div class="home-match-command-metrics" aria-label="Bugünün maç özeti">' +
-      '<a href="./canli-skor.html"><span>Canlı</span><b class="live-number">' + liveCount + '</b></a>' +
+      '<a href="./canli-skor.html"><span><span class="live-pulse" aria-hidden="true"></span> Canlı</span><b class="live-number">' + liveCount + '</b></a>' +
       '<a href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>' + upcomingCount + '</b></a>' +
       '<a href="./bugunun-maclari.html?status=finished"><span>Tamamlanan</span><b>' + finishedCount + '</b></a>' +
       '<a href="./bugunun-maclari.html"><span>Aktif lig</span><b>' + leagueCount + '</b></a>' +
@@ -5449,6 +5526,8 @@
     initAnalytics();
     initCompetitionFilters();
     initMatchExplorer();
+    initSeasonCountdown();
+    initCommandCounters();
 
     renderInto(
       document.querySelector('[data-api-target="featured-match"]'),
