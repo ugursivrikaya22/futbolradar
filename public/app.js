@@ -295,6 +295,7 @@
     target.innerHTML = html;
     target.dataset.state = "ready";
     applyRelativeTimes(target);
+    initSeasonCountdown(target);
   }
 
   function setEmpty(target, title, text) {
@@ -417,8 +418,9 @@
     }
   }
 
-  function initSeasonCountdown() {
-    var elements = document.querySelectorAll("[data-season-start]");
+  function initSeasonCountdown(root) {
+    var scope = root || document;
+    var elements = scope.querySelectorAll("[data-season-start]");
     if (!elements.length) {
       return;
     }
@@ -543,6 +545,8 @@
           if (staticFallback) {
             target.innerHTML = staticFallback;
             target.dataset.state = "fallback";
+            applyRelativeTimes(target);
+            initSeasonCountdown(target);
             return;
           }
           setEmpty(target, emptyTitle || "Veri bulunamadi", "Bu bölüm icin gösterilecek kayit yok.");
@@ -554,6 +558,8 @@
         if (staticFallback) {
           target.innerHTML = staticFallback;
           target.dataset.state = "fallback";
+          applyRelativeTimes(target);
+          initSeasonCountdown(target);
           return;
         }
         setEmpty(target, emptyTitle || "Veri yüklenemedi", "Bu bölüm geçici olarak kullanılamıyor. Sayfanın diğer alanlarını incelemeye devam edebilirsin.");
@@ -2051,9 +2057,12 @@
     var text = preseason
       ? "Süper Lig 14 Ağustos'ta başlayacak. İlk maçlar tamamlandığında puan tablosu otomatik güncellenecek."
       : "İlk sonuçlar kesinleştiğinde sıralama ve puanlar burada gösterilecek.";
+    var badge = preseason
+      ? '<span class="status-badge upcoming" data-season-start="' + SUPER_LIG_SEASON_START + '">Süper Lig 14 Ağustos\'ta başlıyor</span>'
+      : "";
     return (
       '<div class="standings-empty' + (compact ? " compact" : "") + '" data-card="standings-preseason">' +
-      '<span class="card-kicker">Süper Lig · 2026/27</span><strong>' + escapeHtml(title) + '</strong><p>' + escapeHtml(text) + '</p>' +
+      '<span class="card-kicker">Süper Lig · 2026/27</span><strong>' + escapeHtml(title) + '</strong>' + badge + '<p>' + escapeHtml(text) + '</p>' +
       '<a class="detail-link" href="./super-lig-fikstur.html">Sezon fikstürünü aç</a></div>'
     );
   }
@@ -2733,10 +2742,21 @@
     );
   }
 
+  function riskBadgeVariant(value) {
+    var key = String(value || "").toLowerCase();
+    if (key.indexOf("düşük") !== -1 || key.indexOf("dusuk") !== -1) {
+      return "low";
+    }
+    if (key.indexOf("yüksek") !== -1 || key.indexOf("yuksek") !== -1) {
+      return "high";
+    }
+    return "medium";
+  }
+
   function renderMomentumRow(item) {
     return (
       '<div class="table-row" data-card="momentum" data-team="' + escapeHtml(item.team) + '">' +
-      "<span>" + escapeHtml(displayValue(item.rank)) + "</span><b>" + escapeHtml(item.team) + "</b><span>" + escapeHtml(displayValue(item.momentum)) + "</span><span>" + escapeHtml(displayValue(item.attackScore || item.formScore)) + "</span><span>" + escapeHtml(displayValue(item.defenseScore || item.goalSignal)) + "</span><span>" + escapeHtml(displayValue(item.trend || item.risk)) + "</span>" +
+      "<span>" + escapeHtml(displayValue(item.rank)) + "</span><b>" + escapeHtml(item.team) + "</b><span>" + escapeHtml(displayValue(item.momentum)) + "</span><span>" + escapeHtml(displayValue(item.formScore)) + "</span><span>" + escapeHtml(displayValue(item.goalSignal)) + '</span><span class="risk-badge ' + riskBadgeVariant(item.risk) + '">' + escapeHtml(displayValue(item.risk)) + "</span>" +
       "</div>"
     );
   }
