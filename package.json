@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node scripts/generate-player-profile-pages.mjs && node scripts/generate-static-seo-pages.mjs && node scripts/generate-match-pages.mjs && node scripts/generate-post-match-pages.mjs && node scripts/generate-player-comparison-pages.mjs && node scripts/prerender-core-pages.mjs && node scripts/prerender-player-content.mjs && node scripts/sync-public-assets.mjs && node scripts/inject-ga4.mjs && node scripts/_noop-build-step.mjs \"Vercel build\"",
+    "build": "node scripts/generate-player-profile-pages.mjs && node scripts/generate-static-seo-pages.mjs && node scripts/generate-trend-seo-pages.mjs && node scripts/generate-match-pages.mjs && node scripts/generate-post-match-pages.mjs && node scripts/generate-player-comparison-pages.mjs && node scripts/prerender-core-pages.mjs && node scripts/prerender-player-content.mjs && node scripts/sync-public-assets.mjs && node scripts/inject-ga4.mjs && node scripts/_noop-build-step.mjs \"Vercel build\"",
     "lint": "node scripts/qa.mjs",
     "qa": "node scripts/qa.mjs",
     "test": "node scripts/test-match-radar.mjs && node scripts/test-match-report.mjs && node scripts/test-player-data.mjs && node scripts/validate-transfer-data.mjs && node scripts/test-competition-coverage.mjs && node scripts/test-api-resilience.mjs",

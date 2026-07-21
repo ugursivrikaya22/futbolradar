@@ -187,7 +187,7 @@ function pageHtml(match) {
       </section>
 
       <section class="post-match-context-strip" aria-label="Maç künyesi"><div><span>Teknik direktör</span><b>${escapeHtml(match.coaches.home)}</b></div><div><span>Rakip teknik direktör</span><b>${escapeHtml(match.coaches.away)}</b></div><div><span>Son kontrol</span><b>${escapeHtml(formatDate(match.lastVerifiedAt, { hour: "2-digit", minute: "2-digit" }))}</b></div></section>
-      <section class="post-match-next-grid"><a href="./fenerbahce-form-durumu.html"><span>Takım analizi</span><strong>Fenerbahçe form durumu</strong><p>Son maçın takım momentumuna etkisini incele.</p></a><a href="./oyuncu-radari.html?team=Fenerbahçe"><span>Oyuncu analizi</span><strong>Fenerbahçe Oyuncu Radarı</strong><p>Kadro içindeki form ve rol sinyallerine geç.</p></a><a href="./bugunun-maclari.html"><span>Maç merkezi</span><strong>Bugünün maçları</strong><p>Günün canlı ve tamamlanan maçlarını takip et.</p></a></section>
+      <section class="post-match-next-grid"><a href="./gornik-zabrze-fenerbahce-rovans-ne-zaman.html"><span>Rövanş</span><strong>Rövanş ne zaman?</strong><p>29 Temmuz programını ve tur senaryosunu incele.</p></a><a href="./fenerbahce-avrupa-maclari.html"><span>Avrupa fikstürü</span><strong>Fenerbahçe Avrupa maçları</strong><p>Sonuçları, yaklaşan maçları ve tur yolunu takip et.</p></a><a href="./oyuncu-radari.html?team=Fenerbahçe"><span>Oyuncu analizi</span><strong>Fenerbahçe Oyuncu Radarı</strong><p>Kadro içindeki form ve rol sinyallerine geç.</p></a></section>
     </main>
     <footer class="footer"><div class="container footer-links">FutbolRadar · Maç analizi · <a href="./hakkinda.html">Hakkında</a> · <a href="./veri-notu.html">Veri Notu</a> · <a href="./iletisim.html">İletişim</a></div></footer>
     <script src="./site.js" defer></script>
@@ -202,7 +202,7 @@ function upsertSitemap(pages) {
   for (const match of pages) {
     const loc = `${domain}/${match.analysisPage}`;
     const escapedLoc = loc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    xml = xml.replace(new RegExp(`  <url>\\s*<loc>${escapedLoc}<\\/loc>[\\s\\S]*?<\\/url>\\s*`, "g"), "");
+    xml = xml.replace(new RegExp(`  <url>\\s*<loc>${escapedLoc}<\\/loc>[\\s\\S]*?<\\/url>`, "g"), "");
     const entry = `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${String(match.lastVerifiedAt).slice(0, 10)}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.9</priority>\n  </url>\n`;
     xml = xml.replace("</urlset>", `${entry}</urlset>`);
   }

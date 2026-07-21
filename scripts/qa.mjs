@@ -23,6 +23,14 @@ const pages = [
   "oyuncu-detay.html",
   "mac-detay.html",
   "fenerbahce-gornik-zabrze-mac-analizi.html",
+  "transfer-sezonu-ne-zaman-bitiyor.html",
+  "super-lig-transferleri-2026-2027.html",
+  "gornik-zabrze-fenerbahce-rovans-ne-zaman.html",
+  "uefa-ulke-puani-siralamasi.html",
+  "sampiyonlar-ligi-on-eleme-maclari.html",
+  "fenerbahce-avrupa-maclari.html",
+  "galatasaray-transfer-radar.html",
+  "fenerbahce-transfer-radar.html",
   "takim-detay.html",
   "super-lig-fikstur.html",
   "super-lig-form-durumu.html",
@@ -442,6 +450,9 @@ function checkSeoAndLinks() {
       expect(html.includes("premier-league"), `${page}: missing Premier League route`);
       expect(html.includes("sampiyonlar-ligi"), `${page}: missing Champions League route`);
       expect(html.includes("avrupa-ligi"), `${page}: missing Europa League route`);
+      expect(html.includes('id="trend-radar"'), `${page}: missing Trend Radar section`);
+      expect(html.includes("transfer-sezonu-ne-zaman-bitiyor.html"), `${page}: missing transfer window trend link`);
+      expect(html.includes("uefa-ulke-puani-siralamasi.html"), `${page}: missing UEFA coefficient trend link`);
     }
 
     if (page === "oyuncu-radari.html") {
@@ -465,6 +476,23 @@ function checkSeoAndLinks() {
       expect(html.includes("data-compare-seed"), `${page}: missing comparison seed`);
       expect(html.includes('"@type": "Article"'), `${page}: missing Article schema`);
       expect(html.includes('"@type": "BreadcrumbList"'), `${page}: missing breadcrumb schema`);
+    }
+
+    if ([
+      "transfer-sezonu-ne-zaman-bitiyor.html",
+      "super-lig-transferleri-2026-2027.html",
+      "fenerbahce-gornik-zabrze-mac-analizi.html",
+      "gornik-zabrze-fenerbahce-rovans-ne-zaman.html",
+      "uefa-ulke-puani-siralamasi.html",
+      "sampiyonlar-ligi-on-eleme-maclari.html",
+      "fenerbahce-avrupa-maclari.html",
+      "galatasaray-transfer-radar.html",
+      "fenerbahce-transfer-radar.html",
+      "en-iyi-super-lig-oyunculari.html"
+    ].includes(page)) {
+      expect(html.includes('class="breadcrumb"'), `${page}: missing visible breadcrumb`);
+      expect(html.includes('"@type":"BreadcrumbList"') || html.includes('"@type": "BreadcrumbList"'), `${page}: missing breadcrumb schema`);
+      expect(html.includes("./index.html"), `${page}: missing home link`);
     }
 
     if (page === "404.html") {
