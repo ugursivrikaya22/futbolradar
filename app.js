@@ -4751,6 +4751,7 @@
 
     var query = new URLSearchParams(window.location.search);
     var playerId = target.getAttribute("data-player-id") || query.get("id") || query.get("player");
+    var staticFallback = target.dataset.staticFallback === "true" ? target.innerHTML : "";
 
     target.dataset.state = "loading";
 
@@ -4764,6 +4765,11 @@
 
       setContent(target, renderPlayerDetail(player, players));
     }).catch(function () {
+      if (staticFallback) {
+        target.innerHTML = staticFallback;
+        target.dataset.state = "fallback";
+        return;
+      }
       setEmpty(target, "Oyuncu detayı yüklenemedi", "Oyuncu verisi geçici olarak okunamıyor.");
     });
   }
