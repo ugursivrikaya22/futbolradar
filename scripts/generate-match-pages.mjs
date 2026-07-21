@@ -118,6 +118,12 @@ function radarCard(name, radar, team) {
   </article>`;
 }
 
+function matchVsHeroHtml(match, dateLabel) {
+  const homeInitial = String(match.homeTeam || "?").charAt(0).toLocaleUpperCase("tr-TR");
+  const awayInitial = String(match.awayTeam || "?").charAt(0).toLocaleUpperCase("tr-TR");
+  return `<article class="popular-card match-vs-hero" data-card="match-vs-hero"><div class="popular-card-top"><span class="popular-card-league">${escapeHtml(match.league)} · ${escapeHtml(match.roundLabel)}</span><span class="status-badge upcoming">${escapeHtml(dateLabel)}</span></div><div class="popular-fixture"><div class="popular-side"><span class="logo-fallback" aria-hidden="true">${escapeHtml(homeInitial)}</span><strong>${escapeHtml(match.homeTeam)}</strong></div><div class="popular-score"><span class="vs">VS</span></div><div class="popular-side"><span class="logo-fallback" aria-hidden="true">${escapeHtml(awayInitial)}</span><strong>${escapeHtml(match.awayTeam)}</strong></div></div></article>`;
+}
+
 function relatedComparison(match) {
   const home = teamPlayers(match.homeTeam);
   const away = teamPlayers(match.awayTeam);
@@ -195,6 +201,7 @@ function pageHtml(match) {
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../super-lig-fikstur.html">Süper Lig Fikstürü</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
       <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(match.league)}</span><h1>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</h1><p class="lead">${escapeHtml(radar.lead)}</p></div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>
+      <section class="match-vs-hero-zone" aria-label="Maç özeti">${matchVsHeroHtml(match, dateLabel)}</section>
       <section class="match-freshness-strip" aria-label="Fikstür durumu"><div><span>Fikstür durumu</span><b>${escapeHtml(freshnessLabel(freshness))}</b></div><div><span>Son kontrol</span><b>${escapeHtml(formatFreshnessDate(freshness.verifiedAt || freshness.fetchedAt))}</b></div><div><span>Güven</span><b>${escapeHtml(confidenceLabel(freshness.confidence))}</b></div></section>
       <section class="match-radar-board" aria-label="Maç öncesi radar puanları">${radarCard(match.homeTeam, radar.home, homeTeam)}${radarCard(match.awayTeam, radar.away, awayTeam)}</section>
       <p class="match-radar-disclaimer">${escapeHtml(radar.disclaimer)}</p>
