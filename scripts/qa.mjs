@@ -22,6 +22,7 @@ const pages = [
   "oyuncu-karsilastirmalari.html",
   "oyuncu-detay.html",
   "mac-detay.html",
+  "fenerbahce-gornik-zabrze-mac-analizi.html",
   "takim-detay.html",
   "super-lig-fikstur.html",
   "super-lig-form-durumu.html",

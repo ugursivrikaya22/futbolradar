@@ -35,21 +35,26 @@ function normalizeMatch(match) {
 
 function normalizeMatchDetail(match) {
   const normalized = normalizeMatch(match || {});
+  const fallbackStatistics = [
+    { team: normalized.homeTeam, type: "Momentum", value: normalized.homeMomentum || normalized.homeForm || null },
+    { team: normalized.awayTeam, type: "Momentum", value: normalized.awayMomentum || normalized.awayForm || null },
+    { team: normalized.homeTeam, type: "Goal potential", value: normalized.goalPotential || null }
+  ].filter((item) => item.value !== null);
+
   return {
     ...normalized,
     fixtureId: normalized.providerId || normalized.id,
     status: normalized.status || "SCHEDULED",
     score: typeof normalized.score === "object" ? normalized.score : { home: null, away: null },
-    lineups: [],
-    events: [],
-    statistics: [
-      { team: normalized.homeTeam, type: "Momentum", value: normalized.homeMomentum || normalized.homeForm || null },
-      { team: normalized.awayTeam, type: "Momentum", value: normalized.awayMomentum || normalized.awayForm || null },
-      { team: normalized.homeTeam, type: "Goal potential", value: normalized.goalPotential || null }
-    ],
-    prediction: normalized.aiPrediction ? { label: normalized.aiPrediction, risk: normalized.risk || null } : null,
-    source: "mock",
-    updatedAt: firstDefined(normalized.updatedAt, normalized.fetchedAt, normalized.lastUpdatedAt)
+    lineups: Array.isArray(normalized.lineups) ? normalized.lineups : [],
+    substitutions: Array.isArray(normalized.substitutions) ? normalized.substitutions : [],
+    events: Array.isArray(normalized.events) ? normalized.events : [],
+    statistics: Array.isArray(normalized.statistics) && normalized.statistics.length
+      ? normalized.statistics
+      : fallbackStatistics,
+    prediction: normalized.prediction || (normalized.aiPrediction ? { label: normalized.aiPrediction, risk: normalized.risk || null } : null),
+    source: normalized.source || "mock",
+    updatedAt: firstDefined(normalized.updatedAt, normalized.lastVerifiedAt, normalized.fetchedAt, normalized.lastUpdatedAt)
   };
 }
 

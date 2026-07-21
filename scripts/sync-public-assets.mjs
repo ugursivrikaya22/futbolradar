@@ -18,6 +18,7 @@ for (const file of [
 }
 for (const file of [
   "competitions.json",
+  "matches.json",
   "players.json",
   "teams.json",
   "transfers.json"

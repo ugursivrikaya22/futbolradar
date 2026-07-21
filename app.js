@@ -1284,6 +1284,10 @@
   }
 
   function matchDetailHref(match) {
+    if (match && match.analysisPage) {
+      return "./" + String(match.analysisPage).replace(/^\.\//, "");
+    }
+
     return "./mac-detay.html?id=" + encodeURIComponent(match.fixtureId || match.providerId || match.id || "");
   }
 
@@ -4744,6 +4748,12 @@
     }
 
     return items.map(function (item) {
+      if (Array.isArray(item.players)) {
+        return '<article class="timeline-row lineup-row"><strong>' + escapeHtml(displayValue(item.team)) +
+          ' <small>' + escapeHtml(displayValue(item.formation)) + '</small></strong><span>' +
+          escapeHtml(item.players.join(", ")) + "</span></article>";
+      }
+
       var label = item.time && item.team ? item.time + " · " + item.team.name : item.type || item.detail || item.player && item.player.name || "Kayıt";
       var text = item.value || item.comments || item.detail || item.assist && item.assist.name || "";
       return '<article class="timeline-row"><strong>' + escapeHtml(label) + '</strong><span>' + escapeHtml(displayValue(text)) + "</span></article>";
@@ -4756,6 +4766,13 @@
     }
 
     return items.map(function (item) {
+      if (item.home !== undefined && item.away !== undefined) {
+        var unit = item.unit || "";
+        return '<article class="timeline-row statistic-pair"><strong>' + escapeHtml(displayValue(item.type)) +
+          '</strong><span><b>' + escapeHtml(displayValue(item.home) + unit) + '</b><em>' +
+          escapeHtml(displayValue(item.away) + unit) + "</em></span></article>";
+      }
+
       return '<article class="timeline-row"><strong>' + escapeHtml(item.team && item.team.name || item.team || "Takım") + '</strong><span>' + escapeHtml(displayValue(item.type)) + ": " + escapeHtml(displayValue(item.value)) + "</span></article>";
     }).join("");
   }
@@ -4921,6 +4938,9 @@
       matchActionPanelHtml(detail) +
       '<section class="profile-section"><h2>Kadrolar</h2>' + renderTimelineList(detail.lineups, "Kadro verisi bekleniyor") + "</section>" +
       '<section class="profile-section"><h2>Maç Olayları</h2>' + renderTimelineList(detail.events, "Olay verisi bekleniyor") + "</section>" +
+      '<section class="profile-section"><h2>Oyuncu Değişiklikleri</h2>' + renderTimelineList((detail.substitutions || []).map(function (item) {
+        return { time: item.time, team: { name: item.team }, detail: item.in + " oyuna girdi · " + item.out + " çıktı" };
+      }), "Oyuncu değişikliği verisi bekleniyor") + "</section>" +
       '<section class="profile-section"><h2>İstatistikler</h2>' + renderStatisticsList(detail.statistics) + "</section>" +
       "</article>"
     );
