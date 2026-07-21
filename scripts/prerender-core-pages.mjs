@@ -147,11 +147,15 @@ function staticTeamCard(team) {
 }
 
 function staticStandingRows() {
-  return teams.slice().sort((left, right) => Number(left.rank) - Number(right.rank)).map((team) => `<div class="table-row" data-card="standing-row" data-team="${escapeHtml(team.id)}"><span>${escapeHtml(team.rank)}</span><b>${escapeHtml(team.name)}</b><span>${escapeHtml(team.played)}</span><span>${escapeHtml(team.points)}</span><span>${escapeHtml(team.average)}</span><span>${escapeHtml(team.momentum)}</span></div>`).join("");
+  return standingsPreseason(false);
 }
 
 function staticHomeStandingRows() {
-  return teams.slice().sort((left, right) => Number(left.rank) - Number(right.rank)).slice(0, 5).map((team) => `<div class="standing-row" data-card="standing-row" data-team="${escapeHtml(team.id)}"><span>${escapeHtml(team.rank)}</span><b>${escapeHtml(team.name)}</b><span>${escapeHtml(team.points)} P</span><span>${escapeHtml(team.momentum)} M</span></div>`).join("");
+  return standingsPreseason(true);
+}
+
+function standingsPreseason(compact) {
+  return `<div class="standings-empty${compact ? " compact" : ""}" data-card="standings-preseason"><span class="card-kicker">Süper Lig · 2026/27</span><strong>2026/27 sezonu henüz başlamadı</strong><p>Süper Lig 14 Ağustos'ta başlayacak. İlk maçlar tamamlandığında puan tablosu otomatik güncellenecek.</p><a class="detail-link" href="./super-lig-fikstur.html">Sezon fikstürünü aç</a></div>`;
 }
 
 function staticMomentumRows() {

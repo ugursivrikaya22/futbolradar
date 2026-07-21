@@ -4,6 +4,7 @@
   var API_ROOT = "/api/";
   var DATA_ROOT = "/data/";
   var FETCH_TIMEOUT_MS = 6500;
+  var SUPER_LIG_SEASON_START = "2026-08-14";
   var cache = Object.create(null);
   var COMPETITION_ALIASES = {
     "super-lig": ["super lig", "trendyol super lig"],
@@ -1888,6 +1889,41 @@
       "<span>" + escapeHtml(displayValue(team.rank)) + "</span><b>" + escapeHtml(teamName) + "</b><span>" + escapeHtml(displayValue(team.played)) + "</span><span>" + escapeHtml(displayValue(team.points)) + "</span><span>" + escapeHtml(displayValue(team.average)) + "</span><span>" + escapeHtml(displayValue(team.momentum)) + "</span>" +
       "</div>"
     );
+  }
+
+  function isSuperLigStandingsView() {
+    var league = new URLSearchParams(window.location.search).get("league");
+    if (!league) return true;
+    return ["super-lig", "super lig", "trendyol super lig", "TSL"].some(function (value) {
+      return normalizeSearchText(value) === normalizeSearchText(league);
+    });
+  }
+
+  function standingsWithResults(teams) {
+    return (Array.isArray(teams) ? teams : []).filter(function (team) {
+      return Number(team.played) > 0 && team.points !== null && team.points !== undefined && team.rank !== null && team.rank !== undefined;
+    });
+  }
+
+  function standingsEmptyHtml(compact) {
+    var preseason = isSuperLigStandingsView() && todayInIstanbul() < SUPER_LIG_SEASON_START;
+    var title = preseason ? "2026/27 sezonu henüz başlamadı" : "Puan durumu henüz oluşmadı";
+    var text = preseason
+      ? "Süper Lig 14 Ağustos'ta başlayacak. İlk maçlar tamamlandığında puan tablosu otomatik güncellenecek."
+      : "İlk sonuçlar kesinleştiğinde sıralama ve puanlar burada gösterilecek.";
+    return (
+      '<div class="standings-empty' + (compact ? " compact" : "") + '" data-card="standings-preseason">' +
+      '<span class="card-kicker">Süper Lig · 2026/27</span><strong>' + escapeHtml(title) + '</strong><p>' + escapeHtml(text) + '</p>' +
+      '<a class="detail-link" href="./super-lig-fikstur.html">Sezon fikstürünü aç</a></div>'
+    );
+  }
+
+  function renderStandingsTable(teams, compact) {
+    var rows = standingsWithResults(teams);
+    if ((isSuperLigStandingsView() && todayInIstanbul() < SUPER_LIG_SEASON_START) || !rows.length) {
+      return standingsEmptyHtml(compact);
+    }
+    return sortedByRank(rows).map(compact ? renderHomeStandingRow : renderStandingRow).join("");
   }
 
   function renderHomeStandingRow(team) {
@@ -5463,7 +5499,7 @@
       document.querySelector('[data-api-target="standings"]'),
       "standings",
       function (teams) {
-        return sortedByRank(teams).map(renderStandingRow).join("");
+        return renderStandingsTable(teams, false);
       },
       "Puan durumu yüklenemedi"
     );
@@ -5472,7 +5508,7 @@
       document.querySelector('[data-api-target="home-standings"]'),
       "standings",
       function (teams) {
-        return sortedByRank(teams).map(renderHomeStandingRow).join("");
+        return renderStandingsTable(teams, true);
       },
       "Puan durumu yüklenemedi"
     );
