@@ -367,7 +367,7 @@ writePage("haberler.html", {
 }, fixtureFreshness);
 
 writePage("bugunun-maclari.html", {
-  "matches-page": emptyMatchState("today")
+  "matches-page": fixtureShowcase()
 }, fixtureFreshness);
 
 writePage("canli-skor.html", {

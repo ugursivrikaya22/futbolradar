@@ -254,6 +254,39 @@
     return cache[name];
   }
 
+  function applyRelativeTimes(root) {
+    var scope = root || document;
+    var now = Date.now();
+    scope.querySelectorAll("time[datetime]").forEach(function (el) {
+      var value = new Date(el.getAttribute("datetime"));
+      if (isNaN(value.getTime())) {
+        return;
+      }
+
+      var diff = now - value.getTime();
+      if (diff < 0 || diff > 7 * 86400000) {
+        return;
+      }
+
+      var minutes = Math.floor(diff / 60000);
+      var label;
+      if (minutes < 1) {
+        label = "az önce";
+      } else if (minutes < 60) {
+        label = minutes + " dk önce";
+      } else if (minutes < 1440) {
+        label = Math.floor(minutes / 60) + " saat önce";
+      } else {
+        label = Math.floor(minutes / 1440) + " gün önce";
+      }
+
+      if (!el.getAttribute("title")) {
+        el.setAttribute("title", el.textContent.trim());
+      }
+      el.textContent = label;
+    });
+  }
+
   function setContent(target, html) {
     if (!target) {
       return;
@@ -261,6 +294,7 @@
 
     target.innerHTML = html;
     target.dataset.state = "ready";
+    applyRelativeTimes(target);
   }
 
   function setEmpty(target, title, text) {
@@ -5528,6 +5562,7 @@
     initMatchExplorer();
     initSeasonCountdown();
     initCommandCounters();
+    applyRelativeTimes(document);
 
     renderInto(
       document.querySelector('[data-api-target="featured-match"]'),
@@ -5556,6 +5591,11 @@
         var filteredMatches = Array.isArray(matches) ? filterMatchesByStatus(matches) : [];
         if (!filteredMatches.length) {
           var params = new URLSearchParams(window.location.search);
+          var hasFilter = Boolean(params.get("status") || params.get("league") || params.get("competition") || params.get("date"));
+          if (!hasFilter) {
+            return "";
+          }
+
           var selectedDate = params.get("date") || todayInIstanbul();
           return matchEmptyStateHtml(
             "Bu ölçütlerde doğrulanmış maç yok",
