@@ -249,7 +249,7 @@ function pageHtml(pair) {
         <a class="brand" href="../index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
         <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
         <div class="nav-menu" id="primary-menu">
-          <div class="nav-links"><a href="../bugunun-maclari.html">Bugünkü Maçlar</a><a href="../canli-skor.html">Canlı Skor</a><a href="../puan-durumu.html">Puan Durumu</a><a href="../takimlar.html">Takımlar</a><a href="../oyuncu-radari.html">Oyuncu Radarı</a><a href="../momentum.html">Momentum</a></div>
+          <div class="nav-links"><span class="nav-group" data-nav-group="populer"><span class="nav-group-label">Hızlı Erişim</span><a href="../bugunun-maclari.html">Bugünkü Maçlar</a><a href="../canli-skor.html">Canlı Skor</a><a href="../puan-durumu.html">Puan Durumu</a><a href="../takimlar.html">Takımlar</a></span><span class="nav-group" data-nav-group="radar"><span class="nav-group-label">Radar Analiz</span><a href="../momentum.html">Momentum</a><a href="../oyuncu-radari.html">Oyuncu Radarı</a><a href="../mac-merkezi.html">Maç Analizleri</a></span></div>
           <a class="cta" href="../index.html#radar-sinyalleri">Radar Sinyalleri</a>
         </div>
       </nav>
@@ -301,7 +301,7 @@ function pageHtml(pair) {
         <a href="../oyuncu-karsilastir.html?players=${escapeHtml(left.id)},${escapeHtml(right.id)}">Interaktif kiyas</a>
       </section>
     </main>
-    <footer class="footer"><div class="container footer-links">FutbolRadar · Oyuncu karşılaştırmaları · <a href="../hakkinda.html">Hakkında</a> · <a href="../veri-notu.html">Veri Notu</a> · <a href="../iletisim.html">İletişim</a></div></footer>
+    <footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-col"><strong>Popüler</strong><a href="../bugunun-maclari.html">Bugünkü Maçlar</a><a href="../canli-skor.html">Canlı Skor</a><a href="../puan-durumu.html">Puan Durumu</a><a href="../takimlar.html">Takımlar</a></div><div class="footer-col"><strong>Radar Analiz</strong><a href="../momentum.html">Momentum</a><a href="../super-lig-form-durumu.html">Form Durumu</a><a href="../mac-merkezi.html">Maç Analizleri</a><a href="../istatistik-merkezi.html">İstatistik Merkezi</a></div><div class="footer-col"><strong>Büyük Takımlar</strong><a href="../galatasaray-form-durumu.html">Galatasaray</a><a href="../fenerbahce-form-durumu.html">Fenerbahçe</a><a href="../besiktas-form-durumu.html">Beşiktaş</a><a href="../trabzonspor-form-durumu.html">Trabzonspor</a></div><div class="footer-col"><strong>Kurumsal</strong><a href="../hakkinda.html">Hakkında</a><a href="../veri-notu.html">Veri Notu</a><a href="../iletisim.html">İletişim</a><a href="../gizlilik.html">Gizlilik</a><a href="../kullanim-sartlari.html">Kullanım Şartları</a></div></div><p class="footer-note">FutbolRadar verileri bilgilendirme ve analiz amaçlıdır; kesin tahmin veya bahis yönlendirmesi değildir.</p><div class="footer-links">FutbolRadar · Canlı skor ve futbol istatistikleri</div></div></footer>
     <script src="../site.js" defer></script>
     <script src="../app.js" defer></script>
   </body>
@@ -381,7 +381,7 @@ function comparisonIndexHtml(pairs) {
         <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
         <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
         <div class="nav-menu" id="primary-menu">
-          <div class="nav-links"><a href="./bugunun-maclari.html">Bugünkü Maçlar</a><a href="./canli-skor.html">Canlı Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takimlar.html">Takımlar</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./momentum.html">Momentum</a></div>
+          <div class="nav-links"><span class="nav-group" data-nav-group="populer"><span class="nav-group-label">Hızlı Erişim</span><a href="./bugunun-maclari.html">Bugünkü Maçlar</a><a href="./canli-skor.html">Canlı Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takimlar.html">Takımlar</a></span><span class="nav-group" data-nav-group="radar"><span class="nav-group-label">Radar Analiz</span><a href="./momentum.html">Momentum</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./mac-merkezi.html">Maç Analizleri</a></span></div>
           <a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a>
         </div>
       </nav>
@@ -409,7 +409,7 @@ function comparisonIndexHtml(pairs) {
         <a href="./transfer-radari.html">Transfer Radar</a>
       </section>
     </main>
-    <footer class="footer"><div class="container footer-links">FutbolRadar · Oyuncu karşılaştırmaları · <a href="./hakkinda.html">Hakkında</a> · <a href="./veri-notu.html">Veri Notu</a> · <a href="./iletisim.html">İletişim</a></div></footer>
+    <footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-col"><strong>Popüler</strong><a href="./bugunun-maclari.html">Bugünkü Maçlar</a><a href="./canli-skor.html">Canlı Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takimlar.html">Takımlar</a></div><div class="footer-col"><strong>Radar Analiz</strong><a href="./momentum.html">Momentum</a><a href="./super-lig-form-durumu.html">Form Durumu</a><a href="./mac-merkezi.html">Maç Analizleri</a><a href="./istatistik-merkezi.html">İstatistik Merkezi</a></div><div class="footer-col"><strong>Büyük Takımlar</strong><a href="./galatasaray-form-durumu.html">Galatasaray</a><a href="./fenerbahce-form-durumu.html">Fenerbahçe</a><a href="./besiktas-form-durumu.html">Beşiktaş</a><a href="./trabzonspor-form-durumu.html">Trabzonspor</a></div><div class="footer-col"><strong>Kurumsal</strong><a href="./hakkinda.html">Hakkında</a><a href="./veri-notu.html">Veri Notu</a><a href="./iletisim.html">İletişim</a><a href="./gizlilik.html">Gizlilik</a><a href="./kullanim-sartlari.html">Kullanım Şartları</a></div></div><p class="footer-note">FutbolRadar verileri bilgilendirme ve analiz amaçlıdır; kesin tahmin veya bahis yönlendirmesi değildir.</p><div class="footer-links">FutbolRadar · Canlı skor ve futbol istatistikleri</div></div></footer>
     <script src="./site.js" defer></script>
     <script src="./app.js" defer></script>
   </body>

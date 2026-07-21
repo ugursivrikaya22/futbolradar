@@ -10400,6 +10400,95 @@ h1 {
   border-top: 1px solid var(--line);
 }
 
+/* --- Navigasyon grupları: masaüstünde ayraçlı, mobilde başlıklı bölümler --- */
+.nav-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.nav-group .nav-group-label {
+  display: none;
+}
+
+.nav-group + .nav-group {
+  margin-left: 8px;
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+}
+
+@media (max-width: 1060px) {
+  .nav .nav-links .nav-group {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    width: 100%;
+  }
+
+  .nav-group + .nav-group {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: 0;
+    margin-top: 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+  }
+
+  .nav-group .nav-group-label {
+    display: block;
+    padding: 0 14px;
+    color: var(--cyan);
+    font-size: 0.7rem;
+    font-weight: 850;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}
+
+/* --- Gruplu footer --- */
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr));
+  gap: 22px 26px;
+  padding: 6px 0 18px;
+}
+
+.footer-col {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.footer-col strong {
+  margin-bottom: 2px;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.footer-col a {
+  width: fit-content;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.footer-col a:hover,
+.footer-col a:focus-visible {
+  color: var(--green);
+  outline: 0;
+}
+
+.footer-note {
+  margin: 14px 0 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(134, 255, 218, 0.1);
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
 @media (max-width: 600px) {
   .popular-card { padding: 18px; }
   .popular-card .popular-side .team-logo,
