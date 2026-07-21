@@ -5,6 +5,16 @@
   var DATA_ROOT = "/data/";
   var FETCH_TIMEOUT_MS = 6500;
   var cache = Object.create(null);
+  var COMPETITION_ALIASES = {
+    "super-lig": ["super lig", "trendyol super lig"],
+    "premier-league": ["premier league", "english premier league"],
+    "la-liga": ["la liga", "primera division"],
+    "serie-a": ["serie a", "italian serie a"],
+    bundesliga: ["bundesliga", "german bundesliga"],
+    "ligue-1": ["ligue 1", "french ligue 1"],
+    "sampiyonlar-ligi": ["sampiyonlar ligi", "uefa sampiyonlar ligi", "champions league", "uefa champions league"],
+    "avrupa-ligi": ["avrupa ligi", "uefa avrupa ligi", "europa league", "uefa europa league"]
+  };
   var RESOURCE_CONFIG = {
     matches: { api: "matches", fallback: "matches", reportSource: true },
     standings: { api: "standings", fallback: "teams", reportSource: true },
@@ -201,7 +211,7 @@
       var fallbackUrl = DATA_ROOT + config.fallback + ".json";
       var fallback = function () {
         return fetchJson(fallbackUrl).then(function (result) {
-          return result.data;
+          return filterFallbackData(name, result.data);
         });
       };
 
@@ -250,6 +260,42 @@
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/ı/g, "i");
+  }
+
+  function matchDateValue(match) {
+    var value = match && (match.kickoff || match.date || match.utcDate);
+    return value ? String(value).slice(0, 10) : "";
+  }
+
+  function matchCompetitionMatches(match, selectedLeague) {
+    if (!selectedLeague || selectedLeague === "all") {
+      return true;
+    }
+
+    if (match && match.competitionId === selectedLeague) {
+      return true;
+    }
+
+    var normalizedLeague = normalizeSearchText(match && (match.league || match.competition))
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+    return (COMPETITION_ALIASES[selectedLeague] || [selectedLeague.replace(/-/g, " ")]).some(function (alias) {
+      return normalizedLeague === alias || normalizedLeague.indexOf(alias) !== -1;
+    });
+  }
+
+  function filterFallbackData(name, data) {
+    if (name !== "matches" || !Array.isArray(data)) {
+      return data;
+    }
+
+    var params = new URLSearchParams(window.location.search);
+    var selectedDate = params.get("date") || todayInIstanbul();
+    var selectedLeague = params.get("league") || "all";
+
+    return data.filter(function (match) {
+      return matchDateValue(match) === selectedDate && matchCompetitionMatches(match, selectedLeague);
+    });
   }
 
   function initHomeSearch() {
@@ -1496,43 +1542,63 @@
   }
 
   function renderFeaturedMatch(matches) {
-    var match = matches.find(function (item) {
-      return item.featured;
-    }) || matches[0];
-
-    if (!match) {
-      return "";
-    }
-
-    var homeMomentum = matchMetric(match, "homeMomentum");
-    var awayMomentum = matchMetric(match, "awayMomentum");
-    var homeShort = displayValue(match.homeShort || String(match.homeTeam || "").slice(0, 3).toUpperCase());
-    var awayShort = displayValue(match.awayShort || String(match.awayTeam || "").slice(0, 3).toUpperCase());
+    var list = Array.isArray(matches) ? matches.slice() : [];
+    var liveCount = list.filter(isLiveMatch).length;
+    var finishedCount = list.filter(function (match) {
+      return ["FINISHED", "FT", "AET", "PEN"].includes(String(match.status || match.providerStatus || "").toUpperCase());
+    }).length;
+    var upcomingCount = list.filter(function (match) {
+      return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(String(match.status || match.providerStatus || "").toUpperCase());
+    }).length;
+    var leagueCount = new Set(list.map(function (match) { return match.league; }).filter(Boolean)).size;
+    var ordered = list.sort(function (left, right) {
+      var leftRank = isLiveMatch(left) ? 0 : (String(left.status || "").toUpperCase() === "FINISHED" ? 2 : 1);
+      var rightRank = isLiveMatch(right) ? 0 : (String(right.status || "").toUpperCase() === "FINISHED" ? 2 : 1);
+      return leftRank - rightRank || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
+    });
+    var rows = ordered.slice(0, 3).map(function (match) {
+      var score = matchScoreText(match.score);
+      var result = score !== "-" ? score : displayValue(match.time || statusTr(match.status));
+      return '<a class="home-match-command-row" href="' + escapeHtml(matchDetailHref(match)) + '">' +
+        '<span><i class="' + (isLiveMatch(match) ? "is-live" : "") + '"></i>' + escapeHtml(match.league) + '</span>' +
+        '<strong>' + escapeHtml(match.homeTeam) + ' <em>–</em> ' + escapeHtml(match.awayTeam) + '</strong>' +
+        '<b>' + escapeHtml(result) + '</b>' +
+        '</a>';
+    }).join("");
 
     return (
-      '<div class="match-top">' +
-      '<span class="status-dot">Günün Radar Maçı</span>' +
-      '<span class="match-date">' + escapeHtml(match.time) + " · " + escapeHtml(match.league) + "</span>" +
-      "</div>" +
-      '<div class="versus">' +
-      '<div class="club"><b>' + escapeHtml(match.homeTeam) + "</b><span>" + escapeHtml(homeShort) + " Momentum: " + escapeHtml(displayValue(homeMomentum)) + "</span></div>" +
-      '<span class="vs-pill">VS</span>' +
-      '<div class="club"><b>' + escapeHtml(match.awayTeam) + "</b><span>" + escapeHtml(awayShort) + " Momentum: " + escapeHtml(displayValue(awayMomentum)) + "</span></div>" +
-      "</div>" +
-      barRowHtml(match.homeTeam, displayValue(homeMomentum), homeMomentum) +
-      barRowHtml(match.awayTeam, displayValue(awayMomentum), awayMomentum) +
-      '<div class="radar-visual" aria-hidden="true"><span class="radar-ring"></span></div>' +
-      '<div class="prediction-grid">' +
-      '<div class="prediction"><span>AI Tahmin</span><b>' + escapeHtml(displayValue(match.aiPrediction)) + "</b></div>" +
-      '<div class="prediction"><span>Gol Potansiyeli</span><b>' + escapeHtml(displayValue(match.goalPotential)) + "</b></div>" +
-      '<div class="prediction"><span>Risk</span><b>' + escapeHtml(displayValue(match.risk)) + "</b></div>" +
-      "</div>" +
-      '<div class="player-actions match-actions featured-match-actions">' +
-      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Mac detay merkezi</a>' +
-      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.homeTeam })) + '">Ev radar</a>' +
-      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.awayTeam })) + '">Dep. radar</a>' +
-      "</div>"
+      '<div class="home-match-command">' +
+      '<div class="home-match-command-head"><div><span>Bugünün maç merkezi</span><strong>' + escapeHtml(formatMatchDate(todayInIstanbul())) + '</strong></div><a href="./bugunun-maclari.html">Tümünü aç</a></div>' +
+      '<div class="home-match-command-metrics" aria-label="Bugünün maç özeti">' +
+      '<a href="./canli-skor.html"><span>Canlı</span><b class="live-number">' + liveCount + '</b></a>' +
+      '<a href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>' + upcomingCount + '</b></a>' +
+      '<a href="./bugunun-maclari.html?status=finished"><span>Tamamlanan</span><b>' + finishedCount + '</b></a>' +
+      '<a href="./bugunun-maclari.html"><span>Aktif lig</span><b>' + leagueCount + '</b></a>' +
+      '</div>' +
+      (rows ? '<div class="home-match-command-list">' + rows + '</div>' : '<div class="home-match-command-empty"><strong>Bugün doğrulanmış maç görünmüyor.</strong><span>Önceki ve sonraki günleri maç merkezinden kontrol edebilirsin.</span></div>') +
+      '<div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./bugunun-maclari.html">Maç programı</a><a class="button secondary" href="./canli-skor.html">Canlı skor</a></div>' +
+      '</div>'
     );
+  }
+
+  function renderMatchesByLeague(matches, renderer) {
+    var groups = new Map();
+    matches.forEach(function (match) {
+      var league = match.league || "Diğer karşılaşmalar";
+      if (!groups.has(league)) {
+        groups.set(league, []);
+      }
+      groups.get(league).push(match);
+    });
+
+    return Array.from(groups.entries()).map(function (entry) {
+      var league = entry[0];
+      var leagueMatches = entry[1];
+      return '<section class="league-match-group" data-league-group="' + escapeHtml(league) + '">' +
+        '<header><div><span>Lig / turnuva</span><h2>' + escapeHtml(league) + '</h2></div><b>' + leagueMatches.length + ' maç</b></header>' +
+        '<div class="league-match-grid">' + leagueMatches.map(renderer).join("") + '</div>' +
+        '</section>';
+    }).join("");
   }
 
   function renderHomeMatch(match) {
@@ -1615,14 +1681,16 @@
   }
 
   function matchEmptyStateHtml(title, text, compact) {
+    var params = new URLSearchParams(window.location.search);
+    var selectedDate = params.get("date") || todayInIstanbul();
     return (
       '<article class="data-empty' + (compact ? " compact" : "") + '" data-card="empty-state">' +
       "<strong>" + escapeHtml(title || "Bugün doğrulanmış maç yok") + "</strong>" +
       "<span>" + escapeHtml(text || "Bugünün maç listesi resmi veriyle doğrulanınca burada görünecek.") + "</span>" +
       '<div class="match-empty-actions">' +
-      '<a class="detail-link" href="./super-lig-fikstur.html">Süper Lig fikstürünü aç</a>' +
-      '<a class="detail-link ghost" href="./puan-durumu.html">Puan durumuna git</a>' +
-      '<a class="detail-link ghost" href="./oyuncu-radari.html">Oyuncu radarını aç</a>' +
+      '<a class="detail-link" href="' + escapeHtml(matchExplorerHref(shiftDate(selectedDate, -1), "all")) + '">Önceki günü aç</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(matchExplorerHref(shiftDate(selectedDate, 1), "all")) + '">Sonraki günü aç</a>' +
+      '<a class="detail-link ghost" href="./super-lig-fikstur.html">Sezon fikstürüne git</a>' +
       "</div>" +
       "</article>"
     );
@@ -5295,7 +5363,7 @@
           return "";
         }
 
-        return matches.map(renderHomeMatch).join("");
+        return matches.slice(0, 8).map(renderHomeMatch).join("");
       },
       "Bugunun maçları yüklenemedi"
     );
@@ -5314,7 +5382,7 @@
           );
         }
 
-        return filteredMatches.map(renderMatchPageCard).join("");
+        return renderMatchesByLeague(filteredMatches, renderMatchPageCard);
       },
       "Maç listesi yüklenemedi"
     );
@@ -5328,7 +5396,7 @@
           return "";
         }
 
-        return liveMatches.map(renderLiveMatch).join("");
+        return renderMatchesByLeague(liveMatches, renderLiveMatch);
       },
       "Canli skor verisi yüklenemedi"
     );

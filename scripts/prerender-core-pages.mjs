@@ -95,13 +95,21 @@ function staticMatchCard(match, variant) {
 function emptyMatchState(variant) {
   const isFeatured = variant === "featured";
   const isLive = variant === "live";
+  if (isFeatured) {
+    return `<div class="home-match-command">
+      <div class="home-match-command-head"><div><span>Bugünün maç merkezi</span><strong>Program kontrol ediliyor</strong></div><a href="./bugunun-maclari.html">Tümünü aç</a></div>
+      <div class="home-match-command-metrics" aria-label="Bugünün maç özeti"><a href="./canli-skor.html"><span>Canlı</span><b class="live-number">0</b></a><a href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>0</b></a><a href="./bugunun-maclari.html?status=finished"><span>Tamamlanan</span><b>0</b></a><a href="./bugunun-maclari.html"><span>Aktif lig</span><b>0</b></a></div>
+      <div class="home-match-command-empty"><strong>Maç programı yükleniyor.</strong><span>Bugünün doğrulanmış karşılaşmaları burada listelenecek.</span></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./bugunun-maclari.html">Maç programı</a><a class="button secondary" href="./canli-skor.html">Canlı skor</a></div>
+    </div>`;
+  }
   const title = isFeatured
-    ? "Günün radar maçı bekleniyor"
+    ? "Bugünün maç merkezi"
     : isLive
       ? "Şu anda canlı maç yok"
       : "Bugün doğrulanmış maç yok";
   const text = isFeatured
-    ? "Bugünün doğrulanmış maçları geldiğinde form, momentum ve maç önü sinyalleri burada açılacak."
+    ? "Bugünün doğrulanmış karşılaşmaları burada listelenecek."
     : isLive
       ? "Canlı maç başladığında skor, tempo ve maç içi sinyaller bu alanda görünecek."
       : "Bugünün maç listesi doğrulandığında burada gösterilecek. Sezon eşleşmelerini fikstür sayfasından inceleyebilirsin.";
@@ -112,8 +120,8 @@ function emptyMatchState(variant) {
     <strong>${escapeHtml(title)}</strong>
     <span>${escapeHtml(text)}</span>
     <div class="match-empty-actions">
-      <a class="detail-link" href="./super-lig-fikstur.html">Süper Lig fikstürünü aç</a>
-      <a class="detail-link ghost" href="./puan-durumu.html">Puan durumuna git</a>
+      <a class="detail-link" href="./bugunun-maclari.html">Günün tüm maçlarını aç</a>
+      <a class="detail-link ghost" href="./super-lig-fikstur.html">Sezon fikstürüne git</a>
       <span class="tag soft">${escapeHtml(tag)}</span>
     </div>
   </${element}>`;
