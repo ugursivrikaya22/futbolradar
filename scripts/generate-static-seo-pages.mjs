@@ -343,6 +343,7 @@ function pageHtml(page) {
   <body class="subpage">
 ${nav}
     <main class="container">
+      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span class="sep">/</span><span aria-current="page">${page.h1}</span></nav>
       <section class="hero">
         <div class="hero-row">
           <div>
