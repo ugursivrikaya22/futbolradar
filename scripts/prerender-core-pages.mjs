@@ -13,6 +13,7 @@ const news = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "u
 const freshnessData = JSON.parse(fs.readFileSync(path.join(root, "data", "freshness.json"), "utf8"));
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+const matchesData = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
@@ -317,6 +318,35 @@ function fixturePopularCard(match) {
   return `<article class="popular-card" data-card="fixture-popular"><div class="popular-card-top"><span class="popular-card-league">Süper Lig · ${escapeHtml(match.roundLabel || "Fikstür")}</span><span class="status-badge upcoming">${escapeHtml(match.dateRange || "Tarih bekleniyor")}</span></div><div class="popular-fixture"><div class="popular-side"><span class="logo-fallback" style="width:46px;height:46px" aria-hidden="true">${escapeHtml(homeInitial)}</span><strong>${escapeHtml(match.homeTeam)}</strong></div><div class="popular-score"><span class="vs">VS</span></div><div class="popular-side"><span class="logo-fallback" style="width:46px;height:46px" aria-hidden="true">${escapeHtml(awayInitial)}</span><strong>${escapeHtml(match.awayTeam)}</strong></div></div><div class="popular-card-foot"><a class="cta-button small" href="./mac/${escapeHtml(matchSlug(match))}.html">Maç radarını aç</a></div></article>`;
 }
 
+function upcomingKickoffLabel(kickoff) {
+  const raw = String(kickoff || "");
+  const dateMatch = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!dateMatch) return "";
+  const label = `${Number(dateMatch[3])} ${TR_MONTHS[Number(dateMatch[2]) - 1] || ""}`;
+  const timeMatch = raw.match(/T(\d{2}):(\d{2})/);
+  return timeMatch ? `${label} ${timeMatch[1]}.${timeMatch[2]}` : label;
+}
+
+function liveScoreFallback() {
+  const upcoming = (Array.isArray(matchesData) ? matchesData : [])
+    .filter((match) => ["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(String(match.status || "").toUpperCase()))
+    .filter((match) => String(match.kickoff || "") >= String(new Date().toISOString().slice(0, 10)))
+    .sort((left, right) => String(left.kickoff || "").localeCompare(String(right.kickoff || "")))
+    .slice(0, 3);
+
+  const empty = emptyMatchState("live");
+  if (!upcoming.length) {
+    return empty;
+  }
+
+  const cards = upcoming.map((match) => {
+    const dateOnly = String(match.kickoff || "").slice(0, 10);
+    return `<a class="analysis-card" data-card="live-upcoming" href="./bugunun-maclari.html?date=${escapeHtml(dateOnly)}"><span class="analysis-kicker">${escapeHtml(match.league || "Maç")} · ${escapeHtml(upcomingKickoffLabel(match.kickoff))}</span><div class="analysis-card-title"><h3>${escapeHtml(match.homeTeam)} – ${escapeHtml(match.awayTeam)}</h3></div><p>Maç başladığında canlı skor ve tempo bu sayfada yayınlanacak.</p></a>`;
+  }).join("");
+
+  return `${empty}<div class="section-header live-upcoming-header"><div class="section-header-text"><span class="section-kicker">Sıradaki program</span></div></div><div class="analysis-grid live-upcoming-strip">${cards}</div>`;
+}
+
 function fixtureShowcase() {
   const opening = confirmed.filter((match) => match.round === 1);
   const prioritized = [
@@ -371,7 +401,7 @@ writePage("bugunun-maclari.html", {
 }, fixtureFreshness);
 
 writePage("canli-skor.html", {
-  "live-score": emptyMatchState("live")
+  "live-score": liveScoreFallback()
 }, fixtureFreshness);
 
 writePage("puan-durumu.html", {

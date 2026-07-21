@@ -9738,6 +9738,16 @@ h1 {
   padding: 34px 0 10px;
 }
 
+/* Canlı skor sayfası: sıradaki program şeridi tam genişlik kaplar */
+.live-upcoming-header,
+.live-upcoming-strip {
+  grid-column: 1 / -1;
+}
+
+.live-upcoming-header {
+  margin: 4px 0 -6px;
+}
+
 /* Radar ticker yerleşimi */
 .ticker-zone {
   padding-top: 16px;
