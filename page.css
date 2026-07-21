@@ -9677,3 +9677,681 @@ h1 {
     flex-direction: column;
   }
 }
+
+/* ==========================================================================
+   FutbolRadar iki katmanlı tasarım sistemi
+   Popüler katman (hızlı tüketim) ile Radar/analiz katmanını (derin okuma)
+   görsel olarak net ayıran ortak bileşenler. Mevcut token seti kullanılır:
+   --green (accent), --cyan (accent-2), --amber (uyarı), --red (risk),
+   --panel, --line, --line-strong, --muted, --soft, --shadow, --radius.
+   ========================================================================== */
+
+/* --- Katman başlığı: bir bölümün popüler mi radar mı olduğunu belli eder --- */
+.layer-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px 14px;
+  margin: 0 0 4px;
+}
+
+.layer-heading .layer-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.layer-heading .layer-tag.popular {
+  color: #03100d;
+  background: linear-gradient(135deg, rgba(128, 255, 155, 0.96), rgba(77, 229, 255, 0.9));
+}
+
+.layer-heading .layer-tag.radar {
+  color: var(--cyan);
+  border: 1px solid rgba(77, 229, 255, 0.34);
+  background: rgba(77, 229, 255, 0.08);
+}
+
+/* --- Ortak bölüm başlığı --- */
+.section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin-bottom: 18px;
+}
+
+.section-header .section-header-text {
+  min-width: 0;
+  max-width: 640px;
+}
+
+.section-header h2 {
+  margin: 6px 0 6px;
+  font-size: clamp(1.35rem, 1rem + 1.6vw, 1.9rem);
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+
+.section-header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.section-header .section-kicker {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   POPÜLER KART — büyük, yüksek kontrast, az veri, büyük skor/isim, kısa CTA
+   ========================================================================== */
+.popular-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+}
+
+.popular-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 200px;
+  padding: 22px 22px 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: calc(var(--radius) + 4px);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.025)),
+    var(--panel);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.popular-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(160deg, rgba(128, 255, 155, 0.16), rgba(77, 229, 255, 0.06) 44%, transparent 68%);
+  opacity: 0.9;
+}
+
+.popular-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(128, 255, 155, 0.5);
+}
+
+.popular-card .popular-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.popular-card .popular-card-league {
+  color: var(--soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Ev / deplasman + logo + büyük skor satırı */
+.popular-card .popular-fixture {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.popular-card .popular-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  min-width: 0;
+}
+
+.popular-card .popular-side .team-logo,
+.popular-card .popular-side img,
+.popular-card .popular-side .logo-fallback {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+}
+
+.popular-card .popular-side strong {
+  font-size: 0.98rem;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+
+.popular-card .popular-score {
+  font-size: clamp(1.8rem, 1.3rem + 2vw, 2.6rem);
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.popular-card .popular-score .vs {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.popular-card .popular-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.popular-card .popular-card-foot {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   ANALİZ KARTI — sakin, metrik odaklı, radar barları, açıklama, form trendi
+   ========================================================================== */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 14px;
+}
+
+.analysis-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    var(--panel);
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.24);
+}
+
+.analysis-card .analysis-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.analysis-card .analysis-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.analysis-card .analysis-card-title .team-logo,
+.analysis-card .analysis-card-title img,
+.analysis-card .analysis-card-title .logo-fallback {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+}
+
+.analysis-card .analysis-card-title h3 {
+  margin: 0;
+  font-size: 1.02rem;
+  overflow-wrap: anywhere;
+}
+
+.analysis-card .analysis-kicker {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.analysis-card .analysis-metric {
+  color: var(--cyan);
+  font-size: 1.7rem;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.analysis-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+/* Radar barı: etiketli, 0-100 metriği görselleştirir */
+.radar-bar {
+  display: grid;
+  grid-template-columns: 84px 1fr 34px;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--soft);
+}
+
+.radar-bar .radar-bar-track {
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.radar-bar .radar-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--green), var(--cyan));
+}
+
+.radar-bar .radar-bar-value {
+  text-align: right;
+  font-weight: 850;
+  color: var(--text);
+}
+
+/* Form trendi: G / B / M sonuç noktaları */
+.form-trend {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.form-trend span {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 850;
+  color: #03100d;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.form-trend span.win { background: var(--green); }
+.form-trend span.draw { background: var(--amber); }
+.form-trend span.loss { background: var(--red); color: #1a0608; }
+
+/* ==========================================================================
+   ROZETLER
+   ========================================================================== */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 850;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--soft);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.status-badge::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-badge.live {
+  color: var(--green);
+  border-color: rgba(128, 255, 155, 0.4);
+  background: rgba(128, 255, 155, 0.1);
+}
+
+.status-badge.live::before {
+  box-shadow: 0 0 0 0 rgba(128, 255, 155, 0.55);
+  animation: fr-pulse 1.8s infinite;
+}
+
+.status-badge.upcoming {
+  color: var(--cyan);
+  border-color: rgba(77, 229, 255, 0.36);
+  background: rgba(77, 229, 255, 0.08);
+}
+
+.status-badge.finished {
+  color: var(--muted);
+}
+
+@keyframes fr-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(128, 255, 155, 0.5); }
+  70% { box-shadow: 0 0 0 7px rgba(128, 255, 155, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(128, 255, 155, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-badge.live::before { animation: none; }
+}
+
+.risk-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 850;
+  border: 1px solid currentColor;
+}
+
+.risk-badge.low { color: var(--green); background: rgba(128, 255, 155, 0.08); }
+.risk-badge.medium { color: var(--amber); background: rgba(255, 209, 102, 0.1); }
+.risk-badge.high { color: var(--red); background: rgba(255, 107, 118, 0.1); }
+
+/* ==========================================================================
+   BUTONLAR & LİNKLER
+   ========================================================================== */
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(128, 255, 155, 0.54);
+  background: linear-gradient(135deg, rgba(128, 255, 155, 0.96), rgba(77, 229, 255, 0.9));
+  color: #03100d;
+  font-weight: 850;
+  box-shadow: 0 18px 48px rgba(77, 229, 255, 0.18);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.cta-button:hover,
+.cta-button:focus-visible {
+  transform: translateY(-2px);
+  outline: 0;
+}
+
+.cta-button.small { min-height: 40px; padding: 0 15px; font-size: 0.9rem; }
+
+/* Analiz/radar katmanına götüren sakin ghost link */
+.deep-link-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 15px;
+  border-radius: 999px;
+  border: 1px solid rgba(77, 229, 255, 0.34);
+  color: var(--cyan);
+  background: rgba(77, 229, 255, 0.06);
+  font-weight: 800;
+  font-size: 0.9rem;
+  transition: border-color 180ms ease, background 180ms ease;
+}
+
+.deep-link-button::after {
+  content: "›";
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.deep-link-button:hover,
+.deep-link-button:focus-visible {
+  border-color: rgba(77, 229, 255, 0.6);
+  background: rgba(77, 229, 255, 0.12);
+  outline: 0;
+}
+
+/* ==========================================================================
+   BOŞ DURUM & BREADCRUMB
+   ========================================================================== */
+.empty-state {
+  display: grid;
+  place-content: center;
+  gap: 10px;
+  min-height: 140px;
+  padding: 22px;
+  border: 1px dashed rgba(134, 255, 218, 0.24);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  text-align: center;
+}
+
+.empty-state strong {
+  color: var(--text);
+  font-size: 1.02rem;
+}
+
+.empty-state span {
+  max-width: 460px;
+  margin-inline: auto;
+  font-size: 0.88rem;
+}
+
+.empty-state .empty-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 4px;
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 18px 0 6px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.breadcrumb a {
+  color: var(--soft);
+}
+
+.breadcrumb a:hover,
+.breadcrumb a:focus-visible {
+  color: var(--green);
+  outline: 0;
+}
+
+.breadcrumb li,
+.breadcrumb ol {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.breadcrumb .sep {
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.breadcrumb [aria-current="page"] {
+  color: var(--text);
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   BÜYÜK TAKIMLAR bloğu (popüler katman) + RADAR ANALİZ girişi (analiz teaser)
+   ========================================================================== */
+.big-team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 14px;
+}
+
+.big-team-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: calc(var(--radius) + 2px);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    var(--panel);
+  box-shadow: var(--shadow);
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+
+.big-team-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(128, 255, 155, 0.5);
+}
+
+.big-team-card .big-team-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.big-team-card .big-team-head .team-logo,
+.big-team-card .big-team-head img,
+.big-team-card .big-team-head .logo-fallback {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+}
+
+.big-team-card .big-team-head strong {
+  font-size: 1.08rem;
+  font-weight: 850;
+}
+
+.big-team-card .big-team-head span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.big-team-card .big-team-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+}
+
+.big-team-card .big-team-metrics div {
+  display: flex;
+  flex-direction: column;
+}
+
+.big-team-card .big-team-metrics b {
+  font-size: 1.25rem;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.big-team-card .big-team-metrics span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.big-team-card .big-team-foot {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Radar analiz girişi — daha küçük, premium teaser kartları */
+.radar-entry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+}
+
+.radar-entry-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid rgba(77, 229, 255, 0.22);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(180deg, rgba(77, 229, 255, 0.05), rgba(255, 255, 255, 0.012)),
+    var(--panel);
+  color: inherit;
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+
+.radar-entry-card:hover,
+.radar-entry-card:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(77, 229, 255, 0.5);
+  outline: 0;
+}
+
+.radar-entry-card .radar-entry-kicker {
+  color: var(--cyan);
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.radar-entry-card strong {
+  font-size: 1.02rem;
+  font-weight: 850;
+}
+
+.radar-entry-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.radar-entry-card .radar-entry-go {
+  margin-top: auto;
+  color: var(--cyan);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+/* Katman ayracı: popüler bloğun bittiği, radar katmanının başladığı yer */
+.layer-divider {
+  margin: 6px 0 2px;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 600px) {
+  .popular-card { padding: 18px; }
+  .popular-card .popular-side .team-logo,
+  .popular-card .popular-side img,
+  .popular-card .popular-side .logo-fallback { width: 40px; height: 40px; flex-basis: 40px; }
+  .radar-bar { grid-template-columns: 68px 1fr 30px; }
+}
