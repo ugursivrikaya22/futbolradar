@@ -26,6 +26,7 @@
     momentum: { api: "momentum", fallback: "momentum", reportSource: true },
     signals: { api: "signals", fallback: "signals", reportSource: true },
     analyses: { api: "analyses", fallback: "analyses", reportSource: true },
+    news: { fallback: "news", reportSource: false },
     superLigFixtures: { fallback: "super-lig-fixtures", reportSource: false }
   };
 
@@ -200,6 +201,16 @@
     });
   }
 
+  function mergeMatchCollections(providerMatches, curatedMatches) {
+    var seen = Object.create(null);
+    return [].concat(providerMatches || [], curatedMatches || []).filter(function (match) {
+      var key = String(match && match.id || [match && match.homeTeam, match && match.awayTeam, match && match.kickoff].join("|")).toLocaleLowerCase("tr-TR");
+      if (!key || seen[key]) return false;
+      seen[key] = true;
+      return true;
+    });
+  }
+
   function loadData(name) {
     var config = RESOURCE_CONFIG[name] || { fallback: name, reportSource: false };
 
@@ -221,7 +232,17 @@
             if (config.reportSource) {
               updateUpdatedAtLabel(result.updatedAt);
             }
-            return result.data;
+            if (name !== "matches") {
+              return result.data;
+            }
+
+            return fallback()
+              .then(function (curatedMatches) {
+                return mergeMatchCollections(result.data, curatedMatches);
+              })
+              .catch(function () {
+                return result.data;
+              });
           })
           .catch(fallback);
       } else {
@@ -2566,6 +2587,22 @@
       '<article class="card" id="' + escapeHtml(analysis.id) + '" data-card="analysis">' +
       "<h2>" + escapeHtml(analysis.title) + "</h2><p>" + escapeHtml(analysis.summary) + "</p>" +
       "</article>"
+    );
+  }
+
+  function renderNewsCard(item) {
+    var sourceUrl = safeImageUrl(item && item.url);
+    var published = formatProfileDate(item && item.publishedAt) || "Tarih açıklanmadı";
+    var action = sourceUrl
+      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a>'
+      : "";
+
+    return (
+      '<article class="news-card" data-card="news" data-news="' + escapeHtml(item.id) + '">' +
+      '<div class="news-card-meta"><span class="tag green">' + escapeHtml(item.category || "Futbol Gündemi") + '</span><time datetime="' + escapeHtml(item.publishedAt || "") + '">' + escapeHtml(published) + '</time></div>' +
+      '<div><span class="card-kicker">' + escapeHtml(item.team || item.sourceName || "FutbolRadar") + '</span><h3>' + escapeHtml(item.title) + '</h3><p>' + escapeHtml(item.summary) + '</p></div>' +
+      '<div class="news-card-footer"><span>' + escapeHtml(item.sourceName || "Resmî kaynak") + '</span>' + action + '</div>' +
+      '</article>'
     );
   }
 
@@ -5512,6 +5549,24 @@
         return analyses.map(renderAnalysisPage).join("");
       },
       "Analiz verisi yüklenemedi"
+    );
+
+    renderInto(
+      document.querySelector('[data-api-target="news-preview"]'),
+      "news",
+      function (news) {
+        return news.slice(0, 4).map(renderNewsCard).join("");
+      },
+      "Güncel futbol gündemi yüklenemedi"
+    );
+
+    renderInto(
+      document.querySelector('[data-api-target="news-page"]'),
+      "news",
+      function (news) {
+        return news.map(renderNewsCard).join("");
+      },
+      "Güncel futbol gündemi yüklenemedi"
     );
   }
 

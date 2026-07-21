@@ -12,14 +12,20 @@ for (const file of [
   "index.html",
   "canli-skor.html",
   "bugunun-maclari.html",
+  "haberler.html",
   "istatistik-merkezi.html"
 ]) {
   fs.copyFileSync(path.join(root, file), path.join(publicDir, file));
 }
 for (const file of [
+  "analyses.json",
   "competitions.json",
   "matches.json",
+  "momentum.json",
+  "news.json",
   "players.json",
+  "signals.json",
+  "super-lig-fixtures.json",
   "teams.json",
   "transfers.json"
 ]) {

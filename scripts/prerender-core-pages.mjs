@@ -9,6 +9,7 @@ const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), 
 const momentum = JSON.parse(fs.readFileSync(path.join(root, "data", "momentum.json"), "utf8"));
 const signals = JSON.parse(fs.readFileSync(path.join(root, "data", "signals.json"), "utf8"));
 const analyses = JSON.parse(fs.readFileSync(path.join(root, "data", "analyses.json"), "utf8"));
+const news = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
 const freshnessData = JSON.parse(fs.readFileSync(path.join(root, "data", "freshness.json"), "utf8"));
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
@@ -177,6 +178,10 @@ function analysisCards() {
   return analyses.map((analysis) => `<article class="article-card" data-card="analysis" id="${escapeHtml(analysis.id)}-preview"><div><h3>${escapeHtml(analysis.title)}</h3><p>${escapeHtml(analysis.summary)}</p></div><a href="${escapeHtml(analysis.url)}">Analizi aç</a></article>`).join("");
 }
 
+function newsCards(limit) {
+  return news.slice(0, limit || news.length).map((item) => `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}"><div class="news-card-meta"><span class="tag green">${escapeHtml(item.category || "Futbol Gündemi")}</span><time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatFreshnessDate(item.publishedAt) || "Tarih açıklanmadı")}</time></div><div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p></div><div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Resmî kaynak")}</span><a class="detail-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a></div></article>`).join("");
+}
+
 function fixtureRounds() {
   return (fixtures.rounds || []).map((round) => `<section class="fixture-round-card" data-card="fixture-round"><div class="fixture-round-head"><div><span>${escapeHtml(round.dateRange || "Tarih ve saat bekleniyor")}</span><h2>${escapeHtml(round.label)}</h2></div><b>Onaylı eşleşmeler</b></div><div class="fixture-match-list">${(round.matches || []).map((match) => `<a class="fixture-match-row" href="./mac/${escapeHtml(matchSlug({ ...match, round: round.round }))}.html"><span class="fixture-time">${escapeHtml(match.dateLabel || round.label)}</span><strong>${escapeHtml(match.homeTeam)}</strong><span class="vs-pill">VS</span><strong>${escapeHtml(match.awayTeam)}</strong></a>`).join("")}</div></section>`).join("");
 }
@@ -280,7 +285,12 @@ writePage("index.html", {
   "home-standings": staticHomeStandingRows(),
   "player-radar": topPlayers.slice(0, 3).map(simplePlayerCard).join(""),
   "player-signals": playerSignals(),
+  "news-preview": newsCards(4),
   "analysis-preview": analysisCards()
+}, fixtureFreshness);
+
+writePage("haberler.html", {
+  "news-page": newsCards()
 }, fixtureFreshness);
 
 writePage("bugunun-maclari.html", {

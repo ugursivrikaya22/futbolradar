@@ -2,10 +2,19 @@
   "league": "Trendyol Süper Lig",
   "season": "2026-2027",
   "competitionCode": "TSL",
-  "status": "fixture-hub-ready",
   "seasonStart": "2026-08-14",
-  "lastVerifiedAt": "2026-07-09T23:20:00+03:00",
-  "verificationNote": "Sezon başlangıcı ve 18 takımlı havuz işlendi. Erişilebilir güncel kaynaklarda hafta eşleşmeleri henüz boş göründüğü için rounds[].matches alanı doğrulanmış maç listesi gelince doldurulacak.",
+  "lastVerifiedAt": "2026-07-13T08:00:00+03:00",
+  "fixtureStatus": "partially-confirmed",
+  "freshness": {
+    "source": "Türkiye Futbol Federasyonu fikstür listesi",
+    "provider": "TFF",
+    "fetchedAt": "2026-07-13T08:00:00+03:00",
+    "verifiedAt": "2026-07-13T08:00:00+03:00",
+    "validUntil": "2026-08-17T23:59:59+03:00",
+    "status": "verified",
+    "confidence": "high",
+    "isFallback": false
+  },
   "teams": [
     { "name": "Galatasaray", "city": "İstanbul", "region": "Marmara", "status": "confirmed" },
     { "name": "Fenerbahçe", "city": "İstanbul", "region": "Marmara", "status": "confirmed" },
@@ -22,7 +31,7 @@
     { "name": "Konyaspor", "city": "Konya", "region": "İç Anadolu", "status": "confirmed" },
     { "name": "Gençlerbirliği", "city": "Ankara", "region": "İç Anadolu", "status": "confirmed" },
     { "name": "Gaziantep FK", "city": "Gaziantep", "region": "Güneydoğu Anadolu", "status": "confirmed" },
-    { "name": "Amedspor", "city": "Diyarbakır", "region": "Güneydoğu Anadolu", "status": "confirmed" },
+    { "name": "Amed Sportif Faaliyetler", "city": "Diyarbakır", "region": "Güneydoğu Anadolu", "status": "confirmed" },
     { "name": "Erzurumspor FK", "city": "Erzurum", "region": "Doğu Anadolu", "status": "confirmed" },
     { "name": "Alanyaspor", "city": "Alanya", "region": "Akdeniz", "status": "confirmed" }
   ],
@@ -31,14 +40,41 @@
       "round": 1,
       "label": "1. Hafta",
       "dateRange": "14-17 Ağustos 2026",
-      "status": "awaiting-official-match-list",
-      "matches": []
+      "status": "confirmed-pairings",
+      "matches": [
+        { "id": "tff-tsl-2026-r01-genclerbirligi-fenerbahce", "homeTeam": "Gençlerbirliği", "awayTeam": "Fenerbahçe", "status": "SCHEDULED", "dateLabel": "14-17 Ağustos 2026", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r01-kasimpasa-trabzonspor", "homeTeam": "Kasımpaşa", "awayTeam": "Trabzonspor", "status": "SCHEDULED", "dateLabel": "14-17 Ağustos 2026", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r01-besiktas-eyupspor", "homeTeam": "Beşiktaş", "awayTeam": "Eyüpspor", "status": "SCHEDULED", "dateLabel": "14-17 Ağustos 2026", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r01-galatasaray-corum-fk", "homeTeam": "Galatasaray", "awayTeam": "Çorum FK", "status": "SCHEDULED", "dateLabel": "14-17 Ağustos 2026", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r01-amed-erzurumspor", "homeTeam": "Amed Sportif Faaliyetler", "awayTeam": "Erzurumspor FK", "status": "SCHEDULED", "dateLabel": "14-17 Ağustos 2026", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r01-konyaspor-rizespor", "homeTeam": "Konyaspor", "awayTeam": "Çaykur Rizespor", "status": "SCHEDULED", "dateLabel": "14-17 Ağustos 2026", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r01-samsunspor-goztepe", "homeTeam": "Samsunspor", "awayTeam": "Göztepe", "status": "SCHEDULED", "dateLabel": "14-17 Ağustos 2026", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r01-gaziantep-alanyaspor", "homeTeam": "Gaziantep FK", "awayTeam": "Alanyaspor", "status": "SCHEDULED", "dateLabel": "14-17 Ağustos 2026", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r01-basaksehir-kocaelispor", "homeTeam": "Başakşehir", "awayTeam": "Kocaelispor", "status": "SCHEDULED", "dateLabel": "14-17 Ağustos 2026", "fixtureStatus": "confirmed-pairing" }
+      ]
+    },
+    {
+      "round": 2,
+      "label": "2. Hafta",
+      "dateRange": "Tarih ve saat atamaları bekleniyor",
+      "status": "confirmed-pairings",
+      "matches": [
+        { "id": "tff-tsl-2026-r02-corum-fk-kasimpasa", "homeTeam": "Çorum FK", "awayTeam": "Kasımpaşa", "status": "SCHEDULED", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r02-kocaelispor-amed", "homeTeam": "Kocaelispor", "awayTeam": "Amed Sportif Faaliyetler", "status": "SCHEDULED", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r02-eyupspor-gaziantep", "homeTeam": "Eyüpspor", "awayTeam": "Gaziantep FK", "status": "SCHEDULED", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r02-trabzonspor-basaksehir", "homeTeam": "Trabzonspor", "awayTeam": "Başakşehir", "status": "SCHEDULED", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r02-goztepe-genclerbirligi", "homeTeam": "Göztepe", "awayTeam": "Gençlerbirliği", "status": "SCHEDULED", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r02-erzurumspor-galatasaray", "homeTeam": "Erzurumspor FK", "awayTeam": "Galatasaray", "status": "SCHEDULED", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r02-rizespor-samsunspor", "homeTeam": "Çaykur Rizespor", "awayTeam": "Samsunspor", "status": "SCHEDULED", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r02-fenerbahce-konyaspor", "homeTeam": "Fenerbahçe", "awayTeam": "Konyaspor", "status": "SCHEDULED", "fixtureStatus": "confirmed-pairing" },
+        { "id": "tff-tsl-2026-r02-alanyaspor-besiktas", "homeTeam": "Alanyaspor", "awayTeam": "Beşiktaş", "status": "SCHEDULED", "fixtureStatus": "confirmed-pairing" }
+      ]
     }
   ],
   "watchList": [
-    { "label": "Sezon açılışı", "value": "14 Ağustos 2026" },
+    { "label": "Sezon başlangıcı", "value": "14 Ağustos 2026" },
     { "label": "Takım sayısı", "value": "18" },
-    { "label": "Fikstür modu", "value": "Hafta hafta JSON" },
-    { "label": "Eşleşme durumu", "value": "Hafta listesi bekleniyor" }
+    { "label": "Onaylı eşleşmeler", "value": "İlk iki hafta" },
+    { "label": "Tarih ve saat", "value": "TFF ataması bekleniyor" }
   ]
 }

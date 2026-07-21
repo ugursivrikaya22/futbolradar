@@ -1,52 +1,57 @@
 {
   "radarSignals": [
     {
-      "id": "rising-team",
-      "label": "Formu yükselen takım",
-      "title": "Samsunspor son 5 maçta ivme aldı.",
-      "value": "+18",
-      "description": "Form puanı iki hafta üst üste artışta."
+      "id": "fixture-opening-week",
+      "type": "fixture",
+      "severity": "high",
+      "label": "Fikstür onayı",
+      "title": "Süper Lig'in ilk iki haftasının eşleşmeleri açıklandı.",
+      "value": "18 maç",
+      "description": "Eşleşmeler maç öncesi radar sayfalarına işlendi; kesin saat atamaları ayrıca takip edilecek."
     },
     {
-      "id": "high-goal-match",
-      "label": "Gol potansiyeli yüksek maç",
-      "title": "Galatasaray - Fenerbahçe",
-      "value": "2.8+",
-      "description": "İki takımın gol eğilimi lig ortalamasının üzerinde."
+      "id": "season-countdown",
+      "type": "season",
+      "severity": "medium",
+      "label": "Sezon başlangıcı",
+      "title": "2026-2027 Süper Lig sezonu 14 Ağustos'ta başlıyor.",
+      "value": "14 Ağustos",
+      "description": "Sezon açılışına kadar fikstür, kadro ve oyuncu profil güncellemeleri öne çıkarılır."
     },
     {
-      "id": "surprise-risk",
-      "label": "Sürpriz riski",
-      "title": "Beşiktaş - Trabzonspor",
-      "value": "%42",
-      "description": "Deplasman geçişleri risk modelini yukarı taşıyor."
-    },
-    {
-      "id": "momentum-drop",
-      "label": "Momentum düşüşü",
-      "title": "Valencia baskı üretiminde geriledi.",
-      "value": "-11",
-      "description": "Son iki maçta ikinci yarı momentumu zayıf."
+      "id": "squad-confirmation",
+      "type": "squad",
+      "severity": "low",
+      "label": "Kadro etkisi",
+      "title": "İlk hafta eksik listeleri için kulüp doğrulamaları bekleniyor.",
+      "value": "Takipte",
+      "description": "Resmî sakatlık, ceza ve ilk 11 bilgisi gelmeden eksik oyuncu puanı üretilmez."
     }
   ],
   "momentumSignals": [
     {
-      "id": "strongest-momentum",
-      "label": "En güçlü ivme",
-      "title": "Galatasaray",
-      "description": "Hücum üretimi ve son form momentumu yukarı taşıyor."
+      "id": "reference-model",
+      "type": "momentum",
+      "severity": "low",
+      "label": "Model referansı",
+      "title": "Takım radarları sezon öncesi karşılaştırma modunda.",
+      "description": "Resmî maçlar başladığında form ve momentum bileşenleri yeni sonuçlarla güncellenir."
     },
     {
-      "id": "rising-momentum",
-      "label": "Yükselen sinyal",
-      "title": "Samsunspor",
-      "description": "Son iki maçta form puanı ve baskı süresi artışta."
+      "id": "fixture-radar-ready",
+      "type": "fixture",
+      "severity": "medium",
+      "label": "Maç öncesi radar",
+      "title": "Onaylı eşleşmeler için kalıcı analiz sayfaları hazır.",
+      "description": "Her sayfada eksik bilgi ayrı belirtilir; doğrulanmayan kadro veya skor eklenmez."
     },
     {
-      "id": "watch-area",
-      "label": "Dikkat alanı",
-      "title": "Trabzonspor",
-      "description": "Gol üretimi dengeli, momentum kırılımı maç temposuna bağlı."
+      "id": "player-profile-refresh",
+      "type": "players",
+      "severity": "medium",
+      "label": "Oyuncu takibi",
+      "title": "Oyuncu profilleri transfer geçmişi ve form alanlarıyla güncelleniyor.",
+      "description": "Güncel takım bilgisi, eski kulüplerden ayrı tutulur ve eksik alanlar açıkça belirtilir."
     }
   ]
 }

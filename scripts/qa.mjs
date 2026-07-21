@@ -72,6 +72,7 @@ const pages = [
   ...playerComparisonPages,
   "canli-skor.html",
   "bugunun-maclari.html",
+  "haberler.html",
   "momentum.html",
   "analizler.html"
 ];

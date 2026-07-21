@@ -420,6 +420,7 @@ function sitemapXml(files) {
     ...comparisonPages,
     "momentum.html",
     "analizler.html",
+    "haberler.html",
     "gol-kralligi.html",
     "asist-kralligi.html",
     "derbi-radari.html",
