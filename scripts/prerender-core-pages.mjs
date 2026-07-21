@@ -278,12 +278,30 @@ function writePage(file, slots, freshness) {
 const confirmed = allFixtures();
 const topFixtures = confirmed.slice(0, 3);
 const topTeams = teams.slice().sort((left, right) => Number(right.momentum) - Number(left.momentum));
+
+const BIG_TEAM_IDS = ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"];
+
+function bigTeamCards() {
+  const displayValue = (value) => (value === null || value === undefined || value === "" ? "—" : value);
+  return BIG_TEAM_IDS
+    .map((id) => teams.find((team) => team.id === id))
+    .filter(Boolean)
+    .map((team) => {
+      const initial = String(team.name || "?").charAt(0).toLocaleUpperCase("tr-TR");
+      const formSpans = Array.isArray(team.form)
+        ? team.form.map((item) => `<span class="${escapeHtml(item.result || "")}">${escapeHtml(item.label)}</span>`).join("")
+        : "";
+      return `<article class="big-team-card" data-card="big-team" data-team="${escapeHtml(team.id)}"><div class="big-team-head"><span class="logo-fallback" style="width:44px;height:44px" aria-hidden="true">${escapeHtml(initial)}</span><div><strong>${escapeHtml(team.name)}</strong><span>${escapeHtml(team.league || "Süper Lig")}</span></div></div><div class="big-team-metrics"><div><b>${escapeHtml(displayValue(team.momentum))}</b><span>Momentum</span></div><div><b>${escapeHtml(displayValue(team.formScore))}</b><span>Form puanı</span></div><div><b>${escapeHtml(displayValue(team.goalTrend))}</b><span>Gol eğilimi</span></div></div>${formSpans ? `<div class="form-trend" aria-label="Son 5 maç">${formSpans}</div>` : ""}<div class="big-team-foot"><a class="deep-link-button" href="./${encodeURIComponent(team.id)}-form-durumu.html">Takım sayfası</a></div></article>`;
+    })
+    .join("");
+}
 const topPlayers = players.slice().sort((left, right) => Number(right.overallRating || 0) - Number(left.overallRating || 0));
 
 writePage("index.html", {
   "featured-match": emptyMatchState("featured"),
   "home-transfer-watch": transferWatch(),
   "today-matches": emptyMatchState("today"),
+  "home-big-teams": bigTeamCards(),
   "radar-signals": signalCards(),
   "team-radar": topTeams.slice(0, 4).map(staticTeamCard).join(""),
   "home-standings": staticHomeStandingRows(),

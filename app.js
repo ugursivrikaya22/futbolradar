@@ -1810,6 +1810,35 @@
     );
   }
 
+  var BIG_TEAM_IDS = ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"];
+
+  function bigTeamPageHref(team) {
+    return "./" + encodeURIComponent(team.id) + "-form-durumu.html";
+  }
+
+  function renderBigTeamCard(team) {
+    var initial = String(team.name || "?").charAt(0).toLocaleUpperCase("tr-TR");
+    var formSpans = Array.isArray(team.form)
+      ? team.form.map(function (item) {
+          return '<span class="' + escapeHtml(item.result || "") + '">' + escapeHtml(item.label) + "</span>";
+        }).join("")
+      : "";
+
+    return (
+      '<article class="big-team-card" data-card="big-team" data-team="' + escapeHtml(team.id) + '">' +
+      '<div class="big-team-head"><span class="logo-fallback" style="width:44px;height:44px" aria-hidden="true">' + escapeHtml(initial) + "</span>" +
+      "<div><strong>" + escapeHtml(team.name) + "</strong><span>" + escapeHtml(team.league || "Süper Lig") + "</span></div></div>" +
+      '<div class="big-team-metrics">' +
+      "<div><b>" + escapeHtml(displayValue(team.momentum)) + "</b><span>Momentum</span></div>" +
+      "<div><b>" + escapeHtml(displayValue(team.formScore)) + "</b><span>Form puanı</span></div>" +
+      "<div><b>" + escapeHtml(displayValue(team.goalTrend)) + "</b><span>Gol eğilimi</span></div>" +
+      "</div>" +
+      (formSpans ? '<div class="form-trend" aria-label="Son 5 maç">' + formSpans + "</div>" : "") +
+      '<div class="big-team-foot"><a class="deep-link-button" href="' + bigTeamPageHref(team) + '">Takım sayfası</a></div>' +
+      "</article>"
+    );
+  }
+
   function renderTeamHomeCard(team) {
     var attack = team.attackRating || team.attack;
     var defense = team.defenseRating || team.defense;
@@ -5490,6 +5519,28 @@
         return sortedByRank(teams).slice(0, 4).map(renderTeamHomeCard).join("");
       },
       "Takım radari yüklenemedi"
+    );
+
+    renderInto(
+      document.querySelector('[data-api-target="home-big-teams"]'),
+      "teams",
+      function (teams) {
+        if (!Array.isArray(teams)) {
+          return "";
+        }
+
+        var byId = {};
+        teams.forEach(function (team) {
+          if (team && team.id) {
+            byId[team.id] = team;
+          }
+        });
+
+        return BIG_TEAM_IDS.map(function (id) {
+          return byId[id];
+        }).filter(Boolean).map(renderBigTeamCard).join("");
+      },
+      "Büyük takım kartları yüklenemedi"
     );
 
     initTeamsPage(document.querySelector('[data-api-target="teams-page"]'));

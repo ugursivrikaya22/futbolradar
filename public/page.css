@@ -9695,7 +9695,7 @@ h1 {
   margin: 0 0 4px;
 }
 
-.layer-heading .layer-tag {
+.layer-tag {
   display: inline-flex;
   align-items: center;
   min-height: 26px;
@@ -9707,15 +9707,67 @@ h1 {
   text-transform: uppercase;
 }
 
-.layer-heading .layer-tag.popular {
+.layer-tag.popular {
   color: #03100d;
   background: linear-gradient(135deg, rgba(128, 255, 155, 0.96), rgba(77, 229, 255, 0.9));
 }
 
-.layer-heading .layer-tag.radar {
+.layer-tag.radar {
   color: var(--cyan);
   border: 1px solid rgba(77, 229, 255, 0.34);
   background: rgba(77, 229, 255, 0.08);
+}
+
+.layer-heading h2 {
+  margin: 0;
+  font-size: clamp(1.3rem, 1rem + 1.4vw, 1.7rem);
+}
+
+.layer-heading p {
+  width: 100%;
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  max-width: 640px;
+}
+
+/* Radar katmanı giriş şeridi (ana sayfa analiz teaser'ı) */
+.radar-layer-intro {
+  display: grid;
+  gap: 18px;
+  padding: 34px 0 10px;
+}
+
+/* Veri güven notu */
+.data-trust-note {
+  margin: 26px auto 40px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.data-trust-note a {
+  color: var(--soft);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.data-trust-note a:hover,
+.data-trust-note a:focus-visible {
+  color: var(--green);
+  outline: 0;
+}
+
+/* Logosuz takımlar için baş harf rozeti */
+.logo-fallback {
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  color: var(--green);
+  background: rgba(128, 255, 155, 0.1);
+  font-weight: 900;
+  font-size: 1.05rem;
 }
 
 /* --- Ortak bölüm başlığı --- */
