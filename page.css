@@ -9748,6 +9748,16 @@ h1 {
   margin: 4px 0 -6px;
 }
 
+/* Tek takım radar sayfası (form-durumu): kartı genişlik olarak öne çıkar */
+.single-team-radar {
+  grid-template-columns: minmax(0, 480px);
+  justify-content: flex-start;
+}
+
+.single-team-radar .big-team-card {
+  padding: 22px;
+}
+
 /* Radar ticker yerleşimi */
 .ticker-zone {
   padding-top: 16px;

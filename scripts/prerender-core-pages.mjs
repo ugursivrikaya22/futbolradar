@@ -143,8 +143,20 @@ function signalCards() {
   return (signals.radarSignals || []).slice(0, 3).map((signal) => `<article class="signal-card" data-card="radar-signal" data-signal="${escapeHtml(signal.id)}"><span class="signal-label">${escapeHtml(signal.label)}</span><h3>${escapeHtml(signal.title)}</h3><strong class="signal-value">${escapeHtml(signal.value || "Takipte")}</strong><p>${escapeHtml(signal.description)}</p></article>`).join("");
 }
 
+function metricBarRow(label, value) {
+  const width = Math.max(0, Math.min(100, Number(value) || 0));
+  return `<div class="bar-row"><span>${escapeHtml(label)}</span><span class="bar"><i style="--value: ${width}%"></i></span><b>${escapeHtml(value)}</b></div>`;
+}
+
+function teamTagRow(tags) {
+  if (!Array.isArray(tags) || !tags.length) {
+    return "";
+  }
+  return `<div class="tag-row">${tags.map((tag) => `<span class="tag${tag.variant ? ` ${escapeHtml(tag.variant)}` : ""}">${escapeHtml(tag.label)}</span>`).join("")}</div>`;
+}
+
 function staticTeamCard(team) {
-  return `<article class="team-card" data-card="team-radar" data-team="${escapeHtml(team.id)}"><header><div><h3>${escapeHtml(team.name)}</h3><span>Sezon öncesi referans</span></div><strong class="momentum-number">${escapeHtml(team.momentum)}</strong></header>${formDots(team.form)}<div class="metric-grid compact"><span>Hücum <b>${escapeHtml(team.attack)}</b></span><span>Savunma <b>${escapeHtml(team.defense)}</b></span></div><a class="detail-link" href="./takim-detay.html?team=${encodeURIComponent(team.id)}">Takım radarını aç</a></article>`;
+  return `<article class="card" id="${escapeHtml(team.id)}" data-card="team" data-team="${escapeHtml(team.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(team.league || "Süper Lig")}</span><h2>${escapeHtml(team.name)}</h2></div><strong class="big-value">${escapeHtml(team.momentum)}</strong></div>${formDots(team.form)}${metricBarRow("Hücum", team.attack)}${metricBarRow("Savunma", team.defense)}<div class="metric-grid compact"><span>Form puanı <b>${escapeHtml(team.formScore)}</b></span><span>Gol eğilimi <b>${escapeHtml(team.goalTrend)}</b></span></div>${teamTagRow(team.tags)}<div class="team-card-actions"><a class="detail-link" href="./takim-detay.html?team=${encodeURIComponent(team.id)}">Takım detayı</a><a class="detail-link ghost" href="./oyuncu-radari.html?team=${encodeURIComponent(team.name)}">Oyuncu radarı</a></div></article>`;
 }
 
 function staticStandingRows() {
@@ -384,7 +396,6 @@ writePage("index.html", {
   "today-matches": fixtureShowcase(),
   "home-big-teams": bigTeamCards(),
   "radar-signals": signalCards(),
-  "team-radar": topTeams.slice(0, 4).map(staticTeamCard).join(""),
   "home-standings": staticHomeStandingRows(),
   "player-radar": topPlayers.slice(0, 3).map(simplePlayerCard).join(""),
   "player-signals": playerSignals(),

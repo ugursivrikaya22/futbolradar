@@ -4,6 +4,17 @@ import path from "node:path";
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
 const today = "2026-07-10";
+const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
+const BIG_TEAM_IDS = ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"];
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 const nav = `
     <header class="topbar">
@@ -27,7 +38,8 @@ const seoPages = [
     description: "Süper Lig form durumu sayfası; takımların son 5 maç ivmesi, hücum-savunma dengesi ve momentum sinyallerini gösterir.",
     h1: "Süper Lig Form Durumu",
     lead: "Takımların son formunu, momentum eğilimini ve maç önü veri sinyallerini birlikte oku.",
-    cards: ["Son 5 maç formu", "Momentum değişimi", "Gol eğilimi"]
+    cards: ["Son 5 maç formu", "Momentum değişimi", "Gol eğilimi"],
+    teams: BIG_TEAM_IDS
   },
   {
     file: "super-lig-momentum-siralamasi.html",
@@ -91,7 +103,8 @@ const seoPages = [
     description: "Galatasaray form durumu; son maç ivmesi, momentum skoru, hücum üretimi ve savunma dengesini özetler.",
     h1: "Galatasaray Form Durumu",
     lead: "Galatasaray'ın güncel momentumunu ve son maç trendini takım radarında oku.",
-    cards: ["Momentum yüksek", "Hücum üretimi", "Son form"]
+    cards: ["Momentum yüksek", "Hücum üretimi", "Son form"],
+    team: "galatasaray"
   },
   {
     file: "fenerbahce-form-durumu.html",
@@ -99,7 +112,8 @@ const seoPages = [
     description: "Fenerbahçe form durumu; takım momentumu, gol eğilimi, maç önü risk ve son 5 maç sinyalini gösterir.",
     h1: "Fenerbahçe Form Durumu",
     lead: "Fenerbahçe'nin form grafiğini momentum, risk ve hücum üretimiyle birlikte incele.",
-    cards: ["Gol eğilimi", "Risk seviyesi", "Son 5 maç"]
+    cards: ["Gol eğilimi", "Risk seviyesi", "Son 5 maç"],
+    team: "fenerbahce"
   },
   {
     file: "besiktas-form-durumu.html",
@@ -107,7 +121,8 @@ const seoPages = [
     description: "Beşiktaş form durumu; takım ivmesi, hücum-savunma dengesi, son maç trendi ve risk sinyallerini analiz eder.",
     h1: "Beşiktaş Form Durumu",
     lead: "Beşiktaş'ın form dalgalanmasını veri kartlarıyla takip et.",
-    cards: ["Form dengesi", "Momentum riski", "Savunma sinyali"]
+    cards: ["Form dengesi", "Momentum riski", "Savunma sinyali"],
+    team: "besiktas"
   },
   {
     file: "trabzonspor-form-durumu.html",
@@ -115,7 +130,8 @@ const seoPages = [
     description: "Trabzonspor form durumu; son maç performansı, momentum puanı, gol eğilimi ve savunma dengesini gösterir.",
     h1: "Trabzonspor Form Durumu",
     lead: "Trabzonspor'un son maç trendini ve momentum kırılımlarını incele.",
-    cards: ["Trend izleme", "Gol üretimi", "Savunma dengesi"]
+    cards: ["Trend izleme", "Gol üretimi", "Savunma dengesi"],
+    team: "trabzonspor"
   }
 ];
 
@@ -261,6 +277,56 @@ function cardsHtml(cards) {
   return cards.map((card) => `<article class="card"><span class="card-kicker">Radar</span><h2>${card}</h2><p>${cardDescription(card)}</p></article>`).join("");
 }
 
+function teamById(id) {
+  return teams.find((team) => team.id === id) || null;
+}
+
+function formTrendHtml(form) {
+  const rows = Array.isArray(form) ? form : [];
+  if (!rows.length) {
+    return "";
+  }
+  return `<div class="form-trend">${rows.map((item) => `<span class="${escapeHtml(item.result || "")}">${escapeHtml(item.label)}</span>`).join("")}</div>`;
+}
+
+function metricBarHtml(label, value) {
+  const width = Math.max(0, Math.min(100, Number(value) || 0));
+  return `<div class="radar-bar"><span>${escapeHtml(label)}</span><span class="radar-bar-track"><span class="radar-bar-fill" style="width:${width}%"></span></span><span class="radar-bar-value">${escapeHtml(value)}</span></div>`;
+}
+
+function teamTagsHtml(tags) {
+  if (!Array.isArray(tags) || !tags.length) {
+    return "";
+  }
+  return `<div class="tag-row">${tags.map((tag) => `<span class="tag${tag.variant ? ` ${escapeHtml(tag.variant)}` : ""}">${escapeHtml(tag.label)}</span>`).join("")}</div>`;
+}
+
+function bigTeamCardHtml(team) {
+  if (!team) {
+    return "";
+  }
+  return `<article class="big-team-card" data-card="team-radar" data-team="${escapeHtml(team.id)}">
+    <div class="big-team-head"><span class="logo-fallback" aria-hidden="true">${escapeHtml(String(team.name || "?").charAt(0))}</span><div><strong>${escapeHtml(team.name)}</strong><span>${escapeHtml(team.league || "Süper Lig")} · Momentum ${escapeHtml(team.momentum)}</span></div></div>
+    ${formTrendHtml(team.form)}
+    ${metricBarHtml("Hücum", team.attack)}
+    ${metricBarHtml("Savunma", team.defense)}
+    ${teamTagsHtml(team.tags)}
+    <div class="big-team-foot"><a class="detail-link" href="./takim-detay.html?team=${encodeURIComponent(team.id)}">Takım detayı</a><a class="detail-link ghost" href="./oyuncu-radari.html?team=${encodeURIComponent(team.name)}">Oyuncu radarı</a></div>
+  </article>`;
+}
+
+function teamRadarSectionHtml(page) {
+  if (page.team) {
+    const team = teamById(page.team);
+    return `<section class="big-team-grid single-team-radar">${bigTeamCardHtml(team)}</section>`;
+  }
+  if (Array.isArray(page.teams)) {
+    const cards = page.teams.map((id) => bigTeamCardHtml(teamById(id))).join("");
+    return `<section class="big-team-grid">${cards}</section>`;
+  }
+  return "";
+}
+
 function landingControlsHtml(page) {
   if (page.landing !== "transfer-radari") {
     return "";
@@ -358,7 +424,7 @@ ${nav}
       <section class="player-filter-note"><span data-landing-count>Oyuncu listesi hazirlaniyor</span></section>
       <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${page.landing}">
         <article class="data-empty" data-card="empty-state"><strong>Oyuncular yükleniyor</strong><span>Doğrulanmış oyuncu profilleri hazırlanıyor.</span></article>
-      </section>` : `<section class="grid three">${cardsHtml(page.cards)}</section>`}
+      </section>` : (page.team || page.teams) ? teamRadarSectionHtml(page) : `<section class="grid three">${cardsHtml(page.cards)}</section>`}
       <section class="source-strip" aria-label="İlgili bağlantılar">
         <div><span>İlgili ekran</span><b><a href="./oyuncu-radari.html">Oyuncu Radarı</a></b></div>
         <div><span>Takım verisi</span><b><a href="./momentum.html">Momentum</a></b></div>

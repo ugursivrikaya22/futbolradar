@@ -2010,7 +2010,7 @@
       '<article class="card" id="' + escapeHtml(team.id) + '" data-card="team" data-team="' + escapeHtml(team.id) + '">' +
       '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(team.league) + "</span><h2>" + escapeHtml(team.name) + '</h2></div><strong class="big-value">' + escapeHtml(team.momentum) + "</strong></div>" +
       formDotsHtml(team.form) +
-      barRowHtml("Hucum", attack, attack) +
+      barRowHtml("Hücum", attack, attack) +
       barRowHtml("Savunma", defense, defense) +
       '<div class="metric-grid compact"><span>Lig: <b>' + escapeHtml(displayValue(team.league)) + '</b></span><span>Kadro: <b>' + escapeHtml(displayValue(players.length || team.squadCount)) + '</b></span></div>' +
       tagsHtml(team.tags) +
@@ -4959,7 +4959,7 @@
       '<div class="metric-grid compact"><span>Kadro <b>' + escapeHtml(displayValue(team.squadCount || players.length)) + '</b></span><span>Stadyum <b>' + escapeHtml(displayValue(team.venue)) + '</b></span><span>Teknik ekip <b>' + escapeHtml(displayValue(team.coach)) + "</b></span></div>" +
       teamRadarSnapshotHtml(team, players) +
       teamSignalCardsHtml(team, players) +
-      barRowHtml("Hucum", attack, attack) +
+      barRowHtml("Hücum", attack, attack) +
       barRowHtml("Savunma", defense, defense) +
       formDotsHtml(team.form) +
       tagsHtml(team.tags) +
