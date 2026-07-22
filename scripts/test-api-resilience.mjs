@@ -144,6 +144,36 @@ function testMissingKeyFallback() {
   }
 }
 
+function testConfiguredProviderPreference() {
+  const envNames = [
+    ...utils.API_KEY_ENV_NAMES,
+    "APIFOOTBALL_API_KEY",
+    "FOOTBALL_PRIMARY_PROVIDER",
+    "FOOTBALL_MATCH_PROVIDER"
+  ];
+  const previous = Object.fromEntries(envNames.map((name) => [name, process.env[name]]));
+
+  try {
+    envNames.forEach((name) => delete process.env[name]);
+    process.env.APIFOOTBALL_API_KEY = "test-api-football-key";
+    process.env.FOOTBALL_API_KEY = "test-football-data-key";
+
+    assert.equal(providers.getProvider("matches").name, "api-football");
+    assert.equal(providers.getProvider("standings").name, "api-football");
+
+    process.env.FOOTBALL_MATCH_PROVIDER = "football-data";
+    assert.equal(providers.getProvider("matches").name, "football-data");
+  } finally {
+    envNames.forEach((name) => {
+      if (previous[name] === undefined) {
+        delete process.env[name];
+      } else {
+        process.env[name] = previous[name];
+      }
+    });
+  }
+}
+
 async function testPlayerLeagueSlugFallback() {
   const response = fakeResponse();
   await playersHandler({
@@ -203,6 +233,7 @@ testResponseFreshness();
 testUnknownProviderValues();
 testCompetitionCatalog();
 testMissingKeyFallback();
+testConfiguredProviderPreference();
 await testPlayerLeagueSlugFallback();
 await testFootballDataCompetitionFallback();
 

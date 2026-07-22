@@ -22,7 +22,10 @@ function providerCandidates(resource) {
   const transferProvider = process.env.FOOTBALL_TRANSFER_PROVIDER;
 
   if (resource === "matches" || resource === "standings") {
-    return [matchProvider, primary, "football-data", "mock"];
+    // API-Football covers the multi-league live-score surface. Explicit env
+    // choices still win; this default only prevents a configured API-Football
+    // key from being ignored when routing variables are missing.
+    return [matchProvider, primary, "api-football", "football-data", "mock"];
   }
 
   if (resource === "players") {
