@@ -8,7 +8,7 @@ const {
   sendSuccess,
   setCachePolicy
 } = require("./_utils");
-const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig } = require("../services/providers");
+const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig, getProvider, apiFootballProvider } = require("../services/providers");
 const { getConfig } = require("../services/providers/footballProvider");
 
 function presentEnvNames(names) {
@@ -21,6 +21,7 @@ function buildDiagnostics(config) {
   const competitionEnvNamesPresent = presentEnvNames(COMPETITION_CODE_ENV_NAMES);
   const liveProviderConfigured = hasLiveProviderConfig();
   const liveProviderResources = Array.from(LIVE_PROVIDER_RESOURCES);
+  const apiFootballConfig = apiFootballProvider.getConfig();
 
   return {
     mode: liveProviderConfigured ? "live-ready" : "mock",
@@ -43,7 +44,18 @@ function buildDiagnostics(config) {
       ? "Live provider matches ve standings icin secilir; provider hata verirse frontend statik yedek veriye duser."
       : "Production ortaminda live credential gorunmuyor; matches ve standings Mock API kullanir.",
     vercelEnv: process.env.VERCEL_ENV || "",
-    nodeEnv: process.env.NODE_ENV || ""
+    nodeEnv: process.env.NODE_ENV || "",
+    apiFootball: {
+      credentialPresent: Boolean(process.env.APIFOOTBALL_API_KEY),
+      baseUrlConfigured: Boolean(apiFootballConfig.baseUrl),
+      configured: apiFootballProvider.hasConfig()
+    },
+    providerSelection: {
+      primaryProviderEnv: process.env.FOOTBALL_PRIMARY_PROVIDER || null,
+      matchProviderEnv: process.env.FOOTBALL_MATCH_PROVIDER || null,
+      resolvedMatchProvider: getProvider("matches").name,
+      resolvedStandingsProvider: getProvider("standings").name
+    }
   };
 }
 
