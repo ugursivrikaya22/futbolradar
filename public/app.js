@@ -4,6 +4,8 @@
   var API_ROOT = "/api/";
   var DATA_ROOT = "/data/";
   var FETCH_TIMEOUT_MS = 6500;
+  var MATCH_LIVE_POLL_MS = 20000;
+  var MATCH_DETAIL_POLL_MS = 15000;
   var SUPER_LIG_SEASON_START = "2026-08-14";
   var cache = Object.create(null);
   var COMPETITION_ALIASES = {
@@ -252,6 +254,53 @@
     }
 
     return cache[name];
+  }
+
+  function forceReload(name) {
+    delete cache[name];
+    return loadData(name);
+  }
+
+  function isDocumentHidden() {
+    return typeof document.hidden === "boolean" && document.hidden;
+  }
+
+  // Recursive setTimeout (not setInterval) so a slow fetch can never stack requests;
+  // the next poll is only scheduled once the previous one settles.
+  function createLivePoller(intervalMs, task) {
+    var timer = null;
+    var running = false;
+
+    function schedule() {
+      if (timer) {
+        return;
+      }
+      timer = window.setTimeout(run, intervalMs);
+    }
+
+    function run() {
+      timer = null;
+      if (running || isDocumentHidden()) {
+        schedule();
+        return;
+      }
+      running = true;
+      Promise.resolve().then(task).catch(function () {}).then(function () {
+        running = false;
+        schedule();
+      });
+    }
+
+    return {
+      start: function () {
+        schedule();
+        document.addEventListener("visibilitychange", function () {
+          if (!isDocumentHidden() && !timer && !running) {
+            run();
+          }
+        });
+      }
+    };
   }
 
   function setContent(target, html) {
@@ -1700,6 +1749,82 @@
       "</div>" +
       "</article>"
     );
+  }
+
+  function renderTodayMatchesPreview(matches) {
+    if (!Array.isArray(matches) || !matches.length) {
+      return "";
+    }
+
+    return matches.slice(0, 8).map(renderHomeMatch).join("");
+  }
+
+  function renderMatchesPageSection(matches) {
+    var filteredMatches = Array.isArray(matches) ? filterMatchesByStatus(matches) : [];
+    if (!filteredMatches.length) {
+      var params = new URLSearchParams(window.location.search);
+      var selectedDate = params.get("date") || todayInIstanbul();
+      return matchEmptyStateHtml(
+        "Bu ölçütlerde doğrulanmış maç yok",
+        formatMatchDate(selectedDate) + " için seçilen lig ve durum filtresinde maç bulunamadı. Başka bir gün veya filtre seçebilirsin."
+      );
+    }
+
+    return renderMatchesByLeague(filteredMatches, renderMatchPageCard);
+  }
+
+  function renderLiveScoreSection(matches) {
+    var liveMatches = Array.isArray(matches) ? matches.filter(isLiveMatch) : [];
+    if (!liveMatches.length) {
+      return "";
+    }
+
+    return renderMatchesByLeague(liveMatches, renderLiveMatch);
+  }
+
+  var MATCH_SECTION_BINDINGS = [
+    { selector: "featured-match", renderer: renderFeaturedMatch },
+    { selector: "today-matches", renderer: renderTodayMatchesPreview },
+    { selector: "matches-page", renderer: renderMatchesPageSection },
+    { selector: "live-score", renderer: renderLiveScoreSection }
+  ];
+
+  function initLiveMatchPolling() {
+    var activeBindings = MATCH_SECTION_BINDINGS.filter(function (binding) {
+      return document.querySelector('[data-api-target="' + binding.selector + '"]');
+    });
+
+    if (!activeBindings.length || window.location.protocol === "file:") {
+      return;
+    }
+
+    createLivePoller(MATCH_LIVE_POLL_MS, function () {
+      return forceReload("matches").then(function (matches) {
+        activeBindings.forEach(function (binding) {
+          var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
+          var html = binding.renderer(matches);
+          if (target && html) {
+            setContent(target, html);
+          }
+        });
+      });
+    }).start();
+  }
+
+  function initMatchDetailPolling(target) {
+    if (!target || window.location.protocol === "file:") {
+      return;
+    }
+
+    createLivePoller(MATCH_DETAIL_POLL_MS, function () {
+      return forceReload("matchDetail").then(function (data) {
+        var detail = Array.isArray(data) ? data[0] : data;
+        var html = detail ? renderMatchDetail(detail) : "";
+        if (html) {
+          setContent(target, html);
+        }
+      });
+    }).start();
   }
 
   function matchEmptyStateHtml(title, text, compact) {
@@ -5115,6 +5240,8 @@
       }
       setEmpty(target, "Maç detayı yüklenemedi", "Maç merkezi verisi geçici olarak okunamıyor.");
     });
+
+    initMatchDetailPolling(target);
   }
 
   function statisticNumber(value) {
@@ -5431,48 +5558,25 @@
     renderInto(
       document.querySelector('[data-api-target="today-matches"]'),
       "matches",
-      function (matches) {
-        if (!Array.isArray(matches) || !matches.length) {
-          return "";
-        }
-
-        return matches.slice(0, 8).map(renderHomeMatch).join("");
-      },
+      renderTodayMatchesPreview,
       "Bugunun maçları yüklenemedi"
     );
 
     renderInto(
       document.querySelector('[data-api-target="matches-page"]'),
       "matches",
-      function (matches) {
-        var filteredMatches = Array.isArray(matches) ? filterMatchesByStatus(matches) : [];
-        if (!filteredMatches.length) {
-          var params = new URLSearchParams(window.location.search);
-          var selectedDate = params.get("date") || todayInIstanbul();
-          return matchEmptyStateHtml(
-            "Bu ölçütlerde doğrulanmış maç yok",
-            formatMatchDate(selectedDate) + " için seçilen lig ve durum filtresinde maç bulunamadı. Başka bir gün veya filtre seçebilirsin."
-          );
-        }
-
-        return renderMatchesByLeague(filteredMatches, renderMatchPageCard);
-      },
+      renderMatchesPageSection,
       "Maç listesi yüklenemedi"
     );
 
     renderInto(
       document.querySelector('[data-api-target="live-score"]'),
       "matches",
-      function (matches) {
-        var liveMatches = Array.isArray(matches) ? matches.filter(isLiveMatch) : [];
-        if (!liveMatches.length) {
-          return "";
-        }
-
-        return renderMatchesByLeague(liveMatches, renderLiveMatch);
-      },
+      renderLiveScoreSection,
       "Canli skor verisi yüklenemedi"
     );
+
+    initLiveMatchPolling();
 
     renderInto(
       document.querySelector('[data-api-target="radar-signals"]'),
