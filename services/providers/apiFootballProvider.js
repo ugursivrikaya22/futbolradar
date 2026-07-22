@@ -648,6 +648,7 @@ function statNumber(statistics, aliases, side) {
 function buildLiveMatchAnalysis(match, statistics, events) {
   const signals = [];
   const addSignal = (label, value, text) => signals.push({ label, value, text });
+  const eventList = Array.isArray(events) ? events : [];
   const possessionHome = statNumber(statistics, ["Ball Possession", "Possession"], "home");
   const possessionAway = statNumber(statistics, ["Ball Possession", "Possession"], "away");
   const shotsHome = statNumber(statistics, ["Total Shots"], "home");
@@ -659,22 +660,55 @@ function buildLiveMatchAnalysis(match, statistics, events) {
 
   if (possessionHome !== null && possessionAway !== null) {
     const leader = possessionHome >= possessionAway ? match.homeTeam : match.awayTeam;
-    addSignal("Top hakimiyeti", `${possessionHome}%-${possessionAway}%`, `${leader} topa sahip olma oraninda onde.`);
+    addSignal("Top hakimiyeti", `${possessionHome}%-${possessionAway}%`, `${leader} topa sahip olma oranında önde.`);
   }
 
   if (shotsHome !== null && shotsAway !== null) {
     const leader = shotsHome >= shotsAway ? match.homeTeam : match.awayTeam;
-    addSignal("Sut hacmi", `${shotsHome}-${shotsAway}`, `${leader} daha fazla sut uretti.`);
+    addSignal("Şut hacmi", `${shotsHome}-${shotsAway}`, `${leader} daha fazla şut üretti.`);
   }
 
   if (targetHome !== null && targetAway !== null) {
     const leader = targetHome >= targetAway ? match.homeTeam : match.awayTeam;
-    addSignal("Kaleyi bulan", `${targetHome}-${targetAway}`, `${leader} isabetli sutlarda onde.`);
+    addSignal("Kaleyi bulan", `${targetHome}-${targetAway}`, `${leader} isabetli şutlarda önde.`);
   }
 
   if (xgHome !== null && xgAway !== null) {
     const leader = xgHome >= xgAway ? match.homeTeam : match.awayTeam;
-    addSignal("Gol beklentisi", `${xgHome.toFixed(2)}-${xgAway.toFixed(2)}`, `${leader} daha yuksek pozisyon kalitesi uretti.`);
+    addSignal("Gol beklentisi", `${xgHome.toFixed(2)}-${xgAway.toFixed(2)}`, `${leader} daha yüksek pozisyon kalitesi üretti.`);
+  }
+
+  const statisticSignalCount = signals.length;
+  const goals = eventList.filter((event) => normalizeText(event.type) === "goal");
+  const redCards = eventList.filter((event) => normalizeText(event.detail).includes("red card"));
+  const substitutions = eventList.filter((event) => normalizeText(event.type).includes("subst"));
+
+  if (redCards.length) {
+    const redCardTeams = Array.from(new Set(redCards.map((event) => teamName(event.team)).filter(Boolean)));
+    const label = redCardTeams.length === 1 ? redCardTeams[0] : "İki takım";
+    addSignal(
+      "Disiplin dengesi",
+      `${redCards.length} kırmızı kart`,
+      `${label} kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor.`
+    );
+  }
+
+  if (goals.length) {
+    const latestGoal = goals[goals.length - 1];
+    const scorer = String(latestGoal.value || "").split(" · ")[0];
+    addSignal(
+      "Gol akışı",
+      latestGoal.time || `${goals.length} gol`,
+      `Son gol ${latestGoal.time || "maç içinde"}${scorer ? ` ${scorer} tarafından` : ""} kaydedildi.`
+    );
+  }
+
+  if (substitutions.length >= 2) {
+    addSignal(
+      "Teknik hamleler",
+      `${substitutions.length} değişiklik`,
+      `Kulübeler oyuna müdahale etti; ${substitutions.length} oyuncu değişikliği kayda geçti.`
+    );
   }
 
   const scoreHome = numberOrNull(match.score && match.score.home);
@@ -682,22 +716,35 @@ function buildLiveMatchAnalysis(match, statistics, events) {
   const scoreLeader = scoreHome !== null && scoreAway !== null && scoreHome !== scoreAway
     ? (scoreHome > scoreAway ? match.homeTeam : match.awayTeam)
     : null;
+  if (scoreHome !== null && scoreAway !== null) {
+    addSignal(
+      "Canlı skor",
+      `${scoreHome}-${scoreAway}`,
+      scoreLeader ? `${scoreLeader} skor üstünlüğünü elinde tutuyor.` : "Skor dengede."
+    );
+  }
+
+  const eventSignalCount = signals.length - statisticSignalCount;
   const dataPoints = signals.length;
   const summary = signals.length
-    ? `${signals[0].text}${signals[1] ? ` ${signals[1].text}` : ""}${scoreLeader ? ` Skor ustunlugu ${scoreLeader} tarafinda.` : ""}`
+    ? `${signals[0].text}${signals[1] ? ` ${signals[1].text}` : ""}${scoreLeader ? ` Skor üstünlüğü ${scoreLeader} tarafında.` : ""}`
     : (scoreLeader
-      ? `${scoreLeader} skorda onde; ayrintili canli istatistikler geldikce analiz genisleyecek.`
-      : "Mac dengede; ayrintili canli istatistikler geldikce analiz genisleyecek.");
+      ? `${scoreLeader} skorda önde; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.`
+      : "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.");
 
   return {
-    title: match.live ? "Canli Radar Analizi" : "Mac Radar Analizi",
+    title: match.live ? "Canlı Radar Analizi" : "Maç Radar Analizi",
     summary,
-    confidence: dataPoints >= 3 ? "Yuksek" : dataPoints >= 1 ? "Orta" : "Sinirli",
+    confidence: statisticSignalCount >= 3
+      ? "Yüksek"
+      : statisticSignalCount >= 1 || eventSignalCount >= 2
+        ? "Orta"
+        : "Sınırlı",
     signals,
-    eventCount: Array.isArray(events) ? events.length : 0,
+    eventCount: eventList.length,
     dataPoints,
     generatedAt: new Date().toISOString(),
-    disclaimer: "Analiz yalnizca mevcut skor, olay ve canli istatistiklerden uretilir; eksik veri tahminle doldurulmaz."
+    disclaimer: "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
   };
 }
 

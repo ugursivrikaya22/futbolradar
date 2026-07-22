@@ -240,9 +240,29 @@ function testLiveMatchDetailNormalization() {
   assert.equal(events[0].time, "37'");
   assert.equal(events[0].value, "Golcu · Asist: Asistci · Normal Goal");
   assert.equal(statistics.find((item) => item.type === "Ball Possession").home, "61%");
-  assert.equal(analysis.confidence, "Yuksek");
-  assert.equal(analysis.signals.length, 4);
+  assert.equal(analysis.confidence, "Yüksek");
+  assert.ok(analysis.signals.length >= 6);
   assert.match(analysis.summary, /Ev SK/);
+
+  const eventDrivenAnalysis = apiFootball.buildLiveMatchAnalysis(match, [], apiFootball.normalizeFixtureEvents([
+    {
+      time: { elapsed: 37 },
+      team: { name: "Ev SK" },
+      player: { name: "Golcu" },
+      type: "Goal",
+      detail: "Normal Goal"
+    },
+    {
+      time: { elapsed: 52 },
+      team: { name: "Ev SK" },
+      player: { name: "Savunmaci" },
+      type: "Card",
+      detail: "Red Card"
+    }
+  ]));
+  assert.equal(eventDrivenAnalysis.confidence, "Orta");
+  assert.ok(eventDrivenAnalysis.signals.some((signal) => signal.label === "Disiplin dengesi"));
+  assert.ok(eventDrivenAnalysis.signals.some((signal) => signal.label === "Gol akışı"));
 }
 
 async function testDateOnlyLeagueFiltering() {
