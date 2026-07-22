@@ -7891,6 +7891,206 @@ h1 {
   }
 }
 
+/* Homepage: live scores are the primary product surface. */
+.home-page #hero-canli-skor {
+  grid-template-columns: minmax(300px, 0.72fr) minmax(520px, 1.28fr);
+  gap: 28px;
+  align-items: stretch;
+  padding-top: 42px;
+  padding-bottom: 26px;
+}
+
+.home-page #hero-canli-skor > div {
+  display: grid;
+  align-content: center;
+}
+
+.home-page #hero-canli-skor h1 {
+  margin: 18px 0;
+  font-size: clamp(3rem, 5.4vw, 4.8rem);
+  line-height: 0.96;
+}
+
+.home-page #hero-canli-skor .hero-copy {
+  max-width: 520px;
+  margin-bottom: 24px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.home-page #hero-canli-skor .hero-actions {
+  margin-bottom: 0;
+}
+
+.home-page #hero-canli-skor .match-command-card {
+  height: 100%;
+}
+
+.home-page #bugunun-maclari-preview {
+  padding-top: 38px;
+}
+
+.home-match-command-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.home-score-card {
+  display: grid;
+  min-width: 0;
+  min-height: 184px;
+  gap: 14px;
+  border: 1px solid rgba(77, 229, 255, 0.16);
+  border-radius: var(--radius);
+  padding: 16px;
+  background: rgba(8, 19, 24, 0.82);
+  box-shadow: var(--shadow);
+}
+
+.home-score-card.is-live {
+  border-color: rgba(255, 111, 125, 0.38);
+  background: linear-gradient(145deg, rgba(255, 111, 125, 0.08), rgba(8, 19, 24, 0.9) 48%);
+}
+
+.home-score-card-head,
+.home-score-card-foot,
+.home-score-teams > div {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-score-card-head span {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.home-score-card-head b {
+  flex: 0 0 auto;
+  color: var(--cyan);
+  font-size: 0.78rem;
+}
+
+.home-score-card.is-live .home-score-card-head b {
+  color: #ff8994;
+}
+
+.home-score-teams {
+  display: grid;
+  gap: 4px;
+  border-block: 1px solid rgba(255, 255, 255, 0.07);
+  padding-block: 10px;
+}
+
+.home-score-teams > div {
+  min-height: 34px;
+}
+
+.home-score-teams strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.96rem;
+}
+
+.home-score-teams b {
+  flex: 0 0 auto;
+  min-width: 24px;
+  color: var(--soft);
+  font-size: 1.22rem;
+  text-align: right;
+}
+
+.home-score-card.is-live .home-score-teams b {
+  color: var(--green);
+}
+
+.home-score-card-foot {
+  align-self: end;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.home-score-card-foot a {
+  flex: 0 0 auto;
+  color: var(--green);
+  font-weight: 850;
+}
+
+@media (max-width: 1060px) {
+  .home-page #hero-canli-skor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-page #hero-canli-skor > div {
+    max-width: 720px;
+  }
+}
+
+@media (max-width: 760px) {
+  .home-page #hero-canli-skor {
+    gap: 22px;
+    padding-top: 34px;
+  }
+
+  .home-page #hero-canli-skor h1 {
+    font-size: clamp(2.55rem, 13vw, 3.8rem);
+  }
+
+  .home-page #hero-canli-skor .hero-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-page #hero-canli-skor .hero-actions .button:first-child {
+    grid-column: auto;
+  }
+
+  .home-match-command-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .home-match-command-metrics a:nth-child(3) {
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+}
+
+@media (max-width: 520px) {
+  .home-page #hero-canli-skor .hero-actions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-score-card-foot {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+}
+
+.home-page .home-match-command-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 760px) {
+  .home-page .home-match-command-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .home-page .home-match-command-metrics a:nth-child(3) {
+    border-top: 0;
+    border-left: 1px solid var(--line);
+  }
+}
+
 @media (max-width: 1060px) {
   .nav {
     display: grid !important;
