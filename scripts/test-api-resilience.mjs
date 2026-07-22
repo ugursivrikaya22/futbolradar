@@ -99,11 +99,13 @@ function testUnknownProviderValues() {
 }
 
 function testCompetitionCatalog() {
-  assert.equal(competitionCatalog.competitions.length, 8);
+  assert.equal(competitionCatalog.competitions.length, 10);
   assert.equal(competitionCatalog.providerLeagueValue("premier-league", "api-football"), 39);
   assert.equal(competitionCatalog.providerLeagueValue("sampiyonlar-ligi", "football-data"), "CL");
   assert.equal(competitionCatalog.providerLeagueValue("avrupa-ligi", "api-football"), 3);
   assert.equal(competitionCatalog.providerLeagueValue("avrupa-ligi", "football-data"), null);
+  assert.equal(competitionCatalog.providerLeagueValue("konferans-ligi", "api-football"), 848);
+  assert.equal(competitionCatalog.providerLeagueValue("hazirlik-maclari", "api-football"), 667);
   assert.equal(competitionCatalog.providerLeagueValue("all", "api-football"), "");
   assert.equal(competitionCatalog.matchesCompetition("UEFA Champions League", "sampiyonlar-ligi"), true);
   assert.equal(competitionCatalog.matchesCompetition("English Premier League", "premier-league"), true);

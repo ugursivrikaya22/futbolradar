@@ -1,4 +1,5 @@
 const matches = require("../../data/matches.json");
+const matchCache = require("../../data/matches-cache.json");
 const teams = require("../../data/teams.json");
 const players = require("../../data/players.json");
 const transfers = require("../../data/transfers.json");
@@ -7,6 +8,7 @@ const signals = require("../../data/signals.json");
 const analyses = require("../../data/analyses.json");
 const { normalizeText } = require("../../api/_utils");
 const { normalizePlayer: normalizePlayerRecord } = require("../playerService");
+const { dedupeMatches } = require("../matchDataService");
 
 const source = "FutbolRadar Mock API";
 
@@ -310,7 +312,7 @@ function transferRecordKey(transfer) {
 }
 
 async function getMatches(query) {
-  const normalized = matches.map(normalizeMatch);
+  const normalized = dedupeMatches(matches.concat(matchCache).map(normalizeMatch));
   const byDate = byMatchDate(normalized, query && query.date);
   const data = byLeague(byDate, query && query.league);
   return data;
@@ -318,7 +320,7 @@ async function getMatches(query) {
 
 async function getMatchDetail(query) {
   const id = query && (query.fixtureId || query.id);
-  const data = matches.map(normalizeMatchDetail);
+  const data = dedupeMatches(matches.concat(matchCache)).map(normalizeMatchDetail);
   if (!id) {
     return data[0] || null;
   }
@@ -445,6 +447,29 @@ async function getAnalyses() {
   return analyses.map(normalizeAnalysis);
 }
 
+async function fetchCompetitions() {
+  return require("../../data/competitions.json");
+}
+
+async function fetchMatchesByDate(dateOrQuery) {
+  const query = typeof dateOrQuery === "string" ? { date: dateOrQuery } : (dateOrQuery || {});
+  return getMatches(query);
+}
+
+async function fetchLiveMatches() {
+  const data = await getMatches({});
+  return data.filter((match) => match.live || String(match.status || "").toUpperCase() === "LIVE");
+}
+
+async function fetchMatchDetails(providerMatchId) {
+  const query = typeof providerMatchId === "object" ? providerMatchId : { id: providerMatchId };
+  return getMatchDetail(query);
+}
+
+async function fetchBroadcasts() {
+  return [];
+}
+
 module.exports = {
   name: "mock",
   source,
@@ -458,6 +483,11 @@ module.exports = {
   getMomentum,
   getSignals,
   getAnalyses,
+  fetchCompetitions,
+  fetchMatchesByDate,
+  fetchLiveMatches,
+  fetchMatchDetails,
+  fetchBroadcasts,
   normalizeMatch,
   normalizeMatchDetail,
   normalizeStanding,

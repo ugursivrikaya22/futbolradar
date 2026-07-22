@@ -154,6 +154,30 @@ function withTimeout(promise, ms) {
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function withRetry(operation, options) {
+  const settings = options && typeof options === "object" ? options : {};
+  const attempts = Math.max(1, Math.min(5, Number(settings.attempts) || 3));
+  const baseDelayMs = Math.max(25, Number(settings.baseDelayMs) || 150);
+  const shouldRetry = typeof settings.shouldRetry === "function" ? settings.shouldRetry : () => true;
+  let lastError;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await operation(attempt);
+    } catch (error) {
+      lastError = error;
+      if (attempt >= attempts || !shouldRetry(error, attempt)) throw error;
+      await wait(baseDelayMs * (2 ** (attempt - 1)));
+    }
+  }
+
+  throw lastError;
+}
+
 function safeJsonParse(value, fallback) {
   try {
     return JSON.parse(value);
@@ -420,5 +444,6 @@ module.exports = {
   validateStandings,
   validateTeams,
   validateTransfers,
+  withRetry,
   withTimeout
 };

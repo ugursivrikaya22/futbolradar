@@ -1,4 +1,5 @@
 const { getProvider, mockProvider } = require("../services/providers");
+const { normalizeMatchRecord } = require("../services/matchDataService");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -38,7 +39,7 @@ module.exports = async function handler(req, res) {
     source = mockProvider.source;
   }
 
-  const data = detail ? [detail] : [];
+  const data = detail ? [{ ...normalizeMatchRecord(detail), events: detail.events || [], statistics: detail.statistics || [], lineups: detail.lineups || [], analysis: detail.analysis || null }] : [];
 
   if (!validateOrSend(res, data, validateMatchDetail)) {
     return;

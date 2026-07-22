@@ -1,5 +1,6 @@
 const { getProvider } = require("../services/providers");
 const { providerLeagueValue } = require("../services/competitionCatalog");
+const { dedupeMatches } = require("../services/matchDataService");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -45,7 +46,7 @@ module.exports = async function handler(req, res) {
   let data = [];
 
   try {
-    data = await withTimeout(provider.getMatches(providerQuery), DEFAULT_TIMEOUT_MS);
+    data = dedupeMatches(await withTimeout(provider.getMatches(providerQuery), DEFAULT_TIMEOUT_MS));
   } catch (error) {
     return sendError(
       res,

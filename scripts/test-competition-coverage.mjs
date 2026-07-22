@@ -16,9 +16,11 @@ function fakeResponse() {
   };
 }
 
-assert.equal(competitions.length, 8, "Altı yerel lig ve iki UEFA turnuvası katalogda olmalı.");
+assert.equal(competitions.length, 10, "Altı yerel lig, üç UEFA turnuvası ve hazırlık maçları katalogda olmalı.");
 assert.equal(findCompetition("Champions League")?.id, "sampiyonlar-ligi");
 assert.equal(findCompetition("UEFA Europa League")?.id, "avrupa-ligi");
+assert.equal(findCompetition("UEFA Conference League")?.id, "konferans-ligi");
+assert.equal(findCompetition("Club Friendly Games")?.id, "hazirlik-maclari");
 assert.equal(providerLeagueValue("premier-league", "api-football"), 39);
 assert.equal(providerLeagueValue("avrupa-ligi", "football-data"), null);
 
@@ -32,10 +34,12 @@ const fixture = (id, league, status = "NS") => normalizeFixture({
 const filtered = filterSupportedCompetitions([
   fixture(1, "Premier League"),
   fixture(2, "UEFA Champions League", "1H"),
-  fixture(3, "Regional Test League")
+  fixture(3, "Regional Test League"),
+  fixture(4, "UEFA Conference League"),
+  fixture(5, "Club Friendly Games")
 ]);
 
-assert.deepEqual(filtered.map((match) => match.id), ["1", "2"]);
+assert.deepEqual(filtered.map((match) => match.id), ["1", "2", "4", "5"]);
 assert.equal(filtered[0].status, "SCHEDULED");
 assert.equal(filtered[0].live, false);
 assert.equal(filtered[1].status, "LIVE");
@@ -64,4 +68,4 @@ try {
   }
 }
 
-console.log("Competition coverage tests passed: 8 competitions, live status and provider fallback checked.");
+console.log("Competition coverage tests passed: 10 competitions, live status and provider fallback checked.");

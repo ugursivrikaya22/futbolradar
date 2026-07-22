@@ -4,6 +4,7 @@ const {
   COMPETITION_CODE_ENV_NAMES,
   DEFAULT_TIMEOUT_MS,
   firstPresentEnv,
+  withRetry,
   withTimeout
 } = require("../../api/_utils");
 const { findCompetition, matchesCompetition } = require("../competitionCatalog");
@@ -52,7 +53,7 @@ async function providerFetch(path, params) {
     }
   });
 
-  const request = fetch(url, {
+  const request = () => fetch(url, {
     headers: {
       accept: "application/json",
       "X-Auth-Token": config.apiKey
@@ -75,7 +76,13 @@ async function providerFetch(path, params) {
     return response.json();
   });
 
-  return withTimeout(request, DEFAULT_TIMEOUT_MS);
+  return withRetry(() => withTimeout(request(), DEFAULT_TIMEOUT_MS), {
+    attempts: 3,
+    baseDelayMs: 150,
+    shouldRetry(error) {
+      return error && (error.message === "Provider timeout" || error.code === "PROVIDER_HTTP_ERROR");
+    }
+  });
 }
 
 function notImplemented(resource) {
@@ -447,6 +454,30 @@ async function getAnalyses(query) {
   throw notImplemented("analyses");
 }
 
+async function fetchCompetitions() {
+  return require("../../data/competitions.json");
+}
+
+async function fetchMatchesByDate(dateOrQuery) {
+  const query = typeof dateOrQuery === "string" ? { date: dateOrQuery } : (dateOrQuery || {});
+  return getMatches(query);
+}
+
+async function fetchLiveMatches() {
+  const matches = await getMatches({ date: todayInTimeZone("Europe/Istanbul") });
+  return matches.filter((match) => match.live || String(match.status || "").toUpperCase() === "LIVE");
+}
+
+async function fetchMatchDetails(providerMatchId) {
+  const id = typeof providerMatchId === "object" ? providerMatchId.id || providerMatchId.fixtureId : providerMatchId;
+  const matches = await getMatches({});
+  return matches.find((match) => String(match.providerId || match.id) === String(id)) || null;
+}
+
+async function fetchBroadcasts() {
+  return [];
+}
+
 module.exports = {
   name: "football-data",
   source,
@@ -460,6 +491,11 @@ module.exports = {
   getMomentum,
   getSignals,
   getAnalyses,
+  fetchCompetitions,
+  fetchMatchesByDate,
+  fetchLiveMatches,
+  fetchMatchDetails,
+  fetchBroadcasts,
   normalizeLiveMatch,
   normalizeLiveStanding,
   normalizeLiveTeam,

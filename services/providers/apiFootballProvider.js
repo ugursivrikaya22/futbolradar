@@ -1,9 +1,11 @@
 const {
   DEFAULT_TIMEOUT_MS,
   normalizeText,
+  withRetry,
   withTimeout
 } = require("../../api/_utils");
 const { competitions, matchesCompetition } = require("../competitionCatalog");
+const { dedupeMatches, normalizeMatchRecord } = require("../matchDataService");
 
 const source = "FutbolRadar API-Football Live API";
 const DEFAULT_BASE_URL = "https://v3.football.api-sports.io";
@@ -141,7 +143,7 @@ async function providerFetch(path, params) {
     url.searchParams.set(key, value);
   });
 
-  const request = fetch(url, {
+  const request = () => fetch(url, {
     headers: {
       accept: "application/json",
       "x-apisports-key": config.apiKey
@@ -172,7 +174,13 @@ async function providerFetch(path, params) {
     return payload || {};
   });
 
-  return withTimeout(request, DEFAULT_TIMEOUT_MS);
+  return withRetry(() => withTimeout(request(), DEFAULT_TIMEOUT_MS), {
+    attempts: 3,
+    baseDelayMs: 150,
+    shouldRetry(error) {
+      return error && (error.message === "Provider timeout" || error.code === "PROVIDER_HTTP_ERROR" || error.code === "PROVIDER_RESPONSE_ERROR");
+    }
+  });
 }
 
 function resolveLeague(value) {
@@ -257,17 +265,23 @@ function normalizeFixture(item) {
   const homeTeam = teams.home || {};
   const awayTeam = teams.away || {};
 
-  return {
+  return normalizeMatchRecord({
     id: String(fixture.id || `${teamName(homeTeam)}-${teamName(awayTeam)}-${kickoff}`),
     providerId: fixture.id ? String(fixture.id) : "",
+    leagueId: league.id || null,
+    competitionId: league.id || null,
     league: league.name || "",
     kickoff,
-    time: kickoff ? new Date(kickoff).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) : "",
     homeTeam: teamName(homeTeam),
     awayTeam: teamName(awayTeam),
     status: normalizeStatus(fixture.status || {}),
     providerStatus: fixture.status && fixture.status.short || null,
+    minute: numberOrNull(fixture.status && fixture.status.elapsed),
     live: normalizeStatus(fixture.status || {}) === "LIVE",
+    venue: fixture.venue && fixture.venue.name || null,
+    city: fixture.venue && fixture.venue.city || null,
+    round: league.round || null,
+    country: league.country || null,
     score: {
       home: scoreValue(goals.home),
       away: scoreValue(goals.away)
@@ -282,7 +296,7 @@ function normalizeFixture(item) {
     goalPotential: null,
     risk: null,
     source: "api-football"
-  };
+  });
 }
 
 function filterSupportedCompetitions(matches) {
@@ -471,7 +485,7 @@ async function getFixtures(query) {
   const filteredMatches = league && competition
     ? supportedMatches.filter((match) => matchesCompetition(match.league, competition))
     : supportedMatches;
-  return stampProviderData(filteredMatches, "matches", 5 * 60 * 1000);
+  return dedupeMatches(stampProviderData(filteredMatches, "matches", 5 * 60 * 1000));
 }
 
 async function getMatches(query) {
@@ -800,6 +814,32 @@ async function getMatchDetail(query) {
   };
 }
 
+async function fetchCompetitions() {
+  return competitions.filter((competition) => competition.isActive !== false);
+}
+
+async function fetchMatchesByDate(dateOrQuery) {
+  const query = typeof dateOrQuery === "string" ? { date: dateOrQuery } : (dateOrQuery || {});
+  return getFixtures(query);
+}
+
+async function fetchLiveMatches() {
+  const payload = await providerFetch("/fixtures", { live: "all" });
+  const matches = filterSupportedCompetitions(responseItems(payload).map(normalizeFixture));
+  return dedupeMatches(stampProviderData(matches, "matches", 2 * 60 * 1000));
+}
+
+async function fetchMatchDetails(providerMatchId) {
+  const query = typeof providerMatchId === "object" ? providerMatchId : { fixtureId: providerMatchId };
+  return getMatchDetail(query);
+}
+
+async function fetchBroadcasts() {
+  // API-Football fixture responses do not provide a verified Turkish broadcast
+  // feed. Returning an empty collection keeps "none" and "unverified" distinct.
+  return [];
+}
+
 function canSearchLocally(player, search) {
   if (!search) {
     return true;
@@ -832,6 +872,11 @@ module.exports = {
   getFixtureStatistics,
   getPredictions,
   getMatchDetail,
+  fetchCompetitions,
+  fetchMatchesByDate,
+  fetchLiveMatches,
+  fetchMatchDetails,
+  fetchBroadcasts,
   normalizeFixture,
   normalizeFixtureLineups,
   normalizeFixtureEvents,

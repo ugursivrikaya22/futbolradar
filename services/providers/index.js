@@ -2,6 +2,7 @@ const footballProvider = require("./footballProvider");
 const apiFootballProvider = require("./apiFootballProvider");
 const mockProvider = require("./mockProvider");
 const { hasProviderConfig } = require("../../api/_utils");
+const { createMatchDataProvider } = require("./matchDataProvider");
 const LIVE_PROVIDER_RESOURCES = new Set(["matches", "standings"]);
 
 function hasLiveProviderConfig() {
@@ -85,8 +86,13 @@ function getProvider(resource) {
   return mockProvider;
 }
 
+function getMatchDataProvider(resource) {
+  return createMatchDataProvider(getProvider(resource || "matches"));
+}
+
 module.exports = {
   getProvider,
+  getMatchDataProvider,
   hasLiveProviderConfig,
   LIVE_PROVIDER_RESOURCES,
   mockProvider,
