@@ -307,6 +307,20 @@ h1 {
   line-height: 1.3;
 }
 
+.live-refresh-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.live-refresh-note time {
+  color: var(--text);
+  font-weight: 800;
+}
+
 .match-nav-button,
 .match-today-button,
 .match-status-filters a {

@@ -496,6 +496,110 @@
     observer.observe(host, { childList: true });
   }
 
+  function updateLiveRefreshIndicator() {
+    var el = document.querySelector("[data-live-refresh-indicator]");
+    if (!el) {
+      return;
+    }
+
+    el.setAttribute("datetime", new Date().toISOString());
+    applyRelativeTimes(el.parentElement || document);
+  }
+
+  function renderLiveMatchSections() {
+    renderInto(
+      document.querySelector('[data-api-target="featured-match"]'),
+      "matches",
+      renderFeaturedMatch,
+      "Radar maçı yüklenemedi"
+    );
+
+    renderInto(
+      document.querySelector('[data-api-target="today-matches"]'),
+      "matches",
+      function (matches) {
+        if (!Array.isArray(matches) || !matches.length) {
+          return "";
+        }
+
+        var sorted = matches.slice().sort(function (left, right) {
+          return leagueSortPriority(left.league) - leagueSortPriority(right.league);
+        });
+        return sorted.slice(0, 8).map(renderHomeMatch).join("");
+      },
+      "Bugunun maçları yüklenemedi"
+    );
+
+    renderInto(
+      document.querySelector('[data-api-target="matches-page"]'),
+      "matches",
+      function (matches) {
+        var filteredMatches = Array.isArray(matches) ? filterMatchesByStatus(matches) : [];
+        if (!filteredMatches.length) {
+          var params = new URLSearchParams(window.location.search);
+          var hasFilter = Boolean(params.get("status") || params.get("league") || params.get("competition") || params.get("date"));
+          if (!hasFilter) {
+            return "";
+          }
+
+          var selectedDate = params.get("date") || todayInIstanbul();
+          return matchEmptyStateHtml(
+            "Bu ölçütlerde doğrulanmış maç yok",
+            formatMatchDate(selectedDate) + " için seçilen lig ve durum filtresinde maç bulunamadı. Başka bir gün veya filtre seçebilirsin."
+          );
+        }
+
+        return renderMatchesByLeague(filteredMatches, renderMatchPageCard);
+      },
+      "Maç listesi yüklenemedi"
+    );
+
+    renderInto(
+      document.querySelector('[data-api-target="live-score"]'),
+      "matches",
+      function (matches) {
+        var liveMatches = Array.isArray(matches) ? matches.filter(isLiveMatch) : [];
+        if (!liveMatches.length) {
+          return "";
+        }
+
+        return renderMatchesByLeague(liveMatches, renderLiveMatch);
+      },
+      "Canli skor verisi yüklenemedi"
+    );
+
+    updateLiveRefreshIndicator();
+  }
+
+  var LIVE_POLL_INTERVAL_MS = 45000;
+  var livePollTimerStarted = false;
+
+  function startLiveMatchPolling() {
+    var hasLiveSection = document.querySelector(
+      '[data-api-target="featured-match"], [data-api-target="today-matches"], [data-api-target="matches-page"], [data-api-target="live-score"]'
+    );
+    if (!hasLiveSection || livePollTimerStarted) {
+      return;
+    }
+
+    livePollTimerStarted = true;
+    var tick = function () {
+      if (document.visibilityState === "hidden") {
+        return;
+      }
+
+      delete cache.matches;
+      renderLiveMatchSections();
+    };
+
+    setInterval(tick, LIVE_POLL_INTERVAL_MS);
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "visible") {
+        tick();
+      }
+    });
+  }
+
   function initAnalytics() {
     document.addEventListener("click", function (event) {
       var element = event.target && event.target.closest ? event.target.closest("a, button") : null;
@@ -1693,7 +1797,9 @@
     var ordered = list.sort(function (left, right) {
       var leftRank = isLiveMatch(left) ? 0 : (String(left.status || "").toUpperCase() === "FINISHED" ? 2 : 1);
       var rightRank = isLiveMatch(right) ? 0 : (String(right.status || "").toUpperCase() === "FINISHED" ? 2 : 1);
-      return leftRank - rightRank || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
+      return leftRank - rightRank ||
+        leagueSortPriority(left.league) - leagueSortPriority(right.league) ||
+        String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
     });
     var rows = ordered.slice(0, 3).map(function (match) {
       var score = matchScoreText(match.score);
@@ -1720,6 +1826,11 @@
     );
   }
 
+  function leagueSortPriority(league) {
+    var key = String(league || "").toLowerCase();
+    return key.indexOf("süper lig") !== -1 || key.indexOf("super lig") !== -1 ? 0 : 1;
+  }
+
   function renderMatchesByLeague(matches, renderer) {
     var groups = new Map();
     matches.forEach(function (match) {
@@ -1730,7 +1841,9 @@
       groups.get(league).push(match);
     });
 
-    return Array.from(groups.entries()).map(function (entry) {
+    return Array.from(groups.entries()).sort(function (a, b) {
+      return leagueSortPriority(a[0]) - leagueSortPriority(b[0]);
+    }).map(function (entry) {
       var league = entry[0];
       var leagueMatches = entry[1];
       return '<section class="league-match-group" data-league-group="' + escapeHtml(league) + '">' +
@@ -5590,63 +5703,8 @@
     initCommandCounters();
     applyRelativeTimes(document);
 
-    renderInto(
-      document.querySelector('[data-api-target="featured-match"]'),
-      "matches",
-      renderFeaturedMatch,
-      "Radar maçı yüklenemedi"
-    );
-
-    renderInto(
-      document.querySelector('[data-api-target="today-matches"]'),
-      "matches",
-      function (matches) {
-        if (!Array.isArray(matches) || !matches.length) {
-          return "";
-        }
-
-        return matches.slice(0, 8).map(renderHomeMatch).join("");
-      },
-      "Bugunun maçları yüklenemedi"
-    );
-
-    renderInto(
-      document.querySelector('[data-api-target="matches-page"]'),
-      "matches",
-      function (matches) {
-        var filteredMatches = Array.isArray(matches) ? filterMatchesByStatus(matches) : [];
-        if (!filteredMatches.length) {
-          var params = new URLSearchParams(window.location.search);
-          var hasFilter = Boolean(params.get("status") || params.get("league") || params.get("competition") || params.get("date"));
-          if (!hasFilter) {
-            return "";
-          }
-
-          var selectedDate = params.get("date") || todayInIstanbul();
-          return matchEmptyStateHtml(
-            "Bu ölçütlerde doğrulanmış maç yok",
-            formatMatchDate(selectedDate) + " için seçilen lig ve durum filtresinde maç bulunamadı. Başka bir gün veya filtre seçebilirsin."
-          );
-        }
-
-        return renderMatchesByLeague(filteredMatches, renderMatchPageCard);
-      },
-      "Maç listesi yüklenemedi"
-    );
-
-    renderInto(
-      document.querySelector('[data-api-target="live-score"]'),
-      "matches",
-      function (matches) {
-        var liveMatches = Array.isArray(matches) ? matches.filter(isLiveMatch) : [];
-        if (!liveMatches.length) {
-          return "";
-        }
-
-        return renderMatchesByLeague(liveMatches, renderLiveMatch);
-      },
-      "Canli skor verisi yüklenemedi"
-    );
+    renderLiveMatchSections();
+    startLiveMatchPolling();
 
     renderInto(
       document.querySelector('[data-api-target="radar-signals"]'),
