@@ -23,9 +23,10 @@ module.exports = async function handler(req, res) {
 
   const query = getQuery(req);
   const provider = getProvider("standings");
+  const requestedLeague = query.league || (provider.name === "mock" ? "" : "super-lig");
   const providerQuery = {
     ...query,
-    league: providerLeagueValue(query.league, provider.name)
+    league: providerLeagueValue(requestedLeague, provider.name)
   };
   if (query.league && providerQuery.league === null) {
     return sendError(

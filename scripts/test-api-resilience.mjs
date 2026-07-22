@@ -174,6 +174,25 @@ function testConfiguredProviderPreference() {
   }
 }
 
+function testApiFootballErrorClassification() {
+  assert.equal(
+    apiFootball.classifyPayloadError(["Invalid application key"]).code,
+    "PROVIDER_AUTH_ERROR"
+  );
+  assert.equal(
+    apiFootball.classifyPayloadError(["You have reached the request limit"]).code,
+    "PROVIDER_RATE_LIMIT"
+  );
+  assert.equal(
+    apiFootball.classifyPayloadError(["Your subscription plan does not allow this endpoint"]).code,
+    "PROVIDER_PLAN_ERROR"
+  );
+  assert.equal(
+    apiFootball.classifyPayloadError(["No results for this season"]).code,
+    "PROVIDER_DATA_UNAVAILABLE"
+  );
+}
+
 async function testPlayerLeagueSlugFallback() {
   const response = fakeResponse();
   await playersHandler({
@@ -234,6 +253,7 @@ testUnknownProviderValues();
 testCompetitionCatalog();
 testMissingKeyFallback();
 testConfiguredProviderPreference();
+testApiFootballErrorClassification();
 await testPlayerLeagueSlugFallback();
 await testFootballDataCompetitionFallback();
 

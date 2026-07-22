@@ -92,6 +92,46 @@ function apiErrors(payload) {
   return [payload.errors].filter(Boolean);
 }
 
+function classifyPayloadError(errors) {
+  const text = (errors || [])
+    .map((error) => typeof error === "string" ? error : JSON.stringify(error))
+    .join(" ")
+    .toLowerCase();
+
+  if (/api.?key|application key|token|auth|unauthor|forbidden/.test(text)) {
+    return {
+      code: "PROVIDER_AUTH_ERROR",
+      message: "API-Football anahtari gecersiz, eksik veya bu endpoint icin yetkisiz."
+    };
+  }
+
+  if (/rate.?limit|request.?limit|quota|too many requests/.test(text)) {
+    return {
+      code: "PROVIDER_RATE_LIMIT",
+      message: "API-Football istek limiti doldu; statik yedek veri kullanilacak."
+    };
+  }
+
+  if (/subscription|pricing|plan|not allowed|access denied/.test(text)) {
+    return {
+      code: "PROVIDER_PLAN_ERROR",
+      message: "API-Football paketi bu veri veya turnuva icin erisim vermiyor."
+    };
+  }
+
+  if (/season|date|no results|not found/.test(text)) {
+    return {
+      code: "PROVIDER_DATA_UNAVAILABLE",
+      message: "API-Football istenen tarih veya sezon icin veri dondurmedi."
+    };
+  }
+
+  return {
+    code: "PROVIDER_RESPONSE_ERROR",
+    message: "Live provider kontrollu bir veri hatasi dondu."
+  };
+}
+
 async function providerFetch(path, params) {
   const config = assertConfig();
   const baseUrl = config.baseUrl.endsWith("/") ? config.baseUrl : `${config.baseUrl}/`;
@@ -125,7 +165,8 @@ async function providerFetch(path, params) {
 
     const errors = apiErrors(payload);
     if (errors.length) {
-      throw new ProviderError("PROVIDER_RESPONSE_ERROR", "Live provider kontrollu bir veri hatasi dondu.");
+      const classified = classifyPayloadError(errors);
+      throw new ProviderError(classified.code, classified.message);
     }
 
     return payload || {};
@@ -604,6 +645,7 @@ module.exports = {
   getConfig,
   hasConfig,
   providerFetch,
+  classifyPayloadError,
   getFixtures,
   getMatches,
   getStandings,
