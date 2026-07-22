@@ -300,8 +300,10 @@ function checkJson() {
     const globalHeaders = (vercelConfig.headers || []).find((rule) => rule.source === "/(.*)");
     const headerMap = new Map(((globalHeaders && globalHeaders.headers) || []).map((header) => [header.key, header.value]));
     expect(headerMap.has("Content-Security-Policy"), "vercel security headers missing Content-Security-Policy");
+    expect(headerMap.get("X-Frame-Options") === "SAMEORIGIN", "vercel security headers must prevent cross-origin framing");
     expect(String(headerMap.get("Content-Security-Policy") || "").includes("object-src 'none'"), "vercel CSP must block object sources");
     expect(String(headerMap.get("Content-Security-Policy") || "").includes("connect-src 'self'"), "vercel CSP must restrict API connections");
+    expect(String(headerMap.get("Content-Security-Policy") || "").includes("frame-ancestors 'self'"), "vercel CSP must restrict frame ancestors");
     [
       "futbolradar.com",
       "futbolradar.com.tr",
@@ -335,6 +337,9 @@ function checkJson() {
       rewrites.get("/oyuncular/:slug") === "/oyuncular/:slug.html",
       "vercel rewrite missing /oyuncular/:slug"
     );
+    expect(rewrites.get("/maclar/:date") === "/maclar/:date/index.html", "vercel rewrite missing /maclar/:date");
+    expect(rewrites.get("/mac/:slug") === "/mac/:slug/index.html", "vercel rewrite missing /mac/:slug");
+    expect(rewrites.get("/turnuva/:slug") === "/turnuva/:slug/index.html", "vercel rewrite missing /turnuva/:slug");
     expect(
       redirects.get("/oyuncular/edina-dzeko") === "/oyuncular/edin-dzeko.html",
       "vercel redirect missing /oyuncular/edina-dzeko"
@@ -527,7 +532,12 @@ function checkSeoAndLinks() {
     expect(count === 1, `duplicate description: ${description}`);
   }
 
-  const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+  const sitemapIndex = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+  const childSitemaps = Array.from(sitemapIndex.matchAll(/<loc>https:\/\/www\.futbolradar\.com\/(sitemaps\/[^<]+)<\/loc>/g))
+    .map((match) => path.join(root, match[1].replace(/\//g, path.sep)))
+    .filter((file) => fs.existsSync(file))
+    .map((file) => fs.readFileSync(file, "utf8"));
+  const sitemap = [sitemapIndex, ...childSitemaps].join("\n");
   for (const page of pages) {
     const html = fs.readFileSync(path.join(root, page), "utf8");
     const robots = (html.match(/<meta\s+name="robots"\s+content="([^"]+)"/i) || [])[1] || "";
@@ -565,9 +575,44 @@ function checkSeoAndLinks() {
   expect(fs.existsSync(path.join(root, "public", "site.webmanifest")), "missing public/site.webmanifest");
 }
 
+function checkMatchPlatform() {
+  const manifestPath = path.join(root, "data", "generated-match-pages.json");
+  expect(fs.existsSync(manifestPath), "generated match page manifest missing");
+  if (!fs.existsSync(manifestPath)) return;
+
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  expect(Array.isArray(manifest.dailyPages) && manifest.dailyPages.length >= 7, "daily match pages: rolling window missing");
+  expect(Array.isArray(manifest.matches) && manifest.matches.length > 0, "permanent match pages missing");
+  expect(fs.existsSync(path.join(root, "maclar", "index.html")), "/maclar/ page missing");
+  expect(fs.existsSync(path.join(root, "maclar", manifest.today, "index.html")), "today dated match page missing");
+  expect(fs.existsSync(path.join(root, "turnuva", "konferans-ligi", "index.html")), "Conference League page missing");
+  expect(fs.existsSync(path.join(root, "turnuva", "hazirlik-maclari", "index.html")), "friendly competition page missing");
+  expect(fs.existsSync(path.join(root, "veri-metodolojisi.html")), "data methodology page missing");
+  expect(fs.existsSync(path.join(root, "duzeltme-politikasi.html")), "correction policy page missing");
+  expect(fs.existsSync(path.join(root, "editorial-politikasi.html")), "editorial policy page missing");
+  expect(fs.existsSync(path.join(root, "sitemap-index.xml")), "sitemap index alias missing");
+  ["matches.xml", "teams.xml", "competitions.xml", "editorial.xml"].forEach((file) => {
+    expect(fs.existsSync(path.join(root, "sitemaps", file)), `split sitemap missing ${file}`);
+  });
+
+  const matchSitemap = fs.readFileSync(path.join(root, "sitemaps", "matches.xml"), "utf8");
+  for (const item of manifest.matches) {
+    const file = path.join(root, "mac", item.slug, "index.html");
+    expect(fs.existsSync(file), `permanent match page missing ${item.slug}`);
+    if (!fs.existsSync(file)) continue;
+    const html = fs.readFileSync(file, "utf8");
+    expect(html.includes('"@type":"SportsEvent"') || html.includes('"@type": "SportsEvent"'), `${item.slug}: SportsEvent schema missing`);
+    expect(html.includes('class="breadcrumb"'), `${item.slug}: visible breadcrumb missing`);
+    expect(html.includes("Europe/Istanbul"), `${item.slug}: timezone label missing`);
+    const url = `https://www.futbolradar.com/mac/${item.slug}/`;
+    expect(item.indexable ? matchSitemap.includes(`<loc>${url}</loc>`) : !matchSitemap.includes(`<loc>${url}</loc>`), `${item.slug}: sitemap quality rule mismatch`);
+  }
+}
+
 function checkAnalyticsTag() {
   const htmlFiles = walk(root, (full) => full.endsWith(".html"));
   for (const file of htmlFiles) {
+    if (file.includes(`${path.sep}widgets${path.sep}`)) continue;
     const html = fs.readFileSync(file, "utf8");
     expect(html.includes("data-futbolradar-ga4"), `${path.relative(root, file)}: GA4 tag missing`);
     expect(html.includes("window.gtag"), `${path.relative(root, file)}: gtag bootstrap missing`);
@@ -796,6 +841,7 @@ checkJson();
 checkSeoAndLinks();
 checkClientSecrets();
 checkPublicCopyAndAccessibility();
+checkMatchPlatform();
 await checkApi();
 
 if (failures.length) {

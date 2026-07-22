@@ -7812,6 +7812,229 @@ h1 {
   }
 }
 
+.widget-page {
+  min-width: 260px;
+  background: #060b10;
+}
+
+.widget-page[data-widget-theme="light"] {
+  --bg: #f3f8f7;
+  --panel: rgba(255, 255, 255, 0.96);
+  --line: rgba(14, 74, 62, 0.18);
+  --line-strong: rgba(14, 120, 88, 0.42);
+  --text: #09251f;
+  --muted: #526c66;
+  --green: #08784f;
+  --cyan: #006f82;
+  background: var(--bg);
+}
+
+.widget-shell {
+  width: 100%;
+  min-height: 100vh;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.widget-header,
+.widget-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 58px;
+  border-bottom: 1px solid var(--line);
+  padding: 10px 14px;
+}
+
+.widget-header > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.widget-header .brand-mark {
+  width: 30px;
+  height: 30px;
+  font-size: 0.72rem;
+}
+
+.widget-header > span,
+.widget-footer {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.widget-footer {
+  border-top: 1px solid var(--line);
+  border-bottom: 0;
+}
+
+.widget-footer a {
+  color: var(--green);
+  font-weight: 750;
+}
+
+.widget-match-list {
+  display: grid;
+  gap: 12px;
+  min-height: 180px;
+  padding: 12px;
+}
+
+.widget-match-list .league-match-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.widget-match-list .league-match-group {
+  margin: 0;
+}
+
+.widget-match-list .match-actions {
+  display: none;
+}
+
+/* Permanent match, competition and trust surfaces */
+.match-advanced-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.match-advanced-filters > a,
+.match-advanced-filters button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0 14px;
+  background: rgba(13, 26, 34, 0.72);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.match-advanced-filters > a:hover,
+.match-advanced-filters > a:focus-visible,
+.match-advanced-filters button:hover,
+.match-advanced-filters button:focus-visible {
+  border-color: var(--line-strong);
+  color: var(--green);
+}
+
+.match-advanced-filters form {
+  display: grid;
+  grid-template-columns: minmax(150px, 220px) auto;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.match-advanced-filters label {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.match-advanced-filters input {
+  min-width: 0;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0 12px;
+  background: rgba(6, 11, 16, 0.82);
+  color: var(--text);
+  font: inherit;
+}
+
+.match-broadcast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 14px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.match-broadcast b {
+  color: var(--text);
+  text-align: right;
+}
+
+.match-static-overview,
+.policy-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 18px 0 28px;
+}
+
+.policy-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.policy-grid .card,
+.match-static-overview .card {
+  min-width: 0;
+}
+
+.policy-grid h2,
+.match-static-overview h2 {
+  font-size: 1.15rem;
+}
+
+.match-page-score {
+  min-width: 92px;
+  color: var(--green);
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1;
+  text-align: right;
+}
+
+.match-date-page [aria-live="polite"] {
+  min-height: 160px;
+}
+
+@media (max-width: 760px) {
+  .match-advanced-filters,
+  .match-advanced-filters form,
+  .match-static-overview,
+  .policy-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .match-advanced-filters {
+    display: grid;
+  }
+
+  .match-advanced-filters form {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .match-page-score {
+    min-width: 0;
+    text-align: left;
+  }
+
+  .match-broadcast {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .match-broadcast b {
+    text-align: left;
+  }
+}
+
 /* Live fixture statistics and deterministic match analysis */
 .live-analysis-section {
   border-color: rgba(40, 230, 153, 0.24);

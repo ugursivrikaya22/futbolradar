@@ -7,6 +7,7 @@ for (const file of [
   "page.css",
   "app.js",
   "site.js",
+  "widget.js",
   "site.webmanifest",
   "404.html",
   "index.html",
@@ -30,6 +31,9 @@ for (const file of [
 for (const file of [
   "analyses.json",
   "competitions.json",
+  "freshness.json",
+  "generated-match-pages.json",
+  "matches-cache.json",
   "matches.json",
   "momentum.json",
   "news.json",

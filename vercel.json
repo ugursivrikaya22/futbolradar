@@ -85,6 +85,11 @@
       "source": "/super-lig-form-tablosu",
       "destination": "/super-lig-form-durumu.html",
       "permanent": true
+    },
+    {
+      "source": "/bugunun-maclari.html",
+      "destination": "/maclar/",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -123,6 +128,18 @@
     {
       "source": "/karsilastirma/:slug",
       "destination": "/karsilastirma/:slug.html"
+    },
+    {
+      "source": "/maclar/:date",
+      "destination": "/maclar/:date/index.html"
+    },
+    {
+      "source": "/mac/:slug",
+      "destination": "/mac/:slug/index.html"
+    },
+    {
+      "source": "/turnuva/:slug",
+      "destination": "/turnuva/:slug/index.html"
     }
   ],
   "headers": [
@@ -145,11 +162,38 @@
       ]
     },
     {
+      "source": "/widget.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/widgets/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=60, stale-while-revalidate=180"
+        }
+      ]
+    },
+    {
       "source": "/page.css",
       "headers": [
         {
           "key": "Cache-Control",
           "value": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/assets/og/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, s-maxage=604800, stale-while-revalidate=2592000"
         }
       ]
     },
@@ -163,6 +207,24 @@
       ]
     },
     {
+      "source": "/maclar/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=60, stale-while-revalidate=180"
+        }
+      ]
+    },
+    {
+      "source": "/mac/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=300, stale-while-revalidate=900"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
@@ -170,12 +232,12 @@
           "value": "nosniff"
         },
         {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
           "key": "X-Frame-Options",
           "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
         },
         {
           "key": "Permissions-Policy",

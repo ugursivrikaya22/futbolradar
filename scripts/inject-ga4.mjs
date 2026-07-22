@@ -49,6 +49,9 @@ function analyticsTag(id) {
 
 let injected = 0;
 for (const file of walk(root)) {
+  if (file.includes(`${path.sep}widgets${path.sep}`)) {
+    continue;
+  }
   const html = fs.readFileSync(file, "utf8");
   if (html.includes(marker)) {
     continue;

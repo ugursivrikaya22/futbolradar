@@ -8,6 +8,7 @@
   var MATCH_DETAIL_POLL_MS = 15000;
   var SUPER_LIG_SEASON_START = "2026-08-14";
   var cache = Object.create(null);
+  var resourceState = Object.create(null);
   var COMPETITION_ALIASES = {
     "super-lig": ["super lig", "trendyol super lig"],
     "premier-league": ["premier league", "english premier league"],
@@ -16,7 +17,9 @@
     bundesliga: ["bundesliga", "german bundesliga"],
     "ligue-1": ["ligue 1", "french ligue 1"],
     "sampiyonlar-ligi": ["sampiyonlar ligi", "uefa sampiyonlar ligi", "champions league", "uefa champions league"],
-    "avrupa-ligi": ["avrupa ligi", "uefa avrupa ligi", "europa league", "uefa europa league"]
+    "avrupa-ligi": ["avrupa ligi", "uefa avrupa ligi", "europa league", "uefa europa league"],
+    "konferans-ligi": ["konferans ligi", "uefa konferans ligi", "conference league", "uefa conference league", "uefa europa conference league"],
+    "hazirlik-maclari": ["hazirlik maclari", "hazirlik maci", "club friendlies", "club friendly games", "friendly clubs", "friendlies clubs"]
   };
   var RESOURCE_CONFIG = {
     matches: { api: "matches", fallback: "matches", reportSource: true },
@@ -85,6 +88,11 @@
     return siteHref("oyuncu-karsilastir.html" + (query || ""));
   }
 
+  function selectedMatchDate() {
+    var params = new URLSearchParams(window.location.search);
+    return params.get("date") || document.body && document.body.getAttribute("data-match-date") || "";
+  }
+
   function clampPercent(value) {
     var number = Number(value) || 0;
     return Math.max(0, Math.min(100, number));
@@ -97,8 +105,9 @@
       var params = new URLSearchParams(window.location.search);
       var apiParams = new URLSearchParams();
 
-      if ((config.api === "matches" || config.api === "match-detail") && params.get("date")) {
-        apiParams.set("date", params.get("date"));
+      var matchDate = selectedMatchDate();
+      if ((config.api === "matches" || config.api === "match-detail") && matchDate) {
+        apiParams.set("date", matchDate);
       }
 
       if (params.get("league")) {
@@ -111,6 +120,10 @@
         }
       });
 
+      if (config.api === "match-detail" && !apiParams.get("id") && document.body && document.body.getAttribute("data-match-id")) {
+        apiParams.set("id", document.body.getAttribute("data-match-id"));
+      }
+
       var query = apiParams.toString();
       if (query) {
         url += "?" + query;
@@ -122,7 +135,10 @@
 
   function unwrapPayload(payload) {
     if (payload && payload.ok === false) {
-      throw new Error("api-error");
+      var apiError = new Error(payload.error && payload.error.message || "api-error");
+      apiError.code = payload.error && payload.error.code || "API_ERROR";
+      apiError.updatedAt = payload.updatedAt || "";
+      throw apiError;
     }
 
     if (payload && payload.error) {
@@ -202,16 +218,51 @@
         value.textContent = label;
       }
     });
+
+    document.querySelectorAll("[data-last-match-check]").forEach(function (item) {
+      item.textContent = label;
+    });
   }
 
   function mergeMatchCollections(providerMatches, curatedMatches) {
     var seen = Object.create(null);
     return [].concat(providerMatches || [], curatedMatches || []).filter(function (match) {
-      var key = String(match && match.id || [match && match.homeTeam, match && match.awayTeam, match && match.kickoff].join("|")).toLocaleLowerCase("tr-TR");
-      if (!key || seen[key]) return false;
-      seen[key] = true;
+      var idKey = String(match && (match.providerId || match.fixtureId || match.id) || "").toLocaleLowerCase("tr-TR");
+      var kickoff = String(match && (match.kickoffAtUtc || match.kickoff || match.date || match.time) || "").slice(0, 16);
+      var fixtureKey = [match && (match.competitionId || match.league), match && match.homeTeam, match && match.awayTeam, kickoff]
+        .map(function (value) { return normalizeSearchText(value); })
+        .join("|");
+      if ((!idKey && !fixtureKey) || (idKey && seen["id:" + idKey]) || (fixtureKey && seen["fixture:" + fixtureKey])) return false;
+      if (idKey) seen["id:" + idKey] = true;
+      if (fixtureKey) seen["fixture:" + fixtureKey] = true;
       return true;
     });
+  }
+
+  function latestRecordTimestamp(records) {
+    return (Array.isArray(records) ? records : [])
+      .flatMap(function (record) {
+        return [record && record.lastVerifiedAt, record && record.verifiedAt, record && record.fetchedAt];
+      })
+      .filter(Boolean)
+      .sort()
+      .at(-1) || "";
+  }
+
+  function updateMatchDataState(name) {
+    if (name !== "matches" && name !== "matchDetail") return;
+    var state = resourceState[name] || {};
+    var labels = {
+      ready: "Program güncel",
+      empty: "Seçilen tarihte maç bulunmuyor",
+      fallback: "Son doğrulanmış kayıtlar gösteriliyor",
+      "fallback-empty": "Program henüz güncelleniyor",
+      unavailable: "Maç verisine şu anda ulaşılamıyor"
+    };
+    document.querySelectorAll("[data-match-data-status]").forEach(function (item) {
+      item.textContent = labels[state.kind] || "Program kontrol ediliyor";
+    });
+    if (state.updatedAt) updateUpdatedAtLabel(state.updatedAt);
   }
 
   function loadData(name) {
@@ -223,31 +274,69 @@
 
     if (!cache[name]) {
       var fallbackUrl = DATA_ROOT + config.fallback + ".json";
-      var fallback = function () {
+      var fallback = function (options) {
         return fetchJson(fallbackUrl).then(function (result) {
-          return filterFallbackData(name, result.data);
+          var data = filterFallbackData(name, result.data);
+          if (!options || !options.preserveState) {
+            var providerFailed = Boolean(options && options.providerFailed);
+            resourceState[name] = {
+              kind: providerFailed ? (Array.isArray(data) && data.length ? "fallback" : "unavailable") : (Array.isArray(data) && data.length ? "fallback" : "fallback-empty"),
+              updatedAt: result.updatedAt || latestRecordTimestamp(data),
+              source: "static"
+            };
+            updateMatchDataState(name);
+          }
+          return data;
         });
       };
 
       if (config.api) {
         cache[name] = fetchJson(getApiUrl(config))
           .then(function (result) {
+            var usesMockSource = /mock/i.test(String(result.source || ""));
+            resourceState[name] = {
+              kind: usesMockSource
+                ? (Array.isArray(result.data) && result.data.length ? "fallback" : "fallback-empty")
+                : (Array.isArray(result.data) && result.data.length ? "ready" : "empty"),
+              updatedAt: result.updatedAt || latestRecordTimestamp(result.data),
+              source: result.source || "api"
+            };
             if (config.reportSource) {
               updateUpdatedAtLabel(result.updatedAt);
             }
+            updateMatchDataState(name);
             if (name !== "matches") {
               return result.data;
             }
 
-            return fallback()
+            return fallback({ preserveState: true })
               .then(function (curatedMatches) {
-                return mergeMatchCollections(result.data, curatedMatches);
+                var merged = mergeMatchCollections(result.data, curatedMatches);
+                if (!usesMockSource && (!Array.isArray(result.data) || !result.data.length) && merged.length) {
+                  resourceState[name] = {
+                    kind: "fallback",
+                    updatedAt: latestRecordTimestamp(merged),
+                    source: "static"
+                  };
+                  updateMatchDataState(name);
+                }
+                return merged;
               })
               .catch(function () {
                 return result.data;
               });
           })
-          .catch(fallback);
+          .catch(function (apiError) {
+            return fallback({ providerFailed: true }).catch(function () {
+              resourceState[name] = {
+                kind: "unavailable",
+                updatedAt: apiError && apiError.updatedAt || "",
+                errorCode: apiError && apiError.code || "NETWORK_ERROR"
+              };
+              updateMatchDataState(name);
+              throw apiError;
+            });
+          });
       } else {
         cache[name] = fallback();
       }
@@ -358,7 +447,8 @@
   function filterFallbackData(name, data) {
     if (name === "matchDetail" && Array.isArray(data)) {
       var detailParams = new URLSearchParams(window.location.search);
-      var requestedId = detailParams.get("fixtureId") || detailParams.get("id") || "";
+      var requestedId = detailParams.get("fixtureId") || detailParams.get("id") ||
+        document.body && document.body.getAttribute("data-match-id") || "";
       return data.filter(function (match) {
         return String(match.fixtureId || match.providerId || match.id || "") === requestedId;
       }).slice(0, 1);
@@ -369,7 +459,7 @@
     }
 
     var params = new URLSearchParams(window.location.search);
-    var selectedDate = params.get("date") || todayInIstanbul();
+    var selectedDate = selectedMatchDate() || todayInIstanbul();
     var selectedLeague = params.get("league") || "all";
 
     return data.filter(function (match) {
@@ -429,9 +519,7 @@
 
     if (typeof window.gtag === "function") {
       window.gtag("event", name, properties || {});
-    }
-
-    if (Array.isArray(window.dataLayer)) {
+    } else if (Array.isArray(window.dataLayer)) {
       window.dataLayer.push(payload);
     }
 
@@ -453,18 +541,24 @@
         return;
       }
       if (href.indexOf("/mac/") !== -1) {
-        trackEvent("match_open", { href: href });
+        trackEvent("match_card_clicked", { href: href });
       } else if (href.indexOf("/oyuncular/") !== -1) {
         trackEvent("player_open", { href: href });
       } else if (href.indexOf("karsilastir") !== -1) {
         trackEvent("compare_start", { href: href });
       } else if (href.indexOf("takim") !== -1 || href.indexOf("form-durumu") !== -1) {
         trackEvent("team_open", { href: href });
-      } else if (href.indexOf("veri-notu") !== -1) {
-        trackEvent("data_source_open", { href: href });
+      } else if (href.indexOf("veri-metodolojisi") !== -1 || href.indexOf("veri-notu") !== -1) {
+        trackEvent("methodology_viewed", { href: href });
       } else if (element.closest(".popular-links, .route-chain, .search-trap, .match-related-grid, .static-profile-links")) {
-        trackEvent("related_content_click", { href: href });
+        trackEvent("related_match_clicked", { href: href });
       }
+
+      if (element.hasAttribute("data-competition-filter")) {
+        trackEvent("competition_filter_used", { competition: element.getAttribute("data-competition-filter") || "all" });
+      }
+      if (href.indexOf("broadcast=confirmed") !== -1) trackEvent("broadcast_filter_used", { value: "confirmed" });
+      if (href.indexOf("team=") !== -1) trackEvent("team_filter_used", { area: "match-list" });
     });
 
     document.addEventListener("toggle", function (event) {
@@ -473,6 +567,10 @@
         trackEvent("radar_explanation_open");
       }
     }, true);
+
+    if (document.body && document.body.hasAttribute("data-match-id")) {
+      trackEvent("match_page_view", { match_id: document.body.getAttribute("data-match-id") });
+    }
   }
 
   function renderInto(target, dataName, renderer, emptyTitle) {
@@ -1410,7 +1508,7 @@
 
   function matchDetailHref(match) {
     if (match && match.analysisPage) {
-      return "./" + String(match.analysisPage).replace(/^\.\//, "");
+      return siteHref(String(match.analysisPage).replace(/^\.\//, ""));
     }
 
     var params = new URLSearchParams();
@@ -1419,11 +1517,11 @@
     if (date) {
       params.set("date", date);
     }
-    return "./mac-detay.html?" + params.toString();
+    return siteHref("mac-detay.html?" + params.toString());
   }
 
   function teamDetailHref(team) {
-    return "./takim-detay.html?team=" + encodeURIComponent(team.name || team.team || team.id || "");
+    return siteHref("takim-detay.html?team=" + encodeURIComponent(team.name || team.team || team.id || ""));
   }
 
   function statusTr(status) {
@@ -1466,7 +1564,7 @@
         nextParams.set("league", value);
       }
       var query = nextParams.toString();
-      link.href = window.location.pathname.split("/").pop() + (query ? "?" + query : "");
+      link.href = (document.body && document.body.hasAttribute("data-match-date") ? window.location.pathname : window.location.pathname.split("/").pop()) + (query ? "?" + query : "");
       link.classList.toggle("is-active", active);
       if (active) {
         link.setAttribute("aria-current", "page");
@@ -1512,11 +1610,7 @@
     var params = new URLSearchParams(window.location.search);
     var today = todayInIstanbul();
 
-    if (date && date !== today) {
-      params.set("date", date);
-    } else {
-      params.delete("date");
-    }
+    params.delete("date");
 
     if (status && status !== "all") {
       params.set("status", status);
@@ -1525,6 +1619,11 @@
     }
 
     var query = params.toString();
+    if (document.body && document.body.hasAttribute("data-match-date")) {
+      return "/maclar/" + (date || today) + "/" + (query ? "?" + query : "");
+    }
+    if (date && date !== today) params.set("date", date);
+    query = params.toString();
     return window.location.pathname.split("/").pop() + (query ? "?" + query : "");
   }
 
@@ -1535,7 +1634,7 @@
     }
 
     var params = new URLSearchParams(window.location.search);
-    var selectedDate = params.get("date") || todayInIstanbul();
+    var selectedDate = selectedMatchDate() || todayInIstanbul();
     var selectedStatus = params.get("status") || "all";
     var input = explorer.querySelector("[data-match-date-input]");
     var label = explorer.querySelector("[data-match-date-label]");
@@ -1548,6 +1647,7 @@
     if (input) {
       input.value = selectedDate;
       input.addEventListener("change", function () {
+        trackEvent("date_changed", { date: input.value || todayInIstanbul() });
         window.location.href = matchExplorerHref(input.value || todayInIstanbul(), selectedStatus);
       });
     }
@@ -1720,6 +1820,11 @@
     if (match.aiPrediction) {
       optionalSignals.push({ label: "AI tahmin " + match.aiPrediction, variant: "soft" });
     }
+    var broadcast = match.broadcast && match.broadcast.status || match.broadcastStatus || "unverified";
+    var channels = match.broadcast && Array.isArray(match.broadcast.channels) ? match.broadcast.channels : [];
+    var broadcastLabel = broadcast === "confirmed" && channels.length
+      ? channels.map(function (channel) { return channel.channelName || channel.platformName; }).filter(Boolean).join(", ")
+      : broadcast === "none" ? "Yayın bulunmuyor" : "Yayın bilgisi doğrulanmadı";
 
     return (
       '<article class="card match-card" data-card="today-match" data-match="' + escapeHtml(match.id) + '">' +
@@ -1731,6 +1836,7 @@
       "</div>" +
       (momentum == null ? "" : barRowHtml("Momentum", momentum, momentum)) +
       tagsHtml(optionalSignals) +
+      '<p class="match-broadcast"><span>Yayın</span><b>' + escapeHtml(broadcastLabel) + '</b></p>' +
       '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Maç detayı</a>' +
       '<div class="player-actions match-actions">' +
       '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.homeTeam })) + '">Ev radar</a>' +
@@ -1776,17 +1882,44 @@
   }
 
   function renderMatchesPageSection(matches) {
-    var filteredMatches = Array.isArray(matches) ? filterMatchesByStatus(matches) : [];
+    var filteredMatches = Array.isArray(matches) ? filterMatchesByQuery(filterMatchesByStatus(matches)) : [];
     if (!filteredMatches.length) {
-      var params = new URLSearchParams(window.location.search);
-      var selectedDate = params.get("date") || todayInIstanbul();
+      var selectedDate = selectedMatchDate() || todayInIstanbul();
+      var state = resourceState.matches || {};
+      if (state.kind === "unavailable") {
+        return matchEmptyStateHtml("Maç verisine şu anda ulaşılamıyor", "Son başarılı güncelleme yeniden kontrol ediliyor. Kısa bir süre sonra tekrar deneyebilirsin.");
+      }
+      if (state.kind === "fallback-empty") {
+        return matchEmptyStateHtml("Maç programı henüz güncelleniyor", formatMatchDate(selectedDate) + " programı doğrulanınca burada gösterilecek.");
+      }
       return matchEmptyStateHtml(
-        "Bu ölçütlerde doğrulanmış maç yok",
+        "Seçilen tarih ve filtrelerde maç bulunmuyor",
         formatMatchDate(selectedDate) + " için seçilen lig ve durum filtresinde maç bulunamadı. Başka bir gün veya filtre seçebilirsin."
       );
     }
 
     return renderMatchesByLeague(filteredMatches, renderMatchPageCard);
+  }
+
+  function filterMatchesByQuery(matches) {
+    var params = new URLSearchParams(window.location.search);
+    var team = normalizeSearchText(params.get("team"));
+    var friendlyOnly = params.get("friendly") === "1";
+    var broadcastOnly = params.get("broadcast") === "confirmed";
+    var turkishOnly = params.get("turkish") === "1" || document.body && document.body.getAttribute("data-match-turkish") === "true";
+    var turkishTeams = ["galatasaray", "fenerbahce", "besiktas", "trabzonspor", "basaksehir", "samsunspor", "goztepe"];
+    return matches.filter(function (match) {
+      var home = normalizeSearchText(match.homeTeam);
+      var away = normalizeSearchText(match.awayTeam);
+      var league = normalizeSearchText(match.league);
+      var isFriendly = match.isFriendly === true || normalizeSearchText(match.matchType).indexOf("friendly") !== -1 || league.indexOf("friendly") !== -1 || league.indexOf("hazirlik") !== -1;
+      var broadcast = match.broadcast && match.broadcast.status || match.broadcastStatus || "unverified";
+      if (team && home.indexOf(team) === -1 && away.indexOf(team) === -1) return false;
+      if (friendlyOnly && !isFriendly) return false;
+      if (broadcastOnly && broadcast !== "confirmed") return false;
+      if (turkishOnly && !turkishTeams.includes(home) && !turkishTeams.includes(away)) return false;
+      return true;
+    });
   }
 
   function renderLiveScoreSection(matches) {
@@ -1845,7 +1978,7 @@
 
   function matchEmptyStateHtml(title, text, compact) {
     var params = new URLSearchParams(window.location.search);
-    var selectedDate = params.get("date") || todayInIstanbul();
+    var selectedDate = selectedMatchDate() || todayInIstanbul();
     return (
       '<article class="data-empty' + (compact ? " compact" : "") + '" data-card="empty-state">' +
       "<strong>" + escapeHtml(title || "Bugün doğrulanmış maç yok") + "</strong>" +
@@ -5284,6 +5417,43 @@
     initMatchDetailPolling(target);
   }
 
+  function updatePersistentMatchSnapshot(detail) {
+    if (!detail) {
+      return;
+    }
+
+    document.querySelectorAll("[data-persistent-match-score]").forEach(function (item) {
+      item.textContent = matchScoreText(detail.score);
+    });
+    document.querySelectorAll("[data-persistent-match-status]").forEach(function (item) {
+      item.textContent = displayValue(detail.league) + " · " + statusTr(detail.status);
+    });
+    document.querySelectorAll("[data-persistent-match-status-label]").forEach(function (item) {
+      item.textContent = statusTr(detail.status);
+    });
+  }
+
+  function initPersistentMatchRefresh() {
+    if (!document.querySelector("[data-persistent-match-score]") || window.location.protocol === "file:") {
+      return;
+    }
+
+    forceReload("matchDetail").then(function (data) {
+      var detail = Array.isArray(data) ? data[0] : data;
+      updatePersistentMatchSnapshot(detail);
+
+      if (detail && isLiveMatch(detail)) {
+        createLivePoller(MATCH_DETAIL_POLL_MS, function () {
+          return forceReload("matchDetail").then(function (nextData) {
+            updatePersistentMatchSnapshot(Array.isArray(nextData) ? nextData[0] : nextData);
+          });
+        }).start();
+      }
+    }).catch(function () {
+      // The generated snapshot remains available when live data cannot be reached.
+    });
+  }
+
   function statisticNumber(value) {
     if (value === null || value === undefined || value === "") {
       return null;
@@ -5686,6 +5856,7 @@
     initPlayerSeoLanding(document.querySelector('[data-api-target="player-seo-landing"]'));
     initTeamDetail(document.querySelector('[data-api-target="team-detail"]'));
     initMatchDetail(document.querySelector('[data-api-target="match-detail"]'));
+    initPersistentMatchRefresh();
     initStatisticsHub(document.querySelector('[data-api-target="statistics-hub"]'));
 
     renderInto(
