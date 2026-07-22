@@ -99,7 +99,7 @@ function testUnknownProviderValues() {
 }
 
 function testCompetitionCatalog() {
-  assert.equal(competitionCatalog.competitions.length, 8);
+  assert.equal(competitionCatalog.competitions.length, 9);
   assert.equal(competitionCatalog.providerLeagueValue("premier-league", "api-football"), 39);
   assert.equal(competitionCatalog.providerLeagueValue("sampiyonlar-ligi", "football-data"), "CL");
   assert.equal(competitionCatalog.providerLeagueValue("avrupa-ligi", "api-football"), 3);

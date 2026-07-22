@@ -16,11 +16,13 @@ function fakeResponse() {
   };
 }
 
-assert.equal(competitions.length, 8, "Altı yerel lig ve iki UEFA turnuvası katalogda olmalı.");
+assert.equal(competitions.length, 9, "Altı yerel lig ve üç UEFA turnuvası katalogda olmalı.");
 assert.equal(findCompetition("Champions League")?.id, "sampiyonlar-ligi");
 assert.equal(findCompetition("UEFA Europa League")?.id, "avrupa-ligi");
+assert.equal(findCompetition("Conference League")?.id, "konferans-ligi");
 assert.equal(providerLeagueValue("premier-league", "api-football"), 39);
 assert.equal(providerLeagueValue("avrupa-ligi", "football-data"), null);
+assert.equal(providerLeagueValue("konferans-ligi", "football-data"), null);
 
 const fixture = (id, league, status = "NS") => normalizeFixture({
   fixture: { id, date: "2026-07-19T18:00:00+00:00", status: { short: status } },
@@ -64,4 +66,4 @@ try {
   }
 }
 
-console.log("Competition coverage tests passed: 8 competitions, live status and provider fallback checked.");
+console.log("Competition coverage tests passed: 9 competitions, live status and provider fallback checked.");

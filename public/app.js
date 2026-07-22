@@ -14,7 +14,8 @@
     bundesliga: ["bundesliga", "german bundesliga"],
     "ligue-1": ["ligue 1", "french ligue 1"],
     "sampiyonlar-ligi": ["sampiyonlar ligi", "uefa sampiyonlar ligi", "champions league", "uefa champions league"],
-    "avrupa-ligi": ["avrupa ligi", "uefa avrupa ligi", "europa league", "uefa europa league"]
+    "avrupa-ligi": ["avrupa ligi", "uefa avrupa ligi", "europa league", "uefa europa league"],
+    "konferans-ligi": ["konferans ligi", "uefa konferans ligi", "conference league", "uefa europa conference league"]
   };
   var RESOURCE_CONFIG = {
     matches: { api: "matches", fallback: "matches", reportSource: true },
