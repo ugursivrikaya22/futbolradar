@@ -97,7 +97,7 @@
       var params = new URLSearchParams(window.location.search);
       var apiParams = new URLSearchParams();
 
-      if (config.api === "matches" && params.get("date")) {
+      if ((config.api === "matches" || config.api === "match-detail") && params.get("date")) {
         apiParams.set("date", params.get("date"));
       }
 
@@ -356,6 +356,14 @@
   }
 
   function filterFallbackData(name, data) {
+    if (name === "matchDetail" && Array.isArray(data)) {
+      var detailParams = new URLSearchParams(window.location.search);
+      var requestedId = detailParams.get("fixtureId") || detailParams.get("id") || "";
+      return data.filter(function (match) {
+        return String(match.fixtureId || match.providerId || match.id || "") === requestedId;
+      }).slice(0, 1);
+    }
+
     if (name !== "matches" || !Array.isArray(data)) {
       return data;
     }
@@ -1405,7 +1413,13 @@
       return "./" + String(match.analysisPage).replace(/^\.\//, "");
     }
 
-    return "./mac-detay.html?id=" + encodeURIComponent(match.fixtureId || match.providerId || match.id || "");
+    var params = new URLSearchParams();
+    params.set("id", match.fixtureId || match.providerId || match.id || "");
+    var date = matchDateValue(match);
+    if (date) {
+      params.set("date", date);
+    }
+    return "./mac-detay.html?" + params.toString();
   }
 
   function teamDetailHref(team) {
@@ -1743,7 +1757,7 @@
       (hasTempo ? barRowHtml("Tempo", match.tempo, match.tempo) : "") +
       tagsHtml(match.liveTags || match.tags) +
       '<div class="player-actions match-actions">' +
-      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Mac detayi</a>' +
+      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Canlı istatistik ve analiz</a>' +
       '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.homeTeam })) + '">Ev sahibi radar</a>' +
       '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.awayTeam })) + '">Deplasman radar</a>' +
       "</div>" +
@@ -5186,6 +5200,29 @@
     );
   }
 
+  function renderLiveMatchAnalysis(analysis) {
+    if (!analysis || typeof analysis !== "object") {
+      return '<section class="profile-section live-analysis-section"><div class="profile-section-head"><h2>Canlı Radar Analizi</h2><span>İstatistik akışı bekleniyor</span></div>' +
+        '<article class="data-empty compact"><strong>Analiz hazırlanıyor</strong><span>Doğrulanmış canlı istatistikler geldikçe maç okuması burada oluşacak.</span></article></section>';
+    }
+
+    var signals = Array.isArray(analysis.signals) ? analysis.signals : [];
+    var signalHtml = signals.length
+      ? '<div class="live-analysis-grid">' + signals.map(function (signal) {
+        return '<article class="live-analysis-card"><span>' + escapeHtml(displayValue(signal.label)) + '</span><strong>' +
+          escapeHtml(displayValue(signal.value)) + '</strong><p>' + escapeHtml(displayValue(signal.text)) + '</p></article>';
+      }).join("") + "</div>"
+      : '<article class="data-empty compact"><strong>Ayrıntılı metrik bekleniyor</strong><span>Skor akışı sürüyor; doğrulanmış istatistikler geldikçe analiz genişleyecek.</span></article>';
+
+    return '<section class="profile-section live-analysis-section" data-live-analysis>' +
+      '<div class="profile-section-head"><h2>' + escapeHtml(displayValue(analysis.title || "Canlı Radar Analizi")) + '</h2><span>Güven: ' +
+      escapeHtml(displayValue(analysis.confidence || "Sınırlı")) + '</span></div>' +
+      '<p class="live-analysis-summary">' + escapeHtml(displayValue(analysis.summary)) + '</p>' +
+      signalHtml +
+      '<p class="live-analysis-note">' + escapeHtml(displayValue(analysis.disclaimer)) + '</p>' +
+      "</section>";
+  }
+
   function renderMatchDetail(detail) {
     if (!detail) {
       return "";
@@ -5208,6 +5245,7 @@
         return { time: item.time, team: { name: item.team }, detail: item.in + " oyuna girdi · " + item.out + " çıktı" };
       }), "Oyuncu değişikliği verisi bekleniyor") + "</section>" +
       '<section class="profile-section"><h2>İstatistikler</h2>' + renderStatisticsList(detail.statistics) + "</section>" +
+      renderLiveMatchAnalysis(detail.analysis) +
       "</article>"
     );
   }

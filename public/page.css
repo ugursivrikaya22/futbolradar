@@ -7801,6 +7801,74 @@ h1 {
   }
 }
 
+/* Live fixture statistics and deterministic match analysis */
+.live-analysis-section {
+  border-color: rgba(40, 230, 153, 0.24);
+  background: linear-gradient(145deg, rgba(40, 230, 153, 0.07), rgba(5, 15, 20, 0.76));
+}
+
+.live-analysis-summary {
+  max-width: 860px;
+  margin: 0 0 16px;
+  color: #d7e7e3;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.live-analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.live-analysis-card {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid rgba(77, 229, 255, 0.16);
+  border-radius: var(--radius);
+  background: rgba(2, 12, 17, 0.58);
+}
+
+.live-analysis-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.live-analysis-card strong {
+  display: block;
+  margin: 8px 0;
+  color: var(--green);
+  font-size: 1.2rem;
+}
+
+.live-analysis-card p,
+.live-analysis-note {
+  margin: 0;
+  color: #b9cbc7;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.live-analysis-note {
+  margin-top: 14px;
+  color: var(--muted);
+}
+
+@media (max-width: 980px) {
+  .live-analysis-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .live-analysis-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 1060px) {
   .nav {
     display: grid !important;

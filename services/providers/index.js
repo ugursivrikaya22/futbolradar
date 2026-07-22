@@ -28,6 +28,10 @@ function providerCandidates(resource) {
     return [matchProvider, primary, "api-football", "football-data", "mock"];
   }
 
+  if (resource === "match-detail") {
+    return [matchProvider, primary, "api-football", "mock"];
+  }
+
   if (resource === "players") {
     return [playerProvider, primary, "mock"];
   }

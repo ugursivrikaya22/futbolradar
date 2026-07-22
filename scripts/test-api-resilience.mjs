@@ -160,6 +160,7 @@ function testConfiguredProviderPreference() {
 
     assert.equal(providers.getProvider("matches").name, "api-football");
     assert.equal(providers.getProvider("standings").name, "api-football");
+    assert.equal(providers.getProvider("match-detail").name, "api-football");
 
     process.env.FOOTBALL_MATCH_PROVIDER = "football-data";
     assert.equal(providers.getProvider("matches").name, "football-data");
@@ -191,6 +192,106 @@ function testApiFootballErrorClassification() {
     apiFootball.classifyPayloadError(["No results for this season"]).code,
     "PROVIDER_DATA_UNAVAILABLE"
   );
+}
+
+function testLiveMatchDetailNormalization() {
+  const match = {
+    id: "99",
+    homeTeam: "Ev SK",
+    awayTeam: "Dep SK",
+    live: true,
+    score: { home: 1, away: 0 }
+  };
+  const lineups = apiFootball.normalizeFixtureLineups([
+    {
+      team: { name: "Ev SK" },
+      formation: "4-2-3-1",
+      startXI: [{ player: { name: "Oyuncu Bir" } }],
+      substitutes: [{ player: { name: "Yedek Bir" } }]
+    }
+  ]);
+  const events = apiFootball.normalizeFixtureEvents([
+    {
+      time: { elapsed: 37 },
+      team: { name: "Ev SK" },
+      player: { name: "Golcu" },
+      assist: { name: "Asistci" },
+      type: "Goal",
+      detail: "Normal Goal"
+    }
+  ]);
+  const statistics = apiFootball.normalizeFixtureStatistics([
+    { team: { name: "Ev SK" }, statistics: [
+      { type: "Ball Possession", value: "61%" },
+      { type: "Total Shots", value: 12 },
+      { type: "Shots on Goal", value: 5 },
+      { type: "expected_goals", value: "1.42" }
+    ] },
+    { team: { name: "Dep SK" }, statistics: [
+      { type: "Ball Possession", value: "39%" },
+      { type: "Total Shots", value: 5 },
+      { type: "Shots on Goal", value: 2 },
+      { type: "expected_goals", value: "0.44" }
+    ] }
+  ], match);
+  const analysis = apiFootball.buildLiveMatchAnalysis(match, statistics, events);
+
+  assert.equal(lineups[0].players[0], "Oyuncu Bir");
+  assert.equal(events[0].time, "37'");
+  assert.equal(events[0].value, "Golcu · Asist: Asistci · Normal Goal");
+  assert.equal(statistics.find((item) => item.type === "Ball Possession").home, "61%");
+  assert.equal(analysis.confidence, "Yuksek");
+  assert.equal(analysis.signals.length, 4);
+  assert.match(analysis.summary, /Ev SK/);
+}
+
+async function testDateOnlyLeagueFiltering() {
+  const previousFetch = global.fetch;
+  const previousKey = process.env.APIFOOTBALL_API_KEY;
+  let requestedUrl = "";
+
+  try {
+    process.env.APIFOOTBALL_API_KEY = "test-api-football-key";
+    global.fetch = async (url) => {
+      requestedUrl = String(url);
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          errors: [],
+          response: [
+            {
+              fixture: { id: 1, date: "2026-07-22T18:00:00Z", status: { short: "2H" } },
+              league: { name: "UEFA Champions League" },
+              teams: { home: { name: "Ev" }, away: { name: "Dep" } },
+              goals: { home: 1, away: 0 }
+            },
+            {
+              fixture: { id: 2, date: "2026-07-22T19:00:00Z", status: { short: "NS" } },
+              league: { name: "Premier League" },
+              teams: { home: { name: "Home" }, away: { name: "Away" } },
+              goals: { home: null, away: null }
+            }
+          ]
+        })
+      };
+    };
+
+    const matches = await apiFootball.getMatches({
+      date: "2026-07-22",
+      league: 2,
+      requestedCompetition: "sampiyonlar-ligi"
+    });
+    assert.equal(matches.length, 1);
+    assert.equal(matches[0].league, "UEFA Champions League");
+    assert.match(requestedUrl, /date=2026-07-22/);
+    assert.ok(!requestedUrl.includes("league="));
+    assert.ok(!requestedUrl.includes("season="));
+  } finally {
+    global.fetch = previousFetch;
+    if (previousKey === undefined) delete process.env.APIFOOTBALL_API_KEY;
+    else process.env.APIFOOTBALL_API_KEY = previousKey;
+  }
 }
 
 async function testPlayerLeagueSlugFallback() {
@@ -254,7 +355,9 @@ testCompetitionCatalog();
 testMissingKeyFallback();
 testConfiguredProviderPreference();
 testApiFootballErrorClassification();
+testLiveMatchDetailNormalization();
 await testPlayerLeagueSlugFallback();
+await testDateOnlyLeagueFiltering();
 await testFootballDataCompetitionFallback();
 
 console.log("FutbolRadar API resilience tests passed");

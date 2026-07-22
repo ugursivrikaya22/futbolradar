@@ -455,21 +455,23 @@ function ensureLeagueForData(params) {
 async function getFixtures(query) {
   const fixtureId = query && (query.fixtureId || query.id);
   const league = resolveLeague(query && query.league);
-  const season = resolveSeason(query && query.season);
   const date = query && query.date || (!fixtureId ? todayInIstanbul() : undefined);
+  const competition = query && (query.requestedCompetition || query.league)
+    ? competitions.find((item) => matchesCompetition(query.requestedCompetition || query.league, item))
+    : null;
 
-  // API-Football supports a date-only fixture query. Leaving league empty here
-  // is intentional: it lets the live matches page cover every competition.
-  // Standings and league-specific resources still require a league id.
+  // Date-only fixture access covers all supported competitions and works on
+  // more API plans than league+season queries. League filtering is local.
   const payload = await providerFetch("/fixtures", {
     id: fixtureId,
-    league: league || undefined,
-    season: league || fixtureId ? season : undefined,
     date
   });
   const matches = responseItems(payload).map(normalizeFixture);
-  const supportedMatches = league ? matches : filterSupportedCompetitions(matches);
-  return stampProviderData(supportedMatches, "matches", 5 * 60 * 1000);
+  const supportedMatches = filterSupportedCompetitions(matches);
+  const filteredMatches = league && competition
+    ? supportedMatches.filter((match) => matchesCompetition(match.league, competition))
+    : supportedMatches;
+  return stampProviderData(filteredMatches, "matches", 5 * 60 * 1000);
 }
 
 async function getMatches(query) {
@@ -585,6 +587,120 @@ async function getFixtureStatistics(query) {
   return responseItems(payload);
 }
 
+function normalizeFixtureLineups(items) {
+  return (Array.isArray(items) ? items : []).map((item) => ({
+    team: teamName(item.team),
+    formation: item.formation || null,
+    players: (Array.isArray(item.startXI) ? item.startXI : [])
+      .map((entry) => entry && entry.player && entry.player.name)
+      .filter(Boolean),
+    substitutes: (Array.isArray(item.substitutes) ? item.substitutes : [])
+      .map((entry) => entry && entry.player && entry.player.name)
+      .filter(Boolean)
+  }));
+}
+
+function normalizeFixtureEvents(items) {
+  return (Array.isArray(items) ? items : []).map((item) => {
+    const elapsed = item.time && item.time.elapsed;
+    const extra = item.time && item.time.extra;
+    const minute = elapsed == null ? "" : `${elapsed}${extra ? `+${extra}` : ""}'`;
+    const player = item.player && item.player.name;
+    const assist = item.assist && item.assist.name;
+    const details = [player, assist ? `Asist: ${assist}` : "", item.detail].filter(Boolean);
+
+    return {
+      time: minute,
+      team: { name: teamName(item.team) },
+      type: item.type || "Mac olayi",
+      detail: item.detail || "",
+      value: details.join(" · "),
+      comments: item.comments || ""
+    };
+  });
+}
+
+function normalizeFixtureStatistics(items, match) {
+  const teams = Array.isArray(items) ? items : [];
+  const home = teams.find((item) => normalizeText(teamName(item.team)) === normalizeText(match.homeTeam)) || teams[0];
+  const away = teams.find((item) => normalizeText(teamName(item.team)) === normalizeText(match.awayTeam)) || teams[1];
+  const homeStats = new Map((home && Array.isArray(home.statistics) ? home.statistics : []).map((item) => [item.type, item.value]));
+  const awayStats = new Map((away && Array.isArray(away.statistics) ? away.statistics : []).map((item) => [item.type, item.value]));
+  const types = Array.from(new Set([...homeStats.keys(), ...awayStats.keys()]));
+
+  return types.map((type) => ({
+    type,
+    home: homeStats.has(type) ? homeStats.get(type) : null,
+    away: awayStats.has(type) ? awayStats.get(type) : null
+  }));
+}
+
+function statNumber(statistics, aliases, side) {
+  const wanted = aliases.map((alias) => normalizeText(alias));
+  const row = (Array.isArray(statistics) ? statistics : []).find((item) =>
+    wanted.includes(normalizeText(item.type))
+  );
+  const value = row && row[side];
+  const number = parseFloat(String(value == null ? "" : value).replace("%", "").replace(",", "."));
+  return Number.isFinite(number) ? number : null;
+}
+
+function buildLiveMatchAnalysis(match, statistics, events) {
+  const signals = [];
+  const addSignal = (label, value, text) => signals.push({ label, value, text });
+  const possessionHome = statNumber(statistics, ["Ball Possession", "Possession"], "home");
+  const possessionAway = statNumber(statistics, ["Ball Possession", "Possession"], "away");
+  const shotsHome = statNumber(statistics, ["Total Shots"], "home");
+  const shotsAway = statNumber(statistics, ["Total Shots"], "away");
+  const targetHome = statNumber(statistics, ["Shots on Goal", "Shots on Target"], "home");
+  const targetAway = statNumber(statistics, ["Shots on Goal", "Shots on Target"], "away");
+  const xgHome = statNumber(statistics, ["expected_goals", "Expected Goals"], "home");
+  const xgAway = statNumber(statistics, ["expected_goals", "Expected Goals"], "away");
+
+  if (possessionHome !== null && possessionAway !== null) {
+    const leader = possessionHome >= possessionAway ? match.homeTeam : match.awayTeam;
+    addSignal("Top hakimiyeti", `${possessionHome}%-${possessionAway}%`, `${leader} topa sahip olma oraninda onde.`);
+  }
+
+  if (shotsHome !== null && shotsAway !== null) {
+    const leader = shotsHome >= shotsAway ? match.homeTeam : match.awayTeam;
+    addSignal("Sut hacmi", `${shotsHome}-${shotsAway}`, `${leader} daha fazla sut uretti.`);
+  }
+
+  if (targetHome !== null && targetAway !== null) {
+    const leader = targetHome >= targetAway ? match.homeTeam : match.awayTeam;
+    addSignal("Kaleyi bulan", `${targetHome}-${targetAway}`, `${leader} isabetli sutlarda onde.`);
+  }
+
+  if (xgHome !== null && xgAway !== null) {
+    const leader = xgHome >= xgAway ? match.homeTeam : match.awayTeam;
+    addSignal("Gol beklentisi", `${xgHome.toFixed(2)}-${xgAway.toFixed(2)}`, `${leader} daha yuksek pozisyon kalitesi uretti.`);
+  }
+
+  const scoreHome = numberOrNull(match.score && match.score.home);
+  const scoreAway = numberOrNull(match.score && match.score.away);
+  const scoreLeader = scoreHome !== null && scoreAway !== null && scoreHome !== scoreAway
+    ? (scoreHome > scoreAway ? match.homeTeam : match.awayTeam)
+    : null;
+  const dataPoints = signals.length;
+  const summary = signals.length
+    ? `${signals[0].text}${signals[1] ? ` ${signals[1].text}` : ""}${scoreLeader ? ` Skor ustunlugu ${scoreLeader} tarafinda.` : ""}`
+    : (scoreLeader
+      ? `${scoreLeader} skorda onde; ayrintili canli istatistikler geldikce analiz genisleyecek.`
+      : "Mac dengede; ayrintili canli istatistikler geldikce analiz genisleyecek.");
+
+  return {
+    title: match.live ? "Canli Radar Analizi" : "Mac Radar Analizi",
+    summary,
+    confidence: dataPoints >= 3 ? "Yuksek" : dataPoints >= 1 ? "Orta" : "Sinirli",
+    signals,
+    eventCount: Array.isArray(events) ? events.length : 0,
+    dataPoints,
+    generatedAt: new Date().toISOString(),
+    disclaimer: "Analiz yalnizca mevcut skor, olay ve canli istatistiklerden uretilir; eksik veri tahminle doldurulmaz."
+  };
+}
+
 async function getPredictions(query) {
   const fixtureId = query && query.fixtureId;
   if (!fixtureId) {
@@ -603,18 +719,25 @@ async function getMatchDetail(query) {
     throw new ProviderError("PROVIDER_QUERY_MISSING", "Mac detayi icin fixtureId veya id query gerekli.");
   }
 
-  const fixtures = await getFixtures({ fixtureId });
-  const match = fixtures[0];
+  const requestedDate = query && query.date;
+  const fixtures = requestedDate
+    ? await getFixtures({ date: requestedDate })
+    : await getFixtures({ fixtureId });
+  const match = fixtures.find((item) => String(item.id) === String(fixtureId)) || null;
   if (!match) {
     throw new ProviderError("PROVIDER_NOT_FOUND", "Mac detayi provider tarafinda bulunamadi.");
   }
 
-  const [lineups, events, statistics, predictions] = await Promise.all([
+  const [rawLineups, rawEvents, rawStatistics, predictions] = await Promise.all([
     getLineups({ fixtureId }).catch(() => []),
     getFixtureEvents({ fixtureId }).catch(() => []),
     getFixtureStatistics({ fixtureId }).catch(() => []),
     getPredictions({ fixtureId }).catch(() => [])
   ]);
+  const lineups = normalizeFixtureLineups(rawLineups);
+  const events = normalizeFixtureEvents(rawEvents);
+  const statistics = normalizeFixtureStatistics(rawStatistics, match);
+  const analysis = buildLiveMatchAnalysis(match, statistics, events);
 
   return {
     ...match,
@@ -623,6 +746,7 @@ async function getMatchDetail(query) {
     events,
     statistics,
     prediction: predictions[0] || null,
+    analysis,
     source: "api-football",
     fetchedAt: new Date().toISOString(),
     staleAfter: new Date(Date.now() + 2 * 60 * 1000).toISOString()
@@ -662,6 +786,10 @@ module.exports = {
   getPredictions,
   getMatchDetail,
   normalizeFixture,
+  normalizeFixtureLineups,
+  normalizeFixtureEvents,
+  normalizeFixtureStatistics,
+  buildLiveMatchAnalysis,
   filterSupportedCompetitions,
   normalizeStandingRow,
   normalizeTeam,
