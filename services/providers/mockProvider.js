@@ -470,6 +470,11 @@ async function fetchBroadcasts() {
   return [];
 }
 
+async function fetchMatchEvents(providerMatchId) {
+  const detail = await fetchMatchDetails(providerMatchId);
+  return detail && Array.isArray(detail.events) ? detail.events : [];
+}
+
 module.exports = {
   name: "mock",
   source,
@@ -488,6 +493,11 @@ module.exports = {
   fetchLiveMatches,
   fetchMatchDetails,
   fetchBroadcasts,
+  fetchFixturesByDate: fetchMatchesByDate,
+  fetchLiveFixtures: fetchLiveMatches,
+  fetchFixtureDetails: fetchMatchDetails,
+  fetchMatchEvents,
+  fetchStandings: getStandings,
   normalizeMatch,
   normalizeMatchDetail,
   normalizeStanding,

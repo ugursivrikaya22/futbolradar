@@ -1,6 +1,7 @@
 const BROWSER_CACHE_CONTROL = "public, max-age=0";
 const CACHE_POLICIES = Object.freeze({
   default: { maxAge: 300, stale: 600 },
+  "live-matches": { maxAge: 15, stale: 30 },
   matches: { maxAge: 60, stale: 180 },
   "match-detail": { maxAge: 30, stale: 120 },
   standings: { maxAge: 300, stale: 900 },

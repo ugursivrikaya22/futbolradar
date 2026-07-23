@@ -478,6 +478,11 @@ async function fetchBroadcasts() {
   return [];
 }
 
+async function fetchMatchEvents(providerMatchId) {
+  const detail = await fetchMatchDetails(providerMatchId);
+  return detail && Array.isArray(detail.events) ? detail.events : [];
+}
+
 module.exports = {
   name: "football-data",
   source,
@@ -496,6 +501,11 @@ module.exports = {
   fetchLiveMatches,
   fetchMatchDetails,
   fetchBroadcasts,
+  fetchFixturesByDate: fetchMatchesByDate,
+  fetchLiveFixtures: fetchLiveMatches,
+  fetchFixtureDetails: fetchMatchDetails,
+  fetchMatchEvents,
+  fetchStandings: getStandings,
   normalizeLiveMatch,
   normalizeLiveStanding,
   normalizeLiveTeam,

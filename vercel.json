@@ -140,11 +140,24 @@
     {
       "source": "/turnuva/:slug",
       "destination": "/turnuva/:slug/index.html"
+    },
+    {
+      "source": "/lig/:slug",
+      "destination": "/lig/:slug/index.html"
     }
   ],
   "headers": [
     {
       "source": "/app.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/score-home.js",
       "headers": [
         {
           "key": "Cache-Control",

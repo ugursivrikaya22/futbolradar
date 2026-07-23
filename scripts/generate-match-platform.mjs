@@ -5,6 +5,8 @@ import { createRequire } from "node:module";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const domain = "https://www.futbolradar.com";
+const { featureFlags } = require("../services/featureFlags.js");
+const flags = featureFlags();
 const rawMatches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
 const cachedMatchesPath = path.join(root, "data", "matches-cache.json");
 const cachedMatches = fs.existsSync(cachedMatchesPath) ? JSON.parse(fs.readFileSync(cachedMatchesPath, "utf8")) : [];
@@ -260,7 +262,11 @@ const slugs = new Map(matches.map((match) => {
 
 for (const match of matches) {
   writeMirrored(path.join("assets", "og", `${slugs.get(match.id)}.svg`), ogSvg(match.league, `${match.homeTeam} - ${match.awayTeam}`, `${dateInTimeZone(match.kickoffAtUtc) || "Tarih bekleniyor"} · ${match.time || "Saat doğrulanmadı"}`));
-  writeMirrored(path.join("mac", slugs.get(match.id), "index.html"), matchPageHtml(match, slugs.get(match.id)));
+  const page = matchPageHtml(match, slugs.get(match.id)).replace(
+    '<body class="subpage match-analysis-page"',
+    `<body class="subpage match-analysis-page" data-feature-match-tabs="${flags.matchDetailTabs}" data-feature-advanced-analysis="${flags.advancedAnalysisTabs}"`
+  );
+  writeMirrored(path.join("mac", slugs.get(match.id), "index.html"), page);
 }
 
 const dates = new Set(matches.map((match) => dateInTimeZone(match.kickoffAtUtc)).filter(Boolean));

@@ -5751,7 +5751,137 @@
     });
   }
 
+  function initGeneratedMatchTabs() {
+    var page = document.querySelector(".match-analysis-page");
+    var overview = page && page.querySelector(".match-static-overview");
+    if (!page || !overview || page.getAttribute("data-feature-match-tabs") === "false" || page.querySelector("[data-match-tabs]")) return;
+
+    var profileSections = Array.from(page.querySelectorAll(".profile-section"));
+    var eventsSection = profileSections.find(function (section) {
+      return normalizeSearchText(section.querySelector("h2") && section.querySelector("h2").textContent).includes("mac olay");
+    });
+    var statisticsSection = profileSections.find(function (section) {
+      return normalizeSearchText(section.querySelector("h2") && section.querySelector("h2").textContent).includes("istatistik");
+    });
+    var overviewCards = Array.from(overview.children);
+    var analysisCard = overviewCards[1] || null;
+    var tabs = [
+      { id: "ozet", label: "Özet" },
+      { id: "istatistik", label: "İstatistik" },
+      { id: "kadrolar", label: "Kadrolar" }
+    ];
+    if (page.getAttribute("data-feature-advanced-analysis") !== "false") {
+      tabs.push({ id: "analiz", label: "Analiz" }, { id: "momentum", label: "Momentum" });
+    }
+    var tablist = document.createElement("div");
+    var panels = document.createElement("div");
+    tablist.className = "match-detail-tabs";
+    tablist.setAttribute("data-match-tabs", "");
+    tablist.setAttribute("role", "tablist");
+    tablist.setAttribute("aria-label", "Maç detayı bölümleri");
+    panels.className = "match-tab-panels";
+
+    tabs.forEach(function (tab, index) {
+      var button = document.createElement("button");
+      var panel = document.createElement("section");
+      button.type = "button";
+      button.id = "tab-" + tab.id;
+      button.textContent = tab.label;
+      button.setAttribute("role", "tab");
+      button.setAttribute("aria-controls", "panel-" + tab.id);
+      button.setAttribute("aria-selected", index === 0 ? "true" : "false");
+      button.tabIndex = index === 0 ? 0 : -1;
+      panel.id = "panel-" + tab.id;
+      panel.className = "match-tab-panel";
+      panel.setAttribute("role", "tabpanel");
+      panel.setAttribute("aria-labelledby", button.id);
+      panel.hidden = index !== 0;
+
+      if (tab.id === "ozet") {
+        panel.appendChild(overview);
+        if (eventsSection) panel.appendChild(eventsSection);
+      } else if (tab.id === "istatistik" && statisticsSection) {
+        panel.appendChild(statisticsSection);
+      } else if (tab.id === "analiz" && analysisCard) {
+        panel.appendChild(analysisCard);
+      } else {
+        var empty = document.createElement("article");
+        var strong = document.createElement("strong");
+        var message = document.createElement("span");
+        empty.className = "data-empty compact";
+        strong.textContent = tab.id === "kadrolar" ? "Kadro bilgisi bekleniyor" : tab.id === "momentum" ? "Momentum verisi bekleniyor" : "Analiz verisi bekleniyor";
+        message.textContent = "Doğrulanmış veri geldiğinde bu bölüm otomatik olarak güncellenecek.";
+        empty.appendChild(strong);
+        empty.appendChild(message);
+        panel.appendChild(empty);
+      }
+
+      tablist.appendChild(button);
+      panels.appendChild(panel);
+    });
+
+    var anchor = page.querySelector(".match-freshness-strip");
+    if (!anchor) return;
+    anchor.insertAdjacentElement("afterend", tablist);
+    tablist.insertAdjacentElement("afterend", panels);
+
+    function activate(index, updateHash) {
+      var buttons = Array.from(tablist.querySelectorAll('[role="tab"]'));
+      var panelItems = Array.from(panels.querySelectorAll('[role="tabpanel"]'));
+      buttons.forEach(function (button, buttonIndex) {
+        var selected = buttonIndex === index;
+        button.setAttribute("aria-selected", selected ? "true" : "false");
+        button.tabIndex = selected ? 0 : -1;
+        panelItems[buttonIndex].hidden = !selected;
+      });
+      if (updateHash) window.history.replaceState({}, "", "#" + tabs[index].id);
+    }
+
+    tablist.addEventListener("click", function (event) {
+      var button = event.target.closest('[role="tab"]');
+      if (!button) return;
+      activate(Array.from(tablist.children).indexOf(button), true);
+    });
+    tablist.addEventListener("keydown", function (event) {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      var buttons = Array.from(tablist.children);
+      var current = buttons.indexOf(document.activeElement);
+      var next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 : (current + (event.key === "ArrowRight" ? 1 : -1) + buttons.length) % buttons.length;
+      event.preventDefault();
+      activate(next, true);
+      buttons[next].focus();
+    });
+
+    loadData("matchDetail").then(function (payload) {
+      var detail = Array.isArray(payload) ? payload[0] : payload;
+      if (!detail || detail.needsReview === true) return;
+      var lineupPanel = document.getElementById("panel-kadrolar");
+      var momentumPanel = document.getElementById("panel-momentum");
+      var lineups = Array.isArray(detail.lineups) ? detail.lineups : [];
+      if (lineupPanel && lineups.length) {
+        lineupPanel.innerHTML = '<div class="match-lineup-grid">' + lineups.map(function (lineup) {
+          var players = Array.isArray(lineup.players) ? lineup.players : [];
+          var substitutes = Array.isArray(lineup.substitutes) ? lineup.substitutes : [];
+          return '<article class="card"><span class="card-kicker">' + escapeHtml(lineup.formation || "Diziliş doğrulanmadı") + '</span><h2>' + escapeHtml(lineup.team || "Takım") + '</h2><h3>İlk 11</h3><ol>' + players.map(function (player) { return "<li>" + escapeHtml(player) + "</li>"; }).join("") + '</ol>' + (substitutes.length ? '<h3>Yedekler</h3><p>' + substitutes.map(escapeHtml).join(", ") + "</p>" : "") + "</article>";
+        }).join("") + "</div>";
+      }
+
+      var signals = detail.analysis && Array.isArray(detail.analysis.signals) ? detail.analysis.signals : [];
+      if (momentumPanel && signals.length) {
+        momentumPanel.innerHTML = '<div class="match-momentum-list">' + signals.map(function (signal) {
+          return '<article class="card"><span class="card-kicker">' + escapeHtml(signal.label || "Maç sinyali") + '</span><strong>' + escapeHtml(signal.value || "") + '</strong><p>' + escapeHtml(signal.text || "") + "</p></article>";
+        }).join("") + "</div>";
+      }
+    }).catch(function () {
+      // Static verified sections and explicit empty states remain available.
+    });
+
+    var requested = tabs.findIndex(function (tab) { return window.location.hash === "#" + tab.id; });
+    if (requested >= 0) activate(requested, false);
+  }
+
   function initDataLayer() {
+    initGeneratedMatchTabs();
     initHomeSearch();
     initPlayerSharing();
     initAnalytics();

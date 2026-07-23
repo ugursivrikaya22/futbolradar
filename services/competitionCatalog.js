@@ -1,4 +1,18 @@
 const competitions = require("../data/competitions.json");
+const PRIMARY_COMPETITION_IDS = Object.freeze([
+  "super-lig",
+  "premier-league",
+  "la-liga",
+  "serie-a",
+  "bundesliga",
+  "ligue-1"
+]);
+
+function primaryCompetitions() {
+  return PRIMARY_COMPETITION_IDS
+    .map((id) => competitions.find((competition) => competition.id === id))
+    .filter(Boolean);
+}
 
 function normalizeKey(value) {
   return String(value || "")
@@ -72,9 +86,11 @@ function providerLeagueValue(value, providerName) {
 }
 
 module.exports = {
+  PRIMARY_COMPETITION_IDS,
   competitions,
   findCompetition,
   matchesCompetition,
   normalizeKey,
-  providerLeagueValue
+  providerLeagueValue,
+  primaryCompetitions
 };

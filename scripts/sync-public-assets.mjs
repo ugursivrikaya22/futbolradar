@@ -11,6 +11,8 @@ for (const file of [
   "site.webmanifest",
   "404.html",
   "index.html",
+  "kesfet.html",
+  "score-home.js",
   "canli-skor.html",
   "bugunun-maclari.html",
   "haberler.html",

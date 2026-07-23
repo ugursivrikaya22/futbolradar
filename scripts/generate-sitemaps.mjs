@@ -27,7 +27,7 @@ function readMeta(file) {
 function categoryFor(relativePath) {
   const normalized = relativePath.replace(/\\/g, "/");
   if (normalized.startsWith("mac/") || normalized.startsWith("maclar/")) return "matches";
-  if (normalized.startsWith("turnuva/") || /(sampiyonlar|avrupa-ligi|konferans|super-lig-fikstur)/.test(normalized)) return "competitions";
+  if (normalized.startsWith("turnuva/") || normalized.startsWith("lig/") || /(sampiyonlar|avrupa-ligi|konferans|super-lig-fikstur)/.test(normalized)) return "competitions";
   if (normalized.startsWith("takim/") || /(^takimlar|form-durumu|oyuncu-radari\.html$)/.test(normalized)) return "teams";
   return "editorial";
 }

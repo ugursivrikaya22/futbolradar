@@ -6,6 +6,10 @@ function envFlag(name, defaultValue) {
 
 function featureFlags() {
   return Object.freeze({
+    scoreFirstHomepage: envFlag("FEATURE_SCORE_HOMEPAGE", true),
+    liveScores: envFlag("FEATURE_LIVE_SCORES", true),
+    matchDetailTabs: envFlag("FEATURE_MATCH_DETAIL_TABS", true),
+    advancedAnalysisTabs: envFlag("FEATURE_ADVANCED_ANALYSIS_TABS", true),
     newMatchPages: envFlag("FEATURE_NEW_MATCH_PAGES", true),
     newDailyFixtures: envFlag("FEATURE_NEW_DAILY_FIXTURES", true),
     automatedAnalysis: envFlag("FEATURE_AUTOMATED_ANALYSIS", false),

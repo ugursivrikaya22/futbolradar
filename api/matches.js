@@ -24,6 +24,7 @@ module.exports = async function handler(req, res) {
   if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
+  if (query.mode === "live") setCachePolicy(res, "live-matches");
   const dateError = validateDateParam(query.date);
   if (dateError) {
     return sendError(res, 200, dateError, "INVALID_DATE");
@@ -46,7 +47,10 @@ module.exports = async function handler(req, res) {
   let data = [];
 
   try {
-    data = dedupeMatches(await withTimeout(provider.getMatches(providerQuery), DEFAULT_TIMEOUT_MS));
+    const request = query.mode === "live" && typeof provider.fetchLiveMatches === "function"
+      ? provider.fetchLiveMatches()
+      : provider.getMatches(providerQuery);
+    data = dedupeMatches(await withTimeout(request, DEFAULT_TIMEOUT_MS));
   } catch (error) {
     return sendError(
       res,

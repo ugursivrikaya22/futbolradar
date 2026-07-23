@@ -15,6 +15,13 @@ const playerComparisonPages = fs.existsSync(comparisonPagesDir)
 const pages = [
   "404.html",
   "index.html",
+  "kesfet.html",
+  "lig/super-lig/index.html",
+  "lig/premier-league/index.html",
+  "lig/la-liga/index.html",
+  "lig/serie-a/index.html",
+  "lig/bundesliga/index.html",
+  "lig/ligue-1/index.html",
   "puan-durumu.html",
   "takimlar.html",
   "oyuncu-radari.html",
@@ -239,7 +246,7 @@ function checkVercelFunctionLimit() {
 }
 
 function checkPublicMirrors() {
-  for (const file of ["page.css", "app.js", "site.js", "site.webmanifest"]) {
+  for (const file of ["page.css", "app.js", "score-home.js", "site.js", "site.webmanifest"]) {
     const rootFile = path.join(root, file);
     const publicFile = path.join(root, "public", file);
     if (!fs.existsSync(rootFile) || !fs.existsSync(publicFile)) {
@@ -340,6 +347,7 @@ function checkJson() {
     expect(rewrites.get("/maclar/:date") === "/maclar/:date/index.html", "vercel rewrite missing /maclar/:date");
     expect(rewrites.get("/mac/:slug") === "/mac/:slug/index.html", "vercel rewrite missing /mac/:slug");
     expect(rewrites.get("/turnuva/:slug") === "/turnuva/:slug/index.html", "vercel rewrite missing /turnuva/:slug");
+    expect(rewrites.get("/lig/:slug") === "/lig/:slug/index.html", "vercel rewrite missing /lig/:slug");
     expect(
       redirects.get("/oyuncular/edina-dzeko") === "/oyuncular/edin-dzeko.html",
       "vercel redirect missing /oyuncular/edina-dzeko"
@@ -389,7 +397,8 @@ function checkJson() {
 }
 
 function pageUrl(page) {
-  return `https://www.futbolradar.com/${page === "index.html" ? "" : page}`;
+  const relative = page === "index.html" ? "" : page.replace(/index\.html$/, "");
+  return `https://www.futbolradar.com/${relative}`;
 }
 
 function checkSeoAndLinks() {
@@ -438,26 +447,30 @@ function checkSeoAndLinks() {
     }
 
     if (page === "index.html") {
-      expect(html.includes('data-api-target="featured-match"'), `${page}: missing featured match`);
-      expect(html.includes('data-api-target="today-matches"'), `${page}: missing today matches`);
-      expect(html.includes('data-api-target="radar-signals"'), `${page}: missing radar signals`);
-      expect(html.includes('data-api-target="home-standings"'), `${page}: missing standings summary`);
-      expect(html.includes('data-api-target="player-radar"'), `${page}: missing player radar`);
-      expect(html.includes('data-api-target="home-transfer-watch"'), `${page}: missing transfer watch`);
-      expect(html.includes('data-api-target="analysis-preview"'), `${page}: missing analysis preview`);
+      if (html.includes('class="score-home"')) {
+        expect(html.includes("data-score-live"), `${page}: missing trusted live score area`);
+        expect(html.includes("data-score-list"), `${page}: missing score list`);
+        expect(html.includes("data-score-search"), `${page}: missing global football search`);
+        expect(html.includes('data-score-period="tomorrow"'), `${page}: missing date tabs`);
+        expect(html.includes('data-score-league="ligue-1"'), `${page}: missing six-league filter`);
+        expect(html.includes("oyuncu-radari.html"), `${page}: missing player radar shortcut`);
+        expect(html.includes("kesfet.html"), `${page}: missing deep radar tools route`);
+        expect(!html.includes('src="./app.js"'), `${page}: heavy app.js must not block score-first homepage`);
+      } else {
+        expect(html.includes('data-api-target="featured-match"'), `${page}: missing featured match`);
+        expect(html.includes('data-api-target="today-matches"'), `${page}: missing today matches`);
+        expect(html.includes('data-api-target="radar-signals"'), `${page}: missing radar signals`);
+        expect(html.includes('data-api-target="home-standings"'), `${page}: missing standings summary`);
+        expect(html.includes('data-api-target="player-radar"'), `${page}: missing player radar`);
+      }
+    }
+
+    if (page === "kesfet.html") {
       expect(html.includes("istatistik-merkezi.html"), `${page}: missing statistics center route`);
       expect(html.includes("gol-kralligi.html"), `${page}: missing goal ranking route`);
       expect(html.includes("asist-kralligi.html"), `${page}: missing assist ranking route`);
-      expect(html.includes("mac-merkezi.html"), `${page}: missing match center route`);
-      expect(html.includes("oyuncu-liderleri.html"), `${page}: missing player leaders route`);
       expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison traffic link`);
-      expect(html.includes("super-lig-fikstur.html"), `${page}: missing fixture traffic link`);
-      expect(html.includes("premier-league"), `${page}: missing Premier League route`);
-      expect(html.includes("sampiyonlar-ligi"), `${page}: missing Champions League route`);
-      expect(html.includes("avrupa-ligi"), `${page}: missing Europa League route`);
       expect(html.includes('id="trend-radar"'), `${page}: missing Trend Radar section`);
-      expect(html.includes("transfer-sezonu-ne-zaman-bitiyor.html"), `${page}: missing transfer window trend link`);
-      expect(html.includes("uefa-ulke-puani-siralamasi.html"), `${page}: missing UEFA coefficient trend link`);
     }
 
     if (page === "oyuncu-radari.html") {

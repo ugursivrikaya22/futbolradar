@@ -253,6 +253,10 @@ function normalizeStatus(status) {
     return "FINISHED";
   }
 
+  if (["PST"].includes(short)) return "POSTPONED";
+  if (["CANC", "WO"].includes(short)) return "CANCELLED";
+  if (["SUSP", "INT", "ABD"].includes(short)) return "SUSPENDED";
+
   return "SCHEDULED";
 }
 
@@ -284,7 +288,11 @@ function normalizeFixture(item) {
     country: league.country || null,
     score: {
       home: scoreValue(goals.home),
-      away: scoreValue(goals.away)
+      away: scoreValue(goals.away),
+      halfTime: {
+        home: scoreValue(item.score && item.score.halftime && item.score.halftime.home),
+        away: scoreValue(item.score && item.score.halftime && item.score.halftime.away)
+      }
     },
     homeForm: null,
     awayForm: null,
@@ -840,6 +848,13 @@ async function fetchBroadcasts() {
   return [];
 }
 
+async function fetchMatchEvents(providerMatchId) {
+  const fixtureId = typeof providerMatchId === "object"
+    ? providerMatchId.fixtureId || providerMatchId.id
+    : providerMatchId;
+  return normalizeFixtureEvents(await getFixtureEvents({ fixtureId }));
+}
+
 function canSearchLocally(player, search) {
   if (!search) {
     return true;
@@ -877,6 +892,11 @@ module.exports = {
   fetchLiveMatches,
   fetchMatchDetails,
   fetchBroadcasts,
+  fetchFixturesByDate: fetchMatchesByDate,
+  fetchLiveFixtures: fetchLiveMatches,
+  fetchFixtureDetails: fetchMatchDetails,
+  fetchMatchEvents,
+  fetchStandings: getStandings,
   normalizeFixture,
   normalizeFixtureLineups,
   normalizeFixtureEvents,

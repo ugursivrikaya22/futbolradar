@@ -156,6 +156,49 @@ function normalizeBroadcast(record) {
   };
 }
 
+function normalizeMatchEvent(event) {
+  const raw = event && typeof event === "object" ? event : {};
+  const rawType = String(firstValue(raw.type, raw.eventType, "other") || "other");
+  const rawDetail = String(firstValue(raw.detail, raw.card, "") || "");
+  const normalizedType = normalizeKey(rawType);
+  const normalizedDetail = normalizeKey(rawDetail);
+  let type = "other";
+  if (normalizedType.includes("goal") || normalizedType.includes("gol")) type = "goal";
+  else if (normalizedType.includes("card") || normalizedType.includes("kart")) type = "card";
+  else if (normalizedType.includes("subst") || normalizedType.includes("degisiklik")) type = "substitution";
+
+  let card = null;
+  if (type === "card") {
+    if (normalizedDetail.includes("red") || normalizedDetail.includes("kirmizi")) card = "red";
+    else if (normalizedDetail.includes("yellow") || normalizedDetail.includes("sari")) card = "yellow";
+  }
+
+  const elapsed = numberOrNull(firstValue(raw.minute, raw.elapsed, raw.time && raw.time.elapsed));
+  const extra = numberOrNull(firstValue(raw.extra, raw.time && raw.time.extra));
+  const teamName = String(firstValue(raw.teamName, raw.team && raw.team.name, raw.team) || "");
+  return {
+    ...raw,
+    type: rawType,
+    eventType: type,
+    providerType: rawType,
+    detail: rawDetail,
+    card,
+    minute: elapsed,
+    extra,
+    time: raw.time && typeof raw.time === "string"
+      ? raw.time
+      : (elapsed === null ? "" : `${elapsed}${extra ? `+${extra}` : ""}'`),
+    team: teamName ? { name: teamName } : null,
+    teamName,
+    player: firstValue(raw.player, raw.playerName),
+    assist: firstValue(raw.assist, raw.assistName)
+  };
+}
+
+function normalizeMatchEvents(events) {
+  return (Array.isArray(events) ? events : []).map(normalizeMatchEvent);
+}
+
 function normalizeCompetition(record) {
   const raw = record && typeof record === "object" ? record : {};
   const value = firstValue(raw.competitionId, raw.league, raw.competition && raw.competition.id, raw.competition && raw.competition.name);
@@ -202,12 +245,26 @@ function normalizeMatchRecord(record, options) {
   const homeScore = numberOrNull(firstValue(score.home, raw.homeScore));
   const awayScore = numberOrNull(firstValue(score.away, raw.awayScore));
   const idSeed = [raw.homeTeam, raw.awayTeam, kickoffAtUtc || raw.time, providerId].filter(Boolean).join("-");
+  const events = normalizeMatchEvents(raw.events);
+  const homeTeam = String(firstValue(raw.homeTeam, raw.home && raw.home.name) || "");
+  const awayTeam = String(firstValue(raw.awayTeam, raw.away && raw.away.name) || "");
+  const redCards = events.reduce((count, event) => {
+    if (event.card !== "red") return count;
+    const eventTeam = normalizeKey(event.teamName);
+    if (eventTeam && eventTeam === normalizeKey(homeTeam)) count.home += 1;
+    if (eventTeam && eventTeam === normalizeKey(awayTeam)) count.away += 1;
+    return count;
+  }, {
+    home: numberOrNull(raw.redCards && raw.redCards.home) || 0,
+    away: numberOrNull(raw.redCards && raw.redCards.away) || 0
+  });
+  const halfTime = score.halfTime || score.halftime || raw.halfTimeScore || {};
   return {
     ...raw,
     id: String(firstValue(raw.id, providerId, slugify(idSeed)) || ""),
     providerId: providerId == null ? null : String(providerId),
-    homeTeam: String(firstValue(raw.homeTeam, raw.home && raw.home.name) || ""),
-    awayTeam: String(firstValue(raw.awayTeam, raw.away && raw.away.name) || ""),
+    homeTeam,
+    awayTeam,
     competitionId: competition.id,
     competition,
     league: String(firstValue(raw.league, competition.name) || ""),
@@ -220,8 +277,16 @@ function normalizeMatchRecord(record, options) {
     live: status === MATCH_STATUSES.LIVE,
     minute: numberOrNull(firstValue(raw.minute, raw.elapsed)),
     score: { ...score, home: homeScore, away: awayScore },
+    halfTimeScore: {
+      home: numberOrNull(firstValue(halfTime.home, score.halftimeHome, raw.halfTimeHome)),
+      away: numberOrNull(firstValue(halfTime.away, score.halftimeAway, raw.halfTimeAway))
+    },
     homeScore,
     awayScore,
+    events,
+    lineups: Array.isArray(raw.lineups) ? raw.lineups : [],
+    statistics: Array.isArray(raw.statistics) ? raw.statistics : [],
+    redCards,
     matchType: firstValue(raw.matchType, isFriendly ? "friendly" : "official"),
     isFriendly,
     isNeutralVenue: Boolean(firstValue(raw.isNeutralVenue, raw.neutralVenue, false)),
@@ -351,6 +416,8 @@ module.exports = {
   matchSlug,
   matchUrl,
   normalizeBroadcast,
+  normalizeMatchEvent,
+  normalizeMatchEvents,
   normalizeCompetition,
   normalizeMatchRecord,
   normalizeMatchStatus,

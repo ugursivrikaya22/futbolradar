@@ -6,6 +6,14 @@ const REQUIRED_METHODS = Object.freeze([
   "fetchBroadcasts"
 ]);
 
+const OPTIONAL_METHODS = Object.freeze([
+  "fetchFixturesByDate",
+  "fetchLiveFixtures",
+  "fetchFixtureDetails",
+  "fetchMatchEvents",
+  "fetchStandings"
+]);
+
 function assertMatchDataProvider(provider) {
   if (!provider || typeof provider !== "object") {
     throw new TypeError("MatchDataProvider nesnesi gerekli.");
@@ -18,15 +26,24 @@ function assertMatchDataProvider(provider) {
 }
 
 function createMatchDataProvider(adapter) {
-  return assertMatchDataProvider({
+  const provider = {
     name: adapter.name,
     source: adapter.source,
     fetchCompetitions: adapter.fetchCompetitions,
     fetchMatchesByDate: adapter.fetchMatchesByDate,
     fetchLiveMatches: adapter.fetchLiveMatches,
     fetchMatchDetails: adapter.fetchMatchDetails,
-    fetchBroadcasts: adapter.fetchBroadcasts
-  });
+    fetchBroadcasts: adapter.fetchBroadcasts,
+    fetchFixturesByDate: adapter.fetchFixturesByDate || adapter.fetchMatchesByDate,
+    fetchLiveFixtures: adapter.fetchLiveFixtures || adapter.fetchLiveMatches,
+    fetchFixtureDetails: adapter.fetchFixtureDetails || adapter.fetchMatchDetails,
+    fetchMatchEvents: adapter.fetchMatchEvents || (async (providerMatchId) => {
+      const detail = await adapter.fetchMatchDetails(providerMatchId);
+      return detail && Array.isArray(detail.events) ? detail.events : [];
+    }),
+    fetchStandings: adapter.fetchStandings || adapter.getStandings || (async () => [])
+  };
+  return assertMatchDataProvider(provider);
 }
 
-module.exports = { REQUIRED_METHODS, assertMatchDataProvider, createMatchDataProvider };
+module.exports = { OPTIONAL_METHODS, REQUIRED_METHODS, assertMatchDataProvider, createMatchDataProvider };
