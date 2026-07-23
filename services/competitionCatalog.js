@@ -7,9 +7,22 @@ const PRIMARY_COMPETITION_IDS = Object.freeze([
   "bundesliga",
   "ligue-1"
 ]);
+const SCOREBOARD_COMPETITION_IDS = Object.freeze([
+  ...PRIMARY_COMPETITION_IDS,
+  "sampiyonlar-ligi",
+  "avrupa-ligi",
+  "konferans-ligi",
+  "hazirlik-maclari"
+]);
 
 function primaryCompetitions() {
   return PRIMARY_COMPETITION_IDS
+    .map((id) => competitions.find((competition) => competition.id === id))
+    .filter(Boolean);
+}
+
+function scoreboardCompetitions() {
+  return SCOREBOARD_COMPETITION_IDS
     .map((id) => competitions.find((competition) => competition.id === id))
     .filter(Boolean);
 }
@@ -87,10 +100,12 @@ function providerLeagueValue(value, providerName) {
 
 module.exports = {
   PRIMARY_COMPETITION_IDS,
+  SCOREBOARD_COMPETITION_IDS,
   competitions,
   findCompetition,
   matchesCompetition,
   normalizeKey,
   providerLeagueValue,
-  primaryCompetitions
+  primaryCompetitions,
+  scoreboardCompetitions
 };

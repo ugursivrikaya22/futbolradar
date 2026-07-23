@@ -453,6 +453,10 @@ function checkSeoAndLinks() {
         expect(html.includes("data-score-search"), `${page}: missing global football search`);
         expect(html.includes('data-score-period="tomorrow"'), `${page}: missing date tabs`);
         expect(html.includes('data-score-league="ligue-1"'), `${page}: missing six-league filter`);
+        expect(html.includes('data-score-league="sampiyonlar-ligi"'), `${page}: missing Champions League filter`);
+        expect(html.includes('data-score-league="avrupa-ligi"'), `${page}: missing Europa League filter`);
+        expect(html.includes('data-score-league="konferans-ligi"'), `${page}: missing Conference League filter`);
+        expect(html.includes('data-score-league="hazirlik-maclari"'), `${page}: missing friendly match filter`);
         expect(html.includes("oyuncu-radari.html"), `${page}: missing player radar shortcut`);
         expect(html.includes("kesfet.html"), `${page}: missing deep radar tools route`);
         expect(!html.includes('src="./app.js"'), `${page}: heavy app.js must not block score-first homepage`);
@@ -471,6 +475,11 @@ function checkSeoAndLinks() {
       expect(html.includes("asist-kralligi.html"), `${page}: missing assist ranking route`);
       expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison traffic link`);
       expect(html.includes('id="trend-radar"'), `${page}: missing Trend Radar section`);
+    }
+
+    if (page === "bugunun-maclari.html" || page === "canli-skor.html") {
+      expect(!html.includes("13 Temmuz 2026"), `${page}: obsolete hard-coded match verification date`);
+      expect(html.includes("data-last-match-check"), `${page}: dynamic match verification timestamp hook missing`);
     }
 
     if (page === "oyuncu-radari.html") {

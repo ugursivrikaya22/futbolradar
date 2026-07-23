@@ -1,5 +1,9 @@
 const { getProvider } = require("../services/providers");
-const { providerLeagueValue } = require("../services/competitionCatalog");
+const {
+  findCompetition,
+  matchesCompetition,
+  providerLeagueValue
+} = require("../services/competitionCatalog");
 const { dedupeMatches } = require("../services/matchDataService");
 const {
   DEFAULT_TIMEOUT_MS,
@@ -51,6 +55,13 @@ module.exports = async function handler(req, res) {
       ? provider.fetchLiveMatches()
       : provider.getMatches(providerQuery);
     data = dedupeMatches(await withTimeout(request, DEFAULT_TIMEOUT_MS));
+    if (query.mode === "live" && query.league) {
+      const requestedCompetition = findCompetition(query.league);
+      data = data.filter((match) =>
+        matchesCompetition(match.competitionId, requestedCompetition) ||
+        matchesCompetition(match.league, requestedCompetition)
+      );
+    }
   } catch (error) {
     return sendError(
       res,

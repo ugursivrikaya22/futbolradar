@@ -69,8 +69,19 @@ function testResponseFreshness() {
 }
 
 function testUnknownProviderValues() {
-  const footballDataStanding = footballData.normalizeLiveStanding({ team: { id: 1, name: "Test SK" } });
+  const footballDataMatch = footballData.normalizeLiveMatch({
+    id: 7,
+    utcDate: "2026-07-23T18:00:00Z",
+    homeTeam: { name: "Ev SK", crest: "https://media.example.test/ev-sk.svg" },
+    awayTeam: { name: "Dep SK", crest: "https://media.example.test/dep-sk.svg" },
+    score: { fullTime: { home: null, away: null } }
+  });
+  assert.equal(footballDataMatch.homeTeamLogo, "https://media.example.test/ev-sk.svg");
+  assert.equal(footballDataMatch.awayTeamLogo, "https://media.example.test/dep-sk.svg");
+
+  const footballDataStanding = footballData.normalizeLiveStanding({ team: { id: 1, name: "Test SK", crest: "https://media.example.test/test-sk.svg" } });
   assert.equal(footballDataStanding.points, null);
+  assert.equal(footballDataStanding.logo, "https://media.example.test/test-sk.svg");
   assert.equal(footballDataStanding.played, null);
   assert.equal(footballDataStanding.goalDifference, null);
 
@@ -88,8 +99,9 @@ function testUnknownProviderValues() {
   assert.equal(zeroStanding.points, 0);
   assert.equal(zeroStanding.goalDifference, 0);
 
-  const apiFootballStanding = apiFootball.normalizeStandingRow({ team: { id: 3, name: "Eksik SK" } }, "Super Lig");
+  const apiFootballStanding = apiFootball.normalizeStandingRow({ team: { id: 3, name: "Eksik SK", logo: "https://media.example.test/eksik-sk.png" } }, "Super Lig");
   assert.equal(apiFootballStanding.points, null);
+  assert.equal(apiFootballStanding.logo, "https://media.example.test/eksik-sk.png");
   assert.equal(apiFootballStanding.goalsFor, null);
 
   const apiFootballPlayer = apiFootball.normalizePlayer({ player: { id: 4, name: "Eksik Oyuncu" } });
@@ -114,12 +126,17 @@ function testCompetitionCatalog() {
   const liveFixture = apiFootball.normalizeFixture({
     fixture: { id: 10, date: "2026-07-16T20:00:00+03:00", status: { short: "2H" } },
     league: { name: "UEFA Champions League" },
-    teams: { home: { name: "Ev" }, away: { name: "Deplasman" } },
+    teams: {
+      home: { name: "Ev", logo: "https://media.example.test/home.png" },
+      away: { name: "Deplasman", logo: "https://media.example.test/away.png" }
+    },
     goals: { home: 1, away: 0 }
   });
   assert.equal(liveFixture.status, "LIVE");
   assert.equal(liveFixture.live, true);
   assert.equal(liveFixture.providerStatus, "2H");
+  assert.equal(liveFixture.homeTeamLogo, "https://media.example.test/home.png");
+  assert.equal(liveFixture.awayTeamLogo, "https://media.example.test/away.png");
 }
 
 function testMissingKeyFallback() {

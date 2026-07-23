@@ -14,8 +14,15 @@ const freshnessData = JSON.parse(fs.readFileSync(path.join(root, "data", "freshn
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
+const rawMatches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
+const {
+  dateInTimeZone,
+  dedupeMatches,
+  matchSlug: canonicalMatchSlug,
+  normalizeMatchRecord
+} = require("../services/matchDataService.js");
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
 
 const players = getPlayers(rawPlayers);
@@ -128,6 +135,59 @@ function emptyMatchState(variant) {
   </${element}>`;
 }
 
+function staticDailyMatchCard(record) {
+  const match = normalizeMatchRecord(record);
+  const statusLabels = {
+    SCHEDULED: "Planlandı",
+    LIVE: "Canlı",
+    FINISHED: "Bitti",
+    POSTPONED: "Ertelendi",
+    CANCELLED: "İptal"
+  };
+  const status = statusLabels[match.status] || "Programda";
+  const teamInitials = (name) => {
+    const words = String(name || "").trim().split(/\s+/).filter(Boolean);
+    if (!words.length) return "FR";
+    if (words.length === 1) return words[0].slice(0, 3).toLocaleUpperCase("tr-TR");
+    return words.slice(0, 3).map((word) => word[0]).join("").toLocaleUpperCase("tr-TR");
+  };
+  const crest = (side) => {
+    const name = side === "home" ? match.homeTeam : match.awayTeam;
+    const logo = side === "home" ? match.homeTeamLogo : match.awayTeamLogo;
+    const fallback = `<span aria-hidden="true">${escapeHtml(teamInitials(name))}</span>`;
+    return logo
+      ? `<span class="team-crest has-image"><img src="${escapeHtml(logo)}" alt="" width="38" height="38" loading="lazy" decoding="async" data-team-crest />${fallback}</span>`
+      : `<span class="team-crest">${fallback}</span>`;
+  };
+  const row = (side) => {
+    const name = side === "home" ? match.homeTeam : match.awayTeam;
+    const value = match.score && match.score[side] !== null && match.score[side] !== undefined
+      ? match.score[side]
+      : "–";
+    return `<div>${crest(side)}<strong>${escapeHtml(name)}</strong><b aria-label="${escapeHtml(name)} skoru">${escapeHtml(value)}</b></div>`;
+  };
+
+  return `<article class="card match-card simple-score-card${match.status === "LIVE" ? " is-live" : ""}" data-card="today-match" data-match="${escapeHtml(match.id)}">
+    <div class="simple-score-head"><span>${escapeHtml(match.league)}</span><b>${escapeHtml(match.status === "SCHEDULED" ? match.time || status : status)}</b></div>
+    <div class="simple-score-teams">${row("home")}${row("away")}</div>
+    <a class="simple-score-link" href="./mac/${escapeHtml(canonicalMatchSlug(match))}/">Maç detayı</a>
+  </article>`;
+}
+
+function staticDailyMatches(records) {
+  const groups = new Map();
+  records.forEach((record) => {
+    const match = normalizeMatchRecord(record);
+    const league = match.league || "Diğer karşılaşmalar";
+    if (!groups.has(league)) groups.set(league, []);
+    groups.get(league).push(match);
+  });
+  return Array.from(groups.entries()).map(([league, leagueMatches]) => `<section class="league-match-group" data-league-group="${escapeHtml(league)}">
+    <header><div><span>Lig / turnuva</span><h2>${escapeHtml(league)}</h2></div><b>${leagueMatches.length} maç</b></header>
+    <div class="league-match-grid">${leagueMatches.map(staticDailyMatchCard).join("")}</div>
+  </section>`).join("");
+}
+
 function homeFeature(match) {
   const radar = radarFor(match);
   const homeScore = radar.home.score === null ? "Bekleniyor" : `${radar.home.score}/100`;
@@ -238,10 +298,12 @@ function replaceSlot(html, target, content) {
 }
 
 function updateMetaLabels(html, freshness) {
-  const label = `Son kontrol: ${formatFreshnessDate(freshness.verifiedAt || freshness.fetchedAt)}`;
+  const formattedDate = formatFreshnessDate(freshness.verifiedAt || freshness.fetchedAt);
+  const label = `Son kontrol: ${formattedDate}`;
   return html
     .replace(/<span class="hero-meta">Son güncelleme:[^<]*<\/span>/g, `<span class="hero-meta">${escapeHtml(label)}</span>`)
-    .replace(/<span class="data-stamp">Son güncelleme:[^<]*<\/span>/g, `<span class="data-stamp">${escapeHtml(label)}</span>`);
+    .replace(/<span class="data-stamp">Son güncelleme:[^<]*<\/span>/g, `<span class="data-stamp">${escapeHtml(label)}</span>`)
+    .replace(/<b data-last-match-check>[\s\S]*?<\/b>/g, `<b data-last-match-check>${escapeHtml(formattedDate || "Program kontrol ediliyor")}</b>`);
 }
 
 const noindexShellPages = new Set([
@@ -279,6 +341,19 @@ const confirmed = allFixtures();
 const topFixtures = confirmed.slice(0, 3);
 const topTeams = teams.slice().sort((left, right) => Number(right.momentum) - Number(left.momentum));
 const topPlayers = players.slice().sort((left, right) => Number(right.overallRating || 0) - Number(left.overallRating || 0));
+const curatedMatches = dedupeMatches(rawMatches);
+const currentMatchDate = dateInTimeZone(new Date().toISOString());
+const currentMatches = curatedMatches.filter((match) => dateInTimeZone(match.kickoffAtUtc) === currentMatchDate);
+const latestMatchVerification = curatedMatches
+  .flatMap((match) => [match.lastVerifiedAt, match.fetchedAt])
+  .filter(Boolean)
+  .sort()
+  .at(-1) || null;
+const matchFreshness = normalizeFreshness({
+  fetchedAt: latestMatchVerification,
+  verifiedAt: latestMatchVerification,
+  dataStatus: latestMatchVerification ? "verified" : "pending"
+});
 
 writePage("index.html", {
   "featured-match": emptyMatchState("featured"),
@@ -298,12 +373,12 @@ writePage("haberler.html", {
 }, fixtureFreshness);
 
 writePage("bugunun-maclari.html", {
-  "matches-page": emptyMatchState("today")
-}, fixtureFreshness);
+  "matches-page": currentMatches.length ? staticDailyMatches(currentMatches) : emptyMatchState("today")
+}, matchFreshness);
 
 writePage("canli-skor.html", {
   "live-score": emptyMatchState("live")
-}, fixtureFreshness);
+}, matchFreshness);
 
 writePage("puan-durumu.html", {
   standings: staticStandingRows()

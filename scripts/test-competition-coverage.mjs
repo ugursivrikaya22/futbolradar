@@ -21,6 +21,7 @@ assert.equal(findCompetition("Champions League")?.id, "sampiyonlar-ligi");
 assert.equal(findCompetition("UEFA Europa League")?.id, "avrupa-ligi");
 assert.equal(findCompetition("UEFA Conference League")?.id, "konferans-ligi");
 assert.equal(findCompetition("Club Friendly Games")?.id, "hazirlik-maclari");
+assert.equal(findCompetition("hazirlik-maci")?.id, "hazirlik-maclari");
 assert.equal(providerLeagueValue("premier-league", "api-football"), 39);
 assert.equal(providerLeagueValue("avrupa-ligi", "football-data"), null);
 

@@ -5,14 +5,24 @@
   if (!body || !body.matches(".score-home")) return;
 
   var timeoutMs = 6500;
-  var primaryLeagues = ["super-lig", "premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1"];
+  var domesticLeagues = ["super-lig", "premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1"];
+  var scoreboardCompetitions = domesticLeagues.concat([
+    "sampiyonlar-ligi",
+    "avrupa-ligi",
+    "konferans-ligi",
+    "hazirlik-maclari"
+  ]);
   var leagueAliases = {
     "super-lig": ["super lig", "trendyol super lig"],
     "premier-league": ["premier league", "english premier league"],
     "la-liga": ["la liga", "primera division"],
     "serie-a": ["serie a", "italian serie a"],
     bundesliga: ["bundesliga", "german bundesliga"],
-    "ligue-1": ["ligue 1", "french ligue 1"]
+    "ligue-1": ["ligue 1", "french ligue 1"],
+    "sampiyonlar-ligi": ["sampiyonlar ligi", "uefa sampiyonlar ligi", "champions league", "uefa champions league"],
+    "avrupa-ligi": ["avrupa ligi", "uefa avrupa ligi", "europa league", "uefa europa league"],
+    "konferans-ligi": ["konferans ligi", "uefa konferans ligi", "conference league", "uefa conference league"],
+    "hazirlik-maclari": ["hazirlik maclari", "hazirlik maci", "club friendlies", "club friendly games", "friendly clubs"]
   };
   var state = {
     period: "today",
@@ -58,10 +68,32 @@
     }).format(date);
   }
 
+  function currentDateInIstanbul(offset) {
+    var now = new Date();
+    now.setUTCDate(now.getUTCDate() + Number(offset || 0));
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Istanbul",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).format(now);
+  }
+
+  function formatDateLabel(value) {
+    var date = new Date(String(value || "") + "T12:00:00Z");
+    if (Number.isNaN(date.getTime())) return "Seçilen gün";
+    return new Intl.DateTimeFormat("tr-TR", {
+      timeZone: "Europe/Istanbul",
+      weekday: "long",
+      day: "numeric",
+      month: "long"
+    }).format(date);
+  }
+
   function competitionId(match) {
-    if (primaryLeagues.indexOf(match.competitionId) !== -1) return match.competitionId;
+    if (scoreboardCompetitions.indexOf(match.competitionId) !== -1) return match.competitionId;
     var league = normalize(match.league || match.competition && match.competition.name);
-    return primaryLeagues.find(function (id) {
+    return scoreboardCompetitions.find(function (id) {
       return (leagueAliases[id] || []).some(function (alias) {
         return league === alias || league.indexOf(alias) !== -1;
       });
@@ -80,9 +112,35 @@
     return sitePrefix() + "mac/" + encodeURIComponent(slug) + "/";
   }
 
-  function scoreValue(match) {
+  function safeLogoUrl(value) {
+    var url = String(value || "").trim();
+    if (/^https:\/\//i.test(url)) return url;
+    if (/^(?:\.{0,2}\/|\/)[a-z0-9][a-z0-9/_\-.%]*$/i.test(url)) return url;
+    return "";
+  }
+
+  function teamInitials(name) {
+    var words = String(name || "").trim().split(/\s+/).filter(Boolean);
+    if (!words.length) return "FR";
+    if (words.length === 1) return words[0].slice(0, 3).toLocaleUpperCase("tr-TR");
+    return words.slice(0, 3).map(function (word) { return word.charAt(0); }).join("").toLocaleUpperCase("tr-TR");
+  }
+
+  function teamScore(match, side) {
     var score = match.score || {};
-    return score.home == null || score.away == null ? "-" : score.home + " - " + score.away;
+    return score[side] == null ? "–" : String(score[side]);
+  }
+
+  function teamMarkup(match, side, redCards) {
+    var name = side === "home" ? match.homeTeam : match.awayTeam;
+    var logo = safeLogoUrl(side === "home" ? match.homeTeamLogo : match.awayTeamLogo);
+    var mark = logo
+      ? '<span class="score-team-logo has-image"><img src="' + escapeHtml(logo) + '" alt="" width="38" height="38" loading="lazy" decoding="async" data-team-logo><span class="score-team-fallback" aria-hidden="true">' + escapeHtml(teamInitials(name)) + "</span></span>"
+      : '<span class="score-team-logo"><span class="score-team-fallback" aria-hidden="true">' + escapeHtml(teamInitials(name)) + "</span></span>";
+    var card = redCards
+      ? '<i title="Kırmızı kart" aria-label="' + Number(redCards) + ' kırmızı kart">' + Number(redCards) + "</i>"
+      : "";
+    return '<span class="score-team">' + mark + "<strong>" + escapeHtml(name) + "</strong>" + card + '</span><b class="score-team-score" aria-label="' + escapeHtml(name) + ' skoru">' + escapeHtml(teamScore(match, side)) + "</b>";
   }
 
   function statusValue(match, source) {
@@ -99,9 +157,8 @@
     var live = trustedLive(match, source);
     return '<a class="score-card' + (live ? " is-live" : "") + '" href="' + matchHref(match) + '" data-score-match data-search-label="' + escapeHtml([match.homeTeam, match.awayTeam, match.league].join(" ")) + '" data-match-league="' + escapeHtml(competitionId(match)) + '" data-match-status="' + escapeHtml(match.status) + '">' +
       '<span class="score-card-meta"><b>' + escapeHtml(match.league || match.competition && match.competition.name || "Lig") + '</b><span>' + escapeHtml(statusValue(match, source)) + '</span></span>' +
-      '<span class="score-team"><strong>' + escapeHtml(match.homeTeam) + '</strong>' + (redCards.home ? '<i title="Kırmızı kart" aria-label="' + Number(redCards.home) + ' kırmızı kart">' + Number(redCards.home) + "</i>" : "") + "</span>" +
-      '<span class="score-value" aria-label="Skor">' + escapeHtml(scoreValue(match)) + "</span>" +
-      '<span class="score-team"><strong>' + escapeHtml(match.awayTeam) + '</strong>' + (redCards.away ? '<i title="Kırmızı kart" aria-label="' + Number(redCards.away) + ' kırmızı kart">' + Number(redCards.away) + "</i>" : "") + "</span></a>";
+      teamMarkup(match, "home", redCards.home) +
+      teamMarkup(match, "away", redCards.away) + "</a>";
   }
 
   function emptyHtml(title, text) {
@@ -141,14 +198,14 @@
   function renderMain(matches, source) {
     var target = document.querySelector("[data-score-list]");
     if (!target) return;
-    state.matches = dedupe(matches).filter(function (match) { return primaryLeagues.indexOf(competitionId(match)) !== -1; });
+    state.matches = dedupe(matches).filter(function (match) { return scoreboardCompetitions.indexOf(competitionId(match)) !== -1; });
     var visible = filterByLeague(state.matches);
     var emptyTitle = state.period === "live"
-      ? "Şu anda seçili liglerde canlı maç bulunmuyor"
+      ? "Şu anda seçili turnuvalarda canlı maç bulunmuyor"
       : state.period === "today"
-        ? "Bugün seçili liglerde maç bulunmuyor"
+        ? "Bugün seçili turnuvalarda maç bulunmuyor"
         : state.period === "tomorrow"
-          ? "Yarın seçili liglerde maç bulunmuyor"
+          ? "Yarın seçili turnuvalarda maç bulunmuyor"
           : "Bu seçim için doğrulanmış maç bulunamadı";
     target.innerHTML = visible.length
       ? visible.map(function (match) { return cardHtml(match, source); }).join("")
@@ -165,11 +222,11 @@
       return;
     }
     var live = dedupe(matches).filter(function (match) {
-      return primaryLeagues.indexOf(competitionId(match)) !== -1 && trustedLive(match, source);
+      return scoreboardCompetitions.indexOf(competitionId(match)) !== -1 && trustedLive(match, source);
     });
     target.innerHTML = live.length
       ? live.map(function (match) { return cardHtml(match, source); }).join("")
-      : emptyHtml("Şu anda seçili liglerde canlı maç bulunmuyor", "Canlı başlayan karşılaşmalar otomatik olarak burada görünecek.");
+      : emptyHtml("Şu anda seçili turnuvalarda canlı maç bulunmuyor", "Canlı başlayan karşılaşmalar otomatik olarak burada görünecek.");
   }
 
   function setSyncStatus(message, stateName) {
@@ -193,8 +250,30 @@
   }
 
   function requestPeriod(period) {
-    var today = body.getAttribute("data-today");
-    var tomorrow = body.getAttribute("data-tomorrow");
+    var today = currentDateInIstanbul();
+    var tomorrow = currentDateInIstanbul(1);
+    body.setAttribute("data-today", today);
+    body.setAttribute("data-tomorrow", tomorrow);
+    var dateLabel = document.querySelector("[data-score-date-label]");
+    var listTitle = document.querySelector("[data-score-list-title]");
+    if (dateLabel) {
+      dateLabel.textContent = period === "live"
+        ? "Şu an"
+        : period === "tomorrow"
+          ? formatDateLabel(tomorrow)
+          : period === "all"
+            ? "Bugün ve yarın"
+            : formatDateLabel(today);
+    }
+    if (listTitle) {
+      listTitle.textContent = period === "live"
+        ? "Canlı maçlar"
+        : period === "tomorrow"
+          ? "Yarının maçları"
+          : period === "all"
+            ? "Tüm maçlar"
+            : "Bugünün maçları";
+    }
     var urls = period === "live"
       ? ["/api/matches?mode=live"]
       : period === "tomorrow"
@@ -228,7 +307,7 @@
     var requestedPeriod = params.get("period");
     var requestedLeague = params.get("league");
     if (["live", "today", "tomorrow", "all"].indexOf(requestedPeriod) !== -1) state.period = requestedPeriod;
-    if (primaryLeagues.indexOf(requestedLeague) !== -1) state.league = requestedLeague;
+    if (scoreboardCompetitions.indexOf(requestedLeague) !== -1) state.league = requestedLeague;
 
     document.querySelectorAll("[data-score-period]").forEach(function (button) {
       var selected = button.getAttribute("data-score-period") === state.period;
@@ -251,7 +330,7 @@
       button.classList.toggle("is-active", selected);
       button.addEventListener("click", function () {
         var next = button.getAttribute("data-score-league");
-        if (body.getAttribute("data-page") === "league" && next !== body.getAttribute("data-league") && next !== "all") {
+        if (body.getAttribute("data-page") === "league" && domesticLeagues.indexOf(next) !== -1 && next !== body.getAttribute("data-league")) {
           window.location.href = sitePrefix() + "lig/" + encodeURIComponent(next) + "/";
           return;
         }
@@ -299,6 +378,14 @@
     var initial = new URLSearchParams(window.location.search).get("q");
     if (initial) { input.value = initial; search(); }
   }
+
+  document.addEventListener("error", function (event) {
+    var image = event.target;
+    if (!image || !image.matches || !image.matches("[data-team-logo]")) return;
+    image.hidden = true;
+    var holder = image.closest(".score-team-logo");
+    if (holder) holder.classList.remove("has-image");
+  }, true);
 
   initSearch();
   initScoreFilters();

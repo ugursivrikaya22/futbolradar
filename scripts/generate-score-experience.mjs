@@ -4,7 +4,11 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const { featureFlags } = require("../services/featureFlags");
-const { normalizeKey, primaryCompetitions } = require("../services/competitionCatalog");
+const {
+  normalizeKey,
+  primaryCompetitions,
+  scoreboardCompetitions
+} = require("../services/competitionCatalog");
 const {
   dateInTimeZone,
   dedupeMatches,
@@ -17,6 +21,7 @@ const publicRoot = path.join(root, "public");
 const domain = "https://www.futbolradar.com";
 const flags = featureFlags();
 const competitions = primaryCompetitions();
+const scoreCompetitions = scoreboardCompetitions();
 
 function readJson(relativePath, fallback = []) {
   try {
@@ -90,10 +95,35 @@ function matchHref(match, prefix = "./") {
   return `${prefix}mac/${encodeURIComponent(slug)}/`;
 }
 
-function scoreText(match) {
-  const home = match.score && match.score.home;
-  const away = match.score && match.score.away;
-  return home == null || away == null ? "-" : `${home} - ${away}`;
+function competitionHref(competition, prefix = "./") {
+  return competition.competitionType === "domestic"
+    ? `${prefix}lig/${competition.id}/`
+    : `${prefix}turnuva/${competition.id}/`;
+}
+
+function teamInitials(name) {
+  const words = String(name || "").trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return "FR";
+  if (words.length === 1) return words[0].slice(0, 3).toLocaleUpperCase("tr-TR");
+  return words.slice(0, 3).map((word) => word[0]).join("").toLocaleUpperCase("tr-TR");
+}
+
+function teamScore(match, side) {
+  const value = match.score && match.score[side];
+  return value == null ? "–" : String(value);
+}
+
+function teamMarkup(match, side, redCards) {
+  const name = side === "home" ? match.homeTeam : match.awayTeam;
+  const logo = side === "home" ? match.homeTeamLogo : match.awayTeamLogo;
+  const fallback = teamInitials(name);
+  const logoMarkup = logo
+    ? `<span class="score-team-logo has-image"><img src="${escapeHtml(logo)}" alt="" width="38" height="38" loading="lazy" decoding="async" data-team-logo /><span class="score-team-fallback" aria-hidden="true">${escapeHtml(fallback)}</span></span>`
+    : `<span class="score-team-logo"><span class="score-team-fallback" aria-hidden="true">${escapeHtml(fallback)}</span></span>`;
+  const card = redCards
+    ? `<i title="Kırmızı kart" aria-label="${redCards} kırmızı kart">${redCards}</i>`
+    : "";
+  return `<span class="score-team">${logoMarkup}<strong>${escapeHtml(name)}</strong>${card}</span><b class="score-team-score" aria-label="${escapeHtml(name)} skoru">${escapeHtml(teamScore(match, side))}</b>`;
 }
 
 function statusText(match) {
@@ -106,11 +136,10 @@ function statusText(match) {
 
 function matchCard(rawMatch, prefix = "./") {
   const match = normalizeMatchRecord(rawMatch);
-  const score = scoreText(match);
   const redHome = Number(match.redCards && match.redCards.home || 0);
   const redAway = Number(match.redCards && match.redCards.away || 0);
   const liveClass = trustedLive(match) ? " is-live" : "";
-  return `<a class="score-card${liveClass}" href="${matchHref(match, prefix)}" data-score-match data-match-league="${escapeHtml(match.competitionId)}" data-match-status="${escapeHtml(match.status)}" data-search-record="match" data-search-label="${escapeHtml(`${match.homeTeam} ${match.awayTeam} ${match.league}`)}"><span class="score-card-meta"><b>${escapeHtml(match.league)}</b><span>${escapeHtml(statusText(match))}</span></span><span class="score-team"><strong>${escapeHtml(match.homeTeam)}</strong>${redHome ? `<i title="Kırmızı kart" aria-label="${redHome} kırmızı kart">${redHome}</i>` : ""}</span><span class="score-value" aria-label="Skor">${escapeHtml(score)}</span><span class="score-team"><strong>${escapeHtml(match.awayTeam)}</strong>${redAway ? `<i title="Kırmızı kart" aria-label="${redAway} kırmızı kart">${redAway}</i>` : ""}</span></a>`;
+  return `<a class="score-card${liveClass}" href="${matchHref(match, prefix)}" data-score-match data-match-league="${escapeHtml(match.competitionId)}" data-match-status="${escapeHtml(match.status)}" data-search-record="match" data-search-label="${escapeHtml(`${match.homeTeam} ${match.awayTeam} ${match.league}`)}"><span class="score-card-meta"><b>${escapeHtml(match.league)}</b><span>${escapeHtml(statusText(match))}</span></span>${teamMarkup(match, "home", redHome)}${teamMarkup(match, "away", redAway)}</a>`;
 }
 
 function emptyState(title, text) {
@@ -140,9 +169,11 @@ function searchSeeds(prefix = "./") {
       label: `${match.homeTeam} ${match.awayTeam} ${match.league}`,
       href: matchHref(match, prefix)
     })),
-    ...competitions.flatMap((item) => [
-      { category: "Lig", label: item.name, href: `${prefix}lig/${item.id}/` },
-      { category: "Lig", label: `${item.name} puan durumu`, href: `${prefix}puan-durumu.html?league=${item.id}` }
+    ...scoreCompetitions.flatMap((item) => [
+      { category: item.competitionType === "domestic" ? "Lig" : "Turnuva", label: item.name, href: competitionHref(item, prefix) },
+      ...(item.competitionType === "domestic"
+        ? [{ category: "Lig", label: `${item.name} puan durumu`, href: `${prefix}puan-durumu.html?league=${item.id}` }]
+        : [])
     ]),
     ...teams.map((item) => ({ category: "Takım", label: item.name, href: `${prefix}takim-detay.html?team=${encodeURIComponent(item.name)}` })),
     ...players.slice(0, 24).map((item) => ({ category: "Oyuncu", label: item.name, href: `${prefix}oyuncular/${encodeURIComponent(item.id || item.slug)}.html` })),
@@ -151,21 +182,21 @@ function searchSeeds(prefix = "./") {
   return records.map((item) => `<a href="${item.href}" data-search-seed data-search-category="${escapeHtml(item.category)}" data-search-label="${escapeHtml(item.label)}">${escapeHtml(item.label)}</a>`).join("");
 }
 
-function leagueChips(selected = "all", prefix = "./") {
-  return [`<button type="button" class="${selected === "all" ? "is-active" : ""}" data-score-league="all">Tümü</button>`, ...competitions.map((item) => `<button type="button" class="${selected === item.id ? "is-active" : ""}" data-score-league="${item.id}">${escapeHtml(item.name)}</button>`)].join("");
+function leagueChips(selected = "all", pool = competitions) {
+  return [`<button type="button" class="${selected === "all" ? "is-active" : ""}" data-score-league="all">Tümü</button>`, ...pool.map((item) => `<button type="button" class="${selected === item.id ? "is-active" : ""}" data-score-league="${item.id}">${escapeHtml(item.name)}</button>`)].join("");
 }
 
 function homepage() {
   const today = todayInIstanbul();
   const tomorrow = todayInIstanbul(1);
-  const todayMatches = matches.filter((match) => dateInTimeZone(match.kickoffAtUtc) === today && competitions.some((item) => item.id === match.competitionId));
+  const todayMatches = matches.filter((match) => dateInTimeZone(match.kickoffAtUtc) === today && scoreCompetitions.some((item) => item.id === match.competitionId));
   const liveMatches = todayMatches.filter(trustedLive);
   const upcoming = matches.filter((match) => {
     const date = dateInTimeZone(match.kickoffAtUtc);
-    return date && date >= today && competitions.some((item) => item.id === match.competitionId);
+    return date && date >= today && scoreCompetitions.some((item) => item.id === match.competitionId);
   }).slice(0, 8);
   const title = "Canlı Skorlar ve Bugünün Maçları | FutbolRadar";
-  const description = "Süper Lig, Premier League, La Liga, Serie A, Bundesliga ve Ligue 1 canlı skorları, fikstürü ve maç detayları FutbolRadar'da.";
+  const description = "Süper Lig, Avrupa'nın beş büyük ligi ve UEFA turnuvalarındaki canlı skorlar, fikstür ve maç detayları FutbolRadar'da.";
   const schema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -174,7 +205,7 @@ function homepage() {
     potentialAction: { "@type": "SearchAction", target: `${domain}/?q={search_term_string}`, "query-input": "required name=search_term_string" }
   };
 
-  return `<!doctype html><html lang="tr"><head>${head({ title, description, canonical: `${domain}/`, schema })}</head><body class="score-home" data-page="score-home" data-today="${today}" data-tomorrow="${tomorrow}" data-feature-live-scores="${flags.liveScores}">${nav()}<main class="score-shell score-main"><section class="score-intro"><p class="score-eyebrow">Canlı skor ve maç merkezi</p><h1>Maçlar, skorlar ve fikstür</h1><p>Altı büyük ligde canlı akış, günün programı ve kalıcı maç detayları tek ekranda.</p></section><section class="score-search" id="site-search"><label for="score-search-input">Maç, takım, lig veya oyuncu ara</label><div><input id="score-search-input" type="search" autocomplete="off" placeholder="Örn. Fenerbahçe, Premier League, Icardi" data-score-search /><button type="button" data-score-search-submit>Ara</button></div><div class="score-search-results" data-score-search-results hidden></div><div class="score-search-seeds" hidden>${searchSeeds()}</div></section><section class="score-toolbar" aria-label="Maç filtreleri"><div class="score-period-tabs" role="tablist" aria-label="Tarih"><button type="button" data-score-period="live" role="tab">Canlı</button><button type="button" data-score-period="today" role="tab" class="is-active" aria-selected="true">Bugün</button><button type="button" data-score-period="tomorrow" role="tab">Yarın</button><button type="button" data-score-period="all" role="tab">Tümü</button></div><div class="score-league-chips" aria-label="Lig seçimi">${leagueChips()}</div></section><p class="score-sync-status" data-score-sync-status role="status">Maç programı güncelleniyor.</p><section class="score-section" aria-labelledby="live-score-title"><div class="score-section-head"><div><span class="score-live-dot" aria-hidden="true"></span><h2 id="live-score-title">Canlı maçlar</h2></div><a href="./canli-skor.html">Tüm canlı skorlar</a></div><div class="score-list" data-score-live aria-live="polite">${liveMatches.length ? liveMatches.map((match) => matchCard(match)).join("") : emptyState("Şu anda seçili liglerde canlı maç bulunmuyor", "Canlı başlayan karşılaşmalar otomatik olarak burada görünecek.")}</div></section><section class="score-section" aria-labelledby="today-score-title"><div class="score-section-head"><div><span>${formatDate(today)}</span><h2 id="today-score-title" data-score-list-title>Bugünün maçları</h2></div><span data-score-count>${todayMatches.length} maç</span></div><div class="score-list" data-score-list aria-live="polite">${todayMatches.length ? todayMatches.map((match) => matchCard(match)).join("") : emptyState("Bugün seçili liglerde maç bulunmuyor", "Program sağlayıcıdan geldiğinde bu liste otomatik güncellenecek.")}</div></section><section class="score-section score-upcoming" aria-labelledby="upcoming-title"><div class="score-section-head"><div><span>Takvim</span><h2 id="upcoming-title">Yaklaşan önemli maçlar</h2></div><a href="./maclar/">Maç merkezine git</a></div><div class="score-list">${upcoming.length ? upcoming.map((match) => matchCard(match)).join("") : emptyState("Yaklaşan maçlar kontrol ediliyor", "Doğrulanmış fikstür kayıtları geldikçe burada sıralanacak.")}</div></section><section class="score-shortcuts" aria-labelledby="shortcut-title"><h2 id="shortcut-title">Hızlı erişim</h2><div>${competitions.map((item) => `<a href="./lig/${item.id}/"><strong>${escapeHtml(item.name)}</strong><span>Fikstür ve sonuçlar</span></a>`).join("")}<a href="./oyuncu-radari.html"><strong>Oyuncu Radarı</strong><span>Form ve performans</span></a><a href="./kesfet.html"><strong>Radar araçları</strong><span>Momentum ve analizler</span></a></div></section></main>${footer()}${bottomNav()}<script src="./site.js" defer></script><script src="./score-home.js" defer></script></body></html>`;
+  return `<!doctype html><html lang="tr"><head>${head({ title, description, canonical: `${domain}/`, schema })}</head><body class="score-home" data-page="score-home" data-today="${today}" data-tomorrow="${tomorrow}" data-feature-live-scores="${flags.liveScores}">${nav()}<main class="score-shell score-main"><section class="score-intro"><p class="score-eyebrow">Canlı skor ve maç merkezi</p><h1>Maçlar, skorlar ve fikstür</h1><p>Altı büyük lig, UEFA turnuvaları ve hazırlık maçlarında canlı akış ile günün programı tek ekranda.</p></section><section class="score-search" id="site-search"><label for="score-search-input">Maç, takım, lig veya oyuncu ara</label><div><input id="score-search-input" type="search" autocomplete="off" placeholder="Örn. Fenerbahçe, Premier League, Icardi" data-score-search /><button type="button" data-score-search-submit>Ara</button></div><div class="score-search-results" data-score-search-results hidden></div><div class="score-search-seeds" hidden>${searchSeeds()}</div></section><section class="score-toolbar" aria-label="Maç filtreleri"><div class="score-period-tabs" role="tablist" aria-label="Tarih"><button type="button" data-score-period="live" role="tab">Canlı</button><button type="button" data-score-period="today" role="tab" class="is-active" aria-selected="true">Bugün</button><button type="button" data-score-period="tomorrow" role="tab">Yarın</button><button type="button" data-score-period="all" role="tab">Tümü</button></div><div class="score-league-chips" aria-label="Lig seçimi">${leagueChips("all", scoreCompetitions)}</div></section><p class="score-sync-status" data-score-sync-status role="status">Maç programı güncelleniyor.</p><section class="score-section" aria-labelledby="live-score-title"><div class="score-section-head"><div><span class="score-live-dot" aria-hidden="true"></span><h2 id="live-score-title">Canlı maçlar</h2></div><a href="./canli-skor.html">Tüm canlı skorlar</a></div><div class="score-list" data-score-live aria-live="polite">${liveMatches.length ? liveMatches.map((match) => matchCard(match)).join("") : emptyState("Şu anda seçili turnuvalarda canlı maç bulunmuyor", "Canlı başlayan karşılaşmalar otomatik olarak burada görünecek.")}</div></section><section class="score-section" aria-labelledby="today-score-title"><div class="score-section-head"><div><span data-score-date-label>${formatDate(today)}</span><h2 id="today-score-title" data-score-list-title>Bugünün maçları</h2></div><span data-score-count>${todayMatches.length} maç</span></div><div class="score-list" data-score-list aria-live="polite">${todayMatches.length ? todayMatches.map((match) => matchCard(match)).join("") : emptyState("Bugün seçili turnuvalarda maç bulunmuyor", "Program sağlayıcıdan geldiğinde bu liste otomatik güncellenecek.")}</div></section><section class="score-section score-upcoming" aria-labelledby="upcoming-title"><div class="score-section-head"><div><span>Takvim</span><h2 id="upcoming-title">Yaklaşan önemli maçlar</h2></div><a href="./maclar/">Maç merkezine git</a></div><div class="score-list">${upcoming.length ? upcoming.map((match) => matchCard(match)).join("") : emptyState("Yaklaşan maçlar kontrol ediliyor", "Doğrulanmış fikstür kayıtları geldikçe burada sıralanacak.")}</div></section><section class="score-shortcuts" aria-labelledby="shortcut-title"><h2 id="shortcut-title">Hızlı erişim</h2><div>${competitions.map((item) => `<a href="./lig/${item.id}/"><strong>${escapeHtml(item.name)}</strong><span>Fikstür ve sonuçlar</span></a>`).join("")}${scoreCompetitions.filter((item) => item.competitionType !== "domestic").map((item) => `<a href="${competitionHref(item)}"><strong>${escapeHtml(item.name)}</strong><span>Turnuva maçları</span></a>`).join("")}<a href="./oyuncu-radari.html"><strong>Oyuncu Radarı</strong><span>Form ve performans</span></a><a href="./kesfet.html"><strong>Radar araçları</strong><span>Momentum ve analizler</span></a></div></section></main>${footer()}${bottomNav()}<script src="./site.js" defer></script><script src="./score-home.js" defer></script></body></html>`;
 }
 
 function leaguePage(competition) {
@@ -199,7 +230,7 @@ function leaguePage(competition) {
     .filter((item) => item.id !== competition.id)
     .map((item) => `<a href="${prefix}lig/${item.id}/"><strong>${escapeHtml(item.name)}</strong><span>Lig merkezine git</span></a>`)
     .join("");
-  return `<!doctype html><html lang="tr"><head>${head({ title, description, canonical, prefix, schema })}</head><body class="score-home score-league-page" data-page="league" data-league="${competition.id}" data-today="${todayInIstanbul()}">${nav(prefix)}<main class="score-shell score-main"><nav class="score-breadcrumb" aria-label="Sayfa yolu"><a href="${prefix}index.html">Ana Sayfa</a><span>/</span><span>Ligler</span><span>/</span><strong>${escapeHtml(competition.name)}</strong></nav><section class="score-intro"><p class="score-eyebrow">${escapeHtml(competition.country)} · Lig merkezi</p><h1>${escapeHtml(competition.name)}</h1><p>Canlı skor, fikstür, sonuçlar ve takım bağlantıları. Eksik karşılaşmalar tahminle doldurulmaz.</p></section><section class="score-search" id="site-search"><label for="score-search-input">Takım, oyuncu veya maç ara</label><div><input id="score-search-input" type="search" autocomplete="off" data-score-search /><button type="button" data-score-search-submit>Ara</button></div><div class="score-search-results" data-score-search-results hidden></div><div class="score-search-seeds" hidden>${searchSeeds(prefix)}</div></section><section class="score-toolbar"><div class="score-league-chips">${leagueChips(competition.id, prefix)}</div></section><section class="score-section"><div class="score-section-head"><div><span>Program</span><h2>${escapeHtml(competition.name)} maçları</h2></div><a href="${prefix}puan-durumu.html?league=${competition.id}">Puan durumu</a></div><div class="score-list" data-score-list aria-live="polite">${leagueMatches.length ? leagueMatches.map((match) => matchCard(match, prefix)).join("") : emptyState("Doğrulanmış maç kaydı bekleniyor", "Fikstür sağlayıcıdan geldiğinde bu lig sayfası otomatik güncellenecek.")}</div></section><section class="score-shortcuts"><h2>Takımlar ve bağlantılar</h2><div>${leagueTeams.length ? leagueTeams.map((team) => `<a href="${prefix}takim-detay.html?team=${encodeURIComponent(team.name)}"><strong>${escapeHtml(team.name)}</strong><span>Takım profili</span></a>`).join("") : `<a href="${prefix}takimlar.html"><strong>Takım merkezi</strong><span>${escapeHtml(competition.name)} takım verileri</span></a>`}<a href="${prefix}oyuncu-radari.html?league=${competition.id}"><strong>Oyuncu Radarı</strong><span>Lig oyuncularını incele</span></a><a href="${prefix}maclar/"><strong>Maç merkezi</strong><span>Tüm liglerin programı</span></a>${otherLeagues}</div></section></main>${footer(prefix)}${bottomNav(prefix)}<script src="${prefix}site.js" defer></script><script src="${prefix}score-home.js" defer></script></body></html>`;
+  return `<!doctype html><html lang="tr"><head>${head({ title, description, canonical, prefix, schema })}</head><body class="score-home score-league-page" data-page="league" data-league="${competition.id}" data-today="${todayInIstanbul()}">${nav(prefix)}<main class="score-shell score-main"><nav class="score-breadcrumb" aria-label="Sayfa yolu"><a href="${prefix}index.html">Ana Sayfa</a><span>/</span><span>Ligler</span><span>/</span><strong>${escapeHtml(competition.name)}</strong></nav><section class="score-intro"><p class="score-eyebrow">${escapeHtml(competition.country)} · Lig merkezi</p><h1>${escapeHtml(competition.name)}</h1><p>Canlı skor, fikstür, sonuçlar ve takım bağlantıları. Eksik karşılaşmalar tahminle doldurulmaz.</p></section><section class="score-search" id="site-search"><label for="score-search-input">Takım, oyuncu veya maç ara</label><div><input id="score-search-input" type="search" autocomplete="off" data-score-search /><button type="button" data-score-search-submit>Ara</button></div><div class="score-search-results" data-score-search-results hidden></div><div class="score-search-seeds" hidden>${searchSeeds(prefix)}</div></section><section class="score-toolbar"><div class="score-league-chips">${leagueChips(competition.id)}</div></section><section class="score-section"><div class="score-section-head"><div><span>Program</span><h2>${escapeHtml(competition.name)} maçları</h2></div><a href="${prefix}puan-durumu.html?league=${competition.id}">Puan durumu</a></div><div class="score-list" data-score-list aria-live="polite">${leagueMatches.length ? leagueMatches.map((match) => matchCard(match, prefix)).join("") : emptyState("Doğrulanmış maç kaydı bekleniyor", "Fikstür sağlayıcıdan geldiğinde bu lig sayfası otomatik güncellenecek.")}</div></section><section class="score-shortcuts"><h2>Takımlar ve bağlantılar</h2><div>${leagueTeams.length ? leagueTeams.map((team) => `<a href="${prefix}takim-detay.html?team=${encodeURIComponent(team.name)}"><strong>${escapeHtml(team.name)}</strong><span>Takım profili</span></a>`).join("") : `<a href="${prefix}takimlar.html"><strong>Takım merkezi</strong><span>${escapeHtml(competition.name)} takım verileri</span></a>`}<a href="${prefix}oyuncu-radari.html?league=${competition.id}"><strong>Oyuncu Radarı</strong><span>Lig oyuncularını incele</span></a><a href="${prefix}maclar/"><strong>Maç merkezi</strong><span>Tüm liglerin programı</span></a>${otherLeagues}</div></section></main>${footer(prefix)}${bottomNav(prefix)}<script src="${prefix}site.js" defer></script><script src="${prefix}score-home.js" defer></script></body></html>`;
 }
 
 function enrichLeaguePage(html, competition) {

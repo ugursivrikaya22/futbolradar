@@ -44,6 +44,14 @@ function firstValue(...values) {
   return values.find((value) => value !== undefined && value !== null && value !== "") ?? null;
 }
 
+function safeLogoUrl(value) {
+  const url = String(value || "").trim();
+  if (!url) return null;
+  if (/^https:\/\//i.test(url)) return url;
+  if (/^(?:\.{0,2}\/|\/)[a-z0-9][a-z0-9/_\-.%]*$/i.test(url)) return url;
+  return null;
+}
+
 function numberOrNull(value) {
   if (value === undefined || value === null || value === "") return null;
   const number = Number(value);
@@ -248,6 +256,20 @@ function normalizeMatchRecord(record, options) {
   const events = normalizeMatchEvents(raw.events);
   const homeTeam = String(firstValue(raw.homeTeam, raw.home && raw.home.name) || "");
   const awayTeam = String(firstValue(raw.awayTeam, raw.away && raw.away.name) || "");
+  const homeTeamLogo = safeLogoUrl(firstValue(
+    raw.homeTeamLogo,
+    raw.homeLogo,
+    raw.homeTeamCrest,
+    raw.home && firstValue(raw.home.logo, raw.home.crest),
+    raw.teams && raw.teams.home && firstValue(raw.teams.home.logo, raw.teams.home.crest)
+  ));
+  const awayTeamLogo = safeLogoUrl(firstValue(
+    raw.awayTeamLogo,
+    raw.awayLogo,
+    raw.awayTeamCrest,
+    raw.away && firstValue(raw.away.logo, raw.away.crest),
+    raw.teams && raw.teams.away && firstValue(raw.teams.away.logo, raw.teams.away.crest)
+  ));
   const redCards = events.reduce((count, event) => {
     if (event.card !== "red") return count;
     const eventTeam = normalizeKey(event.teamName);
@@ -265,6 +287,8 @@ function normalizeMatchRecord(record, options) {
     providerId: providerId == null ? null : String(providerId),
     homeTeam,
     awayTeam,
+    homeTeamLogo,
+    awayTeamLogo,
     competitionId: competition.id,
     competition,
     league: String(firstValue(raw.league, competition.name) || ""),
@@ -421,6 +445,7 @@ module.exports = {
   normalizeCompetition,
   normalizeMatchRecord,
   normalizeMatchStatus,
+  safeLogoUrl,
   schemaEventStatus,
   slugify,
   timeInIstanbul,

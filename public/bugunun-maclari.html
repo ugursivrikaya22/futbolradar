@@ -31,7 +31,7 @@
     window.gtag("config", "G-XXXXXXXXXX", { anonymize_ip: true });
   </script>
   </head>
-  <body class="subpage">
+  <body class="subpage" data-page="matches">
     <header class="topbar">
       <nav class="container nav" aria-label="Ana menü">
   <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa">
@@ -64,7 +64,7 @@
             <h1 data-match-page-title>Bugünkü Maçlar</h1>
             <p class="lead">Altı büyük yerel lig ile Şampiyonlar Ligi, Avrupa Ligi, Konferans Ligi ve hazırlık maçlarını tek akışta incele.</p>
           </div>
-          <span class="hero-meta">Son kontrol: 13 Temmuz 2026 08:00 TSİ</span>
+          <span class="hero-meta">Son doğrulama: <b data-last-match-check>22 Temmuz 2026 18:05 TSİ</b></span>
         </div>
       </section>
       <section class="match-explorer" data-match-explorer aria-label="Maç tarihi ve durum filtreleri">
@@ -109,15 +109,14 @@
       </section>
       <section class="grid" id="today-matches-page" data-api-section="today-matches" data-api-target="matches-page" data-static-fallback="true">
         <!-- prerender:matches-page:start -->
-<article class="data-empty" data-card="empty-state">
-    <strong>Bugün doğrulanmış maç yok</strong>
-    <span>Bugünün maç listesi doğrulandığında burada gösterilecek. Sezon eşleşmelerini fikstür sayfasından inceleyebilirsin.</span>
-    <div class="match-empty-actions">
-      <a class="detail-link" href="./bugunun-maclari.html">Günün tüm maçlarını aç</a>
-      <a class="detail-link ghost" href="./super-lig-fikstur.html">Sezon fikstürüne git</a>
-      <span class="tag soft">Günlük maç akışı bekleniyor</span>
-    </div>
-  </article>
+<section class="league-match-group" data-league-group="UEFA Avrupa Ligi">
+    <header><div><span>Lig / turnuva</span><h2>UEFA Avrupa Ligi</h2></div><b>1 maç</b></header>
+    <div class="league-match-grid"><article class="card match-card simple-score-card" data-card="today-match" data-match="besiktas-midtjylland-2026-07-23">
+    <div class="simple-score-head"><span>UEFA Avrupa Ligi</span><b>21:00</b></div>
+    <div class="simple-score-teams"><div><span class="team-crest"><span aria-hidden="true">BEŞ</span></span><strong>Beşiktaş</strong><b aria-label="Beşiktaş skoru">–</b></div><div><span class="team-crest"><span aria-hidden="true">FM</span></span><strong>FC Midtjylland</strong><b aria-label="FC Midtjylland skoru">–</b></div></div>
+    <a class="simple-score-link" href="./mac/besiktas-fc-midtjylland-2026-07-23/">Maç detayı</a>
+  </article></div>
+  </section>
 <!-- prerender:matches-page:end -->
       </section>
       <section class="source-strip" aria-label="Veri bilgisi">

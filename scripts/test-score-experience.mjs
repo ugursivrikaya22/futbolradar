@@ -7,7 +7,9 @@ const require = createRequire(import.meta.url);
 const root = process.cwd();
 const {
   PRIMARY_COMPETITION_IDS,
-  primaryCompetitions
+  SCOREBOARD_COMPETITION_IDS,
+  primaryCompetitions,
+  scoreboardCompetitions
 } = require("../services/competitionCatalog");
 const {
   dateInTimeZone,
@@ -25,6 +27,14 @@ assert.deepEqual(PRIMARY_COMPETITION_IDS, [
   "ligue-1"
 ], "Score surface must use the six canonical leagues in a stable order");
 assert.equal(primaryCompetitions().length, 6, "All six primary competitions must resolve from the catalog");
+assert.deepEqual(SCOREBOARD_COMPETITION_IDS, [
+  ...PRIMARY_COMPETITION_IDS,
+  "sampiyonlar-ligi",
+  "avrupa-ligi",
+  "konferans-ligi",
+  "hazirlik-maclari"
+], "Score surface must include the six leagues, UEFA competitions and friendlies");
+assert.equal(scoreboardCompetitions().length, 10, "All scoreboard competitions must resolve from the catalog");
 
 assert.equal(
   dateInTimeZone("2026-07-21T22:30:00Z", "Europe/Istanbul"),
@@ -38,6 +48,8 @@ const liveMatch = normalizeMatchRecord({
   kickoff: "2026-07-22T19:00:00Z",
   homeTeam: "Home",
   awayTeam: "Away",
+  homeTeamLogo: "https://media.example.test/home.png",
+  awayTeamLogo: "javascript:alert(1)",
   status: "2H",
   minute: 67,
   score: { home: 2, away: 1, halftimeHome: 1, halftimeAway: 0 },
@@ -48,6 +60,8 @@ const liveMatch = normalizeMatchRecord({
   source: "api-football"
 });
 assert.equal(liveMatch.status, "LIVE", "Live provider status must normalize to LIVE");
+assert.equal(liveMatch.homeTeamLogo, "https://media.example.test/home.png", "Secure provider crest URL must survive normalization");
+assert.equal(liveMatch.awayTeamLogo, null, "Unsafe team crest URL must be rejected");
 assert.deepEqual(liveMatch.halfTimeScore, { home: 1, away: 0 }, "Half-time score must be preserved");
 assert.equal(liveMatch.events[0].eventType, "card", "Provider event must use the common event schema");
 assert.equal(liveMatch.events[0].card, "red", "Red-card detail must be normalized");
@@ -66,6 +80,14 @@ const finished = normalizeMatchRecord({
 });
 assert.equal(finished.status, "FINISHED", "Finished provider status must remain final");
 assert.equal(dedupeMatches([finished, { ...finished, fetchedAt: "2026-07-22T10:00:00Z" }]).length, 1, "Duplicate fixtures must collapse to one record");
+assert.equal(normalizeMatchRecord({
+  id: "friendly-1",
+  competitionId: "hazirlik-maci",
+  league: "Hazırlık Maçı",
+  kickoff: "2026-07-24T18:00:00Z",
+  homeTeam: "A",
+  awayTeam: "B"
+}).competitionId, "hazirlik-maclari", "Singular friendly competition identifiers must resolve to the canonical catalog id");
 
 const provider = getMatchDataProvider("matches");
 for (const method of ["fetchFixturesByDate", "fetchLiveFixtures", "fetchFixtureDetails", "fetchMatchEvents", "fetchStandings"]) {
@@ -77,6 +99,10 @@ assert.match(indexHtml, /class="score-home"/, "Homepage must use the score-first
 assert.match(indexHtml, /data-score-search/, "Homepage search control is missing");
 assert.match(indexHtml, /data-score-period="live"/, "Live/today/tomorrow tabs are missing");
 assert.match(indexHtml, /data-score-league="premier-league"/, "Primary league filter is missing");
+assert.match(indexHtml, /data-score-league="sampiyonlar-ligi"/, "Champions League filter is missing");
+assert.match(indexHtml, /data-score-league="avrupa-ligi"/, "Europa League filter is missing");
+assert.match(indexHtml, /data-score-league="konferans-ligi"/, "Conference League filter is missing");
+assert.match(indexHtml, /data-score-league="hazirlik-maclari"/, "Friendly match filter is missing");
 assert.match(indexHtml, /data-score-list/, "Server-rendered match container is missing");
 assert.match(indexHtml, /data-score-sync-status/, "Provider synchronization state is missing");
 assert.match(indexHtml, /score-home\.js/, "Lightweight homepage script is missing");
@@ -86,17 +112,38 @@ assert.doesNotMatch(indexHtml, /Veri kaynağı/i, "Homepage must not expose a pr
 const clientJs = fs.readFileSync(path.join(root, "score-home.js"), "utf8");
 assert.match(clientJs, /\/api\/matches\?mode=live/, "Live endpoint request is missing");
 assert.match(clientJs, /URLSearchParams/, "Filter state must be reflected in the URL");
+assert.match(clientJs, /function currentDateInIstanbul/, "Homepage date must refresh in the browser without requiring a daily deployment");
+assert.match(clientJs, /data-team-logo/, "Homepage client must render provider team crests");
+assert.match(clientJs, /function safeLogoUrl/, "Homepage client must validate provider crest URLs");
 assert.match(clientJs, /data-score-search-results/, "Search result behavior is missing");
 assert.match(clientJs, /Canlı maç verisine şu anda ulaşılamıyor/, "Provider errors need a distinct user state");
-assert.match(clientJs, /Şu anda seçili liglerde canlı maç bulunmuyor/, "A true no-live-match state is missing");
+assert.match(clientJs, /Şu anda seçili turnuvalarda canlı maç bulunmuyor/, "A true no-live-match state is missing");
 assert.match(clientJs, /Son başarılı güncelleme:/, "Stale data must expose the last successful update");
 
 const appJs = fs.readFileSync(path.join(root, "app.js"), "utf8");
 assert.match(appJs, /function initGeneratedMatchTabs/, "Match detail tab controller is missing");
 assert.match(appJs, /Maç detayı bölümleri/, "Match detail tabs need an accessible label");
+assert.match(appJs, /apiParams\.set\("mode", "live"\)/, "Live-score page must call the dedicated live endpoint mode");
+
+for (const page of ["bugunun-maclari.html", "canli-skor.html"]) {
+  const html = fs.readFileSync(path.join(root, page), "utf8");
+  assert.doesNotMatch(html, /13 Temmuz 2026/, `${page} must not contain the obsolete hard-coded verification date`);
+  assert.match(html, /data-last-match-check/, `${page} must expose a dynamic verification timestamp hook`);
+}
+
+const curatedMatches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
+const today = dateInTimeZone(new Date().toISOString(), "Europe/Istanbul");
+const currentCuratedMatches = dedupeMatches(curatedMatches).filter((match) => dateInTimeZone(match.kickoffAtUtc, "Europe/Istanbul") === today);
+const todayPage = fs.readFileSync(path.join(root, "bugunun-maclari.html"), "utf8");
+for (const match of currentCuratedMatches) {
+  assert.match(todayPage, new RegExp(match.homeTeam.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), `Today's verified fallback is missing ${match.homeTeam}`);
+  assert.match(todayPage, new RegExp(match.awayTeam.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")), `Today's verified fallback is missing ${match.awayTeam}`);
+}
 
 const css = fs.readFileSync(path.join(root, "page.css"), "utf8");
 assert.match(css, /\.score-bottom-nav/, "Mobile bottom navigation styles are missing");
+assert.match(css, /\.score-team-logo/, "Simple score cards must reserve stable team crest dimensions");
+assert.match(css, /\.simple-score-card/, "Secondary score pages must use the simplified card surface");
 assert.match(css, /@media \(max-width: 640px\)/, "Mobile score layout breakpoint is missing");
 
 for (const competition of primaryCompetitions()) {
