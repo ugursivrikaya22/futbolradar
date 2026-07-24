@@ -2283,32 +2283,123 @@
     );
   }
 
-  function renderFixtureMatch(match) {
-    var slug = [match.homeTeam, match.awayTeam, match.season, "r" + String(match.round || "").padStart(2, "0")]
+  var FIXTURE_TURKISH_MONTHS = {
+    ocak: "01", subat: "02", mart: "03", nisan: "04", mayis: "05",
+    haziran: "06", temmuz: "07", agustos: "08", eylul: "09",
+    ekim: "10", kasim: "11", aralik: "12"
+  };
+
+  // Parses "14-17 Ağustos 2026" into an ISO start/end range; returns null for
+  // anything not in that shape (e.g. "Tarih ve saat atamaları bekleniyor")
+  // rather than guessing a date. Mirrors services/superLigFixtureService.js's
+  // parseDateRange — kept duplicated on purpose since app.js runs in the
+  // browser and can't require() that Node module.
+  function parseFixtureDateRange(label) {
+    var match = String(label || "").match(/(\d{1,2})(?:-(\d{1,2}))?\s+([A-Za-zÇĞİÖŞÜçğıöşü]+)\s+(\d{4})/);
+    if (!match) {
+      return null;
+    }
+    var month = FIXTURE_TURKISH_MONTHS[normalizeSearchText(match[3])];
+    if (!month) {
+      return null;
+    }
+    var pad = function (value) { return String(value).padStart(2, "0"); };
+    return {
+      start: match[4] + "-" + month + "-" + pad(match[1]),
+      end: match[4] + "-" + month + "-" + pad(match[2] || match[1])
+    };
+  }
+
+  function resolveFixtureDefaultRound(rounds, todayIso) {
+    if (!rounds.length) {
+      return 1;
+    }
+    var parsed = rounds
+      .map(function (round) { return { round: round.round, range: parseFixtureDateRange(round.dateRange) }; })
+      .filter(function (entry) { return entry.range; });
+
+    if (!parsed.length) {
+      return rounds[0].round;
+    }
+    var upcoming = parsed.filter(function (entry) { return entry.range.end >= todayIso; })[0];
+    if (upcoming) {
+      return upcoming.round;
+    }
+    var lastDatedRound = parsed[parsed.length - 1].round;
+    var next = rounds.filter(function (round) { return round.round > lastDatedRound; })[0];
+    return next ? next.round : lastDatedRound;
+  }
+
+  function fixtureMatchStatus(match) {
+    var raw = String(match.status || "SCHEDULED").toUpperCase();
+    var aliases = {
+      NS: "SCHEDULED", TIMED: "SCHEDULED", IN_PLAY: "LIVE", "1H": "LIVE", "2H": "LIVE",
+      HT: "LIVE", ET: "LIVE", FT: "FINISHED", AET: "FINISHED", PEN: "FINISHED",
+      PST: "POSTPONED", CANC: "CANCELLED"
+    };
+    return aliases[raw] || (["SCHEDULED", "LIVE", "POSTPONED", "FINISHED", "CANCELLED"].includes(raw) ? raw : "SCHEDULED");
+  }
+
+  function fixtureStatusSlug(status) {
+    var slugs = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
+    return slugs[status] || "scheduled";
+  }
+
+  function fixtureMatchHref(match, round, season) {
+    var slug = [match.homeTeam, match.awayTeam, season, "r" + String(round || "").padStart(2, "0")]
       .map(function (value) { return normalizeSearchText(value).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); })
       .join("-");
-    var dateLabel = match.dateLabel || match.date || match.time || match.kickoff || "Tarih ve saat bekleniyor";
+    return "./mac/" + slug + ".html";
+  }
+
+  function findFixtureTeamVenue(teams, name) {
+    var wanted = normalizeSearchText(name);
+    var found = (Array.isArray(teams) ? teams : []).find(function (team) { return normalizeSearchText(team.name) === wanted; });
+    return (found && found.venue) || "";
+  }
+
+  function renderFixtureMatch(match, round, season, teams) {
+    var status = fixtureMatchStatus(match);
+    var homeTeam = matchTeam({ homeTeam: match.homeTeam, homeTeamLogo: match.homeTeamLogo }, "home");
+    var awayTeam = matchTeam({ awayTeam: match.awayTeam, awayTeamLogo: match.awayTeamLogo }, "away");
+    var kickoff = getMatchKickoff(match);
+    var timeLabel = kickoff ? formatMatchTime(kickoff) || "Saat bilgisi bekleniyor" : (match.dateLabel || round.dateRange || "Tarih ve saat bekleniyor");
+    var scoreOrVs = status === "FINISHED" && match.score
+      ? '<strong>' + escapeHtml(matchScoreDisplay(match)) + '</strong>'
+      : '<span class="vs-pill">VS</span>';
+    var venue = match.venue || findFixtureTeamVenue(teams, match.homeTeam);
 
     return (
-      '<a class="fixture-match-row" data-card="fixture-match" data-match="' + escapeHtml(match.id || "") + '" href="./mac/' + escapeHtml(slug) + '.html">' +
-      '<span class="fixture-time">' + escapeHtml(displayValue(dateLabel)) + "</span>" +
-      '<strong>' + escapeHtml(displayValue(match.homeTeam)) + "</strong>" +
-      '<span class="vs-pill">VS</span>' +
-      '<strong>' + escapeHtml(displayValue(match.awayTeam)) + "</strong>" +
+      '<a class="fixture-match-row" data-card="fixture-match" data-match="' + escapeHtml(match.id || "") + '" data-status="' + escapeHtml(fixtureStatusSlug(status)) + '" href="' + escapeHtml(fixtureMatchHref(match, round.round, season)) + '">' +
+      '<div class="fixture-match-time"><span class="fixture-time">' + escapeHtml(timeLabel) + '</span>' +
+      '<span class="fixture-status-badge" data-status="' + escapeHtml(fixtureStatusSlug(status)) + '">' + escapeHtml(statusTr(status)) + "</span></div>" +
+      '<div class="fixture-match-team fixture-match-team-home">' + fixtureTeamLogoHtml(homeTeam) + '<span>' + escapeHtml(getTeamName(homeTeam)) + "</span></div>" +
+      '<div class="fixture-match-score">' + scoreOrVs + "</div>" +
+      '<div class="fixture-match-team fixture-match-team-away">' + fixtureTeamLogoHtml(awayTeam) + '<span>' + escapeHtml(getTeamName(awayTeam)) + "</span></div>" +
+      '<div class="fixture-venue">' + escapeHtml(venue) + "</div>" +
       "</a>"
     );
   }
 
-  function renderFixtureRound(round) {
+  function fixtureTeamLogoHtml(team) {
+    var name = getTeamName(team);
+    var logo = getTeamLogo(team);
+    var initials = escapeHtml(teamInitials(name));
+    if (!logo) {
+      return '<span class="fixture-team-logo-fallback" aria-hidden="true">' + initials + "</span>";
+    }
+    return (
+      '<img class="fixture-team-logo" src="' + escapeHtml(logo) + '" alt="' + escapeHtml(name ? name + " logosu" : "Takım logosu") + '" width="26" height="26" loading="lazy" decoding="async" ' +
+      "onerror=\"this.style.display='none';this.nextElementSibling.style.display='flex';\" />" +
+      '<span class="fixture-team-logo-fallback" aria-hidden="true" style="display:none">' + initials + "</span>"
+    );
+  }
+
+  function renderFixtureWeekSection(round, teams) {
     var matches = Array.isArray(round.matches) ? round.matches : [];
     var body = matches.length
       ? matches.map(function (match) {
-        return renderFixtureMatch({
-          ...match,
-          round: round.round,
-          season: round.season || "2026-2027",
-          dateLabel: match.dateLabel || round.dateRange
-        });
+        return renderFixtureMatch(match, round, round.season || "2026-2027", teams);
       }).join("")
       : '<article class="data-empty compact" data-card="empty-state"><strong>Hafta eşleşmeleri bekleniyor</strong><span>Bu haftanın maçları resmi ve doğrulanabilir kaynakta netleştiğinde burada gösterilecek.</span></article>';
 
@@ -2320,13 +2411,33 @@
     );
   }
 
-  function renderSuperLigFixtures(payload) {
-    if (!payload) {
-      return "";
-    }
+  function fixtureControlsHtml(rounds, teams, selectedRound, selectedTeam) {
+    var atFirst = selectedRound <= rounds[0].round;
+    var atLast = selectedRound >= rounds[rounds.length - 1].round;
+    var teamOptions = teams.slice().sort(function (a, b) { return a.name.localeCompare(b.name, "tr"); }).map(function (team) {
+      return '<option value="' + escapeHtml(team.name) + '"' + (team.name === selectedTeam ? " selected" : "") + ">" + escapeHtml(team.name) + "</option>";
+    }).join("");
 
+    return (
+      '<section class="fixture-controls" aria-label="Fikstür filtreleri">' +
+      '<div class="fixture-week-nav">' +
+      '<button type="button" class="fixture-week-prev" data-fixture-nav="prev"' + (atFirst ? " disabled" : "") + ' aria-label="Önceki hafta">‹</button>' +
+      '<div class="fixture-week-current"><span>Hafta</span><strong data-fixture-week-label>' + escapeHtml(selectedRound) + "</strong></div>" +
+      '<button type="button" class="fixture-week-next" data-fixture-nav="next"' + (atLast ? " disabled" : "") + ' aria-label="Sonraki hafta">›</button>' +
+      "</div>" +
+      '<label class="fixture-team-filter"><span>Takım</span><select data-fixture-team-select aria-label="Takıma göre filtrele"><option value="">Tüm takımlar</option>' + teamOptions + "</select></label>" +
+      "</section>"
+    );
+  }
+
+  function fixtureWeekJumpHtml(rounds, selectedRound) {
+    return '<nav class="fixture-week-jump" aria-label="Hafta seç">' + rounds.map(function (round) {
+      return '<button type="button" class="fixture-week-jump-item' + (round.round === selectedRound ? " is-active" : "") + '" data-fixture-week="' + escapeHtml(round.round) + '" aria-current="' + (round.round === selectedRound ? "true" : "false") + '">' + escapeHtml(round.round) + "</button>";
+    }).join("") + "</nav>";
+  }
+
+  function renderSuperLigFixturesOverview(payload) {
     var teams = Array.isArray(payload.teams) ? payload.teams : [];
-    var rounds = Array.isArray(payload.rounds) ? payload.rounds : [];
     var watchList = Array.isArray(payload.watchList) ? payload.watchList : [];
     var confirmedCount = teams.filter(function (team) { return team.status === "confirmed"; }).length;
     var teamSummary = confirmedCount >= teams.length
@@ -2343,10 +2454,115 @@
       }).join("") +
       "</section>" +
       '<section class="fixture-note card"><span class="card-kicker">' + escapeHtml(displayValue(payload.league)) + " · " + escapeHtml(displayValue(payload.season)) + "</span><h2>Fikstür takibi</h2><p>" + escapeHtml(fixtureMessage) + "</p></section>" +
-      '<section class="fixture-rounds">' + rounds.map(renderFixtureRound).join("") + "</section>" +
       '<section class="section"><div class="section-heading"><div><span class="eyebrow">Takım havuzu</span><h2>Doğrulanan ve izlenen takımlar</h2></div><p>' + escapeHtml(teamSummary) + "</p></div>" +
       '<div class="fixture-team-grid">' + teams.map(renderFixtureTeam).join("") + "</div></section>"
     );
+  }
+
+  function initSuperLigFixtures(target) {
+    if (!target) {
+      return;
+    }
+
+    var staticFallback = target.dataset.staticFallback === "true" ? target.innerHTML : "";
+    target.dataset.state = "loading";
+
+    loadData("superLigFixtures").then(function (payload) {
+      var rounds = payload && Array.isArray(payload.rounds) ? payload.rounds : [];
+      if (!rounds.length) {
+        if (staticFallback) {
+          target.innerHTML = staticFallback;
+          target.dataset.state = "fallback";
+          return;
+        }
+        setEmpty(target, "Fikstür bulunamadı", "Süper Lig fikstür verisi şu anda okunamıyor.");
+        return;
+      }
+
+      var teams = Array.isArray(payload.teams) ? payload.teams : [];
+      var params = new URLSearchParams(window.location.search);
+      var requestedTeam = params.get("team") || "";
+      var requestedWeek = Number(params.get("week"));
+      var defaultRound = resolveFixtureDefaultRound(rounds, todayInIstanbul());
+      var state = {
+        round: rounds.some(function (round) { return round.round === requestedWeek; }) ? requestedWeek : defaultRound,
+        team: teams.some(function (team) { return team.name === requestedTeam; }) ? requestedTeam : ""
+      };
+
+      var overviewHtml = renderSuperLigFixturesOverview(payload);
+
+      function syncUrl() {
+        var next = new URLSearchParams(window.location.search);
+        if (state.round === defaultRound) next.delete("week"); else next.set("week", String(state.round));
+        if (state.team) next.set("team", state.team); else next.delete("team");
+        var query = next.toString();
+        window.history.replaceState(null, "", window.location.pathname + (query ? "?" + query : ""));
+      }
+
+      function renderCurrentWeek() {
+        var round = rounds.find(function (item) { return item.round === state.round; }) || rounds[0];
+        var filteredRound = state.team
+          ? { ...round, matches: (round.matches || []).filter(function (match) {
+            return normalizeSearchText(match.homeTeam) === normalizeSearchText(state.team) || normalizeSearchText(match.awayTeam) === normalizeSearchText(state.team);
+          }) }
+          : round;
+
+        setContent(target, overviewHtml +
+          fixtureControlsHtml(rounds, teams, state.round, state.team) +
+          fixtureWeekJumpHtml(rounds, state.round) +
+          '<section class="fixture-rounds">' + renderFixtureWeekSection(filteredRound, teams) + "</section>"
+        );
+        syncUrl();
+        wireControls();
+      }
+
+      function wireControls() {
+        var prevButton = target.querySelector('[data-fixture-nav="prev"]');
+        var nextButton = target.querySelector('[data-fixture-nav="next"]');
+        var teamSelect = target.querySelector("[data-fixture-team-select]");
+        var jumpButtons = Array.prototype.slice.call(target.querySelectorAll("[data-fixture-week]"));
+
+        if (prevButton) {
+          prevButton.addEventListener("click", function () {
+            var index = rounds.findIndex(function (round) { return round.round === state.round; });
+            if (index > 0) {
+              state.round = rounds[index - 1].round;
+              renderCurrentWeek();
+            }
+          });
+        }
+        if (nextButton) {
+          nextButton.addEventListener("click", function () {
+            var index = rounds.findIndex(function (round) { return round.round === state.round; });
+            if (index !== -1 && index < rounds.length - 1) {
+              state.round = rounds[index + 1].round;
+              renderCurrentWeek();
+            }
+          });
+        }
+        if (teamSelect) {
+          teamSelect.addEventListener("change", function () {
+            state.team = teamSelect.value;
+            renderCurrentWeek();
+          });
+        }
+        jumpButtons.forEach(function (button) {
+          button.addEventListener("click", function () {
+            state.round = Number(button.getAttribute("data-fixture-week"));
+            renderCurrentWeek();
+          });
+        });
+      }
+
+      renderCurrentWeek();
+    }).catch(function () {
+      if (staticFallback) {
+        target.innerHTML = staticFallback;
+        target.dataset.state = "fallback";
+        return;
+      }
+      setEmpty(target, "Fikstür yüklenemedi", "Süper Lig fikstür verisi geçici olarak okunamıyor.");
+    });
   }
 
   function renderTeamHomeCard(team) {
@@ -6796,12 +7012,7 @@
     initMatchAnalysis(document.querySelector('[data-api-target="match-analysis"]'));
     initStatisticsHub(document.querySelector('[data-api-target="statistics-hub"]'));
 
-    renderInto(
-      document.querySelector('[data-api-target="super-lig-fixtures"]'),
-      "superLigFixtures",
-      renderSuperLigFixtures,
-      "Süper Lig fikstürü yüklenemedi"
-    );
+    initSuperLigFixtures(document.querySelector('[data-api-target="super-lig-fixtures"]'));
 
     renderInto(
       document.querySelector('[data-api-target="momentum"]'),
