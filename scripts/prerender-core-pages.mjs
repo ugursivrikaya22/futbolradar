@@ -240,8 +240,8 @@ function replaceSlot(html, target, content) {
 function updateMetaLabels(html, freshness) {
   const label = `Son kontrol: ${formatFreshnessDate(freshness.verifiedAt || freshness.fetchedAt)}`;
   return html
-    .replace(/<span class="hero-meta">Son güncelleme:[^<]*<\/span>/g, `<span class="hero-meta">${escapeHtml(label)}</span>`)
-    .replace(/<span class="data-stamp">Son güncelleme:[^<]*<\/span>/g, `<span class="data-stamp">${escapeHtml(label)}</span>`);
+    .replace(/<span class="hero-meta">(?:Son güncelleme|Son kontrol):[^<]*<\/span>/g, `<span class="hero-meta">${escapeHtml(label)}</span>`)
+    .replace(/<span class="data-stamp">(?:Son güncelleme|Son kontrol):[^<]*<\/span>/g, `<span class="data-stamp">${escapeHtml(label)}</span>`);
 }
 
 const noindexShellPages = new Set([
