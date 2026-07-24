@@ -5841,6 +5841,105 @@
     return '<a class="detail-link ghost" href="' + escapeHtml(matchDetailHref(match)) + '">Derin Analiz</a>';
   }
 
+  function deepAnalysisListHtml(items) {
+    if (!Array.isArray(items) || !items.length) {
+      return "";
+    }
+    return "<ul>" + items.map(function (item) {
+      return "<li>" + escapeHtml(item) + "</li>";
+    }).join("") + "</ul>";
+  }
+
+  function deepAnalysisKeyPlayersHtml(players) {
+    if (!Array.isArray(players) || !players.length) {
+      return '<p class="muted-copy">Doğrulanmış oyuncu bilgisi bekleniyor.</p>';
+    }
+    return "<ul>" + players.map(function (player) {
+      return "<li><strong>" + escapeHtml(player.name) + "</strong><span>" + escapeHtml(player.note || "") + "</span></li>";
+    }).join("") + "</ul>";
+  }
+
+  function deepAnalysisScenarioHtml(label, text) {
+    if (!text) {
+      return "";
+    }
+    return '<article class="match-intelligence-card"><span class="card-kicker">' + escapeHtml(label) + "</span><p>" + escapeHtml(text) + "</p></article>";
+  }
+
+  function deepAnalysisSourcesHtml(sources) {
+    if (!Array.isArray(sources) || !sources.length) {
+      return "";
+    }
+    return '<ul class="deep-analysis-source-list">' + sources.map(function (source) {
+      return "<li><strong>" + escapeHtml(source.publisher) + "</strong> — " + escapeHtml(source.type) +
+        "<p>" + escapeHtml(source.usedFor) + "</p>" +
+        '<a href="' + escapeHtml(source.url) + '" target="_blank" rel="noopener noreferrer">Kaynağa git</a>' +
+        (source.publishedAt ? '<span class="deep-analysis-source-date">Yayın: ' + escapeHtml(source.publishedAt) + "</span>" : "") +
+        "</li>";
+    }).join("") + "</ul>";
+  }
+
+  /**
+   * Editorial narrative layer (short answer, favorite reasoning, threats,
+   * risks, scenarios, sources) authored by hand from cited research and
+   * stored on the matches.json record as `deepAnalysis` — deliberately kept
+   * separate from the generated match-analyses.json prediction/coverage so a
+   * routine model regeneration can never silently overwrite it.
+   */
+  function deepAnalysisEditorialHtml(match) {
+    var deep = match && match.deepAnalysis;
+    if (!deep) {
+      return "";
+    }
+
+    var home = getTeamName(matchTeam(match, "home"));
+    var away = getTeamName(matchTeam(match, "away"));
+    var keyPlayers = deep.keyPlayers || {};
+    var scenarios = deep.scenarios || {};
+
+    return (
+      '<article class="match-intelligence-card deep-analysis-editorial" data-card="deep-analysis">' +
+      '<span class="card-kicker">Maç Öncesi Derin Analiz</span>' +
+      '<p class="deep-analysis-short-answer">' + escapeHtml(deep.shortAnswer || "") + "</p>" +
+
+      "<h3>" + escapeHtml(home) + " neden favori?</h3>" +
+      deepAnalysisListHtml(deep.favoriteReasoning) +
+
+      "<h3>" + escapeHtml(away) + " tehditleri</h3>" +
+      deepAnalysisListHtml(deep.awayThreats) +
+
+      '<div class="grid two">' +
+      "<div><h3>" + escapeHtml(home) + " riskleri</h3>" + deepAnalysisListHtml(deep.homeRisks) + "</div>" +
+      "<div><h3>" + escapeHtml(away) + " riskleri</h3>" + deepAnalysisListHtml(deep.awayRisks) + "</div>" +
+      "</div>" +
+
+      "<h3>Kilit oyuncular</h3>" +
+      '<div class="grid two">' +
+      "<div><span class=\"card-kicker\">" + escapeHtml(home) + "</span>" + deepAnalysisKeyPlayersHtml(keyPlayers.home) + "</div>" +
+      "<div><span class=\"card-kicker\">" + escapeHtml(away) + "</span>" + deepAnalysisKeyPlayersHtml(keyPlayers.away) + "</div>" +
+      "</div>" +
+
+      "<h3>Kilit eşleşmeler</h3>" +
+      deepAnalysisListHtml(deep.keyMatchups) +
+
+      "<h3>Senaryo analizi</h3>" +
+      '<div class="grid two">' +
+      deepAnalysisScenarioHtml(home + " maçı nasıl kazanır?", scenarios.galatasarayWin || scenarios.homeWin) +
+      deepAnalysisScenarioHtml(away + " maçı nasıl kazanabilir?", scenarios.monzaWin || scenarios.awayWin) +
+      deepAnalysisScenarioHtml("Maç nasıl dengede kalır?", scenarios.balanced) +
+      deepAnalysisScenarioHtml("Hazırlık maçı rotasyonu sonucu nasıl etkiler?", scenarios.rotationImpact) +
+      "</div>" +
+
+      "<h3>Veri güveni</h3>" +
+      "<p>" + escapeHtml(deep.dataConfidenceNote || "") + "</p>" +
+
+      "<h3>Kaynaklar ve veri notu</h3>" +
+      deepAnalysisSourcesHtml(deep.sources) +
+      (deep.lastVerifiedAt ? '<p class="muted-copy">Son doğrulama: ' + escapeHtml(formatUpdatedAt(deep.lastVerifiedAt)) + "</p>" : "") +
+      "</article>"
+    );
+  }
+
   function probabilityBarHtml(prediction) {
     var probabilities = (prediction && prediction.probabilities) || { homeWin: 0, draw: 0, awayWin: 0 };
     var unavailable = !prediction || prediction.predictionStatus === "unavailable";
@@ -6158,7 +6257,7 @@
         return (item.fixtureId || item.id || item.providerId) === fixtureId;
       }) || null;
 
-      if (!record) {
+      if (!record && !(match && match.deepAnalysis)) {
         if (staticFallback) {
           target.innerHTML = staticFallback;
           target.dataset.state = "fallback";
@@ -6168,8 +6267,12 @@
         return;
       }
 
-      setContent(target, matchAnalysisHeroHtml(record, match) + matchAnalysisTabsHtml(record));
-      initAnalysisTabs(target);
+      var editorialHtml = deepAnalysisEditorialHtml(match);
+      var recordHtml = record ? matchAnalysisHeroHtml(record, match) + matchAnalysisTabsHtml(record) : "";
+      setContent(target, recordHtml + editorialHtml);
+      if (record) {
+        initAnalysisTabs(target);
+      }
     }).catch(function () {
       if (staticFallback) {
         target.innerHTML = staticFallback;
