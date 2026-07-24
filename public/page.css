@@ -10604,6 +10604,62 @@ h1 {
   margin-bottom: 0;
 }
 
+.research-verdict-card {
+  border-color: rgba(77, 229, 255, 0.28);
+}
+
+.research-verdict-card p {
+  margin: 0;
+  font-weight: 650;
+}
+
+.quantitative-model-headline {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.quantitative-model-card[data-confidence-band="insufficient"] {
+  border-color: rgba(255, 122, 132, 0.32);
+}
+
+.quantitative-model-detail summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
+
+.confidence-warning-card {
+  padding: 12px 18px;
+}
+
+.confidence-warning-card p {
+  margin: 0;
+  font-weight: 700;
+}
+
+.confidence-warning-card[data-confidence-band="insufficient"] {
+  color: #ff7a84;
+  border-color: rgba(255, 122, 132, 0.35);
+}
+
+.confidence-warning-card[data-confidence-band="low"] {
+  color: #ffd166;
+  border-color: rgba(255, 209, 102, 0.35);
+}
+
+.confidence-warning-card[data-confidence-band="medium"] {
+  color: var(--cyan);
+  border-color: rgba(77, 229, 255, 0.32);
+}
+
+.confidence-warning-card[data-confidence-band="high"] {
+  color: var(--green);
+  border-color: rgba(128, 255, 155, 0.35);
+}
+
 .deep-analysis-editorial h3 {
   margin: 4px 0 0;
   font-size: 1rem;

@@ -6141,6 +6141,77 @@
       });
   }
 
+  /**
+   * Dedicated bands for the prediction's own dataConfidence (FAZ2 spec:
+   * <25 insufficient, 25-49 low, 50-74 medium, 75+ high) — kept separate
+   * from the generic confidenceLevel() used for coverage/lineup badges
+   * elsewhere, so tightening this gate can't shift unrelated UI.
+   */
+  function predictionConfidenceBand(value) {
+    var number = Number(value);
+    if (!Number.isFinite(number) || number < 25) return "insufficient";
+    if (number < 50) return "low";
+    if (number < 75) return "medium";
+    return "high";
+  }
+
+  function predictionConfidenceLabel(band) {
+    var labels = {
+      insufficient: "Veri güveni: Çok düşük",
+      low: "Düşük güven",
+      medium: "Orta güven",
+      high: "Yüksek güven"
+    };
+    return labels[band] || labels.insufficient;
+  }
+
+  function weakDataSideNote(record, home, away) {
+    var homeStatus = record.homeContext && record.homeContext.dataStatus;
+    var awayStatus = record.awayContext && record.awayContext.dataStatus;
+    var homeWeak = homeStatus === "insufficient" || homeStatus === "limited";
+    var awayWeak = awayStatus === "insufficient" || awayStatus === "limited";
+
+    if (awayWeak && !homeWeak) {
+      return escapeHtml(away) + " için yeterli yapılandırılmış kadro ve performans verisi bulunmadığından olasılık modeli taraflar arasında güvenilir bir ayrım oluşturamıyor.";
+    }
+    if (homeWeak && !awayWeak) {
+      return escapeHtml(home) + " için yeterli yapılandırılmış kadro ve performans verisi bulunmadığından olasılık modeli taraflar arasında güvenilir bir ayrım oluşturamıyor.";
+    }
+    if (homeWeak && awayWeak) {
+      return "Her iki takım için de yeterli yapılandırılmış kadro ve performans verisi bulunmadığından olasılık modeli taraflar arasında güvenilir bir ayrım oluşturamıyor.";
+    }
+    return "Model, mevcut veriyle taraflar arasında güvenilir bir ayrım oluşturamıyor.";
+  }
+
+  function earlySnapshotForMatch(match) {
+    var deep = match && match.deepAnalysis;
+    var snapshots = deep && Array.isArray(deep.preMatchSnapshots) ? deep.preMatchSnapshots : [];
+    return snapshots.find(function (snap) { return snap.snapshotType === "early-pre-match"; }) || snapshots[0] || null;
+  }
+
+  /**
+   * A qualitative research verdict ("X kağıt üzerinde favori") is only ever
+   * surfaced in the headline when the numeric model itself is too thin to
+   * lead — this keeps the two layers visually distinct instead of letting a
+   * researched opinion masquerade as the model's own output.
+   */
+  function heroHeadlineLabel(record, match, home, away) {
+    var band = predictionConfidenceBand(record.dataConfidence);
+    var snapshot = earlySnapshotForMatch(match);
+    var verdict = snapshot && snapshot.researchVerdict;
+
+    if (band === "insufficient" && verdict) {
+      var normalizedVerdict = normalizeSearchText(verdict);
+      var favoredTeam = normalizedVerdict.indexOf(normalizeSearchText(home)) !== -1 ? home
+        : normalizedVerdict.indexOf(normalizeSearchText(away)) !== -1 ? away : null;
+      if (favoredTeam) {
+        return escapeHtml(favoredTeam) + " kağıt üzerinde favori · Nicel veri sınırlı";
+      }
+    }
+
+    return simpleBalanceLabel(record.prediction, home, away);
+  }
+
   function matchAnalysisHeroHtml(record, match) {
     var home = record.homeContext.teamName;
     var away = record.awayContext.teamName;
@@ -6153,7 +6224,7 @@
       '<div class="card-head"><span class="card-kicker">' + escapeHtml(record.competition) + " · " + escapeHtml(formatUpdatedAt(record.kickoff)) +
       '</span><strong class="big-value">' + escapeHtml(scoreOrStatus) + "</strong></div>" +
       "<h2>" + escapeHtml(home) + " - " + escapeHtml(away) + "</h2>" +
-      '<div class="tag-row"><span class="tag soft">' + simpleBalanceLabel(prediction, home, away) + "</span>" +
+      '<div class="tag-row"><span class="tag soft">' + heroHeadlineLabel(record, match, home, away) + "</span>" +
       goalPotentialBadgeHtml(prediction.goalPotential) + "</div>" +
       '<div class="player-actions match-actions">' +
       '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: home })) + '">' + escapeHtml(home) + " takım detayı</a>" +
@@ -6161,19 +6232,60 @@
       "</div></article>";
   }
 
-  function matchAnalysisTabsHtml(record) {
+  function researchVerdictCardHtml(match) {
+    var snapshot = earlySnapshotForMatch(match);
+    var verdict = snapshot && snapshot.researchVerdict;
+    if (!verdict) {
+      return "";
+    }
+    return '<div class="match-intelligence-card research-verdict-card">' +
+      '<span class="card-kicker">Araştırma değerlendirmesi</span>' +
+      "<p>" + escapeHtml(verdict) + "</p>" +
+      "</div>";
+  }
+
+  function quantitativeModelCardHtml(record, home, away) {
+    var prediction = record.prediction;
+    var band = predictionConfidenceBand(record.dataConfidence);
+    var body;
+
+    if (band === "insufficient") {
+      body =
+        '<p class="quantitative-model-headline">Nicel tahmin için veri kapsamı yetersiz</p>' +
+        "<p>" + weakDataSideNote(record, home, away) + "</p>" +
+        '<details class="quantitative-model-detail"><summary>Sayısal olasılıkları göster</summary>' +
+        probabilityBarHtml(prediction) +
+        "</details>";
+    } else {
+      body = probabilityBarHtml(prediction) + "<p>" + escapeHtml(prediction.summary || "") + "</p>";
+    }
+
+    return '<div class="match-intelligence-card quantitative-model-card" data-confidence-band="' + escapeHtml(band) + '">' +
+      '<span class="card-kicker">Sayısal model</span>' +
+      body +
+      '<div class="tag-row">' + goalPotentialBadgeHtml(prediction.goalPotential) + upsetRiskBadgeHtml(prediction.upsetRisk) + "</div>" +
+      "</div>";
+  }
+
+  function confidenceWarningCardHtml(record) {
+    var band = predictionConfidenceBand(record.dataConfidence);
+    var value = Math.round(Number(record.dataConfidence) || 0);
+    return '<div class="match-intelligence-card confidence-warning-card" data-confidence-band="' + escapeHtml(band) + '">' +
+      '<span class="card-kicker">Veri güveni</span>' +
+      "<p>" + escapeHtml(predictionConfidenceLabel(band)) + " — " + value + "/100</p>" +
+      "</div>";
+  }
+
+  function matchAnalysisTabsHtml(record, match) {
     var home = record.homeContext.teamName;
     var away = record.awayContext.teamName;
     var prediction = record.prediction;
 
-    var summaryPanel = '<div class="match-intelligence-card">' +
-      '<span class="card-kicker">FutbolRadar okuması</span>' +
-      "<p>" + escapeHtml((record.matchup && record.matchup.summary) || "") + "</p>" +
-      "<p>" + escapeHtml(prediction.summary || "") + "</p>" +
-      probabilityBarHtml(prediction) +
-      '<div class="tag-row">' + goalPotentialBadgeHtml(prediction.goalPotential) + upsetRiskBadgeHtml(prediction.upsetRisk) + "</div>" +
-      predictionNoteHtml() +
-      "</div>";
+    var summaryPanel =
+      researchVerdictCardHtml(match) +
+      quantitativeModelCardHtml(record, home, away) +
+      confidenceWarningCardHtml(record) +
+      predictionNoteHtml();
 
     var deepPanel = '<div class="grid">' +
       '<div class="match-intelligence-card">' +
@@ -6268,7 +6380,7 @@
       }
 
       var editorialHtml = deepAnalysisEditorialHtml(match);
-      var recordHtml = record ? matchAnalysisHeroHtml(record, match) + matchAnalysisTabsHtml(record) : "";
+      var recordHtml = record ? matchAnalysisHeroHtml(record, match) + matchAnalysisTabsHtml(record, match) : "";
       setContent(target, recordHtml + editorialHtml);
       if (record) {
         initAnalysisTabs(target);
