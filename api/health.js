@@ -1,5 +1,6 @@
 const {
   API_KEY_ENV_NAMES,
+  APIFOOTBALL_API_KEY_ENV_NAMES,
   BASE_URL_ENV_NAMES,
   COMPETITION_CODE_ENV_NAMES,
   enforceRateLimit,
@@ -46,7 +47,7 @@ function buildDiagnostics(config) {
     vercelEnv: process.env.VERCEL_ENV || "",
     nodeEnv: process.env.NODE_ENV || "",
     apiFootball: {
-      credentialPresent: Boolean(process.env.APIFOOTBALL_API_KEY),
+      credentialPresent: Boolean(presentEnvNames(APIFOOTBALL_API_KEY_ENV_NAMES).length),
       baseUrlConfigured: Boolean(apiFootballConfig.baseUrl),
       configured: apiFootballProvider.hasConfig()
     },
