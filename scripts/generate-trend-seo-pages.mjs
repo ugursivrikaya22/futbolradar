@@ -243,7 +243,7 @@ function pageHtml(page) {
       { "@type": "WebPage", name: page.h1, description: page.description, url, dateModified: updatedAt, isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${domain}/` } },
       { "@type": "BreadcrumbList", itemListElement: [
         { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: `${domain}/` },
-        { "@type": "ListItem", position: 2, name: "Trend Radar", item: `${domain}/#trend-radar` },
+        { "@type": "ListItem", position: 2, name: "Trend Radar", item: `${domain}/` },
         { "@type": "ListItem", position: 3, name: page.h1, item: url }
       ] }
     ]
@@ -277,7 +277,7 @@ function pageHtml(page) {
   <body class="subpage trend-seo-page">
     <header class="topbar"><nav class="container nav" aria-label="Ana menü"><a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a><button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button><div class="nav-menu" id="primary-menu"><div class="nav-links"><a href="./bugunun-maclari.html">Bugünkü Maçlar</a><a href="./canli-skor.html">Canlı Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takimlar.html">Takımlar</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./momentum.html">Momentum</a></div><a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a></div></nav></header>
     <main class="container">
-      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><a href="./index.html#trend-radar">Trend Radar</a><span>/</span><span>${escapeHtml(page.h1)}</span></nav>
+      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><a href="./index.html">Trend Radar</a><span>/</span><span>${escapeHtml(page.h1)}</span></nav>
       <section class="trend-hero"><div><span class="eyebrow">Gündem · Veri · Analiz</span><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.lead)}</p></div><aside><span>Son kontrol</span><strong>22 Temmuz 2026</strong><small>Doğrulanmayan alanlar kesin bilgi gibi sunulmaz.</small></aside></section>
       ${factCards(page.facts)}
       ${page.body()}
