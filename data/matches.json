@@ -251,6 +251,35 @@
       "generatedAt": "2026-07-24T14:31:00+03:00",
       "preMatchFrozenAt": "2026-07-24T14:31:00+03:00",
       "modelReference": "futbolradar-match-v1",
+      "officialSourceStatus": {
+        "galatasarayOrgTr": "temporarily-unavailable",
+        "note": "galatasaray.org iki ayrı denemede (24 Temmuz 14:31 TSİ ve 15:11 TSİ) HTTP 503 döndürdü. Temel bilgiler (Ümraniyespor 5-1, Ugochukwu'nun 63' girişi, Avusturya kamp kadrosu) çoklu ulusal basın kaynağıyla (Sabah, Gerçek Gündem, AA) çapraz doğrulandı; sourceStatus=verified-via-cross-source olarak işaretlendi. Resmî site erişilebilir olduğunda mevcut çapraz doğrulama silinmeyecek, resmî kaynak ek kanıt olarak eklenecek.",
+        "lastAttemptAt": "2026-07-24T15:11:00+03:00"
+      },
+      "preMatchSnapshots": [
+        {
+          "snapshotId": "galatasaray-monza-2026-07-24-early-pre-match",
+          "snapshotType": "early-pre-match",
+          "generatedAt": "2026-07-24T14:31:00+03:00",
+          "frozenAt": "2026-07-24T14:31:00+03:00",
+          "dataConfidence": 9,
+          "analysisStatus": "partial",
+          "prediction": {
+            "modelVersion": "futbolradar-match-v1",
+            "probabilities": { "homeWin": 33, "draw": 34, "awayWin": 33 },
+            "primary": "draw",
+            "label": "Beraberlik ihtimali öne çıkıyor"
+          },
+          "researchVerdict": "Galatasaray kağıt üzerinde favori — şampiyon kadro devamlılığı ve rotasyon derinliği nedeniyle.",
+          "probableLineups": {
+            "home": { "status": "low-confidence", "knownStarterCount": 2, "requiredStarterCount": 11 },
+            "away": { "status": "unavailable", "knownStarterCount": 0, "requiredStarterCount": 11 }
+          },
+          "officialLineups": null,
+          "immutable": true
+        }
+      ],
+      "postMatch": null,
       "shortAnswer": "Galatasaray, şampiyon kadro devamlılığı, geniş rotasyon seçenekleri ve ilk hazırlık maçındaki gol üretimiyle bu karşılaşmanın öne çıkan tarafı gibi görünüyor. Ancak Monza'nın yeni teknik direktörü Ivan Jurić'in vurgulanan agresif ve yoğun oyun anlayışı, ilk hazırlık maçında gol üreten Colpani-Forson-Petagna üçlüsü ve hazırlık dönemi maçlarının doğasındaki yüksek rotasyon/belirsizlik nedeniyle sonucu tek taraflı veya kesin kabul etmek doğru olmaz. FutbolRadar modeli, Monza için henüz yeterli yapılandırılmış veri bulunmadığından bu karşılaşmada dengeye yakın bir olasılık dağılımı hesaplıyor; bu, modelin temkinli ve dürüst çalıştığının bir göstergesi.",
       "favoriteReasoning": [
         "2025-26 Süper Lig'i şampiyon tamamladı ve üst üste dördüncü kez lig şampiyonu oldu; aynı teknik direktörle (Okan Buruk) devamlılık sürüyor.",

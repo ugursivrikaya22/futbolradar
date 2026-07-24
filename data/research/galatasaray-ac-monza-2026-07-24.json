@@ -211,6 +211,19 @@
       "Any further summer squad changes between 21-24 July."
     ]
   },
+  "officialSourceRetries": [
+    {
+      "publisher": "Galatasaray (galatasaray.org)",
+      "attempts": [
+        { "url": "https://www.galatasaray.org/haber/futbol/umraniyespor-1-5-galatasaray/60614", "attemptedAt": "2026-07-24T14:31:00+03:00", "result": "HTTP 503" },
+        { "url": "https://www.galatasaray.org/haber/futbol/fark-var/60271", "attemptedAt": "2026-07-24T14:31:00+03:00", "result": "HTTP 503" },
+        { "url": "https://www.galatasaray.org/haber/futbol/umraniyespor-1-5-galatasaray/60614", "attemptedAt": "2026-07-24T15:11:00+03:00", "result": "HTTP 503" },
+        { "url": "https://www.galatasaray.org/", "attemptedAt": "2026-07-24T15:11:00+03:00", "result": "HTTP 503" }
+      ],
+      "sourceStatus": "temporarily-unavailable",
+      "note": "Site iki ayrı oturumda toplam 4 denemede de erişilemedi. Agresif tekrar denemeden kaçınıldı (FAZ5 kuralı). Etkilenen bilgiler (Ümraniyespor 5-1 skoru, ilk 11, Ugochukwu'nun 63' girişi) çoklu bağımsız ulusal basın kaynağıyla (Sabah, DHA, Fanatik, Hürriyet, Gerçek Gündem, AA) çapraz doğrulanmış durumda (sourceStatus=verified-via-cross-source). Resmî kaynak tekrar erişilebilir olduğunda mevcut çapraz doğrulama korunacak, resmî kaynak ek kanıt olarak eklenecek; hiçbir doğrulanmış temel bilgi bu erişilemezlik nedeniyle kaldırılmadı."
+    }
+  ],
   "sourceConflicts": [
     {
       "field": "matchDate",
