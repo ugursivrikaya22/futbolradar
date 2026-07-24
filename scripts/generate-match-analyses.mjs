@@ -18,6 +18,7 @@ const { buildComparison, generateMatchupAdvantages, buildMatchupSummary, generat
 const { buildMatchPrediction, freezePreMatchPrediction, MODEL_VERSION } = require("../services/matchPredictionService.js");
 const { getPlayers } = require("../services/playerService.js");
 const { findCompetition, classifyFixtureCompetition } = require("../services/competitionCatalog.js");
+const { computeAnalysisCoverage, analysisStatusFromCoverage } = require("../services/analysisCoverageService.js");
 
 const DATA_DIR = path.join(root, "data");
 const MATCHES_PATH = path.join(DATA_DIR, "matches.json");
@@ -202,17 +203,7 @@ function buildTeamBundle(teamName, fixture, players, teams, squadStatus, matchup
   const benchStrength = computeBenchStrength(teamPlayers, lineup);
   const missingKeyPlayers = detectMissingKeyPlayers({ name: teamName }, lineup, teamPlayers);
 
-  return { name: teamName, side, radar, lineup, lineupStrength, benchStrength, missingKeyPlayers, squadSize: teamPlayers.length };
-}
-
-function analysisStatusFor(prediction, homeLineup, awayLineup) {
-  if (prediction.predictionStatus === "unavailable" && homeLineup.predictionStatus === "unavailable" && awayLineup.predictionStatus === "unavailable") {
-    return "unavailable";
-  }
-  if (prediction.predictionStatus === "available" && prediction.dataConfidence >= 55 && homeLineup.predictionStatus !== "unavailable" && awayLineup.predictionStatus !== "unavailable") {
-    return "complete";
-  }
-  return "partial";
+  return { name: teamName, side, radar, lineup, lineupStrength, benchStrength, missingKeyPlayers, squadPlayers: teamPlayers, squadSize: teamPlayers.length };
 }
 
 function generateFreshAnalysis(fixture, matches, players, teams, squadStatus) {
@@ -234,7 +225,16 @@ function generateFreshAnalysis(fixture, matches, players, teams, squadStatus) {
   if (home.squadSize === 0) warnings.push("home-squad-data-missing");
   if (away.squadSize === 0) warnings.push("away-squad-data-missing");
 
-  const analysisStatus = analysisStatusFor(prediction, home.lineup, away.lineup);
+  const coverage = computeAnalysisCoverage({
+    home,
+    away,
+    homeContext: context.home,
+    awayContext: context.away,
+    homeSquad: home.squadPlayers,
+    awaySquad: away.squadPlayers,
+    officialLineupStatus: "unavailable"
+  });
+  const analysisStatus = analysisStatusFromCoverage(coverage);
   const isPreMatch = PRE_MATCH_STATES.has(fixture.status);
   if (!isPreMatch) {
     prediction = freezePreMatchPrediction(fixture, prediction);
@@ -256,9 +256,11 @@ function generateFreshAnalysis(fixture, matches, players, teams, squadStatus) {
     awayContext: context.away,
     probableLineups: { home: home.lineup, away: away.lineup },
     officialLineups: { home: null, away: null },
+    officialLineupStatus: "unavailable",
     matchup: { ...matchup, advantages: matchupAdvantages, summary: matchupSummary },
     keyDuels,
     prediction,
+    coverage,
     dataConfidence: prediction.dataConfidence,
     analysisStatus,
     warnings
@@ -269,6 +271,18 @@ function reconcileWithExisting(fixture, existing, fresh) {
   const isPreMatch = PRE_MATCH_STATES.has(fixture.status);
 
   if (isPreMatch || !existing) {
+    if (isPreMatch && existing && existing.officialLineupStatus === "available") {
+      // An official lineup can be fetched by the separate lineup-refresh job
+      // while a fixture is still "scheduled" — a routine regenerate here must
+      // not erase it, since that job never re-runs once it has succeeded.
+      return {
+        ...fresh,
+        officialLineups: existing.officialLineups,
+        officialLineupStatus: existing.officialLineupStatus,
+        officialLineupReceivedAt: existing.officialLineupReceivedAt,
+        lineupAccuracy: existing.lineupAccuracy
+      };
+    }
     return fresh;
   }
 
