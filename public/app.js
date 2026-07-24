@@ -798,7 +798,62 @@
   }
 
   function matchTitle(match) {
-    return escapeHtml(match.homeTeam) + " - " + escapeHtml(match.awayTeam);
+    return escapeHtml(getTeamName(match.homeTeam)) + " - " + escapeHtml(getTeamName(match.awayTeam));
+  }
+
+  function getTeamName(team) {
+    if (team && typeof team === "object") {
+      return team.name || team.team || team.shortName || "";
+    }
+    return team || "";
+  }
+
+  function getTeamLogo(team) {
+    if (team && typeof team === "object") {
+      return team.logo || team.crest || team.badge || "";
+    }
+    return "";
+  }
+
+  function matchTeam(match, side) {
+    var raw = match && match[side + "Team"];
+    if (raw && typeof raw === "object") {
+      return raw;
+    }
+    return {
+      name: raw || "",
+      logo: (match && (match[side + "TeamLogo"] || match[side + "Logo"])) || ""
+    };
+  }
+
+  function teamInitials(name) {
+    var clean = String(name || "").trim();
+    if (!clean) {
+      return "?";
+    }
+    var parts = clean.split(/\s+/).filter(Boolean);
+    var letters = parts.slice(0, 2).map(function (part) {
+      return part.charAt(0).toUpperCase();
+    });
+    return letters.join("") || clean.charAt(0).toUpperCase();
+  }
+
+  function teamLogoHtml(team) {
+    var name = getTeamName(team);
+    var logo = getTeamLogo(team);
+    var initials = escapeHtml(teamInitials(name));
+    var altText = escapeHtml(name ? name + " logosu" : "Takım logosu");
+
+    if (!logo) {
+      return '<span class="live-score-team-logo live-score-team-logo-fallback" aria-hidden="true">' + initials + '</span>';
+    }
+
+    return (
+      '<span class="live-score-team-logo-wrap">' +
+      '<img class="live-score-team-logo" src="' + escapeHtml(logo) + '" alt="' + altText + '" width="40" height="40" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
+      '<span class="live-score-team-logo-fallback" aria-hidden="true" style="display:none">' + initials + '</span>' +
+      '</span>'
+    );
   }
 
   function displayValue(value) {
@@ -1409,6 +1464,83 @@
     return displayValue(score);
   }
 
+  function matchScoreDisplay(match) {
+    var status = String(match && match.status || "").toUpperCase();
+    var score = match && match.score;
+    var hasScore = score && typeof score === "object" &&
+      score.home !== null && score.home !== undefined &&
+      score.away !== null && score.away !== undefined;
+
+    if (!hasScore || status === "SCHEDULED" || status === "POSTPONED" || status === "CANCELLED") {
+      return "- : -";
+    }
+
+    return score.home + " - " + score.away;
+  }
+
+  function getMatchKickoff(match) {
+    return (match && (match.kickoff || match.kickoffTime || match.date)) || "";
+  }
+
+  function formatMatchTime(kickoff) {
+    if (!kickoff) {
+      return "";
+    }
+
+    var date = new Date(kickoff);
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+
+    try {
+      return new Intl.DateTimeFormat("tr-TR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Europe/Istanbul"
+      }).format(date);
+    } catch (err) {
+      return "";
+    }
+  }
+
+  function matchTimeLabel(match) {
+    return formatMatchTime(getMatchKickoff(match)) || "Saat bilgisi bekleniyor";
+  }
+
+  function liveMinuteLabel(match) {
+    if (!isLiveMatch(match)) {
+      return "";
+    }
+
+    if (match && match.minute) {
+      return String(match.minute) + "'";
+    }
+
+    if (match && typeof match.time === "string" && /^\d+(\+\d+)?'$/.test(match.time.trim())) {
+      return match.time.trim();
+    }
+
+    return "";
+  }
+
+  function statusSlug(status) {
+    var normalized = String(status || "").toUpperCase();
+    if (["LIVE", "IN_PLAY", "1H", "2H", "ET", "P"].includes(normalized)) {
+      return "live";
+    }
+    if (["PAUSED", "HT", "HALFTIME"].includes(normalized)) {
+      return "live";
+    }
+    if (normalized === "FINISHED") {
+      return "finished";
+    }
+    if (normalized === "POSTPONED" || normalized === "CANCELLED") {
+      return "muted";
+    }
+    return "scheduled";
+  }
+
   function matchDetailHref(match) {
     if (match && match.analysisPage) {
       return "./" + String(match.analysisPage).replace(/^\.\//, "");
@@ -1434,6 +1566,8 @@
       LIVE: "Canlı",
       IN_PLAY: "Canlı",
       PAUSED: "Devre arası",
+      HALFTIME: "Devre arası",
+      HT: "Devre arası",
       FINISHED: "Bitti",
       POSTPONED: "Ertelendi",
       CANCELLED: "İptal"
@@ -1691,14 +1825,16 @@
     var finished = ["FINISHED", "FT", "AET", "PEN"].includes(rawStatus);
     var scoreHome = match.score && match.score.home !== null && match.score.home !== undefined ? match.score.home : "–";
     var scoreAway = match.score && match.score.away !== null && match.score.away !== undefined ? match.score.away : "–";
-    var statusLabel = live || finished ? statusTr(match.status || match.providerStatus) : (match.time || statusTr(match.status));
+    var statusLabel = live || finished ? statusTr(match.status || match.providerStatus) : matchTimeLabel(match);
+    var homeTeam = matchTeam(match, "home");
+    var awayTeam = matchTeam(match, "away");
 
     return (
       '<article class="home-score-card' + (live ? ' is-live' : '') + '" data-card="today-match" data-match="' + escapeHtml(match.id) + '">' +
       '<div class="home-score-card-head"><span>' + (live ? '<i class="live-pulse" aria-hidden="true"></i>' : '') + escapeHtml(match.league) + '</span><b>' + escapeHtml(statusLabel) + '</b></div>' +
       '<div class="home-score-teams">' +
-      '<div><strong>' + escapeHtml(match.homeTeam) + '</strong><b>' + escapeHtml(scoreHome) + '</b></div>' +
-      '<div><strong>' + escapeHtml(match.awayTeam) + '</strong><b>' + escapeHtml(scoreAway) + '</b></div>' +
+      '<div><span class="live-score-team-name-inline">' + teamLogoHtml(homeTeam) + '<strong>' + escapeHtml(getTeamName(homeTeam)) + '</strong></span><b>' + escapeHtml(scoreHome) + '</b></div>' +
+      '<div><span class="live-score-team-name-inline">' + teamLogoHtml(awayTeam) + '<strong>' + escapeHtml(getTeamName(awayTeam)) + '</strong></span><b>' + escapeHtml(scoreAway) + '</b></div>' +
       '</div>' +
       '<div class="home-score-card-foot"><span>' + escapeHtml(live ? "Maç akışı açık" : statusTr(match.status)) + '</span>' +
       '<a href="' + escapeHtml(matchDetailHref(match)) + '">' + (live ? "Canlı istatistik" : "Maç detayı") + '</a></div>' +
@@ -1711,14 +1847,16 @@
     var headlineValue = scoreText !== "-" ? scoreText : statusTr(match.status);
     var analysis = findAnalysisForMatch(analysesIndex, match);
     var prediction = analysis && analysis.prediction;
+    var homeTeam = matchTeam(match, "home");
+    var awayTeam = matchTeam(match, "away");
 
     return (
       '<article class="card match-card match-intelligence-card" data-card="today-match" data-match="' + escapeHtml(match.id) + '">' +
-      '<div class="card-head"><span class="card-kicker">' + escapeHtml(match.time) + " · " + escapeHtml(match.league) + " · " + escapeHtml(statusTr(match.status)) + '</span><strong class="big-value match-score-value">' + escapeHtml(headlineValue) + "</strong></div>" +
+      '<div class="card-head"><span class="card-kicker">' + escapeHtml(matchTimeLabel(match)) + " · " + escapeHtml(match.league) + " · " + escapeHtml(statusTr(match.status)) + '</span><strong class="big-value match-score-value">' + escapeHtml(headlineValue) + "</strong></div>" +
       "<h2>" + matchTitle(match) + "</h2>" +
       '<div class="match-teams">' +
-      '<div class="team-line"><span>' + escapeHtml(match.homeTeam) + "</span></div>" +
-      '<div class="team-line"><span>' + escapeHtml(match.awayTeam) + "</span></div>" +
+      '<div class="team-line"><span class="live-score-team-name-inline">' + teamLogoHtml(homeTeam) + escapeHtml(getTeamName(homeTeam)) + "</span></div>" +
+      '<div class="team-line"><span class="live-score-team-name-inline">' + teamLogoHtml(awayTeam) + escapeHtml(getTeamName(awayTeam)) + "</span></div>" +
       "</div>" +
       (analysis
         ? '<div class="tag-row">' +
@@ -1735,17 +1873,38 @@
 
   function renderLiveMatch(match) {
     var hasTempo = match.tempo !== undefined && match.tempo !== null && match.tempo !== "";
+    var homeTeam = matchTeam(match, "home");
+    var awayTeam = matchTeam(match, "away");
+    var statusLabel = statusTr(match.status);
+    var minuteLabel = liveMinuteLabel(match);
+
     return (
-      '<article class="card match-card" data-card="live-match" data-match="' + escapeHtml(match.id) + '">' +
-      '<div class="card-head"><span class="card-kicker"><i class="live-pulse" aria-hidden="true"></i> ' + escapeHtml(statusTr(match.status)) + " · " + escapeHtml(match.time) + " · " + escapeHtml(match.league) + '</span><strong class="big-value">' + escapeHtml(matchScoreText(match.score)) + "</strong></div>" +
-      "<h2>" + matchTitle(match) + "</h2>" +
+      '<article class="card match-card live-score-card" data-card="live-match" data-match="' + escapeHtml(match.id) + '">' +
+      '<div class="live-score-meta">' +
+      '<span class="live-score-league">' + escapeHtml(displayValue(match.league)) + '</span>' +
+      '<time class="live-score-time">' + escapeHtml(matchTimeLabel(match)) + '</time>' +
+      '<span class="live-score-status live-score-status-' + statusSlug(match.status) + '">' +
+      '<i class="live-pulse" aria-hidden="true"></i>' + escapeHtml(statusLabel) + (minuteLabel ? " · " + escapeHtml(minuteLabel) : "") +
+      '</span>' +
+      '</div>' +
+      '<div class="live-score-match">' +
+      '<div class="live-score-team live-score-team-home">' +
+      teamLogoHtml(homeTeam) +
+      '<span class="live-score-team-name">' + escapeHtml(getTeamName(homeTeam)) + '</span>' +
+      '</div>' +
+      '<div class="live-score-result"><strong>' + escapeHtml(matchScoreDisplay(match)) + '</strong></div>' +
+      '<div class="live-score-team live-score-team-away">' +
+      teamLogoHtml(awayTeam) +
+      '<span class="live-score-team-name">' + escapeHtml(getTeamName(awayTeam)) + '</span>' +
+      '</div>' +
+      '</div>' +
       "<p>" + escapeHtml(match.summary || "Maç skoru ve olay akışı canlı olarak takip ediliyor.") + "</p>" +
       (hasTempo ? barRowHtml("Tempo", match.tempo, match.tempo) : "") +
       tagsHtml(match.liveTags || match.tags) +
       '<div class="player-actions match-actions">' +
-      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Canlı istatistik ve analiz</a>' +
-      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.homeTeam })) + '">Ev sahibi radar</a>' +
-      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.awayTeam })) + '">Deplasman radar</a>' +
+      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Maç Detayı</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref(homeTeam)) + '">Ev sahibi radar</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref(awayTeam)) + '">Deplasman radar</a>' +
       "</div>" +
       "</article>"
     );
@@ -1943,12 +2102,14 @@
     var analysis = findAnalysisForMatch(analysesIndex, match);
     var prediction = analysis && analysis.prediction;
     var live = isLiveMatch(match);
-    var statusLabel = live ? statusTr(match.status) : (match.time || statusTr(match.status));
+    var statusLabel = live ? (statusTr(match.status) + " · " + matchTimeLabel(match)) : matchTimeLabel(match) + " · " + statusTr(match.status);
+    var homeTeam = matchTeam(match, "home");
+    var awayTeam = matchTeam(match, "away");
 
     return '<article class="match-intelligence-card" data-card="today-radar-match" data-match="' + escapeHtml(match.id) + '">' +
       '<div class="card-head"><span class="card-kicker">' + escapeHtml(match.league) + '</span><span>' +
       (live ? '<i class="live-pulse" aria-hidden="true"></i> ' : "") + escapeHtml(statusLabel) + "</span></div>" +
-      "<h3>" + escapeHtml(match.homeTeam) + " - " + escapeHtml(match.awayTeam) + "</h3>" +
+      '<h3 class="live-score-team-name-inline">' + teamLogoHtml(homeTeam) + escapeHtml(getTeamName(homeTeam)) + " - " + teamLogoHtml(awayTeam) + escapeHtml(getTeamName(awayTeam)) + "</h3>" +
       (analysis
         ? '<div class="tag-row"><span class="tag soft">' + simpleBalanceLabel(prediction, match.homeTeam, match.awayTeam) + "</span>" +
           goalPotentialBadgeHtml(prediction && prediction.goalPotential) + "</div>"
@@ -5469,10 +5630,13 @@
 
     updateMatchDetailMeta(detail);
 
+    var detailHomeTeam = matchTeam(detail, "home");
+    var detailAwayTeam = matchTeam(detail, "away");
+
     return (
       '<article class="match-detail-card card" data-card="match-detail" data-match="' + escapeHtml(detail.id) + '">' +
-      '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(displayValue(detail.league)) + " · " + escapeHtml(statusTr(detail.status)) + "</span><h2>" + matchTitle(detail) + '</h2></div><strong class="big-value">' + escapeHtml(matchScoreText(detail.score)) + "</strong></div>" +
-      '<div class="metric-grid compact"><span>Saat <b>' + escapeHtml(displayValue(detail.time || detail.kickoff)) + '</b></span><span>Durum <b>' + escapeHtml(statusTr(detail.status)) + '</b></span><span>Model <b>' + escapeHtml(displayValue(detail.prediction && (detail.prediction.label || detail.prediction.advice))) + "</b></span></div>" +
+      '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(displayValue(detail.league)) + " · " + escapeHtml(statusTr(detail.status)) + "</span><h2 class=\"live-score-team-name-inline\">" + teamLogoHtml(detailHomeTeam) + escapeHtml(getTeamName(detailHomeTeam)) + " - " + teamLogoHtml(detailAwayTeam) + escapeHtml(getTeamName(detailAwayTeam)) + '</h2></div><strong class="big-value">' + escapeHtml(matchScoreText(detail.score)) + "</strong></div>" +
+      '<div class="metric-grid compact"><span>Saat <b>' + escapeHtml(matchTimeLabel(detail)) + '</b></span><span>Durum <b>' + escapeHtml(statusTr(detail.status)) + '</b></span><span>Model <b>' + escapeHtml(displayValue(detail.prediction && (detail.prediction.label || detail.prediction.advice))) + "</b></span></div>" +
       '<p class="match-detail-lead">' + escapeHtml(matchDetailInsight(detail)) + '</p>' +
       matchRadarSnapshotHtml(detail) +
       matchSignalCardsHtml(detail) +
@@ -5677,6 +5841,105 @@
     return '<a class="detail-link ghost" href="' + escapeHtml(matchDetailHref(match)) + '">Derin Analiz</a>';
   }
 
+  function deepAnalysisListHtml(items) {
+    if (!Array.isArray(items) || !items.length) {
+      return "";
+    }
+    return "<ul>" + items.map(function (item) {
+      return "<li>" + escapeHtml(item) + "</li>";
+    }).join("") + "</ul>";
+  }
+
+  function deepAnalysisKeyPlayersHtml(players) {
+    if (!Array.isArray(players) || !players.length) {
+      return '<p class="muted-copy">Doğrulanmış oyuncu bilgisi bekleniyor.</p>';
+    }
+    return "<ul>" + players.map(function (player) {
+      return "<li><strong>" + escapeHtml(player.name) + "</strong><span>" + escapeHtml(player.note || "") + "</span></li>";
+    }).join("") + "</ul>";
+  }
+
+  function deepAnalysisScenarioHtml(label, text) {
+    if (!text) {
+      return "";
+    }
+    return '<article class="match-intelligence-card"><span class="card-kicker">' + escapeHtml(label) + "</span><p>" + escapeHtml(text) + "</p></article>";
+  }
+
+  function deepAnalysisSourcesHtml(sources) {
+    if (!Array.isArray(sources) || !sources.length) {
+      return "";
+    }
+    return '<ul class="deep-analysis-source-list">' + sources.map(function (source) {
+      return "<li><strong>" + escapeHtml(source.publisher) + "</strong> — " + escapeHtml(source.type) +
+        "<p>" + escapeHtml(source.usedFor) + "</p>" +
+        '<a href="' + escapeHtml(source.url) + '" target="_blank" rel="noopener noreferrer">Kaynağa git</a>' +
+        (source.publishedAt ? '<span class="deep-analysis-source-date">Yayın: ' + escapeHtml(source.publishedAt) + "</span>" : "") +
+        "</li>";
+    }).join("") + "</ul>";
+  }
+
+  /**
+   * Editorial narrative layer (short answer, favorite reasoning, threats,
+   * risks, scenarios, sources) authored by hand from cited research and
+   * stored on the matches.json record as `deepAnalysis` — deliberately kept
+   * separate from the generated match-analyses.json prediction/coverage so a
+   * routine model regeneration can never silently overwrite it.
+   */
+  function deepAnalysisEditorialHtml(match) {
+    var deep = match && match.deepAnalysis;
+    if (!deep) {
+      return "";
+    }
+
+    var home = getTeamName(matchTeam(match, "home"));
+    var away = getTeamName(matchTeam(match, "away"));
+    var keyPlayers = deep.keyPlayers || {};
+    var scenarios = deep.scenarios || {};
+
+    return (
+      '<article class="match-intelligence-card deep-analysis-editorial" data-card="deep-analysis">' +
+      '<span class="card-kicker">Maç Öncesi Derin Analiz</span>' +
+      '<p class="deep-analysis-short-answer">' + escapeHtml(deep.shortAnswer || "") + "</p>" +
+
+      "<h3>" + escapeHtml(home) + " neden favori?</h3>" +
+      deepAnalysisListHtml(deep.favoriteReasoning) +
+
+      "<h3>" + escapeHtml(away) + " tehditleri</h3>" +
+      deepAnalysisListHtml(deep.awayThreats) +
+
+      '<div class="grid two">' +
+      "<div><h3>" + escapeHtml(home) + " riskleri</h3>" + deepAnalysisListHtml(deep.homeRisks) + "</div>" +
+      "<div><h3>" + escapeHtml(away) + " riskleri</h3>" + deepAnalysisListHtml(deep.awayRisks) + "</div>" +
+      "</div>" +
+
+      "<h3>Kilit oyuncular</h3>" +
+      '<div class="grid two">' +
+      "<div><span class=\"card-kicker\">" + escapeHtml(home) + "</span>" + deepAnalysisKeyPlayersHtml(keyPlayers.home) + "</div>" +
+      "<div><span class=\"card-kicker\">" + escapeHtml(away) + "</span>" + deepAnalysisKeyPlayersHtml(keyPlayers.away) + "</div>" +
+      "</div>" +
+
+      "<h3>Kilit eşleşmeler</h3>" +
+      deepAnalysisListHtml(deep.keyMatchups) +
+
+      "<h3>Senaryo analizi</h3>" +
+      '<div class="grid two">' +
+      deepAnalysisScenarioHtml(home + " maçı nasıl kazanır?", scenarios.galatasarayWin || scenarios.homeWin) +
+      deepAnalysisScenarioHtml(away + " maçı nasıl kazanabilir?", scenarios.monzaWin || scenarios.awayWin) +
+      deepAnalysisScenarioHtml("Maç nasıl dengede kalır?", scenarios.balanced) +
+      deepAnalysisScenarioHtml("Hazırlık maçı rotasyonu sonucu nasıl etkiler?", scenarios.rotationImpact) +
+      "</div>" +
+
+      "<h3>Veri güveni</h3>" +
+      "<p>" + escapeHtml(deep.dataConfidenceNote || "") + "</p>" +
+
+      "<h3>Kaynaklar ve veri notu</h3>" +
+      deepAnalysisSourcesHtml(deep.sources) +
+      (deep.lastVerifiedAt ? '<p class="muted-copy">Son doğrulama: ' + escapeHtml(formatUpdatedAt(deep.lastVerifiedAt)) + "</p>" : "") +
+      "</article>"
+    );
+  }
+
   function probabilityBarHtml(prediction) {
     var probabilities = (prediction && prediction.probabilities) || { homeWin: 0, draw: 0, awayWin: 0 };
     var unavailable = !prediction || prediction.predictionStatus === "unavailable";
@@ -5878,6 +6141,77 @@
       });
   }
 
+  /**
+   * Dedicated bands for the prediction's own dataConfidence (FAZ2 spec:
+   * <25 insufficient, 25-49 low, 50-74 medium, 75+ high) — kept separate
+   * from the generic confidenceLevel() used for coverage/lineup badges
+   * elsewhere, so tightening this gate can't shift unrelated UI.
+   */
+  function predictionConfidenceBand(value) {
+    var number = Number(value);
+    if (!Number.isFinite(number) || number < 25) return "insufficient";
+    if (number < 50) return "low";
+    if (number < 75) return "medium";
+    return "high";
+  }
+
+  function predictionConfidenceLabel(band) {
+    var labels = {
+      insufficient: "Veri güveni: Çok düşük",
+      low: "Düşük güven",
+      medium: "Orta güven",
+      high: "Yüksek güven"
+    };
+    return labels[band] || labels.insufficient;
+  }
+
+  function weakDataSideNote(record, home, away) {
+    var homeStatus = record.homeContext && record.homeContext.dataStatus;
+    var awayStatus = record.awayContext && record.awayContext.dataStatus;
+    var homeWeak = homeStatus === "insufficient" || homeStatus === "limited";
+    var awayWeak = awayStatus === "insufficient" || awayStatus === "limited";
+
+    if (awayWeak && !homeWeak) {
+      return escapeHtml(away) + " için yeterli yapılandırılmış kadro ve performans verisi bulunmadığından olasılık modeli taraflar arasında güvenilir bir ayrım oluşturamıyor.";
+    }
+    if (homeWeak && !awayWeak) {
+      return escapeHtml(home) + " için yeterli yapılandırılmış kadro ve performans verisi bulunmadığından olasılık modeli taraflar arasında güvenilir bir ayrım oluşturamıyor.";
+    }
+    if (homeWeak && awayWeak) {
+      return "Her iki takım için de yeterli yapılandırılmış kadro ve performans verisi bulunmadığından olasılık modeli taraflar arasında güvenilir bir ayrım oluşturamıyor.";
+    }
+    return "Model, mevcut veriyle taraflar arasında güvenilir bir ayrım oluşturamıyor.";
+  }
+
+  function earlySnapshotForMatch(match) {
+    var deep = match && match.deepAnalysis;
+    var snapshots = deep && Array.isArray(deep.preMatchSnapshots) ? deep.preMatchSnapshots : [];
+    return snapshots.find(function (snap) { return snap.snapshotType === "early-pre-match"; }) || snapshots[0] || null;
+  }
+
+  /**
+   * A qualitative research verdict ("X kağıt üzerinde favori") is only ever
+   * surfaced in the headline when the numeric model itself is too thin to
+   * lead — this keeps the two layers visually distinct instead of letting a
+   * researched opinion masquerade as the model's own output.
+   */
+  function heroHeadlineLabel(record, match, home, away) {
+    var band = predictionConfidenceBand(record.dataConfidence);
+    var snapshot = earlySnapshotForMatch(match);
+    var verdict = snapshot && snapshot.researchVerdict;
+
+    if (band === "insufficient" && verdict) {
+      var normalizedVerdict = normalizeSearchText(verdict);
+      var favoredTeam = normalizedVerdict.indexOf(normalizeSearchText(home)) !== -1 ? home
+        : normalizedVerdict.indexOf(normalizeSearchText(away)) !== -1 ? away : null;
+      if (favoredTeam) {
+        return escapeHtml(favoredTeam) + " kağıt üzerinde favori · Nicel veri sınırlı";
+      }
+    }
+
+    return simpleBalanceLabel(record.prediction, home, away);
+  }
+
   function matchAnalysisHeroHtml(record, match) {
     var home = record.homeContext.teamName;
     var away = record.awayContext.teamName;
@@ -5890,7 +6224,7 @@
       '<div class="card-head"><span class="card-kicker">' + escapeHtml(record.competition) + " · " + escapeHtml(formatUpdatedAt(record.kickoff)) +
       '</span><strong class="big-value">' + escapeHtml(scoreOrStatus) + "</strong></div>" +
       "<h2>" + escapeHtml(home) + " - " + escapeHtml(away) + "</h2>" +
-      '<div class="tag-row"><span class="tag soft">' + simpleBalanceLabel(prediction, home, away) + "</span>" +
+      '<div class="tag-row"><span class="tag soft">' + heroHeadlineLabel(record, match, home, away) + "</span>" +
       goalPotentialBadgeHtml(prediction.goalPotential) + "</div>" +
       '<div class="player-actions match-actions">' +
       '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: home })) + '">' + escapeHtml(home) + " takım detayı</a>" +
@@ -5898,19 +6232,60 @@
       "</div></article>";
   }
 
-  function matchAnalysisTabsHtml(record) {
+  function researchVerdictCardHtml(match) {
+    var snapshot = earlySnapshotForMatch(match);
+    var verdict = snapshot && snapshot.researchVerdict;
+    if (!verdict) {
+      return "";
+    }
+    return '<div class="match-intelligence-card research-verdict-card">' +
+      '<span class="card-kicker">Araştırma değerlendirmesi</span>' +
+      "<p>" + escapeHtml(verdict) + "</p>" +
+      "</div>";
+  }
+
+  function quantitativeModelCardHtml(record, home, away) {
+    var prediction = record.prediction;
+    var band = predictionConfidenceBand(record.dataConfidence);
+    var body;
+
+    if (band === "insufficient") {
+      body =
+        '<p class="quantitative-model-headline">Nicel tahmin için veri kapsamı yetersiz</p>' +
+        "<p>" + weakDataSideNote(record, home, away) + "</p>" +
+        '<details class="quantitative-model-detail"><summary>Sayısal olasılıkları göster</summary>' +
+        probabilityBarHtml(prediction) +
+        "</details>";
+    } else {
+      body = probabilityBarHtml(prediction) + "<p>" + escapeHtml(prediction.summary || "") + "</p>";
+    }
+
+    return '<div class="match-intelligence-card quantitative-model-card" data-confidence-band="' + escapeHtml(band) + '">' +
+      '<span class="card-kicker">Sayısal model</span>' +
+      body +
+      '<div class="tag-row">' + goalPotentialBadgeHtml(prediction.goalPotential) + upsetRiskBadgeHtml(prediction.upsetRisk) + "</div>" +
+      "</div>";
+  }
+
+  function confidenceWarningCardHtml(record) {
+    var band = predictionConfidenceBand(record.dataConfidence);
+    var value = Math.round(Number(record.dataConfidence) || 0);
+    return '<div class="match-intelligence-card confidence-warning-card" data-confidence-band="' + escapeHtml(band) + '">' +
+      '<span class="card-kicker">Veri güveni</span>' +
+      "<p>" + escapeHtml(predictionConfidenceLabel(band)) + " — " + value + "/100</p>" +
+      "</div>";
+  }
+
+  function matchAnalysisTabsHtml(record, match) {
     var home = record.homeContext.teamName;
     var away = record.awayContext.teamName;
     var prediction = record.prediction;
 
-    var summaryPanel = '<div class="match-intelligence-card">' +
-      '<span class="card-kicker">FutbolRadar okuması</span>' +
-      "<p>" + escapeHtml((record.matchup && record.matchup.summary) || "") + "</p>" +
-      "<p>" + escapeHtml(prediction.summary || "") + "</p>" +
-      probabilityBarHtml(prediction) +
-      '<div class="tag-row">' + goalPotentialBadgeHtml(prediction.goalPotential) + upsetRiskBadgeHtml(prediction.upsetRisk) + "</div>" +
-      predictionNoteHtml() +
-      "</div>";
+    var summaryPanel =
+      researchVerdictCardHtml(match) +
+      quantitativeModelCardHtml(record, home, away) +
+      confidenceWarningCardHtml(record) +
+      predictionNoteHtml();
 
     var deepPanel = '<div class="grid">' +
       '<div class="match-intelligence-card">' +
@@ -5994,7 +6369,7 @@
         return (item.fixtureId || item.id || item.providerId) === fixtureId;
       }) || null;
 
-      if (!record) {
+      if (!record && !(match && match.deepAnalysis)) {
         if (staticFallback) {
           target.innerHTML = staticFallback;
           target.dataset.state = "fallback";
@@ -6004,8 +6379,12 @@
         return;
       }
 
-      setContent(target, matchAnalysisHeroHtml(record, match) + matchAnalysisTabsHtml(record));
-      initAnalysisTabs(target);
+      var editorialHtml = deepAnalysisEditorialHtml(match);
+      var recordHtml = record ? matchAnalysisHeroHtml(record, match) + matchAnalysisTabsHtml(record, match) : "";
+      setContent(target, recordHtml + editorialHtml);
+      if (record) {
+        initAnalysisTabs(target);
+      }
     }).catch(function () {
       if (staticFallback) {
         target.innerHTML = staticFallback;

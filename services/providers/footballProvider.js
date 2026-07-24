@@ -131,6 +131,10 @@ function teamShort(team) {
   return team && (team.tla || team.shortName || team.name || "").slice(0, 3).toUpperCase();
 }
 
+function teamLogo(team) {
+  return (team && (team.crest || team.logo)) || "";
+}
+
 function scoreObject(score) {
   const fullTime = score && score.fullTime ? score.fullTime : {};
   return {
@@ -178,9 +182,11 @@ function normalizeLiveMatch(item) {
     id: String(item.id || item.fixtureId || `${teamName(homeTeam)}-${teamName(awayTeam)}-${kickoff}`),
     league: item.competition && (item.competition.name || item.competition.code) || item.league || "",
     kickoff,
-    time: kickoff ? new Date(kickoff).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) : "",
+    time: kickoff ? new Date(kickoff).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }) : "",
     homeTeam: teamName(homeTeam) || item.home || "",
     awayTeam: teamName(awayTeam) || item.away || "",
+    homeTeamLogo: teamLogo(homeTeam),
+    awayTeamLogo: teamLogo(awayTeam),
     homeShort: teamShort(homeTeam),
     awayShort: teamShort(awayTeam),
     status: item.status || "SCHEDULED",
