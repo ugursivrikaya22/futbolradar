@@ -8,7 +8,9 @@ const {
   findFixtureTeam,
   resolveDefaultRound,
   parseDateRange,
-  filterWeeksByTeam
+  filterWeeksByTeam,
+  groupMatchesIntoWeeks,
+  formatDateRangeLabel
 } = require("../services/superLigFixtureService.js");
 
 const sampleFixtures = {
@@ -79,5 +81,27 @@ assert.equal(onlyGalatasaray[0].matches.length, 2, "Galatasaray'ın oynadığı 
 assert.equal(onlyGalatasaray[1].matches.length, 0, "Galatasaray oynamayan haftada maç kalmamalı");
 const allTeams = filterWeeksByTeam(weeks, "");
 assert.equal(allTeams[0].matches.length, 2, "Boş takım filtresi 'tüm takımlar' anlamına gelmeli");
+
+// --- groupMatchesIntoWeeks (full-season live-provider fetch) ---
+const liveMatches = [];
+for (let round = 1; round <= 34; round += 1) {
+  liveMatches.push({
+    round,
+    homeTeam: "Galatasaray",
+    awayTeam: "Fenerbahçe",
+    kickoff: `2026-08-${String(10 + round).padStart(2, "0")}T19:00:00+03:00`,
+    status: "NS",
+    score: null,
+    venue: "Rams Park"
+  });
+}
+const liveWeeks = groupMatchesIntoWeeks(liveMatches);
+assert.equal(liveWeeks.length, 34, "Tüm sezonun 34 haftası da gruplanmalı, hiçbir hafta atlanmamalı veya kesilmemeli (limit uygulanmamalı)");
+assert.deepEqual(liveWeeks.map((week) => week.round), Array.from({ length: 34 }, (_, i) => i + 1), "Haftalar sıralı ve eksiksiz olmalı");
+assert.equal(groupMatchesIntoWeeks([{ homeTeam: "A", awayTeam: "B", kickoff: null }]).length, 0, "Hafta numarası bilinmeyen maç uydurma bir haftaya eklenmemeli");
+
+// --- formatDateRangeLabel ---
+assert.equal(formatDateRangeLabel(["2026-08-15T19:00:00+03:00"], "fallback"), "15 Ağustos 2026", "Tek günlük hafta doğru etiketlenmeli");
+assert.equal(formatDateRangeLabel([], "Tarih bekleniyor"), "Tarih bekleniyor", "Kickoff yoksa varsayılan etiket kullanılmalı");
 
 console.log("Süper Lig fixture service tests passed");

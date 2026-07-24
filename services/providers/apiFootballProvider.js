@@ -252,6 +252,13 @@ function normalizeStatus(status) {
   return "SCHEDULED";
 }
 
+function roundNumber(league) {
+  // API-Football rounds read like "Regular Season - 3"; only the trailing
+  // number is ever used (grouping matches into weeks), never the label text.
+  const match = String((league && league.round) || "").match(/(\d+)\s*$/);
+  return match ? Number(match[1]) : null;
+}
+
 function normalizeFixture(item) {
   const fixture = item.fixture || {};
   const league = item.league || {};
@@ -265,6 +272,8 @@ function normalizeFixture(item) {
     id: String(fixture.id || `${teamName(homeTeam)}-${teamName(awayTeam)}-${kickoff}`),
     providerId: fixture.id ? String(fixture.id) : "",
     league: league.name || "",
+    round: roundNumber(league),
+    venue: (fixture.venue && fixture.venue.name) || null,
     kickoff,
     time: kickoff ? new Date(kickoff).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }) : "",
     homeTeam: teamName(homeTeam),
@@ -482,6 +491,21 @@ async function getFixtures(query) {
 
 async function getMatches(query) {
   return getFixtures(query);
+}
+
+/**
+ * Full-season fixture list for one league (e.g. every Süper Lig matchday),
+ * not just "today". API-Football's /fixtures endpoint returns the whole
+ * season in a single unpaginated response when queried by league+season —
+ * there is no page/limit parameter to raise here, and no client-side
+ * slicing is applied to the result.
+ */
+async function getSeasonFixtures(query) {
+  const league = ensureLeagueForData(query);
+  const season = resolveSeason(query && query.season);
+  const payload = await providerFetch("/fixtures", { league, season });
+  const matches = responseItems(payload).map(normalizeFixture);
+  return stampProviderData(matches, "season-fixtures", 60 * 60 * 1000);
 }
 
 async function getStandings(query) {
@@ -825,6 +849,7 @@ module.exports = {
   classifyPayloadError,
   getFixtures,
   getMatches,
+  getSeasonFixtures,
   getStandings,
   getTeams,
   getSquad,

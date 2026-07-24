@@ -2,6 +2,7 @@ const { getProvider, mockProvider } = require("../services/providers");
 const { mergeProviderPlayers } = require("../services/playerService");
 const { enrichPlayerRating } = require("../services/ratingService");
 const { MODEL_VERSION: MATCH_PREDICTION_MODEL_VERSION } = require("../services/matchPredictionService");
+const { getFixtureWeeks, groupMatchesIntoWeeks } = require("../services/superLigFixtureService");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -137,6 +138,39 @@ async function handlePlayerRankings(req, res, query) {
   return sendSuccess(res, ranked, source);
 }
 
+/**
+ * Full Süper Lig season, grouped into weeks. Always starts from the
+ * curated data/super-lig-fixtures.json (season metadata, team pool,
+ * verified venues) and only ever swaps in `rounds` from a live provider —
+ * every other editorial field is left untouched. No limit/page parameter
+ * is applied; a provider fetch failure or empty result simply keeps the
+ * curated rounds instead of guessing.
+ */
+async function handleSuperLigFixtures(req, res, query) {
+  const fixturesData = require("../data/super-lig-fixtures.json");
+  const provider = getProvider("super-lig-fixtures");
+  let rounds = getFixtureWeeks(fixturesData);
+  let source = mockProvider.source;
+
+  try {
+    if (provider !== mockProvider && typeof provider.getSeasonFixtures === "function") {
+      const seasonMatches = await withTimeout(provider.getSeasonFixtures(query), DEFAULT_TIMEOUT_MS);
+      if (Array.isArray(seasonMatches) && seasonMatches.length) {
+        const liveRounds = groupMatchesIntoWeeks(seasonMatches);
+        if (liveRounds.length) {
+          rounds = liveRounds;
+          source = provider.source;
+        }
+      }
+    }
+  } catch (error) {
+    rounds = getFixtureWeeks(fixturesData);
+    source = mockProvider.source;
+  }
+
+  return sendSuccess(res, { ...fixturesData, rounds }, source);
+}
+
 function matchAnalysisResponse(res, statusCode, payload) {
   return sendJson(res, statusCode, payload);
 }
@@ -230,6 +264,10 @@ module.exports = async function handler(req, res) {
 
   if (route === "match-analysis") {
     return handleMatchAnalysis(req, res, query);
+  }
+
+  if (route === "super-lig-fixtures") {
+    return handleSuperLigFixtures(req, res, query);
   }
 
   return sendError(res, 404, "API endpoint bulunamadi.", "API_ROUTE_NOT_FOUND");

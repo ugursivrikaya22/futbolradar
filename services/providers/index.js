@@ -2,7 +2,7 @@ const footballProvider = require("./footballProvider");
 const apiFootballProvider = require("./apiFootballProvider");
 const mockProvider = require("./mockProvider");
 const { hasProviderConfig } = require("../../api/_utils");
-const LIVE_PROVIDER_RESOURCES = new Set(["matches", "standings"]);
+const LIVE_PROVIDER_RESOURCES = new Set(["matches", "standings", "super-lig-fixtures"]);
 
 function hasLiveProviderConfig() {
   return hasProviderConfig();
@@ -30,6 +30,10 @@ function providerCandidates(resource) {
 
   if (resource === "match-detail") {
     return [matchProvider, primary, "api-football", "mock"];
+  }
+
+  if (resource === "super-lig-fixtures") {
+    return [matchProvider, primary, "api-football", "football-data", "mock"];
   }
 
   if (resource === "players") {
