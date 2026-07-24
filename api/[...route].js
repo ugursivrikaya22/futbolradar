@@ -151,24 +151,34 @@ async function handleSuperLigFixtures(req, res, query) {
   const provider = getProvider("super-lig-fixtures");
   let rounds = getFixtureWeeks(fixturesData);
   let source = mockProvider.source;
+  // Debug-only: never guessed data, just a trace of what the live attempt did
+  // so a silent provider failure (bad league id, plan restriction, timeout)
+  // is diagnosable from the API response instead of vanishing into a catch.
+  let providerDebug = { attempted: false };
 
   try {
     if (provider !== mockProvider && typeof provider.getSeasonFixtures === "function") {
+      providerDebug = { attempted: true, provider: provider.name };
       const seasonMatches = await withTimeout(provider.getSeasonFixtures(query), DEFAULT_TIMEOUT_MS);
+      providerDebug.matchCount = Array.isArray(seasonMatches) ? seasonMatches.length : 0;
       if (Array.isArray(seasonMatches) && seasonMatches.length) {
         const liveRounds = groupMatchesIntoWeeks(seasonMatches);
+        providerDebug.roundCount = liveRounds.length;
         if (liveRounds.length) {
           rounds = liveRounds;
           source = provider.source;
         }
       }
+    } else {
+      providerDebug = { attempted: false, provider: provider.name };
     }
   } catch (error) {
     rounds = getFixtureWeeks(fixturesData);
     source = mockProvider.source;
+    providerDebug.error = { code: error.code || "UNKNOWN", message: error.message || String(error) };
   }
 
-  return sendSuccess(res, { ...fixturesData, rounds }, source);
+  return sendSuccess(res, { ...fixturesData, rounds, providerDebug }, source);
 }
 
 function matchAnalysisResponse(res, statusCode, payload) {
