@@ -1,5 +1,9 @@
 const {
   APIFOOTBALL_API_KEY_ENV_NAMES,
+  APIFOOTBALL_LEAGUE_ID_ENV_NAMES,
+  APIFOOTBALL_BASE_URL_ENV_NAMES,
+  APIFOOTBALL_SEASON_ENV_NAMES,
+  APIFOOTBALL_COUNTRY_ENV_NAMES,
   DEFAULT_TIMEOUT_MS,
   firstPresentEnv,
   normalizeText,
@@ -22,11 +26,11 @@ class ProviderError extends Error {
 function getConfig() {
   return {
     provider: process.env.FOOTBALL_PRIMARY_PROVIDER || "api-football",
-    baseUrl: process.env.APIFOOTBALL_API_BASE_URL || DEFAULT_BASE_URL,
+    baseUrl: firstPresentEnv(APIFOOTBALL_BASE_URL_ENV_NAMES) || DEFAULT_BASE_URL,
     apiKey: firstPresentEnv(APIFOOTBALL_API_KEY_ENV_NAMES),
-    leagueId: process.env.APIFOOTBALL_LEAGUE_ID || "",
-    season: process.env.APIFOOTBALL_SEASON || "2026",
-    country: process.env.APIFOOTBALL_COUNTRY || "Turkey"
+    leagueId: firstPresentEnv(APIFOOTBALL_LEAGUE_ID_ENV_NAMES),
+    season: firstPresentEnv(APIFOOTBALL_SEASON_ENV_NAMES) || "2026",
+    country: firstPresentEnv(APIFOOTBALL_COUNTRY_ENV_NAMES) || "Turkey"
   };
 }
 
