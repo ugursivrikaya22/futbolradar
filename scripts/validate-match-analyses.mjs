@@ -8,7 +8,8 @@ const { normalizeText } = require("../services/matchRadarService.js");
 
 const VERCEL_HOBBY_FUNCTION_LIMIT = 12;
 const SUSPICIOUS_KEYS = ["xg", "xa", "odds", "bettingodds", "marketodds", "bahisorani"];
-const SECRET_PATTERNS = [/FOOTBALL_API_KEY/i, /FOOTBALL_DATA_API_KEY/i, /X-Auth-Token/i, /"apiKey"/i, /Bearer\s+[A-Za-z0-9._-]{10,}/];
+const SECRET_PATTERNS = [/FOOTBALL_API_KEY/i, /FOOTBALL_DATA_API_KEY/i, /APIFOOTBALL_API_KEY/i, /X-Auth-Token/i, /"apiKey"/i, /Bearer\s+[A-Za-z0-9._-]{10,}/];
+const VALID_COMPETITION_TYPES = new Set(["league", "cup", "europe", "friendly"]);
 const INTERNAL_ERROR_KEYS = ["stack", "errno", "stacktrace", "provider_error_raw"];
 
 const failures = [];
@@ -170,6 +171,39 @@ function checkSlugLinkable(record) {
   expect(/^[a-z0-9-]+$/.test(record.slug || ""), `${record.fixtureId}: slug "${record.slug}" is not URL-safe for match detail links`);
 }
 
+function checkCompetitionClassification(record) {
+  if (record.competitionType === undefined) return;
+  expect(VALID_COMPETITION_TYPES.has(record.competitionType), `${record.fixtureId}: invalid competitionType "${record.competitionType}"`);
+  if (record.competitionType === "friendly") {
+    expect(record.includeInLeagueForm === false, `${record.fixtureId}: a friendly must never have includeInLeagueForm=true`);
+    expect(record.isOfficialCompetition === false, `${record.fixtureId}: a friendly must not be flagged as an official competition`);
+  }
+}
+
+function checkOfficialLineupIntegrity(record) {
+  const hasOfficial = record.officialLineupStatus === "available";
+  const officialHome = record.officialLineups && record.officialLineups.home;
+  const officialAway = record.officialLineups && record.officialLineups.away;
+
+  if (!hasOfficial) {
+    expect(!officialHome && !officialAway, `${record.fixtureId}: officialLineups populated without officialLineupStatus="available"`);
+    expect(!record.lineupAccuracy, `${record.fixtureId}: lineupAccuracy must not be computed before an official lineup exists`);
+  }
+
+  // Official lineup presence must never wipe the probable-lineup snapshot.
+  if (hasOfficial) {
+    const probableHome = record.probableLineups && record.probableLineups.home;
+    const probableAway = record.probableLineups && record.probableLineups.away;
+    expect(Boolean(probableHome) && Boolean(probableAway), `${record.fixtureId}: probable lineups must survive an official lineup arriving`);
+  }
+}
+
+function checkCoverageConfidenceAlignment(record) {
+  if (!record.coverage) return;
+  const overconfident = record.analysisStatus === "complete" && record.coverage.overallCoverage < 55;
+  expect(!overconfident, `${record.fixtureId}: analysisStatus="complete" but coverage.overallCoverage is only ${record.coverage.overallCoverage} (low coverage must not present as complete)`);
+}
+
 function checkPublicSync() {
   const rootPath = path.join(root, "data", "match-analyses.json");
   const publicPath = path.join(root, "public", "data", "match-analyses.json");
@@ -201,6 +235,9 @@ for (const record of analyses) {
   checkNoFabricatedMarketData(record);
   checkNoSecretsOrInternalErrors(record);
   checkSlugLinkable(record);
+  checkCompetitionClassification(record);
+  checkOfficialLineupIntegrity(record);
+  checkCoverageConfidenceAlignment(record);
 }
 checkPublicSync();
 checkApiFunctionLimit();

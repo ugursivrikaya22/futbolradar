@@ -1,19 +1,36 @@
 name: Match Analysis Automation
 
-# This is the first GitHub Actions workflow in this repository — there was
-# no pre-existing data-update automation to attach to (data/matches.json is
-# hand-curated, and no fixture-sync script exists). Scope is deliberately
-# narrow: regenerate data/match-analyses.json from whatever is already
-# checked in, validate it, build, run QA, and commit only if something
-# actually changed. No external football-data provider is called here, so
-# there is no API polling or rate-limit concern to manage.
+# The only GitHub Actions workflow in this repository — there was no
+# pre-existing data-update automation to attach to (data/matches.json is
+# hand-curated, and no live fixture-sync script exists yet). Two jobs:
+#
+# 1. update-match-analyses: the full pipeline, twice a day. Safe order —
+#    league/team config -> squad sync -> player canonical merge -> player
+#    validation -> match analysis generation -> match analysis validation ->
+#    build (static pages/sitemap/public sync) -> QA -> tests -> commit only
+#    if something changed. squad/player sync steps no-op cleanly today
+#    because no APIFOOTBALL_API_KEY is configured — they activate
+#    automatically once real credentials are added as a secret.
+#
+# 2. lineup-refresh: a separate, lighter, more frequent job. It only calls
+#    the narrow refresh-official-lineups.mjs script, which itself limits
+#    scope to fixtures inside a 180-minute pre-kickoff window (capped at 20
+#    per run) — running it often is safe and not "aggressive polling"
+#    because the script is the one deciding whether there is anything to do.
+#
+# Every step in both jobs is a real gate: a failed step stops the job before
+# the commit step ever runs, so a bad sync/validation can never publish
+# partial data or overwrite good data with nothing.
 
 on:
   schedule:
-    # 08:00 Europe/Istanbul - morning fixture/analysis refresh.
+    # 08:00 Europe/Istanbul - morning fixture/squad/analysis refresh.
     - cron: "0 5 * * *"
     # 16:00 Europe/Istanbul - a few hours ahead of typical evening kickoffs.
     - cron: "0 13 * * *"
+    # Lineup refresh: every 30 minutes. The script itself decides whether
+    # any fixture is actually inside its refresh window before doing work.
+    - cron: "*/30 * * * *"
   workflow_dispatch: {}
 
 permissions:
@@ -25,6 +42,7 @@ concurrency:
 
 jobs:
   update-match-analyses:
+    if: github.event.schedule != '*/30 * * * *'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,22 +53,35 @@ jobs:
         with:
           node-version: 20
 
+      - name: Sync Süper Lig teams and squads (no-ops without a live provider key)
+        run: node scripts/sync-super-lig-squads.mjs --apply
+
+      - name: Merge synced squads into canonical player data
+        run: node scripts/sync-canonical-players.mjs --apply
+
       - name: Validate team/player data
         run: |
           node scripts/validate-player-data.mjs
           node scripts/validate-transfer-data.mjs
+          node scripts/validate-football-coverage.mjs
 
       - name: Generate upcoming match analyses
         run: node scripts/generate-match-analyses.mjs --days=3 --apply
 
+      - name: Refresh official lineups for fixtures inside the pre-kickoff window
+        run: node scripts/refresh-official-lineups.mjs --apply
+
       - name: Validate match analyses
         run: node scripts/validate-match-analyses.mjs
 
-      - name: Build static site (pages, sync, public mirrors)
+      - name: Build static site (pages, sitemap, public mirrors)
         run: npm run build
 
       - name: QA
         run: npm run qa
+
+      - name: Tests
+        run: npm test
 
       - name: Commit changes if any
         run: |
@@ -59,6 +90,39 @@ jobs:
           if [ -n "$(git status --porcelain)" ]; then
             git add -A
             git commit -m "ci(matches): automate fixture and match analysis updates"
+            git push
+          else
+            echo "No meaningful changes to commit."
+          fi
+
+  lineup-refresh:
+    if: github.event.schedule == '*/30 * * * *'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Refresh official lineups (no-ops without a live provider key)
+        run: node scripts/refresh-official-lineups.mjs --apply
+
+      - name: Validate match analyses
+        run: node scripts/validate-match-analyses.mjs
+
+      - name: Sync public data mirror
+        run: node scripts/sync-public-assets.mjs
+
+      - name: Commit changes if any
+        run: |
+          git config user.name "futbolradar-bot"
+          git config user.email "actions@users.noreply.github.com"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "ci(matches): refresh official lineups"
             git push
           else
             echo "No meaningful changes to commit."
