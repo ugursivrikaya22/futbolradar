@@ -30,7 +30,7 @@
     signals: { api: "signals", fallback: "signals", reportSource: true },
     analyses: { api: "analyses", fallback: "analyses", reportSource: true },
     news: { fallback: "news", reportSource: false },
-    superLigFixtures: { fallback: "super-lig-fixtures", reportSource: false },
+    superLigFixtures: { api: "super-lig-fixtures", fallback: "super-lig-fixtures", reportSource: false },
     matchAnalyses: { fallback: "match-analyses", reportSource: false }
   };
 
@@ -6053,6 +6053,43 @@
       "</div>";
   }
 
+  function officialLineupPlayerCardHtml(player) {
+    var meta = [player && player.position, player && player.number ? "Forma " + player.number : null].filter(Boolean).join(" · ");
+    return '<div class="lineup-player-card">' +
+      "<strong>" + escapeHtml((player && player.name) || "Bilinmiyor") + "</strong>" +
+      (meta ? "<span>" + escapeHtml(meta) + "</span>" : "") +
+      "</div>";
+  }
+
+  function officialLineupSummaryHtml(officialSide, teamName) {
+    if (!officialSide || !Array.isArray(officialSide.startingXI) || !officialSide.startingXI.length) {
+      return "";
+    }
+
+    return '<div class="lineup-summary">' +
+      '<div class="lineup-summary-head"><h3>' + escapeHtml(teamName) + " · " + escapeHtml(officialSide.formation || "") + "</h3>" +
+      '<span class="lineup-status-badge" data-status="confirmed">Resmî İlk 11</span></div>' +
+      '<div class="lineup-grid">' + officialSide.startingXI.map(officialLineupPlayerCardHtml).join("") + "</div>" +
+      "</div>";
+  }
+
+  function officialLineupPanelHtml(record, home, away) {
+    if (record.officialLineupStatus !== "available") {
+      return "";
+    }
+
+    var homeHtml = officialLineupSummaryHtml(record.officialLineups && record.officialLineups.home, home);
+    var awayHtml = officialLineupSummaryHtml(record.officialLineups && record.officialLineups.away, away);
+    if (!homeHtml && !awayHtml) {
+      return "";
+    }
+
+    return '<div class="grid two">' +
+      (homeHtml ? '<div class="match-intelligence-card">' + homeHtml + "</div>" : "") +
+      (awayHtml ? '<div class="match-intelligence-card">' + awayHtml + "</div>" : "") +
+      "</div>";
+  }
+
   function analysisDeepLinkHtml(match) {
     return '<a class="detail-link ghost" href="' + escapeHtml(matchDetailHref(match)) + '">Derin Analiz</a>';
   }
@@ -6526,6 +6563,7 @@
       '<div class="match-intelligence-card">' + lineupSummaryHtml(record.probableLineups && record.probableLineups.home, home) + "</div>" +
       '<div class="match-intelligence-card">' + lineupSummaryHtml(record.probableLineups && record.probableLineups.away, away) + "</div>" +
       "</div>" +
+      officialLineupPanelHtml(record, home, away) +
       officialLineupComparisonHtml(record);
 
     var duelsPanel = '<div class="match-intelligence-card">' + keyDuelsHtml(record.keyDuels) + "</div>";

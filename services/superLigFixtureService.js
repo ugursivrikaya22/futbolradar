@@ -228,6 +228,87 @@ function filterWeeksByTeam(weeks, teamName) {
   }));
 }
 
+/**
+ * Turns an ISO kickoff into a "14 Ağustos 2026" style label for a single
+ * match, or null when no kickoff is known yet.
+ * @param {string|null} iso
+ * @returns {string|null}
+ */
+function formatDayLabel(iso) {
+  if (!iso) return null;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "long", year: "numeric", timeZone: TIMEZONE }).format(date);
+}
+
+/**
+ * Builds a "14-17 Ağustos 2026" (or "14 Ağustos 2026" for a single day)
+ * range label from the earliest/latest kickoff in a round. Falls back to
+ * the provided default when no match in the round has a known kickoff yet.
+ * @param {string[]} isoKickoffs
+ * @param {string} fallback
+ * @returns {string}
+ */
+function formatDateRangeLabel(isoKickoffs, fallback) {
+  const known = isoKickoffs.filter(Boolean).sort();
+  if (!known.length) return fallback;
+
+  const start = new Date(known[0]);
+  const end = new Date(known[known.length - 1]);
+  if (Number.isNaN(start.getTime())) return fallback;
+
+  const startLabel = formatDayLabel(known[0]);
+  if (start.toDateString() === end.toDateString() || Number.isNaN(end.getTime())) {
+    return startLabel || fallback;
+  }
+
+  const sameMonth = new Intl.DateTimeFormat("en-CA", { timeZone: TIMEZONE, year: "numeric", month: "2-digit" }).format(start) ===
+    new Intl.DateTimeFormat("en-CA", { timeZone: TIMEZONE, year: "numeric", month: "2-digit" }).format(end);
+  if (!sameMonth) {
+    return `${startLabel} - ${formatDayLabel(known[known.length - 1])}`;
+  }
+
+  const startDay = new Intl.DateTimeFormat("en-CA", { timeZone: TIMEZONE, day: "2-digit" }).format(start);
+  const endDay = new Intl.DateTimeFormat("en-CA", { timeZone: TIMEZONE, day: "2-digit" }).format(end);
+  const monthYear = new Intl.DateTimeFormat("tr-TR", { month: "long", year: "numeric", timeZone: TIMEZONE }).format(start);
+  return `${Number(startDay)}-${Number(endDay)} ${monthYear}`;
+}
+
+/**
+ * Groups a FLAT list of provider-normalized matches (each already carrying
+ * `round`, `homeTeam`, `awayTeam`, `kickoff`, `status`, `score`, `venue`)
+ * into the same FixtureWeek[] shape getFixtureWeeks() produces from the
+ * curated JSON file — so a live provider's full-season fetch can flow
+ * through the exact same rendering pipeline. Matches without a known round
+ * are dropped rather than guessed into a week.
+ * @param {Array<*>} matches
+ * @returns {FixtureWeek[]}
+ */
+function groupMatchesIntoWeeks(matches) {
+  const byRound = new Map();
+  for (const match of Array.isArray(matches) ? matches : []) {
+    const round = Number.isFinite(Number(match.round)) ? Number(match.round) : null;
+    if (round === null) continue;
+    if (!byRound.has(round)) byRound.set(round, []);
+    byRound.get(round).push(match);
+  }
+
+  return [...byRound.keys()].sort((a, b) => a - b).map((round) => {
+    const roundMatches = byRound.get(round);
+    const dateRange = formatDateRangeLabel(roundMatches.map((m) => m.kickoff), "Tarih ve saat atamaları bekleniyor");
+    const normalizedMatches = roundMatches.map((match) => normalizeFixtureMatch({ ...match, dateLabel: dateRange }, { round, dateRange }));
+
+    return {
+      round,
+      label: `${round}. Hafta`,
+      dateRange,
+      status: "confirmed-pairings",
+      matches: normalizedMatches,
+      hasConfirmedDates: normalizedMatches.every((match) => Boolean(match.kickoff))
+    };
+  });
+}
+
 module.exports = {
   getFixtureWeeks,
   normalizeFixtureMatch,
@@ -237,5 +318,7 @@ module.exports = {
   parseDateRange,
   todayInTimeZone,
   filterWeeksByTeam,
+  groupMatchesIntoWeeks,
+  formatDateRangeLabel,
   TIMEZONE
 };
