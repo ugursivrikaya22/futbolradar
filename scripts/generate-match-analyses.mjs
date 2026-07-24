@@ -215,6 +215,10 @@ function generateFreshAnalysis(fixture, matches, players, teams, squadStatus) {
   const context = buildMatchContext(fixture, fixture.homeTeam.name, fixture.awayTeam.name, matches);
   const home = buildTeamBundle(fixture.homeTeam.name, fixture, players, teams, squadStatus, context.home);
   const away = buildTeamBundle(fixture.awayTeam.name, fixture, players, teams, squadStatus, context.away);
+  home.lineup.missingKeyPlayers = home.missingKeyPlayers;
+  away.lineup.missingKeyPlayers = away.missingKeyPlayers;
+  home.lineup.benchStrength = home.benchStrength;
+  away.lineup.benchStrength = away.benchStrength;
 
   const matchup = buildComparison(home, away, context.home, context.away);
   const matchupAdvantages = generateMatchupAdvantages(matchup);
