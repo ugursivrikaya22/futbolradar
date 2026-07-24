@@ -17,7 +17,7 @@ const {
 const { buildComparison, generateMatchupAdvantages, buildMatchupSummary, generateKeyDuels } = require("../services/matchupService.js");
 const { buildMatchPrediction, freezePreMatchPrediction, MODEL_VERSION } = require("../services/matchPredictionService.js");
 const { getPlayers } = require("../services/playerService.js");
-const { findCompetition } = require("../services/competitionCatalog.js");
+const { findCompetition, classifyFixtureCompetition } = require("../services/competitionCatalog.js");
 
 const DATA_DIR = path.join(root, "data");
 const MATCHES_PATH = path.join(DATA_DIR, "matches.json");
@@ -139,6 +139,7 @@ function resolveSourceStatus(match) {
 function normalizeFixture(match) {
   const kickoffDate = new Date(match.kickoff);
   const hasValidKickoff = match.kickoff && !Number.isNaN(kickoffDate.getTime());
+  const classification = classifyFixtureCompetition(match);
 
   return {
     id: match.id,
@@ -146,6 +147,9 @@ function normalizeFixture(match) {
     providerId: match.providerId || null,
     slug: match.id || `${slug(match.homeTeam)}-${slug(match.awayTeam)}-${dateOnly(match.kickoff) || "tbd"}`,
     competition: resolveCompetition(match),
+    competitionType: classification.competitionType,
+    isOfficialCompetition: classification.isOfficialCompetition,
+    includeInLeagueForm: classification.includeInLeagueForm,
     kickoff: hasValidKickoff ? kickoffDate.toISOString() : null,
     timezone: "Europe/Istanbul",
     status: normalizeStatus(match.status),
@@ -240,6 +244,9 @@ function generateFreshAnalysis(fixture, matches, players, teams, squadStatus) {
     fixtureId: fixture.id,
     slug: fixture.slug,
     competition: fixture.competition.name,
+    competitionType: fixture.competitionType,
+    isOfficialCompetition: fixture.isOfficialCompetition,
+    includeInLeagueForm: fixture.includeInLeagueForm,
     kickoff: fixture.kickoff,
     status: fixture.status,
     generatedAt: new Date().toISOString(),

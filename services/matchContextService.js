@@ -1,8 +1,12 @@
+const { classifyFixtureCompetition } = require("./competitionCatalog");
+
 const FINISHED_STATUSES = new Set(["FINISHED", "FT", "AET", "PEN"]);
-const FRIENDLY_COMPETITION_IDS = new Set(["hazirlik-maci"]);
 const RECENT_FORM_LIMIT = 5;
 const SCHEDULE_LOAD_WINDOW_DAYS = 14;
 const RECENCY_WEIGHTS = [1, 0.92, 0.84, 0.76, 0.68];
+// Non-league results still carry signal but never at full league weight;
+// friendlies are the only case dampened hard, per Faz 6 classification.
+const FORM_WEIGHT_BY_COMPETITION_TYPE = { league: 1, europe: 0.85, cup: 0.85, friendly: 0.6 };
 
 function normalizeText(value) {
   return String(value || "")
@@ -28,10 +32,12 @@ function teamKey(team) {
 }
 
 function isFriendly(match) {
-  if (FRIENDLY_COMPETITION_IDS.has(match.competitionId)) {
-    return true;
-  }
-  return normalizeText(match.league).includes("hazirlik");
+  return classifyFixtureCompetition(match).competitionType === "friendly";
+}
+
+function formWeightFor(match) {
+  const { competitionType } = classifyFixtureCompetition(match);
+  return FORM_WEIGHT_BY_COMPETITION_TYPE[competitionType] ?? 1;
 }
 
 function matchSide(match, key) {
@@ -75,6 +81,7 @@ function resultFor(entry) {
   }
 
   const outcome = goalsFor > goalsAgainst ? "W" : goalsFor < goalsAgainst ? "L" : "D";
+  const competition = classifyFixtureCompetition(match);
   return {
     matchId: match.id || null,
     kickoff: match.kickoff || null,
@@ -83,6 +90,8 @@ function resultFor(entry) {
     goalsFor,
     goalsAgainst,
     outcome,
+    competitionType: competition.competitionType,
+    formWeight: formWeightFor(match),
     isFriendly: isFriendly(match)
   };
 }
@@ -121,8 +130,7 @@ function summarizeForm(results) {
 
     const outcomePoints = result.outcome === "W" ? 3 : result.outcome === "D" ? 1 : 0;
     const recencyWeight = RECENCY_WEIGHTS[index] ?? RECENCY_WEIGHTS[RECENCY_WEIGHTS.length - 1];
-    const frienldyWeight = result.isFriendly ? 0.6 : 1;
-    const weight = recencyWeight * frienldyWeight;
+    const weight = recencyWeight * (result.formWeight ?? 1);
     weightedPointsSum += (outcomePoints / 3) * weight;
     weightSum += weight;
   });
