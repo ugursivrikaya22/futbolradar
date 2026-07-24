@@ -4947,6 +4947,254 @@ h1 {
         font-weight: 800;
       }
 
+      .fixture-match-row {
+        grid-template-columns: minmax(78px, 0.55fr) minmax(0, 1fr) auto minmax(0, 1fr) minmax(0, 0.7fr);
+      }
+
+      .fixture-match-time {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .fixture-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        width: fit-content;
+        border-radius: 999px;
+        padding: 2px 9px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        border: 1px solid var(--line);
+        color: var(--muted);
+      }
+
+      .fixture-status-badge[data-status="live"] {
+        color: #ff7a84;
+        border-color: rgba(255, 122, 132, 0.35);
+        background: rgba(255, 122, 132, 0.1);
+      }
+
+      .fixture-status-badge[data-status="finished"] {
+        color: var(--muted);
+      }
+
+      .fixture-status-badge[data-status="scheduled"] {
+        color: var(--cyan);
+        border-color: rgba(77, 229, 255, 0.3);
+      }
+
+      .fixture-status-badge[data-status="postponed"],
+      .fixture-status-badge[data-status="cancelled"] {
+        color: #ffd166;
+        border-color: rgba(255, 209, 102, 0.32);
+      }
+
+      .fixture-match-team {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+      }
+
+      .fixture-match-team-away {
+        flex-direction: row-reverse;
+        text-align: right;
+      }
+
+      .fixture-team-logo,
+      .fixture-team-logo-fallback {
+        flex: none;
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+      }
+
+      .fixture-team-logo {
+        object-fit: contain;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .fixture-team-logo-fallback {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(134, 255, 218, 0.14);
+        color: var(--green);
+        font-size: 0.68rem;
+        font-weight: 800;
+      }
+
+      .fixture-match-score {
+        font-size: 1.05rem;
+        font-weight: 900;
+        white-space: nowrap;
+        text-align: center;
+      }
+
+      .fixture-venue {
+        color: var(--muted);
+        font-size: 0.78rem;
+        text-align: right;
+      }
+
+      @media (max-width: 760px) {
+        .fixture-match-row {
+          grid-template-columns: 1fr;
+        }
+
+        .fixture-match-team-away {
+          flex-direction: row;
+          text-align: left;
+        }
+
+        .fixture-venue {
+          text-align: left;
+        }
+      }
+
+      .fixture-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 0 0 14px;
+      }
+
+      .fixture-week-nav {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .fixture-week-prev,
+      .fixture-week-next {
+        min-width: 40px;
+        min-height: 40px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        font-size: 1.1rem;
+        cursor: pointer;
+      }
+
+      .fixture-week-prev:hover,
+      .fixture-week-next:hover {
+        border-color: var(--green);
+      }
+
+      .fixture-week-prev:disabled,
+      .fixture-week-next:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+
+      .fixture-week-prev:focus-visible,
+      .fixture-week-next:focus-visible {
+        outline: 2px solid rgba(134, 255, 218, 0.28);
+        outline-offset: 2px;
+      }
+
+      .fixture-week-current {
+        display: grid;
+        gap: 2px;
+        min-width: 90px;
+        text-align: center;
+      }
+
+      .fixture-week-current span {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .fixture-week-current strong {
+        font-size: 1.1rem;
+      }
+
+      .fixture-team-filter {
+        display: grid;
+        gap: 6px;
+      }
+
+      .fixture-team-filter span {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .fixture-team-filter select {
+        min-height: 42px;
+        min-width: 200px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 0 34px 0 11px;
+        color: var(--text);
+        background: #0a171d;
+        font: inherit;
+      }
+
+      .fixture-team-filter select:focus-visible {
+        border-color: var(--green);
+        outline: 2px solid rgba(134, 255, 218, 0.22);
+        outline-offset: 2px;
+      }
+
+      .fixture-week-jump {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .fixture-week-jump-item {
+        min-width: 38px;
+        min-height: 34px;
+        padding: 0 10px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--muted);
+        font-weight: 800;
+        font-size: 0.82rem;
+        cursor: pointer;
+      }
+
+      .fixture-week-jump-item:hover {
+        border-color: var(--green);
+        color: var(--text);
+      }
+
+      .fixture-week-jump-item.is-active {
+        color: var(--green);
+        border-color: rgba(128, 255, 155, 0.4);
+        background: rgba(128, 255, 155, 0.08);
+      }
+
+      .fixture-week-jump-item:focus-visible {
+        outline: 2px solid rgba(134, 255, 218, 0.28);
+        outline-offset: 2px;
+      }
+
+      @media (max-width: 640px) {
+        .fixture-controls {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .fixture-team-filter select {
+          min-width: 0;
+          width: 100%;
+        }
+      }
+
       .fixture-team-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));

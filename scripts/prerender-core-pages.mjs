@@ -17,6 +17,21 @@ const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
+const { getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigFixtureService.js");
+
+const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
+const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
+
+function fixtureTeamInitials(name) {
+  const clean = String(name || "").trim();
+  if (!clean) return "?";
+  const parts = clean.split(/\s+/).filter(Boolean);
+  return parts.slice(0, 2).map((part) => part.charAt(0).toUpperCase()).join("") || clean.charAt(0).toUpperCase();
+}
+
+function fixtureTeamLogoHtml(name) {
+  return `<span class="fixture-team-logo-fallback" aria-hidden="true">${escapeHtml(fixtureTeamInitials(name))}</span>`;
+}
 
 const players = getPlayers(rawPlayers);
 const fixtureFreshness = normalizeFreshness(fixtures.freshness || freshnessData.records.fixtures);
@@ -186,8 +201,33 @@ function newsCards(limit) {
   return news.slice(0, limit || news.length).map((item) => `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}"><div class="news-card-meta"><span class="tag green">${escapeHtml(item.category || "Futbol Gündemi")}</span><time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatFreshnessDate(item.publishedAt) || "Tarih açıklanmadı")}</time></div><div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p></div><div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Resmî kaynak")}</span><a class="detail-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a></div></article>`).join("");
 }
 
+function fixtureMatchRowHtml(match, round) {
+  const status = normalizeMatchStatus(match.status);
+  const statusSlug = FIXTURE_STATUS_SLUG[status] || "scheduled";
+  const timeLabel = match.dateLabel || round.dateRange || "Tarih ve saat bekleniyor";
+  const scoreOrVs = status === "FINISHED" && match.score
+    ? `<strong>${escapeHtml(displayScore(match.score))}</strong>`
+    : `<span class="vs-pill">VS</span>`;
+
+  return `<a class="fixture-match-row" data-card="fixture-match" data-status="${statusSlug}" href="./mac/${escapeHtml(matchSlug({ ...match, round: round.round }))}.html">` +
+    `<div class="fixture-match-time"><span class="fixture-time">${escapeHtml(timeLabel)}</span><span class="fixture-status-badge" data-status="${statusSlug}">${escapeHtml(FIXTURE_STATUS_TR[status] || "Planlandı")}</span></div>` +
+    `<div class="fixture-match-team fixture-match-team-home">${fixtureTeamLogoHtml(match.homeTeam)}<span>${escapeHtml(match.homeTeam)}</span></div>` +
+    `<div class="fixture-match-score">${scoreOrVs}</div>` +
+    `<div class="fixture-match-team fixture-match-team-away">${fixtureTeamLogoHtml(match.awayTeam)}<span>${escapeHtml(match.awayTeam)}</span></div>` +
+    `<div class="fixture-venue">${escapeHtml(match.venue || "")}</div>` +
+    `</a>`;
+}
+
+function displayScore(score) {
+  if (!score || score.home === null || score.home === undefined || score.away === null || score.away === undefined) {
+    return "- : -";
+  }
+  return `${score.home} - ${score.away}`;
+}
+
 function fixtureRounds() {
-  return (fixtures.rounds || []).map((round) => `<section class="fixture-round-card" data-card="fixture-round"><div class="fixture-round-head"><div><span>${escapeHtml(round.dateRange || "Tarih ve saat bekleniyor")}</span><h2>${escapeHtml(round.label)}</h2></div><b>Onaylı eşleşmeler</b></div><div class="fixture-match-list">${(round.matches || []).map((match) => `<a class="fixture-match-row" href="./mac/${escapeHtml(matchSlug({ ...match, round: round.round }))}.html"><span class="fixture-time">${escapeHtml(match.dateLabel || round.label)}</span><strong>${escapeHtml(match.homeTeam)}</strong><span class="vs-pill">VS</span><strong>${escapeHtml(match.awayTeam)}</strong></a>`).join("")}</div></section>`).join("");
+  const weeks = getFixtureWeeks(fixtures);
+  return weeks.map((round) => `<section class="fixture-round-card" data-card="fixture-round"><div class="fixture-round-head"><div><span>${escapeHtml(round.dateRange || "Tarih ve saat bekleniyor")}</span><h2>${escapeHtml(round.label)}</h2></div><b>Onaylı eşleşmeler</b></div><div class="fixture-match-list">${(round.matches || []).map((match) => fixtureMatchRowHtml(match, round)).join("")}</div></section>`).join("");
 }
 
 function transferWatch() {
