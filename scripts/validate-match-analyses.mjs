@@ -24,6 +24,8 @@ function readJson(filePath, fallback) {
 
 const analyses = readJson(path.join(root, "data", "match-analyses.json"), []);
 const players = readJson(path.join(root, "data", "players.json"), []);
+const matches = readJson(path.join(root, "data", "matches.json"), []);
+const predictionPerformance = readJson(path.join(root, "data", "prediction-performance.json"), null);
 
 function isNumberInRange(value, min, max) {
   return typeof value === "number" && Number.isFinite(value) && value >= min && value <= max;
@@ -216,6 +218,130 @@ function checkPublicSync() {
   expect(rootContent === publicContent, "public/data/match-analyses.json is out of sync with data/match-analyses.json");
 }
 
+const SNAPSHOT_TYPES = new Set(["early-pre-match", "lineup-informed", "final-pre-kickoff"]);
+const POST_MATCH_ONLY_KEYS = ["finalScore", "halftimeScore", "events", "statistics", "actualOutcome"];
+
+/**
+ * data/matches.json is the hand-maintained editorial layer (matches.json
+ * comment: "carries hand-verified editorial content") — its deepAnalysis /
+ * preMatchSnapshots system is validated separately from the fully-generated
+ * match-analyses.json above, since the two are deliberately different files
+ * with different mutability rules.
+ */
+function checkMatchDeepAnalysis(match) {
+  const deep = match.deepAnalysis;
+  if (!deep) return;
+
+  const snapshots = Array.isArray(deep.preMatchSnapshots) ? deep.preMatchSnapshots : [];
+  const isPreMatch = String(match.status || "").toUpperCase() === "SCHEDULED";
+
+  expect(
+    snapshots.some((snap) => snap.snapshotType === "early-pre-match"),
+    `${match.id}: deepAnalysis.preMatchSnapshots must contain an "early-pre-match" snapshot`
+  );
+
+  const snapshotIds = snapshots.map((snap) => snap.snapshotId);
+  expect(findDuplicates(snapshotIds).length === 0, `${match.id}: duplicate preMatchSnapshot snapshotId(s): ${findDuplicates(snapshotIds).join(", ")}`);
+
+  const snapshotTypes = snapshots.map((snap) => snap.snapshotType);
+  expect(findDuplicates(snapshotTypes).length === 0, `${match.id}: duplicate snapshotType within preMatchSnapshots: ${findDuplicates(snapshotTypes).join(", ")}`);
+
+  for (const snapshot of snapshots) {
+    expect(SNAPSHOT_TYPES.has(snapshot.snapshotType), `${match.id}: unknown snapshotType "${snapshot.snapshotType}"`);
+    expect(snapshot.immutable === true, `${match.id}/${snapshot.snapshotId}: preMatchSnapshot must have immutable=true`);
+    expect(Boolean(snapshot.frozenAt) && !Number.isNaN(Date.parse(snapshot.frozenAt)), `${match.id}/${snapshot.snapshotId}: invalid or missing frozenAt`);
+
+    if (match.kickoff && snapshot.frozenAt) {
+      expect(Date.parse(snapshot.frozenAt) <= Date.parse(match.kickoff), `${match.id}/${snapshot.snapshotId}: frozenAt (${snapshot.frozenAt}) is not before kickoff (${match.kickoff})`);
+    }
+
+    const probabilities = snapshot.prediction && snapshot.prediction.probabilities;
+    if (probabilities) {
+      const sum = Number(probabilities.homeWin) + Number(probabilities.draw) + Number(probabilities.awayWin);
+      expect(sum === 100, `${match.id}/${snapshot.snapshotId}: snapshot probabilities sum to ${sum}, expected 100`);
+    }
+
+    for (const key of POST_MATCH_ONLY_KEYS) {
+      expect(!(key in snapshot), `${match.id}/${snapshot.snapshotId}: post-match field "${key}" leaked into a pre-match snapshot`);
+    }
+
+    if (typeof snapshot.dataConfidence === "number" && snapshot.dataConfidence < 25) {
+      expect(
+        !snapshot.uiPresentedAsStrongPrediction,
+        `${match.id}/${snapshot.snapshotId}: dataConfidence ${snapshot.dataConfidence} is very low but flagged as a strong prediction`
+      );
+    }
+  }
+
+  expect(!isPreMatch || snapshots.length > 0, `${match.id}: scheduled match must have at least one frozen pre-match snapshot before generating any live/post-match view`);
+
+  if (deep.postMatch) {
+    const referencedIds = new Set(snapshots.map((snap) => snap.snapshotId));
+    const evalSnapshotId = deep.postMatch.evaluation && deep.postMatch.evaluation.snapshotId;
+    if (evalSnapshotId) {
+      expect(referencedIds.has(evalSnapshotId), `${match.id}: postMatch.evaluation.snapshotId "${evalSnapshotId}" does not reference a real preMatchSnapshot`);
+    }
+  }
+
+  const officialLineups = deep.officialLineups || (snapshots[0] && snapshots[0].officialLineups);
+  if (officialLineups && (officialLineups.home || officialLineups.away)) {
+    expect(
+      snapshots.every((snap) => snap.probableLineups),
+      `${match.id}: an official lineup must never erase a snapshot's probableLineups`
+    );
+  }
+}
+
+function checkFinishedMatchHasFinalScore(match) {
+  if (String(match.status || "").toUpperCase() !== "FINISHED") return;
+  expect(
+    match.score && typeof match.score.home === "number" && typeof match.score.away === "number",
+    `${match.id}: status is FINISHED but score.home/score.away are not both numbers`
+  );
+}
+
+function checkMatchesDeepAnalyses() {
+  for (const match of matches) {
+    checkMatchDeepAnalysis(match);
+    checkFinishedMatchHasFinalScore(match);
+  }
+
+  const matchesPublicPath = path.join(root, "public", "data", "matches.json");
+  const matchesRootPath = path.join(root, "data", "matches.json");
+  if (fs.existsSync(matchesPublicPath) && fs.existsSync(matchesRootPath)) {
+    expect(
+      fs.readFileSync(matchesRootPath, "utf8") === fs.readFileSync(matchesPublicPath, "utf8"),
+      "public/data/matches.json is out of sync with data/matches.json"
+    );
+  }
+
+  const researchDir = path.join(root, "data", "research");
+  const publicResearchDir = path.join(root, "public", "data", "research");
+  expect(!fs.existsSync(publicResearchDir), "data/research must never be copied into public/ (internal research records only)");
+  void researchDir;
+}
+
+function checkPredictionPerformanceSeparation() {
+  if (!predictionPerformance) return;
+  const byType = predictionPerformance.aggregate && predictionPerformance.aggregate.byCompetitionType;
+  expect(Boolean(byType), "prediction-performance.json must break down aggregate metrics byCompetitionType");
+  if (byType) {
+    expect(
+      Object.prototype.hasOwnProperty.call(byType, "friendly") && Object.prototype.hasOwnProperty.call(byType, "league"),
+      "prediction-performance.json must keep friendly and league performance in separate buckets"
+    );
+  }
+
+  const overall = predictionPerformance.aggregate && predictionPerformance.aggregate.overall;
+  const minimumSample = predictionPerformance.minimumSampleSize;
+  if (overall && typeof minimumSample === "number" && overall.sampleSize < minimumSample) {
+    expect(overall.status === "insufficient-sample", `prediction-performance.json: overall sampleSize (${overall.sampleSize}) is below minimumSampleSize (${minimumSample}) but status is "${overall.status}", expected "insufficient-sample"`);
+  }
+
+  const publicPath = path.join(root, "public", "data", "prediction-performance.json");
+  expect(!fs.existsSync(publicPath), "data/prediction-performance.json is an internal file and must not be copied into public/");
+}
+
 function checkApiFunctionLimit() {
   const apiDir = path.join(root, "api");
   const functionFiles = fs.readdirSync(apiDir).filter((file) => file.endsWith(".js") && !file.startsWith("_"));
@@ -241,6 +367,8 @@ for (const record of analyses) {
 }
 checkPublicSync();
 checkApiFunctionLimit();
+checkMatchesDeepAnalyses();
+checkPredictionPerformanceSeparation();
 
 if (failures.length) {
   console.error(`match-analyses validation failed with ${failures.length} issue(s):`);
@@ -249,3 +377,4 @@ if (failures.length) {
 }
 
 console.log(`match-analyses validation passed for ${analyses.length} record(s).`);
+console.log(`matches.json deepAnalysis validation passed for ${matches.length} match record(s).`);
