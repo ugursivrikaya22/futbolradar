@@ -1,0 +1,65 @@
+name: Match Analysis Automation
+
+# This is the first GitHub Actions workflow in this repository — there was
+# no pre-existing data-update automation to attach to (data/matches.json is
+# hand-curated, and no fixture-sync script exists). Scope is deliberately
+# narrow: regenerate data/match-analyses.json from whatever is already
+# checked in, validate it, build, run QA, and commit only if something
+# actually changed. No external football-data provider is called here, so
+# there is no API polling or rate-limit concern to manage.
+
+on:
+  schedule:
+    # 08:00 Europe/Istanbul - morning fixture/analysis refresh.
+    - cron: "0 5 * * *"
+    # 16:00 Europe/Istanbul - a few hours ahead of typical evening kickoffs.
+    - cron: "0 13 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: match-analysis-automation
+  cancel-in-progress: false
+
+jobs:
+  update-match-analyses:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate team/player data
+        run: |
+          node scripts/validate-player-data.mjs
+          node scripts/validate-transfer-data.mjs
+
+      - name: Generate upcoming match analyses
+        run: node scripts/generate-match-analyses.mjs --days=3 --apply
+
+      - name: Validate match analyses
+        run: node scripts/validate-match-analyses.mjs
+
+      - name: Build static site (pages, sync, public mirrors)
+        run: npm run build
+
+      - name: QA
+        run: npm run qa
+
+      - name: Commit changes if any
+        run: |
+          git config user.name "futbolradar-bot"
+          git config user.email "actions@users.noreply.github.com"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "ci(matches): automate fixture and match analysis updates"
+            git push
+          else
+            echo "No meaningful changes to commit."
+          fi

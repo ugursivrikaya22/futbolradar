@@ -153,7 +153,27 @@ korumak ve `analysisStatus`/`predictionStatus` ile netleştirmek gerekiyor.
    eklenecek (mevcut bir "veri güncelleme" akışı olmadığından bağlanacak bir
    şey yok); gerekçe Faz 15 bölümünde ayrıca raporlanacak.
 
-## Sonraki Fazlar
+## Uygulama Özeti (Faz 1-16 tamamlandı)
 
-Faz 1-16 uygulaması bu doküman temel alınarak yapılacak; her fazın çıktısı
-`docs/match-analysis-operations.md` içinde operasyonel olarak belgelenecek.
+- **Faz 1-2**: `services/matchContextService.js` — leak-safe form/trend/dinlenme
+  hesaplayıcıları, mevcut `data/matches.json` üzerinde okuma-anında normalizasyon.
+- **Faz 3**: `services/lineupPredictionService.js` (yeni) — sınırlı kadro
+  verisiyle dürüst muhtemel ilk 11 motoru.
+- **Faz 4-5**: `services/matchupService.js` (yeni) — matchup karşılaştırması +
+  `generateKeyDuels`.
+- **Faz 6**: `services/matchPredictionService.js` (yeni) — `futbolradar-match-v1`
+  kural tabanlı tahmin motoru.
+- **Faz 7**: `data/match-analyses.json` + `scripts/generate-match-analyses.mjs`
+  (dry-run/apply, freeze-on-kickoff).
+- **Faz 8**: `/api/match-analysis` → `api/[...route].js` catch-all içinde
+  (API function sayısı 12'de sabit kaldı).
+- **Faz 9-11**: `bugunun-maclari.html`, `mac-detay.html`, `index.html` — basit
+  kartlar + derin analiz katmanı + "Günün Radar Maçı".
+- **Faz 12**: `page.css` içinde match-intelligence komponent ailesi.
+- **Faz 13**: `scripts/validate-match-analyses.mjs`.
+- **Faz 14**: `npm run build` + `npm run qa` + `npm test` + Playwright
+  390px/1440px doğrulaması yeşil.
+- **Faz 15**: `.github/workflows/match-analysis.yml` (bu repodaki ilk workflow).
+- **Faz 16**: bu doküman + `docs/match-analysis-operations.md`.
+
+Detaylı operasyon soruları için bkz. `docs/match-analysis-operations.md`.
