@@ -18,6 +18,11 @@ function slug(value) {
   return normalizeText(value).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
+function teamLogoByName(name) {
+  const team = teams.find((item) => normalizeText(item.name) === normalizeText(name));
+  return (team && team.logo) || "";
+}
+
 function normalizeMatch(match) {
   const homeMomentum = Number(match.homeMomentum || match.homeForm || 0);
   const awayMomentum = Number(match.awayMomentum || match.awayForm || 0);
@@ -26,6 +31,8 @@ function normalizeMatch(match) {
     ...match,
     id: match.id || `${slug(match.homeTeam)}-${slug(match.awayTeam)}`,
     kickoff: match.kickoff || match.time || "",
+    homeTeamLogo: match.homeTeamLogo || teamLogoByName(match.homeTeam),
+    awayTeamLogo: match.awayTeamLogo || teamLogoByName(match.awayTeam),
     momentum: match.momentum || {
       side: homeMomentum >= awayMomentum ? "home" : "away",
       value: Math.abs(homeMomentum - awayMomentum)

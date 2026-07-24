@@ -202,6 +202,10 @@ function teamName(team) {
   return team && (team.name || team.shortName || team.code) || "";
 }
 
+function teamLogo(team) {
+  return (team && team.logo) || "";
+}
+
 function scoreValue(score) {
   return score === undefined || score === null ? null : score;
 }
@@ -262,9 +266,11 @@ function normalizeFixture(item) {
     providerId: fixture.id ? String(fixture.id) : "",
     league: league.name || "",
     kickoff,
-    time: kickoff ? new Date(kickoff).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) : "",
+    time: kickoff ? new Date(kickoff).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }) : "",
     homeTeam: teamName(homeTeam),
     awayTeam: teamName(awayTeam),
+    homeTeamLogo: teamLogo(homeTeam),
+    awayTeamLogo: teamLogo(awayTeam),
     status: normalizeStatus(fixture.status || {}),
     providerStatus: fixture.status && fixture.status.short || null,
     live: normalizeStatus(fixture.status || {}) === "LIVE",

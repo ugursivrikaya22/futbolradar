@@ -798,7 +798,62 @@
   }
 
   function matchTitle(match) {
-    return escapeHtml(match.homeTeam) + " - " + escapeHtml(match.awayTeam);
+    return escapeHtml(getTeamName(match.homeTeam)) + " - " + escapeHtml(getTeamName(match.awayTeam));
+  }
+
+  function getTeamName(team) {
+    if (team && typeof team === "object") {
+      return team.name || team.team || team.shortName || "";
+    }
+    return team || "";
+  }
+
+  function getTeamLogo(team) {
+    if (team && typeof team === "object") {
+      return team.logo || team.crest || team.badge || "";
+    }
+    return "";
+  }
+
+  function matchTeam(match, side) {
+    var raw = match && match[side + "Team"];
+    if (raw && typeof raw === "object") {
+      return raw;
+    }
+    return {
+      name: raw || "",
+      logo: (match && (match[side + "TeamLogo"] || match[side + "Logo"])) || ""
+    };
+  }
+
+  function teamInitials(name) {
+    var clean = String(name || "").trim();
+    if (!clean) {
+      return "?";
+    }
+    var parts = clean.split(/\s+/).filter(Boolean);
+    var letters = parts.slice(0, 2).map(function (part) {
+      return part.charAt(0).toUpperCase();
+    });
+    return letters.join("") || clean.charAt(0).toUpperCase();
+  }
+
+  function teamLogoHtml(team) {
+    var name = getTeamName(team);
+    var logo = getTeamLogo(team);
+    var initials = escapeHtml(teamInitials(name));
+    var altText = escapeHtml(name ? name + " logosu" : "Takım logosu");
+
+    if (!logo) {
+      return '<span class="live-score-team-logo live-score-team-logo-fallback" aria-hidden="true">' + initials + '</span>';
+    }
+
+    return (
+      '<span class="live-score-team-logo-wrap">' +
+      '<img class="live-score-team-logo" src="' + escapeHtml(logo) + '" alt="' + altText + '" width="40" height="40" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
+      '<span class="live-score-team-logo-fallback" aria-hidden="true" style="display:none">' + initials + '</span>' +
+      '</span>'
+    );
   }
 
   function displayValue(value) {
@@ -1409,6 +1464,83 @@
     return displayValue(score);
   }
 
+  function matchScoreDisplay(match) {
+    var status = String(match && match.status || "").toUpperCase();
+    var score = match && match.score;
+    var hasScore = score && typeof score === "object" &&
+      score.home !== null && score.home !== undefined &&
+      score.away !== null && score.away !== undefined;
+
+    if (!hasScore || status === "SCHEDULED" || status === "POSTPONED" || status === "CANCELLED") {
+      return "- : -";
+    }
+
+    return score.home + " - " + score.away;
+  }
+
+  function getMatchKickoff(match) {
+    return (match && (match.kickoff || match.kickoffTime || match.date)) || "";
+  }
+
+  function formatMatchTime(kickoff) {
+    if (!kickoff) {
+      return "";
+    }
+
+    var date = new Date(kickoff);
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+
+    try {
+      return new Intl.DateTimeFormat("tr-TR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "Europe/Istanbul"
+      }).format(date);
+    } catch (err) {
+      return "";
+    }
+  }
+
+  function matchTimeLabel(match) {
+    return formatMatchTime(getMatchKickoff(match)) || "Saat bilgisi bekleniyor";
+  }
+
+  function liveMinuteLabel(match) {
+    if (!isLiveMatch(match)) {
+      return "";
+    }
+
+    if (match && match.minute) {
+      return String(match.minute) + "'";
+    }
+
+    if (match && typeof match.time === "string" && /^\d+(\+\d+)?'$/.test(match.time.trim())) {
+      return match.time.trim();
+    }
+
+    return "";
+  }
+
+  function statusSlug(status) {
+    var normalized = String(status || "").toUpperCase();
+    if (["LIVE", "IN_PLAY", "1H", "2H", "ET", "P"].includes(normalized)) {
+      return "live";
+    }
+    if (["PAUSED", "HT", "HALFTIME"].includes(normalized)) {
+      return "live";
+    }
+    if (normalized === "FINISHED") {
+      return "finished";
+    }
+    if (normalized === "POSTPONED" || normalized === "CANCELLED") {
+      return "muted";
+    }
+    return "scheduled";
+  }
+
   function matchDetailHref(match) {
     if (match && match.analysisPage) {
       return "./" + String(match.analysisPage).replace(/^\.\//, "");
@@ -1434,6 +1566,8 @@
       LIVE: "Canlı",
       IN_PLAY: "Canlı",
       PAUSED: "Devre arası",
+      HALFTIME: "Devre arası",
+      HT: "Devre arası",
       FINISHED: "Bitti",
       POSTPONED: "Ertelendi",
       CANCELLED: "İptal"
@@ -1691,14 +1825,16 @@
     var finished = ["FINISHED", "FT", "AET", "PEN"].includes(rawStatus);
     var scoreHome = match.score && match.score.home !== null && match.score.home !== undefined ? match.score.home : "–";
     var scoreAway = match.score && match.score.away !== null && match.score.away !== undefined ? match.score.away : "–";
-    var statusLabel = live || finished ? statusTr(match.status || match.providerStatus) : (match.time || statusTr(match.status));
+    var statusLabel = live || finished ? statusTr(match.status || match.providerStatus) : matchTimeLabel(match);
+    var homeTeam = matchTeam(match, "home");
+    var awayTeam = matchTeam(match, "away");
 
     return (
       '<article class="home-score-card' + (live ? ' is-live' : '') + '" data-card="today-match" data-match="' + escapeHtml(match.id) + '">' +
       '<div class="home-score-card-head"><span>' + (live ? '<i class="live-pulse" aria-hidden="true"></i>' : '') + escapeHtml(match.league) + '</span><b>' + escapeHtml(statusLabel) + '</b></div>' +
       '<div class="home-score-teams">' +
-      '<div><strong>' + escapeHtml(match.homeTeam) + '</strong><b>' + escapeHtml(scoreHome) + '</b></div>' +
-      '<div><strong>' + escapeHtml(match.awayTeam) + '</strong><b>' + escapeHtml(scoreAway) + '</b></div>' +
+      '<div><span class="live-score-team-name-inline">' + teamLogoHtml(homeTeam) + '<strong>' + escapeHtml(getTeamName(homeTeam)) + '</strong></span><b>' + escapeHtml(scoreHome) + '</b></div>' +
+      '<div><span class="live-score-team-name-inline">' + teamLogoHtml(awayTeam) + '<strong>' + escapeHtml(getTeamName(awayTeam)) + '</strong></span><b>' + escapeHtml(scoreAway) + '</b></div>' +
       '</div>' +
       '<div class="home-score-card-foot"><span>' + escapeHtml(live ? "Maç akışı açık" : statusTr(match.status)) + '</span>' +
       '<a href="' + escapeHtml(matchDetailHref(match)) + '">' + (live ? "Canlı istatistik" : "Maç detayı") + '</a></div>' +
@@ -1711,14 +1847,16 @@
     var headlineValue = scoreText !== "-" ? scoreText : statusTr(match.status);
     var analysis = findAnalysisForMatch(analysesIndex, match);
     var prediction = analysis && analysis.prediction;
+    var homeTeam = matchTeam(match, "home");
+    var awayTeam = matchTeam(match, "away");
 
     return (
       '<article class="card match-card match-intelligence-card" data-card="today-match" data-match="' + escapeHtml(match.id) + '">' +
-      '<div class="card-head"><span class="card-kicker">' + escapeHtml(match.time) + " · " + escapeHtml(match.league) + " · " + escapeHtml(statusTr(match.status)) + '</span><strong class="big-value match-score-value">' + escapeHtml(headlineValue) + "</strong></div>" +
+      '<div class="card-head"><span class="card-kicker">' + escapeHtml(matchTimeLabel(match)) + " · " + escapeHtml(match.league) + " · " + escapeHtml(statusTr(match.status)) + '</span><strong class="big-value match-score-value">' + escapeHtml(headlineValue) + "</strong></div>" +
       "<h2>" + matchTitle(match) + "</h2>" +
       '<div class="match-teams">' +
-      '<div class="team-line"><span>' + escapeHtml(match.homeTeam) + "</span></div>" +
-      '<div class="team-line"><span>' + escapeHtml(match.awayTeam) + "</span></div>" +
+      '<div class="team-line"><span class="live-score-team-name-inline">' + teamLogoHtml(homeTeam) + escapeHtml(getTeamName(homeTeam)) + "</span></div>" +
+      '<div class="team-line"><span class="live-score-team-name-inline">' + teamLogoHtml(awayTeam) + escapeHtml(getTeamName(awayTeam)) + "</span></div>" +
       "</div>" +
       (analysis
         ? '<div class="tag-row">' +
@@ -1735,17 +1873,38 @@
 
   function renderLiveMatch(match) {
     var hasTempo = match.tempo !== undefined && match.tempo !== null && match.tempo !== "";
+    var homeTeam = matchTeam(match, "home");
+    var awayTeam = matchTeam(match, "away");
+    var statusLabel = statusTr(match.status);
+    var minuteLabel = liveMinuteLabel(match);
+
     return (
-      '<article class="card match-card" data-card="live-match" data-match="' + escapeHtml(match.id) + '">' +
-      '<div class="card-head"><span class="card-kicker"><i class="live-pulse" aria-hidden="true"></i> ' + escapeHtml(statusTr(match.status)) + " · " + escapeHtml(match.time) + " · " + escapeHtml(match.league) + '</span><strong class="big-value">' + escapeHtml(matchScoreText(match.score)) + "</strong></div>" +
-      "<h2>" + matchTitle(match) + "</h2>" +
+      '<article class="card match-card live-score-card" data-card="live-match" data-match="' + escapeHtml(match.id) + '">' +
+      '<div class="live-score-meta">' +
+      '<span class="live-score-league">' + escapeHtml(displayValue(match.league)) + '</span>' +
+      '<time class="live-score-time">' + escapeHtml(matchTimeLabel(match)) + '</time>' +
+      '<span class="live-score-status live-score-status-' + statusSlug(match.status) + '">' +
+      '<i class="live-pulse" aria-hidden="true"></i>' + escapeHtml(statusLabel) + (minuteLabel ? " · " + escapeHtml(minuteLabel) : "") +
+      '</span>' +
+      '</div>' +
+      '<div class="live-score-match">' +
+      '<div class="live-score-team live-score-team-home">' +
+      teamLogoHtml(homeTeam) +
+      '<span class="live-score-team-name">' + escapeHtml(getTeamName(homeTeam)) + '</span>' +
+      '</div>' +
+      '<div class="live-score-result"><strong>' + escapeHtml(matchScoreDisplay(match)) + '</strong></div>' +
+      '<div class="live-score-team live-score-team-away">' +
+      teamLogoHtml(awayTeam) +
+      '<span class="live-score-team-name">' + escapeHtml(getTeamName(awayTeam)) + '</span>' +
+      '</div>' +
+      '</div>' +
       "<p>" + escapeHtml(match.summary || "Maç skoru ve olay akışı canlı olarak takip ediliyor.") + "</p>" +
       (hasTempo ? barRowHtml("Tempo", match.tempo, match.tempo) : "") +
       tagsHtml(match.liveTags || match.tags) +
       '<div class="player-actions match-actions">' +
-      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Canlı istatistik ve analiz</a>' +
-      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.homeTeam })) + '">Ev sahibi radar</a>' +
-      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref({ name: match.awayTeam })) + '">Deplasman radar</a>' +
+      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Maç Detayı</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref(homeTeam)) + '">Ev sahibi radar</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref(awayTeam)) + '">Deplasman radar</a>' +
       "</div>" +
       "</article>"
     );
@@ -1943,12 +2102,14 @@
     var analysis = findAnalysisForMatch(analysesIndex, match);
     var prediction = analysis && analysis.prediction;
     var live = isLiveMatch(match);
-    var statusLabel = live ? statusTr(match.status) : (match.time || statusTr(match.status));
+    var statusLabel = live ? (statusTr(match.status) + " · " + matchTimeLabel(match)) : matchTimeLabel(match) + " · " + statusTr(match.status);
+    var homeTeam = matchTeam(match, "home");
+    var awayTeam = matchTeam(match, "away");
 
     return '<article class="match-intelligence-card" data-card="today-radar-match" data-match="' + escapeHtml(match.id) + '">' +
       '<div class="card-head"><span class="card-kicker">' + escapeHtml(match.league) + '</span><span>' +
       (live ? '<i class="live-pulse" aria-hidden="true"></i> ' : "") + escapeHtml(statusLabel) + "</span></div>" +
-      "<h3>" + escapeHtml(match.homeTeam) + " - " + escapeHtml(match.awayTeam) + "</h3>" +
+      '<h3 class="live-score-team-name-inline">' + teamLogoHtml(homeTeam) + escapeHtml(getTeamName(homeTeam)) + " - " + teamLogoHtml(awayTeam) + escapeHtml(getTeamName(awayTeam)) + "</h3>" +
       (analysis
         ? '<div class="tag-row"><span class="tag soft">' + simpleBalanceLabel(prediction, match.homeTeam, match.awayTeam) + "</span>" +
           goalPotentialBadgeHtml(prediction && prediction.goalPotential) + "</div>"
@@ -5469,10 +5630,13 @@
 
     updateMatchDetailMeta(detail);
 
+    var detailHomeTeam = matchTeam(detail, "home");
+    var detailAwayTeam = matchTeam(detail, "away");
+
     return (
       '<article class="match-detail-card card" data-card="match-detail" data-match="' + escapeHtml(detail.id) + '">' +
-      '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(displayValue(detail.league)) + " · " + escapeHtml(statusTr(detail.status)) + "</span><h2>" + matchTitle(detail) + '</h2></div><strong class="big-value">' + escapeHtml(matchScoreText(detail.score)) + "</strong></div>" +
-      '<div class="metric-grid compact"><span>Saat <b>' + escapeHtml(displayValue(detail.time || detail.kickoff)) + '</b></span><span>Durum <b>' + escapeHtml(statusTr(detail.status)) + '</b></span><span>Model <b>' + escapeHtml(displayValue(detail.prediction && (detail.prediction.label || detail.prediction.advice))) + "</b></span></div>" +
+      '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(displayValue(detail.league)) + " · " + escapeHtml(statusTr(detail.status)) + "</span><h2 class=\"live-score-team-name-inline\">" + teamLogoHtml(detailHomeTeam) + escapeHtml(getTeamName(detailHomeTeam)) + " - " + teamLogoHtml(detailAwayTeam) + escapeHtml(getTeamName(detailAwayTeam)) + '</h2></div><strong class="big-value">' + escapeHtml(matchScoreText(detail.score)) + "</strong></div>" +
+      '<div class="metric-grid compact"><span>Saat <b>' + escapeHtml(matchTimeLabel(detail)) + '</b></span><span>Durum <b>' + escapeHtml(statusTr(detail.status)) + '</b></span><span>Model <b>' + escapeHtml(displayValue(detail.prediction && (detail.prediction.label || detail.prediction.advice))) + "</b></span></div>" +
       '<p class="match-detail-lead">' + escapeHtml(matchDetailInsight(detail)) + '</p>' +
       matchRadarSnapshotHtml(detail) +
       matchSignalCardsHtml(detail) +
