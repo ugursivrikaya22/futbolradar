@@ -787,6 +787,43 @@ async function checkApi() {
   expect(keremApi && Array.isArray(keremApi.formerTeams) && keremApi.formerTeams.includes("Galatasaray"), "api players: Kerem formerTeams must include Galatasaray");
 }
 
+async function checkMatchAnalysisApi() {
+  const analyses = JSON.parse(fs.readFileSync(path.join(root, "data", "match-analyses.json"), "utf8"));
+  const missingQuery = await callEndpoint("match-analysis", "/api/match-analysis");
+  expect(missingQuery.payload.ok === false, "match-analysis: missing query should return ok:false");
+  expect(missingQuery.payload.error?.code === "MATCH_ANALYSIS_QUERY_REQUIRED", "match-analysis: missing query error code mismatch");
+
+  const notFound = await callEndpoint("match-analysis", "/api/match-analysis?fixtureId=does-not-exist");
+  expect(notFound.response.statusCode === 404, "match-analysis: unknown fixture should 404");
+  expect(notFound.payload.error?.code === "MATCH_ANALYSIS_NOT_FOUND", "match-analysis: unknown fixture error code mismatch");
+
+  if (!analyses.length) {
+    return;
+  }
+
+  const sample = analyses[0];
+  const byFixtureId = await callEndpoint("match-analysis", `/api/match-analysis?fixtureId=${encodeURIComponent(sample.fixtureId)}`);
+  expect(byFixtureId.payload.ok === true, "match-analysis: fixtureId lookup should succeed");
+  expect(byFixtureId.payload.method, "match-analysis: missing method field");
+  expect(byFixtureId.payload.data && byFixtureId.payload.data.fixtureId === sample.fixtureId, "match-analysis: data mismatch for fixtureId lookup");
+  expect(
+    byFixtureId.response.headers["cdn-cache-control"] === "public, s-maxage=300, stale-while-revalidate=900",
+    "match-analysis: CDN cache header mismatch"
+  );
+
+  const bySlug = await callEndpoint("match-analysis", `/api/match-analysis?slug=${encodeURIComponent(sample.slug)}`);
+  expect(bySlug.payload.ok === true, "match-analysis: slug lookup should succeed");
+
+  const payloadText = JSON.stringify(byFixtureId.payload);
+  expect(!/FOOTBALL_API_KEY|apiKey|X-Auth-Token/i.test(payloadText), "match-analysis: should not expose API key material");
+
+  const probabilities = sample.prediction && sample.prediction.probabilities;
+  if (probabilities) {
+    const sum = Number(probabilities.homeWin) + Number(probabilities.draw) + Number(probabilities.awayWin);
+    expect(sum === 100, `match-analysis: probabilities must sum to 100 (got ${sum})`);
+  }
+}
+
 checkVercelFunctionLimit();
 checkPublicMirrors();
 checkAnalyticsTag();
@@ -797,6 +834,7 @@ checkSeoAndLinks();
 checkClientSecrets();
 checkPublicCopyAndAccessibility();
 await checkApi();
+await checkMatchAnalysisApi();
 
 if (failures.length) {
   console.error(failures.join("\n"));

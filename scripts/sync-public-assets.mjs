@@ -30,6 +30,7 @@ for (const file of [
 for (const file of [
   "analyses.json",
   "competitions.json",
+  "match-analyses.json",
   "matches.json",
   "momentum.json",
   "news.json",

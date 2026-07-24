@@ -11,6 +11,7 @@ const CACHE_POLICIES = Object.freeze({
   momentum: { maxAge: 300, stale: 900 },
   signals: { maxAge: 120, stale: 600 },
   analyses: { maxAge: 3600, stale: 21600 },
+  "match-analysis": { maxAge: 300, stale: 900 },
   health: { noStore: true }
 });
 const QUERY_VALUE_MAX_LENGTH = 160;
