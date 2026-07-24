@@ -6843,7 +6843,7 @@
       document.querySelector('[data-api-target="news-preview"]'),
       "news",
       function (news) {
-        return news.slice(0, 4).map(renderNewsCard).join("");
+        return news.slice(0, 3).map(renderNewsCard).join("");
       },
       "Güncel futbol gündemi yüklenemedi"
     );

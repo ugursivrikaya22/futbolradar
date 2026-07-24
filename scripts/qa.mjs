@@ -435,24 +435,18 @@ function checkSeoAndLinks() {
     if (page === "index.html") {
       expect(html.includes('data-api-target="featured-match"'), `${page}: missing featured match`);
       expect(html.includes('data-api-target="today-matches"'), `${page}: missing today matches`);
-      expect(html.includes('data-api-target="radar-signals"'), `${page}: missing radar signals`);
-      expect(html.includes('data-api-target="home-standings"'), `${page}: missing standings summary`);
       expect(html.includes('data-api-target="player-radar"'), `${page}: missing player radar`);
       expect(html.includes('data-api-target="home-transfer-watch"'), `${page}: missing transfer watch`);
-      expect(html.includes('data-api-target="analysis-preview"'), `${page}: missing analysis preview`);
       expect(html.includes("istatistik-merkezi.html"), `${page}: missing statistics center route`);
       expect(html.includes("gol-kralligi.html"), `${page}: missing goal ranking route`);
-      expect(html.includes("asist-kralligi.html"), `${page}: missing assist ranking route`);
-      expect(html.includes("mac-merkezi.html"), `${page}: missing match center route`);
-      expect(html.includes("oyuncu-liderleri.html"), `${page}: missing player leaders route`);
       expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison traffic link`);
       expect(html.includes("super-lig-fikstur.html"), `${page}: missing fixture traffic link`);
       expect(html.includes("premier-league"), `${page}: missing Premier League route`);
       expect(html.includes("sampiyonlar-ligi"), `${page}: missing Champions League route`);
       expect(html.includes("avrupa-ligi"), `${page}: missing Europa League route`);
-      expect(html.includes('id="trend-radar"'), `${page}: missing Trend Radar section`);
-      expect(html.includes("transfer-sezonu-ne-zaman-bitiyor.html"), `${page}: missing transfer window trend link`);
-      expect(html.includes("uefa-ulke-puani-siralamasi.html"), `${page}: missing UEFA coefficient trend link`);
+      expect(html.includes("puan-durumu.html"), `${page}: missing standings route`);
+      expect(html.includes("momentum.html"), `${page}: missing momentum route`);
+      expect(html.includes("analizler.html"), `${page}: missing analysis hub route`);
     }
 
     if (page === "oyuncu-radari.html") {

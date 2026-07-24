@@ -289,7 +289,7 @@ writePage("index.html", {
   "home-standings": staticHomeStandingRows(),
   "player-radar": topPlayers.slice(0, 3).map(simplePlayerCard).join(""),
   "player-signals": playerSignals(),
-  "news-preview": newsCards(4),
+  "news-preview": newsCards(3),
   "analysis-preview": analysisCards()
 }, fixtureFreshness);
 
