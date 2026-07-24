@@ -15,11 +15,12 @@ const source = "FutbolRadar API-Football Live API";
 const DEFAULT_BASE_URL = "https://v3.football.api-sports.io";
 
 class ProviderError extends Error {
-  constructor(code, message, statusCode) {
+  constructor(code, message, statusCode, raw) {
     super(message);
     this.name = "ProviderError";
     this.code = code;
     this.statusCode = statusCode || 200;
+    this.raw = raw;
   }
 }
 
@@ -165,14 +166,15 @@ async function providerFetch(path, params) {
       throw new ProviderError(
         code,
         publicErrorMessage(code, response.status),
-        response.status
+        response.status,
+        payload
       );
     }
 
     const errors = apiErrors(payload);
     if (errors.length) {
       const classified = classifyPayloadError(errors);
-      throw new ProviderError(classified.code, classified.message);
+      throw new ProviderError(classified.code, classified.message, response.status, payload);
     }
 
     return payload || {};

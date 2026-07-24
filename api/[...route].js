@@ -175,7 +175,12 @@ async function handleSuperLigFixtures(req, res, query) {
   } catch (error) {
     rounds = getFixtureWeeks(fixturesData);
     source = mockProvider.source;
-    providerDebug.error = { code: error.code || "UNKNOWN", message: error.message || String(error) };
+    providerDebug.error = {
+      code: error.code || "UNKNOWN",
+      message: error.message || String(error),
+      httpStatus: error.statusCode || null,
+      raw: error.raw ?? null
+    };
   }
 
   return sendSuccess(res, { ...fixturesData, rounds, providerDebug }, source);
