@@ -1,0 +1,123 @@
+const apiFootballProvider = require("./providers/apiFootballProvider");
+const { normalizeText } = require("./matchRadarService");
+
+const PARTIAL_SQUAD_THRESHOLD = 11;
+
+async function fetchTeamSquad(team) {
+  if (!apiFootballProvider.hasConfig()) {
+    return { status: "unavailable", reason: "no-provider-config", players: [] };
+  }
+  if (!team || !team.providerId) {
+    return { status: "unavailable", reason: "no-team-provider-id", players: [] };
+  }
+
+  try {
+    const players = await apiFootballProvider.getSquad({ teamId: team.providerId });
+    return { status: "fetched", reason: null, players };
+  } catch (error) {
+    return { status: "unavailable", reason: error.code || "provider-error", players: [] };
+  }
+}
+
+function buildSquadSnapshot(team, providerPlayers, season) {
+  const players = Array.isArray(providerPlayers) ? providerPlayers : [];
+  const status = players.length === 0 ? "unavailable" : players.length < PARTIAL_SQUAD_THRESHOLD ? "partial" : "complete";
+
+  return {
+    teamId: team.providerId || team.id,
+    teamName: team.name,
+    season: season || new Date().getUTCFullYear(),
+    syncedAt: new Date().toISOString(),
+    status,
+    players: players.map((player) => ({
+      providerId: player.providerId || null,
+      name: player.name,
+      number: player.number ?? null,
+      position: player.position || null,
+      age: player.age ?? null,
+      photo: player.photo || null
+    }))
+  };
+}
+
+/**
+ * A team's squad snapshot is only ever additive-or-replace, never
+ * destructive: an empty/failed fetch must not erase a previously good
+ * snapshot for that team.
+ */
+function evaluateSquadSyncSafety(previousSnapshot, freshSnapshot) {
+  const previousCount = previousSnapshot && Array.isArray(previousSnapshot.players) ? previousSnapshot.players.length : 0;
+  const freshCount = freshSnapshot && Array.isArray(freshSnapshot.players) ? freshSnapshot.players.length : 0;
+
+  if (freshCount === 0 && previousCount > 0) {
+    return { safe: false, reason: "empty-fetch-would-erase-existing-squad", previousCount, freshCount };
+  }
+
+  return { safe: true, reason: null, previousCount, freshCount };
+}
+
+/**
+ * A providerId appearing as active in two different team squads at once is
+ * a data-quality signal (mid-window transfer, provider lag, duplicate
+ * roster entry) that must be surfaced for review, not silently resolved.
+ */
+function detectProviderIdConflicts(squadSnapshots) {
+  const seenBy = new Map();
+  const conflicts = [];
+
+  for (const snapshot of Array.isArray(squadSnapshots) ? squadSnapshots : []) {
+    for (const player of snapshot.players || []) {
+      if (!player.providerId) continue;
+      const previousTeam = seenBy.get(player.providerId);
+      if (previousTeam && previousTeam !== snapshot.teamName) {
+        conflicts.push({
+          providerId: player.providerId,
+          name: player.name,
+          teams: [previousTeam, snapshot.teamName],
+          reason: "player-active-in-two-squads"
+        });
+      }
+      seenBy.set(player.providerId, snapshot.teamName);
+    }
+  }
+
+  return conflicts;
+}
+
+/**
+ * Identity resolution order for matching a provider squad row against an
+ * existing canonical player: providerId first, then birthDate + normalized
+ * name. Name-only similarity is reported separately for manual review — it
+ * is never used to auto-merge two records.
+ */
+function matchCanonicalPlayer(canonicalPlayers, providerPlayer, providerBirthDate) {
+  const byProviderId = canonicalPlayers.find((player) => player.providerId && providerPlayer.providerId && player.providerId === providerPlayer.providerId);
+  if (byProviderId) {
+    return { match: byProviderId, method: "providerId" };
+  }
+
+  if (providerBirthDate) {
+    const byBirthAndName = canonicalPlayers.find((player) => {
+      return player.birthDate === providerBirthDate && normalizeText(player.name) === normalizeText(providerPlayer.name);
+    });
+    if (byBirthAndName) {
+      return { match: byBirthAndName, method: "birthDate+name" };
+    }
+  }
+
+  const nameOnlyCandidate = canonicalPlayers.find((player) => normalizeText(player.name) === normalizeText(providerPlayer.name));
+  if (nameOnlyCandidate) {
+    return { match: null, method: "name-only-review-required", reviewCandidate: nameOnlyCandidate };
+  }
+
+  return { match: null, method: "no-match" };
+}
+
+module.exports = {
+  fetchTeamSquad,
+  buildSquadSnapshot,
+  evaluateSquadSyncSafety,
+  detectProviderIdConflicts,
+  matchCanonicalPlayer,
+  PARTIAL_SQUAD_THRESHOLD
+};
