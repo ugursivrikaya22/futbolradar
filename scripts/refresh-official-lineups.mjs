@@ -12,6 +12,7 @@ const {
   compareProbableWithOfficial,
   computeLineupRefreshTargets
 } = require("../services/officialLineupService.js");
+const { applyOfficialLineupToCoverage } = require("../services/analysisCoverageService.js");
 
 const ANALYSES_PATH = path.join(root, "data", "match-analyses.json");
 const MAX_TARGETS_PER_RUN = 20;
@@ -74,6 +75,9 @@ async function main() {
       home: homeAccuracy.available ? homeAccuracy.accuracy : null,
       away: awayAccuracy.available ? awayAccuracy.accuracy : null
     };
+    if (merged.coverage) {
+      merged.coverage = applyOfficialLineupToCoverage(merged.coverage);
+    }
 
     byId.set(record.fixtureId, merged);
     changedCount += 1;

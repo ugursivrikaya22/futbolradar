@@ -89,6 +89,32 @@ function computeAnalysisCoverage({ home, away, homeContext, awayContext, homeSqu
 }
 
 /**
+ * The lineup-refresh job only has the stored match-analysis record, not the
+ * full team/player bundles the generator used — this cheaply patches an
+ * already-computed coverage object once an official lineup arrives, without
+ * needing to rebuild the whole coverage calculation from scratch.
+ */
+function applyOfficialLineupToCoverage(coverage) {
+  if (!coverage) return coverage;
+  const components = { ...coverage, officialLineupCoverage: 100 };
+  const totalWeight = Object.values(COMPONENT_WEIGHTS).reduce((sum, weight) => sum + weight, 0);
+  const overallCoverage = Math.round(
+    Object.entries(COMPONENT_WEIGHTS).reduce((sum, [key, weight]) => sum + (components[key] ?? 0) * weight, 0) / totalWeight
+  );
+
+  let confidenceLevel = "unavailable";
+  if (overallCoverage >= 65) confidenceLevel = "high";
+  else if (overallCoverage >= 40) confidenceLevel = "medium";
+  else if (overallCoverage > 0) confidenceLevel = "low";
+
+  const missingComponents = (coverage.missingComponents || []).filter(
+    (label) => label !== MISSING_COMPONENT_LABELS.officialLineupCoverage
+  );
+
+  return { ...components, overallCoverage, confidenceLevel, missingComponents };
+}
+
+/**
  * Faz 9 guard: full "complete" analysis requires both squads and lineups
  * to clear a real bar — an 8-player total dataset must never present as
  * "complete" just because the math happens to average out.
@@ -109,6 +135,7 @@ function analysisStatusFromCoverage(coverage) {
 module.exports = {
   computeAnalysisCoverage,
   analysisStatusFromCoverage,
+  applyOfficialLineupToCoverage,
   LOW_COVERAGE_THRESHOLD,
   COMPONENT_WEIGHTS
 };

@@ -1726,6 +1726,7 @@
           goalPotentialBadgeHtml(prediction && prediction.goalPotential) +
           "</div>"
         : "") +
+      '<div class="tag-row">' + coverageStatusChipHtml(analysis) + "</div>" +
       '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Maç detayı</a>' +
       (analysis ? analysisDeepLinkHtml(match) : "") +
       "</article>"
@@ -5586,6 +5587,92 @@
     return "İki takım dengeli";
   }
 
+  function coverageStatusChipHtml(analysis) {
+    if (!analysis) {
+      return '<span class="tag soft">Kadro verisi bekleniyor</span>';
+    }
+    if (analysis.officialLineupStatus === "available") {
+      return '<span class="tag green">Resmî ilk 11 açıklandı</span>';
+    }
+    if (analysis.analysisStatus === "complete") {
+      return '<span class="tag green">Analiz hazır</span>';
+    }
+    if (analysis.analysisStatus === "partial") {
+      return '<span class="tag soft">Kısmi analiz</span>';
+    }
+    return '<span class="tag soft">Kadro verisi bekleniyor</span>';
+  }
+
+  var COVERAGE_FIELD_LABELS = [
+    ["homeSquadCoverage", "Ev sahibi kadro kapsamı"],
+    ["awaySquadCoverage", "Deplasman kadro kapsamı"],
+    ["recentFormCoverage", "Form kapsamı"],
+    ["homeStatsCoverage", "Ev sahibi oyuncu istatistik kapsamı"],
+    ["awayStatsCoverage", "Deplasman oyuncu istatistik kapsamı"],
+    ["probableLineupCoverage", "Muhtemel ilk 11 güveni"]
+  ];
+
+  function coverageRowHtml(label, value) {
+    var known = value !== null && value !== undefined;
+    var width = known ? clampPercent(value) : 0;
+    return '<div class="matchup-row' + (known ? "" : " is-unavailable") + '">' +
+      '<span class="matchup-row-label">' + escapeHtml(label) + "</span>" +
+      '<span class="matchup-row-value is-home">' + (known ? Math.round(value) : "–") + "</span>" +
+      '<div class="matchup-row-track" role="img" aria-label="' + escapeHtml(label) + ": " + (known ? Math.round(value) + "/100" : "veri yok") + '">' +
+      '<span class="home-fill" style="--home-width:' + width + '%"></span>' +
+      "</div>" +
+      '<span class="matchup-row-value is-away">/100</span>' +
+      "</div>";
+  }
+
+  function dataCoverageSectionHtml(record) {
+    var coverage = record.coverage;
+    if (!coverage) {
+      return "";
+    }
+
+    var rows = COVERAGE_FIELD_LABELS.map(function (entry) {
+      return coverageRowHtml(entry[1], coverage[entry[0]]);
+    }).join("");
+
+    var officialLineupLabel = record.officialLineupStatus === "available" ? "Resmî ilk 11 açıklandı" : "Resmî ilk 11 bekleniyor";
+
+    return '<div class="match-intelligence-card">' +
+      '<span class="card-kicker">Veri Kapsamı</span>' +
+      analysisConfidenceBadge(coverage.overallCoverage, "Genel analiz güveni") +
+      '<div class="matchup-grid">' + rows + "</div>" +
+      '<div class="tag-row"><span class="tag soft">' + escapeHtml(officialLineupLabel) + "</span></div>" +
+      (coverage.missingComponents && coverage.missingComponents.length
+        ? '<ul class="lineup-missing-list">' + coverage.missingComponents.map(function (item) {
+          return "<li><span>" + escapeHtml(item) + "</span></li>";
+        }).join("") + "</ul>"
+        : "") +
+      "</div>";
+  }
+
+  function lineupAccuracySentence(sideLabel, accuracy, total) {
+    if (accuracy === null || accuracy === undefined) {
+      return "";
+    }
+    var correct = Math.round((accuracy / 100) * (total || 11));
+    return "<p>" + escapeHtml(sideLabel) + " muhtemel ilk 11 tahmininde " + (total || 11) + " oyuncunun " + correct +
+      "'i doğru eşleşti (%" + Math.round(accuracy) + ").</p>";
+  }
+
+  function officialLineupComparisonHtml(record) {
+    if (record.officialLineupStatus !== "available") {
+      return "";
+    }
+
+    var accuracy = record.lineupAccuracy || {};
+    return '<div class="match-intelligence-card">' +
+      '<span class="card-kicker">Muhtemel ve Resmî İlk 11 Karşılaştırması</span>' +
+      lineupAccuracySentence(record.homeContext.teamName, accuracy.home, 11) +
+      lineupAccuracySentence(record.awayContext.teamName, accuracy.away, 11) +
+      '<p class="muted-copy">Bu karşılaştırma yalnızca resmî ilk 11 açıklandıktan sonra hesaplanır ve geçmiş maçlarda değişmez.</p>' +
+      "</div>";
+  }
+
   function analysisDeepLinkHtml(match) {
     return '<a class="detail-link ghost" href="' + escapeHtml(matchDetailHref(match)) + '">Derin Analiz</a>';
   }
@@ -5841,12 +5928,14 @@
       '<p class="muted-copy">Model: ' + escapeHtml(record.modelVersion) + " · Üretim: " + escapeHtml(formatUpdatedAt(record.generatedAt)) + "</p>" +
       predictionNoteHtml() +
       "</div>" +
+      dataCoverageSectionHtml(record) +
       "</div>";
 
     var lineupPanel = '<div class="grid two">' +
       '<div class="match-intelligence-card">' + lineupSummaryHtml(record.probableLineups && record.probableLineups.home, home) + "</div>" +
       '<div class="match-intelligence-card">' + lineupSummaryHtml(record.probableLineups && record.probableLineups.away, away) + "</div>" +
-      "</div>";
+      "</div>" +
+      officialLineupComparisonHtml(record);
 
     var duelsPanel = '<div class="match-intelligence-card">' + keyDuelsHtml(record.keyDuels) + "</div>";
 
