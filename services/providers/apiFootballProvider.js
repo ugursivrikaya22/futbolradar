@@ -1,5 +1,7 @@
 const {
+  APIFOOTBALL_API_KEY_ENV_NAMES,
   DEFAULT_TIMEOUT_MS,
+  firstPresentEnv,
   normalizeText,
   withTimeout
 } = require("../../api/_utils");
@@ -21,7 +23,7 @@ function getConfig() {
   return {
     provider: process.env.FOOTBALL_PRIMARY_PROVIDER || "api-football",
     baseUrl: process.env.APIFOOTBALL_API_BASE_URL || DEFAULT_BASE_URL,
-    apiKey: process.env.APIFOOTBALL_API_KEY || "",
+    apiKey: firstPresentEnv(APIFOOTBALL_API_KEY_ENV_NAMES),
     leagueId: process.env.APIFOOTBALL_LEAGUE_ID || "",
     season: process.env.APIFOOTBALL_SEASON || "2026",
     country: process.env.APIFOOTBALL_COUNTRY || "Turkey"
