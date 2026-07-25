@@ -13,7 +13,31 @@ const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig, getProvider, getProvider
 const { getConfig } = require("../services/providers/footballProvider");
 
 function presentEnvNames(names) {
-  return names.filter((name) => Boolean(process.env[name]));
+  return names.filter((name) => String(process.env[name] || "").trim() !== "");
+}
+
+/**
+ * Kimlik bilgisinin kendisini değil, "doğru değişkene doğru biçimde
+ * girilmiş mi" sorusunun cevabını raporlar: hangi isimler dolu, değer kaç
+ * karakter ve kırpılması gerekiyor muydu. Yanlış isme yazılmış ya da sonda
+ * boşluk taşıyan bir anahtar sağlayıcıda "Missing application key" olarak
+ * görünüyor; bu alanlar olmadan ikisi ayırt edilemiyor. Değer hiçbir
+ * koşulda yanıta girmez.
+ */
+function credentialShape(names) {
+  return names
+    .filter((name) => process.env[name] !== undefined && process.env[name] !== "")
+    .map((name) => {
+      const raw = String(process.env[name]);
+      const trimmed = raw.trim();
+      return {
+        env: name,
+        length: trimmed.length,
+        hadSurroundingWhitespace: raw !== trimmed,
+        looksQuoted: /^["'].*["']$/.test(trimmed),
+        blank: trimmed === ""
+      };
+    });
 }
 
 function buildDiagnostics(config) {
@@ -49,7 +73,13 @@ function buildDiagnostics(config) {
     apiFootball: {
       credentialPresent: Boolean(presentEnvNames(APIFOOTBALL_API_KEY_ENV_NAMES).length),
       baseUrlConfigured: Boolean(apiFootballConfig.baseUrl),
-      configured: apiFootballProvider.hasConfig()
+      configured: apiFootballProvider.hasConfig(),
+      // Hangi değişken okunuyor ve değeri biçimsel olarak sağlam mı.
+      credentialEnvNames: presentEnvNames(APIFOOTBALL_API_KEY_ENV_NAMES),
+      credentialShape: credentialShape(APIFOOTBALL_API_KEY_ENV_NAMES),
+      activeBaseUrl: apiFootballConfig.baseUrl,
+      leagueIdConfigured: Boolean(apiFootballConfig.leagueId),
+      resolvedSeason: apiFootballConfig.season
     },
     providerSelection: {
       primaryProviderEnv: process.env.FOOTBALL_PRIMARY_PROVIDER || null,

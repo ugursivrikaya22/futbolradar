@@ -117,7 +117,11 @@ async function resolveFromProviders({ resource, run, query, isUsable }) {
       continue;
     }
 
-    if (!isLastResort && isProviderDisabled(resource, provider.name)) {
+    // `?debug=1` devre kesiciyi atlar. Teşhis anında operatörün görmek
+    // istediği şey sağlayıcının o anki gerçek cevabıdır; beş dakika önce
+    // alınmış bir karar yüzünden "skipped" görmek, anahtar/plan düzeltmesi
+    // yapıldıktan sonra durumu doğrulamayı imkânsız kılıyordu.
+    if (!isLastResort && !includeDetail && isProviderDisabled(resource, provider.name)) {
       attempt.status = "skipped";
       attempt.code = "PROVIDER_TEMPORARILY_DISABLED";
       attempts.push(attempt);

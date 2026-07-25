@@ -238,9 +238,19 @@ function normalizeText(value) {
     .toLowerCase();
 }
 
+/**
+ * İlk dolu ortam değişkeninin değerini kırpılmış olarak döndürür.
+ *
+ * Kırpma önemli: panelden kopyalanan API anahtarları sık sık sonda bir
+ * boşluk veya satır sonu taşıyor. Ham değer HTTP başlığına konduğunda
+ * sağlayıcı bunu geçersiz sayıp "Missing application key" döndürüyor —
+ * anahtar doğru olduğu hâlde. Sadece boşluk içeren bir değer de "yok"
+ * sayılır, böylece yanlışlıkla boş bırakılmış bir değişken sıradaki
+ * geçerli ismi gölgelemez.
+ */
 function firstPresentEnv(names) {
-  const found = names.find((name) => Boolean(process.env[name]));
-  return found ? process.env[found] : "";
+  const found = names.find((name) => String(process.env[name] || "").trim() !== "");
+  return found ? String(process.env[found]).trim() : "";
 }
 
 function hasProviderConfig() {
