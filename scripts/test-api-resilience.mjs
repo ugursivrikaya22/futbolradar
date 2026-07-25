@@ -41,6 +41,27 @@ function testQuerySanitizing() {
   assert.equal(utils.sanitizeQuery({ team: ["Galatasaray", "Fenerbahce"] }).team, "Galatasaray");
 }
 
+async function testHeadRequestSupport() {
+  // HEAD, izleme araçlarının ve CDN ön kontrollerinin varsayılan yöntemi.
+  const head = fakeResponse();
+  await matchesHandler({
+    method: "HEAD",
+    url: "/api/matches?date=2026-07-23",
+    headers: { "x-forwarded-for": "203.0.113.61" }
+  }, head);
+  assert.equal(head.statusCode, 200);
+  assert.equal(head.headers["cdn-cache-control"], "public, s-maxage=60, stale-while-revalidate=180");
+
+  const post = fakeResponse();
+  await matchesHandler({
+    method: "POST",
+    url: "/api/matches",
+    headers: { "x-forwarded-for": "203.0.113.62" }
+  }, post);
+  assert.equal(post.statusCode, 405);
+  assert.equal(post.payload.error.code, "METHOD_NOT_ALLOWED");
+}
+
 function testCachePolicies() {
   assert.equal(utils.cacheControlFor("matches").cdn, "public, s-maxage=60, stale-while-revalidate=180");
   assert.equal(utils.cacheControlFor("players").cdn, "public, s-maxage=3600, stale-while-revalidate=21600");
@@ -559,5 +580,6 @@ await testFootballDataCompetitionFallback();
 await testPlanErrorFailsOverToCuratedData();
 await testCuratedAndCalendarMerge();
 await testCuratedLeagueFilterUsesCatalog();
+await testHeadRequestSupport();
 
 console.log("FutbolRadar API resilience tests passed");

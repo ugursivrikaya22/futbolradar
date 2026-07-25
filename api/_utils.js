@@ -247,9 +247,15 @@ function hasProviderConfig() {
   return Boolean(firstPresentEnv(API_KEY_ENV_NAMES));
 }
 
+const READ_ONLY_METHODS = new Set(["GET", "HEAD"]);
+
 function rejectUnsupportedMethod(req, res) {
-  if (req.method && req.method !== "GET") {
-    sendError(res, 405, "Sadece GET istekleri desteklenir.", "METHOD_NOT_ALLOWED");
+  // HEAD, GET'in gövdesiz hâlidir; uptime kontrolleri ve bazı tarayıcı/CDN
+  // ön isteklerinde kullanılır. Eskiden 405 dönüyordu, bu da izleme
+  // araçlarında sahte "endpoint kapalı" alarmı üretiyordu. Node HEAD
+  // yanıtında gövdeyi kendisi atar; başlıklar ve durum kodu GET ile aynı.
+  if (req.method && !READ_ONLY_METHODS.has(req.method)) {
+    sendError(res, 405, "Sadece GET ve HEAD istekleri desteklenir.", "METHOD_NOT_ALLOWED");
     return true;
   }
 
