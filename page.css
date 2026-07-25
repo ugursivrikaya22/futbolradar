@@ -3623,7 +3623,21 @@ h1 {
         gap: 14px;
       }
 
-      /* Canlı maç yokken canlı skor sayfasında gösterilen günün sonuçları. */
+      /* Canlı maç yokken canlı skor sayfasında gösterilen günün sonuçları.
+         Sarmalayıcı `.grid` üç sütunlu; bu bölüm tek hücreye sıkışırsa
+         içindeki kartlar okunamayacak kadar daralıyor, o yüzden satırın
+         tamamını kaplar. */
+      .live-score-daily {
+        grid-column: 1 / -1;
+        min-width: 0;
+      }
+
+      /* Kart sayısı değişken olduğu için sabit dört sütun yerine sığdıkça
+         yerleşir; üç maçlık bir günde kartlar dörtte bire düşmez. */
+      .live-score-daily .matches-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+
       .live-score-daily-head {
         display: flex;
         flex-wrap: wrap;
