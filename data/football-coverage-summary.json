@@ -1,19 +1,19 @@
 {
-  "generatedAt": "2026-07-25T11:51:36.171Z",
+  "generatedAt": "2026-07-25T12:20:20.325Z",
   "season": 2026,
   "teamCount": 5,
-  "currentPlayerCount": 8,
-  "currentSuperLigPlayerCount": 6,
-  "averagePlayersPerTeam": 1.2,
+  "currentPlayerCount": 110,
+  "currentSuperLigPlayerCount": 106,
+  "averagePlayersPerTeam": 21.2,
   "playersWithProviderId": 0,
-  "playersWithCurrentTeam": 8,
-  "playersWithPosition": 8,
+  "playersWithCurrentTeam": 110,
+  "playersWithPosition": 110,
   "playersWithSeasonStats": 8,
-  "playersWithRating": 8,
-  "teamsWithCompleteSquad": 0,
-  "teamsWithPartialSquad": 3,
-  "teamsWithInsufficientSquad": 2,
-  "teamsThatCanGenerateProbableLineup": 0,
+  "playersWithRating": 110,
+  "teamsWithCompleteSquad": 5,
+  "teamsWithPartialSquad": 0,
+  "teamsWithInsufficientSquad": 0,
+  "teamsThatCanGenerateProbableLineup": 5,
   "fixtureCount": 8,
   "fixtureRoundMatchCount": 306,
   "upcomingLeagueFixtureCount": 0,
@@ -26,56 +26,55 @@
     "stale": 0
   },
   "componentScores": {
-    "squadCoverage": 0,
+    "squadCoverage": 100,
     "playerMetadataCoverage": 100,
-    "lineupFeasibility": 0,
+    "lineupFeasibility": 100,
     "fixtureReadiness": 60,
     "officialLineupCoverage": 100
   },
-  "coverageScore": 36,
+  "coverageScore": 96,
   "teamSquadReports": [
     {
       "team": "Galatasaray",
-      "squadSize": 2,
-      "lineupCoverage": 18,
-      "canGenerateProbableLineup": false,
-      "squadStatus": "partial"
+      "squadSize": 21,
+      "lineupCoverage": 100,
+      "canGenerateProbableLineup": true,
+      "squadStatus": "complete"
     },
     {
       "team": "Fenerbahçe",
-      "squadSize": 2,
-      "lineupCoverage": 18,
-      "canGenerateProbableLineup": false,
-      "squadStatus": "partial"
+      "squadSize": 22,
+      "lineupCoverage": 100,
+      "canGenerateProbableLineup": true,
+      "squadStatus": "complete"
     },
     {
       "team": "Beşiktaş",
-      "squadSize": 2,
-      "lineupCoverage": 18,
-      "canGenerateProbableLineup": false,
-      "squadStatus": "partial"
+      "squadSize": 21,
+      "lineupCoverage": 100,
+      "canGenerateProbableLineup": true,
+      "squadStatus": "complete"
     },
     {
       "team": "Trabzonspor",
-      "squadSize": 0,
-      "lineupCoverage": 0,
-      "canGenerateProbableLineup": false,
-      "squadStatus": "unavailable"
+      "squadSize": 20,
+      "lineupCoverage": 100,
+      "canGenerateProbableLineup": true,
+      "squadStatus": "complete"
     },
     {
       "team": "Samsunspor",
-      "squadSize": 0,
-      "lineupCoverage": 0,
-      "canGenerateProbableLineup": false,
-      "squadStatus": "unavailable"
+      "squadSize": 22,
+      "lineupCoverage": 100,
+      "canGenerateProbableLineup": true,
+      "squadStatus": "complete"
     }
   ],
   "criticalIssues": [
-    "Süper Lig oyuncu sayısı kritik eşiğin altında: 6/100. Muhtemel ilk 11 ve kilit eşleşme motorları çoğu maçta 'yetersiz veri' dönecek.",
     "Hiçbir oyuncuda gerçek provider ID yok; tüm kimlikler mock/sentetik."
   ],
   "warnings": [
-    "2 takımın kadro verisi tamamen eksik.",
+    "Süper Lig oyuncu sayısı hedefin altında: 106/300.",
     "Yaklaşan doğrulanmış Süper Lig ligi maçı bulunamadı (sezon henüz başlamamış olabilir)."
   ]
 }

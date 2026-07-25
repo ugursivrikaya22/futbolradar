@@ -78,7 +78,10 @@ function positionGroup(position) {
     normalized.includes("orta") ||
     normalized.includes("10 numara") ||
     normalized.includes("merkez") ||
-    normalized.includes("midfield")
+    normalized.includes("midfield") ||
+    // "Ön libero" is the Turkish term for the holding midfielder, not a
+    // sweeper; without this it falls through and is treated as a striker.
+    normalized.includes("libero")
   ) {
     return "midfielder";
   }

@@ -66,7 +66,15 @@ function profileContent(player) {
     ["Piyasa", market]
   ];
   const radar = player.radar || {};
-  const radarItems = Object.entries(radar).slice(0, 5).map(([key, value]) => `<span>${escapeHtml(key)} <b>${escapeHtml(value)}</b></span>`).join("");
+  // Axes are null until real performance data exists; rendering them anyway
+  // produces bare labels with no value, so drop them and fall back to the
+  // "yakinda" note below.
+  const radarItems = Object.entries(radar)
+    .filter(([key]) => key !== "dataConfidence")
+    .filter(([, value]) => Number.isFinite(Number(value)) && value !== null && value !== "")
+    .slice(0, 5)
+    .map(([key, value]) => `<span>${escapeHtml(key)} <b>${escapeHtml(value)}</b></span>`)
+    .join("");
   return `<section class="profile-section profile-content-prerender" aria-label="${escapeHtml(player.name)} performans ozeti">
     <div class="metric-grid profile-metrics">${metrics.map(([label, value]) => `<span>${escapeHtml(label)} <b>${escapeHtml(value)}</b></span>`).join("")}</div>
     <div class="profile-section-head"><h2>Oyuncu ozeti</h2><span>${escapeHtml(team(player))} · ${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)} yas</span></div>
