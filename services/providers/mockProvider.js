@@ -293,6 +293,16 @@ function hasFinalScore(match) {
  * Böylece kürasyonlu veri bir gün geride kaldığında biten maç "oynanacak"
  * görünmez, ama doğrulanmış bir skor da asla sağlayıcı tahminiyle ezilmez.
  */
+// "Açıklanmadı" gibi yer tutucular teknik olarak dolu bir alan, ama bilgi
+// taşımıyorlar. Yer tutucu sayılmazlarsa sağlayıcıdan gelen gerçek stadyum
+// adı hiçbir zaman yerlerine geçemiyor ve kullanıcı, elimizde veri varken
+// "Açıklanmadı" görmeye devam ediyordu.
+const VENUE_PLACEHOLDERS = new Set(["", "-", "–", "aciklanmadi", "belirlenmedi", "bilinmiyor", "tbd"]);
+
+function hasRealVenue(value) {
+  return !VENUE_PLACEHOLDERS.has(normalizeText(value).replace(/\s+/g, " ").trim());
+}
+
 function curatedMatches() {
   const merged = new Map();
 
@@ -309,18 +319,30 @@ function curatedMatches() {
       continue;
     }
 
+    // Saha bilgisi maç durumundan bağımsız tamamlanır: kürasyonlu kayıtta
+    // gerçek bir stadyum yoksa sağlayıcınınki kullanılır. Kürasyonlu kayıtta
+    // doğrulanmış bir saha varsa (ör. kamp maçının tarafsız stadı) sağlayıcı
+    // onu asla ezmez - sağlayıcılar bu durumda ev sahibinin varsayılan
+    // stadyumunu göstermeye eğilimli.
+    const venue = hasRealVenue(existing.venue) ? existing.venue : (calendarMatch.venue || existing.venue || null);
     const advances = matchStateRank(calendarMatch.status) > matchStateRank(existing.status);
-    if (!advances || hasFinalScore(existing)) {
+    const canAdvance = advances && !hasFinalScore(existing);
+
+    if (!canAdvance && venue === existing.venue) {
       continue;
     }
 
     merged.set(key, {
       ...existing,
-      status: calendarMatch.status,
-      score: hasFinalScore(calendarMatch) ? { ...existing.score, ...calendarMatch.score } : existing.score,
-      venue: existing.venue || calendarMatch.venue || null,
-      providerId: existing.providerId || calendarMatch.providerId || "",
-      liveStateSource: calendarMatch.source || "provider"
+      venue,
+      ...(canAdvance
+        ? {
+          status: calendarMatch.status,
+          score: hasFinalScore(calendarMatch) ? { ...existing.score, ...calendarMatch.score } : existing.score,
+          liveStateSource: calendarMatch.source || "provider"
+        }
+        : {}),
+      providerId: existing.providerId || calendarMatch.providerId || ""
     });
   }
 

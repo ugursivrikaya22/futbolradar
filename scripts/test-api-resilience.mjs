@@ -332,6 +332,26 @@ async function testCuratedAndCalendarMerge() {
   assert.ok(today.every((match) => match.homeTeam && match.awayTeam && match.league && match.kickoff));
 }
 
+/**
+ * Kamp maçlarında iki kaynak da kısmen doğru: kürasyonlu kayıt tarafsız
+ * sahayı biliyor, sağlayıcı ise ev sahibinin varsayılan stadyumunu
+ * gösteriyor. Buna karşılık kürasyonlu kayıtta saha "Açıklanmadı" ise
+ * sağlayıcının gerçek stadyumu kullanılmalı.
+ */
+async function testVenueCompletion() {
+  const today = await mockProvider.getMatches({ date: "2026-07-25" });
+  const byTeam = (name) => today.find((match) => `${match.homeTeam} ${match.awayTeam}`.includes(name));
+
+  const camp = byTeam("Hull City");
+  assert.ok(camp, "Konyaspor kamp maci listelenmeli");
+  assert.equal(camp.venue, "Športni park Aluminij", "dogrulanmis tarafsiz saha saglayici tarafindan ezilmemeli");
+
+  const abroad = byTeam("RAAL La Louvière");
+  assert.ok(abroad, "Samsunspor maci listelenmeli");
+  assert.notEqual(abroad.venue, "Açıklanmadı", "yer tutucu saha saglayici verisiyle tamamlanmali");
+  assert.ok(abroad.venue && abroad.venue.length > 3);
+}
+
 function testCuratedLeagueFilterUsesCatalog() {
   // "sampiyonlar-ligi" slug'ı "UEFA Şampiyonlar Ligi" satırıyla birebir
   // eşleşmediği için lig filtresi kürasyonlu veride hiç sonuç dönmüyordu.
@@ -643,5 +663,6 @@ await testCuratedAndCalendarMerge();
 await testCuratedLeagueFilterUsesCatalog();
 await testHeadRequestSupport();
 await testApiKeyCandidateRecovery();
+await testVenueCompletion();
 
 console.log("FutbolRadar API resilience tests passed");
