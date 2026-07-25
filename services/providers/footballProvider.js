@@ -6,7 +6,7 @@ const {
   firstPresentEnv,
   withTimeout
 } = require("../../api/_utils");
-const { findCompetition, matchesCompetition } = require("../competitionCatalog");
+const { competitions, findCompetition, matchesCompetition } = require("../competitionCatalog");
 
 const source = "FutbolRadar Football-Data Live API";
 
@@ -403,10 +403,14 @@ async function getMatches(query) {
     payload = await providerFetch("/matches", { dateFrom, dateTo });
   }
 
-  let matches = (payload.matches || payload.data || []).map(normalizeLiveMatch);
-  if (competition) {
-    matches = matches.filter((match) => matchesCompetition(match.league, competition));
-  }
+  const allMatches = (payload.matches || payload.data || []).map(normalizeLiveMatch);
+  // Belirli bir turnuva istenmediğinde football-data.org abonelikteki tüm
+  // turnuvaları döndürüyor. Editoryal kapsam dışı ligler (ör. Brasileirão)
+  // "Bugünkü Maçlar" listesine sızmasın diye api-football adaptöründeki
+  // katalog filtresinin aynısı burada da uygulanır.
+  const matches = competition
+    ? allMatches.filter((match) => matchesCompetition(match.league, competition))
+    : allMatches.filter((match) => competitions.some((item) => matchesCompetition(match.league, item)));
 
   return stampProviderData(matches, "matches", 5 * 60 * 1000);
 }

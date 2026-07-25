@@ -21,8 +21,8 @@ const PERMANENT_ERROR_CODES = new Set([
   "LIVE_PROVIDER_NOT_IMPLEMENTED"
 ]);
 
-function errorAttempt(error) {
-  return {
+function errorAttempt(error, includeDetail) {
+  const attempt = {
     status: "error",
     code: error && error.code ? error.code : "PROVIDER_ERROR",
     // Provider messages are already user-facing Turkish strings built by the
@@ -30,6 +30,21 @@ function errorAttempt(error) {
     message: error && error.message ? String(error.message).slice(0, 200) : "Bilinmeyen provider hatasi.",
     permanent: PERMANENT_ERROR_CODES.has(error && error.code)
   };
+
+  // `?debug=1` adds the provider's own error body. Adapters classify errors
+  // into our own codes, which loses the vendor wording - and that wording
+  // ("Free plans do not have access to this season") is exactly what tells
+  // an operator whether the fix is a key, a plan or a query. Off by default
+  // so a normal response stays lean; the body is provider-authored error
+  // text, never request headers, so no credential can appear here.
+  if (includeDetail && error) {
+    attempt.httpStatus = error.statusCode || null;
+    attempt.detail = error.raw === undefined || error.raw === null
+      ? null
+      : String(typeof error.raw === "string" ? error.raw : JSON.stringify(error.raw)).slice(0, 400);
+  }
+
+  return attempt;
 }
 
 /**
@@ -50,6 +65,7 @@ async function resolveFromProviders({ resource, run, query, isUsable }) {
   const attempts = [];
   const deadline = Date.now() + TOTAL_BUDGET_MS;
   const usable = isUsable || ((data) => Array.isArray(data) && data.length > 0);
+  const includeDetail = Boolean(query && String(query.debug) === "1");
   let fallback = null;
 
   for (const provider of chain) {
@@ -99,7 +115,7 @@ async function resolveFromProviders({ resource, run, query, isUsable }) {
         fallback = { data, provider };
       }
     } catch (error) {
-      Object.assign(attempt, errorAttempt(error));
+      Object.assign(attempt, errorAttempt(error, includeDetail));
     }
 
     attempts.push(attempt);

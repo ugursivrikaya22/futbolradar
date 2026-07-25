@@ -221,8 +221,22 @@ async function testPlanErrorFailsOverToCuratedData() {
     assert.equal(apiFootballAttempt.code, "PROVIDER_PLAN_ERROR");
     assert.equal(apiFootballAttempt.permanent, true);
 
+    assert.equal(apiFootballAttempt.detail, undefined, "saglayici hata govdesi varsayilan olarak kapali olmali");
+
     const serialized = JSON.stringify(response.payload);
     assert.ok(!serialized.includes("test-free-plan-key"), "teshis alani kimlik bilgisi sizdirmamali");
+
+    // ?debug=1 ile sağlayıcının kendi hata metni görünür olmalı; operatör
+    // sorunun anahtar mı, paket mi, sorgu mu olduğunu buradan ayırt eder.
+    const debugResponse = fakeResponse();
+    await matchesHandler({
+      method: "GET",
+      url: "/api/matches?date=2026-07-23&debug=1",
+      headers: { "x-forwarded-for": "203.0.113.45" }
+    }, debugResponse);
+    const debugAttempt = debugResponse.payload.meta.attempts.find((attempt) => attempt.provider === "api-football");
+    assert.match(debugAttempt.detail, /Free plans do not have access to this season/);
+    assert.ok(!JSON.stringify(debugResponse.payload).includes("test-free-plan-key"));
   } finally {
     global.fetch = previousFetch;
     envNames.forEach((name) => {
@@ -493,6 +507,11 @@ async function testFootballDataCompetitionFallback() {
     assert.equal(matches.length, 1);
     assert.equal(matches[0].league, "Premier League");
     assert.deepEqual(matches[0].score, { home: 2, away: 1 });
+
+    // Turnuva belirtilmeyen istekte football-data abonelikteki her ligi
+    // döndürüyor; katalog dışı ligler günün maç listesine girmemeli.
+    const unscoped = await footballData.getMatches({ date: "2026-05-24" });
+    assert.deepEqual(unscoped.map((match) => match.league), ["Premier League"]);
   } finally {
     global.fetch = previousFetch;
     if (previousKey === undefined) delete process.env.FOOTBALL_API_KEY;
