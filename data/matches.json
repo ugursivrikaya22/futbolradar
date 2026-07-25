@@ -195,19 +195,26 @@
     "city": "İstanbul",
     "homeTeam": "Beşiktaş",
     "awayTeam": "FC Midtjylland",
-    "status": "SCHEDULED",
-    "score": { "home": null, "away": null },
-    "summary": "Beşiktaş, UEFA Avrupa Ligi 2. eleme turu ilk maçında FC Midtjylland'ı İstanbul'da ağırlayacak.",
+    "status": "FINISHED",
+    "score": { "home": 1, "away": 0, "halftimeHome": 1, "halftimeAway": 0 },
+    "summary": "Beşiktaş, UEFA Avrupa Ligi 2. eleme turu ilk maçında Orkun Kökçü'nün golüyle FC Midtjylland'ı 1-0 mağlup etti; Midtjylland 15. dakikada kırmızı kartla 10 kişi kaldı. Rövanş 30 Temmuz'da Danimarka'da oynanacak.",
     "lineups": [],
     "substitutions": [],
-    "events": [],
+    "events": [
+      { "time": "15'", "team": { "name": "FC Midtjylland" }, "type": "Kırmızı Kart", "detail": "Friday Etim, Tiago Djalo'ya yaptığı sert faul nedeniyle doğrudan kırmızı kart gördü." },
+      { "time": "26'", "team": { "name": "Beşiktaş" }, "type": "Gol", "detail": "Orkun Kökçü'nün golüyle Beşiktaş 1-0 öne geçti." }
+    ],
     "statistics": [],
     "prediction": null,
-    "source": "official_club",
-    "sourceName": "Beşiktaş JK",
-    "sourceUrls": ["https://bjk.com.tr/tr/mobil/haber?news_id=94748"],
-    "fetchedAt": "2026-07-22T12:00:00+03:00",
-    "lastVerifiedAt": "2026-07-22T12:00:00+03:00",
+    "source": "manual_verified",
+    "sourceName": "Sporx",
+    "sourceUrls": [
+      "https://bjk.com.tr/tr/mobil/haber?news_id=94748",
+      "https://www.sporx.com/besiktas-fc-midtjylland-maci-goller-kartlar-5788580",
+      "https://www.hurriyet.com.tr/sporarena/canli-anlatim-besiktas-midtjylland-uefa-avrupa-ligi-eleme-maci-43248871"
+    ],
+    "fetchedAt": "2026-07-25T12:00:00+03:00",
+    "lastVerifiedAt": "2026-07-25T12:00:00+03:00",
     "dataStatus": "verified",
     "confidence": 1,
     "needsReview": false
@@ -225,24 +232,26 @@
     "broadcast": { "turkey": "S Sport Plus", "italy": "Sportitalia" },
     "homeTeam": "Galatasaray",
     "awayTeam": "AC Monza",
-    "status": "SCHEDULED",
-    "score": { "home": null, "away": null },
-    "summary": "Galatasaray, Avusturya kampındaki hazırlık maçında Serie A ekibi AC Monza ile karşılaşacak.",
+    "status": "FINISHED",
+    "score": { "home": 0, "away": 2, "halftimeHome": 0, "halftimeAway": 1 },
+    "summary": "Galatasaray, Avusturya kampındaki hazırlık maçında AC Monza'ya 0-2 mağlup oldu; golleri 23. dakikada Andrea Carboni ve 49. dakikada Patrick Cutrone kaydetti.",
     "lineups": [],
     "substitutions": [],
-    "events": [],
+    "events": [
+      { "time": "23'", "team": { "name": "AC Monza" }, "type": "Gol", "detail": "Andrea Carboni'nin golüyle Monza 1-0 öne geçti." },
+      { "time": "49'", "team": { "name": "AC Monza" }, "type": "Gol", "detail": "Patrick Cutrone'nin golüyle Monza 2-0'a çıktı." }
+    ],
     "statistics": [],
     "prediction": null,
-    "source": "official_club",
-    "sourceName": "AC Monza",
+    "source": "manual_verified",
+    "sourceName": "Fanatik",
     "sourceUrls": [
       "https://www.acmonza.com/en/news/galatasaray-monza-friendly-match-24-july-in-austria/",
-      "https://www.acmonza.com/en/news/galatasaray-monza-live-on-sportitalia/",
-      "https://www.ssportplus.com/galatasaray-ac-monza-maci-canli-izle/",
-      "https://www.aa.com.tr/tr/spor/galatasaray-hazirlik-macinda-italya-ekibi-monza-ile-karsilasacak/4006557"
+      "https://www.fanatik.com.tr/galatasaray/live-galatasaraydan-tatsiz-prova-hazirlik-macinda-maglup-galatasaray-monza-mac-sonucu-0-2-2631856",
+      "https://www.gzt.com/spor/galatasaray-monza-mac-sonucu-galatasaray-monza-hazirlik-maci-ozeti-galatasaray-0-2-monza-hazirlik-maci-4244524"
     ],
-    "fetchedAt": "2026-07-24T14:31:00+03:00",
-    "lastVerifiedAt": "2026-07-24T14:31:00+03:00",
+    "fetchedAt": "2026-07-25T12:00:00+03:00",
+    "lastVerifiedAt": "2026-07-25T12:00:00+03:00",
     "dataStatus": "verified",
     "confidence": 1,
     "needsReview": false,
@@ -346,46 +355,6 @@
       ],
       "lastVerifiedAt": "2026-07-24T14:31:00+03:00"
     }
-  },
-  {
-    "id": "trabzonspor-sturm-graz-2026-07-22",
-    "competitionId": "hazirlik-maci",
-    "league": "Hazırlık Maçı",
-    "stage": "Avusturya kampı, 2. hazırlık maçı",
-    "kickoff": "2026-07-22T17:00:00+03:00",
-    "time": "63'",
-    "venue": "Planai-Stadion",
-    "city": "Schladming",
-    "homeTeam": "Trabzonspor",
-    "awayTeam": "SK Sturm Graz",
-    "status": "LIVE",
-    "score": { "home": 1, "away": 1, "halftimeHome": 0, "halftimeAway": 1 },
-    "summary": "Trabzonspor, Avusturya kampındaki ikinci hazırlık maçında Sturm Graz ile 1-1 berabere; skor ve istatistikler maç sürerken güncelleniyor.",
-    "lineups": [],
-    "substitutions": [],
-    "events": [
-      { "time": "38'", "team": { "name": "SK Sturm Graz" }, "type": "Gol", "detail": "Sturm Graz devreye 1-0 önde girdi." },
-      { "time": "57'", "team": { "name": "Trabzonspor" }, "type": "Gol", "detail": "Trabzonspor'un golüyle skor 1-1 oldu." }
-    ],
-    "statistics": [
-      { "category": "Genel", "type": "Topla oynama", "home": 54, "away": 46, "unit": "%", "higherIsBetter": true },
-      { "category": "Hücum", "type": "Toplam şut", "home": 7, "away": 5, "higherIsBetter": true },
-      { "category": "Hücum", "type": "İsabetli şut", "home": 3, "away": 2, "higherIsBetter": true },
-      { "category": "Genel", "type": "Korner", "home": 4, "away": 3 }
-    ],
-    "prediction": null,
-    "liveTags": [
-      { "label": "Canlı skor güncelleniyor", "variant": "green" },
-      { "label": "İstatistikler maç sırasında yenilenir", "variant": "" }
-    ],
-    "source": "official_club",
-    "sourceName": "Trabzonspor",
-    "sourceUrls": ["https://www.trabzonspor.org.tr/tr/haberler/hazirlik-maci-programimiz-belli-oldu-3-21-07-2026"],
-    "fetchedAt": "2026-07-22T18:05:00+03:00",
-    "lastVerifiedAt": "2026-07-22T18:05:00+03:00",
-    "dataStatus": "verified",
-    "confidence": 0.92,
-    "needsReview": false
   },
   {
     "id": "samsunspor-raal-la-louviere-2026-07-25",
