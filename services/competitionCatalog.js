@@ -92,6 +92,10 @@ function classifyFixtureCompetition(match) {
     return { competitionType: "cup", isOfficialCompetition: true, includeInLeagueForm: false };
   }
 
+  if (competition.type === "friendly") {
+    return { competitionType: "friendly", isOfficialCompetition: false, includeInLeagueForm: false };
+  }
+
   if (competition.type === "continental") {
     return { competitionType: "europe", isOfficialCompetition: true, includeInLeagueForm: false };
   }

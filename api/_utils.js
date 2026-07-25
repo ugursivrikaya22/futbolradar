@@ -140,14 +140,24 @@ function resolveUpdatedAt(data, updatedAt) {
   return timestamps.sort((left, right) => Date.parse(right) - Date.parse(left))[0];
 }
 
-function successResponse(data, source, updatedAt) {
-  return {
+function successResponse(data, source, updatedAt, meta) {
+  const payload = {
     ok: true,
     source: source || DEFAULT_SOURCE,
     updatedAt: resolveUpdatedAt(data, updatedAt),
     responseAt: new Date().toISOString(),
     data
   };
+
+  // `meta` carries provider-failover diagnostics (which provider answered,
+  // which ones were skipped and why). It never contains credentials or
+  // stack traces, so it can stay on in production instead of being a
+  // debug-only field that has to be redeployed whenever live data breaks.
+  if (meta && typeof meta === "object") {
+    payload.meta = meta;
+  }
+
+  return payload;
 }
 
 function errorResponse(message, code, source) {
@@ -164,8 +174,8 @@ function errorResponse(message, code, source) {
   };
 }
 
-function sendSuccess(res, data, source, updatedAt) {
-  return sendJson(res, 200, successResponse(data, source, updatedAt));
+function sendSuccess(res, data, source, updatedAt, meta) {
+  return sendJson(res, 200, successResponse(data, source, updatedAt, meta));
 }
 
 function sendError(res, statusCode, message, code, source) {

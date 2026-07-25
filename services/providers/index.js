@@ -78,19 +78,40 @@ function resolveProviderByName(name, resource) {
 }
 
 function getProvider(resource) {
-  const candidates = providerCandidates(resource);
-  for (const candidate of candidates) {
+  return getProviderChain(resource)[0];
+}
+
+/**
+ * Every provider that could answer for this resource, in preference order,
+ * always ending with the curated mock provider.
+ *
+ * Single-provider selection was the production failure mode: API-Football's
+ * free plan rejects the current season, so `/api/matches` returned
+ * `ok:false` with an empty array and the match pages rendered an empty
+ * state — even though a second live provider and curated data were
+ * available. Callers walk this chain and only give up once every provider
+ * has actually been tried.
+ */
+function getProviderChain(resource) {
+  const chain = [];
+
+  for (const candidate of providerCandidates(resource)) {
     const provider = resolveProviderByName(candidate, resource);
-    if (provider) {
-      return provider;
+    if (provider && !chain.includes(provider)) {
+      chain.push(provider);
     }
   }
 
-  return mockProvider;
+  if (!chain.includes(mockProvider)) {
+    chain.push(mockProvider);
+  }
+
+  return chain;
 }
 
 module.exports = {
   getProvider,
+  getProviderChain,
   hasLiveProviderConfig,
   LIVE_PROVIDER_RESOURCES,
   mockProvider,

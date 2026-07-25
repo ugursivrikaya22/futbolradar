@@ -3,6 +3,7 @@ const { mergeProviderPlayers } = require("../services/playerService");
 const { enrichPlayerRating } = require("../services/ratingService");
 const { MODEL_VERSION: MATCH_PREDICTION_MODEL_VERSION } = require("../services/matchPredictionService");
 const { getFixtureWeeks, groupMatchesIntoWeeks } = require("../services/superLigFixtureService");
+const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -148,42 +149,35 @@ async function handlePlayerRankings(req, res, query) {
  */
 async function handleSuperLigFixtures(req, res, query) {
   const fixturesData = require("../data/super-lig-fixtures.json");
-  const provider = getProvider("super-lig-fixtures");
-  let rounds = getFixtureWeeks(fixturesData);
-  let source = mockProvider.source;
-  // Debug-only: never guessed data, just a trace of what the live attempt did
-  // so a silent provider failure (bad league id, plan restriction, timeout)
-  // is diagnosable from the API response instead of vanishing into a catch.
-  let providerDebug = { attempted: false };
-
-  try {
-    if (provider !== mockProvider && typeof provider.getSeasonFixtures === "function") {
-      providerDebug = { attempted: true, provider: provider.name };
-      const seasonMatches = await withTimeout(provider.getSeasonFixtures(query), DEFAULT_TIMEOUT_MS);
-      providerDebug.matchCount = Array.isArray(seasonMatches) ? seasonMatches.length : 0;
-      if (Array.isArray(seasonMatches) && seasonMatches.length) {
-        const liveRounds = groupMatchesIntoWeeks(seasonMatches);
-        providerDebug.roundCount = liveRounds.length;
-        if (liveRounds.length) {
-          rounds = liveRounds;
-          source = provider.source;
-        }
+  const result = await resolveFromProviders({
+    resource: "super-lig-fixtures",
+    query,
+    run: (provider, providerQuery) => {
+      if (typeof provider.getSeasonFixtures !== "function") {
+        return [];
       }
-    } else {
-      providerDebug = { attempted: false, provider: provider.name };
-    }
-  } catch (error) {
-    rounds = getFixtureWeeks(fixturesData);
-    source = mockProvider.source;
-    providerDebug.error = {
-      code: error.code || "UNKNOWN",
-      message: error.message || String(error),
-      httpStatus: error.statusCode || null,
-      raw: error.raw ?? null
-    };
-  }
 
-  return sendSuccess(res, { ...fixturesData, rounds, providerDebug }, source);
+      return provider.getSeasonFixtures(providerQuery);
+    },
+    // A live season feed is only usable once it actually groups into weeks;
+    // anything less keeps the curated, editorially verified rounds.
+    isUsable: (data) => Array.isArray(data) && data.length > 0 && groupMatchesIntoWeeks(data).length > 0
+  });
+
+  const liveRounds = Array.isArray(result.data) && result.data.length ? groupMatchesIntoWeeks(result.data) : [];
+  const useLive = liveRounds.length > 0 && result.provider && result.provider !== mockProvider;
+
+  return sendSuccess(
+    res,
+    {
+      ...fixturesData,
+      rounds: useLive ? liveRounds : getFixtureWeeks(fixturesData),
+      roundsSource: useLive ? "provider" : "curated"
+    },
+    useLive ? result.provider.source : mockProvider.source,
+    undefined,
+    providerMeta(result, { roundsSource: useLive ? "provider" : "curated" })
+  );
 }
 
 function matchAnalysisResponse(res, statusCode, payload) {

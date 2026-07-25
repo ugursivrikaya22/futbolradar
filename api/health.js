@@ -9,7 +9,7 @@ const {
   sendSuccess,
   setCachePolicy
 } = require("./_utils");
-const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig, getProvider, apiFootballProvider } = require("../services/providers");
+const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig, getProvider, getProviderChain, apiFootballProvider } = require("../services/providers");
 const { getConfig } = require("../services/providers/footballProvider");
 
 function presentEnvNames(names) {
@@ -55,7 +55,12 @@ function buildDiagnostics(config) {
       primaryProviderEnv: process.env.FOOTBALL_PRIMARY_PROVIDER || null,
       matchProviderEnv: process.env.FOOTBALL_MATCH_PROVIDER || null,
       resolvedMatchProvider: getProvider("matches").name,
-      resolvedStandingsProvider: getProvider("standings").name
+      resolvedStandingsProvider: getProvider("standings").name,
+      // Full failover order, so an outage report shows not just who was
+      // asked first but who is available to take over.
+      matchProviderChain: getProviderChain("matches").map((provider) => provider.name),
+      standingsProviderChain: getProviderChain("standings").map((provider) => provider.name),
+      seasonFixtureProviderChain: getProviderChain("super-lig-fixtures").map((provider) => provider.name)
     }
   };
 }

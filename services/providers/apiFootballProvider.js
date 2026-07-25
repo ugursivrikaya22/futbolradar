@@ -24,13 +24,26 @@ class ProviderError extends Error {
   }
 }
 
+/**
+ * API-Football labels a European season by its starting year, so anything
+ * from July onwards belongs to the season that starts that year. Deriving
+ * it beats the previous hard-coded "2026" default, which silently pointed
+ * at the wrong season the moment the calendar rolled over.
+ */
+function seasonForDate(value) {
+  const date = value ? new Date(`${String(value).slice(0, 10)}T12:00:00Z`) : new Date();
+  const reference = Number.isNaN(date.getTime()) ? new Date() : date;
+  const year = reference.getUTCFullYear();
+  return String(reference.getUTCMonth() + 1 >= 7 ? year : year - 1);
+}
+
 function getConfig() {
   return {
     provider: process.env.FOOTBALL_PRIMARY_PROVIDER || "api-football",
     baseUrl: firstPresentEnv(APIFOOTBALL_BASE_URL_ENV_NAMES) || DEFAULT_BASE_URL,
     apiKey: firstPresentEnv(APIFOOTBALL_API_KEY_ENV_NAMES),
     leagueId: firstPresentEnv(APIFOOTBALL_LEAGUE_ID_ENV_NAMES),
-    season: firstPresentEnv(APIFOOTBALL_SEASON_ENV_NAMES) || "2026",
+    season: firstPresentEnv(APIFOOTBALL_SEASON_ENV_NAMES) || seasonForDate(),
     country: firstPresentEnv(APIFOOTBALL_COUNTRY_ENV_NAMES) || "Turkey"
   };
 }
@@ -119,7 +132,11 @@ function classifyPayloadError(errors) {
     };
   }
 
-  if (/subscription|pricing|plan|not allowed|access denied/.test(text)) {
+  // "Free plans do not have access to this season, try from 2022 to 2024."
+  // is the exact production failure: the configured key cannot serve the
+  // current season at all, so this must classify as a plan problem (a
+  // permanent, skip-this-provider condition) and never as "no data today".
+  if (/subscription|subscribed|pricing|plan|upgrade|not allowed|do not have access|does not have access|access denied/.test(text)) {
     return {
       code: "PROVIDER_PLAN_ERROR",
       message: "API-Football paketi bu veri veya turnuva icin erisim vermiyor."
@@ -188,9 +205,9 @@ function resolveLeague(value) {
   return value || config.leagueId || "";
 }
 
-function resolveSeason(value) {
+function resolveSeason(value, dateHint) {
   const config = getConfig();
-  return value || config.season || "2026";
+  return value || config.season || seasonForDate(dateHint);
 }
 
 function todayInIstanbul() {
@@ -855,6 +872,7 @@ module.exports = {
   hasConfig,
   providerFetch,
   classifyPayloadError,
+  seasonForDate,
   getFixtures,
   getMatches,
   getSeasonFixtures,

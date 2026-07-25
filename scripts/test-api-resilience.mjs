@@ -8,6 +8,8 @@ const apiFootball = require("../services/providers/apiFootballProvider");
 const providers = require("../services/providers");
 const competitionCatalog = require("../services/competitionCatalog");
 const playersHandler = require("../api/players");
+const matchesHandler = require("../api/matches");
+const mockProvider = require("../services/providers/mockProvider");
 
 function fakeResponse() {
   return {
@@ -99,7 +101,7 @@ function testUnknownProviderValues() {
 }
 
 function testCompetitionCatalog() {
-  assert.equal(competitionCatalog.competitions.length, 8);
+  assert.equal(competitionCatalog.competitions.length, 10);
   assert.equal(competitionCatalog.providerLeagueValue("premier-league", "api-football"), 39);
   assert.equal(competitionCatalog.providerLeagueValue("sampiyonlar-ligi", "football-data"), "CL");
   assert.equal(competitionCatalog.providerLeagueValue("avrupa-ligi", "api-football"), 3);
@@ -175,6 +177,122 @@ function testConfiguredProviderPreference() {
   }
 }
 
+/**
+ * Production teşhisinin bire bir kopyası: API-Football ücretsiz paketi
+ * içinde bulunulan sezona erişim vermiyor. Eskiden bu tek hata
+ * /api/matches yanıtını `ok:false` + boş listeye çeviriyor, "Bugünkü
+ * Maçlar" sayfası da boş kalıyordu. Artık zincir bir sonraki sağlayıcıya
+ * geçmeli ve kürasyonlu maçlarla 200/ok:true dönmeli.
+ */
+async function testPlanErrorFailsOverToCuratedData() {
+  const envNames = [...utils.API_KEY_ENV_NAMES, "APIFOOTBALL_API_KEY", "FOOTBALL_PRIMARY_PROVIDER", "FOOTBALL_MATCH_PROVIDER"];
+  const previous = Object.fromEntries(envNames.map((name) => [name, process.env[name]]));
+  const previousFetch = global.fetch;
+
+  try {
+    envNames.forEach((name) => delete process.env[name]);
+    process.env.APIFOOTBALL_API_KEY = "test-free-plan-key";
+    global.fetch = async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        get: "fixtures",
+        errors: { plan: "Free plans do not have access to this season, try from 2022 to 2024." },
+        results: 0,
+        response: []
+      })
+    });
+
+    const response = fakeResponse();
+    await matchesHandler({
+      method: "GET",
+      url: "/api/matches?date=2026-07-23",
+      headers: { "x-forwarded-for": "203.0.113.44" }
+    }, response);
+
+    assert.equal(response.statusCode, 200);
+    assert.equal(response.payload.ok, true, "plan hatasi tum yaniti bosaltmamali");
+    assert.ok(response.payload.data.length > 0, "kurasyonlu mac listesi devreye girmeli");
+    assert.equal(response.payload.meta.degraded, true);
+    assert.equal(response.payload.meta.provider, "mock");
+
+    const apiFootballAttempt = response.payload.meta.attempts.find((attempt) => attempt.provider === "api-football");
+    assert.equal(apiFootballAttempt.status, "error");
+    assert.equal(apiFootballAttempt.code, "PROVIDER_PLAN_ERROR");
+    assert.equal(apiFootballAttempt.permanent, true);
+
+    const serialized = JSON.stringify(response.payload);
+    assert.ok(!serialized.includes("test-free-plan-key"), "teshis alani kimlik bilgisi sizdirmamali");
+  } finally {
+    global.fetch = previousFetch;
+    envNames.forEach((name) => {
+      if (previous[name] === undefined) delete process.env[name];
+      else process.env[name] = previous[name];
+    });
+  }
+}
+
+function testProviderChainOrder() {
+  const envNames = [...utils.API_KEY_ENV_NAMES, "APIFOOTBALL_API_KEY", "FOOTBALL_PRIMARY_PROVIDER", "FOOTBALL_MATCH_PROVIDER"];
+  const previous = Object.fromEntries(envNames.map((name) => [name, process.env[name]]));
+
+  try {
+    envNames.forEach((name) => delete process.env[name]);
+    process.env.APIFOOTBALL_API_KEY = "test-api-football-key";
+    process.env.FOOTBALL_API_KEY = "test-football-data-key";
+
+    assert.deepEqual(
+      providers.getProviderChain("matches").map((provider) => provider.name),
+      ["api-football", "football-data", "mock"]
+    );
+
+    delete process.env.APIFOOTBALL_API_KEY;
+    assert.deepEqual(
+      providers.getProviderChain("matches").map((provider) => provider.name),
+      ["football-data", "mock"]
+    );
+
+    delete process.env.FOOTBALL_API_KEY;
+    assert.deepEqual(providers.getProviderChain("matches").map((provider) => provider.name), ["mock"]);
+  } finally {
+    envNames.forEach((name) => {
+      if (previous[name] === undefined) delete process.env[name];
+      else process.env[name] = previous[name];
+    });
+  }
+}
+
+/**
+ * Kürasyonlu veri seti bir gün geride kalabiliyor: 23 Temmuz'daki
+ * Beşiktaş - Midtjylland maçı dosyada hâlâ "SCHEDULED" duruyordu.
+ * Sağlayıcı takvimi maç durumunu ileri taşımalı, ama doğrulanmış bir
+ * skoru asla ezmemeli.
+ */
+async function testCuratedAndCalendarMerge() {
+  const finished = await mockProvider.getMatches({ date: "2026-07-23" });
+  assert.equal(finished.length, 1);
+  assert.equal(finished[0].status, "FINISHED");
+  assert.equal(finished[0].score.home, 1);
+  assert.equal(finished[0].score.away, 0);
+  assert.ok(finished[0].analysisPage || finished[0].summary || finished[0].id, "editoryal alanlar korunmali");
+
+  const today = await mockProvider.getMatches({ date: "2026-07-25" });
+  assert.ok(today.length > 0, "fikstur takvimi bugunun maclarini saglamali");
+  assert.ok(today.every((match) => match.homeTeam && match.awayTeam && match.league && match.kickoff));
+}
+
+function testCuratedLeagueFilterUsesCatalog() {
+  // "sampiyonlar-ligi" slug'ı "UEFA Şampiyonlar Ligi" satırıyla birebir
+  // eşleşmediği için lig filtresi kürasyonlu veride hiç sonuç dönmüyordu.
+  return Promise.all([
+    mockProvider.getMatches({ date: "2026-07-21", league: "Şampiyonlar Ligi" }),
+    mockProvider.getMatches({ date: "2026-07-24", league: "hazirlik-maci" })
+  ]).then(([championsLeague, friendlies]) => {
+    assert.equal(championsLeague.length, 1);
+    assert.ok(friendlies.length > 0);
+  });
+}
+
 function testApiFootballErrorClassification() {
   assert.equal(
     apiFootball.classifyPayloadError(["Invalid application key"]).code,
@@ -192,6 +310,24 @@ function testApiFootballErrorClassification() {
     apiFootball.classifyPayloadError(["No results for this season"]).code,
     "PROVIDER_DATA_UNAVAILABLE"
   );
+  // Production'da dönen gerçek metin. "season" kelimesi yüzünden geçici
+  // veri yokluğu sanılıp zincirin durmasına yol açmamalı.
+  assert.equal(
+    apiFootball.classifyPayloadError(["Free plans do not have access to this season, try from 2022 to 2024."]).code,
+    "PROVIDER_PLAN_ERROR"
+  );
+  assert.equal(
+    apiFootball.classifyPayloadError(["You are not subscribed to this API."]).code,
+    "PROVIDER_PLAN_ERROR"
+  );
+}
+
+function testSeasonDerivation() {
+  // Avrupa sezonu temmuzda başlar: 2026-07-25 -> "2026", 2027-03-01 -> "2026".
+  assert.equal(apiFootball.seasonForDate("2026-07-25"), "2026");
+  assert.equal(apiFootball.seasonForDate("2026-12-31"), "2026");
+  assert.equal(apiFootball.seasonForDate("2027-03-01"), "2026");
+  assert.equal(apiFootball.seasonForDate("2027-08-01"), "2027");
 }
 
 function testLiveMatchDetailNormalization() {
@@ -375,9 +511,14 @@ testCompetitionCatalog();
 testMissingKeyFallback();
 testConfiguredProviderPreference();
 testApiFootballErrorClassification();
+testSeasonDerivation();
+testProviderChainOrder();
 testLiveMatchDetailNormalization();
 await testPlayerLeagueSlugFallback();
 await testDateOnlyLeagueFiltering();
 await testFootballDataCompetitionFallback();
+await testPlanErrorFailsOverToCuratedData();
+await testCuratedAndCalendarMerge();
+await testCuratedLeagueFilterUsesCatalog();
 
 console.log("FutbolRadar API resilience tests passed");

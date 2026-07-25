@@ -14,6 +14,10 @@ const freshnessData = JSON.parse(fs.readFileSync(path.join(root, "data", "freshn
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
+const fixtureCalendarPath = path.join(root, "data", "fixture-calendar.json");
+const calendarMatches = fs.existsSync(fixtureCalendarPath)
+  ? (JSON.parse(fs.readFileSync(fixtureCalendarPath, "utf8")).matches || [])
+  : [];
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
@@ -106,6 +110,69 @@ function staticMatchCard(match, variant) {
     <div class="tag-row"><span class="tag green">${escapeHtml(confidenceLabel(fixtureFreshness.confidence))}</span><span class="tag soft">Fikstür eşleşmesi</span></div>
     <a class="detail-link" href="./mac/${escapeHtml(matchSlug(match))}.html">Maç öncesi analizi aç</a>
   </article>`;
+}
+
+const MATCH_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
+
+function istanbulToday() {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Istanbul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+}
+
+function longDateLabel(value) {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat("tr-TR", {
+    timeZone: "Europe/Istanbul",
+    day: "numeric",
+    month: "long",
+    weekday: "long"
+  }).format(parsed);
+}
+
+/**
+ * Statik yedek içerik: JS çalışmadan önce (ve arama motoru taramasında)
+ * görünen blok. Eskiden koşulsuz "Bugün doğrulanmış maç yok" yazıyordu;
+ * derleme anı ile görüntüleme anı aynı olmadığı için bu, maç olan günlerde
+ * bile boş sayfa demekti. Artık takvimden yaklaşan maçlar kendi tarih
+ * etiketleriyle basılıyor - bir gün eskise bile yanıltmayan bir içerik.
+ */
+function calendarProgramCards(limit) {
+  const today = istanbulToday();
+  const upcoming = calendarMatches
+    .filter((match) => String(match.kickoff || "").slice(0, 10) >= today)
+    .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
+    .slice(0, limit || 6);
+
+  if (!upcoming.length) {
+    return "";
+  }
+
+  return upcoming.map((match) => {
+    const date = String(match.kickoff || "").slice(0, 10);
+    const isToday = date === today;
+    const status = String(match.status || "SCHEDULED").toUpperCase();
+
+    return `<article class="card match-card static-match-card" data-card="fixture-preview" data-match="${escapeHtml(match.id)}">
+    <div class="card-head"><span class="card-kicker">${escapeHtml(match.league || "Maç programı")}</span><strong class="big-value">${escapeHtml(match.time || "")}</strong></div>
+    <h2>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</h2>
+    <p>${escapeHtml(`${isToday ? "Bugün" : longDateLabel(match.kickoff)} · ${match.venue || "Saha bilgisi bekleniyor"}`)}</p>
+    <div class="tag-row"><span class="tag soft">${escapeHtml(MATCH_STATUS_TR[status] || "Planlandı")}</span><span class="tag soft">${escapeHtml(isToday ? "Bugünün programı" : "Yaklaşan maç")}</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
+  </article>`;
+  }).join("");
+}
+
+function matchProgramState(variant) {
+  const cards = calendarProgramCards(variant === "today" ? 6 : 4);
+  return cards || emptyMatchState(variant);
 }
 
 function emptyMatchState(variant) {
@@ -323,7 +390,7 @@ const topPlayers = players.slice().sort((left, right) => Number(right.overallRat
 writePage("index.html", {
   "featured-match": emptyMatchState("featured"),
   "home-transfer-watch": transferWatch(),
-  "today-matches": emptyMatchState("today"),
+  "today-matches": matchProgramState("today"),
   "radar-signals": signalCards(),
   "team-radar": topTeams.slice(0, 4).map(staticTeamCard).join(""),
   "home-standings": staticHomeStandingRows(),
@@ -338,7 +405,7 @@ writePage("haberler.html", {
 }, fixtureFreshness);
 
 writePage("bugunun-maclari.html", {
-  "matches-page": emptyMatchState("today")
+  "matches-page": matchProgramState("today")
 }, fixtureFreshness);
 
 writePage("canli-skor.html", {

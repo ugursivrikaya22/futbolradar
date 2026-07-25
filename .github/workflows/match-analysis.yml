@@ -53,6 +53,13 @@ jobs:
         with:
           node-version: 20
 
+      # Fikstür takvimi: TheSportsDB ücretsiz/anahtarsız çalışır, bu yüzden
+      # secret olmadan da gerçek maç listesi üretir. Script kendi boş-çekim
+      # ve %50 düşüş korumalarına sahip; hata verirse iş burada durur ve
+      # eski takvim dosyası olduğu gibi kalır.
+      - name: Sync fixture calendar (Süper Lig takımlarının maç takvimi)
+        run: node scripts/sync-fixture-calendar.mjs --apply
+
       - name: Sync Süper Lig teams and squads (no-ops without a live provider key)
         run: node scripts/sync-super-lig-squads.mjs --apply
 

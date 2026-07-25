@@ -16,7 +16,9 @@
     bundesliga: ["bundesliga", "german bundesliga"],
     "ligue-1": ["ligue 1", "french ligue 1"],
     "sampiyonlar-ligi": ["sampiyonlar ligi", "uefa sampiyonlar ligi", "champions league", "uefa champions league"],
-    "avrupa-ligi": ["avrupa ligi", "uefa avrupa ligi", "europa league", "uefa europa league"]
+    "avrupa-ligi": ["avrupa ligi", "uefa avrupa ligi", "europa league", "uefa europa league"],
+    "konferans-ligi": ["konferans ligi", "uefa konferans ligi", "conference league", "uefa conference league", "uefa europa conference league"],
+    "hazirlik-maci": ["hazirlik maci", "hazirlik maclari", "club friendlies", "friendlies", "friendly"]
   };
   var RESOURCE_CONFIG = {
     matches: { api: "matches", fallback: "matches", reportSource: true },
@@ -205,13 +207,43 @@
     });
   }
 
+  // Aynı maç farklı kaynaklarda farklı id ile gelebiliyor (kürasyonlu
+  // "besiktas-midtjylland-...", sağlayıcı "besiktas-fc-midtjylland-...").
+  // Bu yüzden tekilleştirme id'ye değil takım+gün kimliğine bakar; yoksa
+  // aynı maç listede iki kez çıkıyordu.
+  function matchIdentityKey(match) {
+    return [
+      normalizeSearchText(match && match.homeTeam),
+      normalizeSearchText(match && match.awayTeam),
+      matchDateValue(match)
+    ].join("|");
+  }
+
   function mergeMatchCollections(providerMatches, curatedMatches) {
     var seen = Object.create(null);
     return [].concat(providerMatches || [], curatedMatches || []).filter(function (match) {
-      var key = String(match && match.id || [match && match.homeTeam, match && match.awayTeam, match && match.kickoff].join("|")).toLocaleLowerCase("tr-TR");
+      var identity = matchIdentityKey(match);
+      var key = identity === "||" ? String(match && match.id || "").toLocaleLowerCase("tr-TR") : identity;
       if (!key || seen[key]) return false;
       seen[key] = true;
       return true;
+    });
+  }
+
+  // Statik yedek yol: API tamamen ulaşılamazsa bile bugünün maçları
+  // görünsün diye elle doğrulanmış maçlar ile sağlayıcı fikstür takvimi
+  // birlikte okunur. Aynı maç iki dosyada da varsa kürasyonlu kayıt kalır.
+  function loadStaticMatchSources() {
+    return Promise.all([
+      fetchJson(DATA_ROOT + "matches.json").then(function (result) { return result.data; }).catch(function () { return []; }),
+      fetchJson(DATA_ROOT + "fixture-calendar.json").then(function (result) {
+        var payload = result.data;
+        return payload && Array.isArray(payload.matches) ? payload.matches : [];
+      }).catch(function () { return []; })
+    ]).then(function (results) {
+      var curated = Array.isArray(results[0]) ? results[0] : [];
+      var calendar = Array.isArray(results[1]) ? results[1] : [];
+      return mergeMatchCollections(curated, calendar);
     });
   }
 
@@ -225,8 +257,12 @@
     if (!cache[name]) {
       var fallbackUrl = DATA_ROOT + config.fallback + ".json";
       var fallback = function () {
-        return fetchJson(fallbackUrl).then(function (result) {
-          return filterFallbackData(name, result.data);
+        var source = name === "matches"
+          ? loadStaticMatchSources()
+          : fetchJson(fallbackUrl).then(function (result) { return result.data; });
+
+        return source.then(function (data) {
+          return filterFallbackData(name, data);
         });
       };
 
@@ -1943,6 +1979,40 @@
     });
   }
 
+  function upcomingMatchesAfter(matches, fromDate, limit) {
+    return (Array.isArray(matches) ? matches : [])
+      .filter(function (match) {
+        var date = matchDateValue(match);
+        return Boolean(date) && date > fromDate;
+      })
+      .sort(function (left, right) {
+        return String(left.kickoff || "").localeCompare(String(right.kickoff || ""));
+      })
+      .slice(0, limit || 4);
+  }
+
+  function renderUpcomingMatchesFallback(target, analysesIndex) {
+    return loadStaticMatchSources().then(function (allMatches) {
+      var params = new URLSearchParams(window.location.search);
+      var selectedDate = params.get("date") || todayInIstanbul();
+      var upcoming = upcomingMatchesAfter(allMatches, selectedDate, 4);
+
+      if (!upcoming.length || !target) {
+        return;
+      }
+
+      setContent(
+        target,
+        matchEmptyStateHtml(
+          "Bu tarihte doğrulanmış maç yok",
+          formatMatchDate(selectedDate) + " için maç bulunamadı. Sıradaki doğrulanmış maçlar aşağıda listelendi."
+        ) + renderMatchesByLeague(upcoming, function (match) {
+          return renderMatchPageCard(match, analysesIndex);
+        })
+      );
+    }).catch(function () {});
+  }
+
   function matchCenterMetricsHtml(matches, analysesIndex) {
     var list = Array.isArray(matches) ? matches : [];
     var live = list.filter(isLiveMatch).length;
@@ -2079,6 +2149,11 @@
 
       if (targets.matchesPage) {
         setContent(targets.matchesPage, renderMatchesPageSection(matches, index));
+        // Boş bir gün artık çıkmaz sokak değil: seçilen tarihte maç yoksa
+        // sıradaki doğrulanmış maçlar aynı ekranda listelenir.
+        if (!filterMatchesByStatus(matches).length) {
+          renderUpcomingMatchesFallback(targets.matchesPage, index);
+        }
       }
     }).catch(function () {
       Object.keys(targets).forEach(function (key) {

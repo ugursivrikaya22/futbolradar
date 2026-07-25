@@ -16,11 +16,19 @@ function fakeResponse() {
   };
 }
 
-assert.equal(competitions.length, 8, "Altı yerel lig ve iki UEFA turnuvası katalogda olmalı.");
+assert.equal(competitions.length, 10, "Altı yerel lig, üç UEFA turnuvası ve hazırlık maçları katalogda olmalı.");
 assert.equal(findCompetition("Champions League")?.id, "sampiyonlar-ligi");
 assert.equal(findCompetition("UEFA Europa League")?.id, "avrupa-ligi");
 assert.equal(providerLeagueValue("premier-league", "api-football"), 39);
 assert.equal(providerLeagueValue("avrupa-ligi", "football-data"), null);
+
+// Hazırlık maçları katalogda yoktu; sonuç olarak sağlayıcıdan gelen tüm
+// sezon öncesi maçlar filterSupportedCompetitions içinde sessizce eleniyor
+// ve temmuz/ağustos boyunca "bugün maç yok" görünüyordu.
+assert.equal(findCompetition("Club Friendlies")?.id, "hazirlik-maci");
+assert.equal(findCompetition("Hazırlık Maçı")?.id, "hazirlik-maci");
+assert.equal(providerLeagueValue("hazirlik-maci", "api-football"), 667);
+assert.equal(findCompetition("UEFA Conference League")?.id, "konferans-ligi");
 
 const fixture = (id, league, status = "NS") => normalizeFixture({
   fixture: { id, date: "2026-07-19T18:00:00+00:00", status: { short: status } },
@@ -32,10 +40,11 @@ const fixture = (id, league, status = "NS") => normalizeFixture({
 const filtered = filterSupportedCompetitions([
   fixture(1, "Premier League"),
   fixture(2, "UEFA Champions League", "1H"),
-  fixture(3, "Regional Test League")
+  fixture(3, "Regional Test League"),
+  fixture(4, "Club Friendlies")
 ]);
 
-assert.deepEqual(filtered.map((match) => match.id), ["1", "2"]);
+assert.deepEqual(filtered.map((match) => match.id), ["1", "2", "4"]);
 assert.equal(filtered[0].status, "SCHEDULED");
 assert.equal(filtered[0].live, false);
 assert.equal(filtered[1].status, "LIVE");
@@ -51,12 +60,19 @@ try {
   const response = fakeResponse();
   await matchesHandler({
     method: "GET",
-    url: "/api/matches?league=avrupa-ligi",
+    url: "/api/matches?league=avrupa-ligi&date=2026-07-23",
     headers: { "x-forwarded-for": "203.0.113.99" }
   }, response);
+  // football-data.org'da Avrupa Ligi kodu yok. Eskiden bu istek hata
+  // döndürüyor ve sayfa boş kalıyordu; artık sağlayıcı atlanıp zincir
+  // kürasyonlu veriyle devam ediyor.
   assert.equal(response.statusCode, 200);
-  assert.equal(response.payload.ok, false);
-  assert.equal(response.payload.error.code, "COMPETITION_NOT_SUPPORTED");
+  assert.equal(response.payload.ok, true);
+  const skipped = response.payload.meta.attempts.find((attempt) => attempt.provider === "football-data");
+  assert.equal(skipped.status, "skipped");
+  assert.equal(skipped.code, "COMPETITION_NOT_SUPPORTED");
+  assert.equal(response.payload.meta.provider, "mock");
+  assert.ok(response.payload.data.length > 0, "Kürasyonlu Avrupa Ligi maçı listelenmeli");
 } finally {
   for (const name of envNames) {
     if (previousEnv[name] === undefined) delete process.env[name];
@@ -64,4 +80,4 @@ try {
   }
 }
 
-console.log("Competition coverage tests passed: 8 competitions, live status and provider fallback checked.");
+console.log("Competition coverage tests passed: 10 competitions, live status and provider fallback checked.");
