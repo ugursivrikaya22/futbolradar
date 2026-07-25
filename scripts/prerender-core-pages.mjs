@@ -182,6 +182,33 @@ function calendarProgramCards(limit) {
  * önce (ve tarayıcısız tarayıcılarda) sayfanın kartların son halini
  * göstermesi gerektiği için. İkisinin sınıf adları bilerek özdeştir.
  */
+/**
+ * Lig işareti: sağlayıcı lig logosu vermediği için turnuvanın baş
+ * harflerinden tutarlı bir rozet üretilir. İstemcideki `leagueMarkHtml`
+ * ile aynı kısaltma ve aynı renk tonunu verir.
+ */
+function leagueMarkHtml(league) {
+  const name = String(league || "").trim();
+
+  if (!name) {
+    return "";
+  }
+
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word.charAt(0).toLocaleUpperCase("tr"))
+    .join("");
+
+  let hash = 0;
+  for (let index = 0; index < name.length; index += 1) {
+    hash = (hash * 31 + name.charCodeAt(index)) % 997;
+  }
+
+  return `<i class="league-mark league-mark-${hash % 5}" aria-hidden="true">${escapeHtml(initials)}</i>`;
+}
+
 function staticFormPercent(name) {
   const team = teamByName(name);
   const form = team && Array.isArray(team.form) ? team.form : null;
@@ -225,7 +252,7 @@ function staticFixtureCard(match, meta) {
     : `<div class="fixture-metric"><span>Form (son 5)</span><b>${homeForm === null ? "–" : `%${homeForm}`} · ${awayForm === null ? "–" : `%${awayForm}`}</b></div>`;
 
   return `<article class="fixture-card${isLive ? " is-live" : ""}" data-card="fixture" data-match="${escapeHtml(match.id)}">
-    <div class="fixture-card-top"><span class="fixture-card-league">${escapeHtml(match.league || "Maç programı")}</span><span class="fixture-card-state ${stateClass}">${escapeHtml(stateLabel)}</span></div>
+    <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(match.league)}${escapeHtml(match.league || "Maç programı")}</span><span class="fixture-card-state ${stateClass}">${escapeHtml(stateLabel)}</span></div>
     <div class="fixture-card-rows">${staticFixtureRow(match.homeTeam, homeScore, awayScore)}${staticFixtureRow(match.awayTeam, awayScore, homeScore)}</div>
     ${formHtml ? `<div class="fixture-card-meta">${formHtml}</div>` : ""}
     <a class="fixture-card-action" href="./canli-skor.html">Analizi İncele</a>
@@ -274,7 +301,7 @@ function staticFeaturedFixture() {
       </div>`;
 
   return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}">
-      <div class="featured-fixture-head"><span class="featured-fixture-league">${escapeHtml(featured.league || "Maç programı")}</span><span>${escapeHtml(`${dateLabel} · ${featured.venue || "Saha bilgisi bekleniyor"}`)}</span></div>
+      <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMarkHtml(featured.league)}${escapeHtml(featured.league || "Maç programı")}</span><span>${escapeHtml(`${dateLabel} · ${featured.venue || "Saha bilgisi bekleniyor"}`)}</span></div>
       <div class="featured-fixture-board">
         ${side(featured.homeTeam)}
         <div class="featured-fixture-score"><b>${escapeHtml(headline)}</b><span>${escapeHtml(stateLabel)}</span></div>

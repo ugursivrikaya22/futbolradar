@@ -1881,6 +1881,34 @@
     return { className: "", label: matchTimeLabel(match) || statusTr(status), live: false, finished: false };
   }
 
+  /**
+   * Lig işareti. Sağlayıcı lig logosu vermediği için (veri setinde logo alanı
+   * yok) turnuvanın baş harflerinden tutarlı bir rozet üretilir: aynı lig her
+   * yerde aynı kısaltma ve aynı renk tonuyla görünür. Uydurma bir amblem
+   * indirmek yerine dürüst ve kararlı bir görsel işaret.
+   */
+  function leagueMarkHtml(league) {
+    var name = String(league || "").trim();
+
+    if (!name) {
+      return "";
+    }
+
+    var initials = name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(function (word) { return word.charAt(0).toLocaleUpperCase("tr"); })
+      .join("");
+
+    var hash = 0;
+    for (var index = 0; index < name.length; index += 1) {
+      hash = (hash * 31 + name.charCodeAt(index)) % 997;
+    }
+
+    return '<i class="league-mark league-mark-' + (hash % 5) + '" aria-hidden="true">' + escapeHtml(initials) + "</i>";
+  }
+
   function fixtureTeamLogo(team, name) {
     var logo = getTeamLogo(team) || (lookupTeam(name) && (lookupTeam(name).logo || lookupTeam(name).crest)) || "";
     var initials = escapeHtml(teamInitials(name));
@@ -1968,7 +1996,7 @@
       '<article class="fixture-card' + (meta.live ? " is-live" : "") + '" data-card="fixture" data-match="' +
       escapeHtml(match.id) + '">' +
       '<div class="fixture-card-top">' +
-      '<span class="fixture-card-league">' + escapeHtml(displayValue(match.league)) + "</span>" +
+      '<span class="fixture-card-league">' + leagueMarkHtml(match.league) + escapeHtml(displayValue(match.league)) + "</span>" +
       '<span class="fixture-card-state ' + meta.className + '">' +
       (meta.live ? '<i class="live-pulse" aria-hidden="true"></i>' : "") +
       escapeHtml(meta.label) +
@@ -2010,7 +2038,7 @@
     return (
       '<div class="featured-fixture' + (meta.live ? " is-live" : "") + '">' +
       '<div class="featured-fixture-head">' +
-      '<span class="featured-fixture-league">' + escapeHtml(displayValue(match.league)) + "</span>" +
+      '<span class="featured-fixture-league">' + leagueMarkHtml(match.league) + escapeHtml(displayValue(match.league)) + "</span>" +
       "<span>" + escapeHtml(match.venue || formatMatchDate(todayInIstanbul())) + "</span>" +
       "</div>" +
       '<div class="featured-fixture-board">' +

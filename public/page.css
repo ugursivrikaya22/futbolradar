@@ -13088,14 +13088,32 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
     font-size: var(--fs-xs);
   }
 
+  /* Skor tablosu dar ekranda da satır düzenini korur: ev sahibi | skor |
+     deplasman. Alt alta yığmak "15:00 / Göztepe / Rudeš" gibi okunuyordu. */
   .featured-fixture-board {
-    grid-template-columns: 1fr;
-    justify-items: center;
-    text-align: center;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: var(--sp-2);
+  }
+
+  .featured-fixture-team img,
+  .featured-fixture-team .team-logo-fallback,
+  .featured-fixture-team .fixture-row-fallback {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+  }
+
+  .featured-fixture-team strong {
+    font-size: var(--fs-sm);
   }
 
   .featured-fixture-score {
-    order: -1;
+    min-width: 86px;
+  }
+
+  .featured-fixture-score b {
+    font-size: 1.75rem;
   }
 
   .footer-grid {
@@ -13292,4 +13310,35 @@ table {
 
 .competition-chip-row a {
   flex: 0 0 auto;
+}
+
+/* ----------------------------------------------------------------------------
+   14. LİG İŞARETİ
+   Veri sağlayıcı lig amblemi vermiyor. Amblem uydurmak yerine turnuvanın baş
+   harflerinden kararlı bir rozet üretilir: aynı lig her sayfada aynı kısaltma
+   ve aynı renk tonuyla görünür, kart üstünde logo boşluğu kalmaz.
+   -------------------------------------------------------------------------- */
+.league-mark {
+  display: inline-grid;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 6px;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 850;
+  letter-spacing: 0;
+}
+
+.league-mark-0 { background: rgba(128, 255, 155, 0.16); color: var(--green); }
+.league-mark-1 { background: rgba(77, 229, 255, 0.16); color: var(--cyan); }
+.league-mark-2 { background: rgba(255, 209, 102, 0.16); color: var(--warn); }
+.league-mark-3 { background: rgba(255, 111, 125, 0.16); color: var(--live); }
+.league-mark-4 { background: rgba(197, 213, 210, 0.14); color: var(--text-soft); }
+
+.featured-fixture-league .league-mark {
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
 }
