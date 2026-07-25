@@ -436,10 +436,20 @@ function transferRecordKey(transfer) {
   ].join("|");
 }
 
+const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "1H", "2H", "ET", "HT", "HALFTIME", "PAUSED"]);
+
 async function getMatches(query) {
   const normalized = curatedMatches().map(normalizeMatch);
   const byDate = byMatchDate(normalized, query && query.date);
   const data = byLeague(byDate, query && query.league);
+
+  // "live" sorgusunun sözleşmesi kaynaktan bağımsız aynı olmalı: yalnızca
+  // oynanmakta olan maçlar. Kürasyonlu yedeğe düşüldüğünde günün tamamı
+  // dönerse istemci bunları canlı güncelleme sanıp hepsini yeniden yazar.
+  if (query && query.live) {
+    return data.filter((match) => LIVE_STATUSES.has(String(match.status || "").toUpperCase()));
+  }
+
   return data;
 }
 
