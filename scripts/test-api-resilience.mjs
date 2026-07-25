@@ -10,6 +10,7 @@ const competitionCatalog = require("../services/competitionCatalog");
 const playersHandler = require("../api/players");
 const matchesHandler = require("../api/matches");
 const mockProvider = require("../services/providers/mockProvider");
+const { resetProviderHealth } = require("../services/liveDataService");
 
 function fakeResponse() {
   return {
@@ -38,6 +39,27 @@ function testQuerySanitizing() {
   assert.equal(Object.keys(sanitized).length, 24);
   assert.equal(sanitized["param-0"].length, 160);
   assert.equal(utils.sanitizeQuery({ team: ["Galatasaray", "Fenerbahce"] }).team, "Galatasaray");
+}
+
+async function testHeadRequestSupport() {
+  // HEAD, izleme araçlarının ve CDN ön kontrollerinin varsayılan yöntemi.
+  const head = fakeResponse();
+  await matchesHandler({
+    method: "HEAD",
+    url: "/api/matches?date=2026-07-23",
+    headers: { "x-forwarded-for": "203.0.113.61" }
+  }, head);
+  assert.equal(head.statusCode, 200);
+  assert.equal(head.headers["cdn-cache-control"], "public, s-maxage=60, stale-while-revalidate=180");
+
+  const post = fakeResponse();
+  await matchesHandler({
+    method: "POST",
+    url: "/api/matches",
+    headers: { "x-forwarded-for": "203.0.113.62" }
+  }, post);
+  assert.equal(post.statusCode, 405);
+  assert.equal(post.payload.error.code, "METHOD_NOT_ALLOWED");
 }
 
 function testCachePolicies() {
@@ -226,6 +248,21 @@ async function testPlanErrorFailsOverToCuratedData() {
     const serialized = JSON.stringify(response.payload);
     assert.ok(!serialized.includes("test-free-plan-key"), "teshis alani kimlik bilgisi sizdirmamali");
 
+    // Kalıcı hatadan sonra aynı sağlayıcı kısa süre atlanmalı: her istekte
+    // ölü sağlayıcıya gidip gecikme eklemenin ve kota harcamanın anlamı yok.
+    const repeatResponse = fakeResponse();
+    await matchesHandler({
+      method: "GET",
+      url: "/api/matches?date=2026-07-23",
+      headers: { "x-forwarded-for": "203.0.113.46" }
+    }, repeatResponse);
+    const repeatAttempt = repeatResponse.payload.meta.attempts.find((attempt) => attempt.provider === "api-football");
+    assert.equal(repeatAttempt.status, "skipped");
+    assert.equal(repeatAttempt.code, "PROVIDER_TEMPORARILY_DISABLED");
+    assert.ok(repeatResponse.payload.data.length > 0, "devre kesici acikken de mac listesi dolu kalmali");
+
+    resetProviderHealth();
+
     // ?debug=1 ile sağlayıcının kendi hata metni görünür olmalı; operatör
     // sorunun anahtar mı, paket mi, sorgu mu olduğunu buradan ayırt eder.
     const debugResponse = fakeResponse();
@@ -333,6 +370,10 @@ function testApiFootballErrorClassification() {
   assert.equal(
     apiFootball.classifyPayloadError(["You are not subscribed to this API."]).code,
     "PROVIDER_PLAN_ERROR"
+  );
+  assert.equal(
+    apiFootball.classifyPayloadError(["Your account is suspended, check on https://dashboard.api-football.com."]).code,
+    "PROVIDER_ACCOUNT_SUSPENDED"
   );
 }
 
@@ -539,5 +580,6 @@ await testFootballDataCompetitionFallback();
 await testPlanErrorFailsOverToCuratedData();
 await testCuratedAndCalendarMerge();
 await testCuratedLeagueFilterUsesCatalog();
+await testHeadRequestSupport();
 
 console.log("FutbolRadar API resilience tests passed");
