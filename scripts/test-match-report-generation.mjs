@@ -232,7 +232,7 @@ function testSyncTargetSelection() {
   ];
   const selected = selectSyncTargets(rows, now);
   assert.deepEqual(selected.map((entry) => entry.match.id).sort(), ["bitti-eksik", "id-yok", "sonuc-bekleyen"]);
-  assert.equal(selected.find((entry) => entry.match.id === "id-yok").skipped, "providerId yok");
+  assert.equal(selected.find((entry) => entry.match.id === "id-yok").skipped, "API-Football fixture id yok");
 }
 
 testTurkishSuffixes();

@@ -566,16 +566,22 @@ function ensureLeagueForData(params) {
 async function getFixtures(query) {
   const fixtureId = query && (query.fixtureId || query.id);
   const league = resolveLeague(query && query.league);
-  const date = query && query.date || (!fixtureId ? todayInIstanbul() : undefined);
   const competition = query && (query.requestedCompetition || query.league)
     ? competitions.find((item) => matchesCompetition(query.requestedCompetition || query.league, item))
     : null;
 
-  // Date-only fixture access covers all supported competitions and works on
-  // more API plans than league+season queries. League filtering is local.
+  // Canlı skor için API-Football'ın gerçek zamanlı uç noktası "?live=all".
+  // Tarih sorgusu da devam eden maçları döndürür ama daha seyrek tazelenir ve
+  // her yoklamada günün tüm fikstürünü çekerek kotayı boşa harcar. Canlı
+  // yoklama bu yüzden ayrı parametreyle sadece oynanan maçları ister.
+  const live = query && query.live;
+  const liveValue = live === true || live === "1" || live === "true" ? "all" : (live || null);
+  const date = liveValue || fixtureId ? undefined : (query && query.date) || todayInIstanbul();
+
   const payload = await providerFetch("/fixtures", {
     id: fixtureId,
-    date
+    date,
+    live: liveValue || undefined
   });
   const matches = responseItems(payload).map(normalizeFixture);
   const supportedMatches = filterSupportedCompetitions(matches);

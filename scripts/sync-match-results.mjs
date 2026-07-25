@@ -22,6 +22,7 @@ const require = createRequire(import.meta.url);
 const apiFootballProvider = require("../services/providers/apiFootballProvider.js");
 
 const { selectSyncTargets, mergeProviderDetail } = require("../services/matchResultSyncService.js");
+const { API_FOOTBALL, providerIdFor } = require("../services/providerIdentityService.js");
 
 const MATCHES_PATH = path.join(root, "data", "matches.json");
 const PUBLIC_MATCHES_PATH = path.join(root, "public", "data", "matches.json");
@@ -77,7 +78,7 @@ async function main() {
     const { match, reason } = entry;
     let detail = null;
     try {
-      detail = await apiFootballProvider.getMatchDetail({ fixtureId: match.providerId });
+      detail = await apiFootballProvider.getMatchDetail({ fixtureId: providerIdFor(match, API_FOOTBALL) });
     } catch (error) {
       console.log(`  ! ${match.id}: sağlayıcı hatası (${error.code || error.message}) — kayıt değişmedi`);
       continue;

@@ -219,7 +219,12 @@ function normalizeEvent(event) {
 
   return {
     id: `${slug(homeTeam)}-${slug(awayTeam)}-${stamp.date}`,
+    // Kimlik hem eski alanda (geriye dönük uyumluluk) hem de isim alanlı
+    // haritada tutulur. İsim alanı şart: bu bir TheSportsDB olay numarası ve
+    // API-Football fixture id'si sanılıp o sağlayıcıya gönderilirse istek
+    // sessizce boşa gider.
     providerId: String(event.idEvent || ""),
+    providerIds: event.idEvent ? { theSportsDb: String(event.idEvent) } : {},
     competitionId: competition.id,
     league: competition.name,
     kickoff: stamp.iso,

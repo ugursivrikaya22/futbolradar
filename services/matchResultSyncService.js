@@ -6,6 +6,8 @@
  * scripts/test-match-report.mjs içinde doğrudan sınanır.
  */
 
+const { API_FOOTBALL, providerIdFor } = require("./providerIdentityService");
+
 /** Maçın bitmiş sayılması için ilk vuruştan sonra beklenen süre (dk). */
 const FULL_TIME_MINUTES = 135;
 
@@ -48,7 +50,10 @@ function selectSyncTargets(matches, now) {
     else if (!isFinished(match) && ended) reason = "maç saati geçti, sonuç bekleniyor";
     if (!reason) continue;
 
-    targets.push({ match, reason, skipped: match.providerId ? null : "providerId yok" });
+    // Sorgu API-Football'a gidiyor; başka bir sağlayıcının kimliği işe
+    // yaramaz, bu yüzden özellikle o isim alanı aranır.
+    const fixtureId = providerIdFor(match, API_FOOTBALL);
+    targets.push({ match, reason, fixtureId, skipped: fixtureId ? null : "API-Football fixture id yok" });
   }
   return targets;
 }

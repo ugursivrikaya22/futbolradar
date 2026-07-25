@@ -2281,6 +2281,48 @@
     { selector: "live-score", renderer: renderLiveScoreSection }
   ];
 
+  // Canlı yoklama API-Football'ın gerçek zamanlı uç noktasını kullanır
+  // (/api/matches?live=all). Bu uç nokta YALNIZCA oynanmakta olan maçları
+  // döndürdüğü için sonuç listeyi değiştirmez, günün listesinin üzerine
+  // birleştirilir; aksi halde canlı maç yokken tablo boşalırdı. Biten bir maç
+  // canlı listeden düştüğü için nihai skoru kaçırmamak adına belirli
+  // aralıklarla tam liste de yeniden çekilir.
+  var LIVE_FULL_RELOAD_EVERY = 5;
+
+  function mergeLiveIntoMatches(baseMatches, liveMatches) {
+    var base = Array.isArray(baseMatches) ? baseMatches.slice() : [];
+    if (!Array.isArray(liveMatches) || !liveMatches.length) {
+      return base;
+    }
+
+    var indexByKey = {};
+    base.forEach(function (match, index) {
+      indexByKey[matchIdentityKey(match)] = index;
+    });
+
+    liveMatches.forEach(function (liveMatch) {
+      var key = matchIdentityKey(liveMatch);
+      var existing = indexByKey[key];
+      if (existing === undefined) {
+        base.push(liveMatch);
+        indexByKey[key] = base.length - 1;
+        return;
+      }
+      // Kimlik ve editoryal alanlar korunur; sağlayıcı yalnızca canlı durumu
+      // ve skoru ilerletir.
+      base[existing] = Object.assign({}, base[existing], {
+        status: liveMatch.status || base[existing].status,
+        providerStatus: liveMatch.providerStatus || base[existing].providerStatus,
+        minute: liveMatch.minute || base[existing].minute,
+        elapsed: liveMatch.elapsed || base[existing].elapsed,
+        score: liveMatch.score || base[existing].score,
+        live: liveMatch.live
+      });
+    });
+
+    return base;
+  }
+
   function initLiveMatchPolling() {
     var activeBindings = MATCH_SECTION_BINDINGS.filter(function (binding) {
       return document.querySelector('[data-api-target="' + binding.selector + '"]');
@@ -2290,16 +2332,42 @@
       return;
     }
 
-    createLivePoller(MATCH_LIVE_POLL_MS, function () {
-      return forceReload("matches").then(function (matches) {
-        activeBindings.forEach(function (binding) {
-          var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
-          var html = binding.renderer(matches);
-          if (target && html) {
-            setContent(target, html);
-          }
-        });
+    var tick = 0;
+
+    function paint(matches) {
+      activeBindings.forEach(function (binding) {
+        var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
+        var html = binding.renderer(matches);
+        if (target && html) {
+          setContent(target, html);
+        }
       });
+    }
+
+    createLivePoller(MATCH_LIVE_POLL_MS, function () {
+      tick += 1;
+
+      if (tick % LIVE_FULL_RELOAD_EVERY === 0) {
+        return forceReload("matches").then(paint);
+      }
+
+      return fetchJson(API_ROOT + "matches?live=all")
+        .then(function (result) {
+          var live = (result && result.data) || [];
+          if (!live.length) {
+            return null;
+          }
+          return loadData("matches").then(function (matches) {
+            var merged = mergeLiveIntoMatches(matches, live);
+            cache.matches = Promise.resolve(merged);
+            paint(merged);
+            return merged;
+          });
+        })
+        .catch(function () {
+          // Canlı uç nokta erişilemezse tam listeye düş; skorlar yine tazelenir.
+          return forceReload("matches").then(paint);
+        });
     }).start();
   }
 
