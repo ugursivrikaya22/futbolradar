@@ -951,7 +951,127 @@ function canSearchLocally(player, search) {
   return normalizeText(player.name).includes(normalizeText(search));
 }
 
+
+/**
+ * Kimlik bilgisini gerçek istekle doğrular.
+ *
+ * Anahtar uzunluğuna bakarak "geçerli görünüyor" demek yeterli değil:
+ * biçimi doğru ama süresi dolmuş, planı yetersiz veya başka bir hesaba ait
+ * bir anahtar da aynı şekilde görünür. Bu yüzden API-Football'ın /status uç
+ * noktasına gerçekten istek atılır; o uç nokta anahtarın geçerliliğini,
+ * abonelik planını ve kota durumunu birlikte döner.
+ *
+ * Yanıta ASLA anahtarın kendisi girmez: yalnızca maskeli önek/sonek ve
+ * uzunluk raporlanır. Hesap adı/e-postası da PII olduğu için ayıklanır.
+ */
+function maskKey(value) {
+  const text = String(value || "");
+  if (text.length <= 8) return `${"*".repeat(Math.max(0, text.length))} (len=${text.length})`;
+  return `${text.slice(0, 4)}…${text.slice(-4)} (len=${text.length})`;
+}
+
+/** Hangi environment değişkeni hangi değeri sağlıyor (değer maskeli). */
+function credentialSources() {
+  const seen = new Map();
+  for (const name of APIFOOTBALL_API_KEY_ENV_NAMES) {
+    const raw = process.env[name];
+    if (raw === undefined) continue;
+    const value = String(raw).trim();
+    if (!value) continue;
+    if (!seen.has(value)) seen.set(value, []);
+    seen.get(value).push(name);
+  }
+  return [...seen.entries()].map(([value, envNames]) => ({ value, envNames }));
+}
+
+async function probeCredentials() {
+  const config = getConfig();
+  const baseUrl = config.baseUrl.endsWith("/") ? config.baseUrl : `${config.baseUrl}/`;
+  const url = new URL("status", baseUrl);
+  const sources = credentialSources();
+
+  if (!sources.length) {
+    return {
+      endpoint: url.toString(),
+      headerName: "x-apisports-key",
+      candidates: [],
+      note: "Tanımlı hiçbir APIFOOTBALL_* değişkeninde değer yok."
+    };
+  }
+
+  // Sağlayıcının gerçek deneme sırası: biçimi geçerli olanlar önce.
+  const ordered = [
+    ...sources.filter((row) => looksLikeApiKey(row.value)),
+    ...sources.filter((row) => !looksLikeApiKey(row.value))
+  ];
+
+  const candidates = [];
+  for (const row of ordered) {
+    const entry = {
+      envNames: row.envNames,
+      maskedKey: maskKey(row.value),
+      formatValid: looksLikeApiKey(row.value),
+      headersSent: { accept: "application/json", "x-apisports-key": maskKey(row.value) }
+    };
+
+    try {
+      const response = await withTimeout(fetch(url, {
+        headers: { accept: "application/json", "x-apisports-key": row.value }
+      }), DEFAULT_TIMEOUT_MS);
+
+      entry.httpStatus = response.status;
+      // API-Sports kota/plan bilgisini yanıt başlıklarında da döner.
+      entry.rateLimitHeaders = {
+        "x-ratelimit-requests-limit": response.headers.get("x-ratelimit-requests-limit"),
+        "x-ratelimit-requests-remaining": response.headers.get("x-ratelimit-requests-remaining")
+      };
+
+      let payload = null;
+      try {
+        payload = await response.json();
+      } catch {
+        payload = null;
+      }
+
+      // errors alanı API-Sports'ta hem dizi hem nesne olabiliyor.
+      const errors = payload && payload.errors;
+      entry.apiErrors = errors && (Array.isArray(errors) ? errors.length : Object.keys(errors).length)
+        ? errors
+        : null;
+
+      const account = payload && payload.response;
+      if (account && typeof account === "object") {
+        // Hesap adı/e-postası raporlanmaz; plan ve kota yeterli.
+        entry.subscription = account.subscription || null;
+        entry.requests = account.requests || null;
+      }
+
+      entry.verdict = entry.apiErrors
+        ? "REJECTED"
+        : response.ok && entry.subscription
+          ? "ACCEPTED"
+          : response.ok
+            ? "ACCEPTED_NO_DETAIL"
+            : "HTTP_ERROR";
+    } catch (error) {
+      entry.httpStatus = null;
+      entry.transportError = String((error && error.message) || error).slice(0, 200);
+      entry.verdict = "TRANSPORT_ERROR";
+    }
+
+    candidates.push(entry);
+  }
+
+  return {
+    endpoint: url.toString(),
+    headerName: "x-apisports-key",
+    candidates
+  };
+}
+
 module.exports = {
+  probeCredentials,
+  credentialSources,
   name: "api-football",
   source,
   ProviderError,

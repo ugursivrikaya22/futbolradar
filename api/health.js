@@ -109,9 +109,18 @@ module.exports = async function handler(req, res) {
   setCachePolicy(res, "health");
   if (enforceRateLimit(req, res, { limit: 30 })) return;
 
-  getQuery(req);
-
+  const query = getQuery(req);
   const config = getConfig();
+  const diagnostics = buildDiagnostics(config);
 
-  return sendSuccess(res, [buildDiagnostics(config)]);
+  // `?probe=api-football` kimliği gerçek istekle sınar. Biçim kontrolü
+  // "anahtar geçerli mi" sorusunu cevaplamıyor: doğru biçimde ama süresi
+  // dolmuş, planı yetersiz ya da başka hesaba ait bir anahtar da geçerli
+  // görünür. Prob, sağlayıcının döndüğü HTTP kodunu ve hata gövdesini
+  // olduğu gibi raporlar. Anahtarın kendisi hiçbir koşulda yanıta girmez.
+  if (String(query.probe || "") === "api-football") {
+    diagnostics.apiFootballProbe = await apiFootballProvider.probeCredentials();
+  }
+
+  return sendSuccess(res, [diagnostics]);
 };
