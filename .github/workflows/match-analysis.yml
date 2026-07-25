@@ -78,6 +78,9 @@ jobs:
       - name: Refresh official lineups for fixtures inside the pre-kickoff window
         run: node scripts/refresh-official-lineups.mjs --apply
 
+      - name: Sync finished match results (statistics, events, lineups)
+        run: node scripts/sync-match-results.mjs --apply
+
       - name: Validate match analyses
         run: node scripts/validate-match-analyses.mjs
 
@@ -117,8 +120,19 @@ jobs:
       - name: Refresh official lineups (no-ops without a live provider key)
         run: node scripts/refresh-official-lineups.mjs --apply
 
+      # Maç biter bitmez sonucu çekip raporu üretir. Yarım saatlik döngüde
+      # olması, biten bir maçın raporunun ertesi güne kalmamasını sağlar.
+      - name: Sync finished match results
+        run: node scripts/sync-match-results.mjs --apply
+
+      - name: Regenerate match reports
+        run: node scripts/generate-post-match-pages.mjs
+
       - name: Validate match analyses
         run: node scripts/validate-match-analyses.mjs
+
+      - name: Match report generation tests
+        run: node scripts/test-match-report-generation.mjs
 
       - name: Sync public data mirror
         run: node scripts/sync-public-assets.mjs
