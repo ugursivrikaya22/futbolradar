@@ -14,12 +14,42 @@ const MIN_PROVIDER_TIMEOUT_MS = 800;
 // missing credential, unsupported query). Retrying is pointless; the chain
 // should move on immediately. Everything else is treated as transient.
 const PERMANENT_ERROR_CODES = new Set([
+  "PROVIDER_ACCOUNT_SUSPENDED",
   "PROVIDER_AUTH_ERROR",
   "PROVIDER_CONFIG_MISSING",
   "PROVIDER_PLAN_ERROR",
   "PROVIDER_QUERY_MISSING",
   "LIVE_PROVIDER_NOT_IMPLEMENTED"
 ]);
+
+// Bir sağlayıcı hesap/paket düzeyinde reddedince her istekte tekrar
+// denemenin faydası yok: yanıta gereksiz gecikme ekler ve sağlayıcının
+// kota sayacını boşuna harcar. Kısa süreli, süreç içi devre kesici; her
+// yeni lambda örneğinde ve süre dolduğunda kendiliğinden iyileşir.
+const DISABLED_PROVIDER_TTL_MS = 5 * 60 * 1000;
+const disabledProviders = new Map();
+
+function disableProvider(resource, providerName) {
+  disabledProviders.set(`${resource}:${providerName}`, Date.now() + DISABLED_PROVIDER_TTL_MS);
+}
+
+function isProviderDisabled(resource, providerName) {
+  const until = disabledProviders.get(`${resource}:${providerName}`);
+  if (!until) {
+    return false;
+  }
+
+  if (until <= Date.now()) {
+    disabledProviders.delete(`${resource}:${providerName}`);
+    return false;
+  }
+
+  return true;
+}
+
+function resetProviderHealth() {
+  disabledProviders.clear();
+}
 
 function errorAttempt(error, includeDetail) {
   const attempt = {
@@ -83,6 +113,13 @@ async function resolveFromProviders({ resource, run, query, isUsable }) {
       continue;
     }
 
+    if (isProviderDisabled(resource, provider.name)) {
+      attempt.status = "skipped";
+      attempt.code = "PROVIDER_TEMPORARILY_DISABLED";
+      attempts.push(attempt);
+      continue;
+    }
+
     const remaining = deadline - Date.now();
     if (remaining < MIN_PROVIDER_TIMEOUT_MS && attempts.length) {
       attempt.status = "skipped";
@@ -116,6 +153,9 @@ async function resolveFromProviders({ resource, run, query, isUsable }) {
       }
     } catch (error) {
       Object.assign(attempt, errorAttempt(error, includeDetail));
+      if (attempt.permanent) {
+        disableProvider(resource, provider.name);
+      }
     }
 
     attempts.push(attempt);
@@ -143,9 +183,11 @@ function providerMeta(result, extra) {
 }
 
 module.exports = {
+  DISABLED_PROVIDER_TTL_MS,
   MAX_PROVIDER_TIMEOUT_MS,
   PERMANENT_ERROR_CODES,
   TOTAL_BUDGET_MS,
   providerMeta,
+  resetProviderHealth,
   resolveFromProviders
 };

@@ -118,6 +118,16 @@ function classifyPayloadError(errors) {
     .join(" ")
     .toLowerCase();
 
+  // "Your account is suspended, check on https://dashboard.api-football.com."
+  // Production'da dönen ikinci hata. Hesap düzeyinde bir durum; yeniden
+  // denemek anlamsız, zincir hemen bir sonraki sağlayıcıya geçmeli.
+  if (/suspend|account is (disabled|blocked)/.test(text)) {
+    return {
+      code: "PROVIDER_ACCOUNT_SUSPENDED",
+      message: "API-Football hesabi askiya alinmis; canli saglayici devre disi."
+    };
+  }
+
   if (/api.?key|application key|token|auth|unauthor|forbidden/.test(text)) {
     return {
       code: "PROVIDER_AUTH_ERROR",
