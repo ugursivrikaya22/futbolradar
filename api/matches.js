@@ -26,7 +26,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  setCachePolicy(res, "matches");
+  // Canlı skor isteği taze olmalı; günlük liste daha uzun önbelleklenebilir.
+  setCachePolicy(res, getQuery(req).live ? "matches-live" : "matches");
   if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);

@@ -164,6 +164,7 @@ async function resolveFromProviders({ resource, run, query, isUsable }) {
       if (attempt.permanent) {
         disableProvider(resource, provider.name);
       }
+      logProviderFailure(resource, attempt);
     }
 
     attempts.push(attempt);
@@ -174,6 +175,23 @@ async function resolveFromProviders({ resource, run, query, isUsable }) {
   }
 
   return { data: null, provider: null, attempts, degraded: true };
+}
+
+/**
+ * Sağlayıcı hataları sunucu loguna tek satır olarak düşer. Yanıttaki `meta`
+ * yalnızca o isteği yapan kişiye görünür; kesinti sırasında geriye dönük
+ * bakılabilecek bir iz de gerekiyor. Mesajlar adaptörlerde üretilen kullanıcıya
+ * dönük metinlerdir, kimlik bilgisi taşımaz.
+ */
+function logProviderFailure(resource, attempt) {
+  const parts = [
+    `resource=${resource}`,
+    `provider=${attempt.provider}`,
+    `code=${attempt.code}`,
+    attempt.permanent ? "permanent=true" : null,
+    attempt.message ? `message=${JSON.stringify(attempt.message)}` : null
+  ].filter(Boolean);
+  console.warn(`[futbolradar:provider-failure] ${parts.join(" ")}`);
 }
 
 /**

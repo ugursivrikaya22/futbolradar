@@ -1624,7 +1624,7 @@
     }
 
     var status = String(match.status || match.providerStatus || "").toUpperCase();
-    return ["LIVE", "IN_PLAY", "PAUSED", "1H", "HT", "2H", "ET", "BT", "P"].includes(status);
+    return ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].includes(status);
   }
 
   function initCompetitionFilters() {

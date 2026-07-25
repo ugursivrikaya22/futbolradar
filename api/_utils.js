@@ -2,6 +2,10 @@ const BROWSER_CACHE_CONTROL = "public, max-age=0";
 const CACHE_POLICIES = Object.freeze({
   default: { maxAge: 300, stale: 600 },
   matches: { maxAge: 60, stale: 180 },
+  // Canlı sorgu ayrı politika: 60 saniyelik CDN önbelleği + 180 saniyelik
+  // stale-while-revalidate, oynanan bir maçta dört dakikaya kadar eski skor
+  // servis edebiliyordu. Canlı yanıt kısa ömürlü olmalı.
+  "matches-live": { maxAge: 10, stale: 20 },
   "match-detail": { maxAge: 30, stale: 120 },
   standings: { maxAge: 300, stale: 900 },
   teams: { maxAge: 1800, stale: 7200 },

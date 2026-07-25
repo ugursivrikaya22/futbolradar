@@ -21,6 +21,7 @@ const {
 } = require("../services/providerIdentityService.js");
 const { matchFixture, nameSimilarity } = require("../services/fixtureMatchingService.js");
 const apiFootball = require("../services/providers/apiFootballProvider.js");
+const utils = require("../api/_utils.js");
 
 function testIdNamespacing() {
   // TheSportsDB olay numarası API-Football kimliği olarak OKUNMAMALI
@@ -144,11 +145,59 @@ async function testLiveEndpointUsage() {
   }
 }
 
+
+/**
+ * Canlı skor için API'den gelmesi beklenen alanlar: takım adı, logo, saat,
+ * skor, durum (LIVE / HALFTIME / FINISHED) ve oynanan dakika.
+ */
+function testLiveFixtureNormalization() {
+  const fixture = (short, elapsed) => apiFootball.normalizeFixture({
+    fixture: { id: 991, date: "2026-07-25T18:00:00+00:00", status: { short, elapsed } },
+    league: { name: "Süper Lig", round: "Regular Season - 3" },
+    teams: {
+      home: { name: "Galatasaray", logo: "https://media.api-sports.io/football/teams/645.png" },
+      away: { name: "Fenerbahçe", logo: "https://media.api-sports.io/football/teams/611.png" }
+    },
+    goals: { home: 2, away: 1 }
+  });
+
+  const firstHalf = fixture("1H", 37);
+  assert.equal(firstHalf.status, "LIVE");
+  assert.equal(firstHalf.live, true);
+  assert.equal(firstHalf.minute, 37, "oynanan dakika fixture'dan okunmali");
+  assert.equal(firstHalf.homeTeam, "Galatasaray");
+  assert.equal(firstHalf.homeTeamLogo, "https://media.api-sports.io/football/teams/645.png");
+  assert.equal(firstHalf.awayTeamLogo, "https://media.api-sports.io/football/teams/611.png");
+  assert.deepEqual(firstHalf.score, { home: 2, away: 1 });
+  assert.equal(firstHalf.providerId, "991");
+  assert.ok(firstHalf.time, "baslama saati TSI olarak uretilmeli");
+
+  // Devre arasi LIVE'a ezilmemeli ama hala in-play sayilmali
+  const half = fixture("HT", 45);
+  assert.equal(half.status, "HALFTIME", "devre arasi ayri durum olmali");
+  assert.equal(half.live, true, "devre arasi hala in-play");
+
+  const done = fixture("FT", 90);
+  assert.equal(done.status, "FINISHED");
+  assert.equal(done.live, false);
+}
+
+/** Canlı yanıt, günlük listeden belirgin şekilde kısa ömürlü olmalı. */
+function testLiveCachePolicy() {
+  const daily = utils.cacheControlFor("matches");
+  const live = utils.cacheControlFor("matches-live");
+  const age = (value) => Number(String(value).match(/s-maxage=(\d+)/)[1]);
+  assert.ok(age(live.cdn) < age(daily.cdn), "canli yanit gunluk listeden kisa onbelleklenmeli");
+  assert.ok(age(live.cdn) <= 15, "canli skor icin 15 saniyeden uzun CDN onbellegi kabul edilemez");
+}
+
 testIdNamespacing();
 testWithProviderIdGuards();
 testNameSimilarity();
 testFixtureMatching();
 testCoverageReport();
 await testLiveEndpointUsage();
+testLiveFixtureNormalization();
+testLiveCachePolicy();
 
 console.log("Provider identity tests passed (kimlik isim alanı, eşleştirme eşikleri, belirsizlik koruması, canlı uç nokta).");

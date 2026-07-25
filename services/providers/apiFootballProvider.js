@@ -337,7 +337,13 @@ function stampProviderData(records, resource, staleAfterMs) {
 
 function normalizeStatus(status) {
   const short = status && status.short;
-  if (["1H", "2H", "HT", "ET", "BT", "P", "LIVE"].includes(short)) {
+  // Devre arasi ayri bir durum: arayuz "Devre arasi" diyebilmeli. LIVE'a
+  // ezilirse skor tablosunda oynanmayan bir maca dakika bekleniyormus gibi
+  // gorunuyordu. Devre arasi hala "in-play" sayilir (live: true).
+  if (short === "HT" || short === "BT") {
+    return "HALFTIME";
+  }
+  if (["1H", "2H", "ET", "P", "LIVE"].includes(short)) {
     return "LIVE";
   }
 
@@ -377,8 +383,13 @@ function normalizeFixture(item) {
     homeTeamLogo: teamLogo(homeTeam),
     awayTeamLogo: teamLogo(awayTeam),
     status: normalizeStatus(fixture.status || {}),
-    providerStatus: fixture.status && fixture.status.short || null,
-    live: normalizeStatus(fixture.status || {}) === "LIVE",
+    providerStatus: (fixture.status && fixture.status.short) || null,
+    // Oynanan dakika yalnizca olay akisinda okunuyordu; maca ait `elapsed`
+    // hic alinmadigi icin canli kartlarda dakika bos kaliyor, istemci de
+    // baslama saatini ("21:00") dakika sanip gostermiyordu.
+    minute: fixture.status && fixture.status.elapsed != null ? Number(fixture.status.elapsed) : null,
+    elapsed: fixture.status && fixture.status.elapsed != null ? Number(fixture.status.elapsed) : null,
+    live: ["LIVE", "HALFTIME"].includes(normalizeStatus(fixture.status || {})),
     score: {
       home: scoreValue(goals.home),
       away: scoreValue(goals.away)
