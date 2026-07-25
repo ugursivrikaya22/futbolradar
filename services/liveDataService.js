@@ -98,8 +98,12 @@ async function resolveFromProviders({ resource, run, query, isUsable }) {
   const includeDetail = Boolean(query && String(query.debug) === "1");
   let fallback = null;
 
-  for (const provider of chain) {
+  for (const [index, provider] of chain.entries()) {
     const attempt = { provider: provider.name };
+    // Zincirin son halkası kürasyonlu veridir: ağ isteği yapmaz, bu yüzden
+    // zaman bütçesi gerekçesiyle atlanmamalı - atlanırsa sayfa elimizde
+    // hazır veri dururken boş kalırdı.
+    const isLastResort = index === chain.length - 1;
     const requestedLeague = query && query.league ? String(query.league) : "";
     const providerLeague = requestedLeague ? providerLeagueValue(requestedLeague, provider.name) : "";
 
@@ -113,7 +117,7 @@ async function resolveFromProviders({ resource, run, query, isUsable }) {
       continue;
     }
 
-    if (isProviderDisabled(resource, provider.name)) {
+    if (!isLastResort && isProviderDisabled(resource, provider.name)) {
       attempt.status = "skipped";
       attempt.code = "PROVIDER_TEMPORARILY_DISABLED";
       attempts.push(attempt);
@@ -121,7 +125,7 @@ async function resolveFromProviders({ resource, run, query, isUsable }) {
     }
 
     const remaining = deadline - Date.now();
-    if (remaining < MIN_PROVIDER_TIMEOUT_MS && attempts.length) {
+    if (remaining < MIN_PROVIDER_TIMEOUT_MS && attempts.length && !isLastResort) {
       attempt.status = "skipped";
       attempt.code = "TIME_BUDGET_EXHAUSTED";
       attempts.push(attempt);
