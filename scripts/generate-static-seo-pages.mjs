@@ -128,7 +128,7 @@ const playerSeoPages = [
     description: "En iyi forvetler listesi; gol tehdidi, xG, sut hacmi, form ve AI rating sinyalleriyle hazirlanir.",
     h1: "En Iyi Forvetler",
     lead: "Forvet ve kanat oyuncularini gol tehdidi, hucum radari ve form ivmesiyle oku.",
-    cards: ["Gol tehdidi", "Hucum radari", "Bitiricilik"]
+    cards: ["Gol tehdidi", "Hücum radarı", "Bitiricilik"]
   },
   {
     file: "en-iyi-orta-sahalar.html",
@@ -137,7 +137,7 @@ const playerSeoPages = [
     description: "En iyi orta sahalar; yaraticilik, pas, pres gucu, form ve AI rating metrikleriyle listelenir.",
     h1: "En Iyi Orta Sahalar",
     lead: "Orta saha oyuncularini yaraticilik, pres, pas ve sureklilik sinyalleriyle karsilastir.",
-    cards: ["Yaraticilik", "Pres gucu", "Pas kalitesi"]
+    cards: ["Yaratıcılık", "Pres gucu", "Pas kalitesi"]
   },
   {
     file: "en-iyi-defanslar.html",
@@ -146,7 +146,7 @@ const playerSeoPages = [
     description: "En iyi defanslar; savunma radari, sureklilik, disiplin, top kapma ve AI rating sinyalleriyle analiz edilir.",
     h1: "En Iyi Defanslar",
     lead: "Defans oyuncularini savunma etkisi, disiplin, fiziksel sureklilik ve radar skoruyla oku.",
-    cards: ["Savunma radari", "Disiplin", "Sureklilik"]
+    cards: ["Savunma radari", "Disiplin", "Süreklilik"]
   },
   {
     file: "en-iyi-kaleciler.html",
@@ -155,7 +155,7 @@ const playerSeoPages = [
     description: "En iyi kaleciler; form, savunma etkisi, veri guveni ve AI rating sinyalleriyle takip edilir.",
     h1: "En Iyi Kaleciler",
     lead: "Kalecileri form, savunma katkisi ve performans radariyla karsilastir.",
-    cards: ["Kaleci formu", "Savunma etkisi", "Veri guveni"]
+    cards: ["Kaleci formu", "Savunma etkisi", "Veri güveni"]
   },
   {
     file: "yukselen-oyuncular.html",
@@ -182,7 +182,7 @@ const playerSeoPages = [
     description: "Genc yetenekler listesi; yas, potansiyel rating, form, piyasa degeri ve radar sinyallerine gore hazirlanir.",
     h1: "Genc Yetenekler",
     lead: "Genc oyunculari potansiyel, form ve piyasa degeri radariyla incele.",
-    cards: ["Potansiyel", "Yas profili", "Piyasa degeri"]
+    cards: ["Potansiyel", "Yas profili", "Piyasa değeri"]
   }
 ];
 

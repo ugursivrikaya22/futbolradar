@@ -686,8 +686,8 @@
   function playerRadarRows(player) {
     return [
       { label: "Form", value: radarMetric(player, "form", "Form") },
-      { label: "Hucum", value: radarMetric(player, "attack", "Hucum") },
-      { label: "Yaraticilik", value: radarMetric(player, "creativity", "Yaraticilik") },
+      { label: "Hücum", value: radarMetric(player, "attack", "Hücum") },
+      { label: "Yaratıcılık", value: radarMetric(player, "creativity", "Yaratıcılık") },
       { label: "Savunma", value: radarMetric(player, "defense", "Savunma") },
       { label: "Potansiyel", value: radarMetric(player, "potential", "Potansiyel") },
       { label: "Veri", value: radarMetric(player, "dataConfidence", "Veri") }
@@ -1185,8 +1185,8 @@
       ["Form", radarMetric(player, "form")],
       ["Potansiyel", radarMetric(player, "potential")],
       ["Gol tehdidi", playerScore(player, "threatScore")],
-      ["Yaraticilik", playerScore(player, "creativityScore")],
-      ["Veri guveni", radarMetric(player, "dataConfidence")]
+      ["Yaratıcılık", playerScore(player, "creativityScore")],
+      ["Veri güveni", radarMetric(player, "dataConfidence")]
     ];
 
     return (
@@ -3051,7 +3051,7 @@
       '<article class="card" id="' + escapeHtml(team.id) + '" data-card="team" data-team="' + escapeHtml(team.id) + '">' +
       '<div class="card-head"><div><span class="card-kicker">' + escapeHtml(team.league) + "</span><h2>" + escapeHtml(team.name) + '</h2></div><strong class="big-value">' + escapeHtml(team.momentum) + "</strong></div>" +
       formDotsHtml(team.form) +
-      barRowHtml("Hucum", attack, attack) +
+      barRowHtml("Hücum", attack, attack) +
       barRowHtml("Savunma", defense, defense) +
       '<div class="metric-grid compact"><span>Lig: <b>' + escapeHtml(displayValue(team.league)) + '</b></span><span>Kadro: <b>' + escapeHtml(displayValue(players.length || team.squadCount)) + '</b></span></div>' +
       tagsHtml(team.tags) +
@@ -3483,10 +3483,10 @@
   function playerPrimaryWeapon(player) {
     var metrics = [
       ["Gol tehdidi", playerScore(player, "threatScore")],
-      ["Yaraticilik", playerScore(player, "creativityScore")],
+      ["Yaratıcılık", playerScore(player, "creativityScore")],
       ["Pres gucu", playerScore(player, "pressingScore")],
       ["Form", radarMetric(player, "form")],
-      ["Sureklilik", playerScore(player, "continuityScore")]
+      ["Süreklilik", playerScore(player, "continuityScore")]
     ].sort(function (a, b) { return Number(b[1] || 0) - Number(a[1] || 0); });
 
     return metrics[0][0] + " " + displayValue(metrics[0][1]);
@@ -3645,7 +3645,7 @@
         profileItemHtml("Mevki", player.position),
         profileItemHtml("Yas", age),
         profileItemHtml("Uyruk", player.nationality),
-        profileItemHtml("Piyasa degeri", marketValue, "Piyasa degeri yakinda"),
+        profileItemHtml("Piyasa değeri", marketValue, "Piyasa değeri yakında"),
         profileItemHtml("Veri durumu", playerDataStatusLabel(player), "Yakinda"),
         profileItemHtml("Transfer kaydi", playerHasTransferHistory(player) ? player.transferHistory.length + " kayit" : "Yakinda"),
         profileItemHtml("Rating durumu", statusLabel(player.ratingStatus, "rating"), "Yakinda")
@@ -4076,7 +4076,7 @@
     }
 
     if (playerScore(player, "threatScore") >= 84) {
-      return "Hucum katkisi yuksek";
+      return "Hücum katkısı yüksek";
     }
 
     if (radarMetric(player, "potential") >= 84) {
@@ -5005,8 +5005,8 @@
       "en-iyi-kaleciler": { label: "Form", getter: function (player) { return radarMetric(player, "form"); }, note: "Kurtaris formu ve sureklilik" },
       defanslar: { label: "Savunma", getter: function (player) { return radarMetric(player, "defense"); }, note: "Pozisyon alma ve top kazanma" },
       "en-iyi-defanslar": { label: "Savunma", getter: function (player) { return radarMetric(player, "defense"); }, note: "Pozisyon alma ve top kazanma" },
-      "orta-sahalar": { label: "Yaraticilik", getter: function (player) { return playerScore(player, "creativityScore"); }, note: "Pas, xA ve oyun baglantisi" },
-      "en-iyi-orta-sahalar": { label: "Yaraticilik", getter: function (player) { return playerScore(player, "creativityScore"); }, note: "Pas, xA ve oyun baglantisi" },
+      "orta-sahalar": { label: "Yaratıcılık", getter: function (player) { return playerScore(player, "creativityScore"); }, note: "Pas, xA ve oyun bağlantısı" },
+      "en-iyi-orta-sahalar": { label: "Yaratıcılık", getter: function (player) { return playerScore(player, "creativityScore"); }, note: "Pas, xA ve oyun bağlantısı" },
       "genc-yetenekler": { label: "Potansiyel", getter: function (player) { return radarMetric(player, "potential"); }, note: "Yas, tavan ve form ivmesi" },
       "yukselen-oyuncular": { label: "Form ivmesi", getter: function (player) { return Number(player.formChange || 0) * 10 + radarMetric(player, "form"); }, note: "Son donem yukselis sinyali" },
       "en-iyi-oyuncular": { label: "Overall", getter: playerAiScore, note: "Genel rating ve radar etkisi" },
@@ -5444,13 +5444,13 @@
       compareInsightCardsHtml(selected) +
       compareMultiRowHtml("Overall", selected, function (player) { return player.overallRating || player.aiRating || player.rating; }) +
       compareMultiRowHtml("Form", selected, function (player) { return radarMetric(player, "form"); }) +
-      compareMultiRowHtml("Hucum", selected, function (player) { return radarMetric(player, "attack"); }) +
-      compareMultiRowHtml("Yaraticilik", selected, function (player) { return radarMetric(player, "creativity"); }) +
+      compareMultiRowHtml("Hücum", selected, function (player) { return radarMetric(player, "attack"); }) +
+      compareMultiRowHtml("Yaratıcılık", selected, function (player) { return radarMetric(player, "creativity"); }) +
       compareMultiRowHtml("Savunma", selected, function (player) { return radarMetric(player, "defense"); }) +
       compareMultiRowHtml("Disiplin", selected, function (player) { return radarMetric(player, "discipline"); }) +
-      compareMultiRowHtml("Sureklilik", selected, function (player) { return radarMetric(player, "durability"); }) +
+      compareMultiRowHtml("Süreklilik", selected, function (player) { return radarMetric(player, "durability"); }) +
       compareMultiRowHtml("Potansiyel", selected, function (player) { return radarMetric(player, "potential"); }) +
-      compareMultiRowHtml("Veri guveni", selected, function (player) { return radarMetric(player, "dataConfidence"); }) +
+      compareMultiRowHtml("Veri güveni", selected, function (player) { return radarMetric(player, "dataConfidence"); }) +
       compareMultiRowHtml("Piyasa EUR", selected, function (player) { return player.marketValueEur; }) +
       compareMultiRowHtml("Mac", selected, function (player) { return playerStats(player).appearances; }) +
       compareMultiRowHtml("Dakika", selected, function (player) { return playerStats(player).minutesPlayed; }) +
@@ -5517,7 +5517,7 @@
       },
       {
         key: "creative-core",
-        title: "Yaraticilik",
+        title: "Yaratıcılık",
         note: "Kilit pas, xA ve pas radari",
         ids: topPlayerIds(list, function (player) { return playerScore(player, "creativityScore") + playerStats(player).assists * 2; }, 3)
       },
@@ -5860,7 +5860,7 @@
     var rows = [
       ["Momentum", team.momentum || team.rating],
       ["Form", Math.round(Number(team.formScore || 0) * 10) || team.momentum],
-      ["Hucum", attack],
+      ["Hücum", attack],
       ["Savunma", defense],
       ["Kadro", avgRating],
       ["Gol trendi", attack >= 78 ? 82 : attack]
@@ -5882,7 +5882,7 @@
       { label: "Takim yorumu", title: "Radar yorumu", value: displayValue(team.momentum || team.rating), text: teamInsight(team), href: "./momentum.html" },
       leader ? { label: "Kadro lideri", title: leader.name, value: "AI " + displayValue(playerAiScore(leader)), text: playerCurrentTeam(leader) + " - " + displayValue(leader.position), href: playerProfileHref(leader.id) } : null,
       scorer ? { label: "Gol lideri", title: scorer.name, value: displayValue(scorer.goals) + " gol", text: "Gol tehdidi " + displayValue(playerScore(scorer, "threatScore")), href: playerProfileHref(scorer.id) } : null,
-      creator ? { label: "Yaraticilik", title: creator.name, value: displayValue(playerScore(creator, "creativityScore")), text: "Pas ve xA etkisi yuksek oyuncu", href: playerCompareHref("?p1=" + encodeURIComponent(creator.id)) } : null
+      creator ? { label: "Yaratıcılık", title: creator.name, value: displayValue(playerScore(creator, "creativityScore")), text: "Pas ve xA etkisi yüksek oyuncu", href: playerCompareHref("?p1=" + encodeURIComponent(creator.id)) } : null
     ].filter(Boolean);
 
     return '<section class="team-signal-grid">' + cards.map(function (card) {
@@ -6000,7 +6000,7 @@
       '<div class="metric-grid compact"><span>Kadro <b>' + escapeHtml(displayValue(team.squadCount || players.length)) + '</b></span><span>Stadyum <b>' + escapeHtml(displayValue(team.venue)) + '</b></span><span>Teknik ekip <b>' + escapeHtml(displayValue(team.coach)) + "</b></span></div>" +
       teamRadarSnapshotHtml(team, players) +
       teamSignalCardsHtml(team, players) +
-      barRowHtml("Hucum", attack, attack) +
+      barRowHtml("Hücum", attack, attack) +
       barRowHtml("Savunma", defense, defense) +
       formDotsHtml(team.form) +
       tagsHtml(team.tags) +
