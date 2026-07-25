@@ -1,7 +1,5 @@
-const { getProvider } = require("../services/providers");
-const { providerLeagueValue } = require("../services/competitionCatalog");
+const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
 const {
-  DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
   getQuery,
   rejectUnsupportedMethod,
@@ -10,10 +8,19 @@ const {
   setCachePolicy,
   validateDateParam,
   validateMatches,
-  validateOrSend,
-  withTimeout
+  validateOrSend
 } = require("./_utils");
 
+/**
+ * Günün maç listesi.
+ *
+ * Every configured provider is tried in order and only then the curated
+ * data set. A single provider failing (expired plan, rate limit, timeout)
+ * used to return `ok:false` with an empty array, which rendered the match
+ * pages as "bugün maç yok" even when another source had the fixtures. The
+ * endpoint now degrades instead of failing, and reports what happened in
+ * `meta` so the same class of outage is diagnosable from the response.
+ */
 module.exports = async function handler(req, res) {
   if (rejectUnsupportedMethod(req, res)) {
     return;
@@ -28,36 +35,26 @@ module.exports = async function handler(req, res) {
     return sendError(res, 200, dateError, "INVALID_DATE");
   }
 
-  const provider = getProvider("matches");
-  const providerQuery = {
-    ...query,
-    requestedCompetition: query.league || "",
-    league: providerLeagueValue(query.league, provider.name)
-  };
-  if (query.league && providerQuery.league === null) {
+  const result = await resolveFromProviders({
+    resource: "matches",
+    query,
+    run: (provider, providerQuery) => provider.getMatches(providerQuery)
+  });
+
+  if (!result.provider) {
+    const firstError = result.attempts.find((attempt) => attempt.status === "error");
     return sendError(
       res,
       200,
-      "Seçilen turnuva mevcut canlı veri sağlayıcısında desteklenmiyor; yedek veri denenecek.",
-      "COMPETITION_NOT_SUPPORTED"
-    );
-  }
-  let data = [];
-
-  try {
-    data = await withTimeout(provider.getMatches(providerQuery), DEFAULT_TIMEOUT_MS);
-  } catch (error) {
-    return sendError(
-      res,
-      200,
-      error.message || "Mac verisi provider katmanindan alinamadi.",
-      error.code || "PROVIDER_ERROR"
+      (firstError && firstError.message) || "Mac verisi hicbir saglayicidan alinamadi.",
+      (firstError && firstError.code) || "PROVIDER_ERROR"
     );
   }
 
+  const data = Array.isArray(result.data) ? result.data : [];
   if (!validateOrSend(res, data, validateMatches)) {
     return;
   }
 
-  return sendSuccess(res, data, provider.source);
+  return sendSuccess(res, data, result.provider.source, undefined, providerMeta(result));
 };

@@ -1,6 +1,9 @@
 const { getProvider, mockProvider } = require("../services/providers");
 const { mergeProviderPlayers } = require("../services/playerService");
 const { enrichPlayerRating } = require("../services/ratingService");
+const { MODEL_VERSION: MATCH_PREDICTION_MODEL_VERSION } = require("../services/matchPredictionService");
+const { getFixtureWeeks, groupMatchesIntoWeeks } = require("../services/superLigFixtureService");
+const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -8,6 +11,7 @@ const {
   normalizeText,
   rejectUnsupportedMethod,
   sendError,
+  sendJson,
   sendSuccess,
   setCachePolicy,
   withTimeout
@@ -135,13 +139,122 @@ async function handlePlayerRankings(req, res, query) {
   return sendSuccess(res, ranked, source);
 }
 
+/**
+ * Full Süper Lig season, grouped into weeks. Always starts from the
+ * curated data/super-lig-fixtures.json (season metadata, team pool,
+ * verified venues) and only ever swaps in `rounds` from a live provider —
+ * every other editorial field is left untouched. No limit/page parameter
+ * is applied; a provider fetch failure or empty result simply keeps the
+ * curated rounds instead of guessing.
+ */
+async function handleSuperLigFixtures(req, res, query) {
+  const fixturesData = require("../data/super-lig-fixtures.json");
+  const result = await resolveFromProviders({
+    resource: "super-lig-fixtures",
+    query,
+    run: (provider, providerQuery) => {
+      if (typeof provider.getSeasonFixtures !== "function") {
+        return [];
+      }
+
+      return provider.getSeasonFixtures(providerQuery);
+    },
+    // A live season feed is only usable once it actually groups into weeks;
+    // anything less keeps the curated, editorially verified rounds.
+    isUsable: (data) => Array.isArray(data) && data.length > 0 && groupMatchesIntoWeeks(data).length > 0
+  });
+
+  const liveRounds = Array.isArray(result.data) && result.data.length ? groupMatchesIntoWeeks(result.data) : [];
+  const useLive = liveRounds.length > 0 && result.provider && result.provider !== mockProvider;
+
+  return sendSuccess(
+    res,
+    {
+      ...fixturesData,
+      rounds: useLive ? liveRounds : getFixtureWeeks(fixturesData),
+      roundsSource: useLive ? "provider" : "curated"
+    },
+    useLive ? result.provider.source : mockProvider.source,
+    undefined,
+    providerMeta(result, { roundsSource: useLive ? "provider" : "curated" })
+  );
+}
+
+function matchAnalysisResponse(res, statusCode, payload) {
+  return sendJson(res, statusCode, payload);
+}
+
+async function handleMatchAnalysis(req, res, query) {
+  const fixtureId = normalizeText(query.fixtureId);
+  const slugQuery = normalizeText(query.slug);
+
+  if (!fixtureId && !slugQuery) {
+    return matchAnalysisResponse(res, 200, {
+      ok: false,
+      source: "FutbolRadar Analysis",
+      updatedAt: null,
+      method: MATCH_PREDICTION_MODEL_VERSION,
+      error: { code: "MATCH_ANALYSIS_QUERY_REQUIRED", message: "fixtureId veya slug parametresi gerekli." },
+      data: null
+    });
+  }
+
+  let analyses = [];
+  try {
+    analyses = require("../data/match-analyses.json");
+  } catch (error) {
+    return matchAnalysisResponse(res, 200, {
+      ok: false,
+      source: "FutbolRadar Analysis",
+      updatedAt: null,
+      method: MATCH_PREDICTION_MODEL_VERSION,
+      error: { code: "MATCH_ANALYSIS_UNAVAILABLE", message: "Maç analizi verisi şu anda okunamıyor." },
+      data: null
+    });
+  }
+
+  const record = (Array.isArray(analyses) ? analyses : []).find((item) => {
+    return (fixtureId && normalizeText(item.fixtureId) === fixtureId) || (slugQuery && normalizeText(item.slug) === slugQuery);
+  });
+
+  if (!record) {
+    return matchAnalysisResponse(res, 404, {
+      ok: false,
+      source: "FutbolRadar Analysis",
+      updatedAt: null,
+      method: MATCH_PREDICTION_MODEL_VERSION,
+      error: { code: "MATCH_ANALYSIS_NOT_FOUND", message: "Bu maç için analiz bulunamadı." },
+      data: null
+    });
+  }
+
+  if (record.analysisStatus === "unavailable") {
+    return matchAnalysisResponse(res, 200, {
+      ok: true,
+      source: "FutbolRadar Analysis",
+      updatedAt: record.generatedAt || null,
+      method: record.modelVersion || MATCH_PREDICTION_MODEL_VERSION,
+      status: "unavailable",
+      data: record
+    });
+  }
+
+  return matchAnalysisResponse(res, 200, {
+    ok: true,
+    source: "FutbolRadar Analysis",
+    updatedAt: record.generatedAt || null,
+    method: record.modelVersion || MATCH_PREDICTION_MODEL_VERSION,
+    data: record
+  });
+}
+
 module.exports = async function handler(req, res) {
   if (rejectUnsupportedMethod(req, res)) {
     return;
   }
 
   const route = routeName(req);
-  setCachePolicy(res, "players");
+  setCachePolicy(res, route === "match-analysis" ? "match-analysis" : "players");
   if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
@@ -156,6 +269,14 @@ module.exports = async function handler(req, res) {
 
   if (route === "player-rankings") {
     return handlePlayerRankings(req, res, query);
+  }
+
+  if (route === "match-analysis") {
+    return handleMatchAnalysis(req, res, query);
+  }
+
+  if (route === "super-lig-fixtures") {
+    return handleSuperLigFixtures(req, res, query);
   }
 
   return sendError(res, 404, "API endpoint bulunamadi.", "API_ROUTE_NOT_FOUND");

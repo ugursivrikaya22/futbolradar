@@ -71,10 +71,43 @@ function providerLeagueValue(value, providerName) {
   return competition.name;
 }
 
+const FRIENDLY_COMPETITION_IDS = new Set(["hazirlik-maci"]);
+
+/**
+ * Single shared classifier so a friendly never gets counted as league form
+ * and a European/cup result never gets the full weight of a league result
+ * — used by both the match-analysis generator (fixture normalization) and
+ * matchContextService (form weighting) so the two can never disagree.
+ */
+function classifyFixtureCompetition(match) {
+  const raw = match && (match.competitionId || match.league);
+  const normalizedId = normalizeKey(match && match.competitionId);
+
+  if (FRIENDLY_COMPETITION_IDS.has(normalizedId) || normalizeKey(match && match.league).includes("hazirlik")) {
+    return { competitionType: "friendly", isOfficialCompetition: false, includeInLeagueForm: false };
+  }
+
+  const competition = findCompetition(raw);
+  if (!competition) {
+    return { competitionType: "cup", isOfficialCompetition: true, includeInLeagueForm: false };
+  }
+
+  if (competition.type === "friendly") {
+    return { competitionType: "friendly", isOfficialCompetition: false, includeInLeagueForm: false };
+  }
+
+  if (competition.type === "continental") {
+    return { competitionType: "europe", isOfficialCompetition: true, includeInLeagueForm: false };
+  }
+
+  return { competitionType: "league", isOfficialCompetition: true, includeInLeagueForm: true };
+}
+
 module.exports = {
   competitions,
   findCompetition,
   matchesCompetition,
   normalizeKey,
-  providerLeagueValue
+  providerLeagueValue,
+  classifyFixtureCompetition
 };

@@ -51,7 +51,7 @@
           <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
           <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
           <div class="nav-menu" id="primary-menu">
-            <div class="nav-links"><a href="./bugunun-maclari.html">Bugünkü Maçlar</a><a href="./canli-skor.html">Canlı Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takimlar.html">Takımlar</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./momentum.html">Momentum</a></div>
+            <div class="nav-links"><a href="./bugunun-maclari.html">Bugünkü Maçlar</a><a href="./canli-skor.html">Canlı Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./super-lig-fikstur.html">Süper Lig Fikstürü</a><a href="./takimlar.html">Takımlar</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./momentum.html">Momentum</a></div>
             <a class="cta" href="./istatistik-merkezi.html">İstatistikler</a>
           </div>
         </nav>
@@ -60,98 +60,103 @@
       <main>
         <section class="container hero" id="hero-canli-skor">
           <div>
-            <span class="eyebrow">8 lig ve UEFA turnuvaları · Tek maç merkezi</span>
-            <h1><span>Maçlar.</span><span>Canlı skor.</span><span>İstatistikler.</span></h1>
-            <p class="hero-copy">Süper Lig ile Avrupa'nın büyük liglerini aynı akışta takip et; maçı skordan kadroya, formdan ayrıntılı istatistiklere kadar tek yerde incele.</p>
+            <span class="eyebrow"><i class="live-pulse" aria-hidden="true"></i> Canlı maç merkezi</span>
+            <h1><span>Canlı skor.</span><span>Maç merkezi.</span></h1>
+            <p class="hero-copy">Bugünün maçlarını, canlı skorları ve maç içi gelişmeleri tek ekranda takip et.</p>
             <div class="hero-actions">
-              <a class="button primary" href="./bugunun-maclari.html">Bugünkü Maçları Gör</a>
-              <a class="button secondary" href="./canli-skor.html">Canlı Skoru Aç</a>
-              <a class="button secondary" href="./istatistik-merkezi.html">İstatistik Merkezi</a>
-            </div>
-            <div class="hero-metrics" aria-label="FutbolRadar kapsamı">
-              <div class="metric-tile"><strong>8</strong><span>Lig ve UEFA turnuvası</span></div>
-              <div class="metric-tile"><strong>Canlı</strong><span>Skor ve maç akışı</span></div>
-              <div class="metric-tile"><strong>Detaylı</strong><span>Kadro, form ve istatistik</span></div>
+              <a class="button primary" href="./canli-skor.html">Canlı Skorları Aç</a>
+              <a class="button secondary" href="./bugunun-maclari.html">Tüm Maçlar</a>
             </div>
           </div>
           <article class="glass-card match-card match-command-card" id="featured-radar-match" data-api-section="featured-match" data-api-target="featured-match" data-static-fallback="true" aria-label="Bugünün maç merkezi özeti">
             <!-- prerender:featured-match:start -->
 <div class="home-match-command">
-      <div class="home-match-command-head"><div><span>Bugünün maç merkezi</span><strong>Program kontrol ediliyor</strong></div><a href="./bugunun-maclari.html">Tümünü aç</a></div>
-      <div class="home-match-command-metrics" aria-label="Bugünün maç özeti"><a href="./canli-skor.html"><span>Canlı</span><b class="live-number">0</b></a><a href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>0</b></a><a href="./bugunun-maclari.html?status=finished"><span>Tamamlanan</span><b>0</b></a><a href="./bugunun-maclari.html"><span>Aktif lig</span><b>0</b></a></div>
+      <div class="home-match-command-head"><div><span>Canlı skor panosu</span><strong>Program kontrol ediliyor</strong></div><a href="./canli-skor.html">Tam ekran</a></div>
+      <div class="home-match-command-metrics" aria-label="Bugünün maç özeti"><a href="./canli-skor.html"><span>Canlı</span><b class="live-number">0</b></a><a href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>0</b></a><a href="./bugunun-maclari.html?status=finished"><span>Biten</span><b>0</b></a></div>
       <div class="home-match-command-empty"><strong>Maç programı yükleniyor.</strong><span>Bugünün doğrulanmış karşılaşmaları burada listelenecek.</span></div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./bugunun-maclari.html">Maç programı</a><a class="button secondary" href="./canli-skor.html">Canlı skor</a></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Canlı skor</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
     </div>
 <!-- prerender:featured-match:end -->
           </article>
         </section>
 
         <section class="container section section-matches" id="bugunun-maclari-preview" data-api-section="today-matches" aria-labelledby="today-title">
-          <div class="section-head"><div class="section-title"><span class="section-kicker">Maç Merkezi</span><h2 id="today-title">Bugünün maçları</h2><p>Süper Lig, Avrupa'nın beş büyük ligi, Şampiyonlar Ligi ve Avrupa Ligi; lig lig ayrılmış tek programda.</p></div><a class="section-link" href="./bugunun-maclari.html">Tüm programı aç</a></div>
+          <div class="section-head"><div class="section-title"><span class="section-kicker">Bugünün programı</span><h2 id="today-title">Maçlar ve canlı skorlar</h2><p>Devam eden maçlar önce, başlayacak ve tamamlanan karşılaşmalar hemen altında.</p></div><a class="section-link" href="./bugunun-maclari.html">Tümünü gör</a></div>
           <div class="competition-chip-row home-competition-row" aria-label="Lig kısa yolları">
-            <a href="./bugunun-maclari.html">Tümü</a><a href="./bugunun-maclari.html?league=super-lig">Süper Lig</a><a href="./bugunun-maclari.html?league=premier-league">Premier League</a><a href="./bugunun-maclari.html?league=la-liga">La Liga</a><a href="./bugunun-maclari.html?league=serie-a">Serie A</a><a href="./bugunun-maclari.html?league=bundesliga">Bundesliga</a><a href="./bugunun-maclari.html?league=ligue-1">Ligue 1</a><a href="./bugunun-maclari.html?league=sampiyonlar-ligi">Şampiyonlar Ligi</a><a href="./bugunun-maclari.html?league=avrupa-ligi">Avrupa Ligi</a>
+            <a href="./bugunun-maclari.html">Tümü</a><a href="./bugunun-maclari.html?league=super-lig">Süper Lig</a><a href="./bugunun-maclari.html?league=sampiyonlar-ligi">Şampiyonlar Ligi</a><a href="./bugunun-maclari.html?league=avrupa-ligi">Avrupa Ligi</a><a href="./bugunun-maclari.html?league=premier-league">Premier League</a><a href="./bugunun-maclari.html?league=la-liga">La Liga</a><a href="./bugunun-maclari.html?league=serie-a">Serie A</a><a href="./bugunun-maclari.html?league=bundesliga">Bundesliga</a>
           </div>
           <div class="matches-grid" id="today-matches-grid" data-api-target="today-matches" data-static-fallback="true">
             <!-- prerender:today-matches:start -->
-<article class="data-empty" data-card="empty-state">
-    <strong>Bugün doğrulanmış maç yok</strong>
-    <span>Bugünün maç listesi doğrulandığında burada gösterilecek. Sezon eşleşmelerini fikstür sayfasından inceleyebilirsin.</span>
-    <div class="match-empty-actions">
-      <a class="detail-link" href="./bugunun-maclari.html">Günün tüm maçlarını aç</a>
-      <a class="detail-link ghost" href="./super-lig-fikstur.html">Sezon fikstürüne git</a>
-      <span class="tag soft">Günlük maç akışı bekleniyor</span>
-    </div>
+<article class="card match-card static-match-card" data-card="fixture-preview" data-match="raal-la-louviere-samsunspor-2026-07-25">
+    <div class="card-head"><span class="card-kicker">Hazırlık Maçı</span><strong class="big-value">15:00</strong></div>
+    <h2>RAAL La Louvière - Samsunspor</h2>
+    <p>Bugün · Stade du Tivoli</p>
+    <div class="tag-row"><span class="tag soft">Planlandı</span><span class="tag soft">Bugünün programı</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
+  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="konyaspor-hull-city-2026-07-25">
+    <div class="card-head"><span class="card-kicker">Hazırlık Maçı</span><strong class="big-value">18:30</strong></div>
+    <h2>Konyaspor - Hull City</h2>
+    <p>Bugün · Konya Büyükşehir Belediye Stadyumu</p>
+    <div class="tag-row"><span class="tag soft">Planlandı</span><span class="tag soft">Bugünün programı</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
+  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="osijek-caykur-rizespor-2026-07-25">
+    <div class="card-head"><span class="card-kicker">Hazırlık Maçı</span><strong class="big-value">21:00</strong></div>
+    <h2>Osijek - Çaykur Rizespor</h2>
+    <p>Bugün · Opus Arena</p>
+    <div class="tag-row"><span class="tag soft">Planlandı</span><span class="tag soft">Bugünün programı</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
+  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="goztepe-rudes-2026-07-26">
+    <div class="card-head"><span class="card-kicker">Hazırlık Maçı</span><strong class="big-value">15:00</strong></div>
+    <h2>Göztepe - Rudeš</h2>
+    <p>26 Temmuz Pazar · Gürsel Aksel Stadyumu</p>
+    <div class="tag-row"><span class="tag soft">Planlandı</span><span class="tag soft">Yaklaşan maç</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
+  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="galatasaray-venezia-2026-07-27">
+    <div class="card-head"><span class="card-kicker">Hazırlık Maçı</span><strong class="big-value">21:00</strong></div>
+    <h2>Galatasaray - Venezia</h2>
+    <p>27 Temmuz Pazartesi · Rams Park</p>
+    <div class="tag-row"><span class="tag soft">Planlandı</span><span class="tag soft">Yaklaşan maç</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
+  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="gornik-zabrze-fenerbahce-2026-07-29">
+    <div class="card-head"><span class="card-kicker">Şampiyonlar Ligi</span><strong class="big-value">21:00</strong></div>
+    <h2>Górnik Zabrze - Fenerbahçe</h2>
+    <p>29 Temmuz Çarşamba · Stadion im Ernesta Pohla</p>
+    <div class="tag-row"><span class="tag soft">Planlandı</span><span class="tag soft">Yaklaşan maç</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
   </article>
 <!-- prerender:today-matches:end -->
           </div>
+        </section>
+
+        <section class="container section home-radar-matches" id="gunun-radar-maci" aria-labelledby="gunun-radar-maci-title" hidden>
+          <div class="section-head"><div class="section-title"><span class="section-kicker">FutbolRadar analizi</span><h2 id="gunun-radar-maci-title">Günün Radar Maçı</h2><p>Kadro, form ve veri güvenilirliğine göre üretilen kural tabanlı maç öncesi okuma.</p></div><a class="section-link" href="./bugunun-maclari.html">Tüm maç merkezini aç</a></div>
+          <div class="grid" data-api-target="today-radar-matches"></div>
         </section>
 
         <!-- post-match-feature:start -->
 <section class="container section home-post-match" aria-labelledby="home-post-match-title"><div class="section-head"><div class="section-title"><span class="section-kicker">Son maç analizi</span><h2 id="home-post-match-title">Fenerbahçe 1-0 Górnik Zabrze</h2><p>Şut, xG, pas, kadro ve kritik anlarla tamamlanan maçın veri odaklı okuması.</p></div><a class="section-link" href="./fenerbahce-gornik-zabrze-mac-analizi.html">Tam analizi aç</a></div><div class="home-post-match-shell"><div><span>Şampiyonlar Ligi</span><strong>%79 topa sahip olma · 15 şut · 1,54 xG</strong></div><p>Fenerbahçe oyunu kontrol etti ve rakibin hücum tehdidini çok düşük seviyede tuttu. Buna karşın yüzde 79 topa sahip olma ve 762 pas yalnızca tek gole dönüştü; skor üstünlüğü oyun üstünlüğünün gerisinde kaldı.</p><a class="detail-link" href="./fenerbahce-gornik-zabrze-mac-analizi.html">Tüm istatistikleri incele</a></div></section>
 <!-- post-match-feature:end -->
 
-        <section class="container section radar-layout" id="radar-sinyalleri" aria-labelledby="radar-title">
-          <div>
-            <div class="section-head"><div class="section-title"><span class="section-kicker">Radar Sinyalleri</span><h2 id="radar-title">Form ve momentum görünümü</h2><p>Takımların son dönem hareketini ve öne çıkan maç sinyallerini birlikte oku.</p></div><a class="section-link" href="./momentum.html">Momentum tablosu</a></div>
-            <div class="signals-grid" id="radar-signals-grid" data-api-section="radar-signals" data-api-target="radar-signals" data-static-fallback="true">
-              <!-- prerender:radar-signals:start -->
-<article class="signal-card" data-card="radar-signal" data-signal="fixture-opening-week"><span class="signal-label">Fikstür onayı</span><h3>Süper Lig&#039;in ilk iki haftasının eşleşmeleri açıklandı.</h3><strong class="signal-value">18 maç</strong><p>Eşleşmeler maç öncesi radar sayfalarına işlendi; kesin saat atamaları ayrıca takip edilecek.</p></article><article class="signal-card" data-card="radar-signal" data-signal="season-countdown"><span class="signal-label">Sezon başlangıcı</span><h3>2026-2027 Süper Lig sezonu 14 Ağustos&#039;ta başlıyor.</h3><strong class="signal-value">14 Ağustos</strong><p>Sezon açılışına kadar fikstür, kadro ve oyuncu profil güncellemeleri öne çıkarılır.</p></article><article class="signal-card" data-card="radar-signal" data-signal="squad-confirmation"><span class="signal-label">Kadro etkisi</span><h3>İlk hafta eksik listeleri için kulüp doğrulamaları bekleniyor.</h3><strong class="signal-value">Takipte</strong><p>Resmî sakatlık, ceza ve ilk 11 bilgisi gelmeden eksik oyuncu puanı üretilmez.</p></article>
-<!-- prerender:radar-signals:end -->
-            </div>
-          </div>
-          <aside class="standings glass-card" aria-labelledby="standings-title">
-            <div class="card-head"><div><span class="card-kicker">Lig Tablosu</span><h2 id="standings-title">Puan durumu</h2></div><a class="detail-link" href="./puan-durumu.html">Tam tablo</a></div>
-            <div id="home-standings-list" data-api-target="home-standings" data-static-fallback="true">
-              <!-- prerender:home-standings:start -->
-<div class="standings-empty compact" data-card="standings-preseason"><span class="card-kicker">Süper Lig · 2026/27</span><strong>2026/27 sezonu henüz başlamadı</strong><p>Süper Lig 14 Ağustos'ta başlayacak. İlk maçlar tamamlandığında puan tablosu otomatik güncellenecek.</p><a class="detail-link" href="./super-lig-fikstur.html">Sezon fikstürünü aç</a></div>
-<!-- prerender:home-standings:end -->
-            </div>
-          </aside>
-        </section>
-
-        <section class="container section home-statistics-entry" aria-labelledby="stats-home-title">
-          <div class="section-head"><div class="section-title"><span class="section-kicker">İstatistik Merkezi</span><h2 id="stats-home-title">Rakamları karşılaştır, liderleri bul.</h2><p>Gol, asist, rating, pas, pres, takım gücü ve maç akışı istatistiklerini filtreleyerek incele.</p></div><a class="button primary" href="./istatistik-merkezi.html">Merkezi aç</a></div>
-          <div class="stats-route-grid">
-            <a href="./gol-kralligi.html"><span>Gol</span><strong>Gol krallığı</strong></a>
-            <a href="./asist-kralligi.html"><span>Üretim</span><strong>Asist liderleri</strong></a>
-            <a href="./oyuncu-liderleri.html"><span>Performans</span><strong>Oyuncu liderleri</strong></a>
-            <a href="./takimlar.html"><span>Takım</span><strong>Takım istatistikleri</strong></a>
-            <a href="./mac-merkezi.html"><span>Maç</span><strong>Maç merkezi</strong></a>
-            <a href="./oyuncu-karsilastirmalari.html"><span>Kıyas</span><strong>Oyuncu karşılaştır</strong></a>
-          </div>
-        </section>
-
         <section class="container section section-player-radar" id="oyuncu-radar-preview" data-api-section="player-radar" aria-labelledby="players-title">
-          <div class="section-head"><div class="section-title"><span class="section-kicker">Oyuncu Radarı</span><h2 id="players-title">Formda ve yükselişte olan oyuncular</h2><p>Rating, gol tehdidi, yaratıcılık ve pres gücüyle öne çıkan profilleri keşfet.</p></div><a class="section-link" href="./oyuncu-radari.html">Tüm oyuncuları aç</a></div>
+          <div class="section-head"><div class="section-title"><span class="section-kicker">Oyuncu Radarı</span><h2 id="players-title">Formda ve yükselişte olan oyuncular</h2><p>Rating, gol tehdidi ve yaratıcılıkla öne çıkan profilleri keşfet.</p></div><a class="section-link" href="./oyuncu-radari.html">Tüm oyuncuları aç</a></div>
           <div class="players-grid" id="player-radar-grid" data-api-target="player-radar" data-static-fallback="true">
             <!-- prerender:player-radar:start -->
 <article class="card player-detail-card" data-card="player" data-player="mauro-icardi"><div class="card-head"><div><span class="card-kicker">Serbest oyuncu · Santrfor</span><h2>Mauro Icardi</h2></div><strong class="big-value player-rating-badge">84</strong></div><div class="metric-grid compact"><span>Yaş <b>33</b></span><span>Dakika <b>536</b></span><span>Piyasa <b>3.2M EUR</b></span></div><p>Ceza sahası içi bitiricilik ve doğru koşu zamanlamasıyla yüksek gol tehdidi üretir.</p><a class="detail-link" href="./oyuncular/mauro-icardi.html">Oyuncu profilini aç</a></article><article class="card player-detail-card" data-card="player" data-player="kerem-akturkoglu"><div class="card-head"><div><span class="card-kicker">Fenerbahçe · Sol kanat</span><h2>Kerem Aktürkoğlu</h2></div><strong class="big-value player-rating-badge">82</strong></div><div class="metric-grid compact"><span>Yaş <b>27</b></span><span>Dakika <b>512</b></span><span>Piyasa <b>22.5M EUR</b></span></div><p>Kanat üretimi, dikine taşıma ve geçiş hücumlarında hız etkisiyle öne çıkar.</p><a class="detail-link" href="./oyuncular/kerem-akturkoglu.html">Oyuncu profilini aç</a></article><article class="card player-detail-card" data-card="player" data-player="edin-dzeko"><div class="card-head"><div><span class="card-kicker">Schalke 04 · Santrfor</span><h2>Edin Dzeko</h2></div><strong class="big-value player-rating-badge">81</strong></div><div class="metric-grid compact"><span>Yaş <b>40</b></span><span>Dakika <b>598</b></span><span>Piyasa <b>2.5M EUR</b></span></div><p>Sırtı dönük oyun, bağlantı pasları ve final aksiyonu dengesiyle hücum merkezi olur.</p><a class="detail-link" href="./oyuncular/edin-dzeko.html">Oyuncu profilini aç</a></article>
 <!-- prerender:player-radar:end -->
           </div>
-          <div class="player-signals-grid" data-api-section="player-signals" data-api-target="player-signals" data-static-fallback="true">
-            <!-- prerender:player-signals:start -->
-<article class="card player-signal-card"><span class="card-kicker">AI rating</span><h3>Mauro Icardi</h3><strong>84</strong><p>Serbest oyuncu · Santrfor</p><a href="./oyuncular/mauro-icardi.html">Profili aç</a></article><article class="card player-signal-card"><span class="card-kicker">Gol tehdidi</span><h3>Mauro Icardi</h3><strong>94</strong><p>Serbest oyuncu · Santrfor</p><a href="./oyuncular/mauro-icardi.html">Profili aç</a></article><article class="card player-signal-card"><span class="card-kicker">Yaratıcılık</span><h3>Sebastian Szymanski</h3><strong>92</strong><p>Fenerbahçe · 10 numara</p><a href="./oyuncular/sebastian-szymanski.html">Profili aç</a></article>
-<!-- prerender:player-signals:end -->
+        </section>
+
+        <section class="container section home-statistics-entry" aria-labelledby="stats-home-title">
+          <div class="section-head"><div class="section-title"><span class="section-kicker">Keşfet</span><h2 id="stats-home-title">FutbolRadar'da hızlı gezin.</h2><p>En çok aranan ekranlara tek tıkla ulaş.</p></div></div>
+          <div class="stats-route-grid">
+            <a href="./puan-durumu.html"><span>Lig</span><strong>Puan durumu</strong></a>
+            <a href="./momentum.html"><span>Form</span><strong>Momentum tablosu</strong></a>
+            <a href="./takimlar.html"><span>Takım</span><strong>Takımlar</strong></a>
+            <a href="./istatistik-merkezi.html"><span>İstatistik</span><strong>İstatistik merkezi</strong></a>
+            <a href="./gol-kralligi.html"><span>Gol</span><strong>Gol krallığı</strong></a>
+            <a href="./oyuncu-karsilastirmalari.html"><span>Kıyas</span><strong>Oyuncu karşılaştır</strong></a>
+            <a href="./super-lig-fikstur.html"><span>Fikstür</span><strong>Süper Lig fikstürü</strong></a>
+            <a href="./analizler.html"><span>Rehber</span><strong>FutbolRadar analizleri</strong></a>
           </div>
         </section>
 
@@ -175,17 +180,8 @@
           </div>
           <div class="news-grid" data-api-section="news" data-api-target="news-preview" data-static-fallback="true">
             <!-- prerender:news-preview:start -->
-<article class="news-card" data-card="news" data-news="besiktas-midtjylland-mac-programi"><div class="news-card-meta"><span class="tag green">Avrupa Ligi</span><time datetime="2026-07-21T12:06:00+03:00">21 Temmuz 2026 12:06 TSİ</time></div><div><span class="card-kicker">Beşiktaş</span><h3>Beşiktaş&#039;ın Avrupa sınavı 23 Temmuz&#039;da</h3><p>Beşiktaş, UEFA Avrupa Ligi 2. eleme turu ilk maçında FC Midtjylland&#039;ı saat 21.00&#039;de Tüpraş Stadyumu&#039;nda ağırlayacak.</p></div><div class="news-card-footer"><span>Beşiktaş JK</span><a class="detail-link" href="https://bjk.com.tr/tr/mobil/haber?news_id=94748" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a></div></article><article class="news-card" data-card="news" data-news="galatasaray-monza-hazirlik-maci"><div class="news-card-meta"><span class="tag green">Hazırlık Maçı</span><time datetime="2026-07-21T10:00:00+03:00">21 Temmuz 2026 10:00 TSİ</time></div><div><span class="card-kicker">Galatasaray</span><h3>Galatasaray, AC Monza ile Avusturya&#039;da karşılaşacak</h3><p>Summer Series Upper Austria kapsamındaki maç 24 Temmuz Cuma günü TSİ 21.00&#039;de Raiffeisen Arena&#039;da oynanacak.</p></div><div class="news-card-footer"><span>AC Monza</span><a class="detail-link" href="https://www.acmonza.com/en/news/galatasaray-monza-friendly-match-24-july-in-austria/" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a></div></article><article class="news-card" data-card="news" data-news="trabzonspor-avusturya-hazirlik-programi"><div class="news-card-meta"><span class="tag green">Kamp Programı</span><time datetime="2026-07-21T16:00:00+03:00">21 Temmuz 2026 16:00 TSİ</time></div><div><span class="card-kicker">Trabzonspor</span><h3>Trabzonspor&#039;un Avusturya kampı maç programı açıklandı</h3><p>Bordo-mavililer, Schladming&#039;deki ikinci etap kampında oynayacağı hazırlık karşılaşmalarının programını kulüp sitesinden duyurdu.</p></div><div class="news-card-footer"><span>Trabzonspor</span><a class="detail-link" href="https://www.trabzonspor.org.tr/tr/haberler/hazirlik-maci-programimiz-belli-oldu-3-21-07-2026" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a></div></article><article class="news-card" data-card="news" data-news="tayyip-talha-sanuc-rizespor-transferi"><div class="news-card-meta"><span class="tag green">Transfer</span><time datetime="2026-07-19T15:30:00+03:00">19 Temmuz 2026 15:30 TSİ</time></div><div><span class="card-kicker">Beşiktaş</span><h3>Tayyip Talha Sanuç, Çaykur Rizespor&#039;a transfer oldu</h3><p>Beşiktaş, oyuncunun Çaykur Rizespor&#039;a kesin transferi konusunda anlaşmaya varıldığını açıkladı.</p></div><div class="news-card-footer"><span>Beşiktaş JK</span><a class="detail-link" href="https://www.bjk.com.tr/tr/haber/94750/tayyip-talha-sanuc-caykur-rizespora-transfer-oldu.html" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a></div></article>
+<article class="news-card" data-card="news" data-news="besiktas-midtjylland-mac-programi"><div class="news-card-meta"><span class="tag green">Avrupa Ligi</span><time datetime="2026-07-21T12:06:00+03:00">21 Temmuz 2026 12:06 TSİ</time></div><div><span class="card-kicker">Beşiktaş</span><h3>Beşiktaş&#039;ın Avrupa sınavı 23 Temmuz&#039;da</h3><p>Beşiktaş, UEFA Avrupa Ligi 2. eleme turu ilk maçında FC Midtjylland&#039;ı saat 21.00&#039;de Tüpraş Stadyumu&#039;nda ağırlayacak.</p></div><div class="news-card-footer"><span>Beşiktaş JK</span><a class="detail-link" href="https://bjk.com.tr/tr/mobil/haber?news_id=94748" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a></div></article><article class="news-card" data-card="news" data-news="galatasaray-monza-hazirlik-maci"><div class="news-card-meta"><span class="tag green">Hazırlık Maçı</span><time datetime="2026-07-21T10:00:00+03:00">21 Temmuz 2026 10:00 TSİ</time></div><div><span class="card-kicker">Galatasaray</span><h3>Galatasaray, AC Monza ile Avusturya&#039;da karşılaşacak</h3><p>Summer Series Upper Austria kapsamındaki maç 24 Temmuz Cuma günü TSİ 21.00&#039;de Raiffeisen Arena&#039;da oynanacak.</p></div><div class="news-card-footer"><span>AC Monza</span><a class="detail-link" href="https://www.acmonza.com/en/news/galatasaray-monza-friendly-match-24-july-in-austria/" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a></div></article><article class="news-card" data-card="news" data-news="trabzonspor-avusturya-hazirlik-programi"><div class="news-card-meta"><span class="tag green">Kamp Programı</span><time datetime="2026-07-21T16:00:00+03:00">21 Temmuz 2026 16:00 TSİ</time></div><div><span class="card-kicker">Trabzonspor</span><h3>Trabzonspor&#039;un Avusturya kampı maç programı açıklandı</h3><p>Bordo-mavililer, Schladming&#039;deki ikinci etap kampında oynayacağı hazırlık karşılaşmalarının programını kulüp sitesinden duyurdu.</p></div><div class="news-card-footer"><span>Trabzonspor</span><a class="detail-link" href="https://www.trabzonspor.org.tr/tr/haberler/hazirlik-maci-programimiz-belli-oldu-3-21-07-2026" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a></div></article>
 <!-- prerender:news-preview:end -->
-          </div>
-        </section>
-
-        <section class="container section section-analyses" aria-labelledby="analysis-title">
-          <div class="section-head"><div class="section-title"><span class="section-kicker">FutbolRadar Analizleri</span><h2 id="analysis-title">Formu ve maçı doğru bağlamda oku.</h2><p>Kısa rehberler, takım trendleri ve oyuncu performansını anlamlandıran analizler.</p></div><a class="section-link" href="./analizler.html">Tüm analizler</a></div>
-          <div class="articles-grid" id="analysis-preview-grid" data-api-target="analysis-preview" data-static-fallback="true">
-            <!-- prerender:analysis-preview:start -->
-<article class="article-card" data-card="analysis" id="super-lig-form-durumu-preview"><div><h3>Süper Lig form durumu sezon başında nasıl okunur?</h3><p>Son 5 maç verisi oluşmadan form puanı kesin görünmez; fikstür, kadro sürekliliği ve önceki sezon trendi ayrı değerlendirilir.</p></div><a href="./analizler.html#super-lig-form-durumu">Analizi aç</a></article><article class="article-card" data-card="analysis" id="mac-oncesi-radar-puani-preview"><div><h3>Maç öncesi radar puanı hangi bileşenlerden oluşur?</h3><p>Form, hücum, savunma, saha etkisi, kadro eksikleri ve kilit oyuncu formu yalnızca mevcut kayıtlar üzerinden ağırlıklandırılır.</p></div><a href="./futbol-radar-rehberi.html">Analizi aç</a></article><article class="article-card" data-card="analysis" id="fikstur-ve-kadro-etkisi-preview"><div><h3>Fikstür ve kadro etkisi ne anlatır?</h3><p>Tarih, saat veya eksik oyuncu bilgisi doğrulanmamışsa model bu alanı puana katmaz; güven seviyesi buna göre düşer.</p></div><a href="./super-lig-fikstur.html">Analizi aç</a></article><article class="article-card" data-card="analysis" id="avrupa-eleme-maclari-preview"><div><h3>Avrupa eleme maçlarında ilk karşılaşma nasıl okunur?</h3><p>İlk maçlarda skor avantajı kadar geçiş savunması, duran top üretimi ve rövanşa taşınan risk önemlidir; tek sonuç kesin form göstergesi sayılmaz.</p></div><a href="./bugunun-maclari.html?date=2026-07-23&amp;competition=avrupa-ligi">Analizi aç</a></article><article class="article-card" data-card="analysis" id="hazirlik-maci-verisi-preview"><div><h3>Hazırlık maçı sonuçları ne kadar anlamlı?</h3><p>Hazırlık maçlarında rotasyon, dakika dağılımı ve fiziksel yük sonucu doğrudan etkiler; skor sezon gücü olarak tek başına kullanılmamalıdır.</p></div><a href="./haberler.html">Analizi aç</a></article>
-<!-- prerender:analysis-preview:end -->
           </div>
         </section>
 

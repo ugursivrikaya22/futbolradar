@@ -221,6 +221,8 @@
     "time": "21:00",
     "venue": "Raiffeisen Arena",
     "city": "Linz",
+    "country": "Austria",
+    "broadcast": { "turkey": "S Sport Plus", "italy": "Sportitalia" },
     "homeTeam": "Galatasaray",
     "awayTeam": "AC Monza",
     "status": "SCHEDULED",
@@ -233,11 +235,156 @@
     "prediction": null,
     "source": "official_club",
     "sourceName": "AC Monza",
-    "sourceUrls": ["https://www.acmonza.com/en/news/galatasaray-monza-friendly-match-24-july-in-austria/"],
-    "fetchedAt": "2026-07-22T12:00:00+03:00",
-    "lastVerifiedAt": "2026-07-22T12:00:00+03:00",
+    "sourceUrls": [
+      "https://www.acmonza.com/en/news/galatasaray-monza-friendly-match-24-july-in-austria/",
+      "https://www.acmonza.com/en/news/galatasaray-monza-live-on-sportitalia/",
+      "https://www.ssportplus.com/galatasaray-ac-monza-maci-canli-izle/",
+      "https://www.aa.com.tr/tr/spor/galatasaray-hazirlik-macinda-italya-ekibi-monza-ile-karsilasacak/4006557"
+    ],
+    "fetchedAt": "2026-07-24T14:31:00+03:00",
+    "lastVerifiedAt": "2026-07-24T14:31:00+03:00",
     "dataStatus": "verified",
     "confidence": 1,
+    "needsReview": false,
+    "deepAnalysis": {
+      "researchFile": "data/research/galatasaray-ac-monza-2026-07-24.json",
+      "generatedAt": "2026-07-24T14:31:00+03:00",
+      "preMatchFrozenAt": "2026-07-24T14:31:00+03:00",
+      "modelReference": "futbolradar-match-v1",
+      "officialSourceStatus": {
+        "galatasarayOrgTr": "temporarily-unavailable",
+        "note": "galatasaray.org iki ayrı denemede (24 Temmuz 14:31 TSİ ve 15:11 TSİ) HTTP 503 döndürdü. Temel bilgiler (Ümraniyespor 5-1, Ugochukwu'nun 63' girişi, Avusturya kamp kadrosu) çoklu ulusal basın kaynağıyla (Sabah, Gerçek Gündem, AA) çapraz doğrulandı; sourceStatus=verified-via-cross-source olarak işaretlendi. Resmî site erişilebilir olduğunda mevcut çapraz doğrulama silinmeyecek, resmî kaynak ek kanıt olarak eklenecek.",
+        "lastAttemptAt": "2026-07-24T15:11:00+03:00"
+      },
+      "preMatchSnapshots": [
+        {
+          "snapshotId": "galatasaray-monza-2026-07-24-early-pre-match",
+          "snapshotType": "early-pre-match",
+          "generatedAt": "2026-07-24T14:31:00+03:00",
+          "frozenAt": "2026-07-24T14:31:00+03:00",
+          "dataConfidence": 9,
+          "analysisStatus": "partial",
+          "prediction": {
+            "modelVersion": "futbolradar-match-v1",
+            "probabilities": { "homeWin": 33, "draw": 34, "awayWin": 33 },
+            "primary": "draw",
+            "label": "Beraberlik ihtimali öne çıkıyor"
+          },
+          "researchVerdict": "Galatasaray kağıt üzerinde favori — şampiyon kadro devamlılığı ve rotasyon derinliği nedeniyle.",
+          "probableLineups": {
+            "home": { "status": "low-confidence", "knownStarterCount": 2, "requiredStarterCount": 11 },
+            "away": { "status": "unavailable", "knownStarterCount": 0, "requiredStarterCount": 11 }
+          },
+          "officialLineups": null,
+          "immutable": true
+        }
+      ],
+      "postMatch": null,
+      "shortAnswer": "Galatasaray, şampiyon kadro devamlılığı, geniş rotasyon seçenekleri ve ilk hazırlık maçındaki gol üretimiyle bu karşılaşmanın öne çıkan tarafı gibi görünüyor. Ancak Monza'nın yeni teknik direktörü Ivan Jurić'in vurgulanan agresif ve yoğun oyun anlayışı, ilk hazırlık maçında gol üreten Colpani-Forson-Petagna üçlüsü ve hazırlık dönemi maçlarının doğasındaki yüksek rotasyon/belirsizlik nedeniyle sonucu tek taraflı veya kesin kabul etmek doğru olmaz. FutbolRadar modeli, Monza için henüz yeterli yapılandırılmış veri bulunmadığından bu karşılaşmada dengeye yakın bir olasılık dağılımı hesaplıyor; bu, modelin temkinli ve dürüst çalıştığının bir göstergesi.",
+      "favoriteReasoning": [
+        "2025-26 Süper Lig'i şampiyon tamamladı ve üst üste dördüncü kez lig şampiyonu oldu; aynı teknik direktörle (Okan Buruk) devamlılık sürüyor.",
+        "Avusturya kamp kadrosunda Uğurcan Çakır, İlkay Gündoğan, Leroy Sané, Victor Osimhen, Lucas Torreira, Mario Lemina, Kaan Ayhan, Wilfried Singo gibi isimler yer alıyor; kadro tavanı ve rotasyon derinliği geniş.",
+        "İlk hazırlık maçında Ümraniyespor'u 5-1 yenerek gol üretimi ve genç oyuncu katkısı gösterdi (rakip seviyesi farklı olduğu için doğrudan kıyas yapılmamalı).",
+        "Monza'nın aksine mevcut sezon başı hazırlığında teknik direksiyon ve sistem devamlılığına sahip."
+      ],
+      "awayThreats": [
+        "Ivan Jurić'in resmi tanıtım yazısında da vurgulanan 'yoğunluk ve agresif, cesur oyun tarzı', Galatasaray'ın olası genç/rotasyon ağırlıklı savunma hattını baskı altında zorlayabilir.",
+        "İlk hazırlık maçında Colpani (17'), Forson (57') ve Petagna (79') gol üretti; bu oyuncuların ceza sahası etkinliği sürerse Galatasaray'ın olası hatalarını değerlendirebilirler.",
+        "Galatasaray çok sayıda oyuncu değişikliği yaparsa maçın ritmi bozulabilir; bu da Monza'nın geçiş hücumlarına alan açabilir.",
+        "Kadro tanışıklığı henüz oturmamış bir savunmaya karşı duran toplar ve hızlı geçişler etkili olabilir."
+      ],
+      "homeRisks": [
+        "Hazırlık döneminin erken aşamasında olması nedeniyle fiziksel yük ve oyuncular arası uyum tam oturmamış olabilir.",
+        "Okan Buruk'un Ümraniyespor maçında olduğu gibi rotasyon ağırlıklı bir kadro sahaya sürmesi halinde, karşılaşmanın kalitesi beklenenin altında kalabilir.",
+        "Yıldız oyuncuların (örn. Osimhen, Sané, İlkay Gündoğan) bu maçta forma giyeceği resmi olarak doğrulanmadı; Avusturya kamp kadrosunda olmaları, Monza maçında oynayacakları anlamına gelmiyor."
+      ],
+      "awayRisks": [
+        "Ivan Jurić'in göreve başlamasının üzerinden yaklaşık bir ay geçti; yeni sistemin oturma süreci devam ediyor.",
+        "İlk hazırlık maçında (Pro Vercelli, 4-3) 3 gol yedi; bu, sezon öncesinin erken aşamasında savunma geçişleri ve yapı için takip edilmesi gereken bir risk sinyali oluşturuyor — kesin bir savunma zaafı olarak yorumlanmamalı.",
+        "Yaz transfer sürecinin ortasında (Ricardo Mangas geldi, Luca Ravanelli Sampdoria'ya gitti); kadro henüz tam oturmamış olabilir.",
+        "Monza bu karşılaşmaya Serie A seviyesinde henüz resmi maç oynamadan çıkıyor; üst lig temposuna adaptasyon seviyesi bilinmiyor."
+      ],
+      "keyPlayers": {
+        "home": [
+          { "name": "Uğurcan Çakır", "note": "Avusturya kamp kadrosunda; kaleci rotasyonunun ilk ismi." },
+          { "name": "İlkay Gündoğan", "note": "Kamp kadrosunda; Ümraniyespor maçında da forma giydiği bildirildi." },
+          { "name": "Victor Osimhen", "note": "Kamp kadrosunda; Monza maçında oynayacağı resmi olarak doğrulanmadı." },
+          { "name": "Leroy Sané", "note": "Kamp kadrosunda; Monza maçında oynayacağı resmi olarak doğrulanmadı." },
+          { "name": "Lesley Ugochukwu", "note": "Yeni transfer (Burnley'den kiralık); ilk hazırlık maçında 63. dakikada oyuna girdi." }
+        ],
+        "away": [
+          { "name": "Andrea Colpani", "note": "İlk hazırlık maçında gol attı (17'); resmi sitede öne çıkan isimler arasında." },
+          { "name": "Omari Forson", "note": "İlk hazırlık maçında gol attı (57')." },
+          { "name": "Andrea Petagna", "note": "İlk hazırlık maçında gol attı (79')." },
+          { "name": "Matteo Pessina", "note": "Resmi kadroda merkez orta saha; Galatasaray maçı için kadroda olup olmadığı doğrulanmadı." },
+          { "name": "Patrick Cutrone", "note": "Resmi kadroda santrafor; matchday kadrosu henüz açıklanmadı." }
+        ]
+      },
+      "keyMatchups": [
+        "Monza'nın orta sahasında Pessina'nın oyun kurma rolü, Galatasaray'ın orta saha yoğunluğuna karşı.",
+        "Colpani'nin serbest bölge oyunu (10 numara), Galatasaray'ın olası deneysel stoper eşleşmelerine karşı.",
+        "Cutrone/Petagna hedef oyuncu varlığı, Galatasaray savunmasının hava topu ve ikinci top mücadelesine karşı.",
+        "Jurić'in yüksek pres anlayışı, Galatasaray'ın geriden çıkış oyununa karşı."
+      ],
+      "scenarios": {
+        "galatasarayWin": "Galatasaray orta saha kalitesiyle oyunu kontrol eder, kanat ve yarı alan koşularıyla Monza savunmasını genişletir, kadro derinliğini ikinci yarıda devreye sokar ve Monza'nın henüz oturmamış savunma geçişlerini değerlendirirse maçı kazanır.",
+        "monzaWin": "Monza, Jurić'in yüksek baskısıyla Galatasaray'ın olası genç/rotasyon ağırlıklı savunmasını hataya zorlar; top kazanımı sonrası Colpani-Forson-Petagna hattıyla hızlı hücum yapar ve duran toplardan yararlanırsa sürpriz sonuç mümkün olur.",
+        "balanced": "İki takım da çok sayıda değişiklik yaparsa oyun ikinci yarıda parçalanabilir; taraflar skordan çok fiziksel ve taktik denemelere odaklanırsa maç dengede kalabilir.",
+        "rotationImpact": "Hazırlık maçı olması nedeniyle her iki takımın da rotasyon ihtimali yüksek; bu, ilk 11 kalitesini ve dolayısıyla sonucu önemli ölçüde etkileyebilir. Resmi kadrolar açıklanana kadar bu belirsizlik analizin merkezinde tutulmalı."
+      },
+      "dataConfidenceNote": "FutbolRadar modeli bu maç için %33 Galatasaray, %34 beraberlik, %33 Monza olasılığı hesaplıyor (veri güveni 9/100, kapsam 21/100, 'partial' analiz durumu). Bu neredeyse eşit dağılım, iki takımın gerçekten eşit olduğu anlamına gelmiyor; Monza için FutbolRadar'ın yerel veritabanında henüz maç geçmişi, kadro puanlaması veya form verisi bulunmadığından modelin güvenli bir sayısal karşılaştırma üretemediği anlamına geliyor. Yukarıdaki nitel analiz (favori gerekçeleri, tehditler, riskler) doğrulanmış araştırmaya dayanıyor; sayısal model ise veri eksikliğini dürüstçe yansıtıyor. İki katman kasıtlı olarak ayrı tutulmuştur.",
+      "sources": [
+        { "publisher": "AC Monza", "type": "Resmî kulüp açıklaması", "publishedAt": "2026-07-03", "usedFor": "Maç tarihi, saat, stat, organizasyon bilgisi.", "url": "https://www.acmonza.com/en/news/galatasaray-monza-friendly-match-24-july-in-austria/" },
+        { "publisher": "AC Monza", "type": "Resmî kulüp açıklaması", "publishedAt": "2026-07-21", "usedFor": "İtalya yayın bilgisi (Sportitalia) ve Jurić dönemi ikinci maç doğrulaması.", "url": "https://www.acmonza.com/en/news/galatasaray-monza-live-on-sportitalia/" },
+        { "publisher": "AC Monza", "type": "Resmî maç raporu", "publishedAt": "2026-07-18", "usedFor": "Pro Vercelli hazırlık maçı skoru, gol dakikaları ve detayları.", "url": "https://www.acmonza.com/en/news/monza-pro-vercelli-4-3-first-pre-season-friendly/" },
+        { "publisher": "AC Monza", "type": "Resmî kulüp açıklaması", "publishedAt": "2026-06-29", "usedFor": "Ivan Jurić'in teknik direktörlük atanması ve oyun tarzı tanımı.", "url": "https://www.acmonza.com/en/news/welcome-ivan-juric-290626/" },
+        { "publisher": "AC Monza", "type": "Resmî maç raporu", "publishedAt": "2026-05-29", "usedFor": "Serie A'ya yükseliş sürecinin (play-off) doğrulanması.", "url": "https://www.acmonza.com/en/news/monza-catanzaro-match-report-29052026/" },
+        { "publisher": "S Sport Plus", "type": "Resmî yayın programı", "publishedAt": "bilinmiyor", "usedFor": "Türkiye yayın bilgisi ve saat doğrulaması.", "url": "https://www.ssportplus.com/galatasaray-ac-monza-maci-canli-izle/" },
+        { "publisher": "Anadolu Ajansı", "type": "Ulusal haber ajansı", "publishedAt": "2026-07-23", "usedFor": "Avusturya kamp programı ve sonraki hazırlık maçları.", "url": "https://www.aa.com.tr/tr/spor/galatasaray-hazirlik-macinda-italya-ekibi-monza-ile-karsilasacak/4006557" },
+        { "publisher": "Sabah", "type": "Ulusal basın", "publishedAt": "2026-07-17", "usedFor": "Ümraniyespor maçı ilk 11'i, gol dakikaları ve Ugochukwu'nun oyuna giriş anı.", "url": "https://www.sabah.com.tr/spor/futbol/2026/07/17/umraniyespor-galatasaray-canli-galatasaray-umraniyespor-karsisinda-okan-burukun-11i-aciklandi" },
+        { "publisher": "Gerçek Gündem", "type": "Ulusal basın", "publishedAt": "2026-07-23", "usedFor": "Galatasaray'ın 35 kişilik Avusturya kamp kadrosu listesi.", "url": "https://www.gercekgundem.com/guncel/galatasarayin-35-kisilik-avusturya-kamp-kadrosu-belli-oldu-575517" }
+      ],
+      "lastVerifiedAt": "2026-07-24T14:31:00+03:00"
+    }
+  },
+  {
+    "id": "trabzonspor-sturm-graz-2026-07-22",
+    "competitionId": "hazirlik-maci",
+    "league": "Hazırlık Maçı",
+    "stage": "Avusturya kampı, 2. hazırlık maçı",
+    "kickoff": "2026-07-22T17:00:00+03:00",
+    "time": "63'",
+    "venue": "Planai-Stadion",
+    "city": "Schladming",
+    "homeTeam": "Trabzonspor",
+    "awayTeam": "SK Sturm Graz",
+    "status": "LIVE",
+    "score": { "home": 1, "away": 1, "halftimeHome": 0, "halftimeAway": 1 },
+    "summary": "Trabzonspor, Avusturya kampındaki ikinci hazırlık maçında Sturm Graz ile 1-1 berabere; skor ve istatistikler maç sürerken güncelleniyor.",
+    "lineups": [],
+    "substitutions": [],
+    "events": [
+      { "time": "38'", "team": { "name": "SK Sturm Graz" }, "type": "Gol", "detail": "Sturm Graz devreye 1-0 önde girdi." },
+      { "time": "57'", "team": { "name": "Trabzonspor" }, "type": "Gol", "detail": "Trabzonspor'un golüyle skor 1-1 oldu." }
+    ],
+    "statistics": [
+      { "category": "Genel", "type": "Topla oynama", "home": 54, "away": 46, "unit": "%", "higherIsBetter": true },
+      { "category": "Hücum", "type": "Toplam şut", "home": 7, "away": 5, "higherIsBetter": true },
+      { "category": "Hücum", "type": "İsabetli şut", "home": 3, "away": 2, "higherIsBetter": true },
+      { "category": "Genel", "type": "Korner", "home": 4, "away": 3 }
+    ],
+    "prediction": null,
+    "liveTags": [
+      { "label": "Canlı skor güncelleniyor", "variant": "green" },
+      { "label": "İstatistikler maç sırasında yenilenir", "variant": "" }
+    ],
+    "source": "official_club",
+    "sourceName": "Trabzonspor",
+    "sourceUrls": ["https://www.trabzonspor.org.tr/tr/haberler/hazirlik-maci-programimiz-belli-oldu-3-21-07-2026"],
+    "fetchedAt": "2026-07-22T18:05:00+03:00",
+    "lastVerifiedAt": "2026-07-22T18:05:00+03:00",
+    "dataStatus": "verified",
+    "confidence": 0.92,
     "needsReview": false
   }
 ]

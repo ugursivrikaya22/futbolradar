@@ -23,6 +23,14 @@ const pages = [
   "oyuncu-detay.html",
   "mac-detay.html",
   "fenerbahce-gornik-zabrze-mac-analizi.html",
+  "transfer-sezonu-ne-zaman-bitiyor.html",
+  "super-lig-transferleri-2026-2027.html",
+  "gornik-zabrze-fenerbahce-rovans-ne-zaman.html",
+  "uefa-ulke-puani-siralamasi.html",
+  "sampiyonlar-ligi-on-eleme-maclari.html",
+  "fenerbahce-avrupa-maclari.html",
+  "galatasaray-transfer-radar.html",
+  "fenerbahce-transfer-radar.html",
   "takim-detay.html",
   "super-lig-fikstur.html",
   "super-lig-form-durumu.html",
@@ -427,21 +435,18 @@ function checkSeoAndLinks() {
     if (page === "index.html") {
       expect(html.includes('data-api-target="featured-match"'), `${page}: missing featured match`);
       expect(html.includes('data-api-target="today-matches"'), `${page}: missing today matches`);
-      expect(html.includes('data-api-target="radar-signals"'), `${page}: missing radar signals`);
-      expect(html.includes('data-api-target="home-standings"'), `${page}: missing standings summary`);
       expect(html.includes('data-api-target="player-radar"'), `${page}: missing player radar`);
       expect(html.includes('data-api-target="home-transfer-watch"'), `${page}: missing transfer watch`);
-      expect(html.includes('data-api-target="analysis-preview"'), `${page}: missing analysis preview`);
       expect(html.includes("istatistik-merkezi.html"), `${page}: missing statistics center route`);
       expect(html.includes("gol-kralligi.html"), `${page}: missing goal ranking route`);
-      expect(html.includes("asist-kralligi.html"), `${page}: missing assist ranking route`);
-      expect(html.includes("mac-merkezi.html"), `${page}: missing match center route`);
-      expect(html.includes("oyuncu-liderleri.html"), `${page}: missing player leaders route`);
       expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison traffic link`);
       expect(html.includes("super-lig-fikstur.html"), `${page}: missing fixture traffic link`);
       expect(html.includes("premier-league"), `${page}: missing Premier League route`);
       expect(html.includes("sampiyonlar-ligi"), `${page}: missing Champions League route`);
       expect(html.includes("avrupa-ligi"), `${page}: missing Europa League route`);
+      expect(html.includes("puan-durumu.html"), `${page}: missing standings route`);
+      expect(html.includes("momentum.html"), `${page}: missing momentum route`);
+      expect(html.includes("analizler.html"), `${page}: missing analysis hub route`);
     }
 
     if (page === "oyuncu-radari.html") {
@@ -465,6 +470,23 @@ function checkSeoAndLinks() {
       expect(html.includes("data-compare-seed"), `${page}: missing comparison seed`);
       expect(html.includes('"@type": "Article"'), `${page}: missing Article schema`);
       expect(html.includes('"@type": "BreadcrumbList"'), `${page}: missing breadcrumb schema`);
+    }
+
+    if ([
+      "transfer-sezonu-ne-zaman-bitiyor.html",
+      "super-lig-transferleri-2026-2027.html",
+      "fenerbahce-gornik-zabrze-mac-analizi.html",
+      "gornik-zabrze-fenerbahce-rovans-ne-zaman.html",
+      "uefa-ulke-puani-siralamasi.html",
+      "sampiyonlar-ligi-on-eleme-maclari.html",
+      "fenerbahce-avrupa-maclari.html",
+      "galatasaray-transfer-radar.html",
+      "fenerbahce-transfer-radar.html",
+      "en-iyi-super-lig-oyunculari.html"
+    ].includes(page)) {
+      expect(html.includes('class="breadcrumb"'), `${page}: missing visible breadcrumb`);
+      expect(html.includes('"@type":"BreadcrumbList"') || html.includes('"@type": "BreadcrumbList"'), `${page}: missing breadcrumb schema`);
+      expect(html.includes("./index.html"), `${page}: missing home link`);
     }
 
     if (page === "404.html") {
@@ -759,6 +781,43 @@ async function checkApi() {
   expect(keremApi && Array.isArray(keremApi.formerTeams) && keremApi.formerTeams.includes("Galatasaray"), "api players: Kerem formerTeams must include Galatasaray");
 }
 
+async function checkMatchAnalysisApi() {
+  const analyses = JSON.parse(fs.readFileSync(path.join(root, "data", "match-analyses.json"), "utf8"));
+  const missingQuery = await callEndpoint("match-analysis", "/api/match-analysis");
+  expect(missingQuery.payload.ok === false, "match-analysis: missing query should return ok:false");
+  expect(missingQuery.payload.error?.code === "MATCH_ANALYSIS_QUERY_REQUIRED", "match-analysis: missing query error code mismatch");
+
+  const notFound = await callEndpoint("match-analysis", "/api/match-analysis?fixtureId=does-not-exist");
+  expect(notFound.response.statusCode === 404, "match-analysis: unknown fixture should 404");
+  expect(notFound.payload.error?.code === "MATCH_ANALYSIS_NOT_FOUND", "match-analysis: unknown fixture error code mismatch");
+
+  if (!analyses.length) {
+    return;
+  }
+
+  const sample = analyses[0];
+  const byFixtureId = await callEndpoint("match-analysis", `/api/match-analysis?fixtureId=${encodeURIComponent(sample.fixtureId)}`);
+  expect(byFixtureId.payload.ok === true, "match-analysis: fixtureId lookup should succeed");
+  expect(byFixtureId.payload.method, "match-analysis: missing method field");
+  expect(byFixtureId.payload.data && byFixtureId.payload.data.fixtureId === sample.fixtureId, "match-analysis: data mismatch for fixtureId lookup");
+  expect(
+    byFixtureId.response.headers["cdn-cache-control"] === "public, s-maxage=300, stale-while-revalidate=900",
+    "match-analysis: CDN cache header mismatch"
+  );
+
+  const bySlug = await callEndpoint("match-analysis", `/api/match-analysis?slug=${encodeURIComponent(sample.slug)}`);
+  expect(bySlug.payload.ok === true, "match-analysis: slug lookup should succeed");
+
+  const payloadText = JSON.stringify(byFixtureId.payload);
+  expect(!/FOOTBALL_API_KEY|apiKey|X-Auth-Token/i.test(payloadText), "match-analysis: should not expose API key material");
+
+  const probabilities = sample.prediction && sample.prediction.probabilities;
+  if (probabilities) {
+    const sum = Number(probabilities.homeWin) + Number(probabilities.draw) + Number(probabilities.awayWin);
+    expect(sum === 100, `match-analysis: probabilities must sum to 100 (got ${sum})`);
+  }
+}
+
 checkVercelFunctionLimit();
 checkPublicMirrors();
 checkAnalyticsTag();
@@ -769,6 +828,7 @@ checkSeoAndLinks();
 checkClientSecrets();
 checkPublicCopyAndAccessibility();
 await checkApi();
+await checkMatchAnalysisApi();
 
 if (failures.length) {
   console.error(failures.join("\n"));

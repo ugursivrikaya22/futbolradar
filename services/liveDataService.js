@@ -1,0 +1,135 @@
+const { getProviderChain } = require("./providers");
+const { providerLeagueValue } = require("./competitionCatalog");
+const { withTimeout } = require("../api/_utils");
+
+// A serverless request has a hard wall-clock limit, so the whole failover
+// chain shares one budget instead of every provider getting the full
+// DEFAULT_TIMEOUT_MS. A slow first provider therefore shortens - never
+// cancels - the attempt on the next one.
+const TOTAL_BUDGET_MS = 8000;
+const MAX_PROVIDER_TIMEOUT_MS = 3500;
+const MIN_PROVIDER_TIMEOUT_MS = 800;
+
+// Errors that say "this provider can never answer this request" (bad plan,
+// missing credential, unsupported query). Retrying is pointless; the chain
+// should move on immediately. Everything else is treated as transient.
+const PERMANENT_ERROR_CODES = new Set([
+  "PROVIDER_AUTH_ERROR",
+  "PROVIDER_CONFIG_MISSING",
+  "PROVIDER_PLAN_ERROR",
+  "PROVIDER_QUERY_MISSING",
+  "LIVE_PROVIDER_NOT_IMPLEMENTED"
+]);
+
+function errorAttempt(error) {
+  return {
+    status: "error",
+    code: error && error.code ? error.code : "PROVIDER_ERROR",
+    // Provider messages are already user-facing Turkish strings built by the
+    // adapters; they never contain credentials or stack traces.
+    message: error && error.message ? String(error.message).slice(0, 200) : "Bilinmeyen provider hatasi.",
+    permanent: PERMANENT_ERROR_CODES.has(error && error.code)
+  };
+}
+
+/**
+ * Walks the provider chain for `resource` and returns the first usable
+ * result. Providers that throw or return nothing are recorded in
+ * `attempts` and the walk continues, so one broken provider can no longer
+ * blank out a whole page.
+ *
+ * @param {object} options
+ * @param {string} options.resource   Provider-chain key (e.g. "matches").
+ * @param {(provider: object, providerQuery: object) => Promise<any>} options.run
+ * @param {object} [options.query]    Raw request query; league values are
+ *                                    translated per provider.
+ * @param {(data: any) => boolean} [options.isUsable]
+ */
+async function resolveFromProviders({ resource, run, query, isUsable }) {
+  const chain = getProviderChain(resource);
+  const attempts = [];
+  const deadline = Date.now() + TOTAL_BUDGET_MS;
+  const usable = isUsable || ((data) => Array.isArray(data) && data.length > 0);
+  let fallback = null;
+
+  for (const provider of chain) {
+    const attempt = { provider: provider.name };
+    const requestedLeague = query && query.league ? String(query.league) : "";
+    const providerLeague = requestedLeague ? providerLeagueValue(requestedLeague, provider.name) : "";
+
+    // A catalogued competition the provider has no id for (e.g. the Europa
+    // League on football-data.org) is a skip, not a failure - the next
+    // provider in the chain may well cover it.
+    if (requestedLeague && providerLeague === null) {
+      attempt.status = "skipped";
+      attempt.code = "COMPETITION_NOT_SUPPORTED";
+      attempts.push(attempt);
+      continue;
+    }
+
+    const remaining = deadline - Date.now();
+    if (remaining < MIN_PROVIDER_TIMEOUT_MS && attempts.length) {
+      attempt.status = "skipped";
+      attempt.code = "TIME_BUDGET_EXHAUSTED";
+      attempts.push(attempt);
+      continue;
+    }
+
+    const providerQuery = {
+      ...(query || {}),
+      requestedCompetition: requestedLeague,
+      league: providerLeague
+    };
+
+    try {
+      const data = await withTimeout(
+        Promise.resolve().then(() => run(provider, providerQuery)),
+        Math.min(MAX_PROVIDER_TIMEOUT_MS, Math.max(MIN_PROVIDER_TIMEOUT_MS, remaining))
+      );
+      attempt.count = Array.isArray(data) ? data.length : data ? 1 : 0;
+
+      if (usable(data)) {
+        attempt.status = "ok";
+        attempts.push(attempt);
+        return { data, provider, attempts, degraded: attempts.length > 1 };
+      }
+
+      attempt.status = "empty";
+      if (!fallback) {
+        fallback = { data, provider };
+      }
+    } catch (error) {
+      Object.assign(attempt, errorAttempt(error));
+    }
+
+    attempts.push(attempt);
+  }
+
+  if (fallback) {
+    return { data: fallback.data, provider: fallback.provider, attempts, degraded: true };
+  }
+
+  return { data: null, provider: null, attempts, degraded: true };
+}
+
+/**
+ * Compact, credential-free trace of the failover walk. Shipped on every
+ * response so a provider outage is visible from the API itself instead of
+ * requiring a debug redeploy.
+ */
+function providerMeta(result, extra) {
+  return {
+    provider: result.provider ? result.provider.name : null,
+    degraded: Boolean(result.degraded),
+    attempts: result.attempts,
+    ...(extra || {})
+  };
+}
+
+module.exports = {
+  MAX_PROVIDER_TIMEOUT_MS,
+  PERMANENT_ERROR_CODES,
+  TOTAL_BUDGET_MS,
+  providerMeta,
+  resolveFromProviders
+};

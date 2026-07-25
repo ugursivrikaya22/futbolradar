@@ -48,7 +48,8 @@
       <a href="./bugunun-maclari.html">Bugünkü Maçlar</a>
       <a href="./canli-skor.html">Canlı Skor</a>
       <a href="./puan-durumu.html">Puan Durumu</a>
-      <a href="./takimlar.html">Takımlar</a>
+      <a href="./super-lig-fikstur.html">Süper Lig Fikstürü</a>
+            <a href="./takimlar.html">Takımlar</a>
       <a href="./oyuncu-radari.html">Oyuncu Radarı</a>
       <a href="./momentum.html">Momentum</a>
     </div>
@@ -64,7 +65,17 @@
             <h1 data-match-page-title>Bugünkü Maçlar</h1>
             <p class="lead">Altı büyük yerel lig ile Şampiyonlar Ligi ve Avrupa Ligi'nin gün içindeki maçlarını tek akışta incele.</p>
           </div>
-          <span class="hero-meta">Son kontrol: 13 Temmuz 2026 08:00 TSİ</span>
+          <span class="hero-meta">Son kontrol: 24 Temmuz 2026 15:27 TSİ</span>
+        </div>
+      </section>
+      <section class="grid" data-api-target="match-center-metrics" aria-label="Günün maç özeti">
+        <div class="stats-match-grid">
+          <article><span>Bugünkü maç</span><strong>–</strong></article>
+          <article><span>Canlı</span><strong>–</strong></article>
+          <article><span>Tamamlanan</span><strong>–</strong></article>
+          <article><span>Analizi hazır</span><strong>–</strong></article>
+          <article><span>Yüksek gol potansiyeli</span><strong>–</strong></article>
+          <article><span>Dengeli maç</span><strong>–</strong></article>
         </div>
       </section>
       <section class="match-explorer" data-match-explorer aria-label="Maç tarihi ve durum filtreleri">
@@ -103,18 +114,48 @@
           <a href="./bugunun-maclari.html?league=ligue-1" data-competition-filter="ligue-1">Ligue 1</a>
           <a href="./bugunun-maclari.html?league=sampiyonlar-ligi" data-competition-filter="sampiyonlar-ligi">Şampiyonlar Ligi</a>
           <a href="./bugunun-maclari.html?league=avrupa-ligi" data-competition-filter="avrupa-ligi">Avrupa Ligi</a>
+          <a href="./bugunun-maclari.html?league=hazirlik-maci" data-competition-filter="hazirlik-maci">Hazırlık Maçları</a>
         </div>
       </section>
+      <section class="grid" data-api-target="featured-analysis-blocks" data-static-fallback="true" aria-label="Öne çıkan maç analizleri" hidden></section>
       <section class="grid" id="today-matches-page" data-api-section="today-matches" data-api-target="matches-page" data-static-fallback="true">
         <!-- prerender:matches-page:start -->
-<article class="data-empty" data-card="empty-state">
-    <strong>Bugün doğrulanmış maç yok</strong>
-    <span>Bugünün maç listesi doğrulandığında burada gösterilecek. Sezon eşleşmelerini fikstür sayfasından inceleyebilirsin.</span>
-    <div class="match-empty-actions">
-      <a class="detail-link" href="./bugunun-maclari.html">Günün tüm maçlarını aç</a>
-      <a class="detail-link ghost" href="./super-lig-fikstur.html">Sezon fikstürüne git</a>
-      <span class="tag soft">Günlük maç akışı bekleniyor</span>
-    </div>
+<article class="card match-card static-match-card" data-card="fixture-preview" data-match="raal-la-louviere-samsunspor-2026-07-25">
+    <div class="card-head"><span class="card-kicker">Hazırlık Maçı</span><strong class="big-value">15:00</strong></div>
+    <h2>RAAL La Louvière - Samsunspor</h2>
+    <p>Bugün · Stade du Tivoli</p>
+    <div class="tag-row"><span class="tag soft">Planlandı</span><span class="tag soft">Bugünün programı</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
+  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="konyaspor-hull-city-2026-07-25">
+    <div class="card-head"><span class="card-kicker">Hazırlık Maçı</span><strong class="big-value">18:30</strong></div>
+    <h2>Konyaspor - Hull City</h2>
+    <p>Bugün · Konya Büyükşehir Belediye Stadyumu</p>
+    <div class="tag-row"><span class="tag soft">Planlandı</span><span class="tag soft">Bugünün programı</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
+  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="osijek-caykur-rizespor-2026-07-25">
+    <div class="card-head"><span class="card-kicker">Hazırlık Maçı</span><strong class="big-value">21:00</strong></div>
+    <h2>Osijek - Çaykur Rizespor</h2>
+    <p>Bugün · Opus Arena</p>
+    <div class="tag-row"><span class="tag soft">Planlandı</span><span class="tag soft">Bugünün programı</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
+  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="goztepe-rudes-2026-07-26">
+    <div class="card-head"><span class="card-kicker">Hazırlık Maçı</span><strong class="big-value">15:00</strong></div>
+    <h2>Göztepe - Rudeš</h2>
+    <p>26 Temmuz Pazar · Gürsel Aksel Stadyumu</p>
+    <div class="tag-row"><span class="tag soft">Planlandı</span><span class="tag soft">Yaklaşan maç</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
+  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="galatasaray-venezia-2026-07-27">
+    <div class="card-head"><span class="card-kicker">Hazırlık Maçı</span><strong class="big-value">21:00</strong></div>
+    <h2>Galatasaray - Venezia</h2>
+    <p>27 Temmuz Pazartesi · Rams Park</p>
+    <div class="tag-row"><span class="tag soft">Planlandı</span><span class="tag soft">Yaklaşan maç</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
+  </article><article class="card match-card static-match-card" data-card="fixture-preview" data-match="gornik-zabrze-fenerbahce-2026-07-29">
+    <div class="card-head"><span class="card-kicker">Şampiyonlar Ligi</span><strong class="big-value">21:00</strong></div>
+    <h2>Górnik Zabrze - Fenerbahçe</h2>
+    <p>29 Temmuz Çarşamba · Stadion im Ernesta Pohla</p>
+    <div class="tag-row"><span class="tag soft">Planlandı</span><span class="tag soft">Yaklaşan maç</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
   </article>
 <!-- prerender:matches-page:end -->
       </section>

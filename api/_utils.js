@@ -11,6 +11,7 @@ const CACHE_POLICIES = Object.freeze({
   momentum: { maxAge: 300, stale: 900 },
   signals: { maxAge: 120, stale: 600 },
   analyses: { maxAge: 3600, stale: 21600 },
+  "match-analysis": { maxAge: 300, stale: 900 },
   health: { noStore: true }
 });
 const QUERY_VALUE_MAX_LENGTH = 160;
@@ -39,6 +40,34 @@ const COMPETITION_CODE_ENV_NAMES = [
   "FOOTBALL_DATA_COMPETITION_CODE",
   "FOOTBALLDATA_COMPETITION_CODE",
   "COMPETITION_CODE"
+];
+const APIFOOTBALL_API_KEY_ENV_NAMES = [
+  "APIFOOTBALL_API_KEY",
+  "API_FOOTBALL_API_KEY",
+  "APIFOOTBALL_KEY",
+  "API_FOOTBALL_KEY",
+  "API_SPORTS_API_KEY",
+  "APISPORTS_API_KEY"
+];
+const APIFOOTBALL_LEAGUE_ID_ENV_NAMES = [
+  "APIFOOTBALL_LEAGUE_ID",
+  "API_FOOTBALL_LEAGUE_ID",
+  "APIFOOTBALL_LEAGUEID",
+  "API_SPORTS_LEAGUE_ID"
+];
+const APIFOOTBALL_BASE_URL_ENV_NAMES = [
+  "APIFOOTBALL_API_BASE_URL",
+  "API_FOOTBALL_API_BASE_URL",
+  "APIFOOTBALL_BASE_URL",
+  "API_FOOTBALL_BASE_URL"
+];
+const APIFOOTBALL_SEASON_ENV_NAMES = [
+  "APIFOOTBALL_SEASON",
+  "API_FOOTBALL_SEASON"
+];
+const APIFOOTBALL_COUNTRY_ENV_NAMES = [
+  "APIFOOTBALL_COUNTRY",
+  "API_FOOTBALL_COUNTRY"
 ];
 
 function cacheControlFor(policyName) {
@@ -111,14 +140,24 @@ function resolveUpdatedAt(data, updatedAt) {
   return timestamps.sort((left, right) => Date.parse(right) - Date.parse(left))[0];
 }
 
-function successResponse(data, source, updatedAt) {
-  return {
+function successResponse(data, source, updatedAt, meta) {
+  const payload = {
     ok: true,
     source: source || DEFAULT_SOURCE,
     updatedAt: resolveUpdatedAt(data, updatedAt),
     responseAt: new Date().toISOString(),
     data
   };
+
+  // `meta` carries provider-failover diagnostics (which provider answered,
+  // which ones were skipped and why). It never contains credentials or
+  // stack traces, so it can stay on in production instead of being a
+  // debug-only field that has to be redeployed whenever live data breaks.
+  if (meta && typeof meta === "object") {
+    payload.meta = meta;
+  }
+
+  return payload;
 }
 
 function errorResponse(message, code, source) {
@@ -135,8 +174,8 @@ function errorResponse(message, code, source) {
   };
 }
 
-function sendSuccess(res, data, source, updatedAt) {
-  return sendJson(res, 200, successResponse(data, source, updatedAt));
+function sendSuccess(res, data, source, updatedAt, meta) {
+  return sendJson(res, 200, successResponse(data, source, updatedAt, meta));
 }
 
 function sendError(res, statusCode, message, code, source) {
@@ -385,6 +424,11 @@ module.exports = {
   DEFAULT_SOURCE,
   DEFAULT_TIMEOUT_MS,
   API_KEY_ENV_NAMES,
+  APIFOOTBALL_API_KEY_ENV_NAMES,
+  APIFOOTBALL_LEAGUE_ID_ENV_NAMES,
+  APIFOOTBALL_BASE_URL_ENV_NAMES,
+  APIFOOTBALL_SEASON_ENV_NAMES,
+  APIFOOTBALL_COUNTRY_ENV_NAMES,
   BASE_URL_ENV_NAMES,
   COMPETITION_CODE_ENV_NAMES,
   CACHE_POLICIES,

@@ -1,7 +1,5 @@
-const { getProvider } = require("../services/providers");
-const { providerLeagueValue } = require("../services/competitionCatalog");
+const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
 const {
-  DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
   getQuery,
   rejectUnsupportedMethod,
@@ -9,8 +7,7 @@ const {
   sendSuccess,
   setCachePolicy,
   validateOrSend,
-  validateStandings,
-  withTimeout
+  validateStandings
 } = require("./_utils");
 
 module.exports = async function handler(req, res) {
@@ -22,35 +19,30 @@ module.exports = async function handler(req, res) {
   if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
-  const provider = getProvider("standings");
-  const providerQuery = {
-    ...query,
-    league: providerLeagueValue(query.league, provider.name)
-  };
-  if (query.league && providerQuery.league === null) {
+  const result = await resolveFromProviders({
+    resource: "standings",
+    // Live providers need an explicit league; the curated provider answers
+    // for the default competition on its own.
+    query: { ...query, league: query.league || "super-lig" },
+    run: (provider, providerQuery) => provider.getStandings(
+      provider.name === "mock" ? query : providerQuery
+    )
+  });
+
+  if (!result.provider) {
+    const firstError = result.attempts.find((attempt) => attempt.status === "error");
     return sendError(
       res,
       200,
-      "Seçilen turnuvanın puan durumu mevcut veri sağlayıcısında desteklenmiyor.",
-      "COMPETITION_NOT_SUPPORTED"
-    );
-  }
-  let data = [];
-
-  try {
-    data = await withTimeout(provider.getStandings(providerQuery), DEFAULT_TIMEOUT_MS);
-  } catch (error) {
-    return sendError(
-      res,
-      200,
-      error.message || "Puan durumu provider katmanindan alinamadi.",
-      error.code || "PROVIDER_ERROR"
+      (firstError && firstError.message) || "Puan durumu hicbir saglayicidan alinamadi.",
+      (firstError && firstError.code) || "PROVIDER_ERROR"
     );
   }
 
+  const data = Array.isArray(result.data) ? result.data : [];
   if (!validateOrSend(res, data, validateStandings)) {
     return;
   }
 
-  return sendSuccess(res, data, provider.source);
+  return sendSuccess(res, data, result.provider.source, undefined, providerMeta(result));
 };

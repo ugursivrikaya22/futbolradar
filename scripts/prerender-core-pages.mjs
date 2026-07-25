@@ -14,9 +14,28 @@ const freshnessData = JSON.parse(fs.readFileSync(path.join(root, "data", "freshn
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
+const fixtureCalendarPath = path.join(root, "data", "fixture-calendar.json");
+const calendarMatches = fs.existsSync(fixtureCalendarPath)
+  ? (JSON.parse(fs.readFileSync(fixtureCalendarPath, "utf8")).matches || [])
+  : [];
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
+const { getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigFixtureService.js");
+
+const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
+const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
+
+function fixtureTeamInitials(name) {
+  const clean = String(name || "").trim();
+  if (!clean) return "?";
+  const parts = clean.split(/\s+/).filter(Boolean);
+  return parts.slice(0, 2).map((part) => part.charAt(0).toUpperCase()).join("") || clean.charAt(0).toUpperCase();
+}
+
+function fixtureTeamLogoHtml(name) {
+  return `<span class="fixture-team-logo-fallback" aria-hidden="true">${escapeHtml(fixtureTeamInitials(name))}</span>`;
+}
 
 const players = getPlayers(rawPlayers);
 const fixtureFreshness = normalizeFreshness(fixtures.freshness || freshnessData.records.fixtures);
@@ -93,15 +112,78 @@ function staticMatchCard(match, variant) {
   </article>`;
 }
 
+const MATCH_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
+
+function istanbulToday() {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Istanbul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(new Date());
+}
+
+function longDateLabel(value) {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat("tr-TR", {
+    timeZone: "Europe/Istanbul",
+    day: "numeric",
+    month: "long",
+    weekday: "long"
+  }).format(parsed);
+}
+
+/**
+ * Statik yedek içerik: JS çalışmadan önce (ve arama motoru taramasında)
+ * görünen blok. Eskiden koşulsuz "Bugün doğrulanmış maç yok" yazıyordu;
+ * derleme anı ile görüntüleme anı aynı olmadığı için bu, maç olan günlerde
+ * bile boş sayfa demekti. Artık takvimden yaklaşan maçlar kendi tarih
+ * etiketleriyle basılıyor - bir gün eskise bile yanıltmayan bir içerik.
+ */
+function calendarProgramCards(limit) {
+  const today = istanbulToday();
+  const upcoming = calendarMatches
+    .filter((match) => String(match.kickoff || "").slice(0, 10) >= today)
+    .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
+    .slice(0, limit || 6);
+
+  if (!upcoming.length) {
+    return "";
+  }
+
+  return upcoming.map((match) => {
+    const date = String(match.kickoff || "").slice(0, 10);
+    const isToday = date === today;
+    const status = String(match.status || "SCHEDULED").toUpperCase();
+
+    return `<article class="card match-card static-match-card" data-card="fixture-preview" data-match="${escapeHtml(match.id)}">
+    <div class="card-head"><span class="card-kicker">${escapeHtml(match.league || "Maç programı")}</span><strong class="big-value">${escapeHtml(match.time || "")}</strong></div>
+    <h2>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</h2>
+    <p>${escapeHtml(`${isToday ? "Bugün" : longDateLabel(match.kickoff)} · ${match.venue || "Saha bilgisi bekleniyor"}`)}</p>
+    <div class="tag-row"><span class="tag soft">${escapeHtml(MATCH_STATUS_TR[status] || "Planlandı")}</span><span class="tag soft">${escapeHtml(isToday ? "Bugünün programı" : "Yaklaşan maç")}</span></div>
+    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
+  </article>`;
+  }).join("");
+}
+
+function matchProgramState(variant) {
+  const cards = calendarProgramCards(variant === "today" ? 6 : 4);
+  return cards || emptyMatchState(variant);
+}
+
 function emptyMatchState(variant) {
   const isFeatured = variant === "featured";
   const isLive = variant === "live";
   if (isFeatured) {
     return `<div class="home-match-command">
-      <div class="home-match-command-head"><div><span>Bugünün maç merkezi</span><strong>Program kontrol ediliyor</strong></div><a href="./bugunun-maclari.html">Tümünü aç</a></div>
-      <div class="home-match-command-metrics" aria-label="Bugünün maç özeti"><a href="./canli-skor.html"><span>Canlı</span><b class="live-number">0</b></a><a href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>0</b></a><a href="./bugunun-maclari.html?status=finished"><span>Tamamlanan</span><b>0</b></a><a href="./bugunun-maclari.html"><span>Aktif lig</span><b>0</b></a></div>
+      <div class="home-match-command-head"><div><span>Canlı skor panosu</span><strong>Program kontrol ediliyor</strong></div><a href="./canli-skor.html">Tam ekran</a></div>
+      <div class="home-match-command-metrics" aria-label="Bugünün maç özeti"><a href="./canli-skor.html"><span>Canlı</span><b class="live-number">0</b></a><a href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>0</b></a><a href="./bugunun-maclari.html?status=finished"><span>Biten</span><b>0</b></a></div>
       <div class="home-match-command-empty"><strong>Maç programı yükleniyor.</strong><span>Bugünün doğrulanmış karşılaşmaları burada listelenecek.</span></div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./bugunun-maclari.html">Maç programı</a><a class="button secondary" href="./canli-skor.html">Canlı skor</a></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Canlı skor</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
     </div>`;
   }
   const title = isFeatured
@@ -186,8 +268,33 @@ function newsCards(limit) {
   return news.slice(0, limit || news.length).map((item) => `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}"><div class="news-card-meta"><span class="tag green">${escapeHtml(item.category || "Futbol Gündemi")}</span><time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatFreshnessDate(item.publishedAt) || "Tarih açıklanmadı")}</time></div><div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p></div><div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Resmî kaynak")}</span><a class="detail-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a></div></article>`).join("");
 }
 
+function fixtureMatchRowHtml(match, round) {
+  const status = normalizeMatchStatus(match.status);
+  const statusSlug = FIXTURE_STATUS_SLUG[status] || "scheduled";
+  const timeLabel = match.dateLabel || round.dateRange || "Tarih ve saat bekleniyor";
+  const scoreOrVs = status === "FINISHED" && match.score
+    ? `<strong>${escapeHtml(displayScore(match.score))}</strong>`
+    : `<span class="vs-pill">VS</span>`;
+
+  return `<a class="fixture-match-row" data-card="fixture-match" data-status="${statusSlug}" href="./mac/${escapeHtml(matchSlug({ ...match, round: round.round }))}.html">` +
+    `<div class="fixture-match-time"><span class="fixture-time">${escapeHtml(timeLabel)}</span><span class="fixture-status-badge" data-status="${statusSlug}">${escapeHtml(FIXTURE_STATUS_TR[status] || "Planlandı")}</span></div>` +
+    `<div class="fixture-match-team fixture-match-team-home">${fixtureTeamLogoHtml(match.homeTeam)}<span>${escapeHtml(match.homeTeam)}</span></div>` +
+    `<div class="fixture-match-score">${scoreOrVs}</div>` +
+    `<div class="fixture-match-team fixture-match-team-away">${fixtureTeamLogoHtml(match.awayTeam)}<span>${escapeHtml(match.awayTeam)}</span></div>` +
+    `<div class="fixture-venue">${escapeHtml(match.venue || "")}</div>` +
+    `</a>`;
+}
+
+function displayScore(score) {
+  if (!score || score.home === null || score.home === undefined || score.away === null || score.away === undefined) {
+    return "- : -";
+  }
+  return `${score.home} - ${score.away}`;
+}
+
 function fixtureRounds() {
-  return (fixtures.rounds || []).map((round) => `<section class="fixture-round-card" data-card="fixture-round"><div class="fixture-round-head"><div><span>${escapeHtml(round.dateRange || "Tarih ve saat bekleniyor")}</span><h2>${escapeHtml(round.label)}</h2></div><b>Onaylı eşleşmeler</b></div><div class="fixture-match-list">${(round.matches || []).map((match) => `<a class="fixture-match-row" href="./mac/${escapeHtml(matchSlug({ ...match, round: round.round }))}.html"><span class="fixture-time">${escapeHtml(match.dateLabel || round.label)}</span><strong>${escapeHtml(match.homeTeam)}</strong><span class="vs-pill">VS</span><strong>${escapeHtml(match.awayTeam)}</strong></a>`).join("")}</div></section>`).join("");
+  const weeks = getFixtureWeeks(fixtures);
+  return weeks.map((round) => `<section class="fixture-round-card" data-card="fixture-round"><div class="fixture-round-head"><div><span>${escapeHtml(round.dateRange || "Tarih ve saat bekleniyor")}</span><h2>${escapeHtml(round.label)}</h2></div><b>Onaylı eşleşmeler</b></div><div class="fixture-match-list">${(round.matches || []).map((match) => fixtureMatchRowHtml(match, round)).join("")}</div></section>`).join("");
 }
 
 function transferWatch() {
@@ -240,8 +347,8 @@ function replaceSlot(html, target, content) {
 function updateMetaLabels(html, freshness) {
   const label = `Son kontrol: ${formatFreshnessDate(freshness.verifiedAt || freshness.fetchedAt)}`;
   return html
-    .replace(/<span class="hero-meta">Son güncelleme:[^<]*<\/span>/g, `<span class="hero-meta">${escapeHtml(label)}</span>`)
-    .replace(/<span class="data-stamp">Son güncelleme:[^<]*<\/span>/g, `<span class="data-stamp">${escapeHtml(label)}</span>`);
+    .replace(/<span class="hero-meta">(?:Son güncelleme|Son kontrol):[^<]*<\/span>/g, `<span class="hero-meta">${escapeHtml(label)}</span>`)
+    .replace(/<span class="data-stamp">(?:Son güncelleme|Son kontrol):[^<]*<\/span>/g, `<span class="data-stamp">${escapeHtml(label)}</span>`);
 }
 
 const noindexShellPages = new Set([
@@ -283,13 +390,13 @@ const topPlayers = players.slice().sort((left, right) => Number(right.overallRat
 writePage("index.html", {
   "featured-match": emptyMatchState("featured"),
   "home-transfer-watch": transferWatch(),
-  "today-matches": emptyMatchState("today"),
+  "today-matches": matchProgramState("today"),
   "radar-signals": signalCards(),
   "team-radar": topTeams.slice(0, 4).map(staticTeamCard).join(""),
   "home-standings": staticHomeStandingRows(),
   "player-radar": topPlayers.slice(0, 3).map(simplePlayerCard).join(""),
   "player-signals": playerSignals(),
-  "news-preview": newsCards(4),
+  "news-preview": newsCards(3),
   "analysis-preview": analysisCards()
 }, fixtureFreshness);
 
@@ -298,7 +405,7 @@ writePage("haberler.html", {
 }, fixtureFreshness);
 
 writePage("bugunun-maclari.html", {
-  "matches-page": emptyMatchState("today")
+  "matches-page": matchProgramState("today")
 }, fixtureFreshness);
 
 writePage("canli-skor.html", {

@@ -1,5 +1,11 @@
 const {
+  APIFOOTBALL_API_KEY_ENV_NAMES,
+  APIFOOTBALL_LEAGUE_ID_ENV_NAMES,
+  APIFOOTBALL_BASE_URL_ENV_NAMES,
+  APIFOOTBALL_SEASON_ENV_NAMES,
+  APIFOOTBALL_COUNTRY_ENV_NAMES,
   DEFAULT_TIMEOUT_MS,
+  firstPresentEnv,
   normalizeText,
   withTimeout
 } = require("../../api/_utils");
@@ -9,22 +15,36 @@ const source = "FutbolRadar API-Football Live API";
 const DEFAULT_BASE_URL = "https://v3.football.api-sports.io";
 
 class ProviderError extends Error {
-  constructor(code, message, statusCode) {
+  constructor(code, message, statusCode, raw) {
     super(message);
     this.name = "ProviderError";
     this.code = code;
     this.statusCode = statusCode || 200;
+    this.raw = raw;
   }
+}
+
+/**
+ * API-Football labels a European season by its starting year, so anything
+ * from July onwards belongs to the season that starts that year. Deriving
+ * it beats the previous hard-coded "2026" default, which silently pointed
+ * at the wrong season the moment the calendar rolled over.
+ */
+function seasonForDate(value) {
+  const date = value ? new Date(`${String(value).slice(0, 10)}T12:00:00Z`) : new Date();
+  const reference = Number.isNaN(date.getTime()) ? new Date() : date;
+  const year = reference.getUTCFullYear();
+  return String(reference.getUTCMonth() + 1 >= 7 ? year : year - 1);
 }
 
 function getConfig() {
   return {
     provider: process.env.FOOTBALL_PRIMARY_PROVIDER || "api-football",
-    baseUrl: process.env.APIFOOTBALL_API_BASE_URL || DEFAULT_BASE_URL,
-    apiKey: process.env.APIFOOTBALL_API_KEY || "",
-    leagueId: process.env.APIFOOTBALL_LEAGUE_ID || "",
-    season: process.env.APIFOOTBALL_SEASON || "2026",
-    country: process.env.APIFOOTBALL_COUNTRY || "Turkey"
+    baseUrl: firstPresentEnv(APIFOOTBALL_BASE_URL_ENV_NAMES) || DEFAULT_BASE_URL,
+    apiKey: firstPresentEnv(APIFOOTBALL_API_KEY_ENV_NAMES),
+    leagueId: firstPresentEnv(APIFOOTBALL_LEAGUE_ID_ENV_NAMES),
+    season: firstPresentEnv(APIFOOTBALL_SEASON_ENV_NAMES) || seasonForDate(),
+    country: firstPresentEnv(APIFOOTBALL_COUNTRY_ENV_NAMES) || "Turkey"
   };
 }
 
@@ -92,6 +112,50 @@ function apiErrors(payload) {
   return [payload.errors].filter(Boolean);
 }
 
+function classifyPayloadError(errors) {
+  const text = (errors || [])
+    .map((error) => typeof error === "string" ? error : JSON.stringify(error))
+    .join(" ")
+    .toLowerCase();
+
+  if (/api.?key|application key|token|auth|unauthor|forbidden/.test(text)) {
+    return {
+      code: "PROVIDER_AUTH_ERROR",
+      message: "API-Football anahtari gecersiz, eksik veya bu endpoint icin yetkisiz."
+    };
+  }
+
+  if (/rate.?limit|request.?limit|quota|too many requests/.test(text)) {
+    return {
+      code: "PROVIDER_RATE_LIMIT",
+      message: "API-Football istek limiti doldu; statik yedek veri kullanilacak."
+    };
+  }
+
+  // "Free plans do not have access to this season, try from 2022 to 2024."
+  // is the exact production failure: the configured key cannot serve the
+  // current season at all, so this must classify as a plan problem (a
+  // permanent, skip-this-provider condition) and never as "no data today".
+  if (/subscription|subscribed|pricing|plan|upgrade|not allowed|do not have access|does not have access|access denied/.test(text)) {
+    return {
+      code: "PROVIDER_PLAN_ERROR",
+      message: "API-Football paketi bu veri veya turnuva icin erisim vermiyor."
+    };
+  }
+
+  if (/season|date|no results|not found/.test(text)) {
+    return {
+      code: "PROVIDER_DATA_UNAVAILABLE",
+      message: "API-Football istenen tarih veya sezon icin veri dondurmedi."
+    };
+  }
+
+  return {
+    code: "PROVIDER_RESPONSE_ERROR",
+    message: "Live provider kontrollu bir veri hatasi dondu."
+  };
+}
+
 async function providerFetch(path, params) {
   const config = assertConfig();
   const baseUrl = config.baseUrl.endsWith("/") ? config.baseUrl : `${config.baseUrl}/`;
@@ -119,13 +183,15 @@ async function providerFetch(path, params) {
       throw new ProviderError(
         code,
         publicErrorMessage(code, response.status),
-        response.status
+        response.status,
+        payload
       );
     }
 
     const errors = apiErrors(payload);
     if (errors.length) {
-      throw new ProviderError("PROVIDER_RESPONSE_ERROR", "Live provider kontrollu bir veri hatasi dondu.");
+      const classified = classifyPayloadError(errors);
+      throw new ProviderError(classified.code, classified.message, response.status, payload);
     }
 
     return payload || {};
@@ -139,9 +205,9 @@ function resolveLeague(value) {
   return value || config.leagueId || "";
 }
 
-function resolveSeason(value) {
+function resolveSeason(value, dateHint) {
   const config = getConfig();
-  return value || config.season || "2026";
+  return value || config.season || seasonForDate(dateHint);
 }
 
 function todayInIstanbul() {
@@ -159,6 +225,10 @@ function responseItems(payload) {
 
 function teamName(team) {
   return team && (team.name || team.shortName || team.code) || "";
+}
+
+function teamLogo(team) {
+  return (team && team.logo) || "";
 }
 
 function scoreValue(score) {
@@ -207,6 +277,13 @@ function normalizeStatus(status) {
   return "SCHEDULED";
 }
 
+function roundNumber(league) {
+  // API-Football rounds read like "Regular Season - 3"; only the trailing
+  // number is ever used (grouping matches into weeks), never the label text.
+  const match = String((league && league.round) || "").match(/(\d+)\s*$/);
+  return match ? Number(match[1]) : null;
+}
+
 function normalizeFixture(item) {
   const fixture = item.fixture || {};
   const league = item.league || {};
@@ -220,10 +297,14 @@ function normalizeFixture(item) {
     id: String(fixture.id || `${teamName(homeTeam)}-${teamName(awayTeam)}-${kickoff}`),
     providerId: fixture.id ? String(fixture.id) : "",
     league: league.name || "",
+    round: roundNumber(league),
+    venue: (fixture.venue && fixture.venue.name) || null,
     kickoff,
-    time: kickoff ? new Date(kickoff).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) : "",
+    time: kickoff ? new Date(kickoff).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }) : "",
     homeTeam: teamName(homeTeam),
     awayTeam: teamName(awayTeam),
+    homeTeamLogo: teamLogo(homeTeam),
+    awayTeamLogo: teamLogo(awayTeam),
     status: normalizeStatus(fixture.status || {}),
     providerStatus: fixture.status && fixture.status.short || null,
     live: normalizeStatus(fixture.status || {}) === "LIVE",
@@ -414,25 +495,42 @@ function ensureLeagueForData(params) {
 async function getFixtures(query) {
   const fixtureId = query && (query.fixtureId || query.id);
   const league = resolveLeague(query && query.league);
-  const season = resolveSeason(query && query.season);
   const date = query && query.date || (!fixtureId ? todayInIstanbul() : undefined);
+  const competition = query && (query.requestedCompetition || query.league)
+    ? competitions.find((item) => matchesCompetition(query.requestedCompetition || query.league, item))
+    : null;
 
-  // API-Football supports a date-only fixture query. Leaving league empty here
-  // is intentional: it lets the live matches page cover every competition.
-  // Standings and league-specific resources still require a league id.
+  // Date-only fixture access covers all supported competitions and works on
+  // more API plans than league+season queries. League filtering is local.
   const payload = await providerFetch("/fixtures", {
     id: fixtureId,
-    league: league || undefined,
-    season: league || fixtureId ? season : undefined,
     date
   });
   const matches = responseItems(payload).map(normalizeFixture);
-  const supportedMatches = league ? matches : filterSupportedCompetitions(matches);
-  return stampProviderData(supportedMatches, "matches", 5 * 60 * 1000);
+  const supportedMatches = filterSupportedCompetitions(matches);
+  const filteredMatches = league && competition
+    ? supportedMatches.filter((match) => matchesCompetition(match.league, competition))
+    : supportedMatches;
+  return stampProviderData(filteredMatches, "matches", 5 * 60 * 1000);
 }
 
 async function getMatches(query) {
   return getFixtures(query);
+}
+
+/**
+ * Full-season fixture list for one league (e.g. every Süper Lig matchday),
+ * not just "today". API-Football's /fixtures endpoint returns the whole
+ * season in a single unpaginated response when queried by league+season —
+ * there is no page/limit parameter to raise here, and no client-side
+ * slicing is applied to the result.
+ */
+async function getSeasonFixtures(query) {
+  const league = ensureLeagueForData(query);
+  const season = resolveSeason(query && query.season);
+  const payload = await providerFetch("/fixtures", { league, season });
+  const matches = responseItems(payload).map(normalizeFixture);
+  return stampProviderData(matches, "season-fixtures", 60 * 60 * 1000);
 }
 
 async function getStandings(query) {
@@ -544,6 +642,167 @@ async function getFixtureStatistics(query) {
   return responseItems(payload);
 }
 
+function normalizeFixtureLineups(items) {
+  return (Array.isArray(items) ? items : []).map((item) => ({
+    team: teamName(item.team),
+    formation: item.formation || null,
+    players: (Array.isArray(item.startXI) ? item.startXI : [])
+      .map((entry) => entry && entry.player && entry.player.name)
+      .filter(Boolean),
+    substitutes: (Array.isArray(item.substitutes) ? item.substitutes : [])
+      .map((entry) => entry && entry.player && entry.player.name)
+      .filter(Boolean)
+  }));
+}
+
+function normalizeFixtureEvents(items) {
+  return (Array.isArray(items) ? items : []).map((item) => {
+    const elapsed = item.time && item.time.elapsed;
+    const extra = item.time && item.time.extra;
+    const minute = elapsed == null ? "" : `${elapsed}${extra ? `+${extra}` : ""}'`;
+    const player = item.player && item.player.name;
+    const assist = item.assist && item.assist.name;
+    const details = [player, assist ? `Asist: ${assist}` : "", item.detail].filter(Boolean);
+
+    return {
+      time: minute,
+      team: { name: teamName(item.team) },
+      type: item.type || "Mac olayi",
+      detail: item.detail || "",
+      value: details.join(" · "),
+      comments: item.comments || ""
+    };
+  });
+}
+
+function normalizeFixtureStatistics(items, match) {
+  const teams = Array.isArray(items) ? items : [];
+  const home = teams.find((item) => normalizeText(teamName(item.team)) === normalizeText(match.homeTeam)) || teams[0];
+  const away = teams.find((item) => normalizeText(teamName(item.team)) === normalizeText(match.awayTeam)) || teams[1];
+  const homeStats = new Map((home && Array.isArray(home.statistics) ? home.statistics : []).map((item) => [item.type, item.value]));
+  const awayStats = new Map((away && Array.isArray(away.statistics) ? away.statistics : []).map((item) => [item.type, item.value]));
+  const types = Array.from(new Set([...homeStats.keys(), ...awayStats.keys()]));
+
+  return types.map((type) => ({
+    type,
+    home: homeStats.has(type) ? homeStats.get(type) : null,
+    away: awayStats.has(type) ? awayStats.get(type) : null
+  }));
+}
+
+function statNumber(statistics, aliases, side) {
+  const wanted = aliases.map((alias) => normalizeText(alias));
+  const row = (Array.isArray(statistics) ? statistics : []).find((item) =>
+    wanted.includes(normalizeText(item.type))
+  );
+  const value = row && row[side];
+  const number = parseFloat(String(value == null ? "" : value).replace("%", "").replace(",", "."));
+  return Number.isFinite(number) ? number : null;
+}
+
+function buildLiveMatchAnalysis(match, statistics, events) {
+  const signals = [];
+  const addSignal = (label, value, text) => signals.push({ label, value, text });
+  const eventList = Array.isArray(events) ? events : [];
+  const possessionHome = statNumber(statistics, ["Ball Possession", "Possession"], "home");
+  const possessionAway = statNumber(statistics, ["Ball Possession", "Possession"], "away");
+  const shotsHome = statNumber(statistics, ["Total Shots"], "home");
+  const shotsAway = statNumber(statistics, ["Total Shots"], "away");
+  const targetHome = statNumber(statistics, ["Shots on Goal", "Shots on Target"], "home");
+  const targetAway = statNumber(statistics, ["Shots on Goal", "Shots on Target"], "away");
+  const xgHome = statNumber(statistics, ["expected_goals", "Expected Goals"], "home");
+  const xgAway = statNumber(statistics, ["expected_goals", "Expected Goals"], "away");
+
+  if (possessionHome !== null && possessionAway !== null) {
+    const leader = possessionHome >= possessionAway ? match.homeTeam : match.awayTeam;
+    addSignal("Top hakimiyeti", `${possessionHome}%-${possessionAway}%`, `${leader} topa sahip olma oranında önde.`);
+  }
+
+  if (shotsHome !== null && shotsAway !== null) {
+    const leader = shotsHome >= shotsAway ? match.homeTeam : match.awayTeam;
+    addSignal("Şut hacmi", `${shotsHome}-${shotsAway}`, `${leader} daha fazla şut üretti.`);
+  }
+
+  if (targetHome !== null && targetAway !== null) {
+    const leader = targetHome >= targetAway ? match.homeTeam : match.awayTeam;
+    addSignal("Kaleyi bulan", `${targetHome}-${targetAway}`, `${leader} isabetli şutlarda önde.`);
+  }
+
+  if (xgHome !== null && xgAway !== null) {
+    const leader = xgHome >= xgAway ? match.homeTeam : match.awayTeam;
+    addSignal("Gol beklentisi", `${xgHome.toFixed(2)}-${xgAway.toFixed(2)}`, `${leader} daha yüksek pozisyon kalitesi üretti.`);
+  }
+
+  const statisticSignalCount = signals.length;
+  const goals = eventList.filter((event) => normalizeText(event.type) === "goal");
+  const redCards = eventList.filter((event) => normalizeText(event.detail).includes("red card"));
+  const substitutions = eventList.filter((event) => normalizeText(event.type).includes("subst"));
+
+  if (redCards.length) {
+    const redCardTeams = Array.from(new Set(redCards.map((event) => teamName(event.team)).filter(Boolean)));
+    const label = redCardTeams.length === 1 ? redCardTeams[0] : "İki takım";
+    addSignal(
+      "Disiplin dengesi",
+      `${redCards.length} kırmızı kart`,
+      `${label} kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor.`
+    );
+  }
+
+  if (goals.length) {
+    const latestGoal = goals[goals.length - 1];
+    const scorer = String(latestGoal.value || "").split(" · ")[0];
+    addSignal(
+      "Gol akışı",
+      latestGoal.time || `${goals.length} gol`,
+      `Son gol ${latestGoal.time || "maç içinde"}${scorer ? ` ${scorer} tarafından` : ""} kaydedildi.`
+    );
+  }
+
+  if (substitutions.length >= 2) {
+    addSignal(
+      "Teknik hamleler",
+      `${substitutions.length} değişiklik`,
+      `Kulübeler oyuna müdahale etti; ${substitutions.length} oyuncu değişikliği kayda geçti.`
+    );
+  }
+
+  const scoreHome = numberOrNull(match.score && match.score.home);
+  const scoreAway = numberOrNull(match.score && match.score.away);
+  const scoreLeader = scoreHome !== null && scoreAway !== null && scoreHome !== scoreAway
+    ? (scoreHome > scoreAway ? match.homeTeam : match.awayTeam)
+    : null;
+  if (scoreHome !== null && scoreAway !== null) {
+    addSignal(
+      "Canlı skor",
+      `${scoreHome}-${scoreAway}`,
+      scoreLeader ? `${scoreLeader} skor üstünlüğünü elinde tutuyor.` : "Skor dengede."
+    );
+  }
+
+  const eventSignalCount = signals.length - statisticSignalCount;
+  const dataPoints = signals.length;
+  const summary = signals.length
+    ? `${signals[0].text}${signals[1] ? ` ${signals[1].text}` : ""}${scoreLeader ? ` Skor üstünlüğü ${scoreLeader} tarafında.` : ""}`
+    : (scoreLeader
+      ? `${scoreLeader} skorda önde; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.`
+      : "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.");
+
+  return {
+    title: match.live ? "Canlı Radar Analizi" : "Maç Radar Analizi",
+    summary,
+    confidence: statisticSignalCount >= 3
+      ? "Yüksek"
+      : statisticSignalCount >= 1 || eventSignalCount >= 2
+        ? "Orta"
+        : "Sınırlı",
+    signals,
+    eventCount: eventList.length,
+    dataPoints,
+    generatedAt: new Date().toISOString(),
+    disclaimer: "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+  };
+}
+
 async function getPredictions(query) {
   const fixtureId = query && query.fixtureId;
   if (!fixtureId) {
@@ -562,18 +821,25 @@ async function getMatchDetail(query) {
     throw new ProviderError("PROVIDER_QUERY_MISSING", "Mac detayi icin fixtureId veya id query gerekli.");
   }
 
-  const fixtures = await getFixtures({ fixtureId });
-  const match = fixtures[0];
+  const requestedDate = query && query.date;
+  const fixtures = requestedDate
+    ? await getFixtures({ date: requestedDate })
+    : await getFixtures({ fixtureId });
+  const match = fixtures.find((item) => String(item.id) === String(fixtureId)) || null;
   if (!match) {
     throw new ProviderError("PROVIDER_NOT_FOUND", "Mac detayi provider tarafinda bulunamadi.");
   }
 
-  const [lineups, events, statistics, predictions] = await Promise.all([
+  const [rawLineups, rawEvents, rawStatistics, predictions] = await Promise.all([
     getLineups({ fixtureId }).catch(() => []),
     getFixtureEvents({ fixtureId }).catch(() => []),
     getFixtureStatistics({ fixtureId }).catch(() => []),
     getPredictions({ fixtureId }).catch(() => [])
   ]);
+  const lineups = normalizeFixtureLineups(rawLineups);
+  const events = normalizeFixtureEvents(rawEvents);
+  const statistics = normalizeFixtureStatistics(rawStatistics, match);
+  const analysis = buildLiveMatchAnalysis(match, statistics, events);
 
   return {
     ...match,
@@ -582,6 +848,7 @@ async function getMatchDetail(query) {
     events,
     statistics,
     prediction: predictions[0] || null,
+    analysis,
     source: "api-football",
     fetchedAt: new Date().toISOString(),
     staleAfter: new Date(Date.now() + 2 * 60 * 1000).toISOString()
@@ -604,8 +871,11 @@ module.exports = {
   getConfig,
   hasConfig,
   providerFetch,
+  classifyPayloadError,
+  seasonForDate,
   getFixtures,
   getMatches,
+  getSeasonFixtures,
   getStandings,
   getTeams,
   getSquad,
@@ -620,6 +890,10 @@ module.exports = {
   getPredictions,
   getMatchDetail,
   normalizeFixture,
+  normalizeFixtureLineups,
+  normalizeFixtureEvents,
+  normalizeFixtureStatistics,
+  buildLiveMatchAnalysis,
   filterSupportedCompetitions,
   normalizeStandingRow,
   normalizeTeam,

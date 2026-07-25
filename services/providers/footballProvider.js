@@ -131,6 +131,10 @@ function teamShort(team) {
   return team && (team.tla || team.shortName || team.name || "").slice(0, 3).toUpperCase();
 }
 
+function teamLogo(team) {
+  return (team && (team.crest || team.logo)) || "";
+}
+
 function scoreObject(score) {
   const fullTime = score && score.fullTime ? score.fullTime : {};
   return {
@@ -177,10 +181,14 @@ function normalizeLiveMatch(item) {
   return {
     id: String(item.id || item.fixtureId || `${teamName(homeTeam)}-${teamName(awayTeam)}-${kickoff}`),
     league: item.competition && (item.competition.name || item.competition.code) || item.league || "",
+    round: Number.isFinite(Number(item.matchday)) ? Number(item.matchday) : null,
+    venue: item.venue || null,
     kickoff,
-    time: kickoff ? new Date(kickoff).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }) : "",
+    time: kickoff ? new Date(kickoff).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }) : "",
     homeTeam: teamName(homeTeam) || item.home || "",
     awayTeam: teamName(awayTeam) || item.away || "",
+    homeTeamLogo: teamLogo(homeTeam),
+    awayTeamLogo: teamLogo(awayTeam),
     homeShort: teamShort(homeTeam),
     awayShort: teamShort(awayTeam),
     status: item.status || "SCHEDULED",
@@ -403,6 +411,20 @@ async function getMatches(query) {
   return stampProviderData(matches, "matches", 5 * 60 * 1000);
 }
 
+/**
+ * Full-season fixture list for the configured competition (e.g. every
+ * Süper Lig matchday), not just "today". football-data.org's
+ * /competitions/{code}/matches returns the whole season in one
+ * unpaginated response when called without dateFrom/dateTo — no
+ * page/limit parameter is applied here, and nothing is sliced client-side.
+ */
+async function getSeasonFixtures(query) {
+  const season = query && query.season;
+  const payload = await providerFetch(`/competitions/${resolveCompetitionCode(query)}/matches`, { season });
+  const matches = (payload.matches || payload.data || []).map(normalizeLiveMatch);
+  return stampProviderData(matches, "season-fixtures", 60 * 60 * 1000);
+}
+
 async function getStandings(query) {
   const competitionCode = resolveCompetitionCode(query);
   const payload = await providerFetch(`/competitions/${competitionCode}/standings`, {});
@@ -454,6 +476,7 @@ module.exports = {
   getConfig,
   providerFetch,
   getMatches,
+  getSeasonFixtures,
   getStandings,
   getTeams,
   getPlayers,

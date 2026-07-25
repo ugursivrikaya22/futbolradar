@@ -6,6 +6,7 @@ const momentum = require("../../data/momentum.json");
 const signals = require("../../data/signals.json");
 const analyses = require("../../data/analyses.json");
 const { normalizeText } = require("../../api/_utils");
+const { findCompetition, matchesCompetition, normalizeKey } = require("../competitionCatalog");
 const { normalizePlayer: normalizePlayerRecord } = require("../playerService");
 
 const source = "FutbolRadar Mock API";
@@ -18,6 +19,11 @@ function slug(value) {
   return normalizeText(value).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
+function teamLogoByName(name) {
+  const team = teams.find((item) => normalizeText(item.name) === normalizeText(name));
+  return (team && team.logo) || "";
+}
+
 function normalizeMatch(match) {
   const homeMomentum = Number(match.homeMomentum || match.homeForm || 0);
   const awayMomentum = Number(match.awayMomentum || match.awayForm || 0);
@@ -26,6 +32,8 @@ function normalizeMatch(match) {
     ...match,
     id: match.id || `${slug(match.homeTeam)}-${slug(match.awayTeam)}`,
     kickoff: match.kickoff || match.time || "",
+    homeTeamLogo: match.homeTeamLogo || teamLogoByName(match.homeTeam),
+    awayTeamLogo: match.awayTeamLogo || teamLogoByName(match.awayTeam),
     momentum: match.momentum || {
       side: homeMomentum >= awayMomentum ? "home" : "away",
       value: Math.abs(homeMomentum - awayMomentum)
@@ -207,8 +215,21 @@ function byLeague(items, league) {
     return items;
   }
 
+  // Curated rows store display names ("UEFA Şampiyonlar Ligi", "Hazırlık
+  // Maçı") while the request carries a competition slug or a catalog name.
+  // Exact string equality silently dropped every one of those rows, so the
+  // catalog does the matching and `competitionId` is honoured directly.
+  const competition = findCompetition(league);
   const wanted = normalizeText(league);
-  return items.filter((item) => normalizeText(item.league) === wanted);
+
+  return items.filter((item) => {
+    if (competition) {
+      return normalizeKey(item.competitionId) === competition.id
+        || matchesCompetition(item.league, competition);
+    }
+
+    return normalizeText(item.league) === wanted;
+  });
 }
 
 function todayInTimeZone(timeZone) {
@@ -227,6 +248,76 @@ function matchDateOnly(match) {
   }
 
   return String(value).slice(0, 10);
+}
+
+// Fikstür takvimi (scripts/sync-fixture-calendar.mjs çıktısı) opsiyoneldir:
+// dosya yoksa ya da bozuksa kürasyonlu veri tek başına çalışmaya devam eder.
+function fixtureCalendarMatches() {
+  try {
+    const calendar = require("../../data/fixture-calendar.json");
+    return Array.isArray(calendar && calendar.matches) ? calendar.matches : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+const MATCH_STATE_RANK = { SCHEDULED: 0, TIMED: 0, POSTPONED: 0, CANCELLED: 0, LIVE: 1, FINISHED: 2 };
+
+function matchStateRank(status) {
+  return MATCH_STATE_RANK[String(status || "").toUpperCase()] ?? 0;
+}
+
+function matchIdentity(match) {
+  const date = matchDateOnly(match);
+  return `${normalizeText(match && match.homeTeam)}|${normalizeText(match && match.awayTeam)}|${date}`;
+}
+
+function hasFinalScore(match) {
+  const score = match && match.score;
+  return Boolean(score) && score.home !== null && score.home !== undefined && score.away !== null && score.away !== undefined;
+}
+
+/**
+ * Elle doğrulanmış maçlar (data/matches.json) ile sağlayıcı takvimi
+ * (data/fixture-calendar.json) tek listede birleşir.
+ *
+ * Kural: kimlik ve editoryal alanlar (analiz, özet, kaynaklar) her zaman
+ * kürasyonlu kayda aittir; sağlayıcı yalnızca maç *durumunu* ileri taşır.
+ * Böylece kürasyonlu veri bir gün geride kaldığında biten maç "oynanacak"
+ * görünmez, ama doğrulanmış bir skor da asla sağlayıcı tahminiyle ezilmez.
+ */
+function curatedMatches() {
+  const merged = new Map();
+
+  for (const match of matches) {
+    merged.set(matchIdentity(match), match);
+  }
+
+  for (const calendarMatch of fixtureCalendarMatches()) {
+    const key = matchIdentity(calendarMatch);
+    const existing = merged.get(key);
+
+    if (!existing) {
+      merged.set(key, calendarMatch);
+      continue;
+    }
+
+    const advances = matchStateRank(calendarMatch.status) > matchStateRank(existing.status);
+    if (!advances || hasFinalScore(existing)) {
+      continue;
+    }
+
+    merged.set(key, {
+      ...existing,
+      status: calendarMatch.status,
+      score: hasFinalScore(calendarMatch) ? { ...existing.score, ...calendarMatch.score } : existing.score,
+      venue: existing.venue || calendarMatch.venue || null,
+      providerId: existing.providerId || calendarMatch.providerId || "",
+      liveStateSource: calendarMatch.source || "provider"
+    });
+  }
+
+  return [...merged.values()];
 }
 
 function byMatchDate(items, date) {
@@ -310,7 +401,7 @@ function transferRecordKey(transfer) {
 }
 
 async function getMatches(query) {
-  const normalized = matches.map(normalizeMatch);
+  const normalized = curatedMatches().map(normalizeMatch);
   const byDate = byMatchDate(normalized, query && query.date);
   const data = byLeague(byDate, query && query.league);
   return data;
@@ -318,7 +409,7 @@ async function getMatches(query) {
 
 async function getMatchDetail(query) {
   const id = query && (query.fixtureId || query.id);
-  const data = matches.map(normalizeMatchDetail);
+  const data = curatedMatches().map(normalizeMatchDetail);
   if (!id) {
     return data[0] || null;
   }

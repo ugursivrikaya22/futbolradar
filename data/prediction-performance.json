@@ -1,0 +1,35 @@
+{
+  "modelVersion": "futbolradar-match-v1",
+  "minimumSampleSize": 15,
+  "settledMatches": [],
+  "aggregate": {
+    "overall": {
+      "sampleSize": 0,
+      "status": "insufficient-sample",
+      "note": "Yeterli örneklem oluşmadı"
+    },
+    "byCompetitionType": {
+      "friendly": { "sampleSize": 0, "status": "insufficient-sample", "note": "Yeterli örneklem oluşmadı" },
+      "league": { "sampleSize": 0, "status": "insufficient-sample", "note": "Yeterli örneklem oluşmadı" },
+      "cup": { "sampleSize": 0, "status": "insufficient-sample", "note": "Yeterli örneklem oluşmadı" },
+      "europe": { "sampleSize": 0, "status": "insufficient-sample", "note": "Yeterli örneklem oluşmadı" }
+    },
+    "byConfidenceBand": {
+      "veryLow": { "range": "0-24", "sampleSize": 0, "status": "insufficient-sample" },
+      "low": { "range": "25-49", "sampleSize": 0, "status": "insufficient-sample" },
+      "medium": { "range": "50-74", "sampleSize": 0, "status": "insufficient-sample" },
+      "high": { "range": "75-100", "sampleSize": 0, "status": "insufficient-sample" }
+    },
+    "bySnapshotType": {
+      "early-pre-match": { "sampleSize": 0, "status": "insufficient-sample" },
+      "lineup-informed": { "sampleSize": 0, "status": "insufficient-sample" },
+      "final-pre-kickoff": { "sampleSize": 0, "status": "insufficient-sample" }
+    }
+  },
+  "notes": [
+    "Hazırlık maçı performansı ve resmî lig/kupa/Avrupa performansı kasıtlı olarak ayrı havuzlarda tutulur; birleştirilmiş tek bir 'model başarısı' oranı hiçbir zaman raporlanmaz.",
+    "Bir maçın sonucu, genel model başarısı iddiası için yeterli değildir; minimumSampleSize eşiğinin altındaki her grup 'insufficient-sample' olarak işaretlenir.",
+    "settledMatches içindeki her kayıt, o maçın maç öncesi dondurulmuş snapshot'ına referans verir; geçmiş kayıtlar hiçbir koşulda değiştirilmez, yalnızca yeni maçlar eklenir."
+  ],
+  "lastUpdatedAt": "2026-07-24T15:11:00+03:00"
+}

@@ -3,7 +3,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
-const today = "2026-07-10";
+const today = "2026-07-22";
 
 const nav = `
     <header class="topbar">
@@ -11,7 +11,7 @@ const nav = `
         <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
         <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
         <div class="nav-menu" id="primary-menu">
-          <div class="nav-links"><a href="./bugunun-maclari.html">Bugünkü Maçlar</a><a href="./canli-skor.html">Canlı Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takimlar.html">Takımlar</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./momentum.html">Momentum</a></div>
+          <div class="nav-links"><a href="./bugunun-maclari.html">Bugünkü Maçlar</a><a href="./canli-skor.html">Canlı Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./super-lig-fikstur.html">Süper Lig Fikstürü</a><a href="./takimlar.html">Takımlar</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./momentum.html">Momentum</a></div>
           <a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a>
         </div>
       </nav>
@@ -123,11 +123,11 @@ const playerSeoPages = [
   {
     file: "en-iyi-super-lig-oyunculari.html",
     landing: "en-iyi-super-lig-oyunculari",
-    title: "En Iyi Super Lig Oyunculari | AI Rating ve Scouting | FutbolRadar",
-    description: "En iyi Super Lig oyunculari listesi; AI rating, form, radar skoru, piyasa degeri ve scouting sinyallerine gore siralanir.",
-    h1: "En Iyi Super Lig Oyunculari",
-    lead: "Super Lig oyuncularini AI rating, rol grubu, form ve radar etkisine gore karsilastir.",
-    cards: ["AI rating", "Radar profili", "Scouting sinyali"]
+    title: "En İyi Süper Lig Oyuncuları | AI Rating ve Oyuncu Radarı | FutbolRadar",
+    description: "En iyi Süper Lig oyuncularını AI rating, form, potansiyel, piyasa değeri ve oyuncu radar sinyallerine göre karşılaştırın.",
+    h1: "En İyi Süper Lig Oyuncuları",
+    lead: "Süper Lig oyuncularını AI rating, rol grubu, form, potansiyel ve radar etkisine göre karşılaştır.",
+    cards: ["AI rating", "Radar profili", "Oyuncu karşılaştırma"]
   },
   {
     file: "en-iyi-forvetler.html",
@@ -311,8 +311,39 @@ function landingDescriptionHtml(page) {
   return `\n      <section class="player-filter-note" data-transfer-filter-description>${page.lead}</section>`;
 }
 
+function landingExtraLinksHtml(page) {
+  if (page.landing !== "en-iyi-super-lig-oyunculari") {
+    return "";
+  }
+
+  return `<section class="trend-link-grid" aria-label="Oyuncu karşılaştırma bağlantıları">
+        <a href="./oyuncu-karsilastirmalari.html"><span>Karşılaştırma</span><strong>Oyuncu karşılaştırmaları</strong><p>Öne çıkan oyuncuları radar ve özellik farklarıyla yan yana incele.</p></a>
+        <a href="./oyuncu-radari.html?filter=yukselen"><span>Form</span><strong>Yükselen oyuncular</strong><p>Form değişimi pozitif olan oyuncuları keşfet.</p></a>
+        <a href="./genc-yetenekler.html"><span>Potansiyel</span><strong>Genç yetenekler</strong><p>Yaş, potansiyel ve piyasa değeri odağında filtrele.</p></a>
+      </section>`;
+}
+
 function pageHtml(page) {
   const url = `${domain}/${page.file}`;
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        name: page.h1,
+        description: page.description,
+        url,
+        isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${domain}/` }
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: `${domain}/` },
+          { "@type": "ListItem", position: 2, name: page.h1, item: url }
+        ]
+      }
+    ]
+  };
   return `<!doctype html>
 <html lang="tr">
   <head>
@@ -336,6 +367,7 @@ function pageHtml(page) {
     <meta name="twitter:title" content="${page.title}" />
     <meta name="twitter:description" content="${page.description}" />
     <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <script type="application/ld+json">${JSON.stringify(schema)}</script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
     <link rel="stylesheet" href="./page.css" />
@@ -343,6 +375,7 @@ function pageHtml(page) {
   <body class="subpage">
 ${nav}
     <main class="container">
+      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><span>${page.h1}</span></nav>
       <section class="hero">
         <div class="hero-row">
           <div>
@@ -357,7 +390,7 @@ ${nav}
       <section class="player-filter-note"><span data-landing-count>Oyuncu listesi hazirlaniyor</span></section>
       <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${page.landing}">
         <article class="data-empty" data-card="empty-state"><strong>Oyuncular yükleniyor</strong><span>Doğrulanmış oyuncu profilleri hazırlanıyor.</span></article>
-      </section>` : `<section class="grid three">${cardsHtml(page.cards)}</section>`}
+      </section>${landingExtraLinksHtml(page)}` : `<section class="grid three">${cardsHtml(page.cards)}</section>`}
       <section class="source-strip" aria-label="İlgili bağlantılar">
         <div><span>İlgili ekran</span><b><a href="./oyuncu-radari.html">Oyuncu Radarı</a></b></div>
         <div><span>Takım verisi</span><b><a href="./momentum.html">Momentum</a></b></div>

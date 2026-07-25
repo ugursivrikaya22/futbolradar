@@ -1,5 +1,6 @@
 const {
   API_KEY_ENV_NAMES,
+  APIFOOTBALL_API_KEY_ENV_NAMES,
   BASE_URL_ENV_NAMES,
   COMPETITION_CODE_ENV_NAMES,
   enforceRateLimit,
@@ -8,7 +9,7 @@ const {
   sendSuccess,
   setCachePolicy
 } = require("./_utils");
-const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig } = require("../services/providers");
+const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig, getProvider, getProviderChain, apiFootballProvider } = require("../services/providers");
 const { getConfig } = require("../services/providers/footballProvider");
 
 function presentEnvNames(names) {
@@ -21,6 +22,7 @@ function buildDiagnostics(config) {
   const competitionEnvNamesPresent = presentEnvNames(COMPETITION_CODE_ENV_NAMES);
   const liveProviderConfigured = hasLiveProviderConfig();
   const liveProviderResources = Array.from(LIVE_PROVIDER_RESOURCES);
+  const apiFootballConfig = apiFootballProvider.getConfig();
 
   return {
     mode: liveProviderConfigured ? "live-ready" : "mock",
@@ -43,7 +45,23 @@ function buildDiagnostics(config) {
       ? "Live provider matches ve standings icin secilir; provider hata verirse frontend statik yedek veriye duser."
       : "Production ortaminda live credential gorunmuyor; matches ve standings Mock API kullanir.",
     vercelEnv: process.env.VERCEL_ENV || "",
-    nodeEnv: process.env.NODE_ENV || ""
+    nodeEnv: process.env.NODE_ENV || "",
+    apiFootball: {
+      credentialPresent: Boolean(presentEnvNames(APIFOOTBALL_API_KEY_ENV_NAMES).length),
+      baseUrlConfigured: Boolean(apiFootballConfig.baseUrl),
+      configured: apiFootballProvider.hasConfig()
+    },
+    providerSelection: {
+      primaryProviderEnv: process.env.FOOTBALL_PRIMARY_PROVIDER || null,
+      matchProviderEnv: process.env.FOOTBALL_MATCH_PROVIDER || null,
+      resolvedMatchProvider: getProvider("matches").name,
+      resolvedStandingsProvider: getProvider("standings").name,
+      // Full failover order, so an outage report shows not just who was
+      // asked first but who is available to take over.
+      matchProviderChain: getProviderChain("matches").map((provider) => provider.name),
+      standingsProviderChain: getProviderChain("standings").map((provider) => provider.name),
+      seasonFixtureProviderChain: getProviderChain("super-lig-fixtures").map((provider) => provider.name)
+    }
   };
 }
 
