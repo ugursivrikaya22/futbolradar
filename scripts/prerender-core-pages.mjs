@@ -164,9 +164,16 @@ function calendarProgramCards(limit) {
     const date = String(match.kickoff || "").slice(0, 10);
     const isToday = date === today;
     const status = String(match.status || "SCHEDULED").toUpperCase();
+    // Biten maçta başlık saati değil skoru göstermeli; statik yedek JS
+    // çalışmadığında da günün sonucunu vermek zorunda.
+    const finalScore = match.score && match.score.home !== null && match.score.home !== undefined
+      && match.score.away !== null && match.score.away !== undefined
+      ? `${match.score.home}-${match.score.away}`
+      : null;
+    const headlineValue = status === "FINISHED" && finalScore ? finalScore : (match.time || "");
 
     return `<article class="card match-card static-match-card" data-card="fixture-preview" data-match="${escapeHtml(match.id)}">
-    <div class="card-head"><span class="card-kicker">${escapeHtml(match.league || "Maç programı")}</span><strong class="big-value">${escapeHtml(match.time || "")}</strong></div>
+    <div class="card-head"><span class="card-kicker">${escapeHtml(match.league || "Maç programı")}</span><strong class="big-value">${escapeHtml(headlineValue)}</strong></div>
     <h2>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</h2>
     <p>${escapeHtml(`${isToday ? "Bugün" : longDateLabel(match.kickoff)} · ${match.venue || "Saha bilgisi bekleniyor"}`)}</p>
     <div class="tag-row"><span class="tag soft">${escapeHtml(MATCH_STATUS_TR[status] || "Planlandı")}</span><span class="tag soft">${escapeHtml(isToday ? "Bugünün programı" : "Yaklaşan maç")}</span></div>
@@ -414,7 +421,9 @@ writePage("bugunun-maclari.html", {
 }, fixtureFreshness);
 
 writePage("canli-skor.html", {
-  "live-score": emptyMatchState("live")
+  // Canlı maç yokken de günün sonuçları görünsün: sayfa eskiden yalnızca
+  // "canlı maç yok" diyordu ve o günün oynanmış maçları hiç listelenmiyordu.
+  "live-score": matchProgramState("live")
 }, fixtureFreshness);
 
 writePage("puan-durumu.html", {

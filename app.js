@@ -2265,13 +2265,51 @@
     });
   }
 
+  // Canlı maç yokken sayfayı boş bırakmak, günün oynanmış maçlarını da
+  // gizliyordu: ziyaretçi "canlı skor" sayfasına girip bugün ne olduğunu
+  // hiç göremiyordu. Canlı maç varsa o gösterilir; yoksa günün sonuçları
+  // ve başlayacak maçlar listelenir.
   function renderLiveScoreSection(matches) {
-    var liveMatches = Array.isArray(matches) ? matches.filter(isLiveMatch) : [];
-    if (!liveMatches.length) {
+    var list = Array.isArray(matches) ? matches : [];
+    var liveMatches = list.filter(isLiveMatch);
+
+    if (liveMatches.length) {
+      return renderMatchesByLeague(liveMatches, renderLiveMatch);
+    }
+
+    if (!list.length) {
       return "";
     }
 
-    return renderMatchesByLeague(liveMatches, renderLiveMatch);
+    var finished = list.filter(function (match) {
+      return ["FINISHED", "FT", "AET", "PEN"].includes(String(match.status || match.providerStatus || "").toUpperCase());
+    });
+    var upcoming = list.filter(function (match) {
+      return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(String(match.status || match.providerStatus || "").toUpperCase());
+    });
+
+    var ordered = finished.concat(upcoming);
+    if (!ordered.length) {
+      return "";
+    }
+
+    var heading = finished.length
+      ? "Şu anda oynanan maç yok. Bugünün sonuçları:"
+      : "Şu anda oynanan maç yok. Bugün başlayacak maçlar:";
+
+    return (
+      '<section class="live-score-daily" aria-label="Bugünün maç sonuçları">' +
+      '<div class="live-score-daily-head">' +
+      "<span>" + escapeHtml(formatMatchDate(todayInIstanbul())) + "</span>" +
+      "<strong>" + escapeHtml(heading) + "</strong>" +
+      "</div>" +
+      '<div class="matches-grid">' + ordered.map(renderHomeMatch).join("") + "</div>" +
+      '<div class="match-empty-actions">' +
+      '<a class="detail-link" href="./bugunun-maclari.html">Maç merkezini aç</a>' +
+      '<a class="detail-link ghost" href="./super-lig-fikstur.html">Sezon fikstürüne git</a>' +
+      "</div>" +
+      "</section>"
+    );
   }
 
   var MATCH_SECTION_BINDINGS = [

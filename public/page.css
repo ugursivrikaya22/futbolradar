@@ -3623,6 +3623,31 @@ h1 {
         gap: 14px;
       }
 
+      /* Canlı maç yokken canlı skor sayfasında gösterilen günün sonuçları. */
+      .live-score-daily-head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 4px 10px;
+        margin: 0 0 14px;
+      }
+
+      .live-score-daily-head span {
+        color: var(--muted);
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .live-score-daily-head strong {
+        color: var(--text);
+        font-size: 1.02rem;
+      }
+
+      .live-score-daily .match-empty-actions {
+        margin-top: 14px;
+      }
+
       .glass-card {
         min-height: 268px;
         padding: 17px;
