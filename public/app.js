@@ -1588,6 +1588,86 @@
     return ["LIVE", "IN_PLAY", "PAUSED", "1H", "HT", "2H", "ET", "BT", "P"].includes(status);
   }
 
+  function isFriendlyMatch(match) {
+    if (!match) {
+      return false;
+    }
+    if (match.isFriendly === true) {
+      return true;
+    }
+    if (match.competitionId === "hazirlik-maci") {
+      return true;
+    }
+    return normalizeSearchText(match.league || "").indexOf("hazirlik") !== -1;
+  }
+
+  var TURKISH_CLUB_HINTS = [
+    "galatasaray", "fenerbahce", "besiktas", "trabzonspor", "basaksehir",
+    "samsunspor", "konyaspor", "rizespor", "kasimpasa", "alanyaspor",
+    "antalyaspor", "sivasspor", "gaziantep", "kayserispor", "goztepe",
+    "kocaelispor", "eyupspor", "genclerbirligi"
+  ];
+
+  function isTurkishTeamName(name) {
+    var normalized = normalizeSearchText(name).replace(/[^a-z0-9]+/g, "");
+    if (!normalized) {
+      return false;
+    }
+    return TURKISH_CLUB_HINTS.some(function (hint) {
+      return normalized.indexOf(hint) !== -1;
+    });
+  }
+
+  function matchHasTurkishTeam(match) {
+    if (!match) {
+      return false;
+    }
+    if (match.hasTurkishTeam === true) {
+      return true;
+    }
+    if (match.competitionId === "super-lig" || normalizeSearchText(match.league) === "super lig") {
+      return true;
+    }
+    return isTurkishTeamName(getTeamName(matchTeam(match, "home"))) || isTurkishTeamName(getTeamName(matchTeam(match, "away")));
+  }
+
+  function matchMatchesTodayFilter(match, filterKey) {
+    if (!filterKey || filterKey === "all") {
+      return true;
+    }
+    if (filterKey === "hazirlik-maci") {
+      return isFriendlyMatch(match);
+    }
+    if (filterKey === "turkiye") {
+      return matchHasTurkishTeam(match);
+    }
+    if (match && match.competitionId === filterKey) {
+      return true;
+    }
+    if (match && Array.isArray(match.filterLeagues) && match.filterLeagues.indexOf(filterKey) !== -1) {
+      return true;
+    }
+    var normalizedLeague = normalizeSearchText(match && (match.league || match.competition))
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+    return (COMPETITION_ALIASES[filterKey] || [filterKey.replace(/-/g, " ")]).some(function (alias) {
+      return normalizedLeague === alias || normalizedLeague.indexOf(alias) !== -1;
+    });
+  }
+
+  function matchHighlightGroup(match) {
+    if (matchHasTurkishTeam(match)) {
+      return "turkiye";
+    }
+    if (match && match.competitionId && match.competitionId !== "hazirlik-maci") {
+      return "avrupa";
+    }
+    if (match && Array.isArray(match.filterLeagues) && match.filterLeagues.length) {
+      return "avrupa";
+    }
+    return "diger";
+  }
+
   function initCompetitionFilters() {
     var currentParams = new URLSearchParams(window.location.search);
     var selected = currentParams.get("league") || "all";
@@ -1693,7 +1773,7 @@
       pageTitle.textContent = formatMatchDate(selectedDate) + " Maçları";
     }
     if (competitionTitle && selectedDate !== todayInIstanbul()) {
-      competitionTitle.textContent = "Seçilen günün maçlarını lige göre süz";
+      competitionTitle.textContent = "Seçilen günün maçlarını süz";
     }
     if (previous) {
       previous.href = matchExplorerHref(shiftDate(selectedDate, -1), selectedStatus);
@@ -1716,6 +1796,70 @@
         link.removeAttribute("aria-current");
       }
     });
+  }
+
+  function todayFilterHref(filterKey) {
+    var params = new URLSearchParams(window.location.search);
+    if (!filterKey || filterKey === "all") {
+      params.delete("filter");
+    } else {
+      params.set("filter", filterKey);
+    }
+    var query = params.toString();
+    return window.location.pathname.split("/").pop() + (query ? "?" + query : "");
+  }
+
+  function refreshTodayMatchesPage() {
+    var target = document.querySelector('[data-api-target="matches-page"]');
+    if (!target) {
+      return;
+    }
+    Promise.all([loadData("matches"), loadData("matchAnalyses")]).then(function (results) {
+      var matches = Array.isArray(results[0]) ? results[0] : [];
+      var analyses = Array.isArray(results[1]) ? results[1] : [];
+      setContent(target, renderMatchesPageSection(matches, buildAnalysesIndex(analyses)));
+    }).catch(function () {});
+  }
+
+  // Scoped to bugunun-maclari.html's [data-today-filters] row so the shared
+  // [data-competition-filter] mechanism (canli-skor.html) stays untouched.
+  // Filtering happens client-side against already-loaded match data instead
+  // of a page reload, using its own "filter" query param (kept separate
+  // from the server-driven "league" param the rest of the site still uses).
+  function initTodayMatchFilters() {
+    var row = document.querySelector("[data-today-filters]");
+    if (!row) {
+      return;
+    }
+
+    function applyState() {
+      var selected = new URLSearchParams(window.location.search).get("filter") || "all";
+      row.querySelectorAll("[data-today-filter]").forEach(function (link) {
+        var value = link.getAttribute("data-today-filter") || "all";
+        var active = value === selected;
+        link.href = todayFilterHref(value);
+        link.classList.toggle("is-active", active);
+        if (active) {
+          link.setAttribute("aria-current", "page");
+        } else {
+          link.removeAttribute("aria-current");
+        }
+      });
+    }
+
+    row.addEventListener("click", function (event) {
+      var link = event.target.closest("[data-today-filter]");
+      if (!link || !row.contains(link)) {
+        return;
+      }
+      event.preventDefault();
+      var value = link.getAttribute("data-today-filter") || "all";
+      window.history.replaceState(null, "", todayFilterHref(value));
+      applyState();
+      refreshTodayMatchesPage();
+    });
+
+    applyState();
   }
 
   function filterMatchesByStatus(matches) {
@@ -1927,20 +2071,74 @@
     }).slice(0, 8).map(renderHomeMatch).join("");
   }
 
+  var TODAY_HIGHLIGHT_GROUP_META = {
+    turkiye: { title: "Türkiye Takımları", kicker: "Türk kulüplerinin bugünkü maçları" },
+    avrupa: { title: "Avrupa Öne Çıkanlar", kicker: "Avrupa'nın öne çıkan kulüplerinin maçları" },
+    diger: { title: "Diğer Maçlar", kicker: "Günün diğer karşılaşmaları" }
+  };
+  var TODAY_HIGHLIGHT_GROUP_ORDER = ["turkiye", "avrupa", "diger"];
+
+  function compareMatchesForDisplay(left, right) {
+    function rank(match) {
+      if (isLiveMatch(match)) {
+        return 0;
+      }
+      var status = String(match.status || match.providerStatus || "").toUpperCase();
+      return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(status) ? 1 : 2;
+    }
+
+    return rank(left) - rank(right) || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
+  }
+
+  function renderTodayMatchGroups(matches, analysesIndex) {
+    var groups = { turkiye: [], avrupa: [], diger: [] };
+    matches.forEach(function (match) {
+      groups[matchHighlightGroup(match)].push(match);
+    });
+
+    return TODAY_HIGHLIGHT_GROUP_ORDER.filter(function (key) {
+      return groups[key].length > 0;
+    }).map(function (key) {
+      var meta = TODAY_HIGHLIGHT_GROUP_META[key];
+      var list = groups[key].slice().sort(compareMatchesForDisplay);
+      return '<section class="league-match-group" data-highlight-group="' + key + '">' +
+        '<header><div><span>' + escapeHtml(meta.kicker) + '</span><h2>' + escapeHtml(meta.title) + '</h2></div><b>' + list.length + ' maç</b></header>' +
+        '<div class="league-match-grid">' + list.map(function (match) { return renderMatchPageCard(match, analysesIndex); }).join("") + '</div>' +
+        '</section>';
+    }).join("");
+  }
+
+  function todayFriendlyOnlyNoteHtml(matches) {
+    var hasOfficial = matches.some(function (match) { return !isFriendlyMatch(match); });
+    var hasFriendly = matches.some(isFriendlyMatch);
+    if (hasOfficial || !hasFriendly) {
+      return "";
+    }
+
+    return '<article class="data-empty compact today-note" data-card="today-friendly-note">' +
+      '<strong>Bugün resmi takip edilen lig maçı yok</strong>' +
+      '<span>Ancak kulüplerin hazırlık maçları oynanıyor; aşağıda bugünün hazırlık maçı programını bulabilirsin.</span>' +
+      '</article>';
+  }
+
   function renderMatchesPageSection(matches, analysesIndex) {
-    var filteredMatches = Array.isArray(matches) ? filterMatchesByStatus(matches) : [];
+    var allTodayMatches = Array.isArray(matches) ? matches : [];
+    var note = todayFriendlyOnlyNoteHtml(allTodayMatches);
+    var params = new URLSearchParams(window.location.search);
+    var todayFilter = params.get("filter") || "all";
+    var filteredMatches = filterMatchesByStatus(allTodayMatches).filter(function (match) {
+      return matchMatchesTodayFilter(match, todayFilter);
+    });
+
     if (!filteredMatches.length) {
-      var params = new URLSearchParams(window.location.search);
       var selectedDate = params.get("date") || todayInIstanbul();
-      return matchEmptyStateHtml(
+      return note + matchEmptyStateHtml(
         "Bu ölçütlerde doğrulanmış maç yok",
-        formatMatchDate(selectedDate) + " için seçilen lig ve durum filtresinde maç bulunamadı. Başka bir gün veya filtre seçebilirsin."
+        formatMatchDate(selectedDate) + " için seçilen filtrede maç bulunamadı. Başka bir gün veya filtre seçebilirsin."
       );
     }
 
-    return renderMatchesByLeague(filteredMatches, function (match) {
-      return renderMatchPageCard(match, analysesIndex);
-    });
+    return note + renderTodayMatchGroups(filteredMatches, analysesIndex);
   }
 
   function matchCenterMetricsHtml(matches, analysesIndex) {
@@ -6968,6 +7166,7 @@
     );
 
     initMatchCenterIntelligence();
+    initTodayMatchFilters();
     initTodayRadarMatches();
 
     renderInto(

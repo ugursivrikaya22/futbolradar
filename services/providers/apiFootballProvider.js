@@ -9,7 +9,7 @@ const {
   normalizeText,
   withTimeout
 } = require("../../api/_utils");
-const { competitions, matchesCompetition } = require("../competitionCatalog");
+const { competitions, matchesCompetition, normalizeKey } = require("../competitionCatalog");
 
 const source = "FutbolRadar API-Football Live API";
 const DEFAULT_BASE_URL = "https://v3.football.api-sports.io";
@@ -267,6 +267,12 @@ function roundNumber(league) {
   return match ? Number(match[1]) : null;
 }
 
+const FRIENDLY_LEAGUE_PATTERN = /friendl/i;
+
+function isFriendlyLeagueName(name) {
+  return FRIENDLY_LEAGUE_PATTERN.test(String(name || ""));
+}
+
 function normalizeFixture(item) {
   const fixture = item.fixture || {};
   const league = item.league || {};
@@ -275,11 +281,14 @@ function normalizeFixture(item) {
   const kickoff = fixture.date || "";
   const homeTeam = teams.home || {};
   const awayTeam = teams.away || {};
+  const friendly = isFriendlyLeagueName(league.name);
 
   return {
     id: String(fixture.id || `${teamName(homeTeam)}-${teamName(awayTeam)}-${kickoff}`),
     providerId: fixture.id ? String(fixture.id) : "",
-    league: league.name || "",
+    competitionId: friendly ? "hazirlik-maci" : null,
+    league: friendly ? "Hazırlık Maçı" : (league.name || ""),
+    isFriendly: friendly,
     round: roundNumber(league),
     venue: (fixture.venue && fixture.venue.name) || null,
     kickoff,
@@ -479,8 +488,11 @@ async function getFixtures(query) {
   const fixtureId = query && (query.fixtureId || query.id);
   const league = resolveLeague(query && query.league);
   const date = query && query.date || (!fixtureId ? todayInIstanbul() : undefined);
-  const competition = query && (query.requestedCompetition || query.league)
-    ? competitions.find((item) => matchesCompetition(query.requestedCompetition || query.league, item))
+  const requestedRaw = (query && (query.requestedCompetition || query.league)) || "";
+  const wantsFriendlyOnly = normalizeKey(requestedRaw) === "hazirlik-maci";
+  const includeFriendlies = wantsFriendlyOnly || Boolean(query && (query.includeFriendlies === true || query.includeFriendlies === "true"));
+  const competition = requestedRaw && !wantsFriendlyOnly
+    ? competitions.find((item) => matchesCompetition(requestedRaw, item))
     : null;
 
   // Date-only fixture access covers all supported competitions and works on
@@ -490,10 +502,19 @@ async function getFixtures(query) {
     date
   });
   const matches = responseItems(payload).map(normalizeFixture);
-  const supportedMatches = filterSupportedCompetitions(matches);
-  const filteredMatches = league && competition
-    ? supportedMatches.filter((match) => matchesCompetition(match.league, competition))
-    : supportedMatches;
+  const officialMatches = filterSupportedCompetitions(matches);
+  const friendlyMatches = matches.filter((match) => match.isFriendly);
+
+  let filteredMatches;
+  if (wantsFriendlyOnly) {
+    filteredMatches = friendlyMatches;
+  } else {
+    const base = includeFriendlies ? officialMatches.concat(friendlyMatches) : officialMatches;
+    filteredMatches = league && competition
+      ? base.filter((match) => matchesCompetition(match.league, competition))
+      : base;
+  }
+
   return stampProviderData(filteredMatches, "matches", 5 * 60 * 1000);
 }
 
