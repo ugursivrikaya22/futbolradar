@@ -17,6 +17,9 @@ const PERMANENT_ERROR_CODES = new Set([
   "PROVIDER_ACCOUNT_SUSPENDED",
   "PROVIDER_AUTH_ERROR",
   "PROVIDER_CONFIG_MISSING",
+  // Anahtar header'a hic konmamissa yeniden denemek de fayda etmez; ortam
+  // degiskeni duzeltilene kadar kalici bir kurulum hatasidir.
+  "PROVIDER_CREDENTIAL_NOT_SENT",
   "PROVIDER_PLAN_ERROR",
   "PROVIDER_QUERY_MISSING",
   "LIVE_PROVIDER_NOT_IMPLEMENTED"

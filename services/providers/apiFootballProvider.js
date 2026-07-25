@@ -161,10 +161,31 @@ function classifyPayloadError(errors) {
     };
   }
 
+  // API-Sports iki farkli durumu iki farkli metinle bildiriyor ve ayrimi
+  // yapmak teshisi tamamen degistiriyor:
+  //
+  //   header hic yok / bos ->
+  //     "Missing application key, Check our documentation on how to add
+  //      your API key in headers."   (payload'da error kodu "4xHe")
+  //   header var ama anahtar taninmiyor ->
+  //     "Error/Missing application key. Go to https://www.api-football.com/
+  //      documentation-v3 to learn how to get your API application key."
+  //
+  // Ikisi de "missing application key" icerdigi icin tek kaliba dusurulunce
+  // "anahtari header'a koymayi unutmusuz" ile "anahtar yanlis" ayirt
+  // edilemiyordu. Ilk durum bizim hatamiz, ikincisi kimlik bilgisinin
+  // kendisiyle ilgili.
+  if (/check our documentation on how to add your api key in headers/.test(text)) {
+    return {
+      code: "PROVIDER_CREDENTIAL_NOT_SENT",
+      message: "API-Football istegine anahtar basligi gonderilmedi; ortam degiskeni bos okunuyor."
+    };
+  }
+
   if (/api.?key|application key|token|auth|unauthor|forbidden/.test(text)) {
     return {
       code: "PROVIDER_AUTH_ERROR",
-      message: "API-Football anahtari gecersiz, eksik veya bu endpoint icin yetkisiz."
+      message: "API-Football anahtari gonderildi ancak saglayici tarafindan taninmadi (gecersiz, iptal edilmis veya farkli bir platforma ait)."
     };
   }
 

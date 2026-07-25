@@ -191,8 +191,32 @@ function testLiveCachePolicy() {
   assert.ok(age(live.cdn) <= 15, "canli skor icin 15 saniyeden uzun CDN onbellegi kabul edilemez");
 }
 
+
+/**
+ * API-Sports'un iki farklı "missing application key" metni ayırt edilmeli:
+ * biri anahtarın header'a hiç konmadığını, diğeri anahtarın tanınmadığını
+ * söyler. Tek koda düşürülünce teşhis yanlış yöne gidiyordu.
+ */
+function testCredentialErrorClassification() {
+  const headerMissing = apiFootball.classifyPayloadError([
+    "Missing application key, Check our documentation on how to add your API key in headers."
+  ]);
+  assert.equal(headerMissing.code, "PROVIDER_CREDENTIAL_NOT_SENT");
+
+  const keyRejected = apiFootball.classifyPayloadError([
+    "Error/Missing application key. Go to https://www.api-football.com/documentation-v3 to learn how to get your API application key."
+  ]);
+  assert.equal(keyRejected.code, "PROVIDER_AUTH_ERROR");
+
+  const suspended = apiFootball.classifyPayloadError([
+    "Your account is suspended, check on https://dashboard.api-football.com."
+  ]);
+  assert.equal(suspended.code, "PROVIDER_ACCOUNT_SUSPENDED");
+}
+
 testIdNamespacing();
 testWithProviderIdGuards();
+testCredentialErrorClassification();
 testNameSimilarity();
 testFixtureMatching();
 testCoverageReport();
