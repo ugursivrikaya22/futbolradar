@@ -425,6 +425,8 @@ function generatedComparisonPages() {
 
 // Every generated player page belongs in the sitemap. Scanning the directory
 // keeps it correct as squads grow instead of relying on a hand-kept list.
+// Alias files are skipped: they are noindex redirects to the canonical
+// profile, and listing a redirect in a sitemap is a crawl error.
 function generatedPlayerPages() {
   const dir = path.join(root, "oyuncular");
   if (!fs.existsSync(dir)) {
@@ -433,6 +435,7 @@ function generatedPlayerPages() {
 
   return fs.readdirSync(dir)
     .filter((file) => file.endsWith(".html"))
+    .filter((file) => !/content="noindex/.test(fs.readFileSync(path.join(dir, file), "utf8")))
     .sort()
     .map((file) => `oyuncular/${file}`);
 }
