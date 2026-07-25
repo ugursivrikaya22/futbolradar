@@ -33,6 +33,9 @@ function credentialShape(names) {
       return {
         env: name,
         length: trimmed.length,
+        // API-Sports anahtarı tam 32 onaltılık karakterdir; false ise değer
+        // eksik/bozuk kopyalanmıştır ve sağlayıcıya sormaya bile gerek yok.
+        looksValidFormat: apiFootballProvider.looksLikeApiKey(trimmed),
         hadSurroundingWhitespace: raw !== trimmed,
         looksQuoted: /^["'].*["']$/.test(trimmed),
         blank: trimmed === ""
@@ -77,6 +80,9 @@ function buildDiagnostics(config) {
       // Hangi değişken okunuyor ve değeri biçimsel olarak sağlam mı.
       credentialEnvNames: presentEnvNames(APIFOOTBALL_API_KEY_ENV_NAMES),
       credentialShape: credentialShape(APIFOOTBALL_API_KEY_ENV_NAMES),
+      // Kaç farklı anahtar değeri deneniyor: birden fazlaysa ortamda eski
+      // ve yeni anahtar bir arada demektir.
+      credentialCandidateCount: apiFootballConfig.apiKeyCandidateCount,
       activeBaseUrl: apiFootballConfig.baseUrl,
       leagueIdConfigured: Boolean(apiFootballConfig.leagueId),
       resolvedSeason: apiFootballConfig.season
