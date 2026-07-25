@@ -53,7 +53,7 @@ function playerTeamMetaPhrase(player) {
 }
 
 function playerDescription(player) {
-  return `${player.name}; ${playerTeamMetaPhrase(player)}, mevki ${player.position}. Transfer geçmişi, overall rating ${player.overallRating || player.aiRating || player.rating}, potansiyel ${player.potentialRating || "yakında"} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
+  return `${player.name}; ${playerTeamMetaPhrase(player)}, mevki ${player.position}. Transfer geçmişi, overall rating ${player.overallRating || player.aiRating || player.rating || "yakında"}, potansiyel ${player.potentialRating || "yakında"} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
 }
 
 function playerCurrentTeam(player) {

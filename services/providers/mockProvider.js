@@ -269,7 +269,11 @@ function matchStateRank(status) {
 
 function matchIdentity(match) {
   const date = matchDateOnly(match);
-  return `${normalizeText(match && match.homeTeam)}|${normalizeText(match && match.awayTeam)}|${date}`;
+  // Order-insensitive on purpose: for neutral-venue fixtures (pre-season camps
+  // in particular) sources disagree about which club is nominally at home, and
+  // an ordered key let the same match through twice with the sides swapped.
+  const pair = [normalizeText(match && match.homeTeam), normalizeText(match && match.awayTeam)].sort();
+  return `${pair[0]}|${pair[1]}|${date}`;
 }
 
 function hasFinalScore(match) {

@@ -423,8 +423,23 @@ function generatedComparisonPages() {
     .map((file) => `karsilastirma/${file}`);
 }
 
+// Every generated player page belongs in the sitemap. Scanning the directory
+// keeps it correct as squads grow instead of relying on a hand-kept list.
+function generatedPlayerPages() {
+  const dir = path.join(root, "oyuncular");
+  if (!fs.existsSync(dir)) {
+    return [];
+  }
+
+  return fs.readdirSync(dir)
+    .filter((file) => file.endsWith(".html"))
+    .sort()
+    .map((file) => `oyuncular/${file}`);
+}
+
 function sitemapXml(files) {
   const comparisonPages = generatedComparisonPages();
+  const playerPages = generatedPlayerPages();
   const core = [
     "index.html",
     "bugunun-maclari.html",
@@ -442,14 +457,7 @@ function sitemapXml(files) {
     "oyuncular/orta-sahalar.html",
     "oyuncular/genc-yetenekler.html",
     "oyuncular/en-iyi-oyuncular.html",
-    "oyuncular/mauro-icardi.html",
-    "oyuncular/kerem-akturkoglu.html",
-    "oyuncular/edin-dzeko.html",
-    "oyuncular/sebastian-szymanski.html",
-    "oyuncular/gedson-fernandes.html",
-    "oyuncular/ugurcan-cakir.html",
-    "oyuncular/abdulkerim-bardakci.html",
-    "oyuncular/semih-kilicsoy.html",
+    ...playerPages,
     ...comparisonPages,
     "momentum.html",
     "analizler.html",
@@ -464,6 +472,8 @@ function sitemapXml(files) {
     "takim-trendleri.html",
     "futbol-radar-rehberi.html",
     "gunun-radar-bulteni.html",
+    // Indexable and linked from four pages, but was never listed here.
+    "transfer-izleme.html",
     ...files
   ];
   const unique = [...new Set(core)];
