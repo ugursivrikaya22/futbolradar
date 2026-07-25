@@ -348,11 +348,19 @@ async function testVenueAuthority() {
   assert.equal(camp.venue, "Športni park Aluminij", "dogrulanmis saha saglayici tarafindan ezilmemeli");
   assert.equal(camp.providerVenue, undefined, "dogrulanmis saha varken saglayici kaydi tasinmaz");
 
-  const undisclosed = byTeam("RAAL La Louvière");
-  assert.ok(undisclosed, "Samsunspor maci listelenmeli");
+  const undisclosed = byTeam("Osijek");
+  assert.ok(undisclosed, "Caykur Rizespor maci listelenmeli");
   assert.equal(undisclosed.venue, "Açıklanmadı", "aciklanmamis saha tahminle doldurulmamali");
-  assert.equal(undisclosed.providerVenue, "Stade du Tivoli");
+  assert.equal(undisclosed.providerVenue, "Opus Arena");
   assert.equal(undisclosed.providerVenueStatus, "unverified");
+
+  // Saha birincil kaynaktan doğrulandığında sağlayıcı tahmini artık
+  // taşınmaz. (Samsunspor - RAAL sahası RAAL'in resmî maç raporundan
+  // Sportpark Juliana olarak teyit edildi; önceden "Açıklanmadı" idi.)
+  const verifiedLater = byTeam("RAAL La Louvière");
+  assert.ok(verifiedLater, "Samsunspor maci listelenmeli");
+  assert.equal(verifiedLater.venue, "Sportpark Juliana");
+  assert.equal(verifiedLater.providerVenue, undefined, "dogrulanmis saha varken saglayici tahmini eklenmez");
 }
 
 function testCuratedLeagueFilterUsesCatalog() {

@@ -263,6 +263,10 @@ function buildSummary(match, seed) {
     if (scorers.length) {
       sentences.push(`${scorers.length === 1 ? "Tek golü" : "Golleri"} ${scorers.join(", ")} kaydetti.`);
     }
+  } else if (home === 0 && away === 0) {
+    // Golsüz maçta "gol bilgisi doğrulanmadı" demek yanlış olur: eksik veri
+    // değil, gerçekten gol yok.
+    sentences.push("İki takım da gol bulamadı.");
   } else {
     sentences.push("Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.");
   }
@@ -666,9 +670,14 @@ function buildNextMatchOutlook(match, context) {
   }
 
   const ready = entries.filter((entry) => entry.status === "ready");
+  const status = ready.length ? (ready.length === entries.length ? "ready" : "partial") : "unavailable";
   return {
-    status: ready.length ? (ready.length === entries.length ? "ready" : "partial") : "unavailable",
+    status,
     entries,
+    // Diğer bölümlerle aynı sözleşme: "unavailable" ise gerekçe yazılır.
+    reason: status === "unavailable"
+      ? "İki takım için de doğrulanmış bir sonraki karşılaşma takvimde yok; fikstür açıklandığında bu bölüm otomatik dolar."
+      : undefined,
     note: "Öngörü, doğrulanmış fikstür ve bu maçın sonucuna dayanır; skor tahmini içermez."
   };
 }
