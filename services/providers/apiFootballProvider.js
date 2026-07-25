@@ -310,9 +310,16 @@ function normalizeFixture(item) {
 }
 
 function filterSupportedCompetitions(matches) {
-  return (Array.isArray(matches) ? matches : []).filter((match) =>
-    competitions.some((competition) => matchesCompetition(match.league, competition))
-  );
+  return (Array.isArray(matches) ? matches : []).filter((match) => {
+    const providerLeagueId = match && match.competition && match.competition.providerId;
+    if (providerLeagueId === undefined || providerLeagueId === null || providerLeagueId === "") {
+      return false;
+    }
+
+    return competitions.some((competition) =>
+      String(competition.providers && competition.providers.apiFootball) === String(providerLeagueId)
+    );
+  });
 }
 
 function normalizeStandingRow(row, leagueName) {
@@ -367,12 +374,14 @@ function normalizeSquadPlayer(item, team) {
   return {
     id: String(item.id || item.name || ""),
     providerId: item.id ? String(item.id) : "",
+    providerTeamId: team && team.id ? String(team.id) : "",
     name: item.name || "",
     currentTeam: teamName(team),
     team: teamName(team),
     position: item.position || "",
     age: item.age || null,
     photo: item.photo || null,
+    teamLogo: team && team.logo || null,
     dataStatus: "provider",
     ratingStatus: "pending",
     source: "api-football"
@@ -422,7 +431,8 @@ function normalizePlayer(item) {
       goals: playerGoals,
       assists,
       yellowCards,
-      redCards
+      redCards,
+      providerRating: rating
     },
     appearances,
     minutesPlayed: minutes,
@@ -431,12 +441,14 @@ function normalizePlayer(item) {
     assists,
     yellowCards,
     redCards,
-    rating,
-    aiRating: rating,
-    overallRating: rating,
+    providerRating: rating,
+    rating: null,
+    aiRating: null,
+    overallRating: null,
     transferHistory: [],
     dataStatus: "provider",
-    ratingStatus: rating == null ? "pending" : "provider",
+    ratingStatus: "pending",
+    ratingMethod: "futbolradar-rule-v1",
     transferUpdatedAt: null,
     source: "api-football",
     lastSyncedAt: firstDefined(item.lastSyncedAt, item.fetchedAt)
@@ -481,6 +493,7 @@ async function getFixtures(query) {
   const fixtureId = query && (query.fixtureId || query.id);
   const league = resolveLeague(query && query.league);
   const date = query && query.date || (!fixtureId ? todayInIstanbul() : undefined);
+  const timezone = query && query.timezone || query && query.timeZone || "Europe/Istanbul";
   const competition = query && (query.requestedCompetition || query.league)
     ? competitions.find((item) => matchesCompetition(query.requestedCompetition || query.league, item))
     : null;
@@ -489,12 +502,13 @@ async function getFixtures(query) {
   // more API plans than league+season queries. League filtering is local.
   const payload = await providerFetch("/fixtures", {
     id: fixtureId,
-    date
+    date,
+    timezone
   });
   const matches = responseItems(payload).map(normalizeFixture);
   const supportedMatches = filterSupportedCompetitions(matches);
   const filteredMatches = league && competition
-    ? supportedMatches.filter((match) => matchesCompetition(match.league, competition))
+    ? supportedMatches.filter((match) => match.competitionId === competition.id)
     : supportedMatches;
   return dedupeMatches(stampProviderData(filteredMatches, "matches", 5 * 60 * 1000));
 }
@@ -519,7 +533,7 @@ async function getTeams(query) {
     season: resolveSeason(query && query.season),
     search: query && query.search,
     id: query && (query.teamId || query.id),
-    country: query && query.country || getConfig().country
+    country: league ? undefined : query && query.country || getConfig().country
   }));
   return stampProviderData(responseItems(payload).map(normalizeTeam), "teams", 24 * 60 * 60 * 1000);
 }
@@ -548,6 +562,35 @@ async function getPlayers(query) {
     page: query && query.page
   }));
   return stampProviderData(responseItems(payload).map(normalizePlayer), "players", 24 * 60 * 60 * 1000);
+}
+
+async function getAllPlayers(query) {
+  const league = ensureLeagueForData(query);
+  const season = resolveSeason(query && query.season);
+  const maxPages = Math.max(1, Math.min(60, Number(query && query.maxPages) || 40));
+  const records = [];
+  let page = 1;
+  let totalPages = 1;
+
+  do {
+    const payload = await providerFetch("/players", compactParams({
+      league,
+      season,
+      page
+    }));
+    records.push(...responseItems(payload).map(normalizePlayer));
+    totalPages = Math.max(1, Number(payload && payload.paging && payload.paging.total) || 1);
+    page += 1;
+  } while (page <= totalPages && page <= maxPages);
+
+  if (totalPages > maxPages) {
+    throw new ProviderError(
+      "PROVIDER_PAGE_LIMIT",
+      `Oyuncu verisi ${totalPages} sayfa dondurdu; guvenli limit ${maxPages}.`
+    );
+  }
+
+  return stampProviderData(records, "players", 24 * 60 * 60 * 1000);
 }
 
 async function getPlayerById(query) {
@@ -773,6 +816,37 @@ function buildLiveMatchAnalysis(match, statistics, events) {
   };
 }
 
+function normalizePrediction(item) {
+  if (!item || typeof item !== "object") {
+    return null;
+  }
+  if (item.label !== undefined || item.advice !== undefined || item.probability !== undefined) {
+    return item;
+  }
+
+  const raw = item.predictions && typeof item.predictions === "object" ? item.predictions : item;
+  const winner = raw.winner && typeof raw.winner === "object" ? raw.winner : {};
+  const goals = raw.goals && typeof raw.goals === "object" ? raw.goals : {};
+  const percent = raw.percent && typeof raw.percent === "object" ? raw.percent : {};
+  return {
+    label: teamName(winner) || null,
+    advice: raw.advice || null,
+    winner: teamName(winner) || null,
+    winnerComment: winner.comment || null,
+    winOrDraw: typeof raw.win_or_draw === "boolean" ? raw.win_or_draw : null,
+    underOver: raw.under_over || null,
+    expectedGoals: {
+      home: numberOrNull(goals.home),
+      away: numberOrNull(goals.away)
+    },
+    probability: {
+      home: percent.home || null,
+      draw: percent.draw || null,
+      away: percent.away || null
+    }
+  };
+}
+
 async function getPredictions(query) {
   const fixtureId = query && query.fixtureId;
   if (!fixtureId) {
@@ -817,7 +891,7 @@ async function getMatchDetail(query) {
     lineups,
     events,
     statistics,
-    prediction: predictions[0] || null,
+    prediction: normalizePrediction(predictions[0]),
     analysis,
     source: "api-football",
     fetchedAt: new Date().toISOString(),
@@ -881,6 +955,7 @@ module.exports = {
   getTeams,
   getSquad,
   getPlayers,
+  getAllPlayers,
   getPlayerById,
   getPlayerTransfers,
   getTopScorers,
@@ -904,6 +979,7 @@ module.exports = {
   normalizeFixtureLineups,
   normalizeFixtureEvents,
   normalizeFixtureStatistics,
+  normalizePrediction,
   buildLiveMatchAnalysis,
   filterSupportedCompetitions,
   normalizeStandingRow,

@@ -1,8 +1,8 @@
 const BROWSER_CACHE_CONTROL = "public, max-age=0";
 const CACHE_POLICIES = Object.freeze({
   default: { maxAge: 300, stale: 600 },
-  "live-matches": { maxAge: 15, stale: 30 },
-  matches: { maxAge: 60, stale: 180 },
+  "live-matches": { maxAge: 60, stale: 60 },
+  matches: { maxAge: 300, stale: 300 },
   "match-detail": { maxAge: 30, stale: 120 },
   standings: { maxAge: 300, stale: 900 },
   teams: { maxAge: 1800, stale: 7200 },
@@ -294,7 +294,11 @@ function validateMatches(data) {
 }
 
 function validateTeams(data) {
-  return validateCollection(data, (item) => item.name && requireAny(item, ["momentum", "rating"]), "INVALID_TEAM_SCHEMA");
+  return validateCollection(
+    data,
+    (item) => item.name && requireAny(item, ["momentum", "rating", "providerId", "logo"]),
+    "INVALID_TEAM_SCHEMA"
+  );
 }
 
 function validatePlayers(data) {

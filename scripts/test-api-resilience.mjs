@@ -8,6 +8,7 @@ const apiFootball = require("../services/providers/apiFootballProvider");
 const providers = require("../services/providers");
 const competitionCatalog = require("../services/competitionCatalog");
 const playersHandler = require("../api/players");
+const matchesHandler = require("../api/matches");
 
 function fakeResponse() {
   return {
@@ -39,7 +40,8 @@ function testQuerySanitizing() {
 }
 
 function testCachePolicies() {
-  assert.equal(utils.cacheControlFor("matches").cdn, "public, s-maxage=60, stale-while-revalidate=180");
+  assert.equal(utils.cacheControlFor("matches").cdn, "public, s-maxage=300, stale-while-revalidate=300");
+  assert.equal(utils.cacheControlFor("live-matches").cdn, "public, s-maxage=60, stale-while-revalidate=60");
   assert.equal(utils.cacheControlFor("players").cdn, "public, s-maxage=3600, stale-while-revalidate=21600");
   assert.equal(utils.cacheControlFor("health").cdn, "no-store");
 }
@@ -194,6 +196,33 @@ function testConfiguredProviderPreference() {
   }
 }
 
+function testPredictionNormalization() {
+  const normalized = apiFootball.normalizePrediction({
+    predictions: {
+      winner: { id: 1, name: "Ev", comment: "Win or draw" },
+      win_or_draw: true,
+      under_over: "-3.5",
+      goals: { home: "1.8", away: "0.7" },
+      advice: "Double chance : Ev or draw",
+      percent: { home: "45%", draw: "40%", away: "15%" }
+    },
+    teams: { home: { last_5: { form: "80%" } } },
+    h2h: new Array(20).fill({ fixture: { id: 1 } })
+  });
+  assert.deepEqual(normalized, {
+    label: "Ev",
+    advice: "Double chance : Ev or draw",
+    winner: "Ev",
+    winnerComment: "Win or draw",
+    winOrDraw: true,
+    underOver: "-3.5",
+    expectedGoals: { home: 1.8, away: 0.7 },
+    probability: { home: "45%", draw: "40%", away: "15%" }
+  });
+  assert.equal("teams" in normalized, false);
+  assert.equal("h2h" in normalized, false);
+}
+
 function testApiFootballErrorClassification() {
   assert.equal(
     apiFootball.classifyPayloadError(["Invalid application key"]).code,
@@ -301,13 +330,13 @@ async function testDateOnlyLeagueFiltering() {
           response: [
             {
               fixture: { id: 1, date: "2026-07-22T18:00:00Z", status: { short: "2H" } },
-              league: { name: "UEFA Champions League" },
+              league: { id: 2, name: "UEFA Champions League", country: "World" },
               teams: { home: { name: "Ev" }, away: { name: "Dep" } },
               goals: { home: 1, away: 0 }
             },
             {
               fixture: { id: 2, date: "2026-07-22T19:00:00Z", status: { short: "NS" } },
-              league: { name: "Premier League" },
+              league: { id: 39, name: "Premier League", country: "England" },
               teams: { home: { name: "Home" }, away: { name: "Away" } },
               goals: { home: null, away: null }
             }
@@ -385,12 +414,121 @@ async function testFootballDataCompetitionFallback() {
   }
 }
 
+async function testVerifiedFinalSurvivesStaleProviderFixture() {
+  const previousFetch = global.fetch;
+  const previousKey = process.env.APIFOOTBALL_API_KEY;
+  const previousProvider = process.env.FOOTBALL_MATCH_PROVIDER;
+
+  try {
+    process.env.APIFOOTBALL_API_KEY = "test-api-football-key";
+    process.env.FOOTBALL_MATCH_PROVIDER = "api-football";
+    global.fetch = async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        errors: [],
+        response: [{
+          fixture: { id: 25404, date: "2026-07-23T18:00:00Z", status: { short: "NS" } },
+          league: { id: 3, name: "UEFA Europa League" },
+          teams: { home: { name: "Besiktas" }, away: { name: "FC Midtjylland" } },
+          goals: { home: null, away: null }
+        }]
+      })
+    });
+
+    const response = fakeResponse();
+    await matchesHandler({
+      method: "GET",
+      url: "/api/matches?date=2026-07-23",
+      headers: { "x-forwarded-for": "203.0.113.99" }
+    }, response);
+    const result = response.payload.data.find((match) =>
+      competitionCatalog.normalizeKey(match.homeTeam) === "besiktas" &&
+      competitionCatalog.normalizeKey(match.awayTeam) === "fc-midtjylland"
+    );
+    assert.equal(result.status, "FINISHED");
+    assert.deepEqual(result.score, { home: 1, away: 0, halftimeHome: 1, halftimeAway: 0 });
+  } finally {
+    global.fetch = previousFetch;
+    if (previousKey === undefined) delete process.env.APIFOOTBALL_API_KEY;
+    else process.env.APIFOOTBALL_API_KEY = previousKey;
+    if (previousProvider === undefined) delete process.env.FOOTBALL_MATCH_PROVIDER;
+    else process.env.FOOTBALL_MATCH_PROVIDER = previousProvider;
+  }
+}
+
+async function testIstanbulFriendlyFallbackForJuly25() {
+  const envNames = [
+    ...utils.API_KEY_ENV_NAMES,
+    "APIFOOTBALL_API_KEY",
+    "FOOTBALL_PRIMARY_PROVIDER",
+    "FOOTBALL_MATCH_PROVIDER"
+  ];
+  const previous = Object.fromEntries(envNames.map((name) => [name, process.env[name]]));
+
+  try {
+    envNames.forEach((name) => delete process.env[name]);
+    const response = fakeResponse();
+    await matchesHandler({
+      method: "GET",
+      url: "/api/matches?date=2026-07-25&timezone=Europe/Istanbul&includeFriendlies=true",
+      headers: { "x-forwarded-for": "203.0.113.125" }
+    }, response);
+
+    assert.equal(response.statusCode, 200);
+    assert.equal(response.payload.ok, true);
+    assert.match(response.payload.source, /manual-verified/);
+    assert.ok(response.payload.data.length >= 13);
+
+    const key = (value) => competitionCatalog.normalizeKey(value);
+    const hasTeam = (match, team) => [match.homeTeam, match.awayTeam].some((value) => key(value) === key(team));
+    const findPair = (left, right) => response.payload.data.find((match) => hasTeam(match, left) && hasTeam(match, right));
+
+    const konyaspor = findPair("Konyaspor", "Hull City");
+    const samsunspor = findPair("RAAL La Louviere", "Samsunspor");
+    const rizespor = findPair("Caykur Rizespor", "NK Osijek");
+    const standard = findPair("Standard Liege", "Juventus");
+    const porto = findPair("FC Porto", "Aston Villa");
+
+    assert.ok(konyaspor, "Konyaspor-Hull City fallback match is missing");
+    assert.ok(samsunspor, "RAAL La Louviere-Samsunspor fallback match is missing");
+    assert.ok(rizespor, "Caykur Rizespor-NK Osijek fallback match is missing");
+    assert.equal(standard && standard.localTime, "21:00");
+    assert.equal(porto && porto.localTime, "22:00");
+    assert.equal(response.payload.data.some((match) => hasTeam(match, "Liverpool") && hasTeam(match, "Sunderland")), false);
+
+    const duplicateKeys = response.payload.data.map((match) => [
+      key(match.homeTeam),
+      key(match.awayTeam),
+      match.localTime || match.utcKickoff || match.kickoff
+    ].join("|"));
+    assert.equal(new Set(duplicateKeys).size, duplicateKeys.length, "Daily fallback list must not contain duplicate fixtures");
+
+    for (const match of [konyaspor, samsunspor, rizespor, standard, porto]) {
+      assert.equal(match.localDate, "2026-07-25");
+      assert.equal(match.statusLabel, "Başlamadı");
+      assert.equal(match.homeScore, null);
+      assert.equal(match.awayScore, null);
+      assert.equal(match.isFriendly, true);
+    }
+  } finally {
+    envNames.forEach((name) => {
+      if (previous[name] === undefined) {
+        delete process.env[name];
+      } else {
+        process.env[name] = previous[name];
+      }
+    });
+  }
+}
+
 testQuerySanitizing();
 testCachePolicies();
 testRateLimit();
 testResponseFreshness();
 testUnknownProviderValues();
 testCompetitionCatalog();
+testPredictionNormalization();
 testMissingKeyFallback();
 testConfiguredProviderPreference();
 testApiFootballErrorClassification();
@@ -398,5 +536,7 @@ testLiveMatchDetailNormalization();
 await testPlayerLeagueSlugFallback();
 await testDateOnlyLeagueFiltering();
 await testFootballDataCompetitionFallback();
+await testVerifiedFinalSurvivesStaleProviderFixture();
+await testIstanbulFriendlyFallbackForJuly25();
 
 console.log("FutbolRadar API resilience tests passed");

@@ -5,6 +5,9 @@
   if (!body || !body.matches(".score-home")) return;
 
   var timeoutMs = 6500;
+  var livePollMs = 60000;
+  var idlePollMs = 300000;
+  var refreshTimer = null;
   var domesticLeagues = ["super-lig", "premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1"];
   var scoreboardCompetitions = domesticLeagues.concat([
     "sampiyonlar-ligi",
@@ -86,7 +89,8 @@
       timeZone: "Europe/Istanbul",
       weekday: "long",
       day: "numeric",
-      month: "long"
+      month: "long",
+      year: "numeric"
     }).format(date);
   }
 
@@ -107,9 +111,11 @@
   }
 
   function matchHref(match) {
-    var date = dateInIstanbul(match.kickoffAtUtc || match.kickoff);
-    var slug = slugify(match.homeTeam) + "-" + slugify(match.awayTeam) + "-" + date;
-    return sitePrefix() + "mac/" + encodeURIComponent(slug) + "/";
+    var date = dateInIstanbul(match.utcKickoff || match.kickoffAtUtc || match.kickoff);
+    var params = new URLSearchParams();
+    params.set("id", match.providerFixtureId || match.providerId || match.fixtureId || match.id || slugify(match.homeTeam + "-" + match.awayTeam));
+    if (date && date !== "tarih-bekleniyor") params.set("date", date);
+    return sitePrefix() + "mac-detay.html?" + params.toString();
   }
 
   function safeLogoUrl(value) {
@@ -128,6 +134,9 @@
 
   function teamScore(match, side) {
     var score = match.score || {};
+    var status = String(match.status || match.providerStatus || "").toUpperCase();
+    var showScore = trustedLive(match) || ["FINISHED", "FT", "AET", "PEN"].indexOf(status) !== -1;
+    if (!showScore) return "–";
     return score[side] == null ? "–" : String(score[side]);
   }
 
@@ -145,11 +154,12 @@
 
   function statusValue(match, source) {
     var status = String(match.status || "SCHEDULED").toUpperCase();
-    if (trustedLive(match, source)) return match.minute == null ? "CANLI" : match.minute + "'";
+    if (trustedLive(match, source)) return (match.elapsed || match.minute) == null ? "CANLI" : "CANLI " + (match.elapsed || match.minute) + "'";
+    if (match.statusLabel && status !== "SCHEDULED") return match.statusLabel;
     if (status === "FINISHED") return "MS";
     if (status === "POSTPONED") return "ERT";
     if (status === "CANCELLED") return "İPT";
-    return match.time || "Saat bekleniyor";
+    return match.localTime || match.time || "Saat bekleniyor";
   }
 
   function cardHtml(match, source) {
@@ -195,20 +205,31 @@
     return matches.filter(function (match) { return competitionId(match) === state.league; });
   }
 
+  function sortMatches(matches) {
+    return matches.slice().sort(function (left, right) {
+      return String(left.utcKickoff || left.kickoffAtUtc || left.localTime || left.time || "").localeCompare(String(right.utcKickoff || right.kickoffAtUtc || right.localTime || right.time || "")) ||
+        Number(left.priority || 99) - Number(right.priority || 99);
+    });
+  }
+
   function renderMain(matches, source) {
     var target = document.querySelector("[data-score-list]");
     if (!target) return;
     state.matches = dedupe(matches).filter(function (match) { return scoreboardCompetitions.indexOf(competitionId(match)) !== -1; });
-    var visible = filterByLeague(state.matches);
+    var visible = sortMatches(filterByLeague(state.matches));
+    var homepageLimit = state.period === "today" && state.league === "all" ? 10 : visible.length;
+    var rendered = visible.slice(0, homepageLimit);
     var emptyTitle = state.period === "live"
       ? "Şu anda seçili turnuvalarda canlı maç bulunmuyor"
       : state.period === "today"
         ? "Bugün seçili turnuvalarda maç bulunmuyor"
+        : state.period === "yesterday"
+          ? "Dün seçili turnuvalarda maç bulunamadı"
         : state.period === "tomorrow"
           ? "Yarın seçili turnuvalarda maç bulunmuyor"
           : "Bu seçim için doğrulanmış maç bulunamadı";
-    target.innerHTML = visible.length
-      ? visible.map(function (match) { return cardHtml(match, source); }).join("")
+    target.innerHTML = rendered.length
+      ? rendered.map(function (match) { return cardHtml(match, source); }).join("")
       : emptyHtml(emptyTitle, "Başka bir tarih veya lig seçebilirsin.");
     var counter = document.querySelector("[data-score-count]");
     if (counter) counter.textContent = visible.length + " maç";
@@ -249,9 +270,35 @@
     if (list) list.setAttribute("aria-busy", loading ? "true" : "false");
   }
 
+  function matchesUrl(params) {
+    var query = new URLSearchParams(params || {});
+    query.set("timezone", "Europe/Istanbul");
+    query.set("includeFriendlies", "true");
+    return "/api/matches?" + query.toString();
+  }
+
+  function scheduleRefresh(source) {
+    if (refreshTimer) window.clearTimeout(refreshTimer);
+    var hasLive = state.matches.some(function (match) { return trustedLive(match, source); });
+    var delay = hasLive || state.period === "live" ? livePollMs : idlePollMs;
+    refreshTimer = window.setTimeout(function () {
+      if (document.hidden) {
+        scheduleRefresh(source);
+        return;
+      }
+      requestPeriod(state.period);
+    }, delay);
+  }
+
   function requestPeriod(period) {
+    if (refreshTimer) {
+      window.clearTimeout(refreshTimer);
+      refreshTimer = null;
+    }
+    var yesterday = currentDateInIstanbul(-1);
     var today = currentDateInIstanbul();
     var tomorrow = currentDateInIstanbul(1);
+    body.setAttribute("data-yesterday", yesterday);
     body.setAttribute("data-today", today);
     body.setAttribute("data-tomorrow", tomorrow);
     var dateLabel = document.querySelector("[data-score-date-label]");
@@ -259,15 +306,19 @@
     if (dateLabel) {
       dateLabel.textContent = period === "live"
         ? "Şu an"
+        : period === "yesterday"
+          ? formatDateLabel(yesterday)
         : period === "tomorrow"
           ? formatDateLabel(tomorrow)
           : period === "all"
-            ? "Bugün ve yarın"
+            ? "Dün, bugün ve yarın"
             : formatDateLabel(today);
     }
     if (listTitle) {
       listTitle.textContent = period === "live"
         ? "Canlı maçlar"
+        : period === "yesterday"
+          ? "Dünün sonuçları"
         : period === "tomorrow"
           ? "Yarının maçları"
           : period === "all"
@@ -275,12 +326,14 @@
             : "Bugünün maçları";
     }
     var urls = period === "live"
-      ? ["/api/matches?mode=live"]
+      ? [matchesUrl({ mode: "live" })]
+      : period === "yesterday"
+        ? [matchesUrl({ date: yesterday })]
       : period === "tomorrow"
-        ? ["/api/matches?date=" + encodeURIComponent(tomorrow)]
+        ? [matchesUrl({ date: tomorrow })]
         : period === "all"
-          ? ["/api/matches?date=" + encodeURIComponent(today), "/api/matches?date=" + encodeURIComponent(tomorrow)]
-          : ["/api/matches?date=" + encodeURIComponent(today)];
+          ? [matchesUrl({ date: yesterday }), matchesUrl({ date: today }), matchesUrl({ date: tomorrow })]
+          : [matchesUrl({ date: today })];
     setLoading(true);
     setSyncStatus("Maç programı güncelleniyor.", "loading");
     return Promise.all(urls.map(fetchJson)).then(function (responses) {
@@ -296,9 +349,11 @@
       } else {
         setSyncStatus("", "ready");
       }
+      scheduleRefresh(source);
     }).catch(function () {
       setSyncStatus("Canlı maç verisine şu anda ulaşılamıyor.", "error");
       // The server-rendered list remains visible when the provider or network is unavailable.
+      scheduleRefresh("error");
     }).finally(function () { setLoading(false); });
   }
 
@@ -306,7 +361,7 @@
     var params = new URLSearchParams(window.location.search);
     var requestedPeriod = params.get("period");
     var requestedLeague = params.get("league");
-    if (["live", "today", "tomorrow", "all"].indexOf(requestedPeriod) !== -1) state.period = requestedPeriod;
+    if (["live", "yesterday", "today", "tomorrow", "all"].indexOf(requestedPeriod) !== -1) state.period = requestedPeriod;
     if (scoreboardCompetitions.indexOf(requestedLeague) !== -1) state.league = requestedLeague;
 
     document.querySelectorAll("[data-score-period]").forEach(function (button) {
@@ -390,7 +445,7 @@
   initSearch();
   initScoreFilters();
   if (body.getAttribute("data-page") === "score-home" && body.getAttribute("data-feature-live-scores") === "true") {
-    fetchJson("/api/matches?mode=live").then(function (response) { renderLive(response.data, response.source); }).catch(function () {
+    fetchJson(matchesUrl({ mode: "live" })).then(function (response) { renderLive(response.data, response.source); }).catch(function () {
       var target = document.querySelector("[data-score-live]");
       if (target) target.innerHTML = emptyHtml("Canlı maç verisine şu anda ulaşılamıyor", "Maç programını ve geçmiş sonuçları kullanmaya devam edebilirsin.");
     });

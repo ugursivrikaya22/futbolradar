@@ -25,26 +25,32 @@ assert.equal(findCompetition("hazirlik-maci")?.id, "hazirlik-maclari");
 assert.equal(providerLeagueValue("premier-league", "api-football"), 39);
 assert.equal(providerLeagueValue("avrupa-ligi", "football-data"), null);
 
-const fixture = (id, league, status = "NS") => normalizeFixture({
+const fixture = (id, leagueId, league, status = "NS", country = "") => normalizeFixture({
   fixture: { id, date: "2026-07-19T18:00:00+00:00", status: { short: status } },
-  league: { name: league },
+  league: { id: leagueId, name: league, country },
   teams: { home: { name: `Ev ${id}` }, away: { name: `Dep ${id}` } },
   goals: { home: null, away: null }
 });
 
 const filtered = filterSupportedCompetitions([
-  fixture(1, "Premier League"),
-  fixture(2, "UEFA Champions League", "1H"),
-  fixture(3, "Regional Test League"),
-  fixture(4, "UEFA Conference League"),
-  fixture(5, "Club Friendly Games")
+  fixture(1, 39, "Premier League", "NS", "England"),
+  fixture(2, 2, "UEFA Champions League", "1H", "World"),
+  fixture(3, 9001, "Regional Test League"),
+  fixture(4, 848, "UEFA Conference League"),
+  fixture(5, 667, "Club Friendly Games"),
+  fixture(6, 71, "Serie A", "FT", "Brazil"),
+  fixture(7, 355, "Premier League", "FT", "Bhutan"),
+  fixture(8, 3, "UEFA Europa League", "FT", "World"),
+  fixture(9, 135, "Serie A", "FT", "Italy")
 ]);
 
-assert.deepEqual(filtered.map((match) => match.id), ["1", "2", "4", "5"]);
+assert.deepEqual(filtered.map((match) => match.id), ["1", "2", "4", "5", "8", "9"]);
 assert.equal(filtered[0].status, "SCHEDULED");
 assert.equal(filtered[0].live, false);
 assert.equal(filtered[1].status, "LIVE");
 assert.equal(filtered[1].live, true);
+assert.equal(filtered.some((match) => match.id === "6"), false, "Brazil Serie A must not be treated as Italian Serie A.");
+assert.equal(filtered.some((match) => match.id === "7"), false, "Unrelated Premier League competitions must be excluded.");
 
 const envNames = ["FOOTBALL_MATCH_PROVIDER", "FOOTBALL_PRIMARY_PROVIDER", "FOOTBALL_API_KEY", "APIFOOTBALL_API_KEY"];
 const previousEnv = Object.fromEntries(envNames.map((name) => [name, process.env[name]]));
@@ -60,8 +66,8 @@ try {
     headers: { "x-forwarded-for": "203.0.113.99" }
   }, response);
   assert.equal(response.statusCode, 200);
-  assert.equal(response.payload.ok, false);
-  assert.equal(response.payload.error.code, "COMPETITION_NOT_SUPPORTED");
+  assert.equal(response.payload.ok, true);
+  assert.ok(Array.isArray(response.payload.data));
 } finally {
   for (const name of envNames) {
     if (previousEnv[name] === undefined) delete process.env[name];
