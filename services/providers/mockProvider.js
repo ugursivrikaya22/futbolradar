@@ -9,7 +9,10 @@ const { normalizeText } = require("../../api/_utils");
 const { findCompetition, matchesCompetition, normalizeKey } = require("../competitionCatalog");
 const { normalizePlayer: normalizePlayerRecord } = require("../playerService");
 
-const source = "FutbolRadar Mock API";
+// Bu sağlayıcı artık yalnızca örnek veri sunmuyor: elle doğrulanmış
+// editoryal maç kayıtlarını ve sağlayıcıdan senkronlanan fikstür takvimini
+// birleştiriyor. "Mock API" etiketi yanıtı okuyanı yanıltıyordu.
+const source = "FutbolRadar Doğrulanmış Veri";
 
 function firstDefined(...values) {
   return values.find((value) => value !== undefined && value !== null && value !== "") ?? null;
