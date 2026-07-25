@@ -14,6 +14,11 @@ const { competitions, matchesCompetition } = require("../competitionCatalog");
 const source = "FutbolRadar API-Football Live API";
 const DEFAULT_BASE_URL = "https://v3.football.api-sports.io";
 
+// Sağlayıcının kabul ettiği anahtar, süreç içinde hatırlanır: her istekte
+// baştan aday taramak gereksiz çağrı ve gecikme demek. Kimlik hatasında
+// sıfırlanır, yani anahtar değişirse kendiliğinden yeniden keşfedilir.
+let activeApiKey = null;
+
 class ProviderError extends Error {
   constructor(code, message, statusCode, raw) {
     super(message);
@@ -37,11 +42,39 @@ function seasonForDate(value) {
   return String(reference.getUTCMonth() + 1 >= 7 ? year : year - 1);
 }
 
+// API-Sports anahtarları tam olarak 32 onaltılık karakterdir. Biçim
+// kontrolü, eksik kopyalanmış ya da yanlış yapıştırılmış bir anahtarı
+// sağlayıcıya sormadan ayırt etmeyi sağlar.
+const API_KEY_PATTERN = /^[a-f0-9]{32}$/i;
+
+function looksLikeApiKey(value) {
+  return API_KEY_PATTERN.test(String(value || ""));
+}
+
+/**
+ * Tanımlı tüm anahtar değişkenlerinin benzersiz değerleri, öncelik
+ * sırasına göre. Ortamda birden fazla APIFOOTBALL_* değişkeni bulunması
+ * yaygın: eski anahtar bir isimde kalırken yeni anahtar başka bir isme
+ * yazılıyor. Tek bir ismi okuyup ilkinde pes etmek, doğru anahtar ortamda
+ * dururken canlı veriyi tamamen kaybettiriyordu.
+ */
+function apiKeyCandidates() {
+  const values = APIFOOTBALL_API_KEY_ENV_NAMES
+    .map((name) => String(process.env[name] || "").trim())
+    .filter(Boolean);
+  const unique = [...new Set(values)];
+  // Biçimi geçerli olanlar önce denenir; bozuk bir anahtar sırf ismi önde
+  // diye sağlam olanı gölgelemesin.
+  return [...unique.filter(looksLikeApiKey), ...unique.filter((value) => !looksLikeApiKey(value))];
+}
+
 function getConfig() {
+  const candidates = apiKeyCandidates();
   return {
     provider: process.env.FOOTBALL_PRIMARY_PROVIDER || "api-football",
     baseUrl: firstPresentEnv(APIFOOTBALL_BASE_URL_ENV_NAMES) || DEFAULT_BASE_URL,
-    apiKey: firstPresentEnv(APIFOOTBALL_API_KEY_ENV_NAMES),
+    apiKey: activeApiKey && candidates.includes(activeApiKey) ? activeApiKey : candidates[0] || "",
+    apiKeyCandidateCount: candidates.length,
     leagueId: firstPresentEnv(APIFOOTBALL_LEAGUE_ID_ENV_NAMES),
     season: firstPresentEnv(APIFOOTBALL_SEASON_ENV_NAMES) || seasonForDate(),
     country: firstPresentEnv(APIFOOTBALL_COUNTRY_ENV_NAMES) || "Turkey"
@@ -168,6 +201,34 @@ function classifyPayloadError(errors) {
 
 async function providerFetch(path, params) {
   const config = assertConfig();
+  const candidates = apiKeyCandidates();
+  // Doğrulanmış anahtar varsa yalnızca onu kullan; yoksa adayları sırayla
+  // dene. Yalnızca kimlik hatasında sıradakine geçilir - plan, limit ya da
+  // veri hataları anahtarla ilgili değildir ve tekrar denemek kotayı boşa
+  // harcar.
+  const attemptKeys = activeApiKey && candidates.includes(activeApiKey) ? [activeApiKey] : candidates;
+  let lastError = null;
+
+  for (const apiKey of attemptKeys) {
+    try {
+      const payload = await providerFetchWithKey(path, params, apiKey, config);
+      activeApiKey = apiKey;
+      return payload;
+    } catch (error) {
+      lastError = error;
+      if (error.code !== "PROVIDER_AUTH_ERROR") {
+        throw error;
+      }
+      if (activeApiKey === apiKey) {
+        activeApiKey = null;
+      }
+    }
+  }
+
+  throw lastError || new ProviderError("PROVIDER_CONFIG_MISSING", "API-Football provider icin gecerli bir anahtar bulunamadi.");
+}
+
+async function providerFetchWithKey(path, params, apiKey, config) {
   const baseUrl = config.baseUrl.endsWith("/") ? config.baseUrl : `${config.baseUrl}/`;
   const url = new URL(String(path).replace(/^\/+/, ""), baseUrl);
 
@@ -178,7 +239,7 @@ async function providerFetch(path, params) {
   const request = fetch(url, {
     headers: {
       accept: "application/json",
-      "x-apisports-key": config.apiKey
+      "x-apisports-key": apiKey
     }
   }).then(async (response) => {
     let payload = null;
@@ -881,6 +942,8 @@ module.exports = {
   getConfig,
   hasConfig,
   providerFetch,
+  apiKeyCandidates,
+  looksLikeApiKey,
   classifyPayloadError,
   seasonForDate,
   getFixtures,

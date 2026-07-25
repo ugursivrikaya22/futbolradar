@@ -344,6 +344,67 @@ function testCuratedLeagueFilterUsesCatalog() {
   });
 }
 
+/**
+ * Production'da iki farklı APIFOOTBALL_* değişkeni doluydu: biri geçerli
+ * biçimde 32 karakter, diğeri eksik kopyalanmış 31 karakter. Sistem
+ * yalnızca öncelik listesindeki ilk ismi okuduğu için, doğru anahtar
+ * ortamda dururken canlı veri tamamen kayboluyordu.
+ */
+async function testApiKeyCandidateRecovery() {
+  const envNames = [...utils.APIFOOTBALL_API_KEY_ENV_NAMES];
+  const previous = Object.fromEntries(envNames.map((name) => [name, process.env[name]]));
+  const previousFetch = global.fetch;
+  const goodKey = "b".repeat(32);
+  const brokenKey = "a".repeat(31);
+  const usedKeys = [];
+
+  try {
+    envNames.forEach((name) => delete process.env[name]);
+    process.env.APIFOOTBALL_API_KEY = brokenKey;
+    process.env.API_FOOTBALL_API_KEY = goodKey;
+
+    // Biçimi geçerli anahtar, ismi arkada olsa da önce denenmeli.
+    assert.deepEqual(apiFootball.apiKeyCandidates(), [goodKey, brokenKey]);
+    assert.equal(apiFootball.looksLikeApiKey(brokenKey), false);
+
+    global.fetch = async (url, options) => {
+      const key = options.headers["x-apisports-key"];
+      usedKeys.push(key);
+      if (key !== goodKey) {
+        return { ok: true, status: 200, json: async () => ({ errors: { token: "Error/Missing application key." }, response: [] }) };
+      }
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          errors: [],
+          response: [{
+            fixture: { id: 7, date: "2026-07-25T15:00:00+00:00", status: { short: "NS" } },
+            league: { name: "Club Friendlies" },
+            teams: { home: { name: "Ev" }, away: { name: "Dep" } },
+            goals: { home: null, away: null }
+          }]
+        })
+      };
+    };
+
+    const matches = await apiFootball.getMatches({ date: "2026-07-25" });
+    assert.equal(matches.length, 1);
+    assert.equal(usedKeys[0], goodKey, "gecerli bicimli anahtar once denenmeli");
+
+    // Çalışan anahtar hatırlanmalı: ikinci istek tek çağrıyla dönmeli.
+    usedKeys.length = 0;
+    await apiFootball.getMatches({ date: "2026-07-25" });
+    assert.deepEqual(usedKeys, [goodKey], "dogrulanan anahtar surec icinde hatirlanmali");
+  } finally {
+    global.fetch = previousFetch;
+    envNames.forEach((name) => {
+      if (previous[name] === undefined) delete process.env[name];
+      else process.env[name] = previous[name];
+    });
+  }
+}
+
 function testApiFootballErrorClassification() {
   assert.equal(
     apiFootball.classifyPayloadError(["Invalid application key"]).code,
@@ -581,5 +642,6 @@ await testPlanErrorFailsOverToCuratedData();
 await testCuratedAndCalendarMerge();
 await testCuratedLeagueFilterUsesCatalog();
 await testHeadRequestSupport();
+await testApiKeyCandidateRecovery();
 
 console.log("FutbolRadar API resilience tests passed");
