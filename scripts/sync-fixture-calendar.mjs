@@ -41,7 +41,12 @@ const REQUEST_RETRIES = 2;
 // listesi, ileri için fikstür. Sınırsız büyüyen bir takvim dosyası hem
 // gereksiz hem de bayatlama riski.
 const PAST_WINDOW_DAYS = 3;
-const FUTURE_WINDOW_DAYS = 21;
+// 35 gün, sezon açılışını her koşulda kapsar. Daha dar bir pencere (21 gün)
+// temmuz sonunda 16 Ağustos'taki ilk hafta maçlarını dışarıda bırakıyor ve
+// o tarihe giden kullanıcı, veri elimizdeyken boş liste görüyordu. Pencereyi
+// genişletmek ek istek maliyeti getirmiyor: sağlayıcıdan takım başına gelen
+// olaylar zaten tek çağrıda çekiliyor, fark yalnızca kaçının saklandığı.
+const FUTURE_WINDOW_DAYS = 35;
 
 /**
  * TheSportsDB takım kimlikleri. Bir kere çözülüp sabitlendi: her koşuda 18
