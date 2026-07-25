@@ -25,7 +25,7 @@ function stripTags(value) {
 }
 
 function playerCurrentTeam(player) {
-  return player.currentTeam || player.team || "Takim bilgisi yakinda";
+  return player.currentTeam || player.team || "Takım bilgisi yakında";
 }
 
 function playerNeedsTransferReview(player) {
@@ -42,7 +42,7 @@ function playerRating(player) {
 }
 
 function playerMarket(player) {
-  return player.marketValue || formatMarketValueEur(player.marketValueEur) || "Piyasa degeri yakinda";
+  return player.marketValue || formatMarketValueEur(player.marketValueEur) || "Piyasa değeri yakında";
 }
 
 function playerPositionGroup(player) {
@@ -96,14 +96,14 @@ function profileCompareCandidates(player) {
 
   const baseLinks = uniqueCompareCandidates([
     { label: "Akilli eslesme", player: bestPeer, note: "Rol, rating ve piyasa yakinligi" },
-    { label: "Ayni rol kiyas", player: sameRole, note: `${playerPositionGroup(player)} profili` },
+    { label: "Aynı rol kıyası", player: sameRole, note: `${playerPositionGroup(player)} profili` },
     { label: "Rating sinavi", player: closeRating, note: "Overall farkini oku" },
-    { label: "Transfer okuma", player: transferRead, note: "Guncel takim ve piyasa degeri" }
+    { label: "Transfer okuma", player: transferRead, note: "Güncel takım ve piyasa değeri" }
   ]);
   const fallbackLinks = candidates
     .slice()
     .sort((a, b) => playerRating(b) - playerRating(a))
-    .map((candidate) => ({ label: "Radar alternatifi", player: candidate, note: "Profil trafigi ve kiyas akisi" }));
+    .map((candidate) => ({ label: "Radar alternatifi", player: candidate, note: "Profil trafiği ve kıyas akışı" }));
 
   return uniqueCompareCandidates(baseLinks.concat(fallbackLinks)).slice(0, 4);
 }
@@ -134,9 +134,9 @@ function buildPairs() {
   const map = new Map();
   const editorialPairs = [
     ["mauro-icardi", "edin-dzeko", "Super Lig gol tehdidi"],
-    ["kerem-akturkoglu", "semih-kilicsoy", "Yukselen yerli hucum profili"],
-    ["ugurcan-cakir", "abdulkerim-bardakci", "Savunma guveni"],
-    ["sebastian-szymanski", "gedson-fernandes", "Orta saha etki kiyaslamasi"]
+    ["kerem-akturkoglu", "semih-kilicsoy", "Yükselen yerli hücum profili"],
+    ["ugurcan-cakir", "abdulkerim-bardakci", "Savunma güveni"],
+    ["sebastian-szymanski", "gedson-fernandes", "Orta saha etki kıyaslaması"]
   ];
 
   for (const [leftId, rightId, reason] of editorialPairs) {
@@ -168,8 +168,8 @@ function comparisonInsight(left, right) {
 
   return [
     `${leader.name} overall rating tarafinda onde gorunuyor.`,
-    `${marketLeader.name} piyasa degeri okumasinda daha guclu sinyal veriyor.`,
-    `${playerPositionGroup(left)} ve ${playerPositionGroup(right)} rolleri birlikte okunmali; tek skor karar icin yeterli degil.`
+    `${marketLeader.name} piyasa değeri okumasında daha güçlü sinyal veriyor.`,
+    `${playerPositionGroup(left)} ve ${playerPositionGroup(right)} rolleri birlikte okunmalı; tek skor karar için yeterli değil.`
   ];
 }
 
@@ -178,12 +178,12 @@ function playerMiniCard(player) {
     <span>${escapeHtml(player.position || "Mevki yakinda")}</span>
     <h2>${escapeHtml(player.name)}</h2>
     <dl>
-      <div><dt>Takim</dt><dd>${escapeHtml(playerTeamDisplay(player))}</dd></div>
+      <div><dt>Takım</dt><dd>${escapeHtml(playerTeamDisplay(player))}</dd></div>
       <div><dt>Lig</dt><dd>${escapeHtml(player.league || "Lig yakinda")}</dd></div>
       <div><dt>Overall</dt><dd>${escapeHtml(playerRating(player) || "Yakinda")}</dd></div>
       <div><dt>Piyasa</dt><dd>${escapeHtml(playerMarket(player))}</dd></div>
     </dl>
-    <a href="../oyuncular/${escapeHtml(player.id)}.html">Oyuncu profilini ac</a>
+    <a href="../oyuncular/${escapeHtml(player.id)}.html">Oyuncu profilini aç</a>
   </article>`;
 }
 
@@ -293,7 +293,7 @@ function pageHtml(pair) {
         <a href="../oyuncular/${escapeHtml(left.id)}.html">${escapeHtml(left.name)} profili</a>
         <a href="../oyuncular/${escapeHtml(right.id)}.html">${escapeHtml(right.name)} profili</a>
         <a href="../oyuncu-radari.html">Oyuncu Radarı</a>
-        <a href="../oyuncu-karsilastir.html?players=${escapeHtml(left.id)},${escapeHtml(right.id)}">Interaktif kiyas</a>
+        <a href="../oyuncu-karsilastir.html?players=${escapeHtml(left.id)},${escapeHtml(right.id)}">İnteraktif kıyas</a>
       </section>
     </main>
     ${siteFooter({ base: "../" })}

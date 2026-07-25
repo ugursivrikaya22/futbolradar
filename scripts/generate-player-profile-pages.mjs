@@ -116,14 +116,14 @@ function staticCompareLinks(player) {
 
   const baseLinks = uniqueCompareCandidates([
     { label: "Akilli eslesme", player: bestPeer, note: "Rol, rating ve piyasa yakinligi" },
-    { label: "Ayni rol kiyas", player: sameRole, note: `${playerPositionGroup(player)} profili` },
+    { label: "Aynı rol kıyası", player: sameRole, note: `${playerPositionGroup(player)} profili` },
     { label: "Rating sinavi", player: closeRating, note: "Overall farkini oku" },
     { label: "Transfer okuma", player: transferRead, note: "Güncel takım ve piyasa değeri" }
   ]);
   const fallbackLinks = candidates
     .slice()
     .sort((a, b) => playerRating(b) - playerRating(a))
-    .map((candidate) => ({ label: "Radar alternatifi", player: candidate, note: "Profil trafigi ve kiyas akisi" }));
+    .map((candidate) => ({ label: "Radar alternatifi", player: candidate, note: "Profil trafiği ve kıyas akışı" }));
   const links = uniqueCompareCandidates(baseLinks.concat(fallbackLinks)).slice(0, 4);
 
   return links.map((item) => {
@@ -240,8 +240,8 @@ function pageHtml(player) {
           <span>Oyuncu performans kartı yükleniyor.</span>
         </article>
       </section>
-      <section class="static-profile-links" aria-label="Statik oyuncu karsilastirma baglantilari">
-        <div class="profile-section-head"><h2>Hazir Kiyas Linkleri</h2><span>Arama motorlari ve hizli gezinme icin</span></div>
+      <section class="static-profile-links" aria-label="Statik oyuncu karşılaştırma bağlantıları">
+        <div class="profile-section-head"><h2>Hazır Kıyas Linkleri</h2><span>Arama motorları ve hızlı gezinme için</span></div>
         <div class="static-profile-link-grid">
         ${staticCompareLinks(player)}
         </div>

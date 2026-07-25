@@ -283,14 +283,14 @@ function computeOverallRating(playerRadar, group, player) {
 }
 
 const STRENGTH_LABELS = [
-  ["attack", "Hucum tehdidi"],
-  ["creativity", "Yaraticilik"],
-  ["defense", "Savunma katkisi"],
+  ["attack", "Hücum tehdidi"],
+  ["creativity", "Yaratıcılık"],
+  ["defense", "Savunma katkısı"],
   ["form", "Form ivmesi"],
-  ["durability", "Sureklilik"],
-  ["potential", "Gelisim potansiyeli"],
+  ["durability", "Süreklilik"],
+  ["potential", "Gelişim potansiyeli"],
   ["discipline", "Disiplin"],
-  ["dataConfidence", "Veri guveni"]
+  ["dataConfidence", "Veri güveni"]
 ];
 
 function deriveStrengths(player, radar) {
@@ -316,7 +316,7 @@ function deriveWeaknesses(player, radar) {
     .filter((item) => item.value > 0 && item.value < 58)
     .sort((a, b) => a.value - b.value)
     .slice(0, 3)
-    .map((item) => item.label + " gelistirilmeli");
+    .map((item) => item.label + " geliştirilmeli");
 }
 
 function computePlayerRating(player, context) {
@@ -329,7 +329,7 @@ function computePlayerRating(player, context) {
     aiRating,
     overallRating: aiRating,
     ratingStatus: manualRating ? player.ratingStatus : (player.ratingStatus === "provider" ? "provider" : "estimated"),
-    ratingExplanation: "Bu rating; pozisyona gore agirliklanan hucum, yaraticilik, savunma, form, sureklilik, potansiyel ve veri guveni skorlarindan hesaplanir.",
+    ratingExplanation: "Bu rating; pozisyona göre ağırlıklanan hücum, yaratıcılık, savunma, form, süreklilik, potansiyel ve veri güveni skorlarından hesaplanır.",
     ratingComponents: radar,
     radar,
     positionGroup: group,

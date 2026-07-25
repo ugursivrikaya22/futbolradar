@@ -30,9 +30,9 @@ function playerCard(player, hrefPrefix = "./") {
   const market = formatMarketValueEur(player.marketValueEur) || player.marketValue || "Veri yok";
   return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}">
     <div class="card-head"><div><span class="card-kicker">${escapeHtml(team(player))} · ${escapeHtml(player.position || "Mevki bekleniyor")}</span><h2>${escapeHtml(player.name)}</h2></div><strong class="big-value player-rating-badge">${escapeHtml(rating(player))}</strong></div>
-    <div class="metric-grid compact"><span>Yas <b>${escapeHtml(age)}</b></span><span>Mac dakikasi <b>${escapeHtml(player.minutesPlayed || player.minutes || "Veri yok")}</b></span><span>Piyasa <b>${escapeHtml(market)}</b></span></div>
+    <div class="metric-grid compact"><span>Yaş <b>${escapeHtml(age)}</b></span><span>Maç dakikası <b>${escapeHtml(player.minutesPlayed || player.minutes || "Veri yok")}</b></span><span>Piyasa <b>${escapeHtml(market)}</b></span></div>
     <p>${escapeHtml(player.summary || "Form, rol ve radar metriklerini oyuncu profilinde incele.")}</p>
-    <a class="detail-link" href="${escapeHtml(hrefPrefix)}${escapeHtml(player.id)}.html">Oyuncu profilini ac</a>
+    <a class="detail-link" href="${escapeHtml(hrefPrefix)}${escapeHtml(player.id)}.html">Oyuncu profilini aç</a>
   </article>`;
 }
 
@@ -56,7 +56,7 @@ function transferCard(transfer) {
 
 function profileContent(player) {
   const age = player.computedAge || player.age || "Bilinmiyor";
-  const market = formatMarketValueEur(player.marketValueEur) || player.marketValue || "Piyasa degeri yakinda";
+  const market = formatMarketValueEur(player.marketValueEur) || player.marketValue || "Piyasa değeri yakında";
   const metrics = [
     ["Overall", rating(player)],
     ["Form", player.formRating || player.formScore || "Veri yok"],
@@ -158,7 +158,7 @@ for (const slug of ["forvetler", "kaleciler", "defanslar", "orta-sahalar", "genc
   const selected = players.filter(filter).sort((a, b) => Number(rating(b)) - Number(rating(a)));
   const content = selected.length
     ? selected.map((player) => playerCard(player)).join("\n")
-    : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadi</strong><span>Yeni ve dogrulanmis oyuncu verileri geldikce liste genisleyecek.</span></article>`;
+    : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadi</strong><span>Yeni ve doğrulanmış oyuncu verileri geldikçe liste genişleyecek.</span></article>`;
   replaceFile(`oyuncular/${slug}.html`, (html) => html
     .replace(/<span class="hero-meta" data-landing-count>[^<]*<\/span>/, `<span class="hero-meta" data-landing-count>${selected.length} oyuncu</span>`)
     .replace(/<section class="grid" data-api-section="player-seo-landing"[\s\S]*?<\/section>/, `<section class="grid" data-api-section="player-seo-landing" data-api-target="player-seo-landing" data-player-landing="${slug}">${content}</section>`));
