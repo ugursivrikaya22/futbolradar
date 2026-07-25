@@ -139,9 +139,12 @@ function statPair(match, type) {
   return home === null && away === null ? null : { home, away };
 }
 
+// Uzatma dakikasi korunur: "45+4'" bilgisi "45"e indirgenirse ilk yarinin
+// uzatmasinda atilan gol, normal oyun icinde atilmis gibi okunur.
 function minuteOf(event) {
-  const raw = String((event && event.time) || "").match(/\d+/);
-  return raw ? Number(raw[0]) : null;
+  const raw = String((event && event.time) || "").match(/(\d+)(?:\s*\+\s*(\d+))?/);
+  if (!raw) return null;
+  return raw[2] ? `${raw[1]}+${raw[2]}` : Number(raw[1]);
 }
 
 function eventTeamName(event) {
@@ -207,6 +210,8 @@ function buildSummary(match, seed) {
   }
 
   const goals = goalEvents(match);
+  // Saha bilinmediginde `where` bos kalir ve cumle "oynanan ..." diye kucuk
+  // harfle baslardi; cumle kurulduktan sonra bas harf buyutulur.
   const where = match.venue && match.venue !== "Açıklanmadı" ? `${locative(match.venue)} ` : "";
   // Aşama etiketi yalnızca lig adına bilgi katıyorsa eklenir; "Hazırlık Maçı
   // sezon öncesi hazırlık" gibi kendini tekrar eden ifadeler ayıklanır. Özel
@@ -238,17 +243,22 @@ function buildSummary(match, seed) {
     ? `${match.homeTeam} ile ${match.awayTeam} ${score} berabere kaldı`
     : `${result.winner}, ${accusative(result.loser)} ${winnerFirst} yendi`;
 
+  // Saha bilinmiyorsa "oynanan" sozcugu de dusurulur; aksi halde cumle
+  // "Oynanan hazirlik macini ..." diye sahipsiz bir yan cumleyle basliyordu.
+  const played = where ? `${where}oynanan ` : "";
   const opening = result.draw
     ? variant(seed, [
-        `${match.homeTeam} ile ${match.awayTeam}, ${where}oynanan ${stage} karşılaşmasında ${score} berabere kaldı.`,
-        `${where}oynanan ${stage} maçında ${match.homeTeam} ile ${match.awayTeam} birbirini geçemedi: ${score}.`
+        `${match.homeTeam} ile ${match.awayTeam}, ${played}${stage} karşılaşmasında ${score} berabere kaldı.`,
+        `${played}${stage} maçında ${match.homeTeam} ile ${match.awayTeam} birbirini geçemedi: ${score}.`
       ])
     : variant(seed, [
-        `${result.winner}, ${where}oynanan ${stage} karşılaşmasında ${accusative(result.loser)} ${winnerFirst} mağlup etti.`,
-        `${where}oynanan ${stage} maçını ${result.winner} ${winnerFirst} kazandı; ${result.loser} sahadan puansız ayrıldı.`
+        `${result.winner}, ${played}${stage} karşılaşmasında ${accusative(result.loser)} ${winnerFirst} mağlup etti.`,
+        `${played}${stage} maçını ${result.winner} ${winnerFirst} kazandı; ${result.loser} sahadan puansız ayrıldı.`
       ]);
 
-  const sentences = [opening];
+  // Saha bilinmiyorsa `where` bos kalir ve cumle "oynanan ..." diye kucuk
+  // harfle baslar; bas harfi Turkce kurallarina gore buyutulur.
+  const sentences = [opening.charAt(0).toLocaleUpperCase("tr-TR") + opening.slice(1)];
 
   if (goals.length) {
     const scorers = goals
@@ -256,6 +266,11 @@ function buildSummary(match, seed) {
         const minute = minuteOf(event);
         const player = playerFromDetail(event.detail);
         const team = eventTeamName(event);
+        // Kendi kalesine gollerde olay metninde golu atan rakip oyuncu yer
+        // almaz; "52. dakikada Hull City" demek golu onlarin bir oyuncusunun
+        // attigi izlenimi verirdi.
+        const ownGoal = /kendi kalesine/i.test(String(event.detail || ""));
+        if (ownGoal) return minute ? `${minute}. dakikada kendi kalesine` : "kendi kalesine";
         if (!player) return minute ? `${minute}. dakikada ${team}` : team;
         return minute ? `${minute}. dakikada ${player} (${team})` : `${player} (${team})`;
       })
