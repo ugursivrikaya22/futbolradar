@@ -5,6 +5,7 @@ const require = createRequire(import.meta.url);
 const { competitions, findCompetition, providerLeagueValue } = require("../services/competitionCatalog.js");
 const { filterSupportedCompetitions, normalizeFixture } = require("../services/providers/apiFootballProvider.js");
 const matchesHandler = require("../api/matches.js");
+const mockProvider = require("../services/providers/mockProvider.js");
 
 function fakeResponse() {
   return {
@@ -77,6 +78,23 @@ try {
   for (const name of envNames) {
     if (previousEnv[name] === undefined) delete process.env[name];
     else process.env[name] = previousEnv[name];
+  }
+}
+
+// data/matches.json ve data/fixture-calendar.json aynı karşılaşmayı ev/deplasman
+// ters sırayla taşıyabiliyor (nötr sahalı kamp maçlarında kaynaklar farklı
+// tarafı "ev" sayıyor). Kimlik anahtarı sıraya duyarlı olduğunda maç iki kez
+// listeleniyordu; aynı iki kulüp + aynı gün tek kayıt olmalı.
+{
+  const todayFixtures = await mockProvider.getMatches({});
+  const seenPairs = new Map();
+  for (const match of todayFixtures) {
+    const pair = [match.homeTeam, match.awayTeam]
+      .map((name) => String(name).toLocaleLowerCase("tr-TR"))
+      .sort()
+      .join(" - ");
+    assert.equal(seenPairs.has(pair), false, `Ayni karsilasma iki kez listelendi: ${pair}`);
+    seenPairs.set(pair, match);
   }
 }
 

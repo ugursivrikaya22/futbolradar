@@ -273,7 +273,19 @@ function normalizePlayer(player, options) {
 
   const radar = normalizeRadar(player, base, options && options.context);
   const manualRating = isProtectedStatus(base.ratingStatus) && Number.isFinite(Number(rawRating));
-  const rating = manualRating ? Number(rawRating) : radar.overall;
+  // A "pending" rating means the roster identity is known but no performance
+  // data has been collected yet. Publishing the model's neutral baseline for
+  // those players would read as a real assessment, so the rating stays null
+  // until real stats arrive; every render site already falls back to "-".
+  const ratingPending = normalizeText(base.ratingStatus) === "pending" && !hasValue(rawRating);
+  const rating = ratingPending ? null : manualRating ? Number(rawRating) : radar.overall;
+  // Every radar axis is a model estimate built from performance stats. With no
+  // stats the model emits its neutral baseline, which would render as a real
+  // scouting read, so the axes stay null too. dataConfidence is kept: it
+  // describes how well sourced the record is, not how the player performs.
+  const publishedRadar = ratingPending
+    ? { ...Object.fromEntries(Object.keys(radar).map((axis) => [axis, null])), dataConfidence: radar.dataConfidence }
+    : radar;
 
   return {
     ...base,
@@ -281,15 +293,15 @@ function normalizePlayer(player, options) {
     aiRating: rating,
     overallRating: rating,
     radar: {
-      ...radar,
+      ...publishedRadar,
       overall: rating
     },
     ratingComponents: {
-      ...radar,
+      ...publishedRadar,
       overall: rating
     },
-    strengths: deriveStrengths(base, radar),
-    weaknesses: deriveWeaknesses(base, radar),
+    strengths: ratingPending ? [] : deriveStrengths(base, radar),
+    weaknesses: ratingPending ? [] : deriveWeaknesses(base, radar),
     similarPlayers: normalizeSimilarPlayers(player.similarPlayers),
     dataConflict: player.dataConflict || null,
     transferConflict: player.transferConflict || null,

@@ -22,6 +22,7 @@ const { getPlayers, formatMarketValueEur } = require("../services/playerService.
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
 const { getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigFixtureService.js");
+const { curatedMatches } = require("../services/providers/mockProvider.js");
 
 const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
 const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
@@ -146,7 +147,11 @@ function longDateLabel(value) {
  */
 function calendarProgramCards(limit) {
   const today = istanbulToday();
-  const upcoming = calendarMatches
+  // curatedMatches() merges data/matches.json with the provider calendar and
+  // collapses the same fixture listed with the sides swapped. Reading the raw
+  // calendar here rendered those duplicates into the static fallback, so the
+  // homepage showed each neutral-venue friendly twice.
+  const upcoming = curatedMatches()
     .filter((match) => String(match.kickoff || "").slice(0, 10) >= today)
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
     .slice(0, limit || 6);

@@ -6874,14 +6874,32 @@ h1 {
         font-size: 0.88rem;
       }
 
-      .metric-grid.compact {
+      .metric-grid.compact,
+      .metric-grid.profile-metrics {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 10px;
         margin: 14px 0;
       }
 
+      .metric-grid.profile-metrics span {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .metric-grid.profile-metrics b {
+        color: var(--text);
+        font-size: 1.02rem;
+        letter-spacing: 0;
+        text-transform: none;
+      }
+
       .metric-grid.compact span,
+      .metric-grid.profile-metrics span,
       .timeline-row,
       .squad-player-card {
         border: 1px solid rgba(148, 163, 184, 0.16);
@@ -7608,6 +7626,7 @@ h1 {
         }
 
         .metric-grid.compact,
+        .metric-grid.profile-metrics,
         .squad-grid {
           grid-template-columns: 1fr;
         }

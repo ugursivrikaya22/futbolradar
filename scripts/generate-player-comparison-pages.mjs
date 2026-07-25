@@ -153,7 +153,10 @@ function buildPairs() {
     }
   }
 
-  return Array.from(map.values()).slice(0, 32);
+  // No cap: every profile page links to its four comparison peers, so each
+  // pair collected above must get a page or those links 404. A fixed limit
+  // only happened to cover the full set back when the squad was tiny.
+  return Array.from(map.values());
 }
 
 function comparisonInsight(left, right) {

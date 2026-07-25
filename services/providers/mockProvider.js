@@ -272,7 +272,11 @@ function matchStateRank(status) {
 
 function matchIdentity(match) {
   const date = matchDateOnly(match);
-  return `${normalizeText(match && match.homeTeam)}|${normalizeText(match && match.awayTeam)}|${date}`;
+  // Order-insensitive on purpose: for neutral-venue fixtures (pre-season camps
+  // in particular) sources disagree about which club is nominally at home, and
+  // an ordered key let the same match through twice with the sides swapped.
+  const pair = [normalizeText(match && match.homeTeam), normalizeText(match && match.awayTeam)].sort();
+  return `${pair[0]}|${pair[1]}|${date}`;
 }
 
 function hasFinalScore(match) {
@@ -542,6 +546,11 @@ async function getAnalyses() {
 module.exports = {
   name: "mock",
   source,
+  // Exported so the prerender step renders the same merged, de-duplicated
+  // fixture list the API serves. Reading data/fixture-calendar.json directly
+  // reintroduced every match twice whenever the curated record and the
+  // provider disagreed about which club was at home.
+  curatedMatches,
   getMatches,
   getMatchDetail,
   getStandings,
