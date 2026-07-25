@@ -293,10 +293,18 @@ function hasFinalScore(match) {
  * Böylece kürasyonlu veri bir gün geride kaldığında biten maç "oynanacak"
  * görünmez, ama doğrulanmış bir skor da asla sağlayıcı tahminiyle ezilmez.
  */
-// "Açıklanmadı" gibi yer tutucular teknik olarak dolu bir alan, ama bilgi
-// taşımıyorlar. Yer tutucu sayılmazlarsa sağlayıcıdan gelen gerçek stadyum
-// adı hiçbir zaman yerlerine geçemiyor ve kullanıcı, elimizde veri varken
-// "Açıklanmadı" görmeye devam ediyordu.
+// "Açıklanmadı" gibi yer tutucular boş bir alan değil, bilinçli bir
+// editoryal karar: kulüp sahayı henüz duyurmadıysa kayıt bunu `note`
+// alanında gerekçesiyle birlikte saklıyor.
+//
+// Bu yer tutucuları sağlayıcı verisiyle doldurmak denendi ve geri alındı:
+// sağlayıcı sezon öncesi kamp maçlarında ev sahibinin varsayılan stadyumunu
+// döndürüyor ve sonuç doğrulanmış alanlarla çelişiyordu - "country:
+// Slovenya" olan Çaykur Rizespor maçına Hırvatistan'daki Opus Arena,
+// "country: Hollanda" olan Samsunspor maçına Belçika'daki Stade du Tivoli
+// yazılıyordu. Doğrulanmamış bir tahmini kesin bilgi gibi göstermektense
+// "Açıklanmadı" demek doğru. Sağlayıcının kaydı yalnızca ayrı ve açıkça
+// etiketli bir alanda taşınır.
 const VENUE_PLACEHOLDERS = new Set(["", "-", "–", "aciklanmadi", "belirlenmedi", "bilinmiyor", "tbd"]);
 
 function hasRealVenue(value) {
@@ -319,22 +327,21 @@ function curatedMatches() {
       continue;
     }
 
-    // Saha bilgisi maç durumundan bağımsız tamamlanır: kürasyonlu kayıtta
-    // gerçek bir stadyum yoksa sağlayıcınınki kullanılır. Kürasyonlu kayıtta
-    // doğrulanmış bir saha varsa (ör. kamp maçının tarafsız stadı) sağlayıcı
-    // onu asla ezmez - sağlayıcılar bu durumda ev sahibinin varsayılan
-    // stadyumunu göstermeye eğilimli.
-    const venue = hasRealVenue(existing.venue) ? existing.venue : (calendarMatch.venue || existing.venue || null);
+    // `venue` doğrulanmış editoryal alan; sağlayıcı ona hiç dokunmaz.
+    // Kürasyonlu kayıtta saha henüz açıklanmamışsa sağlayıcının kaydı
+    // yalnızca ayrı bir alanda, doğrulanmamış olduğu belli olacak şekilde
+    // taşınır - arayüz isterse "sağlayıcı kaydı" etiketiyle gösterebilir.
+    const providerVenue = !hasRealVenue(existing.venue) && calendarMatch.venue ? calendarMatch.venue : null;
     const advances = matchStateRank(calendarMatch.status) > matchStateRank(existing.status);
     const canAdvance = advances && !hasFinalScore(existing);
 
-    if (!canAdvance && venue === existing.venue) {
+    if (!canAdvance && !providerVenue) {
       continue;
     }
 
     merged.set(key, {
       ...existing,
-      venue,
+      ...(providerVenue ? { providerVenue, providerVenueStatus: "unverified" } : {}),
       ...(canAdvance
         ? {
           status: calendarMatch.status,

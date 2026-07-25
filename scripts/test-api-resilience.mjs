@@ -333,23 +333,26 @@ async function testCuratedAndCalendarMerge() {
 }
 
 /**
- * Kamp maçlarında iki kaynak da kısmen doğru: kürasyonlu kayıt tarafsız
- * sahayı biliyor, sağlayıcı ise ev sahibinin varsayılan stadyumunu
- * gösteriyor. Buna karşılık kürasyonlu kayıtta saha "Açıklanmadı" ise
- * sağlayıcının gerçek stadyumu kullanılmalı.
+ * Saha bilgisinde sağlayıcı asla otorite değildir. Sezon öncesi kamp
+ * maçlarında sağlayıcı ev sahibinin varsayılan stadyumunu döndürüyor ve bu,
+ * doğrulanmış `country` alanıyla çelişiyor (Slovenya kampındaki Çaykur
+ * Rizespor maçına Hırvatistan'daki Opus Arena gibi). Doğrulanmamış kayıt
+ * yalnızca ayrı ve etiketli bir alanda taşınmalı.
  */
-async function testVenueCompletion() {
+async function testVenueAuthority() {
   const today = await mockProvider.getMatches({ date: "2026-07-25" });
   const byTeam = (name) => today.find((match) => `${match.homeTeam} ${match.awayTeam}`.includes(name));
 
   const camp = byTeam("Hull City");
   assert.ok(camp, "Konyaspor kamp maci listelenmeli");
-  assert.equal(camp.venue, "Športni park Aluminij", "dogrulanmis tarafsiz saha saglayici tarafindan ezilmemeli");
+  assert.equal(camp.venue, "Športni park Aluminij", "dogrulanmis saha saglayici tarafindan ezilmemeli");
+  assert.equal(camp.providerVenue, undefined, "dogrulanmis saha varken saglayici kaydi tasinmaz");
 
-  const abroad = byTeam("RAAL La Louvière");
-  assert.ok(abroad, "Samsunspor maci listelenmeli");
-  assert.notEqual(abroad.venue, "Açıklanmadı", "yer tutucu saha saglayici verisiyle tamamlanmali");
-  assert.ok(abroad.venue && abroad.venue.length > 3);
+  const undisclosed = byTeam("RAAL La Louvière");
+  assert.ok(undisclosed, "Samsunspor maci listelenmeli");
+  assert.equal(undisclosed.venue, "Açıklanmadı", "aciklanmamis saha tahminle doldurulmamali");
+  assert.equal(undisclosed.providerVenue, "Stade du Tivoli");
+  assert.equal(undisclosed.providerVenueStatus, "unverified");
 }
 
 function testCuratedLeagueFilterUsesCatalog() {
@@ -663,6 +666,6 @@ await testCuratedAndCalendarMerge();
 await testCuratedLeagueFilterUsesCatalog();
 await testHeadRequestSupport();
 await testApiKeyCandidateRecovery();
-await testVenueCompletion();
+await testVenueAuthority();
 
 console.log("FutbolRadar API resilience tests passed");
