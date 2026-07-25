@@ -211,12 +211,15 @@
   // "besiktas-midtjylland-...", sağlayıcı "besiktas-fc-midtjylland-...").
   // Bu yüzden tekilleştirme id'ye değil takım+gün kimliğine bakar; yoksa
   // aynı maç listede iki kez çıkıyordu.
+  // Takım çifti sıralanır: nötr sahalı maçlarda kürasyonlu kayıt ile
+  // sağlayıcı takvimi ev/deplasman tarafını ters verebiliyor ve sıraya
+  // duyarlı anahtar aynı karşılaşmayı iki kez listeliyordu.
   function matchIdentityKey(match) {
-    return [
+    var pair = [
       normalizeSearchText(match && match.homeTeam),
-      normalizeSearchText(match && match.awayTeam),
-      matchDateValue(match)
-    ].join("|");
+      normalizeSearchText(match && match.awayTeam)
+    ].sort();
+    return [pair[0], pair[1], matchDateValue(match)].join("|");
   }
 
   function mergeMatchCollections(providerMatches, curatedMatches) {

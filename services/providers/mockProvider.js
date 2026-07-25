@@ -546,6 +546,11 @@ async function getAnalyses() {
 module.exports = {
   name: "mock",
   source,
+  // Exported so the prerender step renders the same merged, de-duplicated
+  // fixture list the API serves. Reading data/fixture-calendar.json directly
+  // reintroduced every match twice whenever the curated record and the
+  // provider disagreed about which club was at home.
+  curatedMatches,
   getMatches,
   getMatchDetail,
   getStandings,
