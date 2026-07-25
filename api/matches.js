@@ -1,4 +1,4 @@
-const { getProvider } = require("../services/providers");
+const { getProvider, mockProvider } = require("../services/providers");
 const { providerLeagueValue } = require("../services/competitionCatalog");
 const {
   DEFAULT_TIMEOUT_MS,
@@ -42,22 +42,30 @@ module.exports = async function handler(req, res) {
       "COMPETITION_NOT_SUPPORTED"
     );
   }
-  let data = [];
+  // The verified local fixtures are the floor, exactly as /api/transfers
+  // already works. A failing or empty live provider used to return zero
+  // matches, which hid confirmed fixtures behind the frontend's "no matches
+  // today" fallback. Note the mock reads the raw query: providerQuery.league
+  // has already been rewritten to a provider-specific code.
+  let data = await mockProvider.getMatches(query);
+  let source = mockProvider.source;
 
-  try {
-    data = await withTimeout(provider.getMatches(providerQuery), DEFAULT_TIMEOUT_MS);
-  } catch (error) {
-    return sendError(
-      res,
-      200,
-      error.message || "Mac verisi provider katmanindan alinamadi.",
-      error.code || "PROVIDER_ERROR"
-    );
+  if (provider !== mockProvider) {
+    try {
+      const providerData = await withTimeout(provider.getMatches(providerQuery), DEFAULT_TIMEOUT_MS);
+      if (Array.isArray(providerData) && providerData.length) {
+        data = providerData;
+        source = provider.source;
+      }
+    } catch {
+      data = await mockProvider.getMatches(query);
+      source = mockProvider.source;
+    }
   }
 
   if (!validateOrSend(res, data, validateMatches)) {
     return;
   }
 
-  return sendSuccess(res, data, provider.source);
+  return sendSuccess(res, data, source);
 };

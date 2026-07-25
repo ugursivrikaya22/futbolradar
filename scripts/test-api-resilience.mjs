@@ -8,6 +8,8 @@ const apiFootball = require("../services/providers/apiFootballProvider");
 const providers = require("../services/providers");
 const competitionCatalog = require("../services/competitionCatalog");
 const playersHandler = require("../api/players");
+const matchesHandler = require("../api/matches");
+const verifiedFixtures = require("../data/matches.json");
 
 function fakeResponse() {
   return {
@@ -265,6 +267,46 @@ function testLiveMatchDetailNormalization() {
   assert.ok(eventDrivenAnalysis.signals.some((signal) => signal.label === "Gol akışı"));
 }
 
+// Production ran with a configured live provider that kept erroring, and
+// /api/matches answered with an empty list instead of the verified fixtures in
+// data/matches.json — so confirmed matches silently vanished from the site.
+async function testMatchesFallBackToVerifiedFixtures() {
+  const previousFetch = global.fetch;
+  const previousProvider = process.env.FOOTBALL_API_PROVIDER;
+  const previousKey = process.env.FOOTBALL_API_KEY;
+  const previousBaseUrl = process.env.FOOTBALL_API_BASE_URL;
+
+  try {
+    process.env.FOOTBALL_API_PROVIDER = "football-data";
+    process.env.FOOTBALL_API_KEY = "test-key";
+    process.env.FOOTBALL_API_BASE_URL = "https://api.football-data.org/v4";
+    global.fetch = async () => {
+      throw new Error("live provider down");
+    };
+
+    // Pinned to a date that actually has verified fixtures, so the assertion
+    // does not depend on whether anything is scheduled the day it runs.
+    const query = { date: String(verifiedFixtures[0].kickoff || verifiedFixtures[0].date).slice(0, 10) };
+    const expected = await providers.mockProvider.getMatches(query);
+    assert.ok(expected.length > 0, "pinned date must carry verified fixtures");
+
+    const response = fakeResponse();
+    await matchesHandler({ method: "GET", url: "/api/matches", headers: {}, query }, response);
+
+    assert.equal(response.payload.ok, true, "failing live provider must not blank out verified fixtures");
+    assert.equal(response.payload.source, providers.mockProvider.source);
+    assert.equal(response.payload.data.length, expected.length);
+  } finally {
+    global.fetch = previousFetch;
+    if (previousProvider === undefined) delete process.env.FOOTBALL_API_PROVIDER;
+    else process.env.FOOTBALL_API_PROVIDER = previousProvider;
+    if (previousKey === undefined) delete process.env.FOOTBALL_API_KEY;
+    else process.env.FOOTBALL_API_KEY = previousKey;
+    if (previousBaseUrl === undefined) delete process.env.FOOTBALL_API_BASE_URL;
+    else process.env.FOOTBALL_API_BASE_URL = previousBaseUrl;
+  }
+}
+
 async function testDateOnlyLeagueFiltering() {
   const previousFetch = global.fetch;
   const previousKey = process.env.APIFOOTBALL_API_KEY;
@@ -376,6 +418,7 @@ testMissingKeyFallback();
 testConfiguredProviderPreference();
 testApiFootballErrorClassification();
 testLiveMatchDetailNormalization();
+await testMatchesFallBackToVerifiedFixtures();
 await testPlayerLeagueSlugFallback();
 await testDateOnlyLeagueFiltering();
 await testFootballDataCompetitionFallback();
