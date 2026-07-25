@@ -1,24 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
+import { siteHeader, siteFooter } from "./lib/layout.mjs";
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
 const today = "2026-07-22";
 
 const nav = `
-    <header class="topbar">
-      <nav class="container nav" aria-label="Ana menü">
-        <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
-        <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
-        <div class="nav-menu" id="primary-menu">
-          <div class="nav-links"><a href="./bugunun-maclari.html">Bugünkü Maçlar</a><a href="./canli-skor.html">Canlı Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./super-lig-fikstur.html">Süper Lig Fikstürü</a><a href="./takimlar.html">Takımlar</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./momentum.html">Momentum</a></div>
-          <a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a>
-        </div>
-      </nav>
-    </header>`;
+    ${siteHeader({ base: "./" })}`;
 
 const footer = `
-    <footer class="footer"><div class="container footer-links">FutbolRadar · <a href="./hakkinda.html">Hakkında</a> · <a href="./veri-notu.html">Veri Notu</a> · <a href="./iletisim.html">İletişim</a> · <a href="./gizlilik.html">Gizlilik</a> · <a href="./kullanim-sartlari.html">Kullanım Şartları</a></div></footer>`;
+    ${siteFooter({ base: "./" })}`;
 
 const seoPages = [
   {

@@ -69,18 +69,32 @@ function profileContent(player) {
   // Axes are null until real performance data exists; rendering them anyway
   // produces bare labels with no value, so drop them and fall back to the
   // "yakinda" note below.
+  // Radar anahtarları veri modelinde İngilizce; sayfada ham anahtar
+  // ("finishing", "pressing") görünüyordu. Türkçe etiketler tek yerde.
+  const RADAR_LABELS = {
+    finishing: "Bitiricilik",
+    creativity: "Yaratıcılık",
+    pressing: "Pres",
+    tempo: "Tempo",
+    consistency: "İstikrar",
+    passing: "Pas",
+    dribbling: "Top sürme",
+    defending: "Savunma",
+    aerial: "Hava topu",
+    speed: "Hız"
+  };
   const radarItems = Object.entries(radar)
     .filter(([key]) => key !== "dataConfidence")
     .filter(([, value]) => Number.isFinite(Number(value)) && value !== null && value !== "")
     .slice(0, 5)
-    .map(([key, value]) => `<span>${escapeHtml(key)} <b>${escapeHtml(value)}</b></span>`)
+    .map(([key, value]) => `<span>${escapeHtml(RADAR_LABELS[key] || key)} <b>${escapeHtml(value)}</b></span>`)
     .join("");
-  return `<section class="profile-section profile-content-prerender" aria-label="${escapeHtml(player.name)} performans ozeti">
+  return `<section class="profile-section profile-content-prerender" aria-label="${escapeHtml(player.name)} performans özeti">
     <div class="metric-grid profile-metrics">${metrics.map(([label, value]) => `<span>${escapeHtml(label)} <b>${escapeHtml(value)}</b></span>`).join("")}</div>
-    <div class="profile-section-head"><h2>Oyuncu ozeti</h2><span>${escapeHtml(team(player))} · ${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)} yas</span></div>
+    <div class="profile-section-head"><h2>Oyuncu özeti</h2><span>${escapeHtml(team(player))} · ${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)} yaş</span></div>
     <p>${escapeHtml(player.summary || "Oyuncunun formu, rol etkisi ve radar metrikleri birlikte okunur.")}</p>
-    <div class="radar-mini-bars">${radarItems || "<span>Alt metrikler yakinda</span>"}</div>
-    <div class="tag-row"><span class="tag green">Guncel takim: ${escapeHtml(team(player))}</span><span class="tag soft">${escapeHtml(player.league || "Super Lig")}</span></div>
+    <div class="radar-mini-bars">${radarItems || "<span>Alt metrikler yakında</span>"}</div>
+    <div class="tag-row"><span class="tag green">Güncel takım: ${escapeHtml(team(player))}</span><span class="tag soft">${escapeHtml(player.league || "Süper Lig")}</span></div>
   </section>`;
 }
 

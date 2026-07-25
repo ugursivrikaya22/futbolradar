@@ -1,14 +1,69 @@
+/* ============================================================================
+   TASARIM BELİRTEÇLERİ (design tokens)
+   ----------------------------------------------------------------------------
+   Bu dosyada daha önce 41 ayrı hex renk, 229 ayrı rgba ve 54 ayrı font boyutu
+   vardı; ölçek yoktu, değerler tek tek yazılmıştı. Bu yüzden benzer öğeler
+   birbirinden hafifçe farklı görünüyor ve her düzenleme yeni bir varyant
+   ekliyordu. Aşağıdaki belirteçler tek kaynak oluşturur; yeni kurallar ham
+   değer yerine bunları kullanır.
+   ========================================================================== */
 :root {
   color-scheme: dark;
+
+  /* --- yüzeyler --- */
   --bg: #060b10;
   --panel: rgba(13, 26, 34, 0.8);
+  --surface: rgba(15, 30, 38, 0.72);
+  --surface-raised: rgba(20, 38, 47, 0.86);
   --line: rgba(134, 255, 218, 0.18);
   --line-strong: rgba(134, 255, 218, 0.34);
+
+  /* --- metin --- */
   --text: #eef8f5;
   --muted: #9fb1af;
+  /* --muted ile --text arasında bir ara ton: kart içi ikincil metinler için
+     41 farklı gri yerine tek değer. */
+  --text-soft: #c5d5d2;
+
+  /* --- vurgu ve durum --- */
   --green: #80ff9b;
   --cyan: #4de5ff;
+  --live: #ff6f7d;
+  --warn: #ffd166;
+
+  /* --- tipografi ölçeği ---
+     Taban 16px. En küçük basamak bilinçli olarak 13px: eski dosyadaki
+     0.70–0.76rem (11–12px) değerleri mobilde okunmuyordu. */
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 0.9375rem;
+  --fs-md: 1.0625rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: 2rem;
+
+  /* --- boşluk ölçeği (4px tabanlı) --- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+
+  /* --- biçim --- */
   --radius: 8px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.22);
+  --ring: 0 0 0 2px rgba(77, 229, 255, 0.55);
+
+  /* --- dokunma hedefi ---
+     Denetimde 13 bağlantı/düğme 32px altındaydı; parmakla isabet ettirmek
+     zor. Etkileşimli öğeler için taban yükseklik. */
+  --tap: 40px;
 }
 
 * {
@@ -3635,7 +3690,7 @@ h1 {
       /* Kart sayısı değişken olduğu için sabit dört sütun yerine sığdıkça
          yerleşir; üç maçlık bir günde kartlar dörtte bire düşmez. */
       .live-score-daily .matches-grid {
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       }
 
       .live-score-daily-head {
@@ -8208,13 +8263,6 @@ h1 {
 
   .nav-toggle {
     display: inline-grid !important;
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
-    position: fixed;
-    top: 14px;
-    right: 18px;
-    z-index: 30;
   }
 
   .nav.is-open .nav-toggle-bar:nth-child(1) {
@@ -8564,26 +8612,6 @@ h1 {
 }
 
 @media (max-width: 1060px) {
-  .nav {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) 42px !important;
-    align-items: center;
-  }
-
-  .nav-toggle {
-    display: grid !important;
-    position: static !important;
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
-  }
-
-  .nav-menu {
-    grid-column: 1 / -1;
-    width: 100%;
-    max-width: 100%;
-  }
-
   .intent-card-grid,
   .intent-link-grid,
   .intent-stack-grid,
@@ -8598,17 +8626,6 @@ h1 {
 }
 
 @media (max-width: 760px) {
-  .nav-toggle {
-    display: grid !important;
-    position: fixed !important;
-    top: 18px !important;
-    right: 18px !important;
-    z-index: 120 !important;
-    border-color: rgba(128, 255, 155, 0.62) !important;
-    background: rgba(7, 24, 18, 0.96) !important;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.34), 0 0 18px rgba(128, 255, 155, 0.18);
-  }
-
   .home-page .container,
   .subpage .container {
     width: calc(100% - 24px) !important;
@@ -11568,4 +11585,1711 @@ h1 {
   .matchup-row-value.is-away {
     text-align: start;
   }
+}
+
+/* ============================================================================
+   TASARIM KATMANI
+   ----------------------------------------------------------------------------
+   Bu blok dosyanın sonundadır: aynı özgüllükteki eski kuralları kaynak sırasına
+   göre geçersiz kılar, böylece 11.500 satırlık mevcut CSS'i yeniden yazmadan
+   tutarlı bir görünüm elde edilir. Her bölüm neyi neden değiştirdiğini yazar.
+   ========================================================================== */
+
+/* --- 1. Okunabilirlik tabanı ------------------------------------------------
+   Denetimde ana sayfada 38, oyuncu radarında 2366 metin öğesi 12 pikselin
+   altındaydı. Bu boyutlar mobilde okunmuyor. Aşağıdaki kurallar en küçük
+   basamağı 13 piksele çeker; hiyerarşi korunur, yalnızca taban yükselir. */
+.card-kicker,
+.section-kicker,
+.eyebrow,
+.tag,
+.status-badge,
+.muted-copy,
+.metric-grid span,
+.metric-grid.compact span,
+.transfer-radar-meta span,
+.trend-mini-stats dt,
+.fixture-status-badge,
+.home-score-card-head,
+.home-match-command-metrics span {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.03em;
+}
+
+.metric-grid b,
+.trend-mini-stats dd,
+.transfer-radar-meta b {
+  font-size: var(--fs-base);
+  letter-spacing: 0;
+}
+
+p,
+.lead,
+.section-title p {
+  font-size: var(--fs-base);
+  line-height: 1.6;
+}
+
+/* --- 2. Dokunma hedefleri ---------------------------------------------------
+   Bağlantı ve düğmelerin dikey hedefi 32 pikselin altındaydı. Metin boyutunu
+   büyütmeden isabet alanını büyütür. */
+.nav-links a,
+.detail-link,
+.section-link,
+.competition-chip-row a,
+.stats-route-grid a,
+.button {
+  min-height: var(--tap);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+/* --- 3. Küçük ekranda konteyner --------------------------------------------
+   560 piksel altında konteyner `width: 342px; margin-left: 12px` ile sabitti:
+   390 piksellik bir telefonda içerik sola yaslanıyor, sağda 36 piksel ölü alan
+   kalıyordu. Akışkan ve simetrik hale getirir. */
+@media (max-width: 560px) {
+  .container {
+    width: calc(100% - 32px);
+    max-width: none;
+    margin-inline: auto;
+  }
+}
+
+/* --- 4. Öğe sayısına uyan ızgaralar ----------------------------------------
+   Maç ızgaraları sabit dört sütundu. Günde tek maç olduğunda kart %25
+   genişlikte kalıp yanında üç sütunluk boşluk bırakıyordu — sayfa bozuk
+   görünüyordu. `auto-fit` kart sayısına uyum sağlar. */
+.matches-grid,
+.players-grid,
+.news-grid,
+.league-match-grid {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--sp-4);
+}
+
+/* Tek kart tüm satırı kaplamasın: okunabilir bir üst sınır. */
+.matches-grid > *,
+.news-grid > * {
+  min-width: 0;
+}
+
+/* --- 5. Dikey ritim ---------------------------------------------------------
+   Bölüm dolgusu 44px + başlık boşlukları ile bölümler arası ~100px boşluk
+   oluşuyordu; sayfa seyrek ve gereksiz uzun görünüyordu. */
+.section {
+  padding: var(--sp-8) 0;
+}
+
+.section-head {
+  margin-bottom: var(--sp-5);
+  gap: var(--sp-4);
+}
+
+/* Başlık ile "Tümünü gör" bağlantısı aynı hizada dursun; bağlantı eskiden
+   kendi satırına düşüp başlıktan kopuyordu. */
+.section-head {
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.section-link {
+  white-space: nowrap;
+  color: var(--cyan);
+  font-weight: 600;
+}
+
+/* --- 6. Kart yüzeyi ---------------------------------------------------------
+   Kartlar arasında kenarlık/gölge/dolgu değerleri farklıydı; tek yüzey dili. */
+.card,
+.glass-card,
+.home-score-card,
+.news-card,
+.match-card,
+.transfer-radar-card,
+.static-match-card {
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+/* --- 7. Odak görünürlüğü ----------------------------------------------------
+   Klavye ile gezinirken odak halkası çoğu öğede görünmüyordu (erişilebilirlik).
+   Fare kullanıcısını rahatsız etmemek için yalnızca klavye odağında. */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+  border-radius: var(--radius);
+}
+
+/* ============================================================================
+   PREMIUM KATMAN
+   ----------------------------------------------------------------------------
+   Amaç: Sofascore / FotMob / OneFootball sınıfı bir "his" - geniş düzen, cam
+   yüzeyler, yumuşak gölge, tutarlı yuvarlaklık ve akıcı geçişler.
+   Neden dosyanın sonuna eklendi: 11.700 satırlık mevcut CSS'te aynı seçicinin
+   onlarca varyantı var. Sonda ve daha yüksek özgüllükle yazmak, çalışan hiçbir
+   kuralı silmeden görünümü tek elden yönetmeyi sağlar.
+   ========================================================================== */
+
+:root {
+  /* Geniş düzen: içerik 1120px'e sıkışmıştı, 27" ekranda sayfanın %40'ı boştu. */
+  --wide: 1440px;
+  --gutter: clamp(16px, 3.2vw, 40px);
+  --header-h: 64px;
+
+  /* Derinlik basamakları: tek gölge yerine üç seviye - kart, açılır, hero. */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.24), 0 12px 28px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.34), 0 28px 68px rgba(0, 0, 0, 0.42);
+
+  /* Cam efekti ve vurgu geçişleri tek yerden. */
+  --glass: rgba(12, 24, 31, 0.72);
+  --glass-strong: rgba(9, 19, 25, 0.9);
+  --glass-border: rgba(134, 255, 218, 0.14);
+  --grad-accent: linear-gradient(135deg, var(--green), var(--cyan));
+  --grad-surface: linear-gradient(160deg, rgba(28, 52, 62, 0.66), rgba(9, 18, 24, 0.86));
+  --grad-hero: radial-gradient(120% 140% at 12% 0%, rgba(77, 229, 255, 0.16), transparent 58%),
+    radial-gradient(110% 130% at 92% 10%, rgba(128, 255, 155, 0.14), transparent 60%);
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur: 220ms;
+}
+
+/* --- Geniş konteyner --------------------------------------------------------
+   `.container` (1120px) korunur ama premium bölümler `.container-wide` ile
+   1440px'e kadar açılır; kenar boşluğu viewport ile ölçeklenir. */
+.container-wide {
+  width: 100%;
+  max-width: var(--wide);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+body .container {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* ----------------------------------------------------------------------------
+   1. YAPIŞKAN ÜST ÇUBUK
+   Eski başlık sayfayla birlikte kayıyordu; uzun listelerde menüye dönmek için
+   en üste çıkmak gerekiyordu. Artık sabit, cam yüzeyli ve kaydırınca
+   yoğunlaşan bir çubuk.
+   -------------------------------------------------------------------------- */
+.topbar-premium {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  border-bottom: 1px solid var(--glass-border);
+  background: linear-gradient(180deg, rgba(6, 12, 17, 0.94), rgba(6, 12, 17, 0.78));
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  transition: box-shadow var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.topbar-premium.is-stuck {
+  background: rgba(5, 10, 14, 0.96);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+.topbar-premium .nav {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-4);
+  min-height: var(--header-h);
+  /* Yatay dolgu `.container-wide`den gelir; `padding: 0` onu da siliyor ve
+     başlık içeriği ekran kenarına yapışıyordu. */
+  padding-block: 0;
+}
+
+.topbar-premium .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-md);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.topbar-premium .brand-mark {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 11px;
+  background: var(--grad-accent);
+  color: #04120c;
+  box-shadow: 0 6px 18px rgba(77, 229, 255, 0.28);
+}
+
+.brand-mark svg {
+  width: 20px;
+  height: 20px;
+}
+
+.brand-text b {
+  color: var(--green);
+  font-weight: 800;
+}
+
+.topbar-premium .nav-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.topbar-premium .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+.topbar-premium .nav-links a {
+  position: relative;
+  min-height: 38px;
+  border-radius: 10px;
+  padding: 0 12px;
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  white-space: nowrap;
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.topbar-premium .nav-links a::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: 4px;
+  left: 12px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--grad-accent);
+  opacity: 0;
+  transform: scaleX(0.4);
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+
+.topbar-premium .nav-links a:hover,
+.topbar-premium .nav-links a:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+}
+
+.topbar-premium .nav-links a[aria-current="page"] {
+  background: rgba(128, 255, 155, 0.1);
+  color: var(--green);
+}
+
+.topbar-premium .nav-links a[aria-current="page"]::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* İkincil bağlantılar yalnızca mobil çekmecede: masaüstünde çubuğu şişirirdi. */
+.topbar-premium .nav-links-secondary {
+  display: none;
+}
+
+.topbar-premium .cta {
+  min-height: 38px;
+  border: 0;
+  border-radius: 10px;
+  padding: 0 14px;
+  background: var(--grad-accent);
+  color: #04120c;
+  font-size: var(--fs-sm);
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(77, 229, 255, 0.22);
+  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.topbar-premium .cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(77, 229, 255, 0.32);
+}
+
+/* --- Arama kutusu ---------------------------------------------------------- */
+.site-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  width: clamp(180px, 20vw, 260px);
+  height: 38px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  padding: 0 10px 0 12px;
+  background: rgba(255, 255, 255, 0.04);
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), width var(--dur) var(--ease);
+}
+
+.site-search:focus-within {
+  border-color: rgba(77, 229, 255, 0.5);
+  background: rgba(6, 14, 19, 0.95);
+}
+
+.site-search-icon {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--muted);
+}
+
+.site-search-icon svg,
+.nav-search-toggle svg {
+  width: 17px;
+  height: 17px;
+}
+
+.site-search-input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-sm);
+  outline: none;
+}
+
+.site-search-input::placeholder {
+  color: var(--muted);
+}
+
+.site-search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.site-search-clear {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-soft);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.site-search-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  left: auto;
+  z-index: 70;
+  width: min(360px, calc(100vw - 2 * var(--gutter)));
+  max-height: min(60vh, 420px);
+  overflow-y: auto;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 6px;
+  /* Neredeyse opak: yarı saydam panel mobil çekmecede alttaki bağlantıların
+     üstüne biniyor ve iki metin üst üste okunuyordu. */
+  background: rgba(7, 15, 20, 0.985);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.site-search-panel[hidden] {
+  display: none;
+}
+
+.site-search-option {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border-radius: 10px;
+  padding: 8px 10px;
+  color: var(--text);
+  text-align: start;
+}
+
+.site-search-option:hover,
+.site-search-option.is-active {
+  background: rgba(77, 229, 255, 0.1);
+}
+
+.site-search-option i {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 8px;
+  background: rgba(128, 255, 155, 0.12);
+  color: var(--green);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.site-search-option strong {
+  display: block;
+  overflow: hidden;
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.site-search-option span {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.site-search-empty {
+  padding: 12px;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.nav-search-toggle {
+  display: none;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------------------------
+   2. SON DAKİKA BANDI
+   Sürekli akan, hover/odakta duran, tıklanabilir şerit. Sonsuzluk için içerik
+   iki kez basılır ve şerit %50 kaydırılır - dikişsiz döngü.
+   -------------------------------------------------------------------------- */
+.news-ticker {
+  position: relative;
+  z-index: 40;
+  border-bottom: 1px solid rgba(134, 255, 218, 0.1);
+  background: linear-gradient(90deg, rgba(255, 111, 125, 0.1), rgba(6, 12, 17, 0.6) 22%, rgba(6, 12, 17, 0.6));
+}
+
+.news-ticker-inner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 40px;
+}
+
+.news-ticker-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  background: rgba(255, 111, 125, 0.16);
+  color: var(--live);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.news-ticker-viewport {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  /* Kenarlarda sert kesim yerine yumuşak sönümleme. */
+  mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+
+.news-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll 46s linear infinite;
+}
+
+.news-ticker:hover .news-ticker-track,
+.news-ticker:focus-within .news-ticker-track {
+  animation-play-state: paused;
+}
+
+.news-ticker-group {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding-right: var(--sp-3);
+}
+
+.news-ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  transition: color var(--dur) var(--ease);
+}
+
+.news-ticker-item:hover {
+  color: var(--green);
+}
+
+.news-ticker-tag {
+  border-radius: 6px;
+  padding: 2px 7px;
+  background: rgba(128, 255, 155, 0.12);
+  color: var(--green);
+  font-size: var(--fs-xs);
+  font-weight: 750;
+}
+
+.news-ticker-sep {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(159, 177, 175, 0.5);
+}
+
+.news-ticker-all {
+  color: var(--cyan);
+  font-size: var(--fs-xs);
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+@keyframes ticker-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+/* ----------------------------------------------------------------------------
+   3. SAYFA GİRİŞ GEÇİŞLERİ
+   Sayfa açılışında içerik sert biçimde "zıplıyordu". Bölümler görünüm alanına
+   girerken kısa bir yükselme animasyonu ile belirir; hareket azaltma tercihi
+   olan kullanıcılar için tamamen kapatılır.
+   -------------------------------------------------------------------------- */
+main > * {
+  animation: fr-rise 420ms var(--ease) both;
+}
+
+main > *:nth-child(2) { animation-delay: 40ms; }
+main > *:nth-child(3) { animation-delay: 80ms; }
+main > *:nth-child(4) { animation-delay: 120ms; }
+main > *:nth-child(n + 5) { animation-delay: 160ms; }
+
+@keyframes fr-rise {
+  from { opacity: 0; transform: translate3d(0, 12px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main > *,
+  .news-ticker-track {
+    animation: none !important;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   4. HERO - GÜNÜN ÖNE ÇIKAN MAÇI
+   -------------------------------------------------------------------------- */
+.hero {
+  position: relative;
+  padding: clamp(28px, 5vw, 56px) 0 clamp(20px, 3vw, 32px);
+}
+
+.home-page .hero::before {
+  content: "";
+  position: absolute;
+  inset: -40% 0 auto;
+  z-index: -1;
+  height: 620px;
+  background: var(--grad-hero);
+  pointer-events: none;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 4.4vw, 3.1rem);
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.hero-copy {
+  max-width: 46ch;
+  color: var(--text-soft);
+  font-size: var(--fs-md);
+}
+
+/* Öne çıkan maç paneli: büyük skor/saat, takım logoları, hızlı istatistikler. */
+.featured-fixture {
+  display: grid;
+  gap: var(--sp-4);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: clamp(16px, 2.4vw, 24px);
+  background: var(--grad-surface);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.featured-fixture-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 750;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.featured-fixture-league {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-soft);
+}
+
+.featured-fixture-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.featured-fixture-team {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.featured-fixture-team img,
+.featured-fixture-team .team-logo-fallback,
+.featured-fixture-team .fixture-row-fallback {
+  width: clamp(48px, 7vw, 64px);
+  height: clamp(48px, 7vw, 64px);
+  border-radius: 18px;
+  font-size: clamp(1rem, 2vw, 1.35rem);
+  object-fit: contain;
+}
+
+.featured-fixture-team strong {
+  font-size: var(--fs-md);
+  font-weight: 750;
+  line-height: 1.2;
+}
+
+.featured-fixture-score {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: 108px;
+}
+
+.featured-fixture-score b {
+  font-size: clamp(2rem, 5vw, 2.9rem);
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.featured-fixture-score span {
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--text-soft);
+  font-size: var(--fs-xs);
+  font-weight: 750;
+}
+
+.featured-fixture.is-live .featured-fixture-score span {
+  background: rgba(255, 111, 125, 0.16);
+  color: var(--live);
+}
+
+/* Hero altındaki hızlı istatistik kartları. */
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+
+.quick-stat {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 12px 14px;
+  background: var(--glass);
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.quick-stat:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+}
+
+.quick-stat span {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.quick-stat b {
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.quick-stat.is-live b {
+  color: var(--live);
+}
+
+/* ----------------------------------------------------------------------------
+   5. MAÇ KARTLARI
+   Eski kart yalnızca metin listesiydi. Yeni kart: lig satırı, takım logoları,
+   skor/saat, form yüzdesi, tahmini kazanma oranı ve analiz düğmesi.
+   -------------------------------------------------------------------------- */
+.fixture-card {
+  position: relative;
+  display: grid;
+  gap: var(--sp-3);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  background: var(--glass);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.fixture-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-lg);
+}
+
+.fixture-card.is-live {
+  border-color: rgba(255, 111, 125, 0.36);
+}
+
+.fixture-card.is-live::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--live), rgba(255, 111, 125, 0));
+}
+
+.fixture-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.fixture-card-league {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-soft);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fixture-card-league img {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.fixture-card-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-pill);
+  padding: 3px 9px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.fixture-card-state.is-live {
+  background: rgba(255, 111, 125, 0.16);
+  color: var(--live);
+}
+
+.fixture-card-state.is-final {
+  background: rgba(128, 255, 155, 0.12);
+  color: var(--green);
+}
+
+.fixture-card-rows {
+  display: grid;
+  gap: 8px;
+}
+
+.fixture-row {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.fixture-row img,
+.fixture-row .fixture-row-fallback {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.fixture-row-fallback {
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-soft);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.fixture-row-name {
+  overflow: hidden;
+  font-size: var(--fs-base);
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fixture-row.is-winner .fixture-row-name {
+  color: var(--text);
+  font-weight: 800;
+}
+
+.fixture-row-score {
+  font-size: var(--fs-md);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Form yüzdesi ve tahmini kazanma oranı. */
+.fixture-card-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 10px;
+}
+
+.fixture-metric {
+  display: grid;
+  gap: 4px;
+}
+
+.fixture-metric span {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.fixture-metric b {
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.fixture-bar {
+  display: flex;
+  height: 5px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.fixture-bar i {
+  display: block;
+  height: 100%;
+}
+
+.fixture-bar i:nth-child(1) { background: var(--green); }
+.fixture-bar i:nth-child(2) { background: rgba(159, 177, 175, 0.55); }
+.fixture-bar i:nth-child(3) { background: var(--cyan); }
+
+.fixture-card-action {
+  display: inline-flex;
+  min-height: var(--tap);
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgba(77, 229, 255, 0.32);
+  border-radius: 10px;
+  padding: 0 14px;
+  color: var(--cyan);
+  font-size: var(--fs-sm);
+  font-weight: 750;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.fixture-card-action:hover {
+  background: rgba(77, 229, 255, 0.12);
+}
+
+/* ----------------------------------------------------------------------------
+   6. YATAY KAYDIRMALI ŞERİTLER (trend oyuncular / takımlar)
+   Izgara yerine şerit: mobilde dikeyde 6 kart taramak yerine yatayda kaydırma.
+   -------------------------------------------------------------------------- */
+.slider-shell {
+  position: relative;
+}
+
+.slider-rail {
+  display: grid;
+  grid-auto-columns: minmax(232px, 264px);
+  grid-auto-flow: column;
+  gap: var(--sp-3);
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.slider-rail > * {
+  scroll-snap-align: start;
+}
+
+.slider-rail::-webkit-scrollbar {
+  height: 6px;
+}
+
+.slider-rail::-webkit-scrollbar-thumb {
+  border-radius: var(--radius-pill);
+  background: rgba(134, 255, 218, 0.22);
+}
+
+.slider-nav {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.slider-nav button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.slider-nav button:hover:not(:disabled) {
+  background: rgba(77, 229, 255, 0.14);
+  color: var(--cyan);
+}
+
+.slider-nav button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.trend-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  background: var(--glass);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.trend-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-strong);
+}
+
+.trend-card-head {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.trend-card-head img,
+.trend-card-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  object-fit: contain;
+}
+
+.trend-card-avatar {
+  display: grid;
+  place-items: center;
+  background: var(--grad-accent);
+  color: #04120c;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.trend-card-head strong {
+  display: block;
+  overflow: hidden;
+  font-size: var(--fs-base);
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trend-card-head span {
+  display: block;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trend-card-score {
+  border-radius: 10px;
+  padding: 5px 9px;
+  background: rgba(128, 255, 155, 0.12);
+  color: var(--green);
+  font-size: var(--fs-md);
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.trend-card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+}
+
+.trend-card-stats div {
+  border-radius: 9px;
+  padding: 7px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  text-align: center;
+}
+
+.trend-card-stats dt {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.trend-card-stats dd {
+  margin: 2px 0 0;
+  font-size: var(--fs-sm);
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ----------------------------------------------------------------------------
+   7. LİG BÖLÜMLERİ
+   -------------------------------------------------------------------------- */
+.league-block {
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  padding: clamp(14px, 2vw, 20px);
+  background: rgba(10, 20, 26, 0.5);
+}
+
+.league-block + .league-block {
+  margin-top: var(--sp-4);
+}
+
+.league-block-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+
+.league-block-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  font-size: var(--fs-md);
+  font-weight: 800;
+}
+
+.league-block-title img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.league-block-count {
+  border-radius: var(--radius-pill);
+  padding: 2px 9px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 750;
+}
+
+/* ----------------------------------------------------------------------------
+   8. BÖLÜM BAŞLIKLARI VE KARTLARIN ORTAK YÜZEYİ
+   -------------------------------------------------------------------------- */
+.section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--cyan);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.section-head h2 {
+  margin: 6px 0 0;
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.card,
+.news-card,
+.player-detail-card,
+.static-match-card,
+.home-score-card {
+  border-radius: var(--radius-lg);
+  background: var(--glass);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.card:hover,
+.news-card:hover,
+.player-detail-card:hover,
+.home-score-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-strong);
+  box-shadow: var(--shadow-lg);
+}
+
+.button.primary {
+  border: 0;
+  background: var(--grad-accent);
+  color: #04120c;
+  font-weight: 800;
+  box-shadow: 0 8px 22px rgba(77, 229, 255, 0.22);
+}
+
+.button.primary:hover {
+  transform: translateY(-1px);
+}
+
+/* ----------------------------------------------------------------------------
+   9. PROFESYONEL ALT BİLGİ
+   -------------------------------------------------------------------------- */
+.footer-premium {
+  margin-top: clamp(32px, 5vw, 64px);
+  border-top: 1px solid var(--glass-border);
+  padding: clamp(28px, 4vw, 48px) 0 24px;
+  background: linear-gradient(180deg, rgba(8, 16, 21, 0.5), rgba(4, 9, 12, 0.9));
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.6fr) repeat(3, minmax(140px, 1fr));
+  gap: clamp(20px, 3vw, 40px);
+}
+
+.footer-brand .brand {
+  font-size: var(--fs-md);
+  font-weight: 800;
+}
+
+.footer-brand p {
+  max-width: 44ch;
+  margin: 12px 0 16px;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  line-height: 1.65;
+}
+
+.footer-social {
+  display: flex;
+  gap: 8px;
+}
+
+.footer-social a {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid var(--glass-border);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-soft);
+  transition: transform var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.footer-social a:hover {
+  transform: translateY(-2px);
+  background: rgba(128, 255, 155, 0.12);
+  color: var(--green);
+}
+
+.footer-social svg {
+  width: 18px;
+  height: 18px;
+}
+
+.footer-col h2 {
+  margin: 0 0 10px;
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.footer-col-links {
+  display: grid;
+  gap: 2px;
+}
+
+.footer-col-links a {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  transition: color var(--dur) var(--ease);
+}
+
+.footer-col-links a:hover {
+  color: var(--green);
+}
+
+.footer-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-top: clamp(20px, 3vw, 32px);
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.footer-bottom .footer-links {
+  display: inline-flex;
+  gap: 14px;
+}
+
+/* ----------------------------------------------------------------------------
+   10. MOBİL
+   Öncelik: taşma yok, 44px dokunma hedefi, çekmece menü sorunsuz.
+   -------------------------------------------------------------------------- */
+@media (max-width: 1180px) {
+  .topbar-premium .nav-links a {
+    padding: 0 9px;
+    font-size: var(--fs-xs);
+  }
+
+  .site-search {
+    width: clamp(150px, 16vw, 200px);
+  }
+}
+
+@media (max-width: 1060px) {
+  .topbar-premium .nav {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: var(--sp-2);
+    min-height: 58px;
+    padding-block: 0;
+  }
+
+  .topbar-premium .nav-toggle {
+    display: inline-grid !important;
+    position: static;
+    grid-column: 3;
+    grid-row: 1;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+
+  .topbar-premium .nav-search-toggle {
+    display: inline-grid;
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  /* Arama, çekmece açıldığında menünün üstünde belirir: mobilde çubuğa
+     sığdırmak taşmaya yol açıyordu. */
+  .topbar-premium .site-search {
+    display: none;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    height: 42px;
+    margin-bottom: 10px;
+  }
+
+  .topbar-premium .nav.is-open .site-search {
+    display: flex;
+  }
+
+  .topbar-premium .site-search-panel {
+    right: 0;
+    left: 0;
+    width: auto;
+  }
+
+  .topbar-premium .nav-menu {
+    display: none;
+    grid-column: 1 / -1;
+    grid-row: 3;
+    /* Masaüstünde `.nav-menu` bir flex satırı ve ortalanmış; ızgaraya
+       dönüşünce `justify-content: center` sütun izini içeriğe göre daraltıp
+       bağlantıları ortaya itiyordu. Çekmecede tam genişlik gerekir. */
+    justify-content: stretch;
+    justify-items: stretch;
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    max-width: none;
+    margin-bottom: 12px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: 10px;
+    background: var(--glass-strong);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .topbar-premium .nav.is-open .nav-menu {
+    display: grid;
+    gap: 6px;
+    animation: fr-rise 260ms var(--ease) both;
+  }
+
+  .topbar-premium .nav-links,
+  .topbar-premium .nav-links-secondary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+  }
+
+  .topbar-premium .nav-links-secondary {
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    padding-top: 6px;
+  }
+
+  .topbar-premium .nav-links a {
+    width: 100%;
+    min-height: 44px;
+    justify-content: flex-start;
+    padding: 0 12px;
+    font-size: var(--fs-sm);
+    white-space: normal;
+  }
+
+  .topbar-premium .cta {
+    width: 100%;
+    min-height: 44px;
+    margin-top: 2px;
+  }
+
+  .featured-fixture-board {
+    gap: var(--sp-2);
+  }
+}
+
+@media (max-width: 760px) {
+  .news-ticker-all {
+    display: none;
+  }
+
+  .news-ticker-inner {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .fixture-card-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .slider-rail {
+    grid-auto-columns: minmax(210px, 74vw);
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .topbar-premium .brand-text {
+    font-size: var(--fs-base);
+  }
+
+  .topbar-premium .nav-links {
+    grid-template-columns: 1fr;
+  }
+
+  /* İkincil bağlantılar iki sütunda kalır; tek sütunda çekmece 12 satıra
+     çıkıp ekranı aşıyordu. */
+  .topbar-premium .nav-links-secondary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .topbar-premium .nav-links-secondary a {
+    font-size: var(--fs-xs);
+  }
+
+  .featured-fixture-board {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .featured-fixture-score {
+    order: -1;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Taşma güvenliği: uzun takım adları ve tablolar sayfayı yana kaydırmasın. */
+img,
+svg,
+video,
+table {
+  max-width: 100%;
+}
+
+.table-scroll,
+.standings-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --- Bölüm başlığı yan eylemleri (şerit okları + "tümü" bağlantısı) ------- */
+.section-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+@media (max-width: 760px) {
+  /* Mobilde ok düğmeleri gereksiz: parmakla kaydırma zaten var. */
+  .slider-nav {
+    display: none;
+  }
+}
+
+/* --- Hero'daki öne çıkan maç kabı -------------------------------------------
+   Eskiden `.glass-card.match-card` idi: kartın içinde ikinci bir kart
+   çiziliyor, çift kenarlık ve çift dolgu oluşuyordu. Artık şeffaf bir kap. */
+.hero-featured {
+  display: grid;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+/* Hero'daki hızlı istatistikler dört sütuna sığmalı ama daralınca ikiye insin. */
+.hero-featured .quick-stats {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  margin-top: 0;
+}
+
+/* Trend şeritlerindeki form noktaları kart genişliğini zorlamasın. */
+.trend-card .form-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.trend-card .form-dot {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+}
+
+/* ----------------------------------------------------------------------------
+   11. HERO DENGESİ VE IZGARA DÜZELTMELERİ
+   Bu bloktaki seçiciler bilinçli olarak kimlik (#) taşır: ana sayfa hero'su
+   dosyanın ortasında `.home-page #hero-canli-skor …` kurallarıyla tanımlı ve
+   sınıf tabanlı bir kural onları geçemiyor. Aynı özgüllükte, dosyanın sonunda
+   yazmak tek güvenli yol.
+   -------------------------------------------------------------------------- */
+
+/* Başlık 436 piksellik sütunda 77 piksel puntoyla üç satıra bölünüyordu.
+   Ölçek viewport ile orantılı hale getirildi. */
+.home-page #hero-canli-skor h1 {
+  margin: 14px 0 16px;
+  font-size: clamp(2.1rem, 3.6vw, 3.35rem);
+  letter-spacing: -0.03em;
+  line-height: 1.02;
+  overflow-wrap: normal;
+}
+
+/* Sağdaki maç panosu içeriği sütunu zorlamasın; iki sütun da sıfıra kadar
+   daralabilsin. Aksi halde uzun takım adları soldaki metni eziyordu. */
+.home-page #hero-canli-skor {
+  grid-template-columns: minmax(320px, 0.88fr) minmax(420px, 1.12fr);
+  align-items: center;
+}
+
+.hero > *,
+.hero-featured > *,
+.featured-fixture > * {
+  min-width: 0;
+}
+
+/* Tek maç olduğunda kart tüm satırı kaplayıp devasa görünüyordu.
+   `auto-fill` boş sütunları korur, kart normal genişliğinde kalır. */
+.matches-grid,
+.players-grid,
+.news-grid,
+.league-match-grid {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* Şerit kartları biraz daha geniş: oyuncu kartı yoğun bir bileşen. */
+.slider-rail {
+  grid-auto-columns: minmax(248px, 288px);
+}
+
+@media (max-width: 900px) {
+  .home-page #hero-canli-skor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   12. ÖZET KUTUCUKLARI
+   `.stats-match-grid` üç sütunlu `.grid` bölümünün tek hücresine düşüyordu:
+   altı kutucuk 74 piksellik sütunlara sıkışıp metinleri üst üste biniyordu.
+   Tam satırı kaplar ve kutucuk sayısına uyum sağlar.
+   -------------------------------------------------------------------------- */
+.grid > .stats-match-grid,
+.grid > .stats-coverage-grid {
+  grid-column: 1 / -1;
+}
+
+.stats-match-grid {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--sp-3);
+}
+
+.stats-match-grid article {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+}
+
+.stats-match-grid article strong {
+  color: var(--green);
+  font-size: var(--fs-xl);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+}
+
+/* ----------------------------------------------------------------------------
+   13. ALT SAYFA HERO'SU
+   `.hero` genel olarak iki sütunlu ızgaraydı; ancak yalnızca ana sayfada iki
+   çocuk var. Alt sayfalarda tek çocuk sol sütuna sıkışıyor, başlık gereksiz
+   yere sarıyor ve sağdaki "son kontrol" rozeti sayfanın ortasında kalıyordu.
+   Tek sütun taban, iki çocuk varsa iki sütun.
+   -------------------------------------------------------------------------- */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--sp-5);
+}
+
+.hero:has(> * + *) {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(20px, 3vw, 40px);
+  align-items: center;
+}
+
+.hero-row {
+  align-items: center;
+}
+
+/* Lig kısayolları yatayda kayar; kesik kenar yerine yumuşak sönümleme ve
+   dokunmatik kaydırma. */
+.competition-chip-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--sp-2);
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent);
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent);
+}
+
+.competition-chip-row::-webkit-scrollbar {
+  display: none;
+}
+
+.competition-chip-row a {
+  flex: 0 0 auto;
 }

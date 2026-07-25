@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { siteHeader, siteFooter } from "./lib/layout.mjs";
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
@@ -275,7 +276,7 @@ function pageHtml(page) {
     <link rel="stylesheet" href="./page.css" />
   </head>
   <body class="subpage trend-seo-page">
-    <header class="topbar"><nav class="container nav" aria-label="Ana menü"><a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a><button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button><div class="nav-menu" id="primary-menu"><div class="nav-links"><a href="./bugunun-maclari.html">Bugünkü Maçlar</a><a href="./canli-skor.html">Canlı Skor</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./super-lig-fikstur.html">Süper Lig Fikstürü</a><a href="./takimlar.html">Takımlar</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./momentum.html">Momentum</a></div><a class="cta" href="./index.html#radar-sinyalleri">Radar Sinyalleri</a></div></nav></header>
+    ${siteHeader({ base: "./" })}
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><a href="./index.html">Trend Radar</a><span>/</span><span>${escapeHtml(page.h1)}</span></nav>
       <section class="trend-hero"><div><span class="eyebrow">Gündem · Veri · Analiz</span><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.lead)}</p></div><aside><span>Son kontrol</span><strong>22 Temmuz 2026</strong><small>Doğrulanmayan alanlar kesin bilgi gibi sunulmaz.</small></aside></section>
@@ -284,7 +285,7 @@ function pageHtml(page) {
       ${section("İlgili radar ekranları", "Bu konuyu takım, oyuncu, maç ve momentum verileriyle derinleştir.", linkGrid(page.links), "İç bağlantılar")}
       <section class="trend-home-cta"><div><span class="section-kicker">FutbolRadar</span><h2>Skordan fazlasını oku.</h2><p>Canlı maç merkezi, oyuncu performansı, takım formu ve transfer hareketlerini aynı veri dilinde takip et.</p></div><a class="button primary" href="./index.html">Ana sayfaya dön</a></section>
     </main>
-    <footer class="footer"><div class="container footer-links">FutbolRadar · Veri odaklı futbol analizi · <a href="./hakkinda.html">Hakkında</a> · <a href="./veri-notu.html">Veri Notu</a> · <a href="./iletisim.html">İletişim</a> · <a href="./gizlilik.html">Gizlilik</a> · <a href="./kullanim-sartlari.html">Kullanım Şartları</a></div></footer>
+    ${siteFooter({ base: "./" })}
     <script src="./site.js" defer></script>
   </body>
 </html>`;

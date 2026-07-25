@@ -172,14 +172,116 @@ function calendarProgramCards(limit) {
       : null;
     const headlineValue = status === "FINISHED" && finalScore ? finalScore : (match.time || "");
 
-    return `<article class="card match-card static-match-card" data-card="fixture-preview" data-match="${escapeHtml(match.id)}">
-    <div class="card-head"><span class="card-kicker">${escapeHtml(match.league || "Maç programı")}</span><strong class="big-value">${escapeHtml(headlineValue)}</strong></div>
-    <h2>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</h2>
-    <p>${escapeHtml(`${isToday ? "Bugün" : longDateLabel(match.kickoff)} · ${match.venue || "Saha bilgisi bekleniyor"}`)}</p>
-    <div class="tag-row"><span class="tag soft">${escapeHtml(MATCH_STATUS_TR[status] || "Planlandı")}</span><span class="tag soft">${escapeHtml(isToday ? "Bugünün programı" : "Yaklaşan maç")}</span></div>
-    <a class="detail-link" href="./canli-skor.html">Canlı skoru izle</a>
-  </article>`;
+    return staticFixtureCard(match, { headlineValue, isToday, status, finalScore });
   }).join("");
+}
+
+/**
+ * Statik maç kartı, istemcideki `renderFixtureCard` ile aynı işaretlemeyi
+ * üretir. Aynı görünüm iki kez yazıldığı için değil; JavaScript çalışmadan
+ * önce (ve tarayıcısız tarayıcılarda) sayfanın kartların son halini
+ * göstermesi gerektiği için. İkisinin sınıf adları bilerek özdeştir.
+ */
+function staticFormPercent(name) {
+  const team = teamByName(name);
+  const form = team && Array.isArray(team.form) ? team.form : null;
+
+  if (!form || !form.length) {
+    return null;
+  }
+
+  const earned = form.reduce((total, entry) => {
+    const result = String((entry && (entry.result || entry.label)) || "").toLowerCase();
+    if (result === "win" || result === "g") return total + 3;
+    if (result === "draw" || result === "b") return total + 1;
+    return total;
+  }, 0);
+
+  return Math.round((earned / (form.length * 3)) * 100);
+}
+
+function staticFixtureRow(name, score, otherScore) {
+  const winner = score !== null && otherScore !== null && Number(score) > Number(otherScore);
+  return `<div class="fixture-row${winner ? " is-winner" : ""}">` +
+    `<span class="fixture-row-fallback" aria-hidden="true">${escapeHtml(fixtureTeamInitials(name))}</span>` +
+    `<span class="fixture-row-name">${escapeHtml(name)}</span>` +
+    `<span class="fixture-row-score">${escapeHtml(score === null ? "–" : score)}</span>` +
+    `</div>`;
+}
+
+function staticFixtureCard(match, meta) {
+  const { headlineValue, status, finalScore } = meta;
+  const isLive = status === "LIVE";
+  const isFinal = status === "FINISHED";
+  const stateClass = isLive ? "is-live" : isFinal ? "is-final" : "";
+  const stateLabel = isFinal ? "MS" : isLive ? "Canlı" : (headlineValue || MATCH_STATUS_TR[status] || "Planlandı");
+  const homeScore = finalScore ? Number(String(finalScore).split("-")[0]) : null;
+  const awayScore = finalScore ? Number(String(finalScore).split("-")[1]) : null;
+
+  const homeForm = staticFormPercent(match.homeTeam);
+  const awayForm = staticFormPercent(match.awayTeam);
+  const formHtml = homeForm === null && awayForm === null
+    ? ""
+    : `<div class="fixture-metric"><span>Form (son 5)</span><b>${homeForm === null ? "–" : `%${homeForm}`} · ${awayForm === null ? "–" : `%${awayForm}`}</b></div>`;
+
+  return `<article class="fixture-card${isLive ? " is-live" : ""}" data-card="fixture" data-match="${escapeHtml(match.id)}">
+    <div class="fixture-card-top"><span class="fixture-card-league">${escapeHtml(match.league || "Maç programı")}</span><span class="fixture-card-state ${stateClass}">${escapeHtml(stateLabel)}</span></div>
+    <div class="fixture-card-rows">${staticFixtureRow(match.homeTeam, homeScore, awayScore)}${staticFixtureRow(match.awayTeam, awayScore, homeScore)}</div>
+    ${formHtml ? `<div class="fixture-card-meta">${formHtml}</div>` : ""}
+    <a class="fixture-card-action" href="./canli-skor.html">Analizi İncele</a>
+  </article>`;
+}
+
+/** Hero'daki büyük öne çıkan maç panosunun statik karşılığı. */
+function staticFeaturedFixture() {
+  const today = istanbulToday();
+  const list = curatedMatches()
+    .filter((match) => String(match.kickoff || "").slice(0, 10) >= today)
+    .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)));
+
+  const liveCount = list.filter((match) => String(match.status || "").toUpperCase() === "LIVE").length;
+  const todayList = list.filter((match) => String(match.kickoff || "").slice(0, 10) === today);
+  const finishedCount = todayList.filter((match) => String(match.status || "").toUpperCase() === "FINISHED").length;
+  const upcomingCount = todayList.length - finishedCount - liveCount;
+  const featured = todayList[0] || list[0] || null;
+
+  const quickStats = `<div class="quick-stats" aria-label="Bugünün maç özeti">
+      <a class="quick-stat${liveCount ? " is-live" : ""}" href="./canli-skor.html"><span>Canlı</span><b class="live-number">${liveCount}</b></a>
+      <a class="quick-stat" href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>${Math.max(upcomingCount, 0)}</b></a>
+      <a class="quick-stat" href="./bugunun-maclari.html?status=finished"><span>Biten</span><b>${finishedCount}</b></a>
+      <a class="quick-stat" href="./bugunun-maclari.html"><span>Toplam</span><b>${todayList.length}</b></a>
+    </div>`;
+
+  if (!featured) {
+    return `<div class="featured-fixture">
+      <div class="featured-fixture-head"><span class="featured-fixture-league">Canlı skor panosu</span><span>Program kontrol ediliyor</span></div>
+      <div class="home-match-command-empty"><strong>Maç programı yükleniyor.</strong><span>Bugünün doğrulanmış karşılaşmaları burada listelenecek.</span></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Canlı skor</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
+    </div>${quickStats}`;
+  }
+
+  const status = String(featured.status || "SCHEDULED").toUpperCase();
+  const hasScore = featured.score && featured.score.home !== null && featured.score.home !== undefined
+    && featured.score.away !== null && featured.score.away !== undefined;
+  const headline = hasScore ? `${featured.score.home} - ${featured.score.away}` : (featured.time || "—");
+  // Skor/saat büyük alanda zaten yazıyor; rozet onu tekrar etmesin.
+  const stateLabel = status === "FINISHED" ? "Maç sonucu" : status === "LIVE" ? "Canlı" : "Başlama saati";
+  const dateLabel = String(featured.kickoff || "").slice(0, 10) === today ? "Bugün" : longDateLabel(featured.kickoff);
+
+  const side = (name) => `<div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">${escapeHtml(fixtureTeamInitials(name))}</span>
+        <strong>${escapeHtml(name)}</strong>
+      </div>`;
+
+  return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}">
+      <div class="featured-fixture-head"><span class="featured-fixture-league">${escapeHtml(featured.league || "Maç programı")}</span><span>${escapeHtml(`${dateLabel} · ${featured.venue || "Saha bilgisi bekleniyor"}`)}</span></div>
+      <div class="featured-fixture-board">
+        ${side(featured.homeTeam)}
+        <div class="featured-fixture-score"><b>${escapeHtml(headline)}</b><span>${escapeHtml(stateLabel)}</span></div>
+        ${side(featured.awayTeam)}
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Analizi İncele</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
+    </div>${quickStats}`;
 }
 
 function matchProgramState(variant) {
@@ -238,6 +340,27 @@ function signalCards() {
 
 function staticTeamCard(team) {
   return `<article class="team-card" data-card="team-radar" data-team="${escapeHtml(team.id)}"><header><div><h3>${escapeHtml(team.name)}</h3><span>Sezon öncesi referans</span></div><strong class="momentum-number">${escapeHtml(team.momentum)}</strong></header>${formDots(team.form)}<div class="metric-grid compact"><span>Hücum <b>${escapeHtml(team.attack)}</b></span><span>Savunma <b>${escapeHtml(team.defense)}</b></span></div><a class="detail-link" href="./takim-detay.html?team=${encodeURIComponent(team.id)}">Takım radarını aç</a></article>`;
+}
+
+/**
+ * Ana sayfadaki "trend takımlar" şeridi. Değerler doğrudan takım verisinden
+ * gelir (momentum, form, hücum/savunma); hiçbir sayı burada üretilmez.
+ */
+function trendTeamCards() {
+  return teams
+    .slice()
+    .sort((left, right) => Number(right.momentum || 0) - Number(left.momentum || 0))
+    .slice(0, 8)
+    .map((team) => {
+      const initials = fixtureTeamInitials(team.name);
+      return `<article class="trend-card" data-card="trend-team" data-team="${escapeHtml(team.id)}">
+      <div class="trend-card-head"><span class="trend-card-avatar" aria-hidden="true">${escapeHtml(initials)}</span><span><strong>${escapeHtml(team.name)}</strong><span>${escapeHtml(team.league || "Takım")}</span></span><b class="trend-card-score">${escapeHtml(team.momentum ?? "–")}</b></div>
+      ${formDots(team.form)}
+      <dl class="trend-card-stats"><div><dt>Hücum</dt><dd>${escapeHtml(team.attack ?? "–")}</dd></div><div><dt>Savunma</dt><dd>${escapeHtml(team.defense ?? "–")}</dd></div><div><dt>Form</dt><dd>${escapeHtml(team.formScore ?? "–")}</dd></div></dl>
+      <a class="fixture-card-action" href="./takim-detay.html?team=${encodeURIComponent(team.name)}">Takım radarını aç</a>
+    </article>`;
+    })
+    .join("");
 }
 
 function staticStandingRows() {
@@ -400,7 +523,8 @@ const topTeams = teams.slice().sort((left, right) => Number(right.momentum) - Nu
 const topPlayers = players.slice().sort((left, right) => Number(right.overallRating || 0) - Number(left.overallRating || 0));
 
 writePage("index.html", {
-  "featured-match": emptyMatchState("featured"),
+  "featured-match": staticFeaturedFixture(),
+  "home-trend-teams": trendTeamCards(),
   "home-transfer-watch": transferWatch(),
   "today-matches": matchProgramState("today"),
   "radar-signals": signalCards(),

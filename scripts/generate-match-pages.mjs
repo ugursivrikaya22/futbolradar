@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { siteHeader, siteFooter } from "./lib/layout.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -191,7 +192,7 @@ function pageHtml(match) {
     <link rel="stylesheet" href="../page.css" />
   </head>
   <body class="subpage match-analysis-page">
-    <header class="topbar"><nav class="container nav" aria-label="Ana menü"><a class="brand" href="../index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a><button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button><div class="nav-menu" id="primary-menu"><div class="nav-links"><a href="../bugunun-maclari.html">Bugünkü Maçlar</a><a href="../canli-skor.html">Canlı Skor</a><a href="../puan-durumu.html">Puan Durumu</a><a href="../super-lig-fikstur.html">Süper Lig Fikstürü</a><a href="../takimlar.html">Takımlar</a><a href="../oyuncu-radari.html">Oyuncu Radarı</a><a href="../momentum.html">Momentum</a></div><a class="cta" href="../index.html#radar-sinyalleri">Radar Sinyalleri</a></div></nav></header>
+    ${siteHeader({ base: "../" })}
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../super-lig-fikstur.html">Süper Lig Fikstürü</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
       <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(match.league)}</span><h1>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</h1><p class="lead">${escapeHtml(radar.lead)}</p></div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>
@@ -201,7 +202,7 @@ function pageHtml(match) {
       <section class="match-context-grid" aria-label="Maç bağlamı"><article class="card"><span class="card-kicker">${escapeHtml(match.homeTeam)}</span><h2>Form ve kadro</h2>${formHtml(homeTeam)}${squadHtml(match.homeTeam)}${keyPlayersHtml(match.homeTeam)}</article><article class="card"><span class="card-kicker">${escapeHtml(match.awayTeam)}</span><h2>Form ve kadro</h2>${formHtml(awayTeam)}${squadHtml(match.awayTeam)}${keyPlayersHtml(match.awayTeam)}</article></section>
       <section class="match-related-grid" aria-label="İlgili radar ekranları">${relatedComparison(match)}<a class="match-related-card" href="../super-lig-fikstur.html"><span>Fikstür</span><strong>Sezon eşleşmeleri</strong><p>Onaylı eşleşmelerin tamamına dön.</p></a><a class="match-related-card" href="../momentum.html"><span>Takım formu</span><strong>Momentum tablosu</strong><p>Takım trendlerini ayrı ekranda karşılaştır.</p></a></section>
     </main>
-    <footer class="footer"><div class="container footer-links">FutbolRadar · Maç öncesi analiz · <a href="../hakkinda.html">Hakkında</a> · <a href="../veri-notu.html">Veri Notu</a> · <a href="../iletisim.html">İletişim</a></div></footer>
+    ${siteFooter({ base: "../" })}
     <script src="../site.js" defer></script>
     <script src="../app.js" defer></script>
   </body>

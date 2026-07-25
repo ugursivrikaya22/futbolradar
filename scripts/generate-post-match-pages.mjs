@@ -9,6 +9,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { siteHeader, siteFooter } from "./lib/layout.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -289,7 +290,7 @@ function pageHtml(report, match) {
     <link rel="stylesheet" href="${depth}page.css" />
   </head>
   <body class="subpage post-match-page">
-    <header class="topbar"><nav class="container nav" aria-label="Ana menü"><a class="brand" href="${depth}index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a><button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button><div class="nav-menu" id="primary-menu"><div class="nav-links"><a href="${depth}bugunun-maclari.html">Bugünkü Maçlar</a><a href="${depth}canli-skor.html">Canlı Skor</a><a href="${depth}puan-durumu.html">Puan Durumu</a><a href="${depth}super-lig-fikstur.html">Süper Lig Fikstürü</a><a href="${depth}takimlar.html">Takımlar</a><a href="${depth}oyuncu-radari.html">Oyuncu Radarı</a><a href="${depth}momentum.html">Momentum</a></div><a class="cta" href="${depth}mac-merkezi.html">Maç Merkezi</a></div></nav></header>
+    ${siteHeader({ base: depth })}
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="${depth}index.html">Ana Sayfa</a><span>/</span><a href="${depth}mac-merkezi.html">Maç Merkezi</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
       <section class="post-match-hero">
@@ -352,7 +353,7 @@ function pageHtml(report, match) {
         <a href="${depth}bugunun-maclari.html"><span>Program</span><strong>Bugünkü maçlar</strong><p>Günün doğrulanmış karşılaşmalarını aç.</p></a>
       </section>
     </main>
-    <footer class="footer"><div class="container footer-links">FutbolRadar · Maç raporu · <a href="${depth}hakkinda.html">Hakkında</a> · <a href="${depth}veri-notu.html">Veri Notu</a> · <a href="${depth}iletisim.html">İletişim</a></div></footer>
+    ${siteFooter({ base: depth })}
     <script src="${depth}site.js" defer></script>
   </body>
 </html>`;

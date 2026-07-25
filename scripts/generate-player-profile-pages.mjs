@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { siteHeader, siteFooter } from "./lib/layout.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -117,7 +118,7 @@ function staticCompareLinks(player) {
     { label: "Akilli eslesme", player: bestPeer, note: "Rol, rating ve piyasa yakinligi" },
     { label: "Ayni rol kiyas", player: sameRole, note: `${playerPositionGroup(player)} profili` },
     { label: "Rating sinavi", player: closeRating, note: "Overall farkini oku" },
-    { label: "Transfer okuma", player: transferRead, note: "Guncel takim ve piyasa degeri" }
+    { label: "Transfer okuma", player: transferRead, note: "Güncel takım ve piyasa değeri" }
   ]);
   const fallbackLinks = candidates
     .slice()
@@ -214,16 +215,7 @@ function pageHtml(player) {
     <link rel="stylesheet" href="../page.css" />
   </head>
   <body class="subpage">
-    <header class="topbar">
-      <nav class="container nav" aria-label="Ana menü">
-        <a class="brand" href="../index.html" aria-label="FutbolRadar ana sayfa"><span class="brand-mark">FR</span><span>FutbolRadar</span></a>
-        <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
-        <div class="nav-menu" id="primary-menu">
-          <div class="nav-links"><a href="../bugunun-maclari.html">Bugünkü Maçlar</a><a href="../canli-skor.html">Canlı Skor</a><a href="../puan-durumu.html">Puan Durumu</a><a href="../super-lig-fikstur.html">Süper Lig Fikstürü</a><a href="../takimlar.html">Takımlar</a><a href="../oyuncu-radari.html">Oyuncu Radarı</a><a href="../momentum.html">Momentum</a></div>
-          <a class="cta" href="../index.html#radar-sinyalleri">Radar Sinyalleri</a>
-        </div>
-      </nav>
-    </header>
+    ${siteHeader({ base: "../" })}
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu">
         <a href="../index.html">Ana Sayfa</a>
@@ -259,7 +251,7 @@ function pageHtml(player) {
         ${relatedLinks(player.id)}
       </section>
     </main>
-    <footer class="footer"><div class="container footer-links">FutbolRadar · Oyuncu profilleri · <a href="../hakkinda.html">Hakkında</a> · <a href="../veri-notu.html">Veri Notu</a> · <a href="../iletisim.html">İletişim</a> · <a href="../gizlilik.html">Gizlilik</a> · <a href="../kullanim-sartlari.html">Kullanım Şartları</a></div></footer>
+    ${siteFooter({ base: "../" })}
     <script src="../site.js" defer></script>
     <script src="../app.js" defer></script>
   </body>
