@@ -15085,7 +15085,7 @@ body,
   padding: 0.22rem 0.6rem;
   border-radius: 999px;
   border: 1px solid var(--line);
-  background: var(--soft);
+  background: var(--surface-sunken);
   color: var(--muted);
   font-size: 0.72rem;
   font-weight: 600;
@@ -15132,7 +15132,7 @@ body,
   height: 1.35rem;
   padding: 0 0.35rem;
   border-radius: 999px;
-  background: var(--soft);
+  background: var(--surface-sunken);
   border: 1px solid var(--line);
   color: var(--text);
   font-size: 0.7rem;
@@ -15195,7 +15195,7 @@ body,
 .td-transfer-type {
   padding: 0.1rem 0.45rem;
   border-radius: 999px;
-  background: var(--soft);
+  background: var(--surface-sunken);
   border: 1px solid var(--line);
   font-weight: 600;
 }
@@ -15221,7 +15221,7 @@ body,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--soft);
+  background: var(--surface-sunken);
   border: 1px solid var(--line);
   color: var(--muted);
   font-weight: 700;
@@ -15231,7 +15231,7 @@ body,
 .player-avatar img,
 .td-face {
   object-fit: cover;
-  background: var(--soft);
+  background: var(--surface-sunken);
 }
 
 .post-match-face {
@@ -15242,7 +15242,7 @@ body,
   height: 56px;
   border-radius: 50%;
   object-fit: cover;
-  background: var(--soft);
+  background: var(--surface-sunken);
   border: 1px solid var(--line);
   margin-bottom: 0.6rem;
 }
@@ -15281,7 +15281,7 @@ body,
   display: block;
   height: 8px;
   border-radius: 999px;
-  background: var(--soft);
+  background: var(--surface-sunken);
   border: 1px solid var(--line);
   overflow: hidden;
 }
@@ -15344,3 +15344,136 @@ body,
 .home-report-score { font-size: 0.95rem; }
 .home-report-line { margin: 0; font-size: 0.78rem; color: var(--muted); }
 .home-report-coverage { font-size: 0.7rem; color: var(--muted); }
+
+/* ---------------------------------------------------------------------------
+   MAÇ SONRASI ANALİZ PANOSU
+   Grafikler satır içi: harici kütüphane yok. Renkler tema değişkenlerinden
+   geldiği için açık ve koyu temada aynı okunurluk korunur. Sayılar her
+   zaman çubuğun yanında yazılı — çubuk tek başına bir ölçü değil, sayının
+   görsel karşılığı.
+--------------------------------------------------------------------------- */
+.pmi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.pmi-section { display: grid; gap: 0.7rem; align-content: start; padding: 1.05rem 1.15rem; }
+
+.pmi-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.pmi-section-head h3 { margin: 0; font-size: 1rem; letter-spacing: -0.01em; }
+
+.pmi-confidence {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.16rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface-sunken);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.pmi-confidence i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  flex: none;
+}
+
+.pmi-confidence.is-high i { background: var(--green); }
+.pmi-confidence.is-medium i { background: var(--amber); }
+.pmi-confidence.is-low i { background: var(--muted); }
+
+.pmi-metric { display: grid; gap: 0.28rem; }
+
+.pmi-metric-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.76rem;
+}
+
+.pmi-metric-head span { text-align: center; color: var(--muted); }
+.pmi-metric-head b { font-variant-numeric: tabular-nums; font-size: 0.85rem; }
+
+.pmi-bar {
+  display: flex;
+  height: 7px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+}
+
+.pmi-bar-home { background: var(--green); }
+.pmi-bar-away { background: color-mix(in srgb, var(--muted) 55%, transparent); }
+
+.pmi-readings {
+  margin: 0.2rem 0 0;
+  padding-left: 1.05rem;
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.pmi-basis {
+  display: inline-block;
+  margin-left: 0.3rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  font-size: 0.66rem;
+  font-style: normal;
+}
+
+.pmi-performers { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.4rem; }
+
+.pmi-performers li {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.5rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 0.8rem;
+}
+
+.pmi-performers span { color: var(--muted); font-size: 0.72rem; }
+.pmi-performers b { margin-left: auto; color: var(--green); }
+.pmi-performers em { font-style: normal; color: var(--muted); font-size: 0.7rem; }
+
+.pmi-note,
+.pmi-sources { margin: 0; font-size: 0.7rem; color: var(--muted); }
+
+.pmi-derived {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.5rem 0.65rem;
+  background: var(--surface-sunken);
+  font-size: 0.74rem;
+}
+
+.pmi-derived summary { cursor: pointer; font-weight: 600; color: var(--text); }
+.pmi-derived p { margin: 0.4rem 0 0; color: var(--muted); }
+
+@media (max-width: 640px) {
+  .pmi-grid { grid-template-columns: 1fr; }
+  .pmi-section { padding: 0.9rem 0.95rem; }
+  .pmi-metric-head { font-size: 0.72rem; }
+}

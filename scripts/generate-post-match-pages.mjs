@@ -19,6 +19,7 @@ const matches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json
 const { buildMatchReport } = require("../services/matchReportService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
+const { buildPostMatchIntelligence } = require("../services/postMatchIntelligence.js");
 
 const fixturePool = curatedMatches();
 const finished = matches
@@ -125,6 +126,107 @@ function playerPhotoHtml(player) {
   return `<img class="post-match-face" src="${escapeHtml(photo.url)}" ` +
     `alt="${escapeHtml(playerPhotoAlt(player, `${player.name}, maç sonrası öne çıkan oyuncu`))}" ` +
     `loading="lazy" decoding="async" width="56" height="56">`;
+}
+
+/**
+ * MAÇ SONRASI ANALİZ PANOSU
+ *
+ * Her bölüm yalnızca ölçülmüş girdilerden üretilir; verisi olmayan bölüm
+ * hiç basılmaz (services/postMatchIntelligence.js). Bu yüzden burada
+ * "veri yok" kartı yok — boş bölüm, ölçüm yapılmış ama sonuç çıkmamış
+ * izlenimi verirdi.
+ *
+ * Grafikler satır içi SVG/CSS: harici kütüphane yok, tema değişkenleriyle
+ * boyanıyor, açık ve koyu temada aynı okunurluk.
+ */
+function confidenceBadge(confidence) {
+  if (!confidence) return "";
+  const level = confidence.level;
+  const cls = level === "yüksek" ? "is-high" : level === "orta" ? "is-medium" : "is-low";
+  return `<span class="pmi-confidence ${cls}" title="Bu bölümün dayandığı ölçülerin ne kadarı mevcut">
+    <i aria-hidden="true"></i>Güven: ${escapeHtml(level)}</span>`;
+}
+
+/** Ev-deplasman karşılaştırma çubuğu. Sayılar her zaman yazılır. */
+function comparisonBar(metric, match) {
+  const home = Number(metric.home);
+  const away = Number(metric.away);
+  const total = Math.abs(home) + Math.abs(away);
+  const homePct = total ? Math.round((Math.abs(home) / total) * 100) : 50;
+  const decimals = metric.decimals || 0;
+  const fmt = (value) => (decimals ? Number(value).toFixed(decimals) : String(value)).replace(".", ",");
+  const unit = metric.unit ? escapeHtml(metric.unit) : "";
+
+  return `<div class="pmi-metric">
+    <div class="pmi-metric-head">
+      <b>${escapeHtml(fmt(home))}${unit}</b>
+      <span>${escapeHtml(metric.label)}</span>
+      <b>${escapeHtml(fmt(away))}${unit}</b>
+    </div>
+    <div class="pmi-bar" role="img" aria-label="${escapeHtml(`${metric.label}: ${match.homeTeam} ${fmt(home)}, ${match.awayTeam} ${fmt(away)}`)}">
+      <span class="pmi-bar-home" style="width:${homePct}%"></span>
+      <span class="pmi-bar-away" style="width:${100 - homePct}%"></span>
+    </div>
+  </div>`;
+}
+
+function derivedNote(derived) {
+  if (!derived) return "";
+  return `<details class="pmi-derived">
+    <summary>Bu ölçü nasıl hesaplandı?</summary>
+    <p><b>Formül:</b> ${escapeHtml(derived.formula)}</p>
+    <p><b>Girdiler:</b> ${escapeHtml(derived.inputs.join(", "))}</p>
+    <p>${escapeHtml(derived.note)}</p>
+  </details>`;
+}
+
+function intelligenceSectionHtml(section, match) {
+  const metrics = (section.metrics || []).map((metric) => comparisonBar(metric, match)).join("");
+  const readings = (section.readings || []).length
+    ? `<ul class="pmi-readings">${section.readings.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>`
+    : "";
+
+  const lines = (section.lines || []).length
+    ? `<ul class="pmi-readings">${section.lines.map((line) =>
+        `<li>${escapeHtml(line.text)} <em class="pmi-basis">${escapeHtml(line.basis)}</em></li>`).join("")}</ul>`
+    : "";
+
+  const performers = (section.performers || []).length
+    ? `<ul class="pmi-performers">${section.performers.map((player) =>
+        `<li><strong>${escapeHtml(player.name)}</strong><span>${escapeHtml(player.team)}</span>` +
+        `<b>${player.goals} gol</b>${player.minutes.length ? `<em>${escapeHtml(player.minutes.join(", "))}</em>` : ""}</li>`).join("")}</ul>`
+    : "";
+
+  const note = section.note ? `<p class="pmi-note">${escapeHtml(section.note)}</p>` : "";
+  const sources = section.sources
+    ? `<p class="pmi-sources">Kaynak: ${escapeHtml(section.sources.join(" · "))}</p>`
+    : "";
+
+  return `<article class="card pmi-section" id="pmi-${escapeHtml(section.id)}" data-pmi-section="${escapeHtml(section.id)}">
+    <div class="pmi-section-head">
+      <h3>${escapeHtml(section.title)}</h3>
+      ${confidenceBadge(section.confidence)}
+    </div>
+    ${metrics}
+    ${readings}${lines}${performers}
+    ${note}
+    ${derivedNote(section.derived)}
+    ${sources}
+  </article>`;
+}
+
+function intelligenceDashboard(match) {
+  const intelligence = buildPostMatchIntelligence(match);
+  if (!intelligence.sections.length) return "";
+
+  return `<section class="post-match-section pmi-dashboard" aria-labelledby="rapor-analiz">
+    <div class="section-head"><div class="section-title">
+      <span class="section-kicker">Maç sonrası analiz</span>
+      <h2 id="rapor-analiz">Veri panosu</h2>
+      <p>Her bölüm yalnızca bu maç için ölçülmüş istatistiklerden üretildi; verisi olmayan analiz hiç gösterilmiyor.</p>
+    </div></div>
+    <div class="pmi-grid">${intelligence.sections.map((section) => intelligenceSectionHtml(section, match)).join("")}</div>
+  </section>`;
 }
 
 function standoutSection(report) {
@@ -375,6 +477,8 @@ function pageHtml(report, match) {
         <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-oyuncu">Öne çıkan oyuncular</h2><p>Gol, asist, kart ve kritik aksiyon kayıtlarından çıkarılan katkılar.</p></div></div>
         ${standoutSection(report)}
       </section>
+
+      ${intelligenceDashboard(match)}
 
       <section class="post-match-section" aria-labelledby="rapor-momentum">
         <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-momentum">Maç momentumu</h2><p>Dakikalı olay akışından çıkarılan bölüm bölüm üstünlük dağılımı.</p></div></div>
