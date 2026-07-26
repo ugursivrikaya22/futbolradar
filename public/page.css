@@ -15477,3 +15477,21 @@ body,
   .pmi-section { padding: 0.9rem 0.95rem; }
   .pmi-metric-head { font-size: 0.72rem; }
 }
+
+/* Profil fotoğrafı: yalnızca lisanslı sağlayıcı görseli ya da baş harfli
+   yer tutucu. Kahraman satırında metnin yanında durur. */
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+  background: var(--surface-sunken);
+}
+.player-avatar.is-placeholder.profile-avatar {
+  display: grid;
+  place-items: center;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-soft);
+}

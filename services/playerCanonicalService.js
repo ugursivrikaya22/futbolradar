@@ -14,6 +14,43 @@ const MAX_ACCEPTABLE_PLAYER_DROP_RATIO = 0.2;
  * Cakir, Edin Dzeko) whose currentTeam must never flip on a single
  * provider signal.
  */
+/**
+ * Sağlayıcıdan gelen kayda KÖKEN bilgisini yazar.
+ *
+ * Bunlar uydurma alan değil, kaydın nereden ve ne zaman geldiğine dair
+ * doğrulanabilir olgular: kayıt gerçekten API-Football'un /players/squads
+ * uç noktasından, bu zaman damgasıyla alındı.
+ *
+ * Neden gerekli: yayın kapısı (cardCredibility) bir kaydı yayımlamak için
+ * izlenebilir kaynak ve doğrulama zamanı arıyor. Senkron yalnızca
+ * `lastProviderSeenAt` yazıyordu; sonuç olarak sağlayıcıdan GERÇEKTEN
+ * çekilmiş, sayısal kimliği ve lisanslı fotoğrafı olan 479 oyuncunun
+ * tamamı "kaynak bağlantısı yok / doğrulama zamanı yok" gerekçesiyle
+ * eleniyor ve hiçbir yüzeyde görünmüyordu.
+ *
+ * ratingStatus "pending" kalır: köken bilgisi kadronun doğruluğunu
+ * belgeler, sağlayıcının vermediği bir dereceyi doğrulamaz.
+ */
+const PROVIDER_SOURCE_NAME = "API-Football";
+const PROVIDER_SQUAD_ENDPOINT = "https://v3.football.api-sports.io/players/squads";
+
+function providerProvenance(squadPlayer) {
+  const seenAt = new Date().toISOString();
+  const provenance = {
+    sourceName: PROVIDER_SOURCE_NAME,
+    sourceUrl: PROVIDER_SQUAD_ENDPOINT,
+    lastVerifiedAt: seenAt,
+    // normalizePlayer'ın varsayılanı "FutbolRadar tahmini ve manuel veri
+    // kontrolü" — sağlayıcıdan birebir gelen bir kayıt için yanıltıcı.
+    sourceNote: `${PROVIDER_SOURCE_NAME} kadro uç noktasından senkronlandı.`,
+    providerName: PROVIDER_SOURCE_NAME
+  };
+  if (squadPlayer && squadPlayer.providerId) {
+    provenance.sourceUrl = `${PROVIDER_SQUAD_ENDPOINT}?player=${squadPlayer.providerId}`;
+  }
+  return provenance;
+}
+
 function reconcileSquadPlayer(canonicalPlayers, squadPlayer, team) {
   const resolution = matchCanonicalPlayer(canonicalPlayers, squadPlayer, squadPlayer.birthDate || null);
 
@@ -43,7 +80,8 @@ function reconcileSquadPlayer(canonicalPlayers, squadPlayer, team) {
       ratingStatus: "pending",
       isCurrentSuperLigPlayer: true,
       squadStatus: "active",
-      lastProviderSeenAt: new Date().toISOString()
+      lastProviderSeenAt: new Date().toISOString(),
+      ...providerProvenance(squadPlayer)
     });
     return { action: "create", player: created };
   }
@@ -79,6 +117,9 @@ function reconcileSquadPlayer(canonicalPlayers, squadPlayer, team) {
   merged.isCurrentSuperLigPlayer = true;
   merged.squadStatus = "active";
   merged.lastProviderSeenAt = new Date().toISOString();
+  // Sağlayıcı kaydı tazelendiyse köken de tazelenir; elle doğrulanmış
+  // alanlar mergePlayerWithProvider tarafından zaten korunuyor.
+  Object.assign(merged, providerProvenance(squadPlayer));
 
   return { action: "update", player: normalizePlayer(merged), conflict };
 }

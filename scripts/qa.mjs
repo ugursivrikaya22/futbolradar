@@ -373,8 +373,25 @@ function checkJson() {
   const ugurcan = players.find((player) => player.id === "ugurcan-cakir");
   expect(ugurcan && ugurcan.currentTeam === "Galatasaray", "players: Uğurcan currentTeam must be Galatasaray");
 
-  const serializedPlayers = JSON.stringify(players);
-  expect(!serializedPlayers.includes("?"), "players: mojibake marker '?' found after transfer update");
+  // MOJIBAKE, METİN ALANLARINDA ARANIR — her "?" karakteri değil.
+  //
+  // Kural "players.json içinde hiç ? olmasın"dı ve Türkçe bir harfin ?'e
+  // dönüşmesini yakalamak için yazılmıştı. Kadro senkronu köken bilgisi
+  // yazmaya başlayınca sourceUrl bir sorgu dizesi taşıyor
+  // (".../squads?player=49866") ve kural yanlış alarm veriyor. Kontrol
+  // daraltıldı, KALDIRILMADI: bozulmanın gerçekten olabileceği metin
+  // alanları ve Unicode değiştirme karakteri hâlâ sınanıyor.
+  const TEXT_FIELDS = ["name", "fullName", "currentTeam", "team", "position",
+    "secondaryPosition", "nationality", "summary", "sourceNote", "league"];
+  for (const player of players) {
+    for (const field of TEXT_FIELDS) {
+      const value = String(player[field] || "");
+      expect(!value.includes("?"),
+        `players: mojibake marker '?' in ${player.id}.${field} ("${value}")`);
+    }
+  }
+  expect(!JSON.stringify(players).includes("\uFFFD"),
+    "players: Unicode replacement character found");
 
   const matches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
   expect(Array.isArray(matches), "matches: data/matches.json must be an array");

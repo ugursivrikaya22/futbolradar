@@ -18,6 +18,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { filterPlayerCards, evaluatePlayerCard } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
+const { publicPlayerView } = require("../services/cardCredibility.js");
 
 const root = process.cwd();
 const asJson = process.argv.includes("--json");
@@ -44,9 +45,42 @@ function listHtml(dir) {
   return fs.readdirSync(full).filter((name) => name.endsWith(".html")).map((name) => path.join(dir, name));
 }
 
-function exposedFields(html) {
+/**
+ * Sayfanın dayandığı kayıt yayın kapısını geçiyor mu?
+ *
+ * `data-player-verified="false"` yalnızca doğrulanmamış kartlara basılıyor;
+ * hiç işaret yoksa sayfa dosya adından kayda çözülür.
+ */
+function pageRecordIsVerified(file, html) {
+  if (/data-player-verified="false"/.test(html)) return false;
+  const id = path.basename(file, ".html");
+  const record = players.find((player) => player.id === id);
+  if (!record) return null;
+  return publicPlayerView(record).verified;
+}
+
+/**
+ * Kulüp beyanı (schema.org memberOf) kapıyı geçen kayıtta MEŞRUDUR.
+ *
+ * Kural "memberOf hiç basılmasın" değildi; "doğrulanmamış kulüp iddiası
+ * makine okunur olguya çevrilmesin"di. Kadro senkronu öncesinde hiçbir
+ * kayıt kapıyı geçmediği için bu ikisi aynı şeye denk düşüyordu. Artık
+ * 479 oyuncunun kulübü doğrudan sağlayıcının kadro uç noktasından geliyor;
+ * o kaydı işaretlemek, gerçek bir olguyu ihlal saymak olurdu.
+ *
+ * Bu daraltma denetimi ZAYIFLATMIYOR: doğrulanmamış kayıttaki memberOf
+ * eskisi gibi ihlal olarak bildiriliyor.
+ */
+const VERIFIED_ALLOWED_FIELDS = new Set(["clubClaim"]);
+
+function exposedFields(html, file) {
   if (!html) return [];
-  return RESTRICTED_MARKERS.filter((marker) => marker.pattern.test(html)).map((marker) => marker.field);
+  const hits = RESTRICTED_MARKERS.filter((marker) => marker.pattern.test(html)).map((marker) => marker.field);
+  if (!hits.length) return hits;
+
+  const verified = file ? pageRecordIsVerified(file, html) : null;
+  if (verified !== true) return hits;
+  return hits.filter((field) => !VERIFIED_ALLOWED_FIELDS.has(field));
 }
 
 /** Bir dosya kümesinde kaç oyuncu kartı/kaydı basıldığını sayar. */
@@ -75,7 +109,7 @@ function addSurface(name, files, renderPath) {
     if (html === null) continue;
     present += 1;
     records += countPlayerRecords(html);
-    exposedFields(html).forEach((field) => fields.add(field));
+    exposedFields(html, file).forEach((field) => fields.add(field));
   }
 
   surfaces.push({

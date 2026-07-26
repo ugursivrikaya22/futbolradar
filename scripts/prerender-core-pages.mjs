@@ -23,7 +23,7 @@ const { calculateMatchRadar, normalizeText } = require("../services/matchRadarSe
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
 const { getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigFixtureService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
-const { filterPlayerCards, logRemovedCards } = require("../services/cardCredibility.js");
+const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
 
 const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
@@ -461,10 +461,35 @@ function trendPlayerSlot(limit) {
   return verified.map(simplePlayerCard).join("");
 }
 
+/**
+ * Kartın alanları KAPIDAN GEÇENLERDEN okunur, ham kayıttan değil.
+ *
+ * Kaydın kaynağının doğrulanmış olması üstündeki her sayıyı doğrulamıyor:
+ * kadro uç noktası derecelendirme, dakika ve piyasa değeri göndermiyor.
+ * Ham kayıt okunduğunda normalizePlayer'ın varsayılanları (rating 32,
+ * dakika 0, piyasa "Yakında") doğrulanmış kart görünümüyle basılıyordu.
+ */
 function simplePlayerCard(player) {
-  const rating = player.overallRating || player.aiRating || player.rating || "-";
+  const view = publicPlayerView(player);
   const age = player.computedAge || player.age || "Bilinmiyor";
-  return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(player.currentTeam || player.team)} · ${escapeHtml(player.position)}</span><h2>${escapeHtml(player.name)}</h2></div><strong class="big-value player-rating-badge">${escapeHtml(rating)}</strong></div><div class="metric-grid compact"><span>Yaş <b>${escapeHtml(age)}</b></span><span>Dakika <b>${escapeHtml(player.minutesPlayed ?? "Veri yok")}</b></span><span>Piyasa <b>${escapeHtml(formatMarketValueEur(player.marketValueEur) || "Yakında")}</b></span></div><p>${escapeHtml(player.summary || "Profil metrikleri ve transfer geçmişi oyuncu sayfasında yer alır.")}</p><a class="detail-link" href="./oyuncular/${escapeHtml(player.id)}.html">Oyuncu profilini aç</a></article>`;
+  const ratingValue = view.fields.overallRating || view.fields.aiRating || view.fields.rating;
+  const minutesValue = view.fields.minutesPlayed ?? view.fields.minutes;
+  const marketValue = view.fields.marketValueEur !== undefined
+    ? formatMarketValueEur(view.fields.marketValueEur)
+    : (view.fields.marketValue || null);
+  const clubValue = view.fields.currentTeam || view.fields.team;
+
+  const kicker = [clubValue, player.position].filter(Boolean).join(" · ");
+  const badge = ratingValue
+    ? `<strong class="big-value player-rating-badge">${escapeHtml(ratingValue)}</strong>`
+    : "";
+  const metrics = [`<span>Yaş <b>${escapeHtml(age)}</b></span>`];
+  if (minutesValue !== undefined && minutesValue !== null) {
+    metrics.push(`<span>Dakika <b>${escapeHtml(minutesValue)}</b></span>`);
+  }
+  if (marketValue) metrics.push(`<span>Piyasa <b>${escapeHtml(marketValue)}</b></span>`);
+
+  return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(kicker)}</span><h2>${escapeHtml(player.name)}</h2></div>${badge}</div><div class="metric-grid compact">${metrics.join("")}</div><p>${escapeHtml(player.summary || "Profil metrikleri ve transfer geçmişi oyuncu sayfasında yer alır.")}</p><a class="detail-link" href="./oyuncular/${escapeHtml(player.id)}.html">Oyuncu profilini aç</a></article>`;
 }
 
 /**

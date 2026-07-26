@@ -6,6 +6,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { getPlayers } = require("../services/playerService.js");
+const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const outDir = path.join(root, "oyuncular");
@@ -62,13 +63,44 @@ function playerTeamMetaPhrase(player) {
  * ve meta açıklaması, görünür HTML'den daha tehlikeli: arama motoru bunları
  * olgu olarak yutar.
  */
+/**
+ * Profil fotoğrafı — YALNIZCA lisanslı sağlayıcı barındırıcısından.
+ *
+ * resolvePlayerPhoto yalnızca media.api-sports.io adreslerini kabul ediyor;
+ * kazınmış ya da lisanssız bir görsel buraya giremez. Sağlayıcı fotoğraf
+ * vermiyorsa baş harfli yer tutucu basılır, uydurma bir görsel değil.
+ *
+ * Tembel yükleme ve alt metin zorunlu: 589 profilin her biri bir istek
+ * demek, alt metin de ekran okuyucu için tek tanım.
+ */
+function profileAvatarHtml(player) {
+  const photo = resolvePlayerPhoto(player);
+  const alt = playerPhotoAlt(player);
+
+  if (photo.isPlaceholder) {
+    return `<div class="player-avatar is-placeholder profile-avatar" role="img" aria-label="${escapeHtml(alt)}">` +
+      `<span aria-hidden="true">${escapeHtml(photo.initials)}</span></div>`;
+  }
+
+  return `<img class="player-avatar profile-avatar" src="${escapeHtml(photo.url)}" alt="${escapeHtml(alt)}" ` +
+    `width="96" height="96" loading="lazy" decoding="async">`;
+}
+
 function playerDescription(player, view) {
   if (view && !view.verified) {
     const position = player.position ? `, mevki ${player.position}` : "";
     return `${player.name}${position}. Güncel kulüp, performans ve piyasa verileri doğrulanmış ` +
       "sağlayıcı kaydıyla eşleştiğinde bu sayfada yayımlanır.";
   }
-  return `${player.name}; ${playerTeamMetaPhrase(player)}, mevki ${player.position}. Transfer geçmişi, overall rating ${player.overallRating || player.aiRating || player.rating || "yakında"}, potansiyel ${player.potentialRating || "yakında"} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
+  // Puan yalnızca KAPIDAN GEÇTİYSE cümleye girer. Kaydın kaynağının
+  // doğrulanmış olması, sağlayıcının göndermediği bir dereceyi
+  // doğrulamıyor; kadro senkronu derecelendirme döndürmüyor.
+  const fields = (view && view.fields) || {};
+  const rating = fields.overallRating || fields.aiRating || fields.rating;
+  const potential = fields.potentialRating;
+  const ratingPhrase = rating ? `, overall rating ${rating}` : "";
+  const potentialPhrase = potential ? `, potansiyel ${potential}` : "";
+  return `${player.name}; ${playerTeamMetaPhrase(player)}, mevki ${player.position}. Transfer geçmişi${ratingPhrase}${potentialPhrase} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
 }
 
 function playerCurrentTeam(player) {
@@ -256,6 +288,7 @@ function pageHtml(player) {
       </nav>
       <section class="hero">
         <div class="hero-row">
+          ${profileAvatarHtml(player)}
           <div>
             <span class="eyebrow">${escapeHtml(view.verified ? playerTeamEyebrow(player) : "Oyuncu profili")}</span>
             <h1>${escapeHtml(player.name)}</h1>

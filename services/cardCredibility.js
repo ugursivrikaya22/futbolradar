@@ -166,6 +166,92 @@ const RESTRICTED_FIELDS = [
 ];
 
 /**
+ * KAYNAK DOĞRULAMASI, ALAN DOĞRULAMASI DEĞİLDİR.
+ *
+ * Bir kaydın nereden geldiğini bilmek, o kayıttaki HER SAYIYI doğrulamaz.
+ * API-Football'un /players/squads uç noktası yalnızca kimlik, mevki, yaş,
+ * forma numarası ve fotoğraf döndürür — derecelendirme, piyasa değeri,
+ * dakika, maç, gol, asist DÖNDÜRMEZ.
+ *
+ * Kadro senkronu bu kayıtları yazdığında normalizePlayer eksik alanları
+ * varsayılanlarla dolduruyor: rating 61, aiRating 24, minutes 0, goals 0.
+ * Kayıt kaynak doğrulamasını geçtiği anda bu türetilmiş sayılar da
+ * "doğrulanmış" sayılıp yayına giriyordu. "0 gol", sağlayıcı hiç gol verisi
+ * göndermediğinde "oynadı ve atamadı" gibi okunur — ölçülmemiş bir iddia.
+ *
+ * Bu yüzden kısıtlı alanlar tek blok hâlinde açılmıyor; her biri sağlayıcı
+ * tarafından GERÇEKTEN sağlanıp sağlanmadığına göre ayrı ayrı açılıyor.
+ */
+
+/** Kadro uç noktasının birebir sağladığı alanlar. */
+const PROVIDER_SUPPLIED_FIELDS = new Set([
+  "currentTeam", "team", "currentTeamId", "squadStatus", "number", "providerId", "photo"
+]);
+
+/** Sağlayıcının doğrulanmış bir ölçüm göndermesi gereken alanlar. */
+const RATING_FIELDS = new Set([
+  "aiRating", "rating", "overallRating", "potentialRating", "formRating",
+  "threatScore", "creativityScore", "pressingScore", "continuityScore", "tempoScore",
+  "form", "formChange", "trend", "trendDirection", "impact"
+]);
+
+const COUNTING_STAT_FIELDS = new Set([
+  "minutes", "minutesPlayed", "appearances", "goals", "assists"
+]);
+
+const MARKET_VALUE_FIELDS = new Set(["marketValue", "marketValueEur"]);
+
+/**
+ * Derecelendirme yalnızca AKTİF OLARAK BAKIMI YAPILAN kayıtta yayımlanır.
+ *
+ * "estimated" tam olarak uydurulmuş değeri işaret ediyor: kadro senkronu
+ * derecelendirme döndürmüyor, normalizePlayer alanı varsayılanla dolduruyor
+ * ve sonuç "estimated" olarak işaretleniyor. "pending" henüz ölçüm yok,
+ * "stale" güncelliğini yitirmiş demek. Üçü de yayımlanamaz.
+ */
+const MAINTAINED_RATING_STATUS = new Set(["verified", "current"]);
+
+function ratingIsVerified(player) {
+  return MAINTAINED_RATING_STATUS.has(String((player && player.ratingStatus) || "").toLowerCase());
+}
+
+/**
+ * Sayım istatistikleri yalnızca gerçekten çekilmişse yayımlanır.
+ *
+ * İşaret yoksa sıfır ile "hiç ölçülmedi" ayırt edilemez; güvenli yön
+ * gizlemektir. Kadro senkronu istatistik uç noktasını çağırmıyor, bu yüzden
+ * senkronlanan kayıtlarda bu işaret oluşmuyor.
+ */
+function statsAreVerified(player) {
+  if (!player) return false;
+
+  // Açık köken işareti varsa yeter.
+  if (player.statsVerifiedAt || player.statsSource || player.statsFetchedAt) return true;
+
+  // fetchedAt/lastSyncedAt KULLANILAMAZ: normalizePlayer bu alanları null
+  // olduklarında o anki zamanla dolduruyor, dolayısıyla her kayıt "çekilmiş"
+  // görünüyor. Sentezlenen bir damga ölçüm kanıtı değildir.
+  //
+  // Sentezlenemeyen kanıt: oynanmışlığın kendisi. Kadro senkronundan gelen
+  // 479 kaydın hepsinde maç, dakika ve gol sıfır — çünkü uç nokta hiç
+  // istatistik göndermiyor. Tamamı sıfır olan bir satır "oynadı ve
+  // üretemedi" ile "hiç ölçülmedi" arasında ayrım taşımaz; güvenli yön
+  // yayımlamamaktır.
+  const played = Number(player.appearances) > 0
+    || Number(player.minutesPlayed) > 0
+    || Number(player.minutes) > 0;
+  return played;
+}
+
+function restrictedFieldIsPublishable(player, key) {
+  if (PROVIDER_SUPPLIED_FIELDS.has(key)) return true;
+  if (RATING_FIELDS.has(key)) return ratingIsVerified(player);
+  if (COUNTING_STAT_FIELDS.has(key)) return statsAreVerified(player);
+  if (MARKET_VALUE_FIELDS.has(key)) return statsAreVerified(player);
+  return false;
+}
+
+/**
  * TEK YETKİLİ, SERİLEŞTİRİLEBİLİR KARAR.
  *
  * Hem statik ön render hem tarayıcı bu nesneyi kullanır. Karar bir kez
@@ -188,13 +274,15 @@ function publicPlayerView(player, options = {}) {
     }
   }
 
+  const withheld = [];
   if (verdict.publishable) {
-    // Doğrulanmış kayıtta kısıtlı alanlar da yayımlanabilir.
+    // Kısıtlı alanlar TEK BLOK hâlinde açılmaz: her biri sağlayıcı
+    // tarafından gerçekten sağlanmışsa yayımlanır.
     for (const key of RESTRICTED_FIELDS) {
       const value = player && player[key];
-      if (value !== null && value !== undefined && String(value).trim() !== "") {
-        fields[key] = value;
-      }
+      if (value === null || value === undefined || String(value).trim() === "") continue;
+      if (restrictedFieldIsPublishable(player, key)) fields[key] = value;
+      else withheld.push(key);
     }
   }
 
@@ -205,7 +293,7 @@ function publicPlayerView(player, options = {}) {
     // Hangi alanların KASITLI olarak gizlendiği taşınır: sıfır ya da tire
     // basıp gerçek bir ölçüm sanılmasındansa, alanın yokluğu açıkça bildirilir.
     restricted: verdict.publishable
-      ? []
+      ? withheld
       : RESTRICTED_FIELDS.filter((key) => player && player[key] !== null && player[key] !== undefined && String(player[key]).trim() !== ""),
     meta: sourceMetadata(player)
   };
@@ -234,6 +322,9 @@ function logRemovedCards(scope, removed) {
 }
 
 module.exports = {
+  restrictedFieldIsPublishable,
+  ratingIsVerified,
+  statsAreVerified,
   MAX_VERIFICATION_AGE_DAYS,
   hasRealProviderId,
   evaluatePlayerCard,

@@ -203,13 +203,26 @@ function comparisonInsight(left, right) {
  * bekleniyormuş izlenimi veriyor. Kart ve bağlantı kalıyor.
  */
 function playerMiniCard(player) {
-  const verified = publicPlayerView(player).verified;
+  const view = publicPlayerView(player);
+  const verified = view.verified;
 
-  const rows = verified
-    ? `<div><dt>Takım</dt><dd>${escapeHtml(playerTeamDisplay(player))}</dd></div>
-      <div><dt>Lig</dt><dd>${escapeHtml(player.league || "Lig yakinda")}</dd></div>
-      <div><dt>Overall</dt><dd>${escapeHtml(playerRating(player) || "Yakinda")}</dd></div>
-      <div><dt>Piyasa</dt><dd>${escapeHtml(playerMarket(player))}</dd></div>`
+  // Satırlar tek tek kapıdan geçenlerden kurulur: doğrulanmış bir kayıtta
+  // bile sağlayıcının göndermediği puan ve piyasa değeri basılmaz.
+  const fields = view.fields || {};
+  const rating = fields.overallRating || fields.aiRating || fields.rating;
+  const market = fields.marketValue
+    || (fields.marketValueEur !== undefined ? formatMarketValueEur(fields.marketValueEur) : null);
+
+  const verifiedRows = [];
+  if (fields.currentTeam || fields.team) {
+    verifiedRows.push(`<div><dt>Takım</dt><dd>${escapeHtml(playerTeamDisplay(player))}</dd></div>`);
+  }
+  if (player.league) verifiedRows.push(`<div><dt>Lig</dt><dd>${escapeHtml(player.league)}</dd></div>`);
+  if (rating) verifiedRows.push(`<div><dt>Overall</dt><dd>${escapeHtml(rating)}</dd></div>`);
+  if (market) verifiedRows.push(`<div><dt>Piyasa</dt><dd>${escapeHtml(market)}</dd></div>`);
+
+  const rows = verified && verifiedRows.length
+    ? verifiedRows.join("\n      ")
     : `<div><dt>Veri durumu</dt><dd>Doğrulanmış kayıt bekleniyor</dd></div>`;
 
   return `<article class="comparison-mini-card" data-player-verified="${verified ? "true" : "false"}">

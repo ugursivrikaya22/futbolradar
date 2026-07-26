@@ -35,7 +35,6 @@ function team(player) {
 function playerCard(player, hrefPrefix = "./") {
   const view = publicPlayerView(player);
   const age = player.computedAge || player.age || "Bilinmiyor";
-  const market = formatMarketValueEur(player.marketValueEur) || player.marketValue || "Veri yok";
 
   if (!view.verified) {
     return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}" data-player-verified="false">
@@ -46,9 +45,33 @@ function playerCard(player, hrefPrefix = "./") {
   </article>`;
   }
 
+  // ALANLAR KAPIDAN GEÇENLERDEN OKUNUR, ham kayıttan DEĞİL.
+  //
+  // Kaydın kaynağı doğrulanmış olması, üstündeki her sayının doğrulandığı
+  // anlamına gelmiyor: kadro uç noktası derecelendirme, dakika ve piyasa
+  // değeri göndermiyor; normalizePlayer bu alanları varsayılanla dolduruyor.
+  // Burada ham kayıt okunduğu için o varsayılanlar (rating 32, dakika 0)
+  // doğrulanmış kart görünümüyle basılıyordu.
+  const ratingValue = view.fields.overallRating || view.fields.aiRating || view.fields.rating;
+  const minutesValue = view.fields.minutesPlayed ?? view.fields.minutes;
+  const marketValue = view.fields.marketValueEur !== undefined
+    ? formatMarketValueEur(view.fields.marketValueEur)
+    : (view.fields.marketValue || null);
+  const clubValue = view.fields.currentTeam || view.fields.team;
+
+  const kicker = [clubValue, player.position || "Mevki bekleniyor"].filter(Boolean).join(" · ");
+  const badge = ratingValue
+    ? `<strong class="big-value player-rating-badge">${escapeHtml(ratingValue)}</strong>`
+    : "";
+  const metrics = [`<span>Yaş <b>${escapeHtml(age)}</b></span>`];
+  if (minutesValue !== undefined && minutesValue !== null) {
+    metrics.push(`<span>Maç dakikası <b>${escapeHtml(minutesValue)}</b></span>`);
+  }
+  if (marketValue) metrics.push(`<span>Piyasa <b>${escapeHtml(marketValue)}</b></span>`);
+
   return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}" data-player-verified="true">
-    <div class="card-head"><div><span class="card-kicker">${escapeHtml(team(player))} · ${escapeHtml(player.position || "Mevki bekleniyor")}</span><h2>${escapeHtml(player.name)}</h2></div><strong class="big-value player-rating-badge">${escapeHtml(rating(player))}</strong></div>
-    <div class="metric-grid compact"><span>Yaş <b>${escapeHtml(age)}</b></span><span>Maç dakikası <b>${escapeHtml(player.minutesPlayed || player.minutes || "Veri yok")}</b></span><span>Piyasa <b>${escapeHtml(market)}</b></span></div>
+    <div class="card-head"><div><span class="card-kicker">${escapeHtml(kicker)}</span><h2>${escapeHtml(player.name)}</h2></div>${badge}</div>
+    <div class="metric-grid compact">${metrics.join("")}</div>
     <p>${escapeHtml(player.summary || "Form, rol ve radar metriklerini oyuncu profilinde incele.")}</p>
     <a class="detail-link" href="${escapeHtml(hrefPrefix)}${escapeHtml(player.id)}.html">Oyuncu profilini aç</a>
   </article>`;
@@ -75,7 +98,6 @@ function transferCard(transfer) {
 function profileContent(player) {
   const view = publicPlayerView(player);
   const age = player.computedAge || player.age || "Bilinmiyor";
-  const market = formatMarketValueEur(player.marketValueEur) || player.marketValue || "Piyasa değeri yakında";
 
   // Doğrulanmamış kayıtta ölçüm ızgarası hiç çizilmez. "Veri yok" yazan bir
   // hücre bile, yanındaki dolu hücrelerle birlikte okununca ölçülmüş bir
@@ -88,14 +110,20 @@ function profileContent(player) {
     </article>`;
   }
 
+  // Izgara KAPIDAN GEÇEN alanlardan kurulur. Ham kayıt okunduğunda kadro
+  // senkronundan gelen varsayılanlar (Overall 24, Gol 0, Dakika 0) ölçülmüş
+  // bir tablo gibi basılıyordu; "Veri yok" yazan hücreler de yanlarındaki
+  // dolu hücrelerle birlikte okununca aynı izlenimi güçlendiriyordu.
+  // Değeri olmayan ölçü satır AÇMAZ.
+  const f = view.fields;
   const metrics = [
-    ["Overall", rating(player)],
-    ["Form", player.formRating || player.formScore || "Veri yok"],
-    ["Gol", player.goals ?? "Veri yok"],
-    ["Asist", player.assists ?? "Veri yok"],
-    ["Dakika", player.minutesPlayed || player.minutes || "Veri yok"],
-    ["Piyasa", market]
-  ];
+    ["Overall", f.overallRating || f.aiRating || f.rating],
+    ["Form", f.formRating || f.form],
+    ["Gol", f.goals],
+    ["Asist", f.assists],
+    ["Dakika", f.minutesPlayed ?? f.minutes],
+    ["Piyasa", f.marketValue || (f.marketValueEur !== undefined ? formatMarketValueEur(f.marketValueEur) : null)]
+  ].filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== "");
   const radar = player.radar || {};
   // Axes are null until real performance data exists; rendering them anyway
   // produces bare labels with no value, so drop them and fall back to the
@@ -120,8 +148,14 @@ function profileContent(player) {
     .slice(0, 5)
     .map(([key, value]) => `<span>${escapeHtml(RADAR_LABELS[key] || key)} <b>${escapeHtml(value)}</b></span>`)
     .join("");
-  return `<section class="profile-section profile-content-prerender" aria-label="${escapeHtml(player.name)} performans özeti">
-    <div class="metric-grid profile-metrics">${metrics.map(([label, value]) => `<span>${escapeHtml(label)} <b>${escapeHtml(value)}</b></span>`).join("")}</div>
+  // İşaret, QA ve denetimin "bu sayfa doğrulanmış bir kayda mı dayanıyor"
+  // sorusunu yanıtladığı tek yer; doğrulanmamış dalda basılıyor ama
+  // doğrulanmış dalda unutulmuştu, bu yüzden 480 profil işaretsiz kalıyordu.
+  const metricsHtml = metrics.length
+    ? `<div class="metric-grid profile-metrics">${metrics.map(([label, value]) => `<span>${escapeHtml(label)} <b>${escapeHtml(value)}</b></span>`).join("")}</div>`
+    : "";
+  return `<section class="profile-section profile-content-prerender" data-player-verified="true" aria-label="${escapeHtml(player.name)} performans özeti">
+    ${metricsHtml}
     <div class="profile-section-head"><h2>Oyuncu özeti</h2><span>${escapeHtml(team(player))} · ${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)} yaş</span></div>
     <p>${escapeHtml(player.summary || "Oyuncunun formu, rol etkisi ve radar metrikleri birlikte okunur.")}</p>
     <div class="radar-mini-bars">${radarItems || "<span>Alt metrikler yakında</span>"}</div>

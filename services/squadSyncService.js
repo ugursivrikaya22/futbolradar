@@ -90,6 +90,18 @@ function detectProviderIdConflicts(squadSnapshots) {
  * name. Name-only similarity is reported separately for manual review — it
  * is never used to auto-merge two records.
  */
+/**
+ * İsim karşılaştırması için BOŞLUK SADELEŞTİRİLİR.
+ *
+ * normalizeText iç boşlukları sıkıştırmıyor; sağlayıcı "Taylan  Bulut"
+ * (çift boşluk) gönderdiğinde kayıt "Taylan Bulut" ile eşleşmedi ve aynı
+ * oyuncu için İKİNCİ bir profil açıldı. Çift boşluk gözle görünmez, bu
+ * yüzden hata veride sessizce duruyordu.
+ */
+function normalizedName(value) {
+  return normalizeText(value).replace(/\s+/g, " ").trim();
+}
+
 function matchCanonicalPlayer(canonicalPlayers, providerPlayer, providerBirthDate) {
   const byProviderId = canonicalPlayers.find((player) => player.providerId && providerPlayer.providerId && player.providerId === providerPlayer.providerId);
   if (byProviderId) {
@@ -98,14 +110,14 @@ function matchCanonicalPlayer(canonicalPlayers, providerPlayer, providerBirthDat
 
   if (providerBirthDate) {
     const byBirthAndName = canonicalPlayers.find((player) => {
-      return player.birthDate === providerBirthDate && normalizeText(player.name) === normalizeText(providerPlayer.name);
+      return player.birthDate === providerBirthDate && normalizedName(player.name) === normalizedName(providerPlayer.name);
     });
     if (byBirthAndName) {
       return { match: byBirthAndName, method: "birthDate+name" };
     }
   }
 
-  const nameOnlyCandidate = canonicalPlayers.find((player) => normalizeText(player.name) === normalizeText(providerPlayer.name));
+  const nameOnlyCandidate = canonicalPlayers.find((player) => normalizedName(player.name) === normalizedName(providerPlayer.name));
   if (nameOnlyCandidate) {
     return { match: null, method: "name-only-review-required", reviewCandidate: nameOnlyCandidate };
   }
@@ -114,6 +126,7 @@ function matchCanonicalPlayer(canonicalPlayers, providerPlayer, providerBirthDat
 }
 
 module.exports = {
+  normalizedName,
   fetchTeamSquad,
   buildSquadSnapshot,
   evaluateSquadSyncSafety,

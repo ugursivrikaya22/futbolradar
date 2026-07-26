@@ -38,7 +38,29 @@ const verifiedSample = {
   sourceUrl: "https://media.api-sports.io/football/players/276.png",
   lastVerifiedAt: "2026-07-20T12:00:00+03:00",
   dataStatus: "verified", ratingStatus: "current",
+  // Ölçüm zamanı, kaydın istatistiklerinin GERÇEKTEN çekildiğini gösterir.
+  // Kadro senkronundan gelen kayıtlarda bu alan null: sayaçları sıfır ama
+  // ölçülmemiş. İkisini ayırt eden işaret bu.
+  fetchedAt: "2026-07-20T12:00:00+03:00",
   overallRating: 82, marketValueEur: 12000000, minutesPlayed: 1800
+};
+
+/**
+ * Kadro senkronundan gelen kaydın BİREBİR şekli: sayısal sağlayıcı kimliği,
+ * lisanslı fotoğraf, izlenebilir kaynak — ama derecelendirme ve istatistik
+ * YOK (uç nokta göndermiyor, varsayılanlar dolduruyor).
+ */
+const squadSyncedSample = {
+  id: "test-synced", name: "Senkron Oyuncu", providerId: "312948",
+  currentTeam: "Gaziantep FK", position: "Orta saha",
+  sourceName: "API-Football",
+  sourceUrl: "https://v3.football.api-sports.io/players/squads?player=312948",
+  lastVerifiedAt: "2026-07-26T23:00:00+03:00",
+  photo: "https://media.api-sports.io/football/players/312948.png",
+  dataStatus: "provider", ratingStatus: "estimated",
+  fetchedAt: null, lastSyncedAt: null,
+  overallRating: 24, aiRating: 24, rating: 61,
+  minutesPlayed: 0, minutes: 0, appearances: 0, goals: 0, assists: 0
 };
 
 function listHtml(dir) {
@@ -71,6 +93,38 @@ function testPublicViewKeepsFieldsForVerifiedPlayer() {
   assert.equal(view.restricted.length, 0);
 }
 
+/**
+ * KAYNAK DOĞRULAMASI ALAN DOĞRULAMASI DEĞİLDİR.
+ *
+ * Kadro senkronu 479 oyuncuyu sayısal kimlik, lisanslı fotoğraf ve
+ * izlenebilir kaynakla getiriyor — kayıt yayın kapısını haklı olarak
+ * geçiyor. Ama uç nokta derecelendirme, dakika, maç, gol, asist
+ * GÖNDERMİYOR; normalizePlayer bunları varsayılanla dolduruyor
+ * (rating 61, aiRating 24, gol 0). Kapı tek blok hâlinde açıldığında bu
+ * türetilmiş sayılar doğrulanmış kart görünümüyle yayına giriyordu.
+ *
+ * "0 gol", sağlayıcı hiç gol verisi göndermediğinde "oynadı ve atamadı"
+ * diye okunur — ölçülmemiş bir iddia.
+ */
+function testProviderSuppliedFieldsPublishButDerivedOnesDoNot() {
+  const view = credibility.publicPlayerView(squadSyncedSample, { now });
+
+  assert.equal(view.verified, true, "izlenebilir kaynaklı sağlayıcı kaydı kapıyı geçmeli");
+
+  // Uç noktanın GERÇEKTEN gönderdiği alanlar yayımlanır.
+  assert.equal(view.fields.currentTeam, "Gaziantep FK", "kadro uç noktası kulübü veriyor");
+  assert.ok(view.fields.photo, "sağlayıcı fotoğrafı yayımlanmalı");
+
+  // Sağlayıcının göndermediği, varsayılandan gelen sayılar YAYIMLANMAZ.
+  for (const field of ["rating", "aiRating", "overallRating",
+    "minutes", "minutesPlayed", "appearances", "goals", "assists"]) {
+    assert.ok(!(field in view.fields),
+      `${field} sağlayıcıdan gelmiyor, yayımlanmamalı`);
+    assert.ok(view.restricted.includes(field),
+      `${field} gizlenen alanlar listesinde bildirilmeli`);
+  }
+}
+
 // ── 2. Üretilmiş çıktı ──────────────────────────────────────────────────────
 
 function testProfilePagesExposeNoRestrictedFields() {
@@ -93,6 +147,7 @@ function testJsonLdCarriesNoUnverifiedClubClaim() {
     "orta-sahalar.html", "genc-yetenekler.html", "en-iyi-oyuncular.html", "index.html"].includes(name));
 
   let withLd = 0;
+  let unverifiedChecked = 0;
   for (const file of files) {
     const html = fs.readFileSync(path.join(root, "oyuncular", file), "utf8");
     const block = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
@@ -103,10 +158,24 @@ function testJsonLdCarriesNoUnverifiedClubClaim() {
     const person = (graph["@graph"] || []).find((node) => node["@type"] === "Person");
     if (!person) continue;
 
-    assert.ok(!("memberOf" in person), `${file}: doğrulanmamış kulüp schema.org ile beyan edilmemeli`);
+    // Kural "memberOf hiç basılmasın" DEĞİL: "DOĞRULANMAMIŞ kulüp iddiası
+    // makine okunur olguya çevrilmesin". Kadro senkronu öncesinde hiçbir
+    // kayıt kapıyı geçmediği için ikisi aynı şeye denk düşüyordu. Artık
+    // 479 oyuncunun kulübü sağlayıcının kadro uç noktasından geliyor.
+    const record = players.find((player) => player.id === path.basename(file, ".html"));
+    const verified = record ? credibility.publicPlayerView(record).verified : false;
+    if (!verified) {
+      assert.ok(!("memberOf" in person), `${file}: doğrulanmamış kulüp schema.org ile beyan edilmemeli`);
+    } else if ("memberOf" in person) {
+      const claimed = person.memberOf && person.memberOf.name;
+      assert.equal(claimed, record.currentTeam || record.team,
+        `${file}: beyan edilen kulüp kayıttaki kulüpten farklı`);
+      unverifiedChecked += 1;
+    }
     assert.ok(!/rating \d/i.test(person.description || ""), `${file}: JSON-LD açıklamasında puan olmamalı`);
   }
   assert.ok(withLd >= 100, `JSON-LD taşıyan profil sayısı beklenenden az: ${withLd}`);
+  assert.ok(unverifiedChecked > 0, "doğrulanmış kulüp beyanları da denetlenmeli");
 }
 
 function testComparisonPagesExposeNoRatings() {
@@ -147,7 +216,11 @@ function testSearchIndexCarriesNoClubClaim() {
     `(dizin: ${entries.length}, veri kümesi: ${players.length})`);
 
   for (const entry of entries) {
-    const player = players.find((item) => entry.href.includes(item.id));
+    // href TAM eşleşmeli: "oyuncular/taylan-bulut-besiktas.html" içinde
+    // "taylan-bulut" alt dizesi de geçiyor ve includes() yanlış kaydı
+    // seçip doğrulanmış bir girdiyi doğrulanmamış sanıyordu.
+    const slugFromHref = entry.href.replace(/^.*\//, "").replace(/\.html$/, "");
+    const player = players.find((item) => item.id === slugFromHref);
     if (!player) continue;
     if (credibility.publicPlayerView(player).verified) continue;
 
@@ -258,6 +331,7 @@ function testSyncRespectsRateLimit() {
 const tests = [
   testPublicViewHidesRestrictedFields,
   testPublicViewKeepsFieldsForVerifiedPlayer,
+  testProviderSuppliedFieldsPublishButDerivedOnesDoNot,
   testProfilePagesExposeNoRestrictedFields,
   testJsonLdCarriesNoUnverifiedClubClaim,
   testComparisonPagesExposeNoRatings,
