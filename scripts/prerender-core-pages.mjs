@@ -272,10 +272,22 @@ function staticFeaturedFixture() {
   const upcomingCount = todayList.length - finishedCount - liveCount;
   const featured = todayList[0] || list[0] || null;
 
+  // "Analizi hazır" istemcide de aynı kuralla sayılır (app.js:
+  // matchHasReadyAnalysis): maçın yayımlanabilir bir okuması var mı? Statik
+  // karşılığın eksik kalması, sayfa JS çalışmadan açıldığında sayacın hiç
+  // görünmemesine ve ilk boyamada düzenin kaymasına yol açıyordu.
+  const analysisReadyCount = todayList.filter((match) => Boolean(
+    match.summary ||
+    (match.analysis && (match.analysis.headline || match.analysis.lead)) ||
+    (match.events || []).length ||
+    (match.statistics || []).length
+  )).length;
+
   const quickStats = `<div class="quick-stats" aria-label="Bugünün maç özeti">
       <a class="quick-stat${liveCount ? " is-live" : ""}" href="./canli-skor.html"><span>Canlı</span><b class="live-number">${liveCount}</b></a>
       <a class="quick-stat" href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>${Math.max(upcomingCount, 0)}</b></a>
       <a class="quick-stat" href="./bugunun-maclari.html?status=finished"><span>Biten</span><b>${finishedCount}</b></a>
+      <a class="quick-stat${analysisReadyCount ? " is-ready" : ""}" href="./mac-merkezi.html"><span>Analizi hazır</span><b>${analysisReadyCount}</b></a>
       <a class="quick-stat" href="./bugunun-maclari.html"><span>Toplam</span><b>${todayList.length}</b></a>
     </div>`;
 
