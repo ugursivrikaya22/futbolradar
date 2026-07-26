@@ -99,7 +99,13 @@ jobs:
           APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
           APIFOOTBALL_LEAGUE_ID: ${{ secrets.APIFOOTBALL_LEAGUE_ID }}
           APIFOOTBALL_SEASON: ${{ secrets.APIFOOTBALL_SEASON }}
-        run: node scripts/preflight-api-football.mjs --resolve
+        # --probe olmadan kapı yalnızca anahtarın VAR OLDUĞUNU doğrular.
+        # İptal edilmiş ya da limiti dolmuş bir anahtar kapıyı açar, kadro
+        # senkronu ilk çağrıda düşer ve aynı zincirdeki maç sonucu senkronunu
+        # ve derlemeyi de yanında götürürdü. Lig kimliği env'den/önbellekten
+        # geldiğinde çözümleme ağa hiç çıkmadığı için tek doğrulama noktası
+        # budur. Maliyeti günde iki koşuda birkaç çağrı.
+        run: node scripts/preflight-api-football.mjs --resolve --probe
 
       - name: Sync Süper Lig teams and squads
         if: steps.apifootball.outputs.ready == 'true'
@@ -109,10 +115,12 @@ jobs:
           APIFOOTBALL_SEASON: ${{ secrets.APIFOOTBALL_SEASON }}
         run: node scripts/sync-super-lig-squads.mjs --apply
 
+      # Bu adım tamamen çevrimdışı: data/super-lig-squads.json'ı
+      # data/players.json ile birleştirir, hiçbir sağlayıcı çağrısı yapmaz
+      # ve anlık görüntü yoksa kendi kendine no-op eder. Ön kontrole
+      # bağlanması yanlış bir bağımlılık olurdu — anahtar geçici olarak
+      # yokken önceki koşudan gelen kadroların birleştirilmesini engellerdi.
       - name: Merge synced squads into canonical player data
-        if: steps.apifootball.outputs.ready == 'true'
-        env:
-          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
         run: node scripts/sync-canonical-players.mjs --apply
 
       - name: Validate team/player data
@@ -176,6 +184,12 @@ jobs:
   live-refresh:
     if: github.event.schedule == '*/5 * * * *'
     runs-on: ubuntu-latest
+    # Anahtar iş düzeyinde tanımlanır ki adım koşullarında okunabilsin:
+    # `secrets` bağlamı adım `if`inde kullanılamaz, `env` kullanılabilir.
+    # Tanımsız bir secret boş dizeye açılır, dolayısıyla karşılaştırma
+    # doğru çalışır.
+    env:
+      APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -185,21 +199,25 @@ jobs:
         with:
           node-version: 20
 
+      # Sağlayıcıya ihtiyaç duyan üç adım anahtar yokken açıkça ATLANIR.
+      # Daha önce koşup sessizce hiçbir şey yapmıyorlardı; koşu yeşil
+      # görünüyor ama neden bir şey olmadığı görünmüyordu. Burada ön kontrol
+      # KULLANILMIYOR: bu iş beş dakikada bir koşuyor, günde 288 kez ağa
+      # çıkan bir doğrulama kotayı boşa harcardı. Anahtarın kullanılabilir
+      # olup olmadığı günlük işin ön kontrolünde bir kez sınanıyor; buradaki
+      # kontrol yalnızca "tanımlı mı" sorusunu ücretsiz yanıtlıyor.
       - name: Refresh official lineups
-        env:
-          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
+        if: env.APIFOOTBALL_API_KEY != ''
         run: node scripts/refresh-official-lineups.mjs --apply
 
       # Maç biter bitmez sonucu çekip raporu üretir. Beş dakikalık döngüde
       # olması, biten bir maçın raporunun ertesi güne kalmamasını sağlar.
       - name: Backfill missing API-Football fixture ids
-        env:
-          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
+        if: env.APIFOOTBALL_API_KEY != ''
         run: node scripts/backfill-provider-ids.mjs --apply
 
       - name: Sync finished match results
-        env:
-          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
+        if: env.APIFOOTBALL_API_KEY != ''
         run: node scripts/sync-match-results.mjs --apply
 
       - name: Regenerate match reports

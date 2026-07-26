@@ -159,6 +159,48 @@ function verdictLabel(candidate) {
   return label;
 }
 
+/**
+ * GitHub koşu özeti. Anahtar hiçbir biçimde yazılmaz — yalnızca eksik
+ * değişkenin ADI, gerekçesi ve nereye tanımlanacağı.
+ */
+function writeStepSummary(ready, blockers, resolution) {
+  const file = process.env.GITHUB_STEP_SUMMARY;
+  if (!file) return;
+
+  const lines = ready
+    ? [
+      "### ✅ API-Football yapılandırması hazır",
+      "",
+      `Lig kimliği: \`${resolution.leagueId}\` (${resolution.source})`,
+      "",
+      "Kadro senkronu bu koşuda gerçek veriyle çalışacak."
+    ]
+    : [
+      "### ⚠️ API-Football yapılandırması eksik — kadro senkronu atlandı",
+      "",
+      "Sahte kadro üretilmedi; eksik veriyle sayfa doldurulmadı.",
+      "",
+      ...blockers.flatMap((blocker) => [
+        `**${blocker.title}** — \`${blocker.id}\``,
+        "",
+        blocker.detail,
+        "",
+        blocker.fix,
+        ""
+      ]),
+      "Ayrıntılı kurulum: `docs/api-football-setup.md`",
+      "",
+      "Secret eklendiğinde kod değişikliği gerekmez; bir sonraki koşuda bu adım " +
+        "kendiliğinden gerçek veriyle çalışır."
+    ];
+
+  try {
+    fs.appendFileSync(file, `${lines.join("\n")}\n`, "utf8");
+  } catch {
+    /* Özet yazılamazsa ön kontrol yine çalışır; yalnızca rapor kaybolur. */
+  }
+}
+
 function printBlockers(blockers) {
   line("");
   line("API-Football yapılandırması EKSİK — kadro senkronu çalıştırılmayacak.");
@@ -222,6 +264,28 @@ async function main() {
     line("");
     line("  Sağlayıcı doğrulaması (--probe)");
     const probe = await apiFootballProvider.probeCredentials();
+
+    // Anahtarın VAR OLMASI, KULLANILABİLİR olması demek değil. İptal edilmiş,
+    // askıya alınmış ya da limiti dolmuş bir anahtar kapıyı açar, ardından
+    // kadro senkronu ilk çağrıda düşer ve aynı doğrusal zincirdeki maç
+    // sonucu senkronuyla site derlemesini de yanında götürürdü. Lig kimliği
+    // env'den ya da önbellekten geldiğinde çözümleme hiç ağa çıkmadığı için
+    // bu tek doğrulama noktası.
+    const accepted = (probe.candidates || []).filter((candidate) =>
+      candidate.verdict === "ACCEPTED" || candidate.verdict === "ACCEPTED_NO_DETAIL");
+
+    if (!accepted.length) {
+      blockers.push({
+        id: "APIFOOTBALL_API_KEY",
+        title: "Anahtar tanımlı ama sağlayıcı kabul etmiyor",
+        detail: "Anahtar gönderildi ve reddedildi. En sık sebepler: iptal edilmiş anahtar, askıya alınmış " +
+          "hesap, paketin ilgili sezona erişmemesi ya da günlük limitin dolması. Aşağıdaki satırlar " +
+          "sağlayıcının her aday için verdiği yanıtı gösteriyor.",
+        fix: "Panelden (https://dashboard.api-football.com) anahtarın durumunu ve plan kapsamını " +
+          "kontrol et; gerekiyorsa yeni anahtarı üç ortama da yeniden tanımla."
+      });
+    }
+
     for (const candidate of probe.candidates || []) {
       // probeCredentials'ın gerçek alanı `verdict`. Daha önce burada olmayan
       // bir `ok` alanı okunuyordu ve GEÇERLİ bir anahtar "reddedildi" diye
@@ -265,11 +329,36 @@ async function main() {
       "kadro senkronu atlandı. Sahte veri üretilmedi.");
   }
 
+  // Koşu özetini bu adım yazmalı: kadro senkronu kapı kapalıyken hiç
+  // çalışmıyor, dolayısıyla oradaki özet yazıcısına ulaşılmıyor. Özet
+  // yazılmasaydı "koşu özeti neyin eksik olduğunu söyler" iddiası boşta
+  // kalırdı — operatör yalnızca sessizce atlanmış adımlar görürdü.
+  writeStepSummary(ready, blockers, resolution);
+
   process.exitCode = ready ? 0 : 1;
 }
 
 main().catch((error) => {
   // Hata nesnesi anahtar taşımaz; sağlayıcı katmanı yalnızca kod ve mesaj döner.
-  console.error(`Ön kontrol beklenmedik şekilde başarısız oldu: ${error && error.message ? error.message : error}`);
+  const message = error && error.message ? error.message : String(error);
+  console.error(`Ön kontrol beklenmedik şekilde başarısız oldu: ${message}`);
+
+  // Çöken bir ön kontrol, kapıyı kapalı bırakır (çıktı yazılmadığı için
+  // karşılaştırma 'true' ile eşleşmez) — doğru yön. Ama sessizce çökerse
+  // operatör kadroların neden güncellenmediğini göremez; koşu sağlıklı
+  // görünür. Bu yüzden çökme de görünür bir uyarı üretir.
+  if (process.env.GITHUB_ACTIONS === "true") {
+    console.log(`::warning::API-Football ön kontrolü çöktü: ${message.slice(0, 200)}. ` +
+      "Kadro senkronu atlandı; sahte veri üretilmedi.");
+  }
+
+  if (process.env.GITHUB_OUTPUT) {
+    try {
+      fs.appendFileSync(process.env.GITHUB_OUTPUT, "ready=false\n", "utf8");
+    } catch {
+      /* Çıktı yazılamazsa kapı yine kapalı kalır: boş değer 'true' değildir. */
+    }
+  }
+
   process.exitCode = 1;
 });

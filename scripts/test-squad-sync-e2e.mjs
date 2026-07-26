@@ -376,6 +376,76 @@ async function testPreflightProbeReportsValidKeyAsAccepted() {
   }
 }
 
+/**
+ * Anahtarın VAR OLMASI, KULLANILABİLİR olması demek değil. İptal edilmiş bir
+ * anahtar kapıyı açsaydı kadro senkronu ilk çağrıda düşer ve aynı doğrusal
+ * zincirdeki maç sonucu senkronunu ve site derlemesini de yanında götürürdü.
+ * Lig kimliği env'den geldiğinde çözümleme ağa hiç çıkmaz, dolayısıyla
+ * --probe tek doğrulama noktasıdır.
+ */
+async function testRevokedKeyClosesTheGate() {
+  const workspace = makeWorkspace();
+  const outputFile = path.join(workspace, "gh-output");
+  fs.writeFileSync(outputFile, "", "utf8");
+
+  // Her isteği reddeden sağlayıcı: anahtar var ama tanınmıyor.
+  const server = http.createServer((req, res) => {
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ errors: ["Error/Missing application key."], response: [] }));
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const baseUrl = `http://127.0.0.1:${server.address().port}`;
+
+  try {
+    const result = await runScript(PREFLIGHT_SCRIPT, workspace, {
+      APIFOOTBALL_API_KEY: SECRET_KEY,
+      APIFOOTBALL_API_BASE_URL: baseUrl,
+      // Lig kimliği env'de: çözümleme ağa çıkmaz, yalnızca --probe doğrular.
+      APIFOOTBALL_LEAGUE_ID: String(SUPER_LIG_ID),
+      GITHUB_ACTIONS: "true",
+      GITHUB_OUTPUT: outputFile
+    }, ["--resolve", "--probe"]);
+
+    assert.notEqual(result.code, 0, "reddedilen anahtarla ön kontrol geçmemeli");
+
+    const output = fs.readFileSync(outputFile, "utf8");
+    assert.ok(/^ready=false$/m.test(output),
+      `reddedilen anahtarda kapı kapanmalı, çıktı: ${JSON.stringify(output)}`);
+    assert.ok(!/^ready=true$/m.test(output), "reddedilen anahtarda ready=true yazılmamalı");
+    assert.ok(!result.stdout.includes(SECRET_KEY), "anahtar yazılmamalı");
+  } finally {
+    await closeServer(server);
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+}
+
+/**
+ * Kapı kapandığında kadro senkronu HİÇ çalışmıyor; özet yazıcısı orada
+ * olsaydı operatör yalnızca sessizce atlanmış adımlar görürdü. Özeti yazan
+ * taraf, gerçekten koşan adım olmalı.
+ */
+async function testPreflightWritesRunSummaryWhenBlocked() {
+  const workspace = makeWorkspace();
+  const summaryFile = path.join(workspace, "gh-summary");
+  fs.writeFileSync(summaryFile, "", "utf8");
+
+  await runScript(PREFLIGHT_SCRIPT, workspace, {
+    ...BLANK_CREDENTIALS,
+    GITHUB_ACTIONS: "true",
+    GITHUB_STEP_SUMMARY: summaryFile
+  }, []);
+
+  try {
+    const summary = fs.readFileSync(summaryFile, "utf8");
+    assert.ok(summary.trim(), "koşu özeti boş kalmamalı");
+    assert.ok(summary.includes("APIFOOTBALL_API_KEY"), "eksik değişken özet içinde adıyla geçmeli");
+    assert.ok(/docs\/api-football-setup\.md/.test(summary), "kurulum belgesine yönlendirmeli");
+    assert.ok(!summary.includes(SECRET_KEY), "özet anahtar içermemeli");
+  } finally {
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+}
+
 /** CI kapısının dayandığı çıktı: eksik yapılandırmada ready=false. */
 async function testPreflightWritesCiGateOutput() {
   const workspace = makeWorkspace();
@@ -474,12 +544,15 @@ const tests = [
   testWrongLeagueIdDoesNotSilentlyProduceEmptyData,
   testSquadsFlowIntoCanonicalPlayerData,
   testPreflightProbeReportsValidKeyAsAccepted,
-  testPreflightWritesCiGateOutput
+  testPreflightWritesCiGateOutput,
+  testRevokedKeyClosesTheGate,
+  testPreflightWritesRunSummaryWhenBlocked
 ];
 
 for (const test of tests) {
   await test();
 }
 
-console.log("Squad sync e2e tests passed (18 takım + kadro, otomatik lig çözümleme, canonical oyuncu " +
-  "birleştirme, engelli koşuda sıfır yazım, anahtar sızıntısı yok).");
+console.log(`Squad sync e2e tests passed (${tests.length} senaryo: 18 takım + kadro, otomatik lig ` +
+  "çözümleme, canonical oyuncu birleştirme, yanlış lig reddi, engelli koşuda sıfır yazım, " +
+  "iptal edilmiş anahtarda kapalı kapı, koşu özeti, anahtar sızıntısı yok).");
