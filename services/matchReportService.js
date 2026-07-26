@@ -360,6 +360,146 @@ function buildStandoutPlayers(match) {
 }
 
 // ── 3. İstatistik analizi ───────────────────────────────────────────────────
+/** Olay dakikasını sayıya çevirir: "37'", "90+2'" -> 37, 92. */
+function eventMinute(event) {
+  const raw = String((event && event.time) || "").replace(/['’\s]/g, "");
+  if (!raw) return null;
+  const parts = raw.split("+").map((part) => Number(part));
+  if (!parts.length || !Number.isFinite(parts[0])) return null;
+  return parts.reduce((total, part) => total + (Number.isFinite(part) ? part : 0), 0);
+}
+
+/**
+ * MAÇ MOMENTUMU — olay akışından türetilir, uydurulmaz.
+ *
+ * Momentum burada bir tahmin modeli değil, ÖLÇÜLEN bir şey: maçı yarılara
+ * bölüp her yarıda hangi takımın kaç kayda değer olay ürettiğine bakıyoruz.
+ * Kaynak, sağlayıcının olay akışı (goller, kartlar, kritik kurtarışlar).
+ *
+ * Dakikası okunamayan olaylar sayıma girmez — "bir yerde olmuş" bilgisi
+ * momentum için işe yaramaz ve varsayılan bir dakika atamak veriyi
+ * uydurmak olurdu.
+ *
+ * İki taraflı en az iki dakikalı olay yoksa bölüm "veri yok" der. Tek golle
+ * momentum grafiği çizmek, ölçüm gibi görünen bir süs olurdu.
+ */
+function buildMomentum(match) {
+  const events = Array.isArray(match.events) ? match.events : [];
+  const timed = events
+    .map((event) => ({ event, minute: eventMinute(event), team: eventTeamName(event) }))
+    .filter((item) => item.minute !== null && item.team);
+
+  if (timed.length < 2) {
+    return {
+      status: "unavailable",
+      reason: `${match.homeTeam} - ${match.awayTeam} karşılaşmasının dakikalı olay akışı momentum çıkarmaya yetmiyor. ` +
+        "Sağlayıcıdan olay verisi geldiğinde bu bölüm otomatik dolar."
+    };
+  }
+
+  // Yarım saatlik dilimler: 0-30, 30-60, 60-90+. Maçın gerçek uzunluğuna
+  // göre son dilim uzayabilir.
+  const lastMinute = Math.max(90, ...timed.map((item) => item.minute));
+  const bounds = [[0, 30], [30, 60], [60, lastMinute + 1]];
+
+  const phases = bounds.map(([from, to]) => {
+    const inPhase = timed.filter((item) => item.minute >= from && item.minute < to);
+    const home = inPhase.filter((item) => item.team === match.homeTeam).length;
+    const away = inPhase.filter((item) => item.team === match.awayTeam).length;
+    const label = to > 90 ? `${from}+` : `${from}-${to}`;
+
+    return {
+      label: `${label} dk`,
+      home,
+      away,
+      // Üstünlük yalnızca fark varsa iddia edilir; eşitlikte "dengeli".
+      leader: home === away ? null : (home > away ? match.homeTeam : match.awayTeam),
+      events: inPhase.length
+    };
+  });
+
+  const goals = timed.filter((item) => /gol/i.test(String(item.event.type || "")));
+  const firstGoal = goals.length ? goals[0] : null;
+
+  const readings = phases
+    .filter((phase) => phase.events > 0)
+    .map((phase) => phase.leader
+      ? `${phase.label}: ${phase.leader} ${Math.max(phase.home, phase.away)}-${Math.min(phase.home, phase.away)} olayla öne çıktı.`
+      : `${phase.label}: ${phase.home}-${phase.away} dengeli bir bölüm.`);
+
+  if (firstGoal) {
+    readings.unshift(`İlk gol ${firstGoal.minute}. dakikada ${firstGoal.team} tarafından geldi.`);
+  }
+
+  return {
+    status: "ready",
+    phases,
+    // Kaç olaydan türetildiği açıkça taşınıyor: iki olaydan çıkan momentum
+    // ile yirmi olaydan çıkan momentum aynı ağırlıkta okunmamalı.
+    sampleSize: timed.length,
+    confidence: timed.length >= 6 ? "yüksek" : timed.length >= 4 ? "orta" : "sınırlı",
+    readings
+  };
+}
+
+/**
+ * TAKIM SİNYALLERİ — yalnızca ölçülmüş istatistiklerden.
+ *
+ * Her sinyal tek bir gerçek istatistiğe dayanır ve hangi ölçüden geldiğini
+ * taşır. Ölçü yoksa sinyal üretilmez; "muhtemelen baskılıydı" türü bir
+ * çıkarım yapılmaz.
+ */
+function buildSignals(match) {
+  const stats = Array.isArray(match.statistics) ? match.statistics : [];
+  if (!stats.length) {
+    return {
+      status: "unavailable",
+      reason: `${match.homeTeam} - ${match.awayTeam} için takım sinyalleri istatistik dökümüne dayanır; ` +
+        "sağlayıcıdan bu maçın istatistikleri henüz gelmedi."
+    };
+  }
+
+  const definitions = [
+    { stat: "Topla oynama", label: "Oyun kontrolü", threshold: 60 },
+    { stat: "Gol beklentisi (xG)", label: "Pozisyon kalitesi", threshold: null },
+    { stat: "Toplam şut", label: "Şut hacmi", threshold: null },
+    { stat: "İsabetli şut", label: "İsabet", threshold: null },
+    { stat: "Pas isabeti", label: "Pas güvenliği", threshold: 85 },
+    { stat: "Korner", label: "Baskı sürekliliği", threshold: null }
+  ];
+
+  const signals = [];
+  for (const definition of definitions) {
+    const pair = statPair(match, definition.stat);
+    if (!pair || !isNumber(pair.home) || !isNumber(pair.away)) continue;
+    if (pair.home === pair.away) continue;
+
+    const leader = pair.home > pair.away ? match.homeTeam : match.awayTeam;
+    const top = Math.max(pair.home, pair.away);
+    const bottom = Math.min(pair.home, pair.away);
+
+    signals.push({
+      label: definition.label,
+      team: leader,
+      value: `${pair.home}-${pair.away}`,
+      // Sinyalin dayandığı ölçü adıyla taşınıyor: okuyucu neyin ölçüldüğünü
+      // görebilmeli, "sinyal" kelimesine güvenmek zorunda kalmamalı.
+      metric: definition.stat,
+      strong: definition.threshold !== null && top >= definition.threshold,
+      margin: Math.round((top - bottom) * 100) / 100
+    });
+  }
+
+  if (!signals.length) {
+    return {
+      status: "unavailable",
+      reason: "İstatistik dökümü geldi ancak iki takım arasında sinyal üretecek fark ölçülmedi."
+    };
+  }
+
+  return { status: "ready", signals, sampleSize: signals.length };
+}
+
 function buildStatisticsAnalysis(match, seed) {
   const stats = match.statistics || [];
   if (!stats.length) {
@@ -739,6 +879,8 @@ function buildMatchReport(match, context) {
   const sections = {
     summary,
     standoutPlayers: buildStandoutPlayers(match),
+    momentum: buildMomentum(match),
+    signals: buildSignals(match),
     statistics: buildStatisticsAnalysis(match, seed),
     tactical: buildTacticalRead(match),
     turningPoints: buildTurningPoints(match),
@@ -764,6 +906,8 @@ module.exports = {
   buildSummary,
   buildStandoutPlayers,
   buildStatisticsAnalysis,
+  buildMomentum,
+  buildSignals,
   buildTacticalRead,
   buildTurningPoints,
   buildAiRating,

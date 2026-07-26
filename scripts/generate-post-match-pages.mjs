@@ -138,6 +138,48 @@ function standoutSection(report) {
   </article>`).join("")}</div>`;
 }
 
+/**
+ * Momentum: ölçülen olay dağılımı. Çubuklar uydurma bir eğri değil, dilim
+ * başına düşen gerçek olay sayısı — bu yüzden sayılar da yazılıyor.
+ */
+function momentumSection(report) {
+  const block = report.sections.momentum;
+  if (block.status !== "ready") return noteCard(block.reason);
+
+  const bars = block.phases.map((phase) => {
+    const total = phase.home + phase.away;
+    const homePct = total ? Math.round((phase.home / total) * 100) : 50;
+    return `<div class="pm-momentum-row">
+      <span class="pm-momentum-label">${escapeHtml(phase.label)}</span>
+      <span class="pm-momentum-bar" role="img" aria-label="${escapeHtml(`${phase.label}: ${phase.home}-${phase.away}`)}">
+        <b style="width:${total ? homePct : 0}%"></b>
+      </span>
+      <span class="pm-momentum-count">${phase.home}-${phase.away}</span>
+    </div>`;
+  }).join("");
+
+  return `<div class="card pm-momentum">
+    <p class="pm-momentum-meta">${escapeHtml(`${block.sampleSize} dakikalı olaydan türetildi · güven: ${block.confidence}`)}</p>
+    ${bars}
+    <ul class="pm-momentum-readings">${block.readings.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>
+  </div>`;
+}
+
+/**
+ * Takım sinyalleri. Her sinyal hangi ölçüden geldiğini taşır; okuyucu
+ * "sinyal" kelimesine güvenmek zorunda kalmaz, sayıyı görür.
+ */
+function signalsSection(report) {
+  const block = report.sections.signals;
+  if (block.status !== "ready") return noteCard(block.reason);
+
+  return `<div class="pm-signals">${block.signals.map((signal) => `<article class="card pm-signal${signal.strong ? " is-strong" : ""}">
+    <span class="card-kicker">${escapeHtml(signal.label)}</span>
+    <strong>${escapeHtml(signal.team)}</strong>
+    <p>${escapeHtml(`${signal.metric}: ${signal.value}`)}</p>
+  </article>`).join("")}</div>`;
+}
+
 function statisticsSection(report, match) {
   const block = report.sections.statistics;
   if (block.status !== "ready") return noteCard(block.reason);
@@ -334,6 +376,16 @@ function pageHtml(report, match) {
         ${standoutSection(report)}
       </section>
 
+      <section class="post-match-section" aria-labelledby="rapor-momentum">
+        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-momentum">Maç momentumu</h2><p>Dakikalı olay akışından çıkarılan bölüm bölüm üstünlük dağılımı.</p></div></div>
+        ${momentumSection(report)}
+      </section>
+
+      <section class="post-match-section" aria-labelledby="rapor-sinyal">
+        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-sinyal">Takım sinyalleri</h2><p>Her sinyal tek bir ölçülmüş istatistiğe dayanır; ölçü yoksa sinyal üretilmez.</p></div></div>
+        ${signalsSection(report)}
+      </section>
+
       <section class="post-match-section" aria-labelledby="rapor-istatistik">
         <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-istatistik">İstatistik analizi</h2><p>${escapeHtml(match.homeTeam)} ve ${escapeHtml(match.awayTeam)} verilerinin karşılaştırmalı okuması.</p></div></div>
         ${statisticsSection(report, match)}
@@ -395,6 +447,47 @@ function replaceOrInsert(file, startMarker, endMarker, content, beforeNeedle) {
   }
   fs.writeFileSync(filePath, html, "utf8");
   fs.writeFileSync(path.join(root, "public", file), html, "utf8");
+}
+
+/**
+ * Ana sayfa: SON maç raporları listesi.
+ *
+ * Önceki hâl yalnızca en son raporu gösteriyordu; okuyucu "geçen hafta ne
+ * oynandı" sorusunun cevabını ana sayfada göremiyor, her rapora ancak Maç
+ * Merkezi üzerinden ulaşabiliyordu.
+ *
+ * Her kartta kapsama oranı yazıyor: raporun ne kadarının ölçülmüş veriden
+ * geldiği okuyucudan gizlenmiyor. Kapsaması düşük bir rapor da yayımlanır —
+ * ama düşük olduğu söylenerek.
+ */
+function recentReportsBlock(entries) {
+  const recent = entries.slice(0, 4);
+  if (!recent.length) return "";
+
+  const cards = recent.map(({ report, match }) => {
+    const summary = report.sections.summary;
+    const line = summary.status === "ready"
+      ? summary.headline
+      : `${match.homeTeam} - ${match.awayTeam}`;
+    const measured = ["momentum", "signals", "statistics"]
+      .filter((key) => report.sections[key] && report.sections[key].status === "ready").length;
+
+    return `<a class="home-report-card" href="./${escapeHtml(report.seo.path)}">
+      <span class="home-report-meta">${escapeHtml(match.league)} · ${escapeHtml(formatDate(match.kickoff))}</span>
+      <strong class="home-report-score">${escapeHtml(`${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`)}</strong>
+      <p class="home-report-line">${escapeHtml(line)}</p>
+      <span class="home-report-coverage">${escapeHtml(`Veri kapsamı %${report.coverage}`)}${measured ? escapeHtml(` · ${measured}/3 ölçüm hazır`) : ""}</span>
+    </a>`;
+  }).join("");
+
+  return `<section class="container section home-recent-reports" aria-labelledby="home-recent-reports-title">
+    <div class="section-head"><div class="section-title">
+      <span class="section-kicker">Maç sonrası analizler</span>
+      <h2 id="home-recent-reports-title">Son tamamlanan maçların raporları</h2>
+      <p>Momentum, takım sinyalleri ve istatistik okumasıyla; yalnızca ölçülmüş veriden.</p>
+    </div><a class="section-link" href="./mac-merkezi.html">Tüm raporlar</a></div>
+    <div class="home-report-grid">${cards}</div>
+  </section>`;
 }
 
 function addInternalLinks(report, match) {
@@ -496,6 +589,16 @@ for (const match of finished) {
 
 if (generated.length) {
   addInternalLinks(generated[0].report, generated[0].match);
+  // Ana sayfadaki tek "son rapor" vitrinini, son raporların listesiyle
+  // değiştirir. Vitrin bloğunun kendisi addInternalLinks içinde duruyor;
+  // bu blok onun altına, ayrı bir işaretleyici arasına yazılıyor.
+  replaceOrInsert(
+    "index.html",
+    "<!-- post-match-recent:start -->",
+    "<!-- post-match-recent:end -->",
+    recentReportsBlock(generated),
+    '<section class="container section section-player-radar"'
+  );
   addReportIndex(generated);
   upsertSitemap(generated.map((entry) => entry.report.seo.path));
 }
