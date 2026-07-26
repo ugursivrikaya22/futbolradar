@@ -10,29 +10,35 @@
 :root {
   color-scheme: light;
 
-  /* --- yüzeyler ---
-     Açık kimlikte derinlik saydamlıkla değil, ton basamağıyla kurulur:
-     beyaz kart, çok açık yeşilimsi bölüm zemini, ince çizgi. Yarı saydam
-     beyaz yüzeyler beyaz sayfada görünmez olduğu için katı değer kullanılır. */
-  --bg: #ffffff;
-  --bg-soft: #f7faf9;
+  /* --- yüzeyler (açık tema) ---
+     Saf beyaz zemin düz ve göz yorucu okunuyordu. Sayfa kırık beyaza iner,
+     kartlar sayfadan bir basamak AÇIK durur: derinlik parlaklıkla değil,
+     yüzeyler arası ton farkı ve yumuşak gölgeyle kurulur.
+
+     --surface-rgb, yarı saydam katmanların tema ile birlikte değişebilmesi
+     için ayrı tutulur; sabit beyaz kullanılsaydı koyu temada kırılırdı. */
+  --bg: #f4f7f5;
+  --bg-soft: #eef2f0;
   --panel: #ffffff;
   --surface: #ffffff;
+  --surface-rgb: 255, 255, 255;
   --surface-raised: #ffffff;
-  --surface-tint: #f1f8f4;
-  --line: rgba(14, 26, 22, 0.1);
-  --line-strong: rgba(11, 143, 90, 0.28);
+  --surface-sunken: #f7f9f8;
+  --surface-tint: #edf5f1;
+  --line: rgba(14, 26, 22, 0.09);
+  --line-strong: rgba(11, 143, 90, 0.22);
 
   /* --- metin ---
      Üç basamak: başlık/gövde, kart içi ikincil, üçüncül. Açık zeminde
      kontrast oranları AA hedefiyle seçildi. */
-  --text: #0e1a16;
-  --text-soft: #3d4d47;
-  --muted: #667770;
+  --text: #0f1c17;
+  --text-soft: #3f4f49;
+  --muted: #6b7c76;
 
   /* --- marka ve durum ---
      Zümrüt ana renk; beyaz üzerinde okunması için parlak yeşil yerine
-     doygun ton. Teal ikincil vurgu, aynı aileden. */
+     doygun ton. Vurgu seçici kullanılır: eylem, canlı durum ve veri
+     göstergeleri. Nötr yüzeyler yeşile boyanmaz. */
   --green: #0b8f5a;
   --green-deep: #086a43;
   --green-tint: #e8f5ef;
@@ -40,6 +46,17 @@
   --live: #c81e2d;
   --warn: #b07410;
   --ink: #0e1a16;
+
+  /* Eski adlar. Bir kısmı stil dosyasında kullanılıyordu ama hiçbir yerde
+     tanımlı değildi: tanımsız değişken özelliği tümden geçersiz kılar, yani
+     o kurallar sessizce hiç uygulanmıyordu. Takma ad olarak bağlanır ki tek
+     bir renk kaynağı kalsın ve tema değiştiğinde hepsi birlikte değişsin. */
+  --soft: var(--text-soft);
+  --accent: var(--green);
+  --accent-2: var(--cyan);
+  --amber: var(--warn);
+  --red: var(--live);
+  --surface-strong: var(--surface-raised);
 
   /* --- tipografi ölçeği ---
      Taban 16px. En küçük basamak bilinçli olarak 13px: eski dosyadaki
@@ -164,7 +181,7 @@ a {
 .nav-links a[aria-current="page"],
 .back-link:hover,
 .back-link:focus-visible {
-  background: rgba(255, 255, 255, 0.057);
+  background: rgba(var(--surface-rgb), 0.057);
   outline: 0;
 }
 
@@ -230,7 +247,7 @@ h1 {
   border-radius: 999px;
   padding: 0 13px;
   color: #5b6b65;
-  background: rgba(255, 255, 255, 0.052);
+  background: rgba(var(--surface-rgb), 0.052);
   font-size: 0.82rem;
   white-space: nowrap;
 }
@@ -383,7 +400,7 @@ h1 {
   border-radius: 7px;
   padding: 0 12px;
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.029);
+  background: rgba(var(--surface-rgb), 0.029);
   font-size: 0.78rem;
   font-weight: 850;
   text-decoration: none;
@@ -494,7 +511,7 @@ h1 {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 18px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.063), rgba(255, 255, 255, 0.029)), var(--panel);
+  background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.063), rgba(var(--surface-rgb), 0.029)), var(--panel);
   box-shadow: 0 18px 60px rgba(14, 26, 22, 0.102);
 }
 
@@ -518,7 +535,7 @@ h1 {
   border-radius: var(--radius);
   padding: 18px;
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(var(--surface-rgb), 0.04);
   text-align: center;
 }
 
@@ -605,7 +622,7 @@ h1 {
 .tag.soft {
   border-color: rgba(14, 26, 22, 0.149);
   color: #5b6b65;
-  background: rgba(255, 255, 255, 0.052);
+  background: rgba(var(--surface-rgb), 0.052);
 }
 
 .bar-row {
@@ -622,7 +639,7 @@ h1 {
   height: 8px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.115);
+  background: rgba(var(--surface-rgb), 0.115);
 }
 
 .bar i {
@@ -646,7 +663,7 @@ h1 {
   height: 30px;
   place-items: center;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.081);
+  background: rgba(var(--surface-rgb), 0.081);
   color: #5b6b65;
   font-size: 0.72rem;
   font-weight: 900;
@@ -673,7 +690,7 @@ h1 {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   margin: 22px 0 24px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.063), rgba(255, 255, 255, 0.029)), var(--panel);
+  background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.063), rgba(var(--surface-rgb), 0.029)), var(--panel);
   overflow: hidden;
   box-shadow: 0 18px 60px rgba(14, 26, 22, 0.102);
 }
@@ -785,7 +802,7 @@ h1 {
   font-size: 0.78rem;
   font-weight: 800;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.046);
+  background: rgba(var(--surface-rgb), 0.046);
   color: var(--muted);
 }
 
@@ -849,7 +866,7 @@ h1 {
 .live-score-team-logo {
   object-fit: contain;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.069);
+  background: rgba(var(--surface-rgb), 0.069);
 }
 
 .live-score-team-logo-fallback {
@@ -926,7 +943,7 @@ h1 {
   border-radius: var(--radius);
   margin: 0 0 48px;
   padding: 18px;
-  background: rgba(255, 255, 255, 0.046);
+  background: rgba(var(--surface-rgb), 0.046);
 }
 
 .source-strip span {
@@ -1221,7 +1238,7 @@ h1 {
       .nav-links a:hover,
       .nav-links a:focus-visible {
         border-color: var(--line);
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
         color: var(--text);
         outline: 0;
       }
@@ -1335,7 +1352,7 @@ h1 {
       }
 
       .button.secondary {
-        background: rgba(255, 255, 255, 0.052);
+        background: rgba(var(--surface-rgb), 0.052);
       }
 
       .hero-metrics {
@@ -1463,7 +1480,7 @@ h1 {
         place-items: center;
         border: 1px solid rgba(13, 148, 136, 0.18);
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.088);
+        background: rgba(var(--surface-rgb), 0.088);
         color: var(--cyan);
         font-size: 0.78rem;
         font-weight: 900;
@@ -1526,7 +1543,7 @@ h1 {
         border: 1px solid rgba(14, 26, 22, 0.115);
         border-radius: var(--radius);
         padding: 12px;
-        background: rgba(255, 255, 255, 0.071);
+        background: rgba(var(--surface-rgb), 0.071);
       }
 
       .prediction span {
@@ -1556,7 +1573,7 @@ h1 {
         height: 8px;
         overflow: hidden;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.115);
+        background: rgba(var(--surface-rgb), 0.115);
       }
 
       .bar i {
@@ -1655,7 +1672,7 @@ h1 {
         border: 1px solid rgba(14, 26, 22, 0.115);
         border-radius: 8px;
         padding: 10px 12px;
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
         color: var(--text);
         transition:
           transform 180ms ease,
@@ -1859,7 +1876,7 @@ h1 {
         border: 1px solid rgba(14, 26, 22, 0.138);
         border-radius: 999px;
         padding: 0 11px;
-        background: rgba(255, 255, 255, 0.051);
+        background: rgba(var(--surface-rgb), 0.051);
         color: var(--soft);
         font-size: 0.82rem;
         font-weight: 760;
@@ -1931,7 +1948,7 @@ h1 {
         border: 1px solid rgba(11, 143, 90, 0.132);
         border-radius: 999px;
         padding: 0 18px;
-        background: rgba(255, 255, 255, 0.72);
+        background: rgba(var(--surface-rgb), 0.72);
         color: var(--text);
         font: inherit;
         font-weight: 780;
@@ -2066,7 +2083,7 @@ h1 {
         min-width: 0;
         border: 1px solid rgba(13, 148, 136, 0.08);
         border-radius: 12px;
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
         color: var(--text);
         transition:
           transform 180ms ease,
@@ -2203,7 +2220,7 @@ h1 {
         border: 1px solid rgba(11, 143, 90, 0.094);
         border-radius: var(--radius);
         padding: 12px;
-        background: rgba(255, 255, 255, 0.068);
+        background: rgba(var(--surface-rgb), 0.068);
       }
 
       .home-transfer-score strong {
@@ -2233,7 +2250,7 @@ h1 {
         height: 8px;
         overflow: hidden;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.103);
+        background: rgba(var(--surface-rgb), 0.103);
       }
 
       .home-transfer-score i b {
@@ -2253,7 +2270,7 @@ h1 {
         border: 1px solid rgba(14, 26, 22, 0.115);
         border-radius: var(--radius);
         padding: 12px;
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(var(--surface-rgb), 0.04);
       }
 
       .home-transfer-route b {
@@ -2300,7 +2317,7 @@ h1 {
         border-radius: 8px;
         padding: 10px;
         color: var(--text);
-        background: rgba(255, 255, 255, 0.044);
+        background: rgba(var(--surface-rgb), 0.044);
         transition:
           transform 180ms ease,
           border-color 180ms ease,
@@ -2439,7 +2456,7 @@ h1 {
         border-radius: 999px;
         padding: 4px 9px;
         color: var(--soft);
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
         font-size: 0.76rem;
         white-space: nowrap;
       }
@@ -2494,7 +2511,7 @@ h1 {
         border: 1px solid rgba(14, 26, 22, 0.103);
         border-radius: 8px;
         padding: 10px;
-        background: rgba(255, 255, 255, 0.061);
+        background: rgba(var(--surface-rgb), 0.061);
       }
 
       .home-daily-route-metrics b {
@@ -2619,7 +2636,7 @@ h1 {
         min-width: 0;
         border: 1px solid rgba(14, 26, 22, 0.127);
         border-radius: 8px;
-        background: rgba(255, 255, 255, 0.044);
+        background: rgba(var(--surface-rgb), 0.044);
         color: var(--text);
         transition:
           transform 180ms ease,
@@ -2866,7 +2883,7 @@ h1 {
       .traffic-team-strip a {
         border: 1px solid rgba(14, 26, 22, 0.127);
         border-radius: 8px;
-        background: rgba(255, 255, 255, 0.044);
+        background: rgba(var(--surface-rgb), 0.044);
       }
 
       .traffic-player-card,
@@ -3158,7 +3175,7 @@ h1 {
         border: 1px solid rgba(14, 26, 22, 0.127);
         border-radius: 8px;
         padding: 10px 11px;
-        background: rgba(255, 255, 255, 0.044);
+        background: rgba(var(--surface-rgb), 0.044);
         color: var(--text);
       }
 
@@ -3405,7 +3422,7 @@ h1 {
         border: 1px solid rgba(14, 26, 22, 0.115);
         border-radius: 8px;
         padding: 10px 11px;
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(var(--surface-rgb), 0.04);
         color: var(--soft);
       }
 
@@ -3548,7 +3565,7 @@ h1 {
         border-radius: 999px;
         padding: 0 10px;
         color: var(--soft);
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
         font-size: 0.8rem;
         font-weight: 850;
       }
@@ -3625,7 +3642,7 @@ h1 {
         border: 1px solid rgba(14, 26, 22, 0.127);
         border-radius: 8px;
         padding: 15px;
-        background: rgba(255, 255, 255, 0.041);
+        background: rgba(var(--surface-rgb), 0.041);
         color: var(--text);
       }
 
@@ -3799,7 +3816,7 @@ h1 {
         border: 1px solid rgba(14, 26, 22, 0.138);
         border-radius: 999px;
         padding: 0 9px;
-        background: rgba(255, 255, 255, 0.052);
+        background: rgba(var(--surface-rgb), 0.052);
         color: var(--soft);
         font-size: 0.76rem;
         font-weight: 750;
@@ -3919,7 +3936,7 @@ h1 {
         height: 30px;
         place-items: center;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.081);
+        background: rgba(var(--surface-rgb), 0.081);
         color: var(--soft);
         font-size: 0.72rem;
         font-weight: 900;
@@ -3965,7 +3982,7 @@ h1 {
       .detail-link.ghost {
         border-color: rgba(11, 143, 90, 0.076);
         color: #5b6b65;
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
         cursor: pointer;
         font: inherit;
         font-size: 0.82rem;
@@ -3975,7 +3992,7 @@ h1 {
       .standings {
         border: 1px solid rgba(13, 148, 136, 0.09);
         border-radius: var(--radius);
-        background: rgba(255, 255, 255, 0.082);
+        background: rgba(var(--surface-rgb), 0.082);
         box-shadow: var(--shadow);
         overflow: hidden;
       }
@@ -4038,7 +4055,7 @@ h1 {
         border: 1px solid var(--line);
         border-radius: var(--radius);
         padding: 14px;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.063), rgba(255, 255, 255, 0.029)), var(--panel);
+        background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.063), rgba(var(--surface-rgb), 0.029)), var(--panel);
         box-shadow: var(--shadow);
       }
 
@@ -4063,7 +4080,7 @@ h1 {
         border-radius: var(--radius);
         padding: 0 10px;
         color: var(--text);
-        background: rgba(255, 255, 255, 0.84);
+        background: rgba(var(--surface-rgb), 0.84);
         font: inherit;
         font-size: 0.88rem;
       }
@@ -4089,7 +4106,7 @@ h1 {
         border-radius: 999px;
         padding: 0 12px;
         color: #5b6b65;
-        background: rgba(255, 255, 255, 0.052);
+        background: rgba(var(--surface-rgb), 0.052);
         font: inherit;
         font-size: 0.82rem;
         font-weight: 850;
@@ -4206,7 +4223,7 @@ h1 {
         border-radius: var(--radius);
         padding: 13px;
         color: var(--text);
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(var(--surface-rgb), 0.04);
       }
 
       .comparison-hub-card span,
@@ -4526,7 +4543,7 @@ h1 {
         border-radius: 999px;
         padding: 0 10px;
         color: #e2ece7;
-        background: rgba(255, 255, 255, 0.052);
+        background: rgba(var(--surface-rgb), 0.052);
         font: inherit;
         font-size: 0.78rem;
         font-weight: 850;
@@ -4539,7 +4556,7 @@ h1 {
         line-height: 1;
       }
 
-      @media (max-width: 1060px) {
+      @media (max-width: 1180px) {
         .compare-tray {
           grid-template-columns: 1fr;
         }
@@ -4557,7 +4574,7 @@ h1 {
         border: 1px solid rgba(13, 148, 136, 0.08);
         border-radius: var(--radius);
         padding: 9px;
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
       }
 
       .player-metric span {
@@ -4628,7 +4645,7 @@ h1 {
         border: 1px solid rgba(11, 143, 90, 0.076);
         border-radius: var(--radius);
         padding: 16px;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.063), rgba(255, 255, 255, 0.029)), var(--panel);
+        background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.063), rgba(var(--surface-rgb), 0.029)), var(--panel);
         box-shadow: var(--shadow);
       }
 
@@ -4669,7 +4686,7 @@ h1 {
         border: 1px solid rgba(11, 143, 90, 0.099);
         border-radius: 999px;
         padding: 6px 9px;
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
       }
 
       .popular-links {
@@ -4695,7 +4712,7 @@ h1 {
         border-radius: 999px;
         padding: 0 11px;
         color: #5b6b65;
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
         font-size: 0.82rem;
         font-weight: 800;
       }
@@ -4852,7 +4869,7 @@ h1 {
         border-radius: 12px;
         padding: 11px 12px;
         color: var(--text);
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
       }
 
       .search-trap-links a:hover,
@@ -5042,7 +5059,7 @@ h1 {
         border: 1px solid rgba(14, 26, 22, 0.092);
         border-radius: var(--radius);
         padding: 12px;
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(var(--surface-rgb), 0.04);
       }
 
       .fixture-time {
@@ -5119,7 +5136,7 @@ h1 {
 
       .fixture-team-logo {
         object-fit: contain;
-        background: rgba(255, 255, 255, 0.069);
+        background: rgba(var(--surface-rgb), 0.069);
       }
 
       .fixture-team-logo-fallback {
@@ -5181,7 +5198,7 @@ h1 {
         min-height: 40px;
         border-radius: 999px;
         border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
         color: var(--text);
         font-size: 1.1rem;
         cursor: pointer;
@@ -5264,7 +5281,7 @@ h1 {
         padding: 0 10px;
         border-radius: 999px;
         border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.034);
+        background: rgba(var(--surface-rgb), 0.034);
         color: var(--muted);
         font-weight: 800;
         font-size: 0.82rem;
@@ -5331,7 +5348,7 @@ h1 {
         border: 1px solid var(--line);
         border-radius: var(--radius);
         padding: 14px;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.063), rgba(255, 255, 255, 0.029)), var(--panel);
+        background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.063), rgba(var(--surface-rgb), 0.029)), var(--panel);
         box-shadow: var(--shadow);
       }
 
@@ -5493,7 +5510,7 @@ h1 {
         border: 1px solid var(--line);
         border-radius: var(--radius);
         padding: 18px;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.063), rgba(255, 255, 255, 0.029)), var(--panel);
+        background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.063), rgba(var(--surface-rgb), 0.029)), var(--panel);
         box-shadow: var(--shadow);
       }
 
@@ -5511,7 +5528,7 @@ h1 {
         border: 1px solid rgba(13, 148, 136, 0.07);
         border-radius: var(--radius);
         padding: 14px;
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(var(--surface-rgb), 0.04);
       }
 
       .compare-player.right {
@@ -5575,7 +5592,7 @@ h1 {
         border-radius: 999px;
         padding: 4px 8px;
         color: var(--muted);
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
         font-size: 0.72rem;
         font-style: normal;
         font-weight: 850;
@@ -5759,7 +5776,7 @@ h1 {
         border: 1px solid var(--line);
         border-radius: var(--radius);
         padding: 18px;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.063), rgba(255, 255, 255, 0.029)), var(--panel);
+        background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.063), rgba(var(--surface-rgb), 0.029)), var(--panel);
         box-shadow: var(--shadow);
       }
 
@@ -5844,7 +5861,7 @@ h1 {
         border: 1px solid rgba(11, 143, 90, 0.132);
         border-radius: var(--radius);
         padding: 14px;
-        background: rgba(255, 255, 255, 0.075);
+        background: rgba(var(--surface-rgb), 0.075);
       }
 
       .profile-score-card span {
@@ -5887,7 +5904,7 @@ h1 {
         border: 1px solid rgba(13, 148, 136, 0.07);
         border-radius: var(--radius);
         padding: 12px;
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(var(--surface-rgb), 0.04);
       }
 
       .profile-radar-snapshot span {
@@ -5910,7 +5927,7 @@ h1 {
         height: 6px;
         overflow: hidden;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.092);
+        background: rgba(var(--surface-rgb), 0.092);
       }
 
       .profile-radar-snapshot i::before {
@@ -5942,7 +5959,7 @@ h1 {
         min-width: 0;
         border: 1px solid rgba(13, 148, 136, 0.07);
         border-radius: var(--radius);
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(var(--surface-rgb), 0.04);
         box-shadow: inset 0 1px 0 rgba(14, 26, 22, 0.04);
       }
 
@@ -5972,7 +5989,7 @@ h1 {
         height: 6px;
         overflow: hidden;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.092);
+        background: rgba(var(--surface-rgb), 0.092);
       }
 
       .team-radar-snapshot i::before {
@@ -6044,7 +6061,7 @@ h1 {
         min-width: 0;
         border: 1px solid rgba(13, 148, 136, 0.07);
         border-radius: var(--radius);
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(var(--surface-rgb), 0.04);
         box-shadow: inset 0 1px 0 rgba(14, 26, 22, 0.04);
       }
 
@@ -6075,7 +6092,7 @@ h1 {
         height: 6px;
         overflow: hidden;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.092);
+        background: rgba(var(--surface-rgb), 0.092);
       }
 
       .match-radar-snapshot i::before {
@@ -6195,7 +6212,7 @@ h1 {
         border: 1px solid rgba(13, 148, 136, 0.07);
         border-radius: var(--radius);
         padding: 15px;
-        background: rgba(255, 255, 255, 0.037);
+        background: rgba(var(--surface-rgb), 0.037);
       }
 
       .profile-section h2 {
@@ -6398,7 +6415,7 @@ h1 {
         border-radius: var(--radius);
         padding: 12px;
         color: var(--text);
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(var(--surface-rgb), 0.04);
       }
 
       .static-profile-link-card span,
@@ -6527,7 +6544,7 @@ h1 {
         border: 1px solid rgba(13, 148, 136, 0.07);
         border-radius: var(--radius);
         padding: 14px;
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(var(--surface-rgb), 0.04);
       }
 
       .comparison-seo-links span {
@@ -6606,7 +6623,7 @@ h1 {
         border: 1px solid rgba(14, 26, 22, 0.081);
         border-radius: var(--radius);
         padding: 10px;
-        background: rgba(255, 255, 255, 0.061);
+        background: rgba(var(--surface-rgb), 0.061);
       }
 
       .profile-item span {
@@ -6634,7 +6651,7 @@ h1 {
         border-radius: 999px;
         padding: 4px 9px;
         color: var(--soft);
-        background: rgba(255, 255, 255, 0.057);
+        background: rgba(var(--surface-rgb), 0.057);
         font-size: 0.72rem;
         font-weight: 900;
         white-space: nowrap;
@@ -6765,7 +6782,7 @@ h1 {
         border-radius: 999px;
         padding: 4px 9px;
         color: var(--muted);
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
         font-size: 0.72rem;
         font-weight: 850;
       }
@@ -6791,7 +6808,7 @@ h1 {
         border-radius: 999px;
         padding: 5px 10px;
         color: #e2ece7;
-        background: rgba(255, 255, 255, 0.052);
+        background: rgba(var(--surface-rgb), 0.052);
         font-size: 0.8rem;
         font-weight: 850;
       }
@@ -6816,7 +6833,7 @@ h1 {
         border-radius: 999px;
         padding: 0 12px;
         color: #e2ece7;
-        background: rgba(255, 255, 255, 0.052);
+        background: rgba(var(--surface-rgb), 0.052);
         font: inherit;
         font-size: 0.82rem;
         font-weight: 850;
@@ -6866,7 +6883,7 @@ h1 {
         border: 1px solid rgba(11, 143, 90, 0.088);
         border-radius: var(--radius);
         padding: 10px;
-        background: rgba(255, 255, 255, 0.061);
+        background: rgba(var(--surface-rgb), 0.061);
       }
 
       .transfer-watch-brief {
@@ -6924,7 +6941,7 @@ h1 {
         height: 7px;
         overflow: hidden;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.092);
+        background: rgba(var(--surface-rgb), 0.092);
       }
 
       .transfer-watch-brief i b {
@@ -6963,7 +6980,7 @@ h1 {
         border: 1px solid rgba(14, 26, 22, 0.092);
         border-radius: var(--radius);
         padding: 11px;
-        background: rgba(255, 255, 255, 0.061);
+        background: rgba(var(--surface-rgb), 0.061);
       }
 
       .reliability-grid article span:first-child {
@@ -7105,7 +7122,7 @@ h1 {
         border: 1px solid rgba(14, 26, 22, 0.092);
         border-radius: 999px;
         padding: 0 8px;
-        background: rgba(255, 255, 255, 0.046);
+        background: rgba(var(--surface-rgb), 0.046);
         font-size: 0.72rem;
         font-weight: 850;
       }
@@ -7432,7 +7449,7 @@ h1 {
         border: 1px solid rgba(13, 148, 136, 0.07);
         border-radius: var(--radius);
         padding: 12px;
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(var(--surface-rgb), 0.04);
       }
 
       .similar-player-card span,
@@ -7550,7 +7567,7 @@ h1 {
         font-size: 0.85rem;
       }
 
-      @media (max-width: 1060px) {
+      @media (max-width: 1180px) {
         .nav {
           grid-template-columns: 1fr auto;
           gap: 14px;
@@ -8263,7 +8280,7 @@ h1 {
   white-space: nowrap;
 }
 
-@media (max-width: 1060px) {
+@media (max-width: 1180px) {
   .nav {
     grid-template-columns: 1fr auto;
     gap: 12px;
@@ -8345,7 +8362,7 @@ h1 {
 /* Live fixture statistics and deterministic match analysis */
 .live-analysis-section {
   border-color: rgba(11, 143, 90, 0.132);
-  background: linear-gradient(145deg, rgba(11, 143, 90, 0.039), rgba(255, 255, 255, 0.76));
+  background: linear-gradient(145deg, rgba(11, 143, 90, 0.039), rgba(var(--surface-rgb), 0.76));
 }
 
 .live-analysis-summary {
@@ -8367,7 +8384,7 @@ h1 {
   padding: 15px;
   border: 1px solid rgba(13, 148, 136, 0.08);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.58);
+  background: rgba(var(--surface-rgb), 0.58);
 }
 
 .live-analysis-card span {
@@ -8556,7 +8573,7 @@ h1 {
   font-weight: 850;
 }
 
-@media (max-width: 1060px) {
+@media (max-width: 1180px) {
   .home-page #hero-canli-skor {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -8621,7 +8638,7 @@ h1 {
   }
 }
 
-@media (max-width: 1060px) {
+@media (max-width: 1180px) {
   .intent-card-grid,
   .intent-link-grid,
   .intent-stack-grid,
@@ -8764,7 +8781,7 @@ h1 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   padding: 14px;
   border: 1px solid rgba(11, 143, 90, 0.09);
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(var(--surface-rgb), 0.72);
 }
 
 .match-freshness-strip div,
@@ -8808,7 +8825,7 @@ h1 {
   overflow-x: auto;
   border: 1px solid rgba(11, 143, 90, 0.09);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(var(--surface-rgb), 0.9);
   backdrop-filter: blur(18px);
   scrollbar-width: none;
 }
@@ -8824,7 +8841,7 @@ h1 {
   border: 1px solid var(--line);
   border-radius: 6px;
   color: var(--muted);
-  background: rgba(255, 255, 255, 0.029);
+  background: rgba(var(--surface-rgb), 0.029);
   font: inherit;
   font-weight: 750;
   cursor: pointer;
@@ -8848,7 +8865,7 @@ h1 {
   padding: 14px;
   border: 1px solid rgba(11, 143, 90, 0.08);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.86);
+  background: rgba(var(--surface-rgb), 0.86);
 }
 
 .stats-filter-bar label {
@@ -9016,7 +9033,7 @@ h1 {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.23);
+  background: rgba(var(--surface-rgb), 0.23);
 }
 
 .home-match-command-row i.is-live {
@@ -9113,7 +9130,7 @@ h1 {
   gap: 14px;
 }
 
-@media (max-width: 1060px) {
+@media (max-width: 1180px) {
   .league-match-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -9299,7 +9316,7 @@ h1 {
   border: 1px solid rgba(11, 143, 90, 0.099);
   border-radius: var(--radius);
   padding: 20px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.96));
+  background: linear-gradient(145deg, rgba(var(--surface-rgb), 0.96), rgba(var(--surface-rgb), 0.96));
 }
 
 .post-match-scoreboard > div:not(.post-match-score) {
@@ -9331,7 +9348,7 @@ h1 {
 
 .team-monogram.away {
   border-color: rgba(14, 26, 22, 0.322);
-  background: #ffffff;
+  background: var(--surface);
   color: white;
 }
 
@@ -9373,7 +9390,7 @@ h1 {
   border: 1px solid rgba(91, 107, 101, 0.098);
   border-radius: var(--radius);
   padding: 16px;
-  background: rgba(255, 255, 255, 0.029);
+  background: rgba(var(--surface-rgb), 0.029);
 }
 
 .post-match-kpi-grid span,
@@ -9547,7 +9564,7 @@ h1 {
   gap: 14px;
   border-left: 2px solid rgba(13, 148, 136, 0.15);
   padding: 11px 14px;
-  background: rgba(255, 255, 255, 0.029);
+  background: rgba(var(--surface-rgb), 0.029);
 }
 
 .post-match-event.is-goal {
@@ -9683,7 +9700,7 @@ h1 {
   display: grid;
   gap: 6px;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.029);
+  background: rgba(var(--surface-rgb), 0.029);
 }
 
 .post-match-next-grid {
@@ -9856,7 +9873,7 @@ h1 {
   min-width: 0;
   border: 1px solid rgba(11, 143, 90, 0.08);
   border-radius: 8px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.92));
+  background: linear-gradient(145deg, rgba(var(--surface-rgb), 0.88), rgba(var(--surface-rgb), 0.92));
   box-shadow: 0 18px 44px rgba(14, 26, 22, 0.058);
 }
 
@@ -10064,7 +10081,7 @@ h1 {
   margin: 11px 0 8px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.092);
+  background: rgba(var(--surface-rgb), 0.092);
 }
 
 .stats-coverage-track i {
@@ -10100,7 +10117,7 @@ h1 {
   font-size: 0.95rem;
 }
 
-@media (max-width: 1060px) {
+@media (max-width: 1180px) {
   .stats-filter-bar {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -10168,7 +10185,7 @@ h1 {
 .match-context-grid > .card,
 .match-related-card {
   border: 1px solid rgba(11, 143, 90, 0.09);
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.85));
+  background: linear-gradient(145deg, rgba(var(--surface-rgb), 0.9), rgba(var(--surface-rgb), 0.85));
   box-shadow: 0 18px 42px rgba(14, 26, 22, 0.058);
 }
 
@@ -10227,7 +10244,7 @@ h1 {
   block-size: 6px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.092);
+  background: rgba(var(--surface-rgb), 0.092);
 }
 
 .match-radar-bars i b {
@@ -10637,7 +10654,7 @@ h1 {
 .trend-mini-stats div {
   min-width: 0;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.029);
+  background: rgba(var(--surface-rgb), 0.029);
 }
 
 .trend-mini-stats dt {
@@ -10929,7 +10946,7 @@ h1 {
   padding: 18px;
   border: 1px solid rgba(11, 143, 90, 0.1);
   border-radius: var(--radius);
-  background: linear-gradient(155deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.88));
+  background: linear-gradient(155deg, rgba(var(--surface-rgb), 0.92), rgba(var(--surface-rgb), 0.88));
   box-shadow: 0 18px 42px rgba(14, 26, 22, 0.058);
 }
 
@@ -11090,7 +11107,7 @@ h1 {
   font-weight: 800;
   border: 1px solid rgba(14, 26, 22, 0.161);
   color: var(--soft);
-  background: rgba(255, 255, 255, 0.052);
+  background: rgba(var(--surface-rgb), 0.052);
 }
 
 .goal-potential-badge[data-label="high"],
@@ -11143,7 +11160,7 @@ h1 {
   height: 8px;
   border-radius: 999px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.092);
+  background: rgba(var(--surface-rgb), 0.092);
 }
 
 .match-balance-track span {
@@ -11171,7 +11188,7 @@ h1 {
   height: 10px;
   border-radius: 999px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.092);
+  background: rgba(var(--surface-rgb), 0.092);
 }
 
 .probability-bar-track span {
@@ -11184,7 +11201,7 @@ h1 {
 }
 
 .probability-bar-track .draw-share {
-  background: rgba(255, 255, 255, 0.368);
+  background: rgba(var(--surface-rgb), 0.368);
 }
 
 .probability-bar-track .away-share {
@@ -11247,7 +11264,7 @@ h1 {
   position: relative;
   height: 8px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.092);
+  background: rgba(var(--surface-rgb), 0.092);
   overflow: hidden;
 }
 
@@ -11270,7 +11287,7 @@ h1 {
 }
 
 .matchup-row.is-unavailable .matchup-row-track {
-  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.092) 0 8px, transparent 8px 16px);
+  background: repeating-linear-gradient(90deg, rgba(var(--surface-rgb), 0.092) 0 8px, transparent 8px 16px);
 }
 
 .matchup-row.is-unavailable .matchup-row-value {
@@ -11284,7 +11301,7 @@ h1 {
   padding: 16px;
   border: 1px solid rgba(11, 143, 90, 0.09);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(var(--surface-rgb), 0.55);
 }
 
 .key-duel-title {
@@ -11413,7 +11430,7 @@ h1 {
   padding: 9px 10px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.034);
+  background: rgba(var(--surface-rgb), 0.034);
 }
 
 .lineup-player-card a {
@@ -11496,7 +11513,7 @@ h1 {
 .match-analysis-tab:focus-visible {
   outline: 0;
   border-color: var(--line-strong);
-  background: rgba(255, 255, 255, 0.046);
+  background: rgba(var(--surface-rgb), 0.046);
 }
 
 .match-analysis-tab[aria-selected="true"] {
@@ -11757,6 +11774,9 @@ button:focus-visible,
   --shadow-md: 0 2px 6px rgba(14, 26, 22, 0.05), 0 8px 24px rgba(14, 26, 22, 0.07);
   --shadow-lg: 0 4px 12px rgba(14, 26, 22, 0.06), 0 24px 56px rgba(14, 26, 22, 0.1);
   --shadow-accent: 0 6px 20px rgba(11, 143, 90, 0.18);
+  --shadow: var(--shadow-lg);
+  --shadow-card: var(--shadow-md);
+  --shadow-soft: var(--shadow-sm);
 
   /* Cam efekti ve marka geçişleri tek yerden. */
   --glass: rgba(255, 255, 255, 0.82);
@@ -11809,15 +11829,15 @@ body .container {
 }
 
 .topbar-premium.is-stuck {
-  background: rgba(255, 255, 255, 0.96);
+  background: rgba(var(--surface-rgb), 0.96);
   box-shadow: 0 10px 30px rgba(14, 26, 22, 0.153);
 }
 
 .topbar-premium .nav {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: max-content minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--sp-4);
+  gap: var(--sp-6);
   min-height: var(--header-h);
   /* Yatay dolgu `.container-wide`den gelir; `padding: 0` onu da siliyor ve
      başlık içeriği ekran kenarına yapışıyordu. */
@@ -11899,7 +11919,7 @@ body .container {
 
 .topbar-premium .nav-links a:hover,
 .topbar-premium .nav-links a:focus-visible {
-  background: rgba(255, 255, 255, 0.069);
+  background: rgba(var(--surface-rgb), 0.069);
   color: var(--text);
 }
 
@@ -11948,13 +11968,13 @@ body .container {
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-pill);
   padding: 0 10px 0 12px;
-  background: rgba(255, 255, 255, 0.046);
+  background: rgba(var(--surface-rgb), 0.046);
   transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), width var(--dur) var(--ease);
 }
 
 .site-search:focus-within {
   border-color: rgba(13, 148, 136, 0.25);
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(var(--surface-rgb), 0.95);
 }
 
 .site-search-icon {
@@ -11997,7 +12017,7 @@ body .container {
   place-items: center;
   border: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.092);
+  background: rgba(var(--surface-rgb), 0.092);
   color: var(--text-soft);
   font-size: 15px;
   line-height: 1;
@@ -12018,7 +12038,7 @@ body .container {
   padding: 6px;
   /* Neredeyse opak: yarı saydam panel mobil çekmecede alttaki bağlantıların
      üstüne biniyor ve iki metin üst üste okunuyordu. */
-  background: rgba(255, 255, 255, 0.985);
+  background: rgba(var(--surface-rgb), 0.985);
   box-shadow: var(--shadow-lg);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -12085,7 +12105,7 @@ body .container {
   place-items: center;
   border: 1px solid var(--glass-border);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.046);
+  background: rgba(var(--surface-rgb), 0.046);
   color: var(--text-soft);
   cursor: pointer;
 }
@@ -12348,7 +12368,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 .featured-fixture-score span {
   border-radius: var(--radius-pill);
   padding: 3px 10px;
-  background: rgba(255, 255, 255, 0.081);
+  background: rgba(var(--surface-rgb), 0.081);
   color: var(--text-soft);
   font-size: var(--fs-xs);
   font-weight: 750;
@@ -12474,7 +12494,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   flex: 0 0 auto;
   border-radius: var(--radius-pill);
   padding: 3px 9px;
-  background: rgba(255, 255, 255, 0.069);
+  background: rgba(var(--surface-rgb), 0.069);
   color: var(--text-soft);
   font-variant-numeric: tabular-nums;
 }
@@ -12512,7 +12532,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   display: grid;
   place-items: center;
   border-radius: 7px;
-  background: rgba(255, 255, 255, 0.092);
+  background: rgba(var(--surface-rgb), 0.092);
   color: var(--text-soft);
   font-size: 10px;
   font-weight: 800;
@@ -12567,7 +12587,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   height: 5px;
   overflow: hidden;
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.092);
+  background: rgba(var(--surface-rgb), 0.092);
 }
 
 .fixture-bar i {
@@ -12643,7 +12663,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   place-items: center;
   border: 1px solid var(--glass-border);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.057);
+  background: rgba(var(--surface-rgb), 0.057);
   color: var(--text-soft);
   cursor: pointer;
   transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
@@ -12737,7 +12757,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 .trend-card-stats div {
   border-radius: 9px;
   padding: 7px 8px;
-  background: rgba(255, 255, 255, 0.046);
+  background: rgba(var(--surface-rgb), 0.046);
   text-align: center;
 }
 
@@ -12760,7 +12780,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   border: 1px solid var(--glass-border);
   border-radius: 18px;
   padding: clamp(14px, 2vw, 20px);
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(var(--surface-rgb), 0.5);
 }
 
 .league-block + .league-block {
@@ -12793,7 +12813,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 .league-block-count {
   border-radius: var(--radius-pill);
   padding: 2px 9px;
-  background: rgba(255, 255, 255, 0.081);
+  background: rgba(var(--surface-rgb), 0.081);
   color: var(--muted);
   font-size: var(--fs-xs);
   font-weight: 750;
@@ -12859,7 +12879,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   margin-top: clamp(32px, 5vw, 64px);
   border-top: 1px solid var(--glass-border);
   padding: clamp(28px, 4vw, 48px) 0 24px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.9));
+  background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.5), rgba(var(--surface-rgb), 0.9));
 }
 
 .footer-grid {
@@ -12893,7 +12913,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   place-items: center;
   border: 1px solid var(--glass-border);
   border-radius: 11px;
-  background: rgba(255, 255, 255, 0.046);
+  background: rgba(var(--surface-rgb), 0.046);
   color: var(--text-soft);
   transition: transform var(--dur) var(--ease), background var(--dur) var(--ease), color var(--dur) var(--ease);
 }
@@ -12969,7 +12989,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   }
 }
 
-@media (max-width: 1060px) {
+@media (max-width: 1180px) {
   .topbar-premium .nav {
     grid-template-columns: minmax(0, 1fr) auto auto;
     gap: var(--sp-2);
@@ -13746,7 +13766,7 @@ table {
   padding: var(--sp-2) var(--sp-3);
   border-radius: var(--radius);
   font-size: var(--fs-sm);
-  background: rgba(255, 255, 255, 0.023);
+  background: rgba(var(--surface-rgb), 0.023);
 }
 
 .md-lineup-list li::before {
@@ -14541,7 +14561,7 @@ section[data-api-target="team-detail"] {
   padding: var(--sp-3);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.023);
+  background: rgba(var(--surface-rgb), 0.023);
 }
 
 .td-leader-rank {
@@ -14681,3 +14701,253 @@ section[data-api-target="team-detail"] {
 .md-phase-preview .md-phase-tag { background: rgba(13, 148, 136, 0.08); color: var(--cyan); }
 
 .quick-stat.is-ready b { color: var(--green); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TEMA KATMANI
+   İki tema aynı düzeni, aynı bileşenleri ve aynı işlevi paylaşır; yalnızca
+   renk, gölge ve gradyan değişir. Bütün yüzeyler token üzerinden boyandığı
+   için geçiş yeniden yükleme gerektirmez.
+
+   Öncelik sırası:
+     1. data-theme="dark" | "light"  -> kullanıcının açık tercihi (localStorage)
+     2. prefers-color-scheme          -> ilk ziyarette sistem tercihi
+     3. :root                         -> varsayılan (açık)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Yüzeyler: sayfa en koyu, kartlar bir basamak açık — açık temadaki
+     katmanlanmanın aynısı, ters yönde. */
+  --bg: #0a1512;
+  --bg-soft: #0d1a16;
+  --panel: #10201b;
+  --surface: #12241e;
+  --surface-rgb: 18, 36, 30;
+  --surface-raised: #162b24;
+  --surface-sunken: #0d1a16;
+  --surface-tint: #122a21;
+  --line: rgba(180, 226, 208, 0.14);
+  --line-strong: rgba(52, 211, 153, 0.32);
+
+  /* Koyu zeminde metin saf beyaz olmaz: hafif yeşilimsi kırık beyaz
+     parlamayı düşürür ve uzun okumada göz yormaz. */
+  --text: #e8f2ee;
+  --text-soft: #b9cbc4;
+  --muted: #8b9e97;
+
+  /* Vurgu koyu zeminde daha açık tona kayar; aynı marka ailesi. */
+  --green: #34d399;
+  --green-deep: #10b981;
+  --green-tint: rgba(52, 211, 153, 0.14);
+  --cyan: #2dd4bf;
+  --live: #fb7185;
+  --warn: #fbbf24;
+  --ink: #e8f2ee;
+
+  /* Koyu zeminde gölge daha derin ve geniş olmalı, yoksa kart yüzmez. */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.36);
+  --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.44), 0 28px 64px rgba(0, 0, 0, 0.5);
+  --shadow-accent: 0 6px 22px rgba(52, 211, 153, 0.22);
+
+  --soft: var(--text-soft);
+  --accent: var(--green);
+  --accent-2: var(--cyan);
+  --amber: var(--warn);
+  --red: var(--live);
+  --surface-strong: var(--surface-raised);
+  --shadow: var(--shadow-lg);
+  --shadow-card: var(--shadow-md);
+  --shadow-soft: var(--shadow-sm);
+  --grad-accent: linear-gradient(135deg, var(--green), var(--cyan));
+
+  --glass: rgba(18, 36, 30, 0.82);
+  --glass-strong: rgba(13, 26, 22, 0.95);
+  --glass-border: rgba(180, 226, 208, 0.12);
+  --grad-surface: linear-gradient(180deg, #162b24, #12241e);
+  --grad-hero: linear-gradient(180deg, #0a1512 0%, #0d1a16 55%, #12241e 100%),
+    radial-gradient(120% 130% at 88% 0%, rgba(52, 211, 153, 0.12), transparent 62%);
+  --grad-deep: linear-gradient(160deg, #0a1512 0%, #10352a 100%);
+}
+
+/* İlk ziyaret: kullanıcı henüz seçim yapmadıysa sistem tercihi uygulanır.
+   data-theme yazıldığı anda bu blok devre dışı kalır. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #0a1512;
+    --bg-soft: #0d1a16;
+    --panel: #10201b;
+    --surface: #12241e;
+    --surface-rgb: 18, 36, 30;
+    --surface-raised: #162b24;
+    --surface-sunken: #0d1a16;
+    --surface-tint: #122a21;
+    --line: rgba(180, 226, 208, 0.14);
+    --line-strong: rgba(52, 211, 153, 0.32);
+    --text: #e8f2ee;
+    --text-soft: #b9cbc4;
+    --muted: #8b9e97;
+    --green: #34d399;
+    --green-deep: #10b981;
+    --green-tint: rgba(52, 211, 153, 0.14);
+    --cyan: #2dd4bf;
+    --live: #fb7185;
+    --warn: #fbbf24;
+    --ink: #e8f2ee;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.36);
+    --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.44), 0 28px 64px rgba(0, 0, 0, 0.5);
+    --shadow-accent: 0 6px 22px rgba(52, 211, 153, 0.22);
+    --soft: var(--text-soft);
+    --accent: var(--green);
+    --accent-2: var(--cyan);
+    --amber: var(--warn);
+    --red: var(--live);
+    --surface-strong: var(--surface-raised);
+    --shadow: var(--shadow-lg);
+    --shadow-card: var(--shadow-md);
+    --shadow-soft: var(--shadow-sm);
+    --grad-accent: linear-gradient(135deg, var(--green), var(--cyan));
+
+    --glass: rgba(18, 36, 30, 0.82);
+    --glass-strong: rgba(13, 26, 22, 0.95);
+    --glass-border: rgba(180, 226, 208, 0.12);
+    --grad-surface: linear-gradient(180deg, #162b24, #12241e);
+    --grad-hero: linear-gradient(180deg, #0a1512 0%, #0d1a16 55%, #12241e 100%),
+      radial-gradient(120% 130% at 88% 0%, rgba(52, 211, 153, 0.12), transparent 62%);
+    --grad-deep: linear-gradient(160deg, #0a1512 0%, #10352a 100%);
+  }
+}
+
+/* Sayfa zemini token'a bağlanır: tema değişince gövde de değişmeli.
+   Daha önce doğrudan beyaz yazılıydı ve koyu temada beyaz kalırdı. */
+body {
+  background:
+    linear-gradient(180deg, var(--bg) 0%, var(--bg) 42%, var(--bg-soft) 100%),
+    repeating-linear-gradient(90deg, rgba(11, 143, 90, 0.022) 0 1px, transparent 1px 92px),
+    var(--bg);
+}
+
+/* Tema geçişi: renk değişimi ani değil, kısa ve yumuşak. Hareket azaltma
+   tercihi olan kullanıcıda geçiş kapanır. */
+body,
+.card,
+.topbar,
+.td-card,
+.md-section,
+.fixture-card {
+  transition: background-color var(--dur, 220ms) var(--ease, ease),
+    border-color var(--dur, 220ms) var(--ease, ease),
+    color var(--dur, 220ms) var(--ease, ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .card,
+  .topbar,
+  .td-card,
+  .md-section,
+  .fixture-card {
+    transition: none;
+  }
+}
+
+/* --- tema düğmesi --- */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: var(--tap);
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text-soft);
+  font: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 160ms var(--ease, ease), border-color 160ms var(--ease, ease), color 160ms var(--ease, ease);
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  border-color: var(--line-strong);
+  color: var(--text);
+}
+
+.theme-toggle svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+/* İkon tema ile değişir: açık temada ay (koyuya geç), koyuda güneş. */
+.theme-toggle .theme-icon-dark { display: inline-block; }
+.theme-toggle .theme-icon-light { display: none; }
+
+:root[data-theme="dark"] .theme-toggle .theme-icon-dark { display: none; }
+:root[data-theme="dark"] .theme-toggle .theme-icon-light { display: inline-block; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .theme-toggle .theme-icon-dark { display: none; }
+  :root:not([data-theme]) .theme-toggle .theme-icon-light { display: inline-block; }
+}
+
+@media (max-width: 900px) {
+  .theme-toggle .theme-toggle-label { display: none; }
+  .theme-toggle { padding: 0 var(--sp-2); }
+}
+
+/* Marka adı üst çubukta menünün üstüne biniyordu: .brand `min-width: 0` ile
+   daralabiliyor, ama metin sarmalanmadığı için kutudan taşıyordu. Marka
+   kolonu kendi içeriği kadar yer tutar ve taşmaz; menü kalan alanı alır. */
+.topbar-premium .brand {
+  /* Grid kolonu ölçülürken web fontu henüz yüklenmemiş olabiliyor; yedek font
+     daha dar ölçülüp kolon küçük kalıyor, font gelince marka adı menünün
+     üstüne taşıyordu. Kolon içeriğe göre ölçülür VE taşmaya izin vermez. */
+  min-width: max-content;
+  flex: none;
+  padding-right: var(--sp-3);
+  overflow: visible;
+}
+
+.topbar-premium .brand-text {
+  white-space: nowrap;
+}
+
+/* Çok dar ekranda marka adı gizlenir, işaret kalır: menü ve arama için yer
+   açılır, kimlik korunur. */
+@media (max-width: 420px) {
+  .topbar-premium .brand-text {
+    display: none;
+  }
+}
+
+/* 1180-1400 arası: birincil menü açık kalır ama ikincil bağlantılar gizlenir.
+   Tema düğmesi üst çubuğa eklendikten sonra bu aralıkta marka, menü, CTA ve
+   arama aynı satıra sığmıyor ve öğeler üst üste biniyordu. */
+@media (min-width: 1181px) and (max-width: 1400px) {
+  .topbar-premium .nav-links-secondary {
+    display: none;
+  }
+
+  /* Bu aralıkta arama kutusu yerine üst çubuktaki arama ikonu kullanılır:
+     menü, CTA ve tema düğmesi tek satıra ancak böyle sığıyor. İşlev
+     kaybolmaz, arama ikondan açılır. */
+  .topbar-premium .site-search {
+    display: none;
+  }
+
+  .topbar-premium .nav-search-toggle {
+    display: inline-flex;
+  }
+
+  .topbar-premium .nav-links a {
+    padding: 0 9px;
+    font-size: var(--fs-xs);
+  }
+}

@@ -28,6 +28,18 @@
     window.gtag("js", new Date());
     window.gtag("config", "G-XXXXXXXXXX", { anonymize_ip: true });
   </script>
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
   </head>
   <body class="subpage">
     <main class="container">
