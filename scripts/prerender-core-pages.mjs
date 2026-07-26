@@ -471,8 +471,18 @@ function fixtureRounds() {
   return weeks.map((round) => `<section class="fixture-round-card" data-card="fixture-round"><div class="fixture-round-head"><div><span>${escapeHtml(round.dateRange || "Tarih ve saat bekleniyor")}</span><h2>${escapeHtml(round.label)}</h2></div><b>Onaylı eşleşmeler</b></div><div class="fixture-match-list">${(round.matches || []).map((match) => fixtureMatchRowHtml(match, round)).join("")}</div></section>`).join("");
 }
 
+/**
+ * Transfer radarı bu sezonun hareketlerini gösteriyor; sınır app.js'teki
+ * TRANSFER_RADAR_SINCE ile aynı olmalı. Statik ön render eski kayıtları
+ * gösterip JS yüklendiğinde liste değişseydi, okuyucu sayfanın kendi
+ * kendini düzelttiğini görürdü.
+ */
+const TRANSFER_RADAR_SINCE = "2026-07-01";
+
 function transferWatch() {
-  const selected = transfers.slice().sort((left, right) => String(right.date || "").localeCompare(String(left.date || ""))).slice(0, 5);
+  const selected = transfers
+    .filter((transfer) => String(transfer && transfer.date || "").slice(0, 10) >= TRANSFER_RADAR_SINCE)
+    .sort((left, right) => String(right.date || "").localeCompare(String(left.date || ""))).slice(0, 5);
   if (!selected.length) {
     return '<article class="data-empty"><strong>Kesinleşen transfer bulunamadı</strong><span>Yeni kulüp açıklamaları geldiğinde bu alan güncellenir.</span></article>';
   }

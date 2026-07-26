@@ -5061,7 +5061,9 @@
   }
 
   function renderHomeTransferFeed(records) {
-    var list = sortTransferRecords(Array.isArray(records) ? records : [], "updated");
+    // Ana sayfadaki şerit radarın vitrini; aynı dönem sınırına tabi, aksi
+    // hâlde şerit ile radar farklı listeler gösterirdi.
+    var list = sortTransferRecords(filterTransferRadarWindow(records), "updated");
     if (!list.length) {
       return '<article class="data-empty compact"><strong>Kesinleşen transfer bulunamadı</strong><span>Yeni kulüp açıklamaları geldiğinde bu alan güncellenir.</span></article>';
     }
@@ -5148,6 +5150,27 @@
     );
   }
 
+  // TRANSFER RADARI — dönem sınırı
+  //
+  // Radar bu sezonun hareketlerini gösteriyor. Haziran 2026 ve öncesindeki
+  // kayıtlar (bir önceki sezonun kapanışı ve devre arası hareketleri) listeyi
+  // eskitiyordu: okuyucu "bu yaz kim geldi" sorusunun cevabını ararken
+  // aylar öncesinin transferleriyle karşılaşıyordu.
+  //
+  // Kayıtlar SİLİNMİYOR — doğrulanmış ve kaynaklı veriler, oyuncu geçmişinde
+  // ve takım sayfalarında yerlerinde duruyor. Sınır yalnızca bu bölümde.
+  var TRANSFER_RADAR_SINCE = "2026-07-01";
+
+  function withinTransferRadarWindow(record) {
+    var date = String(record && record.date || "").slice(0, 10);
+    if (!date) return false;
+    return date >= TRANSFER_RADAR_SINCE;
+  }
+
+  function filterTransferRadarWindow(records) {
+    return (Array.isArray(records) ? records : []).filter(withinTransferRadarWindow);
+  }
+
   function initTransferRadarLanding(target, config, count) {
     var filterButtons = Array.from(document.querySelectorAll("[data-transfer-filter]"));
     var teamSelect = document.querySelector("[data-transfer-team-filter]");
@@ -5170,7 +5193,9 @@
 
     loadData("transfers")
       .then(function (records) {
-        var base = Array.isArray(records) ? records : [];
+        // Sınır burada, tek noktada: filtreler, sıralama, özet ve sayaç
+        // hepsi bu listeyi tükettiği için kural kendiliğinden hepsine yayılır.
+        var base = filterTransferRadarWindow(records);
         populatePlayerSelect(teamSelect, transferRecordTeamOptions(base), "Tüm takımlar");
         populatePlayerSelect(statusSelect, uniqueSorted(base, "status"), "Tüm transfer durumları", transferRecordStatusLabel);
 
