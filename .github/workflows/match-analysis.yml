@@ -160,6 +160,17 @@ jobs:
       - name: Match report generation tests
         run: node scripts/test-match-report-generation.mjs
 
+      # Rapor üreteci sayfayı sıfırdan yazar; paylaşılan başlık/haber bandı ve
+      # GA4 etiketi ayrı adımlarda enjekte edildiği için bu iki adım
+      # atlandığında yeniden üretilen her rapor sayfası bandı ve ölçüm
+      # etiketini kaybediyordu. Bu iş beş dakikada bir koştuğu için kayıp
+      # sessizce ve sürekli tekrarlanır; üretimden hemen sonra geri konur.
+      - name: Reapply shared layout (header, ticker, footer)
+        run: node scripts/apply-shared-layout.mjs
+
+      - name: Reapply GA4 tag
+        run: node scripts/inject-ga4.mjs
+
       - name: Sync public data mirror
         run: node scripts/sync-public-assets.mjs
 
