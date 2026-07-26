@@ -14935,19 +14935,122 @@ body,
     display: none;
   }
 
-  /* Bu aralıkta arama kutusu yerine üst çubuktaki arama ikonu kullanılır:
-     menü, CTA ve tema düğmesi tek satıra ancak böyle sığıyor. İşlev
-     kaybolmaz, arama ikondan açılır. */
-  .topbar-premium .site-search {
-    display: none;
-  }
-
-  .topbar-premium .nav-search-toggle {
-    display: inline-flex;
-  }
-
   .topbar-premium .nav-links a {
     padding: 0 9px;
     font-size: var(--fs-xs);
   }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ÜST ÇUBUK ARAMA — büyüteç düğmesi ve açılır arama kutusu
+
+   Düğme artık markanın yanında değil, "Maç Merkezi" ile "Koyu Tema"
+   arasında duruyor; arama, gezinmenin sonundaki eylem grubuna ait.
+
+   Masaüstünde arama kutusu sürekli yer kaplamaz: düğmeye basılınca açılır.
+   Böylece menü, CTA ve tema düğmesi tek satıra rahatça sığar (önceki
+   düzenlemede kutu sığmadığı için tamamen gizlenmiş ve düğme hiçbir şey
+   açmayan ölü bir ikona dönüşmüştü).
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Masaüstü düğmesi menü grubunun içinde, CTA ile tema düğmesi arasında. */
+.topbar-premium .nav-search-toggle-desktop {
+  display: none;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: background-color 160ms var(--ease), border-color 160ms var(--ease), color 160ms var(--ease);
+}
+
+.topbar-premium .nav-search-toggle-desktop:hover,
+.topbar-premium .nav-search-toggle-desktop:focus-visible,
+.topbar-premium .nav-search-toggle-desktop[aria-expanded="true"] {
+  border-color: var(--line-strong);
+  color: var(--green);
+}
+
+.topbar-premium .nav-search-toggle-desktop svg {
+  width: 17px;
+  height: 17px;
+}
+
+@media (min-width: 1181px) {
+  .topbar-premium .nav-search-toggle-desktop {
+    display: inline-grid;
+  }
+
+  /* Mobil büyüteç masaüstünde görünmez: iki düğme aynı anda durmaz. */
+  .topbar-premium .nav-search-toggle-mobile {
+    display: none;
+  }
+
+  /* Ana menü hafifçe sola: arama düğmesi eylem grubuna katılınca sağ taraf
+     ağırlaştı, bağlantılar sola yaslanarak denge kuruluyor. */
+  .topbar-premium .nav-menu {
+    justify-content: flex-start;
+    gap: var(--sp-3);
+  }
+
+  .topbar-premium .nav-links {
+    margin-right: auto;
+  }
+
+  /* Arama kutusu kapalıyken yer kaplamaz, açılınca üst çubuğun sağında
+     belirir. Konumlandırma çubuğa göre yapılır ki düzen kaymasın. */
+  /* Görünürlük display ile açılıp kapanır, opacity/visibility ile değil:
+     gizli (visibility:hidden) bir öğe odak alamadığı için düğmeye basınca
+     kutu "açılıyor" ama imleç girdiye hiç gitmiyordu. display none -> flex
+     geçişinde öğe odak alabilir duruma net biçimde geçer. */
+  .topbar-premium .site-search {
+    display: none;
+    position: absolute;
+    top: 50%;
+    right: var(--gutter, 24px);
+    z-index: 40;
+    width: min(380px, 42vw);
+    transform: translateY(-50%);
+  }
+
+  .topbar-premium .site-search.is-expanded {
+    display: flex;
+    animation: fr-search-in 160ms var(--ease) both;
+  }
+
+  /* Arama açıkken üst çubuk "arama moduna" geçer: menü bağlantıları ve CTA
+     kutuya yer açar. Aksi hâlde mutlak konumlu kutu "Maç Merkezi" düğmesinin
+     üstüne biniyor ve iki öğe üst üste okunuyordu. Marka, arama düğmesi ve
+     tema düğmesi yerinde kalır — çubuğun kimliği ve çıkışlar kaybolmaz. */
+  .topbar-premium .nav.is-searching .nav-links,
+  .topbar-premium .nav.is-searching .nav-links-secondary,
+  .topbar-premium .nav.is-searching .cta {
+    visibility: hidden;
+  }
+
+  .topbar-premium .nav.is-searching .site-search {
+    right: calc(var(--gutter, 24px) + 96px);
+    width: min(520px, 52vw);
+  }
+
+  .topbar-premium .nav {
+    position: relative;
+  }
+}
+
+/* Çekmece düzeni: mobil büyüteç görünür, masaüstü kopyası menüde gizli
+   kalır (menü kapalıyken zaten görünmez, açıkken ikinci bir ikon gereksiz). */
+@media (max-width: 1180px) {
+  .topbar-premium .nav-search-toggle-desktop {
+    display: none;
+  }
+}
+
+@keyframes fr-search-in {
+  from { transform: translateY(-50%) scaleX(0.97); }
+  to { transform: translateY(-50%) scaleX(1); }
 }

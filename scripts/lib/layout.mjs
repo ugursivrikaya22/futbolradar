@@ -94,12 +94,13 @@ export function siteHeader(options = {}) {
             <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 12 17 8"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
             <span class="brand-text"><b>Futbol</b>Radar</span>
           </a>
-          <button class="nav-search-toggle" type="button" aria-label="Arama kutusunu aç" aria-controls="primary-menu">${ICONS.search}</button>
+          <button class="nav-search-toggle nav-search-toggle-mobile" type="button" aria-label="Takım ve futbolcu ara" aria-controls="primary-menu">${ICONS.search}</button>
           <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
           <div class="nav-menu" id="primary-menu">
             <div class="nav-links">${primary}</div>
             <div class="nav-links nav-links-secondary">${secondary}</div>
             <a class="cta" href="${base}mac-merkezi.html">Maç Merkezi</a>
+            <button class="nav-search-toggle nav-search-toggle-desktop" type="button" data-search-open aria-label="Takım ve futbolcu ara" aria-expanded="false" title="Takım ve futbolcu ara">${ICONS.search}</button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Koyu temaya geç">
               <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
               <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>

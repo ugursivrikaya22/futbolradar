@@ -1,5 +1,9 @@
 (function () {
-  var desktopQuery = window.matchMedia("(min-width: 1061px)");
+  // Üst çubuğun daraldığı genişlik. CSS'teki eşikle (1180px) aynı olmalı:
+  // ikisi ayrıştığında JS masaüstü sanırken CSS çekmece düzenini gösteriyor
+  // ve arama düğmesi hiçbir şey açmıyordu.
+  var DESKTOP_MIN_WIDTH = 1181;
+  var desktopQuery = window.matchMedia("(min-width: " + DESKTOP_MIN_WIDTH + "px)");
 
   function closeNav(nav, toggle) {
     nav.classList.remove("is-open");
@@ -125,7 +129,10 @@
     if (!searchIndexPromise) {
       searchIndexPromise = fetch(base + "search-index.json", { cache: "force-cache" })
         .then(function (response) {
-          return response.ok ? response.json() : [];
+          if (!response.ok) {
+            throw new Error("search-index " + response.status);
+          }
+          return response.json();
         })
         .then(function (payload) {
           if (Array.isArray(payload)) {
@@ -134,6 +141,11 @@
           return payload && Array.isArray(payload.items) ? payload.items : [];
         })
         .catch(function () {
+          // Başarısızlık ÖNBELLEĞE ALINMAZ: eskiden boş dizi kalıcı olarak
+          // saklanıyordu ve tek bir geçici ağ hatası, o sayfa oturumunun geri
+          // kalanında aramayı tamamen ölü bırakıyordu. Söz sıfırlanır, bir
+          // sonraki tuş vuruşu yeniden dener.
+          searchIndexPromise = null;
           return [];
         });
     }
@@ -374,6 +386,137 @@
 
   document.querySelectorAll(".nav").forEach(setupNav);
   document.querySelectorAll(".site-search").forEach(setupSearch);
+
+  /* --------------------------------------------------------------------------
+     Arama düğmesi (büyüteç)
+     Düğme üst çubukta "Maç Merkezi" ile "Koyu Tema" arasında durur ve tek işi
+     vardır: takım/futbolcu arama arayüzünü açmak.
+
+     Daha önce düğme yalnızca mobil çekmeceyi açıyordu. Masaüstünde çekmece
+     zaten kapalı bir kavram olduğu için tıklama görünür hiçbir şey yapmıyor,
+     arama kutusu dar genişliklerde gizli olduğundan odak da hiçbir yere
+     gitmiyordu — düğme ölüydü. Artık iki düzen ayrı ele alınır:
+       • masaüstü: arama formu açılır (is-expanded), girdi odaklanır
+       • çekmece düzeni: menü açılır ve içindeki arama girdisine odaklanılır
+     ------------------------------------------------------------------------ */
+  function activeSearchForm() {
+    var forms = document.querySelectorAll(".site-search");
+    for (var i = 0; i < forms.length; i += 1) {
+      if (forms[i].offsetParent !== null || desktopQuery.matches) {
+        return forms[i];
+      }
+    }
+    return forms[0] || null;
+  }
+
+  function focusSearchInput(form) {
+    if (!form) {
+      return;
+    }
+    var input = form.querySelector(".site-search-input");
+    if (!input) {
+      return;
+    }
+
+    // Kutu kapalıyken `visibility: hidden` taşır ve gizli bir öğe odak
+    // alamaz: sınıf eklendikten hemen sonra focus() çağrılırsa sessizce
+    // düşer, kullanıcı düğmeye basar ama imleç girdide belirmez. Odak,
+    // tarayıcı yeni durumu boyadıktan sonra iki kare beklenerek verilir;
+    // görünürlük geçişi tamamlanmazsa kısa bir zamanlayıcı yedeğe geçer.
+    var focused = false;
+    var apply = function () {
+      if (focused || !form.classList.contains("is-expanded") && desktopQuery.matches) {
+        return;
+      }
+      focused = true;
+      input.focus();
+      if (typeof input.select === "function") {
+        input.select();
+      }
+    };
+
+    if (typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(apply);
+      });
+    }
+
+    window.setTimeout(apply, 220);
+  }
+
+  function closeDesktopSearch() {
+    document.querySelectorAll(".site-search.is-expanded").forEach(function (form) {
+      form.classList.remove("is-expanded");
+      var panel = form.querySelector(".site-search-panel");
+      if (panel) {
+        panel.hidden = true;
+      }
+    });
+    document.querySelectorAll("[data-search-open]").forEach(function (button) {
+      button.setAttribute("aria-expanded", "false");
+    });
+    document.querySelectorAll(".nav.is-searching").forEach(function (nav) {
+      nav.classList.remove("is-searching");
+    });
+  }
+
+  document.addEventListener("click", function (event) {
+    var opener = event.target.closest ? event.target.closest("[data-search-open]") : null;
+
+    if (opener) {
+      event.preventDefault();
+      var form = activeSearchForm();
+      if (!form) {
+        return;
+      }
+
+      if (desktopQuery.matches) {
+        var willOpen = !form.classList.contains("is-expanded");
+        closeDesktopSearch();
+        if (willOpen) {
+          form.classList.add("is-expanded");
+          var navEl = document.querySelector(".nav");
+          if (navEl) {
+            navEl.classList.add("is-searching");
+          }
+          opener.setAttribute("aria-expanded", "true");
+          focusSearchInput(form);
+        }
+        return;
+      }
+
+      // Çekmece düzeni: menüyü aç, içindeki arama girdisine odaklan.
+      var nav = document.querySelector(".nav");
+      var navToggle = nav && nav.querySelector(".nav-toggle");
+      if (nav) {
+        nav.classList.add("is-open");
+        if (navToggle) {
+          navToggle.setAttribute("aria-expanded", "true");
+          navToggle.setAttribute("aria-label", "Menüyü kapat");
+        }
+      }
+      focusSearchInput(activeSearchForm());
+      return;
+    }
+
+    // Dışarı tıklama arama kutusunu kapatır; kutunun ve panelin kendi içine
+    // yapılan tıklama (sonuç seçimi dahil) kapatmaz.
+    if (!event.target.closest || !event.target.closest(".site-search")) {
+      closeDesktopSearch();
+    }
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closeDesktopSearch();
+    }
+  });
+
+  // Genişlik değişince açık kalan masaüstü kutusu kapanır: çekmece düzenine
+  // geçildiğinde arama iki farklı yerde açık görünmemeli.
+  desktopQuery.addEventListener("change", function () {
+    closeDesktopSearch();
+  });
   markCurrentPage();
   setupStickyHeader();
   setupSliders();
