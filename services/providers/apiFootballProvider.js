@@ -296,20 +296,14 @@ async function providerFetchWithKey(path, params, apiKey, config) {
 }
 
 /**
- * Sıra: açık parametre → env → depoya commit edilmiş çözülmüş kimlik.
- *
- * Üçüncü basamak olmadan otomatik çözümlemenin faydası yalnızca kadro
- * senkronuyla sınırlı kalıyordu: /api/matches, /api/standings ve sezon
- * fikstürü hâlâ APIFOOTBALL_LEAGUE_ID istiyordu. Önbellek salt okunuyor,
- * bu yüzden Vercel'in salt okunur dosya sisteminde de çalışır.
+ * İzin verici çözümleme: lig kimliği YOKSA boş döner ve çağıran uç nokta
+ * ligsiz (daha geniş) sorgu yapar. /teams ve /players arama davranışı buna
+ * dayanıyor, bu yüzden burada önbellek katmanı KULLANILMAZ — kullanılsaydı
+ * bu uç noktalar sessizce tek lige daraltılırdı.
  */
 function resolveLeague(value) {
   const config = getConfig();
-  if (value) return value;
-  if (config.leagueId) return config.leagueId;
-
-  const cached = readCachedLeague();
-  return cached ? cached.leagueId : "";
+  return value || config.leagueId || "";
 }
 
 function resolveSeason(value, dateHint) {
@@ -601,13 +595,23 @@ function normalizeTransfer(item) {
   });
 }
 
+/**
+ * Ligin ZORUNLU olduğu uç noktalar (sezon fikstürü, puan durumu). İzin
+ * verici resolveLeague'den farkı: burada boş bir kimlik hata demek, o yüzden
+ * son çare olarak depoya commit edilmiş çözülmüş kimliğe bakılır.
+ *
+ * Katman yalnızca burada: /teams ve /players ligsiz sorguya izin veriyor ve
+ * onları sessizce tek lige daraltmak, bu değişikliğin amacı dışında bir
+ * davranış değişikliği olurdu.
+ */
 function ensureLeagueForData(params) {
   const league = resolveLeague(params && params.league);
-  if (!league) {
-    throw new ProviderError("PROVIDER_QUERY_MISSING", "API-Football icin APIFOOTBALL_LEAGUE_ID veya league query gerekli.");
-  }
+  if (league) return league;
 
-  return league;
+  const cached = readCachedLeague();
+  if (cached && cached.leagueId) return cached.leagueId;
+
+  throw new ProviderError("PROVIDER_QUERY_MISSING", "API-Football icin APIFOOTBALL_LEAGUE_ID veya league query gerekli.");
 }
 
 async function getFixtures(query) {

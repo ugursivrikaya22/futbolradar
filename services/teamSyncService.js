@@ -104,7 +104,19 @@ function evaluateLeagueIdentity(fetchedTeams) {
     return { safe: true, reason: null, overlap: null, expectedCount: 0 };
   }
 
-  const matched = fetched.filter((team) => expected.has(normalizeText(team && team.name)));
+  // Eşleştirme İÇEREN biçimde yapılır, birebir değil. İki bağımsız adlandırma
+  // kaynağı karşılaştırılıyor: sağlayıcı "Gaziantep FK" derken fikstür
+  // "Gaziantep", sağlayıcı "Rizespor" derken fikstür "Çaykur Rizespor"
+  // diyebilir. Birebir eşleştirme, DOĞRU bir lig kimliğini yanlışlıkla
+  // reddedip her şeyi durdururdu — bu, korumanın engellemeye çalıştığı
+  // sorundan daha kötü olurdu. (Türkçe katlama normalizeText'te yapılıyor.)
+  const expectedNames = [...expected];
+  const matched = fetched.filter((team) => {
+    const name = normalizeText(team && team.name);
+    if (!name) return false;
+    return expectedNames.some((candidate) =>
+      candidate === name || candidate.includes(name) || name.includes(candidate));
+  });
   const overlap = matched.length / expected.size;
 
   if (overlap < MIN_LEAGUE_IDENTITY_OVERLAP) {

@@ -148,7 +148,7 @@ async function resolveSuperLigLeagueId(options = {}) {
   const provider = options.provider || apiFootballProvider;
   const cachePath = options.cachePath || CACHE_PATH;
   const config = provider.getConfig();
-  const country = "Spain";
+  const country = options.country || config.country || "Turkey";
   const season = options.season || config.season;
 
   if (config.leagueId) {

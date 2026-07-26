@@ -107,8 +107,16 @@ jobs:
         # budur. Maliyeti günde iki koşuda birkaç çağrı.
         run: node scripts/preflight-api-football.mjs --resolve --probe
 
+      # continue-on-error: bu adım artık sağlayıcı kaynaklı geçici sorunlarda
+      # da sıfırdan farklı kod döndürüyor (boş çekim, lig kimliği uyuşmazlığı,
+      # takım sayısında ani düşüş). Bunlar DOĞRU davranış — hiçbiri veri
+      # yazmıyor — ama zincirin geri kalanı maç sonuçları ve site derlemesi.
+      # Bir kadro senkronu hıçkırığının bütün sitenin güncellenmesini
+      # durdurması, engellemeye çalıştığı sorundan daha pahalı. Adım
+      # arayüzde başarısız görünür, veri yazılmaz, zincir devam eder.
       - name: Sync Süper Lig teams and squads
         if: steps.apifootball.outputs.ready == 'true'
+        continue-on-error: true
         env:
           APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
           APIFOOTBALL_LEAGUE_ID: ${{ secrets.APIFOOTBALL_LEAGUE_ID }}

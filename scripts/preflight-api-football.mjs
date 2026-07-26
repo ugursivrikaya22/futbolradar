@@ -16,10 +16,16 @@
  * sağlayıcıya gönderilen başlık maskeli biçimde raporlanır.
  *
  * KULLANIM
- *   node scripts/preflight-api-football.mjs            # yapılandırma kontrolü
- *   node scripts/preflight-api-football.mjs --probe    # anahtarı sağlayıcıya doğrulat
- *   node scripts/preflight-api-football.mjs --resolve  # lig kimliğini çöz ve önbelleğe yaz
+ *   node scripts/preflight-api-football.mjs            # kontrol + lig kimliğini çöz
+ *   node scripts/preflight-api-football.mjs --probe    # ek olarak anahtarı sağlayıcıya doğrulat
  *   node scripts/preflight-api-football.mjs --json     # makine okunur çıktı
+ *
+ * Anahtar tanımlıysa lig kimliği HER KOŞUDA çözülür ve sonuç
+ * data/api-football-league.json'a yazılır; yani komut salt okunur değildir.
+ * Çözümleme daha önce yalnızca --resolve ile yapılıyordu ve çözülmemiş
+ * kimlik engel sayılmadığı için ön kontrol, kadro senkronunun duracağı bir
+ * kurulumu "Hazır" gösteriyordu. --resolve hâlâ kabul edilir ama artık
+ * bir şeyi değiştirmez.
  *
  * ÇIKIŞ KODU: yapılandırma eksikse 1, hazırsa 0. CI bu kodu değil, yazdığı
  * GitHub çıktısını (ready=true/false) kullanır — bkz. .github/workflows.

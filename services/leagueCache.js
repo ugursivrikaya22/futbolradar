@@ -39,10 +39,31 @@ function readCachedLeague(options = {}) {
   if (!options.cachePath && memo !== null) return memo || null;
 
   let parsed = null;
-  try {
-    parsed = JSON.parse(fs.readFileSync(file, "utf8"));
-  } catch {
-    parsed = null;
+
+  // ÖNCE require, SONRA fs — sırası önemli.
+  //
+  // Vercel, fonksiyon paketine hangi dosyaların gireceğini statik olarak
+  // izler ve yalnızca require()'ı takip eder. process.cwd() üzerinden
+  // okunan bir dosya pakete hiç girmez; bu katman sunucuda sessizce ölü
+  // kalırdı. Depodaki diğer veri okumaları da bu yüzden require kullanıyor
+  // (api/momentum.js, api/signals.js).
+  //
+  // fs yedeği CI ve yerel içindir: çözümleyici dosyayı koşu SIRASINDA
+  // yazar, require ise o an önbelleğe alınmış eski hâli döndürebilir.
+  if (!options.cachePath) {
+    try {
+      parsed = require("../data/api-football-league.json");
+    } catch {
+      parsed = null;
+    }
+  }
+
+  if (!parsed) {
+    try {
+      parsed = JSON.parse(fs.readFileSync(file, "utf8"));
+    } catch {
+      parsed = null;
+    }
   }
 
   const leagueId = parsed && parsed.leagueId ? String(parsed.leagueId) : "";

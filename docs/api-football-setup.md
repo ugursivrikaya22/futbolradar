@@ -59,7 +59,12 @@ Kimlik yalnızca doğru çözülmekle kalmaz, sonucu da denetlenir:
    sekiz Süper Lig takımıyla karşılaştırılır. Örtüşme %60'ın altındaysa sorun
    "lig küçüldü" değil "yanlış ligi çektik"tir: yazma durur, hiçbir dosyaya
    dokunulmaz. Bu, yanlış bir ligin *doğru sayıda* takım döndürdüğü durumu
-   yakalar — sayı koruması tek başına bunu göremez.
+   yakalar — sayı koruması tek başına bunu göremez. Boş çekim de koşulsuz
+   reddedilir; Süper Lig'in sıfır takımı olduğu meşru bir durum yok.
+
+   Eşleştirme içeren biçimdedir, birebir değil: sağlayıcı "Gaziantep FK" ya
+   da "Fatih Karagumruk" derken fikstür "Gaziantep" / "Karagümrük" diyebilir.
+   Ölçüldü — sağlayıcı yazımıyla örtüşme %83, bambaşka bir ligde %0.
 2. **Önbellek kendini iptal eder.** Kimlik doğrulaması önbellekten gelen bir
    kimlikle başarısız olursa önbellek silinir; sonraki koşu sıfırdan çözer.
 3. **Yeniden doğrulama penceresi.** Önbellek 30 günden eskiyse sağlayıcıya
@@ -113,11 +118,20 @@ gömmeyin, commit etmeyin, log'a yazdırmayın.
 ## 3. Kurulumu doğrulama
 
 ```bash
-node scripts/preflight-api-football.mjs            # yapılandırma kontrolü
-node scripts/preflight-api-football.mjs --resolve  # lig kimliğini çöz, önbelleğe yaz
-node scripts/preflight-api-football.mjs --probe    # anahtarı sağlayıcıya doğrulat
-node scripts/preflight-api-football.mjs --json     # makine okunur çıktı
+node scripts/preflight-api-football.mjs          # kontrol + lig kimliğini çöz
+node scripts/preflight-api-football.mjs --probe  # ek olarak anahtarı sağlayıcıya doğrulat
+node scripts/preflight-api-football.mjs --json   # makine okunur çıktı
 ```
+
+Anahtar tanımlıysa lig kimliği her koşuda çözülür ve
+`data/api-football-league.json` dosyasına yazılır; komut salt okunur
+değildir. (`--resolve` hâlâ kabul edilir ama artık bir şeyi değiştirmez.)
+
+`--probe` yalnızca bilgi amaçlı değildir: sağlayıcı hiçbir anahtarı kabul
+etmezse bu bir engeldir. Anahtarın VAR OLMASI kullanılabilir olması demek
+değil — iptal edilmiş ya da limiti dolmuş bir anahtar, lig kimliği env'de
+tanımlıyken hiç ağa çıkılmadığı için fark edilmeden kapıyı açardı. CI bu
+yüzden `--resolve --probe` koşar.
 
 Ön kontrol anahtarın kendisini hiçbir çıktı yoluna yazmaz. Yalnızca hangi
 değişkenin dolu olduğunu, uzunluğunu ve biçiminin geçerli görünüp

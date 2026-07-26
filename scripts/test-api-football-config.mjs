@@ -116,9 +116,19 @@ function withEnv(vars, run) {
     });
 }
 
+/** Oluşturulan geçici dizinler; test sonunda silinir. */
+const tempDirs = [];
+
 function tempCache() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "futbolradar-league-"));
+  tempDirs.push(dir);
   return path.join(dir, "api-football-league.json");
+}
+
+function cleanupTempDirs() {
+  for (const dir of tempDirs.splice(0)) {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -542,6 +552,21 @@ function testLeagueIdentityGuardRejectsWrongLeague() {
     .concat([{ name: "Yeni Çıkan A" }, { name: "Yeni Çıkan B" }, { name: "Yeni Çıkan C" }]);
   assert.equal(evaluateLeagueIdentity(mostlyRight).safe, true, "küme değişiklikleri engellenmemeli");
 
+  // YANLIŞ ALARM RİSKİ: sağlayıcı ile TFF fikstürü iki bağımsız adlandırma
+  // kaynağı. Sağlayıcı ASCII ve farklı önekler kullanır ("Istanbul
+  // Basaksehir", "Fatih Karagumruk", "Gaziantep FK"). Birebir eşleştirme
+  // DOĞRU bir ligi reddedip her şeyi durdururdu — korumanın engellemeye
+  // çalıştığı sorundan daha kötü.
+  const providerStyle = [
+    "Galatasaray", "Fenerbahce", "Besiktas", "Trabzonspor", "Istanbul Basaksehir",
+    "Goztepe", "Konyaspor", "Samsunspor", "Rizespor", "Kasimpasa",
+    "Alanyaspor", "Antalyaspor", "Gaziantep FK", "Eyupspor",
+    "Kayserispor", "Kocaelispor", "Genclerbirligi", "Fatih Karagumruk"
+  ].map((name) => ({ name }));
+  const providerCheck = evaluateLeagueIdentity(providerStyle);
+  assert.equal(providerCheck.safe, true,
+    `sağlayıcı yazımıyla gelen doğru lig reddedilmemeli (örtüşme ${Math.round((providerCheck.overlap || 0) * 100)}%)`);
+
   // Boş çekim her zaman reddedilmeli. evaluateTeamListChange bunu yalnızca
   // önceden takım varsa yakalıyor; previousCount 0 iken tüm korumaları
   // atlıyordu ve sıfır takım "başarılı senkron" sayılıyordu.
@@ -569,8 +594,14 @@ const tests = [
   testCorruptCacheIsIgnored
 ];
 
-for (const test of tests) {
-  await test();
+try {
+  for (const test of tests) {
+    await test();
+  }
+} finally {
+  // Başarısızlıkta da temizlenir: her koşuda os.tmpdir() altında onlarca
+  // dizin bırakmak, uzun ömürlü CI makinelerinde birikir.
+  cleanupTempDirs();
 }
 
 console.log(`API-Football config tests passed (${tests.length} senaryo: anahtar yokluğu, env önceliği, ` +
