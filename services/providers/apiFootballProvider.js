@@ -252,7 +252,52 @@ async function providerFetch(path, params) {
   throw lastError || new ProviderError("PROVIDER_CONFIG_MISSING", "API-Football provider icin gecerli bir anahtar bulunamadi.");
 }
 
+/**
+ * Yeniden denenebilir hatalar: yalnızca GEÇİCİ olanlar.
+ *
+ * Kimlik, plan ve limit hataları tekrar denemekle düzelmez — üstelik limit
+ * hatasında yeniden denemek kotayı daha da yakar. Zaman aşımı, bağlantı
+ * kopması ve 5xx ise çoğu zaman bir sonraki denemede geçer; bu maçların
+ * sayfadan kaybolmasının sessiz sebeplerinden biriydi.
+ */
+const RETRYABLE_CODES = new Set(["PROVIDER_HTTP_ERROR", "PROVIDER_TIMEOUT", "PROVIDER_NETWORK_ERROR"]);
+const MAX_ATTEMPTS = 3;
+const RETRY_BASE_DELAY_MS = 250;
+
+function isRetryable(error) {
+  if (!error) return false;
+  if (RETRYABLE_CODES.has(error.code)) {
+    // 4xx bir istemci hatası; tekrar denemek aynı yanıtı getirir.
+    return !error.statusCode || error.statusCode >= 500 || error.statusCode === 408;
+  }
+  // withTimeout ve fetch'in kendi hataları ProviderError olmayabilir.
+  return error.name === "AbortError" || /timeout|network|socket|ECONN|fetch failed/i.test(String(error.message || ""));
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function providerFetchWithKey(path, params, apiKey, config) {
+  let lastError = null;
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+    try {
+      return await providerFetchOnce(path, params, apiKey, config);
+    } catch (error) {
+      lastError = error;
+      if (attempt === MAX_ATTEMPTS || !isRetryable(error)) throw error;
+      // Üstel geri çekilme; anahtar hiçbir günlük satırına girmez.
+      console.warn(`[futbolradar:provider-retry] path=${path} attempt=${attempt}/${MAX_ATTEMPTS} ` +
+        `code=${error.code || error.name || "unknown"}`);
+      await delay(RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1));
+    }
+  }
+
+  throw lastError;
+}
+
+async function providerFetchOnce(path, params, apiKey, config) {
   const baseUrl = config.baseUrl.endsWith("/") ? config.baseUrl : `${config.baseUrl}/`;
   const url = new URL(String(path).replace(/^\/+/, ""), baseUrl);
 

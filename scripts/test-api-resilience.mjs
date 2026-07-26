@@ -703,10 +703,15 @@ async function testDateAllReturnsEveryMatch() {
 await testDateAllReturnsEveryMatch();
 
 /**
- * Maç yayın politikası: onaylı kaynaktan eksiksiz ve doğrulanmış gelmeyen maç
- * sitenin hiçbir yerinde görünmemeli. Bu kural tek bir serviste tanımlı ve
- * curatedMatches üzerinden bütün yüzeylere yayılıyor; sessizce gevşetilirse
- * doğrulanmamış hazırlık maçları arama, canlı skor ve site haritasına sızar.
+ * Maç yayın politikası — POLİTİKA DEĞİŞTİ.
+ *
+ * Eski kural eksik verili her maçı eliyordu ve okuyucu açısından sonuç maçın
+ * HİÇ VAR OLMAMASIydı. Yeni kural iki soruyu ayırıyor: karşılaşma gerçek mi
+ * (öyle değilse yayımlanmaz), ayrıntısı tam mı (değilse yayımlanır ama
+ * "Veri bekleniyor" işaretlenir).
+ *
+ * Test bu ayrımı koruyor: uydurma fikstür hâlâ sızmamalı, ama verisi geç
+ * gelen gerçek bir maç da sessizce kaybolmamalı.
  */
 async function testMatchPublishingPolicy() {
   const { evaluateMatch, filterPublishable } = await import("../services/matchEligibility.js")
@@ -719,49 +724,72 @@ async function testMatchPublishingPolicy() {
   };
   const now = new Date("2026-07-26T23:00:00+03:00");
 
-  assert.equal(evaluateMatch(base, { now }).eligible, true, "tam ve doğrulanmış maç geçmeli");
+  const complete = evaluateMatch(base, { now });
+  assert.equal(complete.eligible, true, "tam ve doğrulanmış maç geçmeli");
+  assert.equal(complete.publishState, "complete", "eksiksiz maç complete olmalı");
+  assert.equal(complete.gaps.length, 0, "eksiksiz maçta boşluk olmamalı");
+
+  // --- Hâlâ ELENEN durumlar: karşılaşmanın gerçekliği şüpheli. ---
 
   assert.equal(
     evaluateMatch({ ...base, source: "mock" }, { now }).eligible, false,
-    "onaylanmamış kaynak elenmeli"
+    "onaylanmamış kaynak elenmeli — uydurma fikstür yayımlanmaz"
   );
   assert.equal(
-    evaluateMatch({ ...base, league: "" }, { now }).eligible, false,
-    "zorunlu alan eksikse elenmeli"
+    evaluateMatch({ ...base, homeTeam: "" }, { now }).eligible, false,
+    "takımı olmayan kayıt elenmeli"
   );
   assert.equal(
-    evaluateMatch({ ...base, score: { home: null, away: null } }, { now }).eligible, false,
-    "biten maçta skor yoksa elenmeli"
+    evaluateMatch({ ...base, kickoff: "bilinmiyor" }, { now }).eligible, false,
+    "başlama saati okunamayan kayıt elenmeli"
   );
+
+  // --- Artık ELENMEYEN durumlar: yayımlanır, eksiklik işaretlenir. ---
+
+  const noScore = evaluateMatch({ ...base, score: { home: null, away: null } }, { now });
+  assert.equal(noScore.eligible, true, "biten maç skorsuz diye gizlenmemeli");
+  assert.equal(noScore.publishState, "awaiting-data");
+  assert.ok(noScore.gaps.some((gap) => gap.field === "score"), "eksik skor boşluk olarak işaretlenmeli");
+
+  const noLeague = evaluateMatch({ ...base, league: "" }, { now });
+  assert.equal(noLeague.eligible, true, "turnuva adı eksik diye maç gizlenmemeli");
+  assert.ok(noLeague.gaps.some((gap) => gap.field === "league"));
 
   const friendly = { ...base, competitionId: "hazirlik-maci", league: "Hazırlık Maçı" };
+  const unverifiedFriendly = evaluateMatch({ ...friendly, dataStatus: "provider" }, { now });
+  assert.equal(unverifiedFriendly.eligible, true, "doğrulanmamış hazırlık maçı da yayımlanmalı");
+  assert.equal(unverifiedFriendly.publishState, "awaiting-data");
+  assert.ok(unverifiedFriendly.gaps.some((gap) => gap.field === "verification"));
+
   assert.equal(
-    evaluateMatch({ ...friendly, dataStatus: "provider" }, { now }).eligible, false,
-    "doğrulanmamış hazırlık maçı elenmeli"
-  );
-  assert.equal(
-    evaluateMatch(friendly, { now }).eligible, true,
-    "doğrulanmış hazırlık maçı yayımlanabilmeli"
+    evaluateMatch(friendly, { now }).publishState, "complete",
+    "doğrulanmış hazırlık maçında boşluk kalmamalı"
   );
 
-  // Başlama saati geçmiş ama hâlâ "başlayacak" diyen kayıt okuyucuyu yanıltır.
-  // Eşik 3.5 saat: normal bir maç bu süre içinde biter ve durumu güncellenir.
+  // Başlama saati geçmiş ama hâlâ "başlayacak" diyen kayıt: gizlenmez,
+  // sonucunun beklendiği söylenir.
   const wellAfterKickoff = new Date("2026-07-27T01:00:00+03:00");
-  assert.equal(
-    evaluateMatch({ ...base, status: "SCHEDULED", score: {} }, { now: wellAfterKickoff }).eligible,
-    false,
-    "saati geçmiş ama güncellenmemiş kayıt elenmeli"
-  );
-  assert.equal(
-    evaluateMatch({ ...base, status: "SCHEDULED", score: {} }, { now: new Date("2026-07-26T21:00:00+03:00") }).eligible,
-    true,
-    "maç sürerken 'başlayacak' kaydı henüz elenmemeli"
-  );
+  const stale = evaluateMatch({ ...base, status: "SCHEDULED", score: {} }, { now: wellAfterKickoff });
+  assert.equal(stale.eligible, true, "saati geçmiş kayıt gizlenmemeli");
+  assert.ok(stale.gaps.some((gap) => gap.label === "Sonuç bekleniyor"), "sonuç beklendiği söylenmeli");
 
-  const { eligible, excluded } = filterPublishable([base, { ...base, id: "x", source: "mock" }], { now });
-  assert.equal(eligible.length, 1, "süzgeç uygun olanı bırakmalı");
+  const during = evaluateMatch({ ...base, status: "SCHEDULED", score: {} }, { now: new Date("2026-07-26T21:00:00+03:00") });
+  assert.equal(during.eligible, true, "maç sürerken kayıt yayımlanmalı");
+
+  const { eligible, excluded, pending } = filterPublishable(
+    [base, { ...base, id: "x", source: "mock" }, { ...base, id: "y", score: {} }],
+    { now }
+  );
+  assert.equal(eligible.length, 2, "süzgeç yalnızca gerçekliği şüpheli olanı elemeli");
   assert.equal(excluded.length, 1, "süzgeç eleneni gerekçesiyle döndürmeli");
   assert.ok(excluded[0].reason, "eleme gerekçesi boş olmamalı");
+  assert.equal(pending.length, 1, "eksik verili maç pending listesine düşmeli");
+  assert.ok(pending[0].fields.includes("score"), "hangi alanın beklendiği bildirilmeli");
+
+  // Yayımlanan kayıtlar durum bilgisini taşımalı; arayüz kendi kuralını uydurmasın.
+  const annotated = eligible.find((match) => match.id === "y");
+  assert.equal(annotated.publishState, "awaiting-data");
+  assert.ok(annotated.awaitingFields.includes("score"));
 
   // Yayın yüzeylerinin tükettiği liste politikadan geçmiş olmalı.
   const provider = await import("../services/providers/mockProvider.js").then((m) => m.default || m);

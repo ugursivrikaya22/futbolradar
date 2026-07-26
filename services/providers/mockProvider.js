@@ -1,4 +1,4 @@
-const { filterPublishable, logExcluded } = require("../matchEligibility.js");
+const { filterPublishable, logExcluded, logDataGaps } = require("../matchEligibility.js");
 const { mergeSuperLigTeams, isFixtureOnly } = require("../superLigTeams.js");
 const matches = require("../../data/matches.json");
 const teams = require("../../data/teams.json");
@@ -357,13 +357,22 @@ function curatedMatches() {
     });
   }
 
-  // YAYIN POLİTİKASI: onaylı kaynaktan eksiksiz ve doğrulanmış gelmeyen maç
-  // sitenin hiçbir yerinde görünmez. Filtre burada, tek noktada uygulanır;
-  // arama, canlı skor, takım sayfaları, statik üreticiler ve site haritası
-  // hepsi bu listeyi tükettiği için kural kendiliğinden her yere yayılır.
-  // Eleme sessiz değildir: gerekçesiyle iç günlüğe yazılır.
-  const { eligible, excluded } = filterPublishable([...merged.values()]);
+  // YAYIN POLİTİKASI tek noktada uygulanır; arama, canlı skor, takım
+  // sayfaları, statik üreticiler ve site haritası hepsi bu listeyi tükettiği
+  // için kural kendiliğinden her yere yayılır.
+  //
+  // Maç artık verisi eksik diye ELENMİYOR: gerçekliği şüpheli olmadıkça
+  // yayımlanıyor ve eksik alanları publishState/dataGaps ile işaretleniyor,
+  // arayüz bunları "Veri bekleniyor" olarak gösteriyor. Sağlayıcı bir
+  // karşılaşmanın ayrıntısını getiremediğinde fikstürün tamamen kaybolması
+  // okuyucu için maçın hiç var olmaması demekti.
+  //
+  // İki günlük ayrı tutuluyor: eleme (gerçeklik sorunu) ve veri boşluğu
+  // (yayımlandı ama eksik). İkincisi kalıcıysa sağlayıcı tarafında bir
+  // sorunun tek işareti olabilir.
+  const { eligible, excluded, pending } = filterPublishable([...merged.values()]);
   logExcluded("curated-matches", excluded);
+  logDataGaps("curated-matches", pending);
   return eligible;
 }
 

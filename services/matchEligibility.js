@@ -1,16 +1,29 @@
 /**
  * MAÇ YAYIN UYGUNLUĞU — tek yetkili kural.
  *
- * Politika: bir maç onaylı bir kaynaktan eksiksiz ve doğrulanmış biçimde
- * gelmiyorsa sitede HİÇBİR yerde görünmez. Kısmi, tahmini veya doğrulanmamış
- * karşılaşma yayımlanmaz; yer tutucu ya da "belki oynanacak" kaydı olmaz.
+ * POLİTİKA DEĞİŞTİ. Önceki kural, eksik veriyle gelen her maçı tamamen
+ * eleyordu. Sonuç, okuyucu açısından maçın HİÇ VAR OLMAMASIydı: sağlayıcı
+ * bir karşılaşmanın ayrıntısını getiremediğinde fikstür de sayfadan
+ * kayboluyordu ve bunun görünür hiçbir izi kalmıyordu.
+ *
+ * Yeni kural iki farklı soruyu ayırıyor:
+ *
+ *   1. Bu KARŞILAŞMA gerçek mi? (takımlar, başlama saati, onaylı kaynak)
+ *      Hayırsa yayımlanmaz — uydurma fikstür üretmiyoruz.
+ *   2. Ayrıntısı tam mı? (skor, durum, lig adı, doğrulama)
+ *      Hayırsa fikstür YİNE DE yayımlanır, eksik alan "Veri bekleniyor"
+ *      olarak işaretlenir.
+ *
+ * Yani bir maç artık yalnızca gerçekliği şüpheliyse elenir; verisi geç
+ * geldiği için elenmez. Uydurma skor ya da uydurma analiz hiçbir durumda
+ * üretilmez — eksik olan alan boş değil, AÇIKÇA "bekleniyor" gösterilir.
  *
  * Bu dosya tek karar noktasıdır. Aynı kuralı arama, canlı skor, takım
  * sayfaları, statik sayfa üreticileri ve site haritası birlikte kullanır;
  * aksi hâlde bir yerde elenen maç başka bir yerde sızar.
  *
- * Elenen her maç sessizce yok sayılmaz: gerekçesiyle birlikte döndürülür ve
- * çağıran taraf bunu iç günlüğe yazar.
+ * Hem elenen hem eksik veriyle yayımlanan her maç iç günlüğe yazılır: veri
+ * boşluğu sessiz kalmamalı.
  */
 
 // Onaylı kaynaklar. Buraya girmeyen hiçbir kayıt yayımlanmaz — "mock" dahil.
@@ -22,8 +35,33 @@ const APPROVED_SOURCES = new Set([
   "thesportsdb"
 ]);
 
-// Her maçta bulunması gereken alanlar.
-const REQUIRED_FIELDS = ["homeTeam", "awayTeam", "kickoff", "league", "status"];
+/**
+ * KİMLİK alanları: bunlar olmadan dürüst bir fikstür satırı çizilemez.
+ * Eksikse maç yayımlanmaz.
+ */
+const IDENTITY_FIELDS = ["homeTeam", "awayTeam", "kickoff"];
+
+/**
+ * Geriye dönük uyumluluk için korunuyor. Artık "eksikse ele" listesi değil;
+ * league ve status eksikse maç yayımlanır, alan "Veri bekleniyor" olur.
+ */
+const REQUIRED_FIELDS = IDENTITY_FIELDS;
+
+/** Yayın durumu: veri tamam mı, yoksa eksik alanlar mı bekleniyor. */
+const PUBLISH_STATE = {
+  COMPLETE: "complete",
+  AWAITING_DATA: "awaiting-data"
+};
+
+/** Okuyucuya gösterilecek tek cümlelik bekleme ifadesi. */
+const AWAITING_LABEL = "Veri bekleniyor";
+
+/**
+ * Başlama saatinden bu kadar saat sonra hâlâ "başlayacak" görünen bir kayıt,
+ * sonucu bilinmeyen bir maçtır. Eskiden eleniyordu; artık sonucu bekleniyor
+ * olarak gösteriliyor.
+ */
+const STALE_STATUS_HOURS = 3.5;
 
 const FINISHED_STATUSES = new Set(["FINISHED", "FT", "AET", "PEN"]);
 const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"]);
@@ -59,54 +97,86 @@ function hasNumericScore(match) {
 }
 
 /**
- * Bir maçın yayımlanıp yayımlanamayacağına karar verir.
- * @returns {{eligible: boolean, reason: string}}
+ * Bir maçın yayımlanıp yayımlanamayacağına ve verisinin tam olup olmadığına
+ * karar verir.
+ *
+ * @returns {{eligible: boolean, reason: string, publishState: string,
+ *   gaps: Array<{field: string, label: string}>}}
  */
 function evaluateMatch(match, options = {}) {
   if (!match || typeof match !== "object") {
-    return { eligible: false, reason: "kayıt yok" };
+    return reject("kayıt yok");
   }
 
-  const missing = REQUIRED_FIELDS.filter((field) => {
+  // --- 1. Karşılaşma gerçek mi? Bunlar olmadan yayımlanmaz. ---
+
+  const missingIdentity = IDENTITY_FIELDS.filter((field) => {
     const value = match[field];
     return value === null || value === undefined || String(value).trim() === "";
   });
 
-  if (missing.length) {
-    return { eligible: false, reason: `zorunlu alan eksik: ${missing.join(", ")}` };
+  if (missingIdentity.length) {
+    return reject(`kimlik alanı eksik: ${missingIdentity.join(", ")}`);
+  }
+
+  const kickoff = new Date(match.kickoff);
+  if (Number.isNaN(kickoff.getTime())) {
+    return reject("başlama saati okunamıyor");
   }
 
   const source = String(match.source || "").toLowerCase();
   if (!APPROVED_SOURCES.has(source)) {
-    return { eligible: false, reason: `kaynak onaylı değil: ${source || "belirtilmemiş"}` };
+    // Uydurma fikstür üretmiyoruz: kaynağı onaylı olmayan kayıt yayımlanmaz.
+    return reject(`kaynak onaylı değil: ${source || "belirtilmemiş"}`);
   }
 
-  // Biten maçın skoru olmak zorunda: skorsuz "bitti" kaydı okuyucuya sonucu
-  // bilinmeyen bir maçı bitmiş gibi gösterir.
+  // --- 2. Ayrıntısı tam mı? Eksikse yayımlanır, "bekleniyor" işaretlenir. ---
+
+  const gaps = [];
+
+  if (!String(match.league || "").trim()) {
+    gaps.push({ field: "league", label: "Turnuva bilgisi bekleniyor" });
+  }
+
+  if (!String(match.status || "").trim()) {
+    gaps.push({ field: "status", label: "Maç durumu bekleniyor" });
+  }
+
+  // Biten maçın skoru yoksa uydurulmaz ve maç da gizlenmez: skor alanı
+  // açıkça "bekleniyor" gösterilir.
   if (isFinished(match) && !hasNumericScore(match)) {
-    return { eligible: false, reason: "biten maçta skor yok" };
+    gaps.push({ field: "score", label: "Skor bekleniyor" });
   }
 
   const verified = String(match.dataStatus || "").toLowerCase() === "verified";
-
   if (isFriendlyOrLowerTier(match) && !verified) {
-    return { eligible: false, reason: "hazırlık/alt seviye maç doğrulanmamış" };
+    // Hazırlık maçlarında sağlayıcı verisi sık sık geç ve eksik geliyor.
+    // Eskiden bu maçlar tamamen eleniyordu; artık fikstür duruyor, ayrıntısı
+    // doğrulanana kadar bekliyor olarak işaretleniyor.
+    gaps.push({ field: "verification", label: "Ayrıntılar doğrulanmayı bekliyor" });
   }
 
   // Zaman tutarlılığı: başlama saati geçmiş ama kayıt hâlâ "başlayacak"
-  // diyorsa, elimizdeki veri maçın gerçek durumunu bilmiyordur. Böyle bir
-  // kayıt canlı skor tablosunda "yakında" olarak durur ve okuyucuyu yanıltır.
+  // diyorsa elimizdeki veri maçın gerçek durumunu bilmiyordur. Bunu gizlemek
+  // yerine söylüyoruz — okuyucu maçın oynandığını bilir, sonucun henüz
+  // gelmediğini de görür.
   const now = options.now instanceof Date ? options.now : new Date();
-  const kickoff = new Date(match.kickoff);
-  if (!Number.isNaN(kickoff.getTime())) {
-    const hoursSinceKickoff = (now.getTime() - kickoff.getTime()) / 3600000;
-    const stillPending = !isFinished(match) && !isLive(match);
-    if (stillPending && hoursSinceKickoff > 3.5) {
-      return { eligible: false, reason: "başlama saati geçmiş ama durum güncellenmemiş" };
-    }
+  const hoursSinceKickoff = (now.getTime() - kickoff.getTime()) / 3600000;
+  const stillPending = !isFinished(match) && !isLive(match);
+  if (stillPending && hoursSinceKickoff > STALE_STATUS_HOURS) {
+    gaps.push({ field: "status", label: "Sonuç bekleniyor" });
   }
 
-  return { eligible: true, reason: "" };
+  return {
+    eligible: true,
+    reason: "",
+    publishState: gaps.length ? PUBLISH_STATE.AWAITING_DATA : PUBLISH_STATE.COMPLETE,
+    gaps
+  };
+}
+
+function reject(reason) {
+  return { eligible: false, reason, publishState: null, gaps: [] };
 }
 
 function isPublishable(match, options) {
@@ -114,23 +184,59 @@ function isPublishable(match, options) {
 }
 
 /**
- * Listeyi süzer ve elenenleri gerekçesiyle döndürür. Çağıran taraf
- * `excluded` listesini iç günlüğe yazar — eleme sessiz olmamalı.
+ * Maçı yayına hazırlar: yayın durumunu ve eksik alanları kaydın üzerine
+ * yazar, böylece her yüzey (ana sayfa kartı, maç detayı, takım sayfası)
+ * aynı bilgiyi görür ve kendi kuralını uydurmaz.
+ */
+function annotateMatch(match, options = {}) {
+  const verdict = evaluateMatch(match, options);
+  if (!verdict.eligible) return null;
+
+  return {
+    ...match,
+    publishState: verdict.publishState,
+    dataGaps: verdict.gaps,
+    awaitingFields: verdict.gaps.map((gap) => gap.field)
+  };
+}
+
+/**
+ * Listeyi yayına hazırlar.
+ *
+ * `eligible` yayımlanacak maçları taşır — eksik verili olanlar DA burada,
+ * yayın durumu işaretlenmiş hâlde. `excluded` yalnızca gerçekliği şüpheli
+ * kayıtları taşır. `pending` ise eksik alanı olan maçların dökümü; çağıran
+ * taraf bunu iç günlüğe yazar.
  */
 function filterPublishable(matches, options = {}) {
   const eligible = [];
   const excluded = [];
+  const pending = [];
 
   for (const match of Array.isArray(matches) ? matches : []) {
     const verdict = evaluateMatch(match, options);
-    if (verdict.eligible) {
-      eligible.push(match);
-    } else {
+
+    if (!verdict.eligible) {
       excluded.push({ id: (match && match.id) || "?", reason: verdict.reason });
+      continue;
+    }
+
+    eligible.push({
+      ...match,
+      publishState: verdict.publishState,
+      dataGaps: verdict.gaps,
+      awaitingFields: verdict.gaps.map((gap) => gap.field)
+    });
+
+    if (verdict.gaps.length) {
+      pending.push({
+        id: (match && match.id) || "?",
+        fields: verdict.gaps.map((gap) => gap.field)
+      });
     }
   }
 
-  return { eligible, excluded };
+  return { eligible, excluded, pending };
 }
 
 /** İç günlük: elenen maçlar tek satırda, sayfa üreticileri ve CI için. */
@@ -143,12 +249,32 @@ function logExcluded(scope, excluded) {
   }
 }
 
+/**
+ * İç günlük: yayımlanan ama verisi eksik maçlar. Bunlar sayfada görünüyor,
+ * o yüzden "excluded" değiller — ama boşluk sessiz kalmamalı, çünkü kalıcı
+ * bir boşluk sağlayıcı tarafında bir sorunun tek işareti olabilir.
+ */
+function logDataGaps(scope, pending) {
+  if (!pending || !pending.length) {
+    return;
+  }
+  for (const item of pending) {
+    console.warn(`[futbolradar:match-data-gap] scope=${scope} id=${item.id} awaiting="${item.fields.join(",")}"`);
+  }
+}
+
 module.exports = {
   APPROVED_SOURCES,
   REQUIRED_FIELDS,
+  IDENTITY_FIELDS,
+  PUBLISH_STATE,
+  AWAITING_LABEL,
+  STALE_STATUS_HOURS,
   evaluateMatch,
+  annotateMatch,
   isPublishable,
   filterPublishable,
   logExcluded,
+  logDataGaps,
   isFriendlyOrLowerTier
 };

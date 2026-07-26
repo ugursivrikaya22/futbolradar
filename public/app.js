@@ -1517,7 +1517,18 @@
       score.home !== null && score.home !== undefined &&
       score.away !== null && score.away !== undefined;
 
-    if (!hasScore || status === "SCHEDULED" || status === "POSTPONED" || status === "CANCELLED") {
+    // Henüz oynanmamış maçta "- : -" doğru. Ama oynanmış bir maçta aynı işaret
+    // "sonuç bilinmiyor" ile "veri gelmedi" arasındaki farkı siliyordu.
+    if (!hasScore) {
+      var played = status === "FINISHED" || status === "FT" || status === "AET" || status === "PEN";
+      if (played || (match && match.publishState === "awaiting-data" &&
+        Array.isArray(match.awaitingFields) && match.awaitingFields.indexOf("score") !== -1)) {
+        return "Veri bekleniyor";
+      }
+      return "- : -";
+    }
+
+    if (status === "SCHEDULED" || status === "POSTPONED" || status === "CANCELLED") {
       return "- : -";
     }
 
@@ -1997,6 +2008,43 @@
    * Tamamı maçın olay kaydından okunur; olay yoksa rozet basılmaz — kart
    * hiçbir koşulda üretilmiş bir gösterge göstermez.
    */
+  // VERİ BEKLENİYOR
+  //
+  // Bir maçın ayrıntısı sağlayıcıdan gelmediğinde fikstür artık gizlenmiyor
+  // (bkz. services/matchEligibility.js). Bunun karşılığı, arayüzün eksikliği
+  // dürüstçe söylemesi: uydurma skor yok, sessiz tire yok, açık bir ifade var.
+  var AWAITING_LABEL = "Veri bekleniyor";
+
+  function matchAwaitingFields(match) {
+    if (!match) return [];
+    if (Array.isArray(match.awaitingFields)) return match.awaitingFields;
+    if (Array.isArray(match.dataGaps)) {
+      return match.dataGaps.map(function (gap) { return gap && gap.field; }).filter(Boolean);
+    }
+    return [];
+  }
+
+  function isAwaitingField(match, field) {
+    return matchAwaitingFields(match).indexOf(field) !== -1;
+  }
+
+  function matchIsAwaitingData(match) {
+    return Boolean(match) && (match.publishState === "awaiting-data" || matchAwaitingFields(match).length > 0);
+  }
+
+  /** Kartın/skor tablosunun altına düşen tek satırlık bekleme rozeti. */
+  function awaitingBadgeHtml(match) {
+    if (!matchIsAwaitingData(match)) return "";
+    var gaps = Array.isArray(match.dataGaps) ? match.dataGaps : [];
+    var detail = gaps.length && gaps[0] && gaps[0].label ? gaps[0].label : AWAITING_LABEL;
+    return (
+      '<span class="fixture-awaiting" title="' + escapeHtml(detail) + '">' +
+      '<i class="fixture-awaiting-dot" aria-hidden="true"></i>' +
+      escapeHtml(AWAITING_LABEL) +
+      "</span>"
+    );
+  }
+
   function fixtureLiveChipsHtml(match) {
     var events = Array.isArray(match.events) ? match.events : [];
     var reds = { home: 0, away: 0 };
@@ -2077,7 +2125,13 @@
     var awayName = getTeamName(awayTeam) || match.awayTeam || "";
     var hasScore = match.score && match.score.home !== null && match.score.home !== undefined
       && match.score.away !== null && match.score.away !== undefined;
-    var headline = hasScore ? match.score.home + " - " + match.score.away : (matchTimeLabel(match) || "—");
+    // Skor yoksa uydurulmaz. Maç oynanmışsa "Veri bekleniyor", henüz
+    // oynanmamışsa başlama saati (Europe/Istanbul) gösterilir — ikisi de
+    // gerçek bilgi, biri diğerinin yerine geçmez.
+    var awaitingScore = !hasScore && (meta.finished || isAwaitingField(match, "score"));
+    var headline = hasScore
+      ? match.score.home + " - " + match.score.away
+      : awaitingScore ? AWAITING_LABEL : (matchTimeLabel(match) || "—");
     // Büyük alanda skor ya da saat zaten var; rozet aynı değeri tekrarlamasın.
     var stateLabel = meta.live ? meta.label : meta.finished ? "Maç sonucu" : "Başlama saati";
 
@@ -6490,7 +6544,11 @@
           '<span class="td-fixture-state ' + meta.className + '">' + escapeHtml(meta.label) + "</span>" +
           '<span class="td-fixture-teams">' + escapeHtml(displayValue(match.homeTeam)) + " – " +
           escapeHtml(displayValue(match.awayTeam)) + "</span>" +
-          '<span class="td-fixture-score">' + escapeHtml(hasScore ? score.home + "-" + score.away : "–") + "</span>" +
+          // Oynanmış ama skoru gelmemiş maçta "–" yerine eksikliğin kendisi.
+          '<span class="td-fixture-score' + (hasScore ? "" : " is-awaiting") + '">' +
+          escapeHtml(hasScore
+            ? score.home + "-" + score.away
+            : (meta.finished || isAwaitingField(match, "score")) ? "Bekleniyor" : "–") + "</span>" +
           "</a>"
         );
       }).join("") + "</div>", true);
@@ -6804,9 +6862,16 @@
       '<div class="md-scoreboard-main">' +
       sideHtml(homeTeam, "home") +
       '<div class="md-score-core">' +
-      '<strong class="md-score">' + escapeHtml(hasScore ? score.home + " - " + score.away : "–") + "</strong>" +
+      // Skorsuz bir "–" okuyucuya hiçbir şey söylemiyordu: maç 0-0 mı bitti,
+      // veri mi gelmedi, belli değildi. Skor yoksa ve maç oynanmışsa
+      // eksikliğin kendisi yazılıyor.
+      '<strong class="md-score' + (hasScore ? "" : " is-awaiting") + '">' +
+      escapeHtml(hasScore
+        ? score.home + " - " + score.away
+        : (meta.finished || isAwaitingField(detail, "score")) ? AWAITING_LABEL : "–") + "</strong>" +
       (halftime ? '<span class="md-score-sub">İlk yarı ' + escapeHtml(halftime) + "</span>" : "") +
       '<span class="md-score-status">' + escapeHtml(statusTr(detail.status)) + "</span>" +
+      awaitingBadgeHtml(detail) +
       "</div>" +
       sideHtml(awayTeam, "away") +
       "</div>" +
