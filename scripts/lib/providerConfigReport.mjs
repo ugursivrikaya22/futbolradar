@@ -21,25 +21,57 @@
 
 import fs from "node:fs";
 
-/** Süper Lig kadro senkronu için gereken yapılandırma. */
-export function missingSquadSyncConfig(config, hasKey) {
+/**
+ * Süper Lig kadro senkronu için gereken yapılandırma.
+ *
+ * Lig kimliği artık zorunlu bir env değişkeni değil: env'de yoksa
+ * services/leagueResolver.js sağlayıcının /leagues uç noktasından çözer.
+ * Bu yüzden burada yalnızca ÇÖZÜLEMEYEN durum bir engeldir ve engelin
+ * gerekçesi çözümlemeden gelir — "tanımlı değil" ile "sağlayıcı iki aday
+ * döndürdü" tamamen farklı iki sorun, aynı cümleyle bildirilemezler.
+ */
+export function missingSquadSyncConfig({ hasKey, leagueResolution }) {
   const missing = [];
 
   if (!hasKey) {
     missing.push({
       env: "APIFOOTBALL_API_KEY",
-      why: "API-Football kimlik anahtarı; kadro ve oyuncu verisi bu anahtar olmadan çekilemez."
+      why: "API-Football kimlik anahtarı; kadro ve oyuncu verisi bu anahtar olmadan çekilemez. " +
+        "Tanımlandığında lig kimliği de kendiliğinden çözülür."
     });
+    return missing;
   }
 
-  if (!config.leagueId) {
+  if (leagueResolution && leagueResolution.status !== "resolved") {
     missing.push({
       env: "APIFOOTBALL_LEAGUE_ID",
-      why: "Süper Lig'in sağlayıcıdaki lig kimliği. Lig bilerek koda gömülmedi (docs/football-data-coverage.md), env'den okunur."
+      why: leagueIdReason(leagueResolution)
     });
   }
 
   return missing;
+}
+
+function leagueIdReason(resolution) {
+  if (resolution.reason === "ambiguous-match") {
+    return "Sağlayıcı Süper Lig adıyla birden fazla lig döndürdü; yanlış ligi seçmek on sekiz takımın " +
+      "kadrosunu yanlış ligden doldururdu, bu yüzden tahmin edilmiyor. Adaylar: " +
+      resolution.candidates.map((item) => `${item.id} (${item.name})`).join(", ") + ". " +
+      "APIFOOTBALL_LEAGUE_ID ile hangisi olduğunu belirt.";
+  }
+
+  if (resolution.reason === "no-match") {
+    return "Sağlayıcı katalogunda Süper Lig bulunamadı; genellikle paketin ilgili sezona erişimi yok. " +
+      "APIFOOTBALL_LEAGUE_ID ile elle tanımlanabilir.";
+  }
+
+  if (String(resolution.reason || "").startsWith("provider-error:")) {
+    return `Lig kimliği sorulurken sağlayıcı hata döndü (${resolution.reason}). ` +
+      "Ayrıntı için: node scripts/preflight-api-football.mjs --probe";
+  }
+
+  return "Lig kimliği ne env'de tanımlı ne de sağlayıcıdan çözülebildi. " +
+    "Lig bilerek koda gömülmedi (docs/football-data-coverage.md).";
 }
 
 function annotate(line) {

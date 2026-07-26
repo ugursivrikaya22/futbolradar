@@ -651,6 +651,42 @@ async function getStandings(query) {
   return stampProviderData(table.map((row) => normalizeStandingRow(row, leaguePayload.name)), "standings", 60 * 60 * 1000);
 }
 
+/**
+ * Sağlayıcının lig kataloğu. Lig kimliği bilerek koda gömülmediği için
+ * (docs/football-data-coverage.md), yapılandırılmamış bir kurulumda Süper
+ * Lig'in kimliğini bulmanın tek dürüst yolu budur: sağlayıcıya sormak.
+ *
+ * Ham kayıtlar döner — hangi ligin aranan lig olduğuna karar vermek
+ * services/leagueResolver.js'in işi, çünkü karar kuralı (isim eşleşmesi,
+ * belirsizlik hâlinde durma) sağlayıcı ayrıntısı değil politika.
+ */
+async function getLeagues(query) {
+  const payload = await providerFetch("/leagues", compactParams({
+    id: query && query.id,
+    name: query && query.name,
+    country: query && query.country,
+    season: query && query.season,
+    type: query && query.type,
+    current: query && query.current
+  }));
+
+  return responseItems(payload)
+    .map((item) => {
+      const league = (item && item.league) || {};
+      const country = (item && item.country) || {};
+      return {
+        id: league.id === undefined || league.id === null ? null : String(league.id),
+        name: league.name || "",
+        type: league.type || "",
+        country: country.name || "",
+        seasons: Array.isArray(item && item.seasons)
+          ? item.seasons.map((season) => String(season && season.year)).filter(Boolean)
+          : []
+      };
+    })
+    .filter((league) => league.id && league.name);
+}
+
 async function getTeams(query) {
   const league = resolveLeague(query && query.league);
   const payload = await providerFetch("/teams", compactParams({
@@ -1108,6 +1144,7 @@ module.exports = {
   getMatches,
   getSeasonFixtures,
   getStandings,
+  getLeagues,
   getTeams,
   getSquad,
   getPlayers,

@@ -17,18 +17,21 @@ function providerSyncConfig() {
  * (APIFOOTBALL_API_KEY). Absence of config is a valid, expected state in
  * this repo today, not a failure — callers must branch on `status`.
  */
-async function fetchCurrentSuperLigTeams() {
+async function fetchCurrentSuperLigTeams(options = {}) {
   if (!apiFootballProvider.hasConfig()) {
     return { status: "unavailable", reason: "no-provider-config", teams: [] };
   }
 
   const config = providerSyncConfig();
-  if (!config.leagueId) {
+  // Çağıran taraf lig kimliğini çözmüşse (env yoksa /leagues üzerinden) onu
+  // kullanır; yoksa eskisi gibi yapılandırmadan okunur.
+  const leagueId = options.leagueId || config.leagueId;
+  if (!leagueId) {
     return { status: "unavailable", reason: "no-league-id-config", teams: [] };
   }
 
   try {
-    const teams = await apiFootballProvider.getTeams({ league: config.leagueId, season: config.season });
+    const teams = await apiFootballProvider.getTeams({ league: leagueId, season: config.season });
     return { status: "fetched", reason: null, teams };
   } catch (error) {
     return { status: "unavailable", reason: error.code || "provider-error", teams: [] };

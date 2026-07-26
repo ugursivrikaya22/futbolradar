@@ -3,11 +3,13 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { missingSquadSyncConfig, reportMissingProviderConfig } from "./lib/providerConfigReport.mjs";
 
+
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const apiFootballProvider = require("../services/providers/apiFootballProvider.js");
 const { fetchCurrentSuperLigTeams, evaluateTeamListChange, mergeTeamList } = require("../services/teamSyncService.js");
 const { fetchTeamSquad, buildSquadSnapshot, evaluateSquadSyncSafety, detectProviderIdConflicts } = require("../services/squadSyncService.js");
+const { resolveSuperLigLeagueId } = require("../services/leagueResolver.js");
 
 const TEAMS_PATH = path.join(root, "data", "teams.json");
 const SQUADS_PATH = path.join(root, "data", "super-lig-squads.json");
@@ -39,7 +41,14 @@ async function main() {
   // Eksik yapılandırma sessiz bir no-op değil, adıyla bildirilen bir engeldir.
   // Önceki hâli güven verici tek bir cümleydi ve on üç takımın kadrosunun
   // neden boş kaldığı CI günlüğünde fark edilmiyordu.
-  const missing = missingSquadSyncConfig(apiFootballProvider.getConfig(), apiFootballProvider.hasConfig());
+  const hasKey = apiFootballProvider.hasConfig();
+  // Anahtar varsa lig kimliği env'den okunur, yoksa sağlayıcıdan çözülüp
+  // önbelleğe alınır. Anahtar yoksa çözümlemeye hiç girilmez.
+  const leagueResolution = hasKey
+    ? await resolveSuperLigLeagueId()
+    : { status: "unavailable", leagueId: null, reason: "no-api-key", candidates: [] };
+
+  const missing = missingSquadSyncConfig({ hasKey, leagueResolution });
   if (missing.length) {
     reportMissingProviderConfig({
       task: "Süper Lig kadro senkronu",
@@ -47,13 +56,17 @@ async function main() {
       impact: "Kadro, oyuncu ve teknik ekip verisi çekilemiyor; yalnızca fikstürden tanınan takımların " +
         "rapor sayfaları kadrosuz kalıyor. Uydurma kadro üretilmiyor."
     });
+    process.exitCode = 1;
     return;
   }
+
+  // Yalnızca çözülen kimlik yazılır; anahtar hiçbir çıktıya girmez.
+  console.log(`Lig kimliği: ${leagueResolution.leagueId} (${leagueResolution.source})`);
 
   const canonicalTeams = readJson(TEAMS_PATH, []);
   const existingSquads = readJson(SQUADS_PATH, []);
 
-  const fetchResult = await fetchCurrentSuperLigTeams();
+  const fetchResult = await fetchCurrentSuperLigTeams({ leagueId: leagueResolution.leagueId });
   if (fetchResult.status !== "fetched") {
     console.error(`Team fetch failed: ${fetchResult.reason}. Canonical data left untouched.`);
     process.exitCode = 1;

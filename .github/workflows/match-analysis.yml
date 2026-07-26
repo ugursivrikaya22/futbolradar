@@ -5,12 +5,17 @@ name: Match Analysis Automation
 # hand-curated, and no live fixture-sync script exists yet). Two jobs:
 #
 # 1. update-match-analyses: the full pipeline, twice a day. Safe order —
-#    league/team config -> squad sync -> player canonical merge -> player
-#    validation -> match analysis generation -> match analysis validation ->
-#    build (static pages/sitemap/public sync) -> QA -> tests -> commit only
-#    if something changed. squad/player sync steps no-op cleanly today
-#    because no APIFOOTBALL_API_KEY is configured — they activate
-#    automatically once real credentials are added as a secret.
+#    league/team config -> API-Football preflight -> squad sync -> player
+#    canonical merge -> player validation -> match analysis generation ->
+#    match analysis validation -> build (static pages/sitemap/public sync) ->
+#    QA -> tests -> commit only if something changed.
+#
+#    Kadro/oyuncu senkron adımları ön kontrole bağlıdır: APIFOOTBALL_API_KEY
+#    secret'i tanımlı değilse bu adımlar HİÇ çalışmaz (körlemesine koşup
+#    sessizce no-op etmez) ve koşu özetinde tam olarak neyin eksik olduğu
+#    yazar. Secret eklendiği anda kendiliğinden gerçek veriyle çalışırlar;
+#    lig kimliği tanımlı değilse sağlayıcının /leagues uç noktasından
+#    çözülüp önbelleğe alınır. Hiçbir durumda sahte kadro üretilmez.
 #
 # 2. live-refresh: a separate, lighter, more frequent job (every 5 minutes).
 #    It refreshes official lineups before kickoff, syncs finished results and
@@ -72,11 +77,32 @@ jobs:
 
       # Kadro senkronu API-Football anahtarına ihtiyaç duyar. Anahtar Vercel'de
       # tanımlı ama GitHub Actions ayrı bir ortamdır: secret buraya
-      # geçirilmediği sürece script her koşuda sessizce no-op eder ve kadrolar
-      # boş kalır. Depo ayarlarına APIFOOTBALL_API_KEY secret'i eklendiği anda
-      # bu adımlar gerçek veriyle çalışmaya başlar; secret yoksa davranış
-      # eskisi gibi güvenli no-op olur.
+      # geçirilmediği sürece kadrolar boş kalır.
+      #
+      # Ön kontrol, senkrondan ÖNCE karar verir ve eksikse tek tek hangi
+      # değişkenin eksik olduğunu koşu özetine yazar. continue-on-error:
+      # eksik secret yüzünden maç sonuçları ve site derlemesi durmamalı —
+      # ama kadro adımları da körlemesine koşmamalı, o yüzden aşağıdaki
+      # adımlar bu adımın çıktısına bağlı.
+      #
+      # KAPI YAPISI GEREĞİ GÜVENLİ TARAFA DÜŞER. Üç durumun üçü de doğru:
+      #   hazır      -> script 0 ile çıkar, ready=true yazılır  -> senkron koşar
+      #   eksik      -> script 1 ile çıkar, ready=false yazılır -> senkron atlanır
+      #   çöker      -> hiçbir çıktı yazılmaz, ready boş kalır  -> senkron atlanır
+      # Yani çıktının kaydedilmediği her senaryoda karşılaştırma 'true' ile
+      # eşleşmez ve kadro senkronu çalışmaz. Hiçbir arıza "körlemesine koş"
+      # yönüne düşemez; sahte veri üretilmez.
+      - name: Preflight API-Football configuration
+        id: apifootball
+        continue-on-error: true
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
+          APIFOOTBALL_LEAGUE_ID: ${{ secrets.APIFOOTBALL_LEAGUE_ID }}
+          APIFOOTBALL_SEASON: ${{ secrets.APIFOOTBALL_SEASON }}
+        run: node scripts/preflight-api-football.mjs --resolve
+
       - name: Sync Süper Lig teams and squads
+        if: steps.apifootball.outputs.ready == 'true'
         env:
           APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
           APIFOOTBALL_LEAGUE_ID: ${{ secrets.APIFOOTBALL_LEAGUE_ID }}
@@ -84,6 +110,7 @@ jobs:
         run: node scripts/sync-super-lig-squads.mjs --apply
 
       - name: Merge synced squads into canonical player data
+        if: steps.apifootball.outputs.ready == 'true'
         env:
           APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
         run: node scripts/sync-canonical-players.mjs --apply

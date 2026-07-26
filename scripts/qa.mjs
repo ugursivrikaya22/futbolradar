@@ -619,6 +619,38 @@ function checkClientSecrets() {
   }
 }
 
+/**
+ * Lig kimliği önbelleği (data/api-football-league.json) commit edilen bir
+ * dosyadır ve CI her koşuda `git add -A` yapar. İçine bir gün bir kimlik
+ * bilgisi düşerse depoya girer ve oradan geri alınamaz. Bu kontrol, dosyanın
+ * yalnızca beklenen alanları taşıdığını ve hiçbir alanının API anahtarı
+ * biçiminde olmadığını doğrular.
+ */
+function checkLeagueCacheHasNoSecret() {
+  const file = path.join(root, "data", "api-football-league.json");
+  if (!fs.existsSync(file)) return;
+
+  const raw = fs.readFileSync(file, "utf8");
+  // API-Sports anahtarı: tam 32 onaltılık karakter.
+  const keyShaped = /\b[a-f0-9]{32}\b/i;
+  expect(!keyShaped.test(raw), "data/api-football-league.json içinde API anahtarı biçiminde bir değer var");
+
+  const allowedKeys = new Set([
+    "leagueId", "leagueName", "country", "resolvedForSeason", "resolvedAt", "source", "note"
+  ]);
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    expect(false, "data/api-football-league.json geçerli JSON değil");
+    return;
+  }
+
+  for (const key of Object.keys(parsed || {})) {
+    expect(allowedKeys.has(key), `data/api-football-league.json beklenmedik alan taşıyor: '${key}'`);
+  }
+}
+
 function checkPublicCopyAndAccessibility() {
   const publicFiles = walk(root, (full) => {
     return full.endsWith(".html") || path.basename(full) === "app.js";
@@ -851,6 +883,7 @@ checkVercelFunctionLimit();
 checkPublicMirrors();
 checkAnalyticsTag();
 checkSiteVerification();
+checkLeagueCacheHasNoSecret();
 checkFeatureMarkers();
 checkJavaScriptSyntax();
 checkJson();
