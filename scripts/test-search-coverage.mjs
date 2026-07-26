@@ -19,7 +19,7 @@ import { createRequire } from "node:module";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
-const { mergeSuperLigTeams, fixtureTeamNames, isFixtureOnly } = require("../services/superLigTeams.js");
+const { mergeSuperLigTeams, fixtureTeamNames, isFixtureOnly, sameClub } = require("../services/superLigTeams.js");
 
 /**
  * site.js içindeki foldTurkish ile AYNI kurallar. Kopya olduğu için, kaynak
@@ -73,17 +73,58 @@ function testFixtureCoverage() {
   assert.equal(isFixtureOnly(gs), false, "editoryal takım fixture-only sayılmamalı");
   assert.ok(gs.momentum, "editoryal takımın momentum verisi korunmalı");
 
-  // Fikstürden türetilen takım UYDURMA veri taşımamalı.
+  // Göztepe "sıfır sonuç" şikâyetinin kaynağıydı: aranabilir KALMALI.
+  // Ama artık fixture-only olduğu VARSAYILMIYOR — kadro senkronu gerçek
+  // anahtarla koştuğunda Göztepe kürasyonlu kayda dönüşüyor ve bu istenen
+  // sonuç. Sabit örnek seçmek, veri gelince testi kırıyordu.
   const goztepe = merged.find((team) => team.name === "Göztepe");
   assert.ok(goztepe, "Göztepe birleşik listede yok");
-  assert.equal(isFixtureOnly(goztepe), true, "Göztepe fikstürden türetilmiş olmalı");
-  for (const field of ["momentum", "form", "attack", "defense", "venue", "coach", "rank", "points"]) {
-    assert.equal(
-      goztepe[field],
-      undefined,
-      `fikstürden türetilen takımda "${field}" alanı üretilmemeli`
-    );
+
+  // Asıl sözleşme: fikstürden türetilen HER takım uydurma veri taşımamalı.
+  const INVENTABLE = ["momentum", "form", "attack", "defense", "venue", "coach", "rank", "points"];
+  for (const team of merged.filter(isFixtureOnly)) {
+    for (const field of INVENTABLE) {
+      assert.equal(
+        team[field],
+        undefined,
+        `${team.name}: fikstürden türetilen takımda "${field}" alanı üretilmemeli`
+      );
+    }
   }
+}
+
+/**
+ * Aynı kulüp iki kaynakta farklı yazıldığında listeye BİR kez girmeli.
+ *
+ * REGRESYON: Kadro senkronu API-Football adlarını yazıyor ("Rizespor"),
+ * fikstür TFF adlarını taşıyor ("Çaykur Rizespor"). Tam ad eşitliği arandığı
+ * sürece ikisi de listeye giriyordu ve arama kutusunda aynı takım iki kez
+ * görünüyordu. Senkron 18 takım yazana kadar (teams.json'da beş takım vardı)
+ * çakışma hiç oluşmadığı için sorun görünmüyordu.
+ */
+function testProviderAndFixtureNamesDoNotDuplicateClubs() {
+  const PROVIDER_NAMES = [
+    "Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor", "Samsunspor",
+    "Başakşehir", "Konyaspor", "Göztepe", "Alanyaspor", "Gençlerbirliği S.K.",
+    "Kasımpaşa", "Rizespor", "Erzurumspor FK", "Gaziantep FK", "Amed",
+    "Eyüpspor", "Çorum FK", "Kocaelispor"
+  ];
+  const synced = PROVIDER_NAMES.map((name) => ({ name, isCurrentSuperLigTeam: true }));
+  const merged = mergeSuperLigTeams(synced);
+
+  assert.equal(merged.length, 18,
+    `sağlayıcı adlarıyla birleşen liste 18 olmalı, ${merged.length} bulundu ` +
+    `(fazlalar: ${merged.map((t) => t.name).filter((n) => !PROVIDER_NAMES.includes(n)).join(", ")})`);
+
+  // Farklı yazımlar aynı kulüp sayılmalı; alakasız kulüpler ayrı kalmalı.
+  assert.ok(sameClub("Rizespor", "Çaykur Rizespor"));
+  assert.ok(sameClub("Gençlerbirliği S.K.", "Gençlerbirliği"));
+  assert.ok(sameClub("Amed", "Amed Sportif Faaliyetler"));
+  assert.ok(!sameClub("Konyaspor", "Kasımpaşa"));
+  assert.ok(!sameClub("Göztepe", "Gaziantep FK"));
+  // Kısa/genel parça alakasız kulübe yapışmamalı.
+  assert.ok(!sameClub("Spor", "Konyaspor"));
+  assert.ok(!sameClub("FK", "Gaziantep FK"));
 }
 
 function testIndexContainsEveryTeam() {
@@ -91,9 +132,12 @@ function testIndexContainsEveryTeam() {
   const teams = index.filter((entry) => entry.type === "team");
   assert.equal(teams.length, 18, `dizinde 18 takım bekleniyor, ${teams.length} var`);
 
+  // Ad EŞİTLİĞİ değil, aynı kulüp olması aranıyor: kadro senkronu sağlayıcı
+  // adını yazınca ("Rizespor") fikstür adı ("Çaykur Rizespor") dizinde birebir
+  // bulunmuyor — ama kulüp aranabilir durumda ve istenen bu.
   for (const name of fixtureTeamNames()) {
     assert.ok(
-      teams.some((entry) => entry.title === name),
+      teams.some((entry) => sameClub(entry.title, name)),
       `"${name}" arama dizininde yok`
     );
   }
@@ -151,9 +195,10 @@ function testTurkishFoldingMatchesSource() {
 }
 
 testFixtureCoverage();
+testProviderAndFixtureNamesDoNotDuplicateClubs();
 testIndexContainsEveryTeam();
 testRequiredTeamsAreSearchable();
 testResultTypesStaySeparated();
 testTurkishFoldingMatchesSource();
 
-console.log("Search coverage tests passed (18 Süper Lig takımı, tip ayrımı, Türkçe katlama).");
+console.log("Search coverage tests passed (18 Süper Lig takımı, sağlayıcı/fikstür ad uzlaşması, tip ayrımı, Türkçe katlama).");

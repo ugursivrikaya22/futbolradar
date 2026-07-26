@@ -61,23 +61,52 @@ function fixtureOnlyTeam(name) {
 }
 
 /**
- * Editoryal kayıtlar + fikstürden türetilenler. Aynı takım her iki kaynakta
- * varsa editoryal kayıt kazanır: elle doğrulanmış veri, türetilmiş kimliğin
- * üzerine yazılmaz.
+ * İki kaynak aynı kulübü FARKLI yazıyor olabilir.
+ *
+ * API-Football "Rizespor", TFF fikstürü "Çaykur Rizespor" diyor. Aynı kulüp.
+ * Tam ad eşitliği arandığı sürece ikisi de listeye giriyor ve kullanıcı arama
+ * kutusunda aynı takımı iki kez görüyor. Kadro senkronu gerçek anahtarla
+ * koşana kadar teams.json'da yalnızca beş takım vardı ve çakışma hiç
+ * oluşmuyordu; senkron 18 takım yazınca üç kulüp ikizlendi (Rizespor,
+ * Gençlerbirliği, Amed).
+ *
+ * Kural: normalleştirilmiş adlardan biri diğerini KELİME SINIRINDA içeriyorsa
+ * aynı kulüptür. Sınır şartı olmadan kısa bir ad alakasız bir kulübe
+ * yapışabilir; en az dört karakter şartı da tek harfli parçaları eler.
+ */
+const MIN_CONTAINMENT_LENGTH = 4;
+
+function sameClub(left, right) {
+  const a = normalizeText(left);
+  const b = normalizeText(right);
+  if (!a || !b) return false;
+  if (a === b) return true;
+
+  const [shorter, longer] = a.length <= b.length ? [a, b] : [b, a];
+  if (shorter.length < MIN_CONTAINMENT_LENGTH) return false;
+  // Kelime sınırı: "amed" ⊂ "amed sportif faaliyetler" eşleşir,
+  // rastgele bir alt dize eşleşmez.
+  return new RegExp(`(^|\\s)${shorter.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\s|$)`).test(longer);
+}
+
+/**
+ * Editoryal/senkronlanmış kayıtlar + fikstürden türetilenler. Aynı takım her
+ * iki kaynakta varsa elde olan kayıt kazanır: doğrulanmış veri, türetilmiş
+ * kimliğin üzerine yazılmaz.
  */
 function mergeSuperLigTeams(curatedTeams) {
   const merged = [];
-  const seen = new Set();
+  const known = [];
 
   for (const team of Array.isArray(curatedTeams) ? curatedTeams : []) {
     if (!team || !team.name) continue;
-    seen.add(normalizeText(team.name));
+    known.push(team.name);
     merged.push(team);
   }
 
   for (const name of fixtureTeamNames()) {
-    if (seen.has(normalizeText(name))) continue;
-    seen.add(normalizeText(name));
+    if (known.some((existing) => sameClub(existing, name))) continue;
+    known.push(name);
     merged.push(fixtureOnlyTeam(name));
   }
 
@@ -91,6 +120,7 @@ function isFixtureOnly(team) {
 
 module.exports = {
   fixtureTeamNames,
+  sameClub,
   fixtureOnlyTeam,
   mergeSuperLigTeams,
   isFixtureOnly,

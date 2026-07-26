@@ -136,7 +136,15 @@ function testSearchIndexCarriesNoClubClaim() {
   const index = JSON.parse(fs.readFileSync(path.join(root, "search-index.json"), "utf8"));
   const entries = (Array.isArray(index) ? index : index.entries || []).filter((item) => item.type === "player");
 
-  assert.equal(entries.length, 110, "110 oyuncu aranabilir kalmalı — URL yapısı korunuyor");
+  // Değişmez "veri kümesi 110 kayıtta kalsın" DEĞİL, "hiçbir oyuncu
+  // aranamaz hâle gelmesin". Sabit sayı, kadro senkronu gerçek anahtarla ilk
+  // kez koşup kümeyi 110'dan 589'a çıkarınca testi kırdı — oysa büyüme
+  // korunmak istenen şeyin ta kendisi. Taban 110: altına düşmek gerileme.
+  assert.ok(entries.length >= 110,
+    `arama dizini taban kapsamın altına düştü (${entries.length} < 110)`);
+  assert.equal(entries.length, players.length,
+    `her oyuncu aranabilir kalmalı — URL yapısı korunuyor ` +
+    `(dizin: ${entries.length}, veri kümesi: ${players.length})`);
 
   for (const entry of entries) {
     const player = players.find((item) => entry.href.includes(item.id));
