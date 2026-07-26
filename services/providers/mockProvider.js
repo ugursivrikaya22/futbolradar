@@ -357,6 +357,13 @@ function curatedMatches() {
 }
 
 function byMatchDate(items, date) {
+  // "all" tarih filtresini kapatır. Takım radarındaki fikstür kartı takımın
+  // tüm doğrulanmış maçlarını ister; varsayılan "bugün" filtresiyle bu kart
+  // maçı olan takımlarda bile boş kalıyordu.
+  if (String(date || "").toLowerCase() === "all") {
+    return items;
+  }
+
   const targetDate = date || todayInTimeZone("Europe/Istanbul");
 
   return items.filter((item) => matchDateOnly(item) === targetDate);

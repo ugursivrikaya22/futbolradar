@@ -14212,3 +14212,407 @@ section[data-api-section="match-detail"],
 section[data-api-target="match-detail"] {
   grid-template-columns: minmax(0, 1fr);
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TAKIM RADARI — premium pano
+   Maç merkeziyle aynı dil. Uzun tek sütun yerine çok sütunlu kart ızgarası:
+   aynı bilgi çok daha az dikey kaydırmayla okunur.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.td-shell {
+  display: grid;
+  gap: var(--sp-5);
+  padding: var(--sp-5);
+}
+
+section[data-api-section="team-detail"],
+section[data-api-target="team-detail"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* --- künye --- */
+.td-hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-5);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-5);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(110% 130% at 0% 0%, rgba(77, 229, 255, 0.12), transparent 60%),
+    var(--surface-raised);
+}
+
+.td-hero-id {
+  display: flex;
+  gap: var(--sp-4);
+  align-items: center;
+  min-width: 0;
+}
+
+.td-hero-badge img,
+.td-hero-badge .team-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.td-hero-league {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
+.td-hero h2 {
+  margin: var(--sp-1) 0;
+  font-size: var(--fs-xl);
+  letter-spacing: -0.02em;
+}
+
+.td-hero p {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-soft);
+  max-width: 62ch;
+}
+
+.td-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  margin: 0;
+}
+
+.td-hero-stats > div {
+  min-width: 84px;
+  padding: var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+
+.td-hero-stats dt {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.td-hero-stats dd {
+  margin: 2px 0 0;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- kart ızgarası --- */
+.td-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--sp-4);
+  align-items: start;
+}
+
+.td-card {
+  display: grid;
+  gap: var(--sp-3);
+  align-content: start;
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  min-width: 0;
+}
+
+.td-card.is-wide { grid-column: 1 / -1; }
+
+.td-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--line);
+}
+
+.td-card-head h2 {
+  margin: 0;
+  font-size: var(--fs-md);
+}
+
+.td-card-head span {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
+.td-note {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
+.td-note b { color: var(--text-soft); }
+
+/* --- göstergeler --- */
+.td-meters { display: grid; gap: var(--sp-3); }
+
+.td-meter {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sp-1) var(--sp-3);
+  align-items: baseline;
+}
+
+.td-meter span { font-size: var(--fs-sm); color: var(--text-soft); }
+
+.td-meter b {
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.td-meter i {
+  grid-column: 1 / -1;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(197, 213, 210, 0.14);
+  position: relative;
+  overflow: hidden;
+}
+
+.td-meter i::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--value, 0%);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--green), var(--cyan));
+}
+
+/* --- künye listesi --- */
+.td-facts { display: grid; gap: var(--sp-2); margin: 0; }
+
+.td-facts > div {
+  display: flex;
+  gap: var(--sp-3);
+  justify-content: space-between;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.td-facts > div:last-child { border-bottom: 0; }
+
+.td-facts dt { font-size: var(--fs-xs); color: var(--muted); }
+
+.td-facts dd {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* --- kadro --- */
+.td-squad-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: var(--sp-4);
+}
+
+.td-squad-group h3 {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.td-squad-group h3 em {
+  font-style: normal;
+  color: var(--cyan);
+}
+
+.td-squad-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.td-squad-list a {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2);
+  border-radius: var(--radius);
+  color: inherit;
+  text-decoration: none;
+  min-height: var(--tap);
+}
+
+.td-squad-list a:hover,
+.td-squad-list a:focus-visible {
+  background: rgba(77, 229, 255, 0.08);
+}
+
+.td-squad-name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+}
+
+.td-squad-meta {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.td-squad-meta b {
+  color: var(--green);
+  font-variant-numeric: tabular-nums;
+}
+
+.td-face {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(77, 229, 255, 0.12);
+}
+
+.td-face.is-mono {
+  display: grid;
+  place-items: center;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+/* --- liderler --- */
+.td-leader-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: var(--sp-3);
+}
+
+.td-leader {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  gap: var(--sp-2) var(--sp-3);
+  align-items: center;
+  padding: var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.td-leader-rank {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(197, 213, 210, 0.14);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.td-leader strong {
+  display: block;
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+}
+
+.td-leader span {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
+.td-leader-score {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--green);
+  font-variant-numeric: tabular-nums;
+}
+
+.td-leader-links {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: var(--sp-3);
+  font-size: var(--fs-xs);
+}
+
+.td-leader-links a { color: var(--cyan); }
+
+/* --- maçlar --- */
+.td-fixture-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-2);
+}
+
+.td-fixture {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--sp-3);
+  align-items: center;
+  padding: var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: inherit;
+  text-decoration: none;
+  min-height: var(--tap);
+}
+
+.td-fixture:hover,
+.td-fixture:focus-visible { border-color: var(--line-strong); }
+
+.td-fixture-state {
+  padding: 2px var(--sp-2);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.td-fixture-state.is-live { color: var(--live); border-color: rgba(255, 111, 125, 0.45); }
+.td-fixture-state.is-final { color: var(--green); }
+
+.td-fixture-teams {
+  font-size: var(--fs-sm);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.td-fixture-score {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- dar ekran --- */
+@media (max-width: 640px) {
+  .td-shell { padding: var(--sp-4); gap: var(--sp-4); }
+
+  .td-hero { padding: var(--sp-4); gap: var(--sp-4); }
+
+  .td-hero-badge img,
+  .td-hero-badge .team-logo { width: 48px; height: 48px; }
+
+  .td-hero-stats { width: 100%; }
+
+  .td-hero-stats > div { flex: 1 1 70px; min-width: 70px; }
+
+  .td-grid { grid-template-columns: minmax(0, 1fr); }
+}
