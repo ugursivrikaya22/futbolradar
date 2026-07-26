@@ -47,6 +47,41 @@ exit code `1` as "continue building". The `scripts/vercel-continue-build.mjs`
 helper exits with `1` on purpose so Production commits are not marked Blocked
 because of an old dashboard ignore command.
 
+## Commit author (deployments fail if this is wrong)
+
+Vercel maps the **author** of the commit that triggers a deployment to a GitHub
+account, and refuses to build when that account has no contributing access to
+the project. A Hobby team cannot add members on a private repository, so the
+only author Vercel accepts here is the project owner, `ugursivrikaya22`.
+
+Every commit that reaches `main` must therefore be authored by:
+
+```
+ugursivrikaya22 <295430257+ugursivrikaya22@users.noreply.github.com>
+```
+
+Two places set this, and both must keep using that identity:
+
+- `.github/workflows/match-analysis.yml` — the `Commit changes if any` step in
+  both jobs. It previously used `futbolradar-bot
+  <actions@users.noreply.github.com>`, which GitHub attributes to the unrelated
+  account `actions`; every automated commit blocked Production.
+- `.claude/hooks/session-start.sh` — sets the same identity in the repository's
+  local git config for Claude Code sessions, whose container default is
+  `Claude <noreply@anthropic.com>` (attributed to the account `claude`).
+
+Check an existing commit's attribution with:
+
+```bash
+curl -s https://api.github.com/repos/ugursivrikaya22/futbolradar/commits/main \
+  | grep -E '"login"|"email"'
+```
+
+A blocked deployment cannot be rescued by re-deploying: the stored commit keeps
+its original author. Land a new commit authored by the owner instead. When
+merging a pull request, use a merge commit or rebase rather than squash —
+squashing preserves the original (wrong) author on the resulting commit.
+
 ## Environment variables
 
 Set these only in the Vercel dashboard. Do not commit real API keys.

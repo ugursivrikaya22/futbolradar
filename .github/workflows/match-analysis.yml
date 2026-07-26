@@ -100,8 +100,16 @@ jobs:
 
       - name: Commit changes if any
         run: |
-          git config user.name "futbolradar-bot"
-          git config user.email "actions@users.noreply.github.com"
+          # Commit'in yazarı repo sahibinin GitHub hesabı olmalı. Vercel,
+          # deploy'u tetikleyen commit'in yazarını bir GitHub hesabına eşler
+          # ve o hesabın projeye katkı erişimi yoksa dağıtımı reddeder; Hobby
+          # planı özel repolarda ek üye kabul etmediği için "futbolradar-bot"
+          # gibi ayrı bir kimlikle atılan her commit dağıtımı bloke eder.
+          # Bu adres ugursivrikaya22 hesabının GitHub noreply adresidir
+          # (kullanıcı kimliği 295430257), bu yüzden commit doğrudan o hesaba
+          # atfedilir ve gizli bir e-posta sızdırmaz.
+          git config user.name "ugursivrikaya22"
+          git config user.email "295430257+ugursivrikaya22@users.noreply.github.com"
           if [ -n "$(git status --porcelain)" ]; then
             git add -A
             git commit -m "ci(matches): automate fixture and match analysis updates"
@@ -147,8 +155,16 @@ jobs:
 
       - name: Commit changes if any
         run: |
-          git config user.name "futbolradar-bot"
-          git config user.email "actions@users.noreply.github.com"
+          # Commit'in yazarı repo sahibinin GitHub hesabı olmalı. Vercel,
+          # deploy'u tetikleyen commit'in yazarını bir GitHub hesabına eşler
+          # ve o hesabın projeye katkı erişimi yoksa dağıtımı reddeder; Hobby
+          # planı özel repolarda ek üye kabul etmediği için "futbolradar-bot"
+          # gibi ayrı bir kimlikle atılan her commit dağıtımı bloke eder.
+          # Bu adres ugursivrikaya22 hesabının GitHub noreply adresidir
+          # (kullanıcı kimliği 295430257), bu yüzden commit doğrudan o hesaba
+          # atfedilir ve gizli bir e-posta sızdırmaz.
+          git config user.name "ugursivrikaya22"
+          git config user.email "295430257+ugursivrikaya22@users.noreply.github.com"
           if [ -n "$(git status --porcelain)" ]; then
             git add -A
             git commit -m "ci(matches): refresh official lineups"
