@@ -6,6 +6,10 @@
   var FETCH_TIMEOUT_MS = 6500;
   var MATCH_LIVE_POLL_MS = 20000;
   var MATCH_DETAIL_POLL_MS = 15000;
+  // Son düdükten sonra nihai istatistiklerin yayımlanması için beklenen süre.
+  // Yoklama aralığıyla birlikte maç sonu analizi ~30-60 saniyede tam veriye
+  // oturur; sağlayıcı geç yayımlarsa sonraki yoklama tamamlar.
+  var MATCH_FINAL_ANALYSIS_DELAY_MS = 30000;
   var SUPER_LIG_SEASON_START = "2026-08-14";
   var cache = Object.create(null);
   var COMPETITION_ALIASES = {
@@ -2139,6 +2143,35 @@
       .join("");
   }
 
+  /**
+   * Bir maçın yayımlanabilir analizi var mı? İki kaynak sayılır: önceden
+   * üretilmiş maç analizi kaydı ve maçın kendi doğrulanmış verisinden
+   * türetilebilen okuma (olay akışı, istatistik veya editoryal analiz).
+   * Hiçbiri yoksa maç "analizi hazır" sayılmaz — boş bir sayfa hazır analiz
+   * gibi sayılmamalıdır.
+   */
+  function matchHasReadyAnalysis(match) {
+    if (!match) {
+      return false;
+    }
+
+    var stored = findAnalysisForMatch(latestAnalysesIndex, match);
+    if (stored && stored.analysisStatus !== "unavailable") {
+      return true;
+    }
+
+    if (match.analysis && typeof match.analysis === "object" &&
+      (match.analysis.headline || match.analysis.lead || match.analysis.summary)) {
+      return true;
+    }
+
+    if (match.summary) {
+      return true;
+    }
+
+    return (match.events || []).length > 0 || (match.statistics || []).length > 0;
+  }
+
   function renderFeaturedMatch(matches) {
     var list = Array.isArray(matches) ? matches.slice() : [];
     var liveCount = list.filter(isLiveMatch).length;
@@ -2157,11 +2190,17 @@
     // tamamlanan karşılaşması. Hero'da tek maç büyük gösterilir.
     var featured = ordered[0] || null;
 
+    // Analizi hazır: maçın kendi kaydından üretilebilen bir okuma var mı?
+    // Sayaç canlı yoklamada yeniden hesaplanır, çünkü bir maç başladığında
+    // veya bittiğinde analiz durumu da değişir.
+    var analysisReadyCount = list.filter(matchHasReadyAnalysis).length;
+
     var quickStats =
       '<div class="quick-stats" aria-label="Bugünün maç özeti">' +
       '<a class="quick-stat' + (liveCount ? " is-live" : "") + '" href="./canli-skor.html"><span>Canlı</span><b class="live-number">' + liveCount + "</b></a>" +
       '<a class="quick-stat" href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>' + upcomingCount + "</b></a>" +
       '<a class="quick-stat" href="./bugunun-maclari.html?status=finished"><span>Biten</span><b>' + finishedCount + "</b></a>" +
+      '<a class="quick-stat' + (analysisReadyCount ? " is-ready" : "") + '" href="./mac-merkezi.html"><span>Analizi hazır</span><b>' + analysisReadyCount + "</b></a>" +
       '<a class="quick-stat" href="./bugunun-maclari.html"><span>Toplam</span><b>' + list.length + "</b></a>" +
       "</div>";
 
@@ -2436,7 +2475,11 @@
       matchesPage: document.querySelector('[data-api-target="matches-page"]')
     };
 
-    if (!targets.metrics && !targets.featured && !targets.matchesPage) {
+    // Ana sayfadaki "Analizi hazır" sayacı da analiz dizinine ihtiyaç duyar.
+    // Bu hedef olmadan çıkılırsa dizin boş kalır ve sayaç sürekli 0 gösterir.
+    var quickStatsTarget = document.querySelector('[data-api-target="featured-match"]');
+
+    if (!targets.metrics && !targets.featured && !targets.matchesPage && !quickStatsTarget) {
       return;
     }
 
@@ -2453,9 +2496,16 @@
       var matches = Array.isArray(results[0]) ? results[0] : [];
       var analyses = Array.isArray(results[1]) ? results[1] : [];
       var index = buildAnalysesIndex(analyses);
+      latestAnalysesIndex = index;
 
       if (targets.metrics) {
         setContent(targets.metrics, matchCenterMetricsHtml(matches, index));
+      }
+
+      // Dizin yüklendikten sonra hero sayaçları bir kez daha çizilir; ilk
+      // çizim analiz verisi gelmeden yapılmış olabilir.
+      if (quickStatsTarget) {
+        setContent(quickStatsTarget, renderFeaturedMatch(matches));
       }
 
       if (targets.featured) {
@@ -2633,12 +2683,25 @@
     );
   }
 
+  // Canlı yoklamada yeniden çizilen maç bölümleri. "match-center-metrics"
+  // buraya dahildir: "Analizi hazır" ve "Canlı" sayaçları sayfa açıldığı anda
+  // dondurulmamalı, skor ve analiz durumu değiştikçe güncellenmelidir.
   var MATCH_SECTION_BINDINGS = [
     { selector: "featured-match", renderer: renderFeaturedMatch },
     { selector: "today-matches", renderer: renderTodayMatchesPreview },
     { selector: "matches-page", renderer: renderMatchesPageSection },
-    { selector: "live-score", renderer: renderLiveScoreSection }
+    { selector: "live-score", renderer: renderLiveScoreSection },
+    {
+      selector: "match-center-metrics",
+      renderer: function (matches) {
+        return matchCenterMetricsHtml(matches, latestAnalysesIndex);
+      }
+    }
   ];
+
+  // initMatchCenterIntelligence tarafından doldurulur; yoklama sırasında
+  // analiz listesini yeniden çekmemek için son bilinen dizin saklanır.
+  var latestAnalysesIndex = buildAnalysesIndex([]);
 
   // Canlı yoklama API-Football'ın gerçek zamanlı uç noktasını kullanır
   // (/api/matches?live=all). Bu uç nokta YALNIZCA oynanmakta olan maçları
@@ -2736,17 +2799,79 @@
     }).start();
   }
 
+  /**
+   * Analizin yeniden üretilmesi gereken durum değişikliklerini yakalayan
+   * imza: skor, maç durumu ve olay sayısı. Gol, kırmızı kart ve penaltı
+   * olay listesini büyüttüğü için bu imzayı da değiştirir; devre arası ve
+   * maç sonu ise durum alanından okunur.
+   */
+  function matchAnalysisSignature(detail) {
+    if (!detail) {
+      return "";
+    }
+
+    var score = detail.score || {};
+    return [
+      String(detail.status || detail.providerStatus || ""),
+      score.home,
+      score.away,
+      score.halftimeHome,
+      score.halftimeAway,
+      (detail.events || []).length,
+      (detail.statistics || []).length,
+      (detail.lineups || []).length
+    ].join("|");
+  }
+
   function initMatchDetailPolling(target) {
     if (!target || window.location.protocol === "file:") {
       return;
     }
 
+    var lastSignature = null;
+    var lastStatus = null;
+
     createLivePoller(MATCH_DETAIL_POLL_MS, function () {
       return forceReload("matchDetail").then(function (data) {
         var detail = Array.isArray(data) ? data[0] : data;
-        var html = detail ? renderMatchDetail(detail) : "";
-        if (html) {
-          setContent(target, html);
+        if (!detail) {
+          return;
+        }
+
+        var signature = matchAnalysisSignature(detail);
+        var status = String(detail.status || detail.providerStatus || "").toUpperCase();
+        var justFinished = lastStatus !== null && lastStatus !== status &&
+          ["FINISHED", "FT", "AET", "PEN"].indexOf(status) !== -1;
+
+        lastStatus = status;
+
+        // Değişiklik yoksa DOM'a dokunulmaz: her yoklamada sayfayı yeniden
+        // yazmak kaydırma konumunu ve odağı bozuyordu.
+        if (signature === lastSignature) {
+          return;
+        }
+
+        lastSignature = signature;
+        setContent(target, renderMatchDetail(detail));
+
+        // Maç yeni bitti: nihai istatistik ve kadro dökümü çoğu sağlayıcıda
+        // son düdükten birkaç saniye sonra yayımlanır. Bir sonraki normal
+        // yoklamayı beklemeden bir kez daha çekilir, böylece maç sonu
+        // analizi tam veriyle bir dakika içinde yerine oturur.
+        if (justFinished) {
+          window.setTimeout(function () {
+            forceReload("matchDetail").then(function (fresh) {
+              var latest = Array.isArray(fresh) ? fresh[0] : fresh;
+              if (!latest) {
+                return;
+              }
+              var freshSignature = matchAnalysisSignature(latest);
+              if (freshSignature !== lastSignature) {
+                lastSignature = freshSignature;
+                setContent(target, renderMatchDetail(latest));
+              }
+            }).catch(function () {});
+          }, MATCH_FINAL_ANALYSIS_DELAY_MS);
         }
       });
     }).start();
@@ -6514,8 +6639,9 @@
       goal: '<circle cx="12" cy="12" r="8"/><path d="M12 8.5l2.6 1.9-1 3H10.4l-1-3z"/>',
       "own-goal": '<circle cx="12" cy="12" r="8"/><path d="M9 9l6 6M15 9l-6 6"/>',
       penalty: '<path d="M4 18V8h16v10"/><path d="M9 18v-4h6v4"/><circle cx="12" cy="11" r="1.4"/>',
-      yellow: '<rect x="8" y="4" width="9" height="14" rx="1.6"/>',
-      red: '<rect x="8" y="4" width="9" height="14" rx="1.6"/>',
+      // Kartlar dolu çizilir: içi boş dikdörtgen ekranda karta benzemiyordu.
+      yellow: '<rect x="8" y="4" width="9" height="14" rx="1.6" fill="currentColor"/>',
+      red: '<rect x="8" y="4" width="9" height="14" rx="1.6" fill="currentColor"/>',
       sub: '<path d="M7 8h9l-2.5-2.5M17 16H8l2.5 2.5"/>',
       var: '<rect x="3.5" y="6" width="17" height="11" rx="2"/><path d="M9 10.5l2 3 2.5-4.5"/>',
       save: '<path d="M12 4l7 3v5c0 4-3 6.5-7 8-4-1.5-7-4-7-8V7z"/>',
@@ -7122,6 +7248,30 @@
     }).slice(0, 4);
   }
 
+  /**
+   * Analizin maç yaşam döngüsündeki aşaması. Analiz metni her zaman maçın o
+   * andaki doğrulanmış kaydından türetildiği için aşama, üretimi değil
+   * sunumu belirler: okuyucu elindeki okumanın maç öncesi mi, devre arası mı,
+   * yoksa nihai mi olduğunu bilmelidir.
+   */
+  function mdAnalysisPhase(detail) {
+    var status = String(detail.status || detail.providerStatus || "").toUpperCase();
+
+    if (["HT", "HALFTIME", "PAUSED", "BT"].indexOf(status) !== -1) {
+      return { key: "halftime", label: "Devre arası analizi", note: "İlk yarı verisiyle güncellendi" };
+    }
+
+    if (isLiveMatch(detail)) {
+      return { key: "live", label: "Canlı analiz", note: "Yeni olaylar geldikçe yenilenir" };
+    }
+
+    if (["FINISHED", "FT", "AET", "PEN"].indexOf(status) !== -1) {
+      return { key: "final", label: "Maç sonu analizi", note: "Nihai veriyle üretildi" };
+    }
+
+    return { key: "preview", label: "Maç öncesi ön izleme", note: "Başlama düdüğüyle canlı analize geçer" };
+  }
+
   /** Premium AI analiz bloğu: yalnızca kayıtlı analiz ve ölçümlerden türer. */
   function mdAnalysisHtml(detail) {
     var analysis = detail.analysis && typeof detail.analysis === "object" ? detail.analysis : null;
@@ -7134,10 +7284,20 @@
     var verified = String(detail.dataStatus || "") === "verified";
 
     if (!analysis && !momentum && !turning.length && !standouts.length) {
-      return mdSection("ai", "AI maç analizi", null, mdEmpty(
-        "Analiz için ölçüm yok",
-        "Analiz yalnızca doğrulanmış istatistik ve olaylardan üretilir; bu maçta ikisi de henüz yok."
-      ));
+      // Ölçüm yoksa da aşama yazılır: okuyucu maçın henüz başlamadığını mı
+      // yoksa verinin gelmediğini mi gördüğünü ayırt edebilmelidir.
+      var emptyPhase = mdAnalysisPhase(detail);
+      return mdSection("ai", "AI maç analizi", emptyPhase.label,
+        '<div class="md-phase md-phase-' + escapeHtml(emptyPhase.key) + '">' +
+        '<span class="md-phase-tag">' + escapeHtml(emptyPhase.label) + "</span>" +
+        "<span>" + escapeHtml(emptyPhase.note) + "</span>" +
+        "</div>" +
+        mdEmpty(
+          emptyPhase.key === "preview" ? "Ön izleme için veri bekleniyor" : "Analiz için ölçüm yok",
+          emptyPhase.key === "preview"
+            ? "Maç öncesi okuma; kadro, form ve istatistik verisi doğrulandıkça bu bölümde oluşur. Başlama düdüğüyle canlı analize geçer."
+            : "Analiz yalnızca doğrulanmış istatistik ve olaylardan üretilir; bu maçta ikisi de henüz yok."
+        ));
     }
 
     var blocks = "";
@@ -7235,10 +7395,16 @@
       ? "Güven verisi yok"
       : "Veri güveni %" + confidence + (verified ? " · doğrulanmış kayıt" : "");
 
+    var phase = mdAnalysisPhase(detail);
+
     return mdSection(
       "ai",
       "AI maç analizi",
       confidenceLabel,
+      '<div class="md-phase md-phase-' + escapeHtml(phase.key) + '">' +
+      '<span class="md-phase-tag">' + escapeHtml(phase.label) + "</span>" +
+      "<span>" + escapeHtml(phase.note) + "</span>" +
+      "</div>" +
       '<div class="md-ai-grid">' + blocks + "</div>" +
       '<p class="md-ai-note">Bölümler maçın doğrulanmış olay ve istatistik kaydından türetilir; eksik alanlar tahminle doldurulmaz.</p>'
     );

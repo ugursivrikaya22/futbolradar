@@ -14616,3 +14616,38 @@ section[data-api-target="team-detail"] {
 
   .td-grid { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Analizin maç yaşam döngüsündeki aşaması: okuyucu elindeki okumanın maç
+   öncesi mi, devre arası mı yoksa nihai mi olduğunu görmeli. */
+.md-phase {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-3);
+  align-items: center;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
+.md-phase-tag {
+  padding: 2px var(--sp-3);
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: rgba(197, 213, 210, 0.14);
+  color: var(--text-soft);
+}
+
+.md-phase-live { border-color: rgba(255, 111, 125, 0.45); }
+.md-phase-live .md-phase-tag { background: rgba(255, 111, 125, 0.18); color: var(--live); }
+
+.md-phase-halftime { border-color: rgba(255, 209, 102, 0.4); }
+.md-phase-halftime .md-phase-tag { background: rgba(255, 209, 102, 0.18); color: var(--warn); }
+
+.md-phase-final .md-phase-tag { background: rgba(128, 255, 155, 0.16); color: var(--green); }
+.md-phase-preview .md-phase-tag { background: rgba(77, 229, 255, 0.16); color: var(--cyan); }
+
+.quick-stat.is-ready b { color: var(--green); }
