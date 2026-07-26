@@ -86,6 +86,27 @@ function teamMatchImpact(teamName, matches) {
   };
 }
 
+/**
+ * Momentum hesaplanabilir mi?
+ *
+ * Hesap, eksik alanları varsayılanlarla dolduruyor: form yoksa beş beraberlik
+ * ("D") uyduruluyor, hücum/savunma yoksa 55 kabul ediliyor. Bu varsayılanlar
+ * ölçümü olan takımlarda küçük bir yumuşatmayken, HİÇ verisi olmayan bir
+ * takımda tamamen üretilmiş bir tablo satırı doğuruyordu: lige yeni eklenen
+ * takımlar "5 beraberlik, hücum 55, momentum 39, risk yüksek" ile sıralamaya
+ * giriyor ve bu /api/momentum ile ok:true olarak yayımlanıyordu.
+ *
+ * Ölçülmüş hiçbir girdi yoksa momentum üretilmez; takım tablodan çıkarılır.
+ */
+function hasMomentumInputs(team) {
+  if (!team) return false;
+  const form = Array.isArray(team.form) ? team.form.filter(Boolean) : [];
+  if (form.length) return true;
+
+  const numeric = [team.attack, team.attackRating, team.defense, team.defenseRating, team.momentum, team.formScore];
+  return numeric.some((value) => value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value)));
+}
+
 function computeTeamMomentum(team, matches, standings) {
   const form = (Array.isArray(team.form) ? team.form : []).map(normalizeFormResult).slice(-5);
   while (form.length < 5) {
@@ -131,7 +152,10 @@ function computeTeamMomentum(team, matches, standings) {
 }
 
 function computeLeagueMomentum(teams, matches, standings) {
+  // Ölçümü olmayan takım momentum tablosuna girmez: uydurulmuş bir satır,
+  // boş bir satırdan daha yanıltıcıdır.
   return (Array.isArray(teams) ? teams : [])
+    .filter(hasMomentumInputs)
     .map((team) => computeTeamMomentum(team, matches, standings))
     .sort((a, b) => Number(b.momentum || 0) - Number(a.momentum || 0))
     .map((item, index) => ({ ...item, rank: index + 1 }));
@@ -140,6 +164,7 @@ function computeLeagueMomentum(teams, matches, standings) {
 module.exports = {
   buildMomentumExplanation,
   computeLeagueMomentum,
+  hasMomentumInputs,
   computeTeamMomentum,
   normalizeFormResult
 };

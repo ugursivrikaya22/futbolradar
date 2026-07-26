@@ -13,6 +13,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { siteHeader, siteFooter, newsTicker } from "./lib/layout.mjs";
+import { buildTickerFeed } from "./lib/tickerFeed.mjs";
 
 const root = process.cwd();
 
@@ -49,54 +50,6 @@ function istanbulToday() {
  * ardından doğrulanmış haber akışı. Uydurma başlık üretilmez; yalnızca
  * veri dosyalarında zaten doğrulanmış kayıtlar kullanılır.
  */
-function buildTickerItems() {
-  const items = [];
-  const today = istanbulToday();
-
-  const matches = asArray(readJson("matches.json"), "matches");
-  const todays = matches
-    .filter((match) => String(match.kickoff || "").slice(0, 10) === today)
-    .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)));
-
-  for (const match of todays) {
-    const status = String(match.status || "").toUpperCase();
-    const hasScore =
-      match.score && match.score.home !== null && match.score.home !== undefined
-        && match.score.away !== null && match.score.away !== undefined;
-    const slug = `${match.id}`;
-
-    if (status === "LIVE" && hasScore) {
-      items.push({
-        label: "Canlı",
-        text: `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`,
-        href: `canli-skor.html#${slug}`
-      });
-    } else if (hasScore) {
-      items.push({
-        label: "Sonuç",
-        text: `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`,
-        href: `canli-skor.html#${slug}`
-      });
-    } else if (match.time) {
-      items.push({
-        label: match.time,
-        text: `${match.homeTeam} - ${match.awayTeam}`,
-        href: "bugunun-maclari.html"
-      });
-    }
-  }
-
-  const news = asArray(readJson("news.json"), "news", "items")
-    .filter((item) => item && item.title && item.status !== "draft")
-    .sort((left, right) => String(right.publishedAt || "").localeCompare(String(left.publishedAt || "")))
-    .slice(0, 8);
-
-  for (const item of news) {
-    items.push({ label: item.category || "Gündem", text: item.title, href: item.url || "haberler.html" });
-  }
-
-  return items.slice(0, 12);
-}
 
 /** Bant öğelerinin göreli bağlantıları sayfa derinliğine göre yeniden yazılır. */
 function rebaseItems(items, base) {
@@ -141,7 +94,11 @@ function baseFor(file) {
   return depth <= 0 ? "./" : "../".repeat(depth);
 }
 
-const tickerItems = buildTickerItems();
+// Bant doğrulanmış kaynaklardan beslenir (maç sonuçları, onaylı transferler,
+// doğrulanmış editoryal haberler) ve tazelik denetiminden geçer: rozet ancak
+// gerçekten taze bir öğe varsa "Son Dakika" olur.
+const tickerFeed = buildTickerFeed();
+const tickerItems = tickerFeed.items;
 const files = [...collectHtmlFiles(root), ...collectHtmlFiles(path.join(root, "public"))]
   .filter((file) => !path.relative(root, file).startsWith("node_modules"));
 
@@ -157,7 +114,7 @@ for (const file of files) {
   }
 
   const base = baseFor(file);
-  const ticker = newsTicker({ base, items: rebaseItems(tickerItems, base) });
+  const ticker = newsTicker({ base, items: rebaseItems(tickerItems, base), badge: tickerFeed.badge });
   const headerBlock = ticker
     ? `${siteHeader({ base })}\n      <!-- shared-layout:ticker:start -->${ticker}<!-- shared-layout:ticker:end -->`
     : siteHeader({ base });
@@ -172,4 +129,8 @@ for (const file of files) {
   }
 }
 
-console.log(`Shared layout applied: ${updated} updated, ${skipped} without layout blocks, ${tickerItems.length} ticker items`);
+console.log(
+  `Shared layout applied: ${updated} updated, ${skipped} without layout blocks, ` +
+  `${tickerItems.length} ticker items (${tickerFeed.badge}` +
+  `${tickerFeed.usedFallback ? ", son doğrulanmış içerik korundu" : ""})`
+);

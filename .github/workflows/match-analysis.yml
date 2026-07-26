@@ -70,10 +70,22 @@ jobs:
       - name: Sync fixture calendar (Süper Lig takımlarının maç takvimi)
         run: node scripts/sync-fixture-calendar.mjs --apply
 
-      - name: Sync Süper Lig teams and squads (no-ops without a live provider key)
+      # Kadro senkronu API-Football anahtarına ihtiyaç duyar. Anahtar Vercel'de
+      # tanımlı ama GitHub Actions ayrı bir ortamdır: secret buraya
+      # geçirilmediği sürece script her koşuda sessizce no-op eder ve kadrolar
+      # boş kalır. Depo ayarlarına APIFOOTBALL_API_KEY secret'i eklendiği anda
+      # bu adımlar gerçek veriyle çalışmaya başlar; secret yoksa davranış
+      # eskisi gibi güvenli no-op olur.
+      - name: Sync Süper Lig teams and squads
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
+          APIFOOTBALL_LEAGUE_ID: ${{ secrets.APIFOOTBALL_LEAGUE_ID }}
+          APIFOOTBALL_SEASON: ${{ secrets.APIFOOTBALL_SEASON }}
         run: node scripts/sync-super-lig-squads.mjs --apply
 
       - name: Merge synced squads into canonical player data
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
         run: node scripts/sync-canonical-players.mjs --apply
 
       - name: Validate team/player data
@@ -86,14 +98,20 @@ jobs:
         run: node scripts/generate-match-analyses.mjs --days=3 --apply
 
       - name: Refresh official lineups for fixtures inside the pre-kickoff window
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
         run: node scripts/refresh-official-lineups.mjs --apply
 
       # Kimlik eşleştirmesi sonuç senkronundan ÖNCE koşmalı: sync, maçı
       # API-Football fixture id'siyle sorguluyor.
       - name: Backfill missing API-Football fixture ids
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
         run: node scripts/backfill-provider-ids.mjs --apply
 
       - name: Sync finished match results (statistics, events, lineups)
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
         run: node scripts/sync-match-results.mjs --apply
 
       - name: Validate match analyses
@@ -140,15 +158,21 @@ jobs:
         with:
           node-version: 20
 
-      - name: Refresh official lineups (no-ops without a live provider key)
+      - name: Refresh official lineups
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
         run: node scripts/refresh-official-lineups.mjs --apply
 
       # Maç biter bitmez sonucu çekip raporu üretir. Beş dakikalık döngüde
       # olması, biten bir maçın raporunun ertesi güne kalmamasını sağlar.
       - name: Backfill missing API-Football fixture ids
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
         run: node scripts/backfill-provider-ids.mjs --apply
 
       - name: Sync finished match results
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
         run: node scripts/sync-match-results.mjs --apply
 
       - name: Regenerate match reports

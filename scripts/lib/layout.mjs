@@ -127,6 +127,12 @@ export function siteHeader(options = {}) {
 export function newsTicker(options = {}) {
   const base = normalizeBase(options.base);
   const items = Array.isArray(options.items) ? options.items.filter(Boolean) : [];
+  // Rozet çağırandan gelir: "Son Dakika" bir zaman iddiasıdır ve yalnızca
+  // gerçekten taze içerik varsa yazılır. Taze içerik yoksa bant kaldırılmaz,
+  // rozet nötr "Gündem" olur — okuyucu gerçek ama eski başlık görür.
+  const badge = typeof options.badge === "string" && options.badge.trim()
+    ? options.badge.trim()
+    : "Gündem";
 
   if (!items.length) {
     return "";
@@ -144,7 +150,7 @@ export function newsTicker(options = {}) {
 
   return `<div class="news-ticker" data-shared-layout="ticker" aria-label="Son dakika futbol gündemi">
       <div class="container-wide news-ticker-inner">
-        <span class="news-ticker-badge"><i class="live-pulse" aria-hidden="true"></i>Son Dakika</span>
+        <span class="news-ticker-badge${badge === "Son Dakika" ? " is-live" : ""}">${badge === "Son Dakika" ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(badge)}</span>
         <div class="news-ticker-viewport">
           <div class="news-ticker-track">
             <div class="news-ticker-group">${track}</div>
