@@ -45,11 +45,15 @@ const COMPETITION_CODE_ENV_NAMES = [
   "FOOTBALLDATA_COMPETITION_CODE",
   "COMPETITION_CODE"
 ];
+// API_FOOTBALL_KEY BİLEREK YOK.
+//
+// Eski ad artık kabul edilmiyor: tek bir kanonik değişken olsun ki hangi
+// sırrın kullanıldığı belirsiz kalmasın ve eski secret güvenle silinebilsin.
+// Kaldırılmadan önce hiçbir iş akışı onu geçirmiyordu; tek okuyucu buydu.
 const APIFOOTBALL_API_KEY_ENV_NAMES = [
   "APIFOOTBALL_API_KEY",
   "API_FOOTBALL_API_KEY",
   "APIFOOTBALL_KEY",
-  "API_FOOTBALL_KEY",
   "API_SPORTS_API_KEY",
   "APISPORTS_API_KEY"
 ];

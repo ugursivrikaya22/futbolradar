@@ -31,6 +31,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
+const utils = require("../api/_utils");
 
 const SECRET_KEY = "abcdef0123456789abcdef0123456789";
 const SUPER_LIG_ID = "203";
@@ -379,6 +380,45 @@ async function testProbeOutputLeaksNoFragmentOfKey() {
   }
 }
 
+/**
+ * Eski secret adı ARTIK KABUL EDİLMİYOR.
+ *
+ * API_FOOTBALL_KEY, kabul edilen değişken adları listesinden kaldırıldı ki
+ * tek bir kanonik değişken kalsın ve eski GitHub Actions secret'ı güvenle
+ * silinebilsin. Bu test, adın sessizce geri eklenmesini engelliyor: eski ad
+ * TEK BAŞINA tanımlıyken sağlayıcı yapılandırılmamış sayılmalı.
+ *
+ * withEnv listesinde adın temizleniyor olması yeterli değildi — temizlik,
+ * adın okunup okunmadığını sınamıyor.
+ */
+async function testLegacyKeyNameIsNotAccepted() {
+  assert.ok(
+    !utils.APIFOOTBALL_API_KEY_ENV_NAMES.includes("API_FOOTBALL_KEY"),
+    "API_FOOTBALL_KEY kabul edilen adlar listesine geri eklenmiş"
+  );
+
+  await withEnv({ API_FOOTBALL_KEY: SECRET_KEY }, async () => {
+    const providerPath = require.resolve("../services/providers/apiFootballProvider.js");
+    delete require.cache[providerPath];
+    const provider = require(providerPath);
+
+    assert.equal(provider.hasConfig(), false,
+      "yalnızca eski ad tanımlıyken sağlayıcı yapılandırılmış sayılmamalı");
+
+    const report = await provider.probeCredentials();
+    assert.equal(report.candidates.length, 0,
+      "eski ad aday kimlik olarak değerlendirilmemeli");
+  });
+
+  // Kanonik ad hâlâ çalışmalı — kaldırma işlemi doğru olanı bozmamalı.
+  await withEnv({ APIFOOTBALL_API_KEY: SECRET_KEY }, async () => {
+    const providerPath = require.resolve("../services/providers/apiFootballProvider.js");
+    delete require.cache[providerPath];
+    const provider = require(providerPath);
+    assert.equal(provider.hasConfig(), true, "kanonik ad tanınmaya devam etmeli");
+  });
+}
+
 async function testSeasonDefaultsToCurrentSeason() {
   await withEnv({ APIFOOTBALL_API_KEY: SECRET_KEY }, async () => {
     const providerPath = require.resolve("../services/providers/apiFootballProvider.js");
@@ -646,6 +686,7 @@ const tests = [
   testProviderErrorIsReportedNotSwallowed,
   testApiKeyNeverLeaks,
   testProbeOutputLeaksNoFragmentOfKey,
+  testLegacyKeyNameIsNotAccepted,
   testSeasonDefaultsToCurrentSeason,
   testCorruptCacheIsIgnored
 ];
@@ -663,4 +704,4 @@ try {
 console.log(`API-Football config tests passed (${tests.length} senaryo: anahtar yokluğu, env önceliği, ` +
   "otomatik çözümleme, önbellek, belirsizlik, eşleşmeme, sponsorlu ad, dar sorgu geri dönüşü, " +
   "kadınlar/altyapı ligi süzgeci, önbellek yeniden doğrulama, lig kimliği koruması, " +
-  "çalışma anında önbellek, sağlayıcı hatası, anahtar sızıntısı, anahtar parçası sızıntısı, sezon).");
+  "çalışma anında önbellek, sağlayıcı hatası, anahtar sızıntısı, anahtar parçası sızıntısı, eski ad reddi, sezon).");

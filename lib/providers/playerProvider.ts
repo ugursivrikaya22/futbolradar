@@ -6,7 +6,7 @@ function hasLivePlayerProviderConfig(): boolean {
     process.env.FOOTBALL_API_KEY ||
     process.env.FOOTBALL_DATA_API_KEY ||
     process.env.SPORTMONKS_API_KEY ||
-    process.env.API_FOOTBALL_KEY
+    process.env.APIFOOTBALL_API_KEY
   );
 }
 

@@ -339,6 +339,33 @@ async function testCuratedAndCalendarMerge() {
  * Rizespor maçına Hırvatistan'daki Opus Arena gibi). Doğrulanmamış kayıt
  * yalnızca ayrı ve etiketli bir alanda taşınmalı.
  */
+/**
+ * Saha kuralının kendisi — canlı veriden BAĞIMSIZ, üç dalın hepsi.
+ *
+ * Kural canlı fikstür takvimindeki belirli bir hazırlık maçı üzerinden
+ * sınanıyordu; o maç sağlayıcı penceresinden çıkınca test kırıldı. Sözleşme
+ * artık sabit girdilerle doğrulanıyor, böylece koruma sağlayıcı verisi
+ * değişse de yerinde kalıyor.
+ */
+function testVenueRuleIsDeterministic() {
+  const resolve = mockProvider.resolveProviderVenue;
+
+  // 1. Doğrulanmış saha ASLA ezilmez: tahmin hiç taşınmaz.
+  assert.equal(resolve("Vodafone Park", "Opus Arena"), null,
+    "doğrulanmış saha varken sağlayıcı tahmini taşınmamalı");
+  assert.equal(resolve("Sportpark Juliana", "Stade du Tivoli"), null);
+
+  // 2. Açıklanmamış saha tahminle DOLDURULMAZ; tahmin ayrı alana geçer.
+  assert.equal(resolve("Açıklanmadı", "Opus Arena"), "Opus Arena",
+    "açıklanmamış sahada tahmin ayrı alanda taşınmalı");
+  assert.equal(resolve("", "Opus Arena"), "Opus Arena");
+  assert.equal(resolve("TBD", "Opus Arena"), "Opus Arena");
+
+  // 3. Tahmin yoksa uydurulmaz.
+  assert.equal(resolve("Açıklanmadı", undefined), null);
+  assert.equal(resolve("Açıklanmadı", ""), null);
+}
+
 async function testVenueAuthority() {
   const today = await mockProvider.getMatches({ date: "2026-07-25" });
   const byTeam = (name) => today.find((match) => `${match.homeTeam} ${match.awayTeam}`.includes(name));
@@ -351,8 +378,18 @@ async function testVenueAuthority() {
   const undisclosed = byTeam("Osijek");
   assert.ok(undisclosed, "Caykur Rizespor maci listelenmeli");
   assert.equal(undisclosed.venue, "Açıklanmadı", "aciklanmamis saha tahminle doldurulmamali");
-  assert.equal(undisclosed.providerVenue, "Opus Arena");
-  assert.equal(undisclosed.providerVenueStatus, "unverified");
+
+  // Sağlayıcı tahmini TAŞINIYORSA doğru etiketle taşınmalı. Tahminin VARLIĞI
+  // burada şart koşulmuyor: tahmin, sağlayıcının eventsnext/eventslast
+  // penceresinden çıkan bir hazırlık maçına bağlıydı ve maç pencereden
+  // düşünce kayboldu — kural bozulmadığı hâlde test kırılıyordu. Kuralın
+  // kendisi aşağıda sabit girdilerle sınanıyor.
+  if (undisclosed.providerVenue !== undefined) {
+    assert.equal(undisclosed.providerVenueStatus, "unverified",
+      "sağlayıcı tahmini yalnızca doğrulanmamış etiketiyle taşınabilir");
+    assert.notEqual(undisclosed.providerVenue, undisclosed.venue,
+      "tahmin doğrulanmış alanın yerine geçmemeli");
+  }
 
   // Saha birincil kaynaktan doğrulandığında sağlayıcı tahmini artık
   // taşınmaz. (Samsunspor - RAAL sahası RAAL'in resmî maç raporundan
@@ -685,6 +722,7 @@ await testCuratedAndCalendarMerge();
 await testCuratedLeagueFilterUsesCatalog();
 await testHeadRequestSupport();
 await testApiKeyCandidateRecovery();
+testVenueRuleIsDeterministic();
 await testVenueAuthority();
 
 /**

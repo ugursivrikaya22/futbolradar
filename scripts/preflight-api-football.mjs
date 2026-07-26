@@ -74,7 +74,7 @@ function missingKeyReport() {
     detail: "Kadro, oyuncu ve teknik ekip verisi bu anahtar olmadan çekilemez. " +
       "Kabul edilen değişken adları: " + [
         "APIFOOTBALL_API_KEY", "API_FOOTBALL_API_KEY", "APIFOOTBALL_KEY",
-        "API_FOOTBALL_KEY", "API_SPORTS_API_KEY", "APISPORTS_API_KEY"
+        "API_SPORTS_API_KEY", "APISPORTS_API_KEY"
       ].join(", ") + ".",
     fix: "Anahtarı https://dashboard.api-football.com adresinden al ve şu üç yere de tanımla:\n    " +
       SETUP_STEPS.join("\n    ")

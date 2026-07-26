@@ -315,6 +315,24 @@ function hasRealVenue(value) {
   return !VENUE_PLACEHOLDERS.has(normalizeText(value).replace(/\s+/g, " ").trim());
 }
 
+/**
+ * Sağlayıcının saha tahminiyle ne yapılacağına karar verir.
+ *
+ * Kural üç dalda da aynı: doğrulanmış saha ASLA ezilmez, açıklanmamış saha
+ * tahminle DOLDURULMAZ, tahmin yalnızca ayrı ve "unverified" etiketli bir
+ * alanda taşınır.
+ *
+ * Ayrı fonksiyon olmasının nedeni test edilebilirlik: kural daha önce
+ * yalnızca canlı fikstür takvimindeki belirli bir hazırlık maçı üzerinden
+ * sınanıyordu. O maç sağlayıcının eventsnext/eventslast penceresinden
+ * çıkınca tahmin de kayboldu ve test kırıldı — kural bozulmadığı hâlde.
+ * Sözleşme artık sabit girdilerle, üç dalın hepsinde doğrulanıyor.
+ */
+function resolveProviderVenue(existingVenue, providerVenue) {
+  if (hasRealVenue(existingVenue)) return null;
+  return providerVenue || null;
+}
+
 function curatedMatches() {
   const merged = new Map();
 
@@ -335,7 +353,7 @@ function curatedMatches() {
     // Kürasyonlu kayıtta saha henüz açıklanmamışsa sağlayıcının kaydı
     // yalnızca ayrı bir alanda, doğrulanmamış olduğu belli olacak şekilde
     // taşınır - arayüz isterse "sağlayıcı kaydı" etiketiyle gösterebilir.
-    const providerVenue = !hasRealVenue(existing.venue) && calendarMatch.venue ? calendarMatch.venue : null;
+    const providerVenue = resolveProviderVenue(existing.venue, calendarMatch.venue);
     const advances = matchStateRank(calendarMatch.status) > matchStateRank(existing.status);
     const canAdvance = advances && !hasFinalScore(existing);
 
@@ -632,6 +650,7 @@ async function getAnalyses() {
 
 module.exports = {
   name: "mock",
+  resolveProviderVenue,
   source,
   // Exported so the prerender step renders the same merged, de-duplicated
   // fixture list the API serves. Reading data/fixture-calendar.json directly
