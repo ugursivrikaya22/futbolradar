@@ -30,6 +30,15 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const {
+  publishableTransfers,
+  logExcludedTransfers,
+  logDuplicateTransfers,
+  involvesSuperLigTeam
+} = require("../../services/transferService.js");
 
 const root = process.cwd();
 
@@ -38,6 +47,25 @@ export const FRESH_WINDOW_HOURS = 36;
 
 /** Banda alınabilecek en eski içerik. Bundan eskisi hiç gösterilmez. */
 const MAX_AGE_HOURS = 24 * 7;
+
+/**
+ * Transferler daha uzun ömürlü. Bir maç sonucu bir hafta sonra haber
+ * değerini yitirir; transfer dönemi boyunca "X kulübe katıldı" bilgisi
+ * geçerliliğini korur. Yedi günlük pencere, doğrulanmış transferlerin
+ * banda hiç girememesine yol açıyordu.
+ *
+ * Bu, tazelik iddiasını gevşetmiyor: "Son Dakika" rozeti hâlâ banttaki EN
+ * TAZE öğeye göre veriliyor, eski bir transfer tek başına o rozeti üretemez.
+ */
+const TRANSFER_MAX_AGE_HOURS = 24 * 21;
+
+/**
+ * Tek bir kategori bandı ele geçirmesin. Altı maç sonucu varken doğrulanmış
+ * transferler hiç görünmüyordu; sıralama önceliği doğruydu ama sonuç
+ * tek sesli bir banttı.
+ */
+const MAX_MATCH_ITEMS = 4;
+const MIN_TRANSFER_SLOTS = 2;
 
 /** Bant en fazla bu kadar öğe taşır; şerit kalabalıklaşmamalı. */
 const MAX_ITEMS = 6;
@@ -111,21 +139,27 @@ function matchItems(now) {
   return items;
 }
 
-/** Doğrulanmış transferler; kaynağı olmayan kayıt banda girmez. */
+/**
+ * Doğrulanmış transferler.
+ *
+ * Yayın kuralı burada tekrarlanmıyor: services/transferService.js tek yetkili
+ * nokta. Kural iki yerde ayrı ayrı yazılsaydı biri gevşediğinde diğeri fark
+ * etmez ve bant ile takım sayfaları farklı şeyler gösterirdi.
+ */
 function transferItems(now) {
-  const transfers = asArray(readJson("transfers.json", []), "transfers");
+  const { transfers, excluded, duplicates } = publishableTransfers();
+  logExcludedTransfers("ticker", excluded);
+  logDuplicateTransfers("ticker", duplicates);
 
   return transfers
-    .filter((item) =>
-      item &&
-      item.playerName &&
-      item.toTeam &&
-      String(item.status || "").toLowerCase() === "confirmed" &&
-      item.sourceUrl)
-    .filter((item) => hoursSince(item.date, now) <= MAX_AGE_HOURS)
+    // Bant Süper Lig gündemi: en az bir taraf lig kulübü olmalı. Giden
+    // transferde karşı taraf yabancı kulüp olabilir, o da lig haberidir.
+    .filter((item) => involvesSuperLigTeam(item))
+    .filter((item) => hoursSince(item.date, now) <= TRANSFER_MAX_AGE_HOURS)
     .map((item) => ({
       label: "Transfer",
-      text: `${item.playerName}, ${item.toTeam} kadrosunda`,
+      // Yön açıkça yazılıyor: "kadrosunda" ifadesi gidenler için yanıltıcıydı.
+      text: `${item.playerName}, ${item.toTeam} kadrosuna katıldı (${item.type})`,
       href: item.sourceUrl,
       at: item.date,
       priority: 2
@@ -194,16 +228,32 @@ function writeState(state) {
 export function buildTickerFeed(options = {}) {
   const now = options.now instanceof Date ? options.now : new Date();
 
-  const collected = dedupe([
-    ...matchItems(now),
-    ...transferItems(now),
-    ...newsItems(now)
-  ]).sort((left, right) => {
-    if (left.priority !== right.priority) return left.priority - right.priority;
-    return String(right.at || "").localeCompare(String(left.at || ""));
-  });
+  const byRecency = (left, right) => String(right.at || "").localeCompare(String(left.at || ""));
 
-  const items = collected.slice(0, MAX_ITEMS);
+  const matches = dedupe(matchItems(now)).sort(byRecency);
+  const transfers = dedupe(transferItems(now)).sort(byRecency);
+  const news = dedupe(newsItems(now)).sort(byRecency);
+
+  // Kategori kotası: maç sonuçları bandı tek başına doldurmasın, doğrulanmış
+  // transferlere yer kalsın. Kota dolmazsa boş slot israf edilmez, kalan
+  // yerler önceliğe göre doldurulur.
+  const reservedForTransfers = Math.min(transfers.length, MIN_TRANSFER_SLOTS);
+  const matchQuota = Math.min(matches.length, MAX_MATCH_ITEMS, MAX_ITEMS - reservedForTransfers);
+
+  const picked = [
+    ...matches.slice(0, matchQuota),
+    ...transfers.slice(0, reservedForTransfers)
+  ];
+
+  // Kalan yerleri önceliğe göre doldur (kalan maçlar, transferler, haberler).
+  const rest = dedupe([...matches, ...transfers, ...news])
+    .filter((item) => !picked.includes(item))
+    .sort((left, right) => {
+      if (left.priority !== right.priority) return left.priority - right.priority;
+      return byRecency(left, right);
+    });
+
+  const items = dedupe([...picked, ...rest]).slice(0, MAX_ITEMS);
   const previous = readState();
 
   // Doğrulanmış hiçbir öğe kalmadıysa son bilinen liste korunur. Bant boş

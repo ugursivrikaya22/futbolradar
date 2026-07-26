@@ -6554,7 +6554,103 @@
       }).join("") + "</div>", true);
   }
 
-  function renderTeamDetail(team, squad, matches) {
+  // DOĞRULANMIŞ TRANSFER HATTI (istemci tarafı)
+  //
+  // Yayın kuralı services/transferService.js'de tanımlı ve API'nin döndürdüğü
+  // listeye zaten uygulanmış. Burada yapılan tek şey o listeyi takıma
+  // bağlamak — söylenti filtrelemesi burada tekrarlanmıyor ki iki yerde iki
+  // farklı kural oluşmasın. Yine de savunma amaçlı: onaylı olmayan ya da
+  // kaynağı olmayan bir kayıt buraya sızarsa gösterilmez.
+  function teamTransferSplit(teamName, transfers) {
+    var target = normalizeSearchText(teamName);
+    if (!target) return { incoming: [], outgoing: [] };
+
+    function matchesTeam(value) {
+      var name = normalizeSearchText(value);
+      if (!name) return false;
+      return name === target || name.indexOf(target) !== -1 || target.indexOf(name) !== -1;
+    }
+
+    var usable = (Array.isArray(transfers) ? transfers : []).filter(function (transfer) {
+      return transfer &&
+        String(transfer.status || "").toLowerCase() === "confirmed" &&
+        transfer.sourceUrl && transfer.playerName;
+    }).sort(function (left, right) {
+      return String(right.date || "").localeCompare(String(left.date || ""));
+    });
+
+    return {
+      incoming: usable.filter(function (transfer) { return matchesTeam(transfer.toTeam); }),
+      outgoing: usable.filter(function (transfer) { return matchesTeam(transfer.fromTeam); })
+    };
+  }
+
+  function transferDateLabel(value) {
+    var date = new Date(String(value || "") + "T12:00:00+03:00");
+    if (isNaN(date.getTime())) return displayValue(value);
+    try {
+      return new Intl.DateTimeFormat("tr-TR", {
+        day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Istanbul"
+      }).format(date);
+    } catch (err) {
+      return displayValue(value);
+    }
+  }
+
+  function teamTransferRowHtml(transfer, direction) {
+    var counterpart = direction === "in" ? transfer.fromTeam : transfer.toTeam;
+    return (
+      '<li class="td-transfer td-transfer-' + direction + '">' +
+      '<span class="td-transfer-dir" aria-hidden="true">' + (direction === "in" ? "↓" : "↑") + "</span>" +
+      '<div class="td-transfer-main">' +
+      '<strong class="td-transfer-player">' + escapeHtml(displayValue(transfer.playerName)) + "</strong>" +
+      '<span class="td-transfer-move">' + escapeHtml(direction === "in" ? "Geldiği kulüp" : "Gittiği kulüp") +
+      ": " + escapeHtml(displayValue(counterpart)) + "</span>" +
+      "</div>" +
+      '<div class="td-transfer-meta">' +
+      '<span class="td-transfer-type">' + escapeHtml(displayValue(transfer.type)) + "</span>" +
+      '<span class="td-transfer-date">' + escapeHtml(transferDateLabel(transfer.date)) + "</span>" +
+      // Kaynak her satırda görünür: doğrulanabilir olmayan bir hareket
+      // zaten yayımlanmıyor, yayımlanan da izlenebilir olmalı.
+      '<a class="td-transfer-source" href="' + escapeHtml(transfer.sourceUrl) +
+      '" target="_blank" rel="noopener noreferrer">' +
+      escapeHtml(displayValue(transfer.sourceName) || "Kaynak") + "</a>" +
+      "</div>" +
+      "</li>"
+    );
+  }
+
+  function teamVerifiedTransfersHtml(team, transfers, limit) {
+    var split = teamTransferSplit(team && team.name, transfers);
+    var max = limit || 5;
+    var incoming = split.incoming.slice(0, max);
+    var outgoing = split.outgoing.slice(0, max);
+
+    // Veri yoksa kart hiç açılmaz — "veri yok" yazısı basmıyoruz.
+    if (!incoming.length && !outgoing.length) return "";
+
+    function column(title, rows) {
+      if (!rows.length) return "";
+      return (
+        '<div class="td-transfer-col">' +
+        '<h4 class="td-transfer-col-title">' + escapeHtml(title) + ' <span>' + rows.length + "</span></h4>" +
+        '<ul class="td-transfer-list">' +
+        rows.map(function (transfer) {
+          return teamTransferRowHtml(transfer, title === "Gelenler" ? "in" : "out");
+        }).join("") +
+        "</ul></div>"
+      );
+    }
+
+    return (
+      '<div class="td-transfers">' +
+      column("Gelenler", incoming) +
+      column("Gidenler", outgoing) +
+      "</div>"
+    );
+  }
+
+  function renderTeamDetail(team, squad, matches, transfers) {
     if (!team) {
       return "";
     }
@@ -6572,8 +6668,8 @@
       tdFormHtml(team) +
       tdVenueStaffHtml(team) +
       // Boş dönen her bölüm sessizce atlanır: veri yoksa kart hiç açılmaz.
-      tdOptionalCard("transfers", "Son transferler", "Doğrulanmış hareketler",
-        teamRecentTransfersHtml(team, 6)) +
+      tdOptionalCard("transfers", "Transferler", "Doğrulanmış gelen ve giden hareketler",
+        teamVerifiedTransfersHtml(team, transfers, 5) || teamRecentTransfersHtml(team, 6)) +
       tdFixturesHtml(team, matches) +
       tdLeadersHtml(team, players) +
       tdSquadHtml(team, players) +
@@ -6644,11 +6740,17 @@
       // Fikstür kartı takımın tüm maçlarını ister; loadData("matches") günün
       // listesini önbelleğe aldığı için ayrı bir "date=all" isteği yapılır.
       // Hata durumunda sayfa yine açılır, yalnızca fikstür kartı boş kalır.
-      loadAllMatches()
+      loadAllMatches(),
+      // Doğrulanmış transferler takım sayfasına buradan bağlanıyor. Kayıtlar
+      // vardı ama hiçbir takıma bağlı değildi: kart `team.recentTransfers`
+      // alanını okuyor, o alan hiçbir yerde doldurulmuyordu. Transfer verisi
+      // gelmezse sayfa yine açılır, yalnızca transfer kartı kapalı kalır.
+      loadData("transfers").catch(function () { return []; })
     ]).then(function (results) {
       var teams = results[0] || [];
       var squad = results[1] || [];
       var matches = results[2] || [];
+      var transfers = Array.isArray(results[3]) ? results[3] : [];
       var query = new URLSearchParams(window.location.search);
       var wanted = normalizeSearchText(query.get("team") || query.get("teamId") || query.get("id"));
       var team = teams.find(function (item) {
@@ -6660,7 +6762,7 @@
         return;
       }
 
-      setContent(target, renderTeamDetail(team, squad, matches));
+      setContent(target, renderTeamDetail(team, squad, matches, transfers));
     }).catch(function () {
       setEmpty(target, "Takım detayı yüklenemedi", "Takım ve kadro verisi geçici olarak okunamıyor.");
     });

@@ -15099,3 +15099,112 @@ body,
   background: var(--amber);
   flex: none;
 }
+
+/* ---------------------------------------------------------------------------
+   TAKIM TRANSFERLERİ — gelen / giden
+   Doğrulanmış hareketler iki sütunda; her satırda tür, tarih ve izlenebilir
+   kaynak var. Kaynak bağlantısı süs değil: yayımlanan her hareketin
+   doğrulanabilir olması kuralının görünür karşılığı.
+--------------------------------------------------------------------------- */
+.td-transfers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.td-transfer-col-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0 0 0.6rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.td-transfer-col-title span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 0.7rem;
+  letter-spacing: 0;
+}
+
+.td-transfer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.td-transfer {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 0.6rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.td-transfer-dir {
+  grid-row: span 2;
+  align-self: center;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.td-transfer-in .td-transfer-dir { color: var(--green); }
+.td-transfer-out .td-transfer-dir { color: var(--muted); }
+
+.td-transfer-player {
+  display: block;
+  font-size: 0.88rem;
+  line-height: 1.25;
+}
+
+.td-transfer-move {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.td-transfer-meta {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.55rem;
+  margin-top: 0.15rem;
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.td-transfer-type {
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  font-weight: 600;
+}
+
+.td-transfer-source {
+  color: var(--green);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.td-transfer-source:hover,
+.td-transfer-source:focus-visible { text-decoration: underline; }
