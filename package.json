@@ -30,6 +30,6 @@
     "sync:results": "node scripts/sync-match-results.mjs",
     "reports": "node scripts/generate-post-match-pages.mjs",
     "backfill:provider-ids": "node scripts/backfill-provider-ids.mjs",
-    "postprocess": "node scripts/apply-shared-layout.mjs && node scripts/inject-theme-boot.mjs && node scripts/inject-ga4.mjs"
+    "postprocess": "node scripts/apply-shared-layout.mjs && node scripts/inject-theme-boot.mjs && node scripts/inject-ga4.mjs && node scripts/inject-site-verification.mjs"
   }
 }

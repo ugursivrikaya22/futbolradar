@@ -15,11 +15,15 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
+
+// Google mülkiyet doğrulama dosyası birebir korunmalı: içine hiçbir etiket
+// enjekte edilmez ve "head yok" uyarısı üretmesin diye baştan atlanır.
+const VERIFICATION_FILE = "googlef881b0d7527a8fba.html";
 const marker = "data-futbolradar-theme";
 
 function walk(dir, files = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if ([".git", ".agents", ".codex", ".vercel", "node_modules", "work", "outputs"].includes(entry.name)) {
+    if ([".git", ".agents", ".codex", ".vercel", "node_modules", "work", "outputs", VERIFICATION_FILE].includes(entry.name)) {
       continue;
     }
 

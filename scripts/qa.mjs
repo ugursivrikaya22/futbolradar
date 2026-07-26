@@ -559,13 +559,42 @@ function checkSeoAndLinks() {
   expect(fs.existsSync(path.join(root, "public", "site.webmanifest")), "missing public/site.webmanifest");
 }
 
+/**
+ * Google mülkiyet doğrulama dosyası bir sayfa değil, içeriği birebir
+ * korunması gereken bir kanıt dosyasıdır: Google tam olarak tek satırı
+ * bekler. GA4/tema enjektörleri onu atlar, bu kontrol de atlamalı.
+ */
+const VERIFICATION_FILE = "googlef881b0d7527a8fba.html";
+const VERIFICATION_CONTENT = "google-site-verification: googlef881b0d7527a8fba.html";
+
 function checkAnalyticsTag() {
-  const htmlFiles = walk(root, (full) => full.endsWith(".html"));
+  const htmlFiles = walk(root, (full) => full.endsWith(".html") && path.basename(full) !== VERIFICATION_FILE);
   for (const file of htmlFiles) {
     const html = fs.readFileSync(file, "utf8");
     expect(html.includes("data-futbolradar-ga4"), `${path.relative(root, file)}: GA4 tag missing`);
     expect(html.includes("window.gtag"), `${path.relative(root, file)}: gtag bootstrap missing`);
   }
+}
+
+/**
+ * Doğrulama dosyası kaybolur ya da içine bir etiket enjekte edilirse Search
+ * Console mülkiyeti sessizce düşer. Derleme her sayfayı yeniden ürettiği için
+ * bu tam olarak fark edilmeden olabilecek bir regresyon; burada kilitleniyor.
+ */
+function checkSiteVerification() {
+  const file = path.join(root, VERIFICATION_FILE);
+  if (!fs.existsSync(file)) {
+    // Dosya yoksa içeriği okumaya çalışmak ham bir ENOENT yığın izi basar ve
+    // asıl mesajı gizler; burada anlaşılır hatayla durulur.
+    expect(false, `missing ${VERIFICATION_FILE} (Google mülkiyet doğrulaması düşer)`);
+    return;
+  }
+
+  const content = fs.readFileSync(file, "utf8").trim();
+  expect(
+    content === VERIFICATION_CONTENT,
+    `${VERIFICATION_FILE} içeriği değişmiş; Google birebir "${VERIFICATION_CONTENT}" bekler`
+  );
 }
 
 function checkClientSecrets() {
@@ -821,6 +850,7 @@ async function checkMatchAnalysisApi() {
 checkVercelFunctionLimit();
 checkPublicMirrors();
 checkAnalyticsTag();
+checkSiteVerification();
 checkFeatureMarkers();
 checkJavaScriptSyntax();
 checkJson();

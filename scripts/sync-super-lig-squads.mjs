@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { missingSquadSyncConfig, reportMissingProviderConfig } from "./lib/providerConfigReport.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -35,10 +36,17 @@ function atomicWrite(filePath, data) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
 
-  if (!apiFootballProvider.hasConfig()) {
-    console.log("No live provider configured (APIFOOTBALL_API_KEY missing). This is the expected state in this " +
-      "environment. Squad sync infrastructure is in place (services/teamSyncService.js, services/squadSyncService.js) " +
-      "and will activate automatically once real credentials are added to Vercel/GitHub secrets. Nothing was written.");
+  // Eksik yapılandırma sessiz bir no-op değil, adıyla bildirilen bir engeldir.
+  // Önceki hâli güven verici tek bir cümleydi ve on üç takımın kadrosunun
+  // neden boş kaldığı CI günlüğünde fark edilmiyordu.
+  const missing = missingSquadSyncConfig(apiFootballProvider.getConfig(), apiFootballProvider.hasConfig());
+  if (missing.length) {
+    reportMissingProviderConfig({
+      task: "Süper Lig kadro senkronu",
+      missing,
+      impact: "Kadro, oyuncu ve teknik ekip verisi çekilemiyor; yalnızca fikstürden tanınan takımların " +
+        "rapor sayfaları kadrosuz kalıyor. Uydurma kadro üretilmiyor."
+    });
     return;
   }
 
