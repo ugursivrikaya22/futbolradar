@@ -454,6 +454,97 @@ async function testPreflightWritesRunSummaryWhenBlocked() {
   }
 }
 
+/**
+ * Kapının AÇIK yolu da sınanmalı. Yalnızca ready=false doğrulansaydı, ön
+ * kontrol her koşulda false üretmeye başlasa bile bütün testler geçerdi —
+ * kadro senkronu bir daha hiç çalışmaz, hiçbir test bunu fark etmezdi.
+ */
+async function testGateOpensForHealthyConfig() {
+  const workspace = makeWorkspace();
+  const outputFile = path.join(workspace, "gh-output");
+  const summaryFile = path.join(workspace, "gh-summary");
+  fs.writeFileSync(outputFile, "", "utf8");
+  fs.writeFileSync(summaryFile, "", "utf8");
+
+  const { server, baseUrl } = await startProviderDouble();
+
+  try {
+    const result = await runScript(PREFLIGHT_SCRIPT, workspace, {
+      APIFOOTBALL_API_KEY: SECRET_KEY,
+      APIFOOTBALL_API_BASE_URL: baseUrl,
+      APIFOOTBALL_LEAGUE_ID: "",
+      GITHUB_ACTIONS: "true",
+      GITHUB_OUTPUT: outputFile,
+      GITHUB_STEP_SUMMARY: summaryFile
+    }, ["--resolve", "--probe"]);
+
+    assert.equal(result.code, 0, `sağlıklı yapılandırmada ön kontrol geçmeli:\n${result.stdout}`);
+
+    const output = fs.readFileSync(outputFile, "utf8");
+    assert.ok(/^ready=true$/m.test(output), `kapı açılmalı, çıktı: ${JSON.stringify(output)}`);
+    assert.ok(new RegExp(`^league_id=${SUPER_LIG_ID}$`, "m").test(output),
+      `çözülen lig kimliği çıktıya yazılmalı, alınan: ${JSON.stringify(output)}`);
+
+    const summary = fs.readFileSync(summaryFile, "utf8");
+    assert.ok(/hazır/i.test(summary), "sağlıklı koşuda özet de yazılmalı");
+    assert.ok(!summary.includes(SECRET_KEY), "özet anahtar içermemeli");
+    assert.ok(!output.includes(SECRET_KEY), "çıktı anahtar içermemeli");
+  } finally {
+    await closeServer(server);
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+}
+
+/**
+ * Yanlış olduğu anlaşılan önbelleğin silinmesi, korumanın kendini
+ * onaran parçası. Silinmezse her koşu aynı yanlış kimlikle aynı duvara
+ * çarpar ve kadrolar süresiz güncellenmez.
+ */
+async function testWrongCachedLeagueIsSelfHealed() {
+  const workspace = makeWorkspace();
+  const cacheFile = path.join(workspace, "data", "api-football-league.json");
+  fs.writeFileSync(cacheFile, JSON.stringify({
+    leagueId: "204",
+    leagueName: "1. Lig",
+    country: "Turkey",
+    resolvedAt: new Date().toISOString()
+  }), "utf8");
+
+  // Önbellekteki kimlikle çağrıldığında yanlış ligin takımlarını döndürür.
+  const server = http.createServer((req, res) => {
+    const url = new URL(req.url, "http://127.0.0.1");
+    res.writeHead(200, { "content-type": "application/json" });
+    if (url.pathname === "/teams") {
+      res.end(JSON.stringify({
+        response: Array.from({ length: 18 }, (_, index) => ({
+          team: { id: 7000 + index, name: `Alt Lig Kulübü ${index + 1}`, country: "Turkey" },
+          venue: {}
+        }))
+      }));
+      return;
+    }
+    res.end(JSON.stringify({ response: [] }));
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+
+  try {
+    const result = await runSync(workspace, {
+      APIFOOTBALL_API_KEY: SECRET_KEY,
+      APIFOOTBALL_API_BASE_URL: `http://127.0.0.1:${server.address().port}`,
+      APIFOOTBALL_LEAGUE_ID: ""
+    });
+
+    assert.notEqual(result.code, 0, "yanlış önbellekle senkron başarılı sayılmamalı");
+    assert.ok(
+      !fs.existsSync(cacheFile),
+      "yanlış olduğu anlaşılan önbellek silinmeli; yoksa her koşu aynı duvara çarpar"
+    );
+  } finally {
+    await closeServer(server);
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+}
+
 /** CI kapısının dayandığı çıktı: eksik yapılandırmada ready=false. */
 async function testPreflightWritesCiGateOutput() {
   const workspace = makeWorkspace();
@@ -554,7 +645,9 @@ const tests = [
   testPreflightProbeReportsValidKeyAsAccepted,
   testPreflightWritesCiGateOutput,
   testRevokedKeyClosesTheGate,
-  testPreflightWritesRunSummaryWhenBlocked
+  testPreflightWritesRunSummaryWhenBlocked,
+  testGateOpensForHealthyConfig,
+  testWrongCachedLeagueIsSelfHealed
 ];
 
 for (const test of tests) {

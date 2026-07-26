@@ -87,8 +87,13 @@ function closeServer(server) {
 function freshResolver() {
   const providerPath = require.resolve("../services/providers/apiFootballProvider.js");
   const resolverPath = require.resolve("../services/leagueResolver.js");
+  // leagueCache da sıfırlanmalı: modül düzeyinde bir `memo` tutuyor ve
+  // sıfırlanmazsa bir senaryoda okunan kimlik sonraki senaryolara sızar,
+  // testler birbirinin durumunu görmeye başlar.
+  const cachePath = require.resolve("../services/leagueCache.js");
   delete require.cache[providerPath];
   delete require.cache[resolverPath];
+  delete require.cache[cachePath];
   return require(resolverPath);
 }
 
@@ -202,6 +207,12 @@ async function testAutoResolveAndCache() {
       const cached = JSON.parse(fs.readFileSync(cachePath, "utf8"));
       assert.equal(String(cached.leagueId), SUPER_LIG_ID);
       assert.equal(cached.leagueName, "Süper Lig");
+      // resolvedAt olmadan 30 günlük yeniden doğrulama penceresi sessizce
+      // devre dışı kalır: Date.parse NaN döner, yaş kontrolü atlanır ve
+      // yanlış bir kimlik depoda süresiz yaşar.
+      assert.ok(cached.resolvedAt, "önbellek çözümleme zamanını taşımalı");
+      assert.ok(!Number.isNaN(Date.parse(cached.resolvedAt)), "resolvedAt geçerli bir tarih olmalı");
+      assert.equal(cached.country, "Turkey", "önbellek hangi ülke için çözüldüğünü taşımalı");
 
       const second = await resolveSuperLigLeagueId({ cachePath });
       assert.equal(second.leagueId, SUPER_LIG_ID);
