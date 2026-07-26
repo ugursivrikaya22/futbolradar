@@ -344,7 +344,7 @@ function buildStandoutPlayers(match) {
   if (!ranked.length) {
     return {
       status: "unavailable",
-      reason: "Bu maç için oyuncu bazlı katkı verisi (gol, asist, kart, kurtarış) henüz doğrulanmadı."
+      reason: `${match.homeTeam} - ${match.awayTeam} maçında oyuncu bazlı katkı verisi (gol, asist, kart, kurtarış) henüz doğrulanmadı.`
     };
   }
 
@@ -365,7 +365,7 @@ function buildStatisticsAnalysis(match, seed) {
   if (!stats.length) {
     return {
       status: "unavailable",
-      reason: "Maçın istatistik dökümü sağlayıcıdan henüz alınmadı. Veri geldiğinde bu bölüm otomatik dolar."
+      reason: `${match.homeTeam} - ${match.awayTeam} karşılaşmasının istatistik dökümü sağlayıcıdan henüz alınmadı. Veri geldiğinde bu bölüm otomatik dolar.`
     };
   }
 
@@ -513,7 +513,7 @@ function buildTacticalRead(match) {
   if (!notes.length) {
     return {
       status: "unavailable",
-      reason: "Diziliş ve oyun yapısı verisi (formasyon, topla oynama, mücadele dağılımı) bu maç için henüz doğrulanmadı."
+      reason: `${match.homeTeam} ve ${match.awayTeam} için diziliş ve oyun yapısı verisi (formasyon, topla oynama, mücadele dağılımı) bu karşılaşmada henüz doğrulanmadı.`
     };
   }
 
@@ -524,7 +524,10 @@ function buildTacticalRead(match) {
 function buildTurningPoints(match) {
   const events = (match.events || []).filter((event) => event && (event.type || event.detail));
   if (!events.length) {
-    return { status: "unavailable", reason: "Maçın olay akışı henüz doğrulanmadı." };
+    return {
+      status: "unavailable",
+      reason: `${match.homeTeam} - ${match.awayTeam} maçının olay akışı henüz doğrulanmadı.`
+    };
   }
 
   const weighted = events.map((event) => {
@@ -570,7 +573,7 @@ function buildAiRating(match) {
   if (!stats.length || !isNumber(score.home) || !isNumber(score.away)) {
     return {
       status: "unavailable",
-      reason: "Performans puanı yalnızca doğrulanmış istatistiklerden hesaplanır; bu maçın istatistik dökümü henüz yok."
+      reason: `Performans puanı yalnızca doğrulanmış istatistiklerden hesaplanır; ${match.homeTeam} - ${match.awayTeam} maçının istatistik dökümü henüz yok.`
     };
   }
 
