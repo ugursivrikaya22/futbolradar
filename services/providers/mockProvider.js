@@ -1,3 +1,4 @@
+const { filterPublishable, logExcluded } = require("../matchEligibility.js");
 const matches = require("../../data/matches.json");
 const teams = require("../../data/teams.json");
 const players = require("../../data/players.json");
@@ -353,6 +354,30 @@ function curatedMatches() {
     });
   }
 
+  // YAYIN POLİTİKASI: onaylı kaynaktan eksiksiz ve doğrulanmış gelmeyen maç
+  // sitenin hiçbir yerinde görünmez. Filtre burada, tek noktada uygulanır;
+  // arama, canlı skor, takım sayfaları, statik üreticiler ve site haritası
+  // hepsi bu listeyi tükettiği için kural kendiliğinden her yere yayılır.
+  // Eleme sessiz değildir: gerekçesiyle iç günlüğe yazılır.
+  const { eligible, excluded } = filterPublishable([...merged.values()]);
+  logExcluded("curated-matches", excluded);
+  return eligible;
+}
+
+/**
+ * Politika süzgecinden GEÇMEMİŞ ham liste. Yalnızca veri denetimi ve
+ * bakım araçları içindir; yayın yüzeylerinde kullanılmaz.
+ */
+function allCuratedMatchesUnfiltered() {
+  const merged = new Map();
+  for (const match of matches) {
+    merged.set(matchIdentity(match), match);
+  }
+  for (const calendarMatch of fixtureCalendarMatches()) {
+    if (!merged.has(matchIdentity(calendarMatch))) {
+      merged.set(matchIdentity(calendarMatch), calendarMatch);
+    }
+  }
   return [...merged.values()];
 }
 
@@ -597,6 +622,7 @@ module.exports = {
   // reintroduced every match twice whenever the curated record and the
   // provider disagreed about which club was at home.
   curatedMatches,
+  allCuratedMatchesUnfiltered,
   getMatches,
   getMatchDetail,
   getStandings,

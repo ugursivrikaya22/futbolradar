@@ -702,4 +702,79 @@ async function testDateAllReturnsEveryMatch() {
 
 await testDateAllReturnsEveryMatch();
 
+/**
+ * Maç yayın politikası: onaylı kaynaktan eksiksiz ve doğrulanmış gelmeyen maç
+ * sitenin hiçbir yerinde görünmemeli. Bu kural tek bir serviste tanımlı ve
+ * curatedMatches üzerinden bütün yüzeylere yayılıyor; sessizce gevşetilirse
+ * doğrulanmamış hazırlık maçları arama, canlı skor ve site haritasına sızar.
+ */
+async function testMatchPublishingPolicy() {
+  const { evaluateMatch, filterPublishable } = await import("../services/matchEligibility.js")
+    .then((m) => m.default || m);
+
+  const base = {
+    id: "t", homeTeam: "A", awayTeam: "B", league: "Süper Lig",
+    kickoff: "2026-07-26T20:00:00+03:00", status: "FINISHED",
+    score: { home: 1, away: 0 }, source: "manual_verified", dataStatus: "verified"
+  };
+  const now = new Date("2026-07-26T23:00:00+03:00");
+
+  assert.equal(evaluateMatch(base, { now }).eligible, true, "tam ve doğrulanmış maç geçmeli");
+
+  assert.equal(
+    evaluateMatch({ ...base, source: "mock" }, { now }).eligible, false,
+    "onaylanmamış kaynak elenmeli"
+  );
+  assert.equal(
+    evaluateMatch({ ...base, league: "" }, { now }).eligible, false,
+    "zorunlu alan eksikse elenmeli"
+  );
+  assert.equal(
+    evaluateMatch({ ...base, score: { home: null, away: null } }, { now }).eligible, false,
+    "biten maçta skor yoksa elenmeli"
+  );
+
+  const friendly = { ...base, competitionId: "hazirlik-maci", league: "Hazırlık Maçı" };
+  assert.equal(
+    evaluateMatch({ ...friendly, dataStatus: "provider" }, { now }).eligible, false,
+    "doğrulanmamış hazırlık maçı elenmeli"
+  );
+  assert.equal(
+    evaluateMatch(friendly, { now }).eligible, true,
+    "doğrulanmış hazırlık maçı yayımlanabilmeli"
+  );
+
+  // Başlama saati geçmiş ama hâlâ "başlayacak" diyen kayıt okuyucuyu yanıltır.
+  // Eşik 3.5 saat: normal bir maç bu süre içinde biter ve durumu güncellenir.
+  const wellAfterKickoff = new Date("2026-07-27T01:00:00+03:00");
+  assert.equal(
+    evaluateMatch({ ...base, status: "SCHEDULED", score: {} }, { now: wellAfterKickoff }).eligible,
+    false,
+    "saati geçmiş ama güncellenmemiş kayıt elenmeli"
+  );
+  assert.equal(
+    evaluateMatch({ ...base, status: "SCHEDULED", score: {} }, { now: new Date("2026-07-26T21:00:00+03:00") }).eligible,
+    true,
+    "maç sürerken 'başlayacak' kaydı henüz elenmemeli"
+  );
+
+  const { eligible, excluded } = filterPublishable([base, { ...base, id: "x", source: "mock" }], { now });
+  assert.equal(eligible.length, 1, "süzgeç uygun olanı bırakmalı");
+  assert.equal(excluded.length, 1, "süzgeç eleneni gerekçesiyle döndürmeli");
+  assert.ok(excluded[0].reason, "eleme gerekçesi boş olmamalı");
+
+  // Yayın yüzeylerinin tükettiği liste politikadan geçmiş olmalı.
+  const provider = await import("../services/providers/mockProvider.js").then((m) => m.default || m);
+  const published = provider.curatedMatches();
+  const raw = provider.allCuratedMatchesUnfiltered();
+  assert.ok(published.length <= raw.length, "yayımlanan liste ham listeden büyük olamaz");
+  assert.ok(
+    published.every((match) => evaluateMatch(match, { now: new Date(match.kickoff) }).eligible ||
+      evaluateMatch(match).eligible),
+    "yayımlanan her maç politikayı geçmeli"
+  );
+}
+
+await testMatchPublishingPolicy();
+
 console.log("FutbolRadar API resilience tests passed");
