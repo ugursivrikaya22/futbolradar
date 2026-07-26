@@ -6,6 +6,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
+const { publicPlayerView } = require("../services/cardCredibility.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const outDir = path.join(root, "karsilastirma");
 const publicOutDir = path.join(root, "public", "karsilastirma");
@@ -160,7 +161,25 @@ function buildPairs() {
   return Array.from(map.values());
 }
 
+/**
+ * Kıyas yorumu. "X overall rating tarafında önde" cümlesi bir SAYIDAN
+ * türetilmiş bir iddiadır; sayı doğrulanmamışsa cümle de doğrulanmamıştır.
+ * Cümlenin sayı içermemesi onu güvenli yapmıyor.
+ *
+ * İki taraf da doğrulanmadıkça yalnızca rol okuması kalıyor — bu, kayıttan
+ * değil mevkiden türeyen ve tartışmasız bir ifade.
+ */
 function comparisonInsight(left, right) {
+  const bothVerified = publicPlayerView(left).verified && publicPlayerView(right).verified;
+  const roleLine = `${playerPositionGroup(left)} ve ${playerPositionGroup(right)} rolleri birlikte okunmalı; tek skor karar için yeterli değil.`;
+
+  if (!bothVerified) {
+    return [
+      "Bu kıyasın performans ve piyasa okuması, iki oyuncunun da doğrulanmış sağlayıcı kaydı geldiğinde yayımlanacak.",
+      roleLine
+    ];
+  }
+
   const ratingDiff = playerRating(left) - playerRating(right);
   const marketDiff = Number(left.marketValueEur || 0) - Number(right.marketValueEur || 0);
   const leader = ratingDiff >= 0 ? left : right;
@@ -169,19 +188,35 @@ function comparisonInsight(left, right) {
   return [
     `${leader.name} overall rating tarafinda onde gorunuyor.`,
     `${marketLeader.name} piyasa değeri okumasında daha güçlü sinyal veriyor.`,
-    `${playerPositionGroup(left)} ve ${playerPositionGroup(right)} rolleri birlikte okunmalı; tek skor karar için yeterli değil.`
+    roleLine
   ];
 }
 
+/**
+ * Kıyas kartı. Puan bir <dl> içinde de olsa puandır: rozet biçiminde
+ * olmaması onu doğrulanmış yapmıyor. Denetimde bu yüzey neredeyse
+ * kaçırılmıştı — arama kalıbı rozete bakıyordu, buradaki
+ * "<dt>Overall</dt><dd>80</dd>" ise 422 sayfada duruyordu.
+ *
+ * Doğrulanmamış kayıtta kulüp, lig, puan ve piyasa satırları hiç
+ * çizilmiyor; "Yakında" gibi bir yer tutucu da basılmıyor, çünkü ölçüm
+ * bekleniyormuş izlenimi veriyor. Kart ve bağlantı kalıyor.
+ */
 function playerMiniCard(player) {
-  return `<article class="comparison-mini-card">
+  const verified = publicPlayerView(player).verified;
+
+  const rows = verified
+    ? `<div><dt>Takım</dt><dd>${escapeHtml(playerTeamDisplay(player))}</dd></div>
+      <div><dt>Lig</dt><dd>${escapeHtml(player.league || "Lig yakinda")}</dd></div>
+      <div><dt>Overall</dt><dd>${escapeHtml(playerRating(player) || "Yakinda")}</dd></div>
+      <div><dt>Piyasa</dt><dd>${escapeHtml(playerMarket(player))}</dd></div>`
+    : `<div><dt>Veri durumu</dt><dd>Doğrulanmış kayıt bekleniyor</dd></div>`;
+
+  return `<article class="comparison-mini-card" data-player-verified="${verified ? "true" : "false"}">
     <span>${escapeHtml(player.position || "Mevki yakinda")}</span>
     <h2>${escapeHtml(player.name)}</h2>
     <dl>
-      <div><dt>Takım</dt><dd>${escapeHtml(playerTeamDisplay(player))}</dd></div>
-      <div><dt>Lig</dt><dd>${escapeHtml(player.league || "Lig yakinda")}</dd></div>
-      <div><dt>Overall</dt><dd>${escapeHtml(playerRating(player) || "Yakinda")}</dd></div>
-      <div><dt>Piyasa</dt><dd>${escapeHtml(playerMarket(player))}</dd></div>
+      ${rows}
     </dl>
     <a href="../oyuncular/${escapeHtml(player.id)}.html">Oyuncu profilini aç</a>
   </article>`;

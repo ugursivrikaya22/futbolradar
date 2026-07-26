@@ -428,7 +428,24 @@ function checkSeoAndLinks() {
       expect(html.includes("static-profile-links"), `${page}: missing static profile comparison links`);
       expect(html.includes("../karsilastirma/"), `${page}: missing static comparison page href`);
       expect(html.includes('"@type": "Person"'), `${page}: missing Person schema`);
-      expect(html.includes('"@type": "SportsTeam"'), `${page}: missing SportsTeam schema`);
+
+      // SportsTeam YALNIZCA doğrulanmış kayıtta beklenir.
+      //
+      // Bu kural, güvenilirlik politikasından önce yazılmıştı ve her profilin
+      // bir kulüp beyan etmesini şart koşuyordu. Politika tam tersini
+      // söylüyor: doğrulanmamış bir kaydın kulübünü schema.org ile beyan
+      // etmek, yanlış bir iddiayı makine okunur bir olguya çevirir
+      // (denetimde Dzeko "Schalke 04" olarak böyle beyan ediliyordu).
+      //
+      // Bu yüzden kontrol tersine çevrildi: doğrulanmışsa SportsTeam OLMALI,
+      // doğrulanmamışsa OLMAMALI. İkisi de sessizce geçilmiyor.
+      const verifiedProfile = html.includes('data-player-verified="true"');
+      if (verifiedProfile) {
+        expect(html.includes('"@type": "SportsTeam"'), `${page}: missing SportsTeam schema`);
+      } else {
+        expect(!html.includes('"@type": "SportsTeam"'),
+          `${page}: doğrulanmamış profil kulüp beyanı taşımamalı`);
+      }
       expect(html.includes('"@type": "BreadcrumbList"'), `${page}: missing breadcrumb schema`);
     }
 

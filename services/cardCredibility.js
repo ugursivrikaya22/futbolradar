@@ -140,6 +140,77 @@ function sourceMetadata(record) {
   };
 }
 
+/**
+ * BAĞIMSIZ OLARAK GÜVENLİ ALANLAR.
+ *
+ * Bunlar oyuncunun kulübünden, formundan ve sezonundan bağımsız, zamanla
+ * değişmeyen kimlik bilgileri. Doğrulama gelmese de yayımlanabilirler:
+ * yanlış olma riski yok, tartışmalı bir iddia taşımıyorlar.
+ *
+ * Listede OLMAYAN her şey kısıtlıdır — özellikle güncel kulüp, çünkü
+ * denetimde en yanıltıcı alan oydu (serbest oyuncu ve Schalke 04 oyuncusu
+ * Süper Lig trendinde duruyordu).
+ */
+const SAFE_FIELDS = ["id", "slug", "name", "fullName", "position", "secondaryPosition",
+  "nationality", "birthDate", "computedAge", "age", "heightCm", "height", "preferredFoot"];
+
+/** Doğrulama olmadan asla yayımlanmayacak alanlar. */
+const RESTRICTED_FIELDS = [
+  "aiRating", "rating", "overallRating", "potentialRating", "formRating",
+  "marketValue", "marketValueEur",
+  "minutes", "minutesPlayed", "appearances", "goals", "assists",
+  "currentTeam", "team", "currentTeamId", "squadStatus", "number",
+  "threatScore", "creativityScore", "pressingScore", "continuityScore", "tempoScore",
+  "form", "formChange", "trend", "trendDirection", "impact",
+  "providerId", "photo"
+];
+
+/**
+ * TEK YETKİLİ, SERİLEŞTİRİLEBİLİR KARAR.
+ *
+ * Hem statik ön render hem tarayıcı bu nesneyi kullanır. Karar bir kez
+ * verilir ve çıktıya gömülür; istemci kendi kuralını yeniden hesaplamaz,
+ * dolayısıyla ön renderde kaldırılan bir alanı geri boyayamaz.
+ *
+ * @returns {{verified: boolean, reasons: string[], fields: object,
+ *   restricted: string[], meta: object}}
+ */
+function publicPlayerView(player, options = {}) {
+  const verdict = options.trend
+    ? evaluateTrendPlayerCard(player, options)
+    : evaluatePlayerCard(player, options);
+
+  const fields = {};
+  for (const key of SAFE_FIELDS) {
+    const value = player && player[key];
+    if (value !== null && value !== undefined && String(value).trim() !== "") {
+      fields[key] = value;
+    }
+  }
+
+  if (verdict.publishable) {
+    // Doğrulanmış kayıtta kısıtlı alanlar da yayımlanabilir.
+    for (const key of RESTRICTED_FIELDS) {
+      const value = player && player[key];
+      if (value !== null && value !== undefined && String(value).trim() !== "") {
+        fields[key] = value;
+      }
+    }
+  }
+
+  return {
+    verified: verdict.publishable,
+    reasons: verdict.reasons,
+    fields,
+    // Hangi alanların KASITLI olarak gizlendiği taşınır: sıfır ya da tire
+    // basıp gerçek bir ölçüm sanılmasındansa, alanın yokluğu açıkça bildirilir.
+    restricted: verdict.publishable
+      ? []
+      : RESTRICTED_FIELDS.filter((key) => player && player[key] !== null && player[key] !== undefined && String(player[key]).trim() !== ""),
+    meta: sourceMetadata(player)
+  };
+}
+
 /** Listeyi süzer; elenenleri gerekçesiyle döndürür. */
 function filterPlayerCards(players, options = {}) {
   const evaluate = options.trend ? evaluateTrendPlayerCard : evaluatePlayerCard;
@@ -167,6 +238,9 @@ module.exports = {
   hasRealProviderId,
   evaluatePlayerCard,
   evaluateTrendPlayerCard,
+  publicPlayerView,
+  SAFE_FIELDS,
+  RESTRICTED_FIELDS,
   filterPlayerCards,
   sourceMetadata,
   logRemovedCards

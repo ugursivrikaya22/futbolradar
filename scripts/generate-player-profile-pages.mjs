@@ -6,6 +6,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { getPlayers } = require("../services/playerService.js");
+const { publicPlayerView } = require("../services/cardCredibility.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const outDir = path.join(root, "oyuncular");
 const publicOutDir = path.join(root, "public", "oyuncular");
@@ -53,7 +54,20 @@ function playerTeamMetaPhrase(player) {
   return `güncel takım ${team}`;
 }
 
-function playerDescription(player) {
+/**
+ * Meta açıklaması, doğrulanmamış kayıtlarda kulüp ve puan İDDİA ETMEZ.
+ *
+ * Önceki hâli "güncel takım Schalke 04 ... overall rating 81" gibi cümleler
+ * üretiyordu ve bunlar arama sonuçlarında görünüyordu. Yapılandırılmış veri
+ * ve meta açıklaması, görünür HTML'den daha tehlikeli: arama motoru bunları
+ * olgu olarak yutar.
+ */
+function playerDescription(player, view) {
+  if (view && !view.verified) {
+    const position = player.position ? `, mevki ${player.position}` : "";
+    return `${player.name}${position}. Güncel kulüp, performans ve piyasa verileri doğrulanmış ` +
+      "sağlayıcı kaydıyla eşleştiğinde bu sayfada yayımlanır.";
+  }
   return `${player.name}; ${playerTeamMetaPhrase(player)}, mevki ${player.position}. Transfer geçmişi, overall rating ${player.overallRating || player.aiRating || player.rating || "yakında"}, potansiyel ${player.potentialRating || "yakında"} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
 }
 
@@ -149,14 +163,27 @@ function relatedLinks(currentId) {
 }
 
 function pageHtml(player) {
-  const team = player.currentTeam || player.team || "Takım bilgisi yakında";
-  const seoTeam = playerSeoTeamLabel(player);
+  // TEK YETKİLİ KARAR. URL ve sayfa iskeleti korunur — 110 profilin bilgi
+  // mimarisi bozulmaz. Değişen tek şey, doğrulanmamış kayıtta hangi
+  // alanların yayımlandığı.
+  const view = publicPlayerView(player);
+
+  const team = view.verified
+    ? (player.currentTeam || player.team || "Takım bilgisi yakında")
+    : "Kulüp bilgisi doğrulanmadı";
+  const seoTeam = view.verified ? playerSeoTeamLabel(player) : "Oyuncu Profili";
   const age = player.computedAge || player.age || "Yaş yakında";
-  const title = `${player.name} Oyuncu Profili | ${seoTeam} | FutbolRadar`;
-  const description = playerDescription(player);
-  const lead = playerNeedsTransferReview(player) ? description : player.summary || description;
+  const title = view.verified
+    ? `${player.name} Oyuncu Profili | ${seoTeam} | FutbolRadar`
+    : `${player.name} Oyuncu Profili | FutbolRadar`;
+  const description = playerDescription(player, view);
+  const lead = view.verified
+    ? (playerNeedsTransferReview(player) ? description : player.summary || description)
+    : description;
   const canonical = `https://www.futbolradar.com/oyuncular/${player.id}.html`;
-  const overall = player.overallRating || player.aiRating || player.rating || "-";
+  // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
+  // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
+  const overall = view.verified ? (player.overallRating || player.aiRating || player.rating || "-") : null;
 
   return `<!doctype html>
 <html lang="tr">
@@ -190,11 +217,14 @@ function pageHtml(player) {
             name: player.name,
             nationality: player.nationality,
             height: player.height,
-            memberOf: {
-              "@type": "SportsTeam",
-              name: team,
-              sport: "Football"
-            },
+            // memberOf YALNIZCA doğrulanmış kayıtta. Doğrulanmamış bir
+            // kulüp iddiasını schema.org ile beyan etmek, onu makine
+            // okunur bir olguya dönüştürür — görünür metinden daha kalıcı
+            // bir yanlış. Denetimde Dzeko "Schalke 04" olarak böyle
+            // beyan ediliyordu.
+            ...(view.verified ? {
+              memberOf: { "@type": "SportsTeam", name: team, sport: "Football" }
+            } : {}),
             jobTitle: player.position,
             url: canonical,
             description: stripTags(description)
@@ -227,17 +257,28 @@ function pageHtml(player) {
       <section class="hero">
         <div class="hero-row">
           <div>
-            <span class="eyebrow">${escapeHtml(playerTeamEyebrow(player))}</span>
+            <span class="eyebrow">${escapeHtml(view.verified ? playerTeamEyebrow(player) : "Oyuncu profili")}</span>
             <h1>${escapeHtml(player.name)}</h1>
             <p class="lead">${escapeHtml(lead)}</p>
           </div>
-          <span class="hero-meta">Overall ${escapeHtml(overall)} · ${escapeHtml(player.position)} · ${escapeHtml(age)}</span>
+          ${view.verified
+            ? `<span class="hero-meta">Overall ${escapeHtml(overall)} · ${escapeHtml(player.position)} · ${escapeHtml(age)}</span>`
+            // Doğrulanmamış kayıtta puan gösterilmez. Yaş ve mevki bağımsız
+            // olarak güvenli bilgiler: kulüpten ve sezondan bağımsızlar.
+            : `<span class="hero-meta">${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)}</span>`}
         </div>
       </section>
-      <section class="player-profile-shell" data-api-target="player-detail" data-player-id="${escapeHtml(player.id)}">
+      ${view.verified ? "" : `<section class="player-unverified-note" aria-label="Veri durumu">
+        <article class="data-empty" data-card="empty-state" data-player-verified="false">
+          <strong>Doğrulanmış veri bekleniyor</strong>
+          <span>Bu oyuncunun güncel kulübü, performans metrikleri ve piyasa değeri, sağlayıcı kaydıyla
+          eşleştirilip doğrulanana kadar yayımlanmıyor. Tahmini ya da eski değer gösterilmiyor.</span>
+        </article>
+      </section>`}
+      <section class="player-profile-shell" data-api-target="player-detail" data-player-id="${escapeHtml(player.id)}" data-player-verified="${view.verified ? "true" : "false"}">
         <article class="data-empty" data-card="empty-state">
-          <strong>${escapeHtml(player.name)} profili hazırlanıyor</strong>
-          <span>Oyuncu performans kartı yükleniyor.</span>
+          <strong>${escapeHtml(player.name)}</strong>
+          <span>${escapeHtml(view.verified ? "Oyuncu performans kartı yükleniyor." : "Doğrulanmış veri geldiğinde performans kartı burada yayımlanacak.")}</span>
         </article>
       </section>
       <section class="static-profile-links" aria-label="Statik oyuncu karşılaştırma bağlantıları">

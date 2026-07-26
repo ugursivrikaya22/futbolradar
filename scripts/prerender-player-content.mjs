@@ -5,6 +5,7 @@ import { createRequire } from "node:module";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
+const { publicPlayerView } = require("../services/cardCredibility.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 
@@ -25,10 +26,27 @@ function team(player) {
   return player.currentTeam || player.team || "Takim bilgisi yakinda";
 }
 
+/**
+ * Liste kartı. Doğrulanmamış kayıtta puan rozeti, piyasa değeri, dakika ve
+ * KULÜP İDDİASI çizilmez — sıfır ya da tire de basılmaz, çünkü bunlar
+ * gerçek bir ölçüm sanılabilir. Kart kalır (bağlantı ve bilgi mimarisi
+ * korunur), yalnızca doğrulanamayan alanlar düşer.
+ */
 function playerCard(player, hrefPrefix = "./") {
+  const view = publicPlayerView(player);
   const age = player.computedAge || player.age || "Bilinmiyor";
   const market = formatMarketValueEur(player.marketValueEur) || player.marketValue || "Veri yok";
-  return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}">
+
+  if (!view.verified) {
+    return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}" data-player-verified="false">
+    <div class="card-head"><div><span class="card-kicker">${escapeHtml(player.position || "Mevki bekleniyor")}</span><h2>${escapeHtml(player.name)}</h2></div></div>
+    <div class="metric-grid compact"><span>Yaş <b>${escapeHtml(age)}</b></span></div>
+    <p>Güncel kulüp, performans ve piyasa verileri doğrulanmış sağlayıcı kaydıyla eşleştiğinde yayımlanır.</p>
+    <a class="detail-link" href="${escapeHtml(hrefPrefix)}${escapeHtml(player.id)}.html">Oyuncu profilini aç</a>
+  </article>`;
+  }
+
+  return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}" data-player-verified="true">
     <div class="card-head"><div><span class="card-kicker">${escapeHtml(team(player))} · ${escapeHtml(player.position || "Mevki bekleniyor")}</span><h2>${escapeHtml(player.name)}</h2></div><strong class="big-value player-rating-badge">${escapeHtml(rating(player))}</strong></div>
     <div class="metric-grid compact"><span>Yaş <b>${escapeHtml(age)}</b></span><span>Maç dakikası <b>${escapeHtml(player.minutesPlayed || player.minutes || "Veri yok")}</b></span><span>Piyasa <b>${escapeHtml(market)}</b></span></div>
     <p>${escapeHtml(player.summary || "Form, rol ve radar metriklerini oyuncu profilinde incele.")}</p>
@@ -55,8 +73,21 @@ function transferCard(transfer) {
 }
 
 function profileContent(player) {
+  const view = publicPlayerView(player);
   const age = player.computedAge || player.age || "Bilinmiyor";
   const market = formatMarketValueEur(player.marketValueEur) || player.marketValue || "Piyasa değeri yakında";
+
+  // Doğrulanmamış kayıtta ölçüm ızgarası hiç çizilmez. "Veri yok" yazan bir
+  // hücre bile, yanındaki dolu hücrelerle birlikte okununca ölçülmüş bir
+  // tablo izlenimi verir; oysa hiçbiri doğrulanmamış.
+  if (!view.verified) {
+    return `<article class="card data-empty" data-card="empty-state" data-player-verified="false">
+      <strong>Doğrulanmış veri bekleniyor</strong>
+      <span>${escapeHtml(player.name)} için güncel kulüp, performans metrikleri ve piyasa değeri,
+      sağlayıcı kaydıyla eşleştirilip doğrulanana kadar yayımlanmıyor. Tahmini değer gösterilmiyor.</span>
+    </article>`;
+  }
+
   const metrics = [
     ["Overall", rating(player)],
     ["Form", player.formRating || player.formScore || "Veri yok"],

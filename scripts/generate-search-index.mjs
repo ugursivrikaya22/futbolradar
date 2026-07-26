@@ -16,6 +16,7 @@ import { NAV_PRIMARY, NAV_SECONDARY } from "./lib/layout.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
+const { publicPlayerView } = require("../services/cardCredibility.js");
 const { mergeSuperLigTeams } = require("../services/superLigTeams.js");
 
 function readJson(file) {
@@ -105,7 +106,13 @@ for (const player of asArray(readJson("players.json"), "players")) {
     continue;
   }
   const href = `oyuncular/${player.id}.html`;
-  const club = player.team || player.club || "";
+  // Arama sonucu altyazısı da bir KULÜP İDDİASIDIR. Denetimde burada
+  // "Serbest oyuncu · Santrfor" ve "Schalke 04 · Santrfor" yazıyordu —
+  // doğrulanmamış kayıtlar için sonuç listesinde beyan edilmiş kulüpler.
+  // Doğrulanmamış kayıtta yalnızca mevki gösteriliyor; oyuncu aranabilir
+  // kalıyor, ama hakkında doğrulanmamış bir iddia taşınmıyor.
+  const verified = publicPlayerView(player).verified;
+  const club = verified ? (player.team || player.club || "") : "";
   const position = player.position || player.role || "";
   push({
     type: "player",

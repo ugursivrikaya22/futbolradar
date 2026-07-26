@@ -6163,6 +6163,17 @@
     var query = new URLSearchParams(window.location.search);
     var playerId = target.getAttribute("data-player-id") || query.get("id") || query.get("player");
 
+    // SERİLEŞTİRİLMİŞ KARAR — hidrasyon, ön renderin kaldırdığını geri boyamaz.
+    //
+    // Karar sunucuda bir kez veriliyor ve iskelete data-player-verified
+    // olarak gömülüyor. İstemci burada kendi kuralını yeniden hesaplasaydı
+    // iki taraf ayrışabilirdi; ayrıştığı anda sayfa önce doğru görünüp JS
+    // yüklendiğinde doğrulanmamış puanları geri getirirdi.
+    if (target.getAttribute("data-player-verified") === "false") {
+      target.dataset.state = "unverified";
+      return;
+    }
+
     target.dataset.state = "loading";
 
     loadData("players").then(function (players) {
@@ -6170,6 +6181,14 @@
 
       if (!player) {
         setEmpty(target, "Oyuncu bulunamadı", "Bu oyuncu profili için gösterilecek kayıt yok.");
+        return;
+      }
+
+      // İkinci savunma hattı: iskelet işareti bir şekilde kaybolsa bile
+      // doğrulanmamış kayıt istemcide de yayımlanmaz.
+      if (!isPublishablePlayerCard(player)) {
+        setEmpty(target, "Doğrulanmış veri bekleniyor",
+          "Bu oyuncunun güncel kulübü, performans metrikleri ve piyasa değeri doğrulanana kadar yayımlanmıyor.");
         return;
       }
 

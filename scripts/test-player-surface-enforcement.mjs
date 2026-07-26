@@ -1,0 +1,273 @@
+/**
+ * SİTE GENELİ OYUNCU GÜVENİLİRLİK TESTLERİ (Faz 2)
+ *
+ * Faz 1 ana sayfayı temizledi. Denetim, aynı 110 kaydın başka yüzeylerde
+ * hâlâ doğrulanmamış iddia taşıdığını gösterdi:
+ *
+ *   • 110 profil sayfasının JSON-LD'sinde memberOf ile KULÜP BEYANI ve
+ *     meta açıklamasında "overall rating 80" cümlesi vardı. Yapılandırılmış
+ *     veri görünür metinden daha kalıcı bir yanlış: arama motoru onu olgu
+ *     olarak yutar.
+ *   • 6 kategori listeleme sayfası puan rozeti, piyasa değeri ve dakika
+ *     basıyordu.
+ *   • 422 kıyas sayfası puanı ROZET DEĞİL, <dl> içinde taşıyordu — bu
+ *     yüzey ilk taramada neredeyse kaçırıldı.
+ *   • Arama dizini altyazısında "Schalke 04 · Santrfor" gibi kulüp
+ *     iddiaları vardı.
+ *   • İstemci hidrasyonu, ön renderin kaldırdığı her şeyi geri boyuyordu.
+ *
+ * Sözleşme: URL'ler ve sayfa iskeleti KORUNUR, yalnızca doğrulanamayan
+ * alanlar düşer. Sıfır ya da tire basılmaz.
+ */
+
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const credibility = require("../services/cardCredibility.js");
+const players = require("../data/players.json");
+
+const root = process.cwd();
+const now = new Date("2026-07-26T21:00:00+03:00");
+
+const verifiedSample = {
+  id: "test-verified", name: "Doğrulanmış Oyuncu", providerId: "276",
+  currentTeam: "Galatasaray", position: "Forvet",
+  sourceUrl: "https://media.api-sports.io/football/players/276.png",
+  lastVerifiedAt: "2026-07-20T12:00:00+03:00",
+  dataStatus: "verified", ratingStatus: "current",
+  overallRating: 82, marketValueEur: 12000000, minutesPlayed: 1800
+};
+
+function listHtml(dir) {
+  const full = path.join(root, dir);
+  if (!fs.existsSync(full)) return [];
+  return fs.readdirSync(full).filter((name) => name.endsWith(".html"));
+}
+
+// ── 1. Karar katmanı ────────────────────────────────────────────────────────
+
+function testPublicViewHidesRestrictedFields() {
+  const unverified = { ...verifiedSample, providerId: "mock-x-1" };
+  const view = credibility.publicPlayerView(unverified, { now });
+
+  assert.equal(view.verified, false);
+  for (const field of ["overallRating", "marketValueEur", "minutesPlayed", "currentTeam", "providerId"]) {
+    assert.ok(!(field in view.fields), `${field} doğrulanmamış görünümde olmamalı`);
+  }
+  // Bağımsız olarak güvenli alanlar kalmalı — sayfa iskeleti boşalmasın.
+  assert.ok(view.fields.name, "isim korunmalı");
+  assert.ok(view.fields.position, "mevki korunmalı");
+  assert.ok(view.restricted.length, "gizlenen alanlar bildirilmeli");
+}
+
+function testPublicViewKeepsFieldsForVerifiedPlayer() {
+  const view = credibility.publicPlayerView(verifiedSample, { now });
+  assert.equal(view.verified, true);
+  assert.equal(view.fields.overallRating, 82, "doğrulanmış kayıtta puan yayımlanmalı");
+  assert.equal(view.fields.currentTeam, "Galatasaray");
+  assert.equal(view.restricted.length, 0);
+}
+
+// ── 2. Üretilmiş çıktı ──────────────────────────────────────────────────────
+
+function testProfilePagesExposeNoRestrictedFields() {
+  const files = listHtml("oyuncular");
+  assert.ok(files.length >= 110, `110 profil beklenir, ${files.length} bulundu`);
+
+  let checked = 0;
+  for (const file of files) {
+    const html = fs.readFileSync(path.join(root, "oyuncular", file), "utf8");
+    assert.ok(!/player-rating-badge/.test(html), `${file}: puan rozeti basılmamalı`);
+    assert.ok(!/mock-[a-z]+-\d+/i.test(html), `${file}: yer tutucu kimlik sızmamalı`);
+    assert.ok(!/overall rating \d/i.test(html), `${file}: meta açıklamasında puan olmamalı`);
+    checked += 1;
+  }
+  assert.ok(checked > 100, "profillerin tamamı taranmalı");
+}
+
+function testJsonLdCarriesNoUnverifiedClubClaim() {
+  const files = listHtml("oyuncular").filter((name) => !["forvetler.html", "kaleciler.html", "defanslar.html",
+    "orta-sahalar.html", "genc-yetenekler.html", "en-iyi-oyuncular.html", "index.html"].includes(name));
+
+  let withLd = 0;
+  for (const file of files) {
+    const html = fs.readFileSync(path.join(root, "oyuncular", file), "utf8");
+    const block = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+    if (!block) continue;
+    withLd += 1;
+
+    const graph = JSON.parse(block[1]);
+    const person = (graph["@graph"] || []).find((node) => node["@type"] === "Person");
+    if (!person) continue;
+
+    assert.ok(!("memberOf" in person), `${file}: doğrulanmamış kulüp schema.org ile beyan edilmemeli`);
+    assert.ok(!/rating \d/i.test(person.description || ""), `${file}: JSON-LD açıklamasında puan olmamalı`);
+  }
+  assert.ok(withLd >= 100, `JSON-LD taşıyan profil sayısı beklenenden az: ${withLd}`);
+}
+
+function testComparisonPagesExposeNoRatings() {
+  const files = listHtml("karsilastirma");
+  assert.ok(files.length > 400, `422 kıyas sayfası beklenir, ${files.length} bulundu`);
+
+  for (const file of files.slice(0, 120)) {
+    const html = fs.readFileSync(path.join(root, "karsilastirma", file), "utf8");
+    assert.ok(!/<dt>Overall<\/dt><dd>\s*\d/.test(html), `${file}: <dl> içindeki puan da puandır`);
+    assert.ok(!/<dt>Piyasa<\/dt><dd>[^<]*\d/.test(html), `${file}: piyasa değeri basılmamalı`);
+  }
+}
+
+function testCategoryPagesExposeNoRestrictedFields() {
+  for (const file of ["forvetler.html", "kaleciler.html", "defanslar.html",
+    "orta-sahalar.html", "genc-yetenekler.html", "en-iyi-oyuncular.html"]) {
+    const full = path.join(root, "oyuncular", file);
+    if (!fs.existsSync(full)) continue;
+    const html = fs.readFileSync(full, "utf8");
+    assert.ok(!/player-rating-badge/.test(html), `${file}: puan rozeti basılmamalı`);
+    assert.ok(!/Piyasa\s*<b>[^<]*\d/.test(html), `${file}: piyasa değeri basılmamalı`);
+    assert.ok(!/Maç dakikası\s*<b>\s*\d/.test(html), `${file}: dakika basılmamalı`);
+  }
+}
+
+function testSearchIndexCarriesNoClubClaim() {
+  const index = JSON.parse(fs.readFileSync(path.join(root, "search-index.json"), "utf8"));
+  const entries = (Array.isArray(index) ? index : index.entries || []).filter((item) => item.type === "player");
+
+  assert.equal(entries.length, 110, "110 oyuncu aranabilir kalmalı — URL yapısı korunuyor");
+
+  for (const entry of entries) {
+    const player = players.find((item) => entry.href.includes(item.id));
+    if (!player) continue;
+    if (credibility.publicPlayerView(player).verified) continue;
+
+    const club = player.currentTeam || player.team || "";
+    if (club) {
+      assert.ok(
+        !entry.subtitle.includes(club),
+        `${entry.title}: doğrulanmamış kulüp arama altyazısında olmamalı (${entry.subtitle})`
+      );
+    }
+  }
+}
+
+function testPlayerUrlsArePreserved() {
+  // Bilgi mimarisi bozulmamalı: her kayıt için sayfa hâlâ var olmalı.
+  let missing = 0;
+  for (const player of players) {
+    if (!fs.existsSync(path.join(root, "oyuncular", `${player.id}.html`))) missing += 1;
+  }
+  assert.equal(missing, 0, `${missing} oyuncu sayfası kaybolmuş — URL yapısı korunmalıydı`);
+}
+
+// ── 3. Hidrasyon ────────────────────────────────────────────────────────────
+
+function testHydrationCannotRepaintBlockedData() {
+  const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
+
+  // İstemci, ön renderin gömdüğü kararı okumalı.
+  assert.ok(
+    app.includes('data-player-verified') && app.includes('=== "false"'),
+    "istemci, iskelete gömülü doğrulama kararını okumalı"
+  );
+
+  // İkinci savunma hattı: kayıt düzeyinde süzgeç.
+  assert.ok(app.includes("isPublishablePlayerCard(player)"), "istemcide kayıt düzeyi süzgeç bulunmalı");
+
+  // Ön render kararı gerçekten gömüyor mu?
+  const sample = fs.readFileSync(path.join(root, "oyuncular", `${players[0].id}.html`), "utf8");
+  assert.ok(/data-player-verified="(true|false)"/.test(sample), "ön render kararı iskelete gömmeli");
+}
+
+function testThreePathsAgreeForAllRecords() {
+  const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
+  const start = app.indexOf("function isPublishablePlayerCard");
+  const body = app.slice(start, app.indexOf("function playerInitials"));
+  const clientFilter = new Function(`return ${body.slice(0, body.lastIndexOf("}") + 1)}`)();
+
+  for (const player of players) {
+    const service = credibility.evaluatePlayerCard(player).publishable;
+    const client = clientFilter(player);
+    assert.equal(client, service, `${player.name}: servis ve istemci aynı kararı vermeli`);
+
+    // Statik çıktı: doğrulanmamışsa sayfada kısıtlı alan olmamalı.
+    const file = path.join(root, "oyuncular", `${player.id}.html`);
+    if (!service && fs.existsSync(file)) {
+      const html = fs.readFileSync(file, "utf8");
+      assert.ok(!/player-rating-badge/.test(html), `${player.name}: statik çıktıda puan rozeti var`);
+      assert.ok(/data-player-verified="false"/.test(html), `${player.name}: statik çıktı kararı taşımalı`);
+    }
+  }
+}
+
+// ── 4. Senkron sertleştirme ─────────────────────────────────────────────────
+
+function testSyncFailsClosedWithoutSecret() {
+  const source = fs.readFileSync(path.join(root, "scripts", "sync-super-lig-squads.mjs"), "utf8");
+
+  assert.ok(source.includes("process.exitCode = 1"), "eksik yapılandırmada sıfırdan farklı çıkış olmalı");
+  assert.ok(source.includes("missingSquadSyncConfig"), "eksik yapılandırma adıyla bildirilmeli");
+  // Anahtar hiçbir çıktı yoluna yazılmamalı.
+  assert.ok(!/console\.log\([^)]*apiKey/i.test(source), "anahtar loglanmamalı");
+  assert.ok(!/APIFOOTBALL_API_KEY\s*=\s*["'][a-f0-9]/i.test(source), "anahtar koda gömülmemeli");
+}
+
+function testSyncStagesValidatesAndPromotesAtomically() {
+  const source = fs.readFileSync(path.join(root, "scripts", "sync-super-lig-squads.mjs"), "utf8");
+
+  assert.ok(source.includes("stageOutputs"), "aday çıktı önce geçici dosyaya yazılmalı");
+  assert.ok(source.includes("validateStagedOutputs"), "aday çıktı doğrulanmalı");
+  assert.ok(source.includes("promoteStaged"), "terfi ayrı bir adım olmalı");
+  assert.ok(source.includes("MIN_SUCCESS_RATIO"), "kısmi başarısızlık eşiği tanımlı olmalı");
+
+  // Doğrulama, DİSKTEN okuyup denetlemeli — bellekteki nesneden değil.
+  const validator = source.slice(source.indexOf("function validateStagedOutputs"));
+  assert.ok(validator.includes("readFileSync"), "aday çıktı diskten okunup denetlenmeli");
+  // Kaynak metninde kalıp `/^mock[-_]/i` biçiminde geçiyor; "mock" kelimesinin
+  // varlığı aranır, ardından gelen karakter değil.
+  assert.ok(/mock/i.test(validator), "aday çıktıda yer tutucu kimlik denetlenmeli");
+}
+
+function testSyncEmitsRunSummaryFields() {
+  const source = fs.readFileSync(path.join(root, "scripts", "sync-super-lig-squads.mjs"), "utf8");
+  const summary = source.slice(source.indexOf("function writeRunSummary"));
+
+  for (const field of ["yapılandırılmış", "Sağlayıcı istek", "Başarılı takım", "Başarısız takım",
+    "Gelen oyuncu", "Gerçek sağlayıcı kimlikli", "elenen", "Değişen çıktı"]) {
+    assert.ok(summary.includes(field), `koşu özeti "${field}" alanını bildirmeli`);
+  }
+  assert.ok(summary.includes("hasConfig()"), "özet, anahtarın varlığını bildirmeli (değerini değil)");
+}
+
+function testSyncRespectsRateLimit() {
+  const source = fs.readFileSync(path.join(root, "scripts", "sync-super-lig-squads.mjs"), "utf8");
+  assert.ok(source.includes("PROVIDER_REQUEST_GAP_MS"), "istekler arası aralık tanımlı olmalı");
+  assert.ok(/setTimeout\(resolve, PROVIDER_REQUEST_GAP_MS\)/.test(source), "aralık gerçekten uygulanmalı");
+}
+
+const tests = [
+  testPublicViewHidesRestrictedFields,
+  testPublicViewKeepsFieldsForVerifiedPlayer,
+  testProfilePagesExposeNoRestrictedFields,
+  testJsonLdCarriesNoUnverifiedClubClaim,
+  testComparisonPagesExposeNoRatings,
+  testCategoryPagesExposeNoRestrictedFields,
+  testSearchIndexCarriesNoClubClaim,
+  testPlayerUrlsArePreserved,
+  testHydrationCannotRepaintBlockedData,
+  testThreePathsAgreeForAllRecords,
+  testSyncFailsClosedWithoutSecret,
+  testSyncStagesValidatesAndPromotesAtomically,
+  testSyncEmitsRunSummaryFields,
+  testSyncRespectsRateLimit
+];
+
+for (const test of tests) {
+  test();
+}
+
+console.log(`Player surface enforcement tests passed (${tests.length} senaryo: karar katmanı, profiller, ` +
+  "JSON-LD, kıyas sayfaları, kategori sayfaları, arama dizini, URL korunumu, hidrasyon, üç yol eşliği, " +
+  "senkron fail-closed, atomik terfi, koşu özeti, rate limit).");
