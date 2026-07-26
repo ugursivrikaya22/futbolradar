@@ -78,10 +78,14 @@ async function main() {
   // kimliği on sekiz takım döndürdüğü sürece fark edilmezdi.
   const identityCheck = evaluateLeagueIdentity(fetchResult.teams);
   if (!identityCheck.safe) {
-    console.error(`Lig kimliği doğrulaması başarısız: ${identityCheck.reason}. ` +
-      `Çekilen ${fetchResult.teams.length} takımdan yalnızca ${identityCheck.matchedNames.length} tanesi ` +
-      `TFF fikstüründeki ${identityCheck.expectedCount} Süper Lig takımıyla eşleşiyor. ` +
-      "Muhtemelen yanlış lig kimliği kullanılıyor. Hiçbir dosya yazılmadı.");
+    console.error(identityCheck.reason === "empty-fetch-result"
+      ? "Lig kimliği doğrulaması başarısız: sağlayıcı hiç takım döndürmedi. " +
+        "Süper Lig'in sıfır takımı olduğu meşru bir durum yok; muhtemelen yanlış lig kimliği ya da " +
+        "paket kısıtı. Hiçbir dosya yazılmadı."
+      : `Lig kimliği doğrulaması başarısız: ${identityCheck.reason}. ` +
+        `Çekilen ${fetchResult.teams.length} takımdan yalnızca ${identityCheck.matchedNames.length} tanesi ` +
+        `TFF fikstüründeki ${identityCheck.expectedCount} Süper Lig takımıyla eşleşiyor. ` +
+        "Muhtemelen yanlış lig kimliği kullanılıyor. Hiçbir dosya yazılmadı.");
 
     // Çözümleme önbellekten geldiyse önbellek yanlış demektir; bir sonraki
     // koşuda aynı hatayı tekrarlamasın diye silinir.

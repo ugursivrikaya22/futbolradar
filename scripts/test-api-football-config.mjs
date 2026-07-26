@@ -541,6 +541,13 @@ function testLeagueIdentityGuardRejectsWrongLeague() {
   const mostlyRight = real.slice(0, real.length - 3)
     .concat([{ name: "Yeni Çıkan A" }, { name: "Yeni Çıkan B" }, { name: "Yeni Çıkan C" }]);
   assert.equal(evaluateLeagueIdentity(mostlyRight).safe, true, "küme değişiklikleri engellenmemeli");
+
+  // Boş çekim her zaman reddedilmeli. evaluateTeamListChange bunu yalnızca
+  // önceden takım varsa yakalıyor; previousCount 0 iken tüm korumaları
+  // atlıyordu ve sıfır takım "başarılı senkron" sayılıyordu.
+  const empty = evaluateLeagueIdentity([]);
+  assert.equal(empty.safe, false, "boş çekim reddedilmeli");
+  assert.equal(empty.reason, "empty-fetch-result");
 }
 
 const tests = [

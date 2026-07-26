@@ -285,10 +285,18 @@ async function testWrongLeagueIdDoesNotSilentlyProduceEmptyData() {
     });
 
     const squads = JSON.parse(fs.readFileSync(path.join(workspace, "data", "super-lig-squads.json"), "utf8"));
+    const teams = JSON.parse(fs.readFileSync(path.join(workspace, "data", "teams.json"), "utf8"));
+
     assert.equal(squads.length, 0, "boş fetch sonrası uydurma kadro yazılmamalı");
+    assert.equal(teams.length, 0, "boş fetch sonrası boş takım listesi yazılmamalı");
+
+    // Zayıf iddia ("0 takım" yazdıysa yeter) yerine sert iddia: boş çekim
+    // BAŞARISIZLIKTIR. previousCount 0 iken sayı korumaları devre dışı
+    // kaldığı için bu daha önce sessizce "başarılı senkron" sayılıyordu.
+    assert.notEqual(result.code, 0, `boş sonuç başarı sayılmamalı, çıktı:\n${result.stdout}\n${result.stderr}`);
     assert.ok(
-      result.code !== 0 || /0 new team|0 active team/.test(result.stdout),
-      `boş sonuç sessizce başarı sayılmamalı, çıktı:\n${result.stdout}`
+      /empty-fetch-result|hiç takım döndürmedi/.test(result.stderr),
+      `boş çekim açıkça bildirilmeli, stderr:\n${result.stderr}`
     );
   } finally {
     await closeServer(server);

@@ -90,10 +90,18 @@ function evaluateLeagueIdentity(fetchedTeams) {
   const fetched = Array.isArray(fetchedTeams) ? fetchedTeams : [];
   const expected = new Set(fixtureTeamNames().map((name) => normalizeText(name)));
 
-  if (!expected.size || !fetched.length) {
-    // Beklenen liste yoksa kıyas yapılamaz; bu kontrol sessizce devre dışı
-    // kalır, mevcut sayı korumaları yürürlükte kalmaya devam eder.
-    return { safe: true, reason: null, overlap: null, expectedCount: expected.size };
+  // Boş çekim HER ZAMAN reddedilir. evaluateTeamListChange bunu yalnızca
+  // önceden takım varsa yakalıyor: previousCount 0 iken tüm korumaları
+  // atlıyor ve sıfır takım "başarılı senkron" sayılıyordu. Süper Lig'in
+  // sıfır takımı olduğu meşru bir durum yok.
+  if (!fetched.length) {
+    return { safe: false, reason: "empty-fetch-result", overlap: 0, expectedCount: expected.size, matchedNames: [] };
+  }
+
+  if (!expected.size) {
+    // Beklenen liste yoksa kıyas yapılamaz; yalnızca bu durumda karşılaştırma
+    // sessizce devre dışı kalır ve mevcut sayı korumaları yürürlükte kalır.
+    return { safe: true, reason: null, overlap: null, expectedCount: 0 };
   }
 
   const matched = fetched.filter((team) => expected.has(normalizeText(team && team.name)));
