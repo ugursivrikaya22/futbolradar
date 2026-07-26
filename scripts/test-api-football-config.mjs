@@ -335,6 +335,50 @@ async function testApiKeyNeverLeaks() {
   }
 }
 
+/**
+ * Doğrulama çıktısı anahtarın HİÇBİR parçasını yazmamalı.
+ *
+ * Önceki maske anahtarın ilk ve son 4 karakterini basıyordu. GitHub Actions
+ * yalnızca sırrın TAM değerini `***` ile değiştirdiği için bu kırpılmış parça
+ * maskelemeyi atlayıp koşu kaydına düşüyordu. Tam-anahtar araması bunu
+ * yakalamıyordu; bu yüzden burada 4 karakterlik her dilim aranıyor.
+ */
+async function testProbeOutputLeaksNoFragmentOfKey() {
+  const { server, baseUrl } = await startProviderDouble({
+    "/status": () => ({ response: { subscription: { active: true }, requests: { current: 1, limit_day: 100 } } })
+  });
+
+  try {
+    await withEnv({
+      APIFOOTBALL_API_KEY: SECRET_KEY,
+      APIFOOTBALL_API_BASE_URL: baseUrl
+    }, async () => {
+      const providerPath = require.resolve("../services/providers/apiFootballProvider.js");
+      delete require.cache[providerPath];
+      const provider = require(providerPath);
+      const report = await provider.probeCredentials();
+      const serialized = JSON.stringify(report);
+
+      assert.ok(!serialized.includes(SECRET_KEY), "tam anahtar çıktıya girmemeli");
+
+      // Anahtarın 4+ karakterlik hiçbir dilimi çıktıda geçmemeli.
+      for (let start = 0; start + 4 <= SECRET_KEY.length; start += 1) {
+        const fragment = SECRET_KEY.slice(start, start + 4);
+        assert.ok(
+          !serialized.includes(fragment),
+          `anahtar parçası çıktıya sızdı: konum ${start}`
+        );
+      }
+
+      // Yine de anahtarı ayırt edebilmeli: geri çevrilemez özet taşımalı.
+      assert.ok(/sha256:[0-9a-f]{8}/.test(serialized), "ayırt edici özet raporlanmalı");
+      assert.ok(report.candidates.length, "aday anahtar raporlanmalı");
+    });
+  } finally {
+    await closeServer(server);
+  }
+}
+
 async function testSeasonDefaultsToCurrentSeason() {
   await withEnv({ APIFOOTBALL_API_KEY: SECRET_KEY }, async () => {
     const providerPath = require.resolve("../services/providers/apiFootballProvider.js");
@@ -601,6 +645,7 @@ const tests = [
   testNoMatchDoesNotInventALeague,
   testProviderErrorIsReportedNotSwallowed,
   testApiKeyNeverLeaks,
+  testProbeOutputLeaksNoFragmentOfKey,
   testSeasonDefaultsToCurrentSeason,
   testCorruptCacheIsIgnored
 ];
@@ -618,4 +663,4 @@ try {
 console.log(`API-Football config tests passed (${tests.length} senaryo: anahtar yokluğu, env önceliği, ` +
   "otomatik çözümleme, önbellek, belirsizlik, eşleşmeme, sponsorlu ad, dar sorgu geri dönüşü, " +
   "kadınlar/altyapı ligi süzgeci, önbellek yeniden doğrulama, lig kimliği koruması, " +
-  "çalışma anında önbellek, sağlayıcı hatası, anahtar sızıntısı, sezon).");
+  "çalışma anında önbellek, sağlayıcı hatası, anahtar sızıntısı, anahtar parçası sızıntısı, sezon).");

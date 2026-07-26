@@ -13,6 +13,8 @@ const { competitions, matchesCompetition } = require("../competitionCatalog");
 // Bağımlılığı olmayan bir okuyucu; leagueResolver'ı require etmek sağlayıcı
 // ile resolver arasında döngü yaratırdı.
 const { readCachedLeague } = require("../leagueCache");
+const { canonicalizeStatistics } = require("../matchStatisticsSchema");
+const { createHash } = require("node:crypto");
 
 const source = "FutbolRadar API-Football Live API";
 const DEFAULT_BASE_URL = "https://v3.football.api-sports.io";
@@ -892,11 +894,23 @@ function normalizeFixtureStatistics(items, match) {
   const awayStats = new Map((away && Array.isArray(away.statistics) ? away.statistics : []).map((item) => [item.type, item.value]));
   const types = Array.from(new Set([...homeStats.keys(), ...awayStats.keys()]));
 
-  return types.map((type) => ({
+  const rawRows = types.map((type) => ({
     type,
     home: homeStats.has(type) ? homeStats.get(type) : null,
     away: awayStats.has(type) ? awayStats.get(type) : null
   }));
+
+  // Sağlayıcı İngilizce tür adı ve metin değer döndürüyor ("Ball Possession"
+  // → "58%"). Analiz katmanı kanonik Türkçe adı ve sayıyı okuyor; çeviri
+  // olmadan çekilen istatistiklerin tamamı kayda girip okunamaz kalıyordu.
+  const { statistics, unmapped } = canonicalizeStatistics(rawRows);
+  if (unmapped.length) {
+    console.warn(
+      `[futbolradar:stat-unmapped] fixture=${match && match.id ? match.id : "?"} ` +
+      `types=${JSON.stringify(unmapped)}`
+    );
+  }
+  return statistics;
 }
 
 function statNumber(statistics, aliases, side) {
@@ -913,14 +927,21 @@ function buildLiveMatchAnalysis(match, statistics, events) {
   const signals = [];
   const addSignal = (label, value, text) => signals.push({ label, value, text });
   const eventList = Array.isArray(events) ? events : [];
-  const possessionHome = statNumber(statistics, ["Ball Possession", "Possession"], "home");
-  const possessionAway = statNumber(statistics, ["Ball Possession", "Possession"], "away");
-  const shotsHome = statNumber(statistics, ["Total Shots"], "home");
-  const shotsAway = statNumber(statistics, ["Total Shots"], "away");
-  const targetHome = statNumber(statistics, ["Shots on Goal", "Shots on Target"], "home");
-  const targetAway = statNumber(statistics, ["Shots on Goal", "Shots on Target"], "away");
-  const xgHome = statNumber(statistics, ["expected_goals", "Expected Goals"], "home");
-  const xgAway = statNumber(statistics, ["expected_goals", "Expected Goals"], "away");
+  // Satırlar normalizeFixtureStatistics'ten KANONİK adla geliyor; ham
+  // İngilizce adlar da listede kalıyor ki kürasyonlu/eski kayıtlar da okunsun.
+  const POSSESSION = ["Topla oynama", "Ball Possession", "Possession"];
+  const TOTAL_SHOTS = ["Toplam şut", "Total Shots"];
+  const ON_TARGET = ["İsabetli şut", "Shots on Goal", "Shots on Target"];
+  const XG = ["Gol beklentisi (xG)", "expected_goals", "Expected Goals"];
+
+  const possessionHome = statNumber(statistics, POSSESSION, "home");
+  const possessionAway = statNumber(statistics, POSSESSION, "away");
+  const shotsHome = statNumber(statistics, TOTAL_SHOTS, "home");
+  const shotsAway = statNumber(statistics, TOTAL_SHOTS, "away");
+  const targetHome = statNumber(statistics, ON_TARGET, "home");
+  const targetAway = statNumber(statistics, ON_TARGET, "away");
+  const xgHome = statNumber(statistics, XG, "home");
+  const xgAway = statNumber(statistics, XG, "away");
 
   if (possessionHome !== null && possessionAway !== null) {
     const leader = possessionHome >= possessionAway ? match.homeTeam : match.awayTeam;
@@ -1082,13 +1103,28 @@ function canSearchLocally(player, search) {
  * noktasına gerçekten istek atılır; o uç nokta anahtarın geçerliliğini,
  * abonelik planını ve kota durumunu birlikte döner.
  *
- * Yanıta ASLA anahtarın kendisi girmez: yalnızca maskeli önek/sonek ve
+ * Yanıta ASLA anahtarın kendisi girmez: yalnızca GERİ ÇEVRİLEMEZ bir özet ve
  * uzunluk raporlanır. Hesap adı/e-postası da PII olduğu için ayıklanır.
+ */
+
+/**
+ * Anahtarı tanımlanabilir kılar ama HİÇBİR karakterini açığa çıkarmaz.
+ *
+ * Önceki hâli anahtarın ilk ve son 4 karakterini basıyordu. GitHub Actions
+ * yalnızca sırrın TAM değerini `***` ile maskeliyor; kırpılmış parça
+ * maskelemeye takılmadan koşu kaydına düşüyordu. 32 karakterlik bir
+ * anahtarın 8 karakteri kırılabilir bir sızıntı değil, ama istenen buydu:
+ * değerinden hiçbir parça yazılmasın.
+ *
+ * SHA-256 öneki aynı işi görüyor: iki farklı anahtar ayırt edilebiliyor,
+ * aynı anahtarın koşular arasında değişmediği doğrulanabiliyor, geriye
+ * çevrilemiyor.
  */
 function maskKey(value) {
   const text = String(value || "");
-  if (text.length <= 8) return `${"*".repeat(Math.max(0, text.length))} (len=${text.length})`;
-  return `${text.slice(0, 4)}…${text.slice(-4)} (len=${text.length})`;
+  if (!text) return "(boş)";
+  const digest = createHash("sha256").update(text).digest("hex").slice(0, 8);
+  return `sha256:${digest}… (len=${text.length})`;
 }
 
 /** Hangi environment değişkeni hangi değeri sağlıyor (değer maskeli). */

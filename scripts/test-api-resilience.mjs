@@ -522,7 +522,18 @@ function testLiveMatchDetailNormalization() {
   assert.equal(lineups[0].players[0], "Oyuncu Bir");
   assert.equal(events[0].time, "37'");
   assert.equal(events[0].value, "Golcu · Asist: Asistci · Normal Goal");
-  assert.equal(statistics.find((item) => item.type === "Ball Possession").home, "61%");
+  // Sağlayıcı "Ball Possession"/"61%" gönderiyor; kayda kanonik ad ve SAYI
+  // girmeli. Eskiden ham hâliyle yazılıyordu ve analiz katmanı okuyamıyordu.
+  const possession = statistics.find((item) => item.type === "Topla oynama");
+  assert.ok(possession, "Ball Possession kanonik ada çevrilmeli");
+  assert.equal(possession.home, 61);
+  assert.equal(possession.away, 39);
+  assert.equal(possession.unit, "%");
+  const rawTypes = ["Ball Possession", "Total Shots", "Shots on Goal", "expected_goals"];
+  assert.ok(!statistics.some((item) => rawTypes.includes(item.type)),
+    "ham sağlayıcı tür adı kayda sızmamalı");
+  const xg = statistics.find((item) => item.type === "Gol beklentisi (xG)");
+  assert.equal(xg.home, 1.42, "metin xG değeri sayıya çevrilmeli");
   assert.equal(analysis.confidence, "Yüksek");
   assert.ok(analysis.signals.length >= 6);
   assert.match(analysis.summary, /Ev SK/);

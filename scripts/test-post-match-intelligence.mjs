@@ -20,6 +20,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const intelligence = require("../services/postMatchIntelligence.js");
+const apiFootball = require("../services/providers/apiFootballProvider.js");
 const root = process.cwd();
 
 const richMatch = {
@@ -172,22 +173,99 @@ function testConclusionReportsDivergenceHonestly() {
   assert.ok(/ayrış/i.test(conclusion.lines[0].text), "skor-xG ayrışması açıkça yazılmalı");
 }
 
+const STAT_SECTION_IDS = ["hucum", "savunma", "sahiplik", "pres", "kurulus", "durantop", "sutkalitesi"];
+
+function statSectionsOf(match) {
+  return intelligence.buildPostMatchIntelligence(match).sections
+    .filter((section) => STAT_SECTION_IDS.includes(section.id));
+}
+
 function testRealMatchesProduceHonestCoverage() {
   const matches = require("../data/matches.json")
     .filter((match) => String(match.status).toUpperCase() === "FINISHED");
-  const withStats = matches.filter((match) => (match.statistics || []).length).length;
 
-  let statBackedPages = 0;
+  // Tek yönlü değişmez: İSTATİSTİĞİ OLMAYAN maç istatistiğe dayalı bölüm
+  // üretemez. Tersi garanti DEĞİL — sağlayıcı paketleri farklı ölçü kümeleri
+  // döndürüyor, gelen küme bir bölümün girdisini hiç içermeyebilir. Eşitlik
+  // aramak, veri gerçekten çekildiği hâlde testi kırıyordu.
   for (const match of matches) {
-    const result = intelligence.buildPostMatchIntelligence(match);
-    const statSections = result.sections.filter((section) =>
-      ["hucum", "savunma", "sahiplik", "pres", "kurulus", "durantop", "sutkalitesi"].includes(section.id));
-    if (statSections.length) statBackedPages += 1;
+    if ((match.statistics || []).length) continue;
+    assert.equal(statSectionsOf(match).length, 0,
+      `${match.id}: istatistiği yokken istatistiğe dayalı bölüm üretildi`);
   }
+}
 
-  assert.equal(statBackedPages, withStats,
-    `istatistiğe dayalı bölüm yalnızca istatistiği olan maçlarda üretilmeli ` +
-    `(bölüm üreten: ${statBackedPages}, istatistiği olan: ${withStats})`);
+/**
+ * API-Football'un standart ölçü kümesi kanonik şemaya çevrildikten sonra
+ * gerçekten bölüm üretmeli.
+ *
+ * REGRESYON KORUMASI: Sağlayıcı çıktısı ham İngilizce adlarla ("Ball
+ * Possession") ve metin değerle ("58%") kaydediliyordu; analiz katmanı
+ * kanonik Türkçe adı arıyordu. Sonuç: gerçekten çekilmiş 18 istatistik maç
+ * kaydında duruyor ama SIFIR bölüm üretiyordu. Sessiz bir veri kaybıydı.
+ */
+function testProviderStatisticsProduceSections() {
+  const providerRows = [
+    { team: { name: "Ev SK" }, statistics: [
+      { type: "Ball Possession", value: "58%" },
+      { type: "Total Shots", value: 14 },
+      { type: "Shots on Goal", value: 6 },
+      { type: "Shots off Goal", value: 5 },
+      { type: "Blocked Shots", value: 3 },
+      { type: "Corner Kicks", value: 7 },
+      { type: "Offsides", value: 2 },
+      { type: "Fouls", value: 11 },
+      { type: "Yellow Cards", value: 2 },
+      { type: "Red Cards", value: 0 },
+      { type: "Goalkeeper Saves", value: 3 },
+      { type: "Total passes", value: 512 },
+      { type: "Passes accurate", value: 441 },
+      { type: "Passes %", value: "86%" },
+      { type: "expected_goals", value: "1.87" }
+    ] },
+    { team: { name: "Dep SK" }, statistics: [
+      { type: "Ball Possession", value: "42%" },
+      { type: "Total Shots", value: 8 },
+      { type: "Shots on Goal", value: 3 },
+      { type: "Shots off Goal", value: 4 },
+      { type: "Blocked Shots", value: 1 },
+      { type: "Corner Kicks", value: 3 },
+      { type: "Offsides", value: 1 },
+      { type: "Fouls", value: 15 },
+      { type: "Yellow Cards", value: 3 },
+      { type: "Red Cards", value: 0 },
+      { type: "Goalkeeper Saves", value: 5 },
+      { type: "Total passes", value: 371 },
+      { type: "Passes accurate", value: 288 },
+      { type: "Passes %", value: "78%" },
+      { type: "expected_goals", value: "0.61" }
+    ] }
+  ];
+
+  const match = {
+    id: "saglayici-olcu-kumesi",
+    status: "FINISHED",
+    homeTeam: "Ev SK",
+    awayTeam: "Dep SK",
+    score: { home: 2, away: 1 },
+    kickoff: "2026-07-23T18:00:00.000Z",
+    events: []
+  };
+  const statistics = apiFootball.normalizeFixtureStatistics(providerRows, match);
+
+  assert.ok(statistics.length >= 14, `kanonik ölçü sayısı yetersiz (${statistics.length})`);
+  const sections = statSectionsOf({ ...match, statistics });
+  const ids = sections.map((section) => section.id);
+
+  assert.ok(ids.includes("hucum"), "şut verisi varken hücum analizi üretilmeli");
+  assert.ok(ids.includes("sahiplik"), "sahiplik verisi varken sahiplik analizi üretilmeli");
+  assert.ok(ids.includes("kurulus"), "pas ve şut verisi varken kuruluş analizi üretilmeli");
+  assert.ok(ids.includes("sutkalitesi"), "xG verisi varken şut kalitesi analizi üretilmeli");
+
+  // Sağlayıcının GÖNDERMEDİĞİ ölçüler uydurulmamalı.
+  const serialized = JSON.stringify(sections);
+  assert.ok(!/ikili mücadele|Başarılı çalım|Uzaklaştırma/.test(serialized),
+    "sağlayıcıda olmayan ölçü üretilmemeli");
 }
 
 // ── Üretilmiş sayfa bütünlüğü ───────────────────────────────────────────────
@@ -252,6 +330,7 @@ const tests = [
   testKeyPerformersDoNotInventRatings,
   testConclusionReportsDivergenceHonestly,
   testRealMatchesProduceHonestCoverage,
+  testProviderStatisticsProduceSections,
   testGeneratedPagesIntegrity,
   testMobileLayoutRulesExist
 ];
@@ -263,4 +342,4 @@ for (const test of tests) {
 console.log(`Post-match intelligence tests passed (${tests.length} senaryo: yalnızca biten maç, ` +
   "veri yoksa bölüm atlanır, yer tutucu yok, güven göstergesi, türetilmiş formül belgesi, " +
   "desteklenmeyen analiz uydurulmaz, tekrarlı olay, derecelendirme uydurulmaz, ayrışma dürüstlüğü, " +
-  "gerçek veri kapsamı, sayfa bütünlüğü, mobil düzen).");
+  "gerçek veri kapsamı, sağlayıcı ölçüleri bölüm üretir, sayfa bütünlüğü, mobil düzen).");
