@@ -6015,7 +6015,30 @@
     }
 
     var title = team.name + " Takım Radarı | Momentum ve Kadro Analizi | FutbolRadar";
-    var description = team.name + " takım detayı; momentum " + displayValue(team.momentum || team.rating) + ", hücum-savunma dengesi, son form ve " + displayValue((players || []).length || team.squadCount) + " oyunculuk kadro radarı.";
+
+    // Açıklama elde NE VARSA ondan kurulur. Sabit bir kalıba eksik değerleri
+    // yerleştirmek "momentum -" ve "0 oyunculuk kadro" gibi, veri yokluğunu
+    // ilan eden ifadeler üretiyordu; kadrosu henüz yayımlanmamış takımlarda
+    // sayfa kendi eksiğini duyurmamalı.
+    var parts = [];
+    var teamMomentum = tdNumber(team.momentum || team.rating);
+    if (teamMomentum !== null) {
+      parts.push("momentum " + teamMomentum);
+    }
+    if (tdNumber(team.attackRating || team.attack) !== null) {
+      parts.push("hücum-savunma dengesi");
+    }
+    if (Array.isArray(team.form) && team.form.length) {
+      parts.push("son form");
+    }
+    var squadSize = (players || []).length || tdNumber(team.squadCount) || 0;
+    if (squadSize > 0) {
+      parts.push(squadSize + " oyunculuk kadro");
+    }
+
+    var description = parts.length
+      ? team.name + " takım detayı; " + parts.join(", ") + " ve maç programı."
+      : team.name + " takım sayfası: maç programı, sonuçlar ve doğrulanmış kulüp bilgileri.";
     var h1 = document.querySelector(".hero h1");
     var lead = document.querySelector(".hero .lead");
     var meta = document.querySelector(".hero-meta");
@@ -6215,6 +6238,18 @@
     return isFinite(number) ? number : null;
   }
 
+  /**
+   * Gövdesi boş dönen bölüm hiç basılmaz. Kart iskeletini boş içerikle
+   * yayımlamak sayfada başlığı olan ama içi olmayan kutular bırakıyordu.
+   */
+  function tdOptionalCard(key, title, note, body, wide) {
+    var content = String(body || "").trim();
+    if (!content) {
+      return "";
+    }
+    return tdCard(key, title, note, content, wide);
+  }
+
   function tdCard(key, title, note, body, wide) {
     return (
       '<section class="td-card' + (wide ? " is-wide" : "") + '" data-td-card="' + escapeHtml(key) + '">' +
@@ -6226,13 +6261,15 @@
 
   /** Takım künyesi: logo, lig, sıra ve momentum. */
   function tdHeroHtml(team, players) {
+    // Sıfır, "veri yok"un sayıya dönmüş hâli: kadro yayımlanmamışken
+    // "KADRO 0" yazmak eksiği duyurmaktan başka bir şey yapmıyor.
     var stats = [
-      ["Sıra", team.rank],
-      ["Puan", team.points],
-      ["Oynanan", team.played],
-      ["Kadro", team.squadCount || players.length]
+      ["Sıra", tdNumber(team.rank)],
+      ["Puan", tdNumber(team.points)],
+      ["Oynanan", tdNumber(team.played)],
+      ["Kadro", tdNumber(team.squadCount) || players.length || null]
     ].filter(function (row) {
-      return row[1] !== null && row[1] !== undefined && row[1] !== "";
+      return row[1] !== null && row[1] !== undefined && row[1] !== "" && row[1] !== 0;
     });
 
     return (
@@ -6267,8 +6304,7 @@
     });
 
     if (!rows.length) {
-      return tdCard("overview", "Takım göstergeleri", null,
-        tdEmpty("Gösterge yok", "Bu takım için momentum, hücum ve savunma ölçümleri henüz doğrulanmadı."));
+      return "";
     }
 
     var body = '<div class="td-meters">' + rows.map(function (row) {
@@ -6288,8 +6324,7 @@
   function tdFormHtml(team) {
     var form = Array.isArray(team.form) ? team.form : [];
     if (!form.length) {
-      return tdCard("form", "Form", null,
-        tdEmpty("Form verisi yok", "Son maç sonuçları bu takım için henüz doğrulanmadı."));
+      return "";
     }
 
     var summary = { win: 0, draw: 0, loss: 0 };
@@ -6318,8 +6353,7 @@
     });
 
     if (!rows.length) {
-      return tdCard("venue", "Stadyum ve teknik ekip", null,
-        tdEmpty("Kulüp künyesi yok", "Stadyum ve teknik ekip bilgisi sağlayıcıdan gelmedi; üretilmedi."));
+      return "";
     }
 
     return tdCard("venue", "Stadyum ve teknik ekip", null,
@@ -6329,10 +6363,15 @@
   }
 
   /** Kadro pozisyona göre gruplanır; uzun düz liste yerine sütunlu kartlar. */
+  /**
+   * Kadro, liderler ve oyuncu vitrini gibi oyuncu verisine bağlı bölümler,
+   * veri yoksa BASILMAZ — "veri bekleniyor" kutusu da gösterilmez. Sağlayıcı
+   * kadrosu olmayan bir takımın sayfası, sayfanın yarısını dolduran boş
+   * durum kutularıyla değil, elde ne varsa onunla açılır.
+   */
   function tdSquadHtml(team, players) {
     if (!players.length) {
-      return tdCard("squad", "Kadro", null,
-        tdEmpty("Kadro verisi yok", "Bu takım için doğrulanmış oyuncu listesi henüz yok."), true);
+      return "";
     }
 
     var order = ["Kaleci", "Defans", "Orta saha", "Forvet"];
@@ -6395,8 +6434,7 @@
     }).slice(0, 6);
 
     if (!rated.length) {
-      return tdCard("leaders", "Kadro liderleri", null,
-        tdEmpty("Rating verisi yok", "Oyuncu ratingleri doğrulanmadığı için lider sıralaması çıkarılmadı."), true);
+      return "";
     }
 
     var body = '<div class="td-leader-grid">' + rated.map(function (player, index) {
@@ -6439,8 +6477,7 @@
     }).slice(0, 6);
 
     if (!own.length) {
-      return tdCard("fixtures", "Maçlar", null,
-        tdEmpty("Maç kaydı yok", "Bu takım için doğrulanmış maç bulunamadı."), true);
+      return "";
     }
 
     return tdCard("fixtures", "Maçlar", "Son ve yaklaşan karşılaşmalar",
@@ -6476,15 +6513,18 @@
       tdOverviewHtml(team) +
       tdFormHtml(team) +
       tdVenueStaffHtml(team) +
-      tdCard("transfers", "Son transferler", "Doğrulanmış hareketler",
-        teamRecentTransfersHtml(team, 6) || tdEmpty("Transfer kaydı yok", "Bu takım için doğrulanmış transfer hareketi yok.")) +
+      // Boş dönen her bölüm sessizce atlanır: veri yoksa kart hiç açılmaz.
+      tdOptionalCard("transfers", "Son transferler", "Doğrulanmış hareketler",
+        teamRecentTransfersHtml(team, 6)) +
       tdFixturesHtml(team, matches) +
       tdLeadersHtml(team, players) +
       tdSquadHtml(team, players) +
-      // Mevcut radar ve oyuncu vitrini işlevleri korunur.
-      tdCard("radar", "Radar sinyalleri", "Momentum ve kadro sinyalleri",
-        teamRadarSnapshotHtml(team, players) + teamSignalCardsHtml(team, players), true) +
-      tdCard("spotlight", "Oyuncu vitrini", null, teamPlayerSpotlightHtml(team, players), true) +
+      // Mevcut radar ve oyuncu vitrini işlevleri korunur; ölçüm yoksa basılmaz.
+      (players.length
+        ? tdOptionalCard("radar", "Radar sinyalleri", "Momentum ve kadro sinyalleri",
+          teamRadarSnapshotHtml(team, players) + teamSignalCardsHtml(team, players), true)
+        : "") +
+      tdOptionalCard("spotlight", "Oyuncu vitrini", null, teamPlayerSpotlightHtml(team, players), true) +
       "</div>" +
       '<div class="player-actions"><a class="detail-link" href="./oyuncu-radari.html?team=' +
       encodeURIComponent(team.name) + '">Oyuncu radarını aç</a>' +

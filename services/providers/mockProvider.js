@@ -1,4 +1,5 @@
 const { filterPublishable, logExcluded } = require("../matchEligibility.js");
+const { mergeSuperLigTeams, isFixtureOnly } = require("../superLigTeams.js");
 const matches = require("../../data/matches.json");
 const teams = require("../../data/teams.json");
 const players = require("../../data/players.json");
@@ -101,7 +102,9 @@ function normalizeTeam(team) {
     rating: team.rating || team.momentum,
     attackRating: team.attackRating || team.attack,
     defenseRating: team.defenseRating || team.defense,
-    source: "mock"
+    // Kaynak korunur: fikstürden türetilen takım "tff-fixture" kalır, böylece
+    // kaydın nereden geldiği yanıtta izlenebilir.
+    source: team.source || "curated"
   };
 }
 
@@ -502,7 +505,11 @@ async function getStandings(query) {
 }
 
 async function getTeams(query) {
-  let data = byLeague(teams.map(normalizeTeam), query && query.league);
+  // Takım kapsamı: elle doğrulanmış kayıtlar + TFF fikstüründen türetilen
+  // lig üyeleri. teams.json'da yalnızca beş takım olduğu için "Göztepe" veya
+  // "Konyaspor" araması sıfır sonuç veriyordu; fikstürde adı geçen her takım
+  // bu sezon ligde olduğu doğrulanmış takımdır.
+  let data = byLeague(mergeSuperLigTeams(teams).map(normalizeTeam), query && query.league);
   data = byTeam(data, query && query.team);
   data = bySearch(data, query && query.search);
   if (query && (query.teamId || query.id)) {

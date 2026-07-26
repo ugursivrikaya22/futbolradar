@@ -333,8 +333,18 @@ function validateMatches(data) {
   );
 }
 
+/**
+ * Takım kaydı için kimlik zorunlu, ANALİZ alanları değil.
+ *
+ * Kural eskiden her takımda momentum veya rating arıyordu. Süper Lig kapsamı
+ * TFF fikstüründen türetilince, kadro/istatistik verisi olmayan takımlar bu
+ * kurala takıldı ve tek bir geçersiz kayıt TÜM takım yanıtını düşürdü —
+ * uç nokta 18 takım yerine boş liste döndürüyordu. Momentum uydurmak yerine
+ * kural düzeltildi: momentum bir ölçüm, kimlik değil. Ölçümü olmayan takım
+ * hâlâ geçerli bir takımdır; arayüz ilgili bölümleri sessizce gizler.
+ */
 function validateTeams(data) {
-  return validateCollection(data, (item) => item.name && requireAny(item, ["momentum", "rating"]), "INVALID_TEAM_SCHEMA");
+  return validateCollection(data, (item) => Boolean(item.name && item.id), "INVALID_TEAM_SCHEMA");
 }
 
 function validatePlayers(data) {

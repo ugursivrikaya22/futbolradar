@@ -10,10 +10,13 @@
  */
 
 import fs from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 import { NAV_PRIMARY, NAV_SECONDARY } from "./lib/layout.mjs";
 
 const root = process.cwd();
+const require = createRequire(import.meta.url);
+const { mergeSuperLigTeams } = require("../services/superLigTeams.js");
 
 function readJson(file) {
   try {
@@ -68,7 +71,12 @@ for (const page of EXTRA_PAGES) {
   push({ type: "page", badge: "SYF", href: page.href, title: page.title, subtitle: page.subtitle });
 }
 
-for (const team of asArray(readJson("teams.json"), "teams")) {
+// Takım kapsamı elle tutulan listeyle sınırlı kalmaz: TFF fikstüründe adı
+// geçen her takım bu sezon ligdedir ve aranabilir olmalıdır. Daha önce dizin
+// yalnızca teams.json'daki beş takımı içerdiği için "Göztepe" ve "Konyaspor"
+// aramaları sıfır sonuç veriyordu.
+const curatedTeams = asArray(readJson("teams.json"), "teams");
+for (const team of mergeSuperLigTeams(curatedTeams)) {
   if (!team || !team.name) {
     continue;
   }
