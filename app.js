@@ -572,6 +572,34 @@
     return '<div class="tag-row">' + (Array.isArray(tags) ? tags.map(tagHtml).join("") : "") + "</div>";
   }
 
+  // GÖRÜNÜR KART GÜVENİLİRLİĞİ (services/cardCredibility.js ile aynı kural)
+  //
+  // Denetim: 110 oyuncu kaydının hiçbiri barı geçmiyor — 102'sinde sağlayıcı
+  // kimliği yok, 8'inde "mock-" yer tutucu var ve ana sayfadaki üç kart bu
+  // sekizden geliyordu. Puanı, piyasa değeri ve dakikası olan tek grup da
+  // aynı sekizdi.
+  //
+  // Bar: gerçek sağlayıcı kimliği + kaynak bağlantısı + doğrulama zamanı.
+  // Biri eksikse kart çizilmez; sayfayı doldurmak doğrulanmamış bir sayı
+  // göstermenin gerekçesi değildir.
+  function isPublishablePlayerCard(player) {
+    if (!player) return false;
+
+    var providerId = String(player.providerId || player.provider_id || "").trim();
+    if (!providerId || /^mock[-_]/i.test(providerId) || !/^\d+$/.test(providerId)) return false;
+
+    if (!String(player.sourceUrl || "").trim()) return false;
+    if (!String(player.lastVerifiedAt || player.lastSyncedAt || "").trim()) return false;
+
+    var dataStatus = String(player.dataStatus || "").toLowerCase();
+    if (dataStatus === "mock_needs_verification") return false;
+
+    var ratingStatus = String(player.ratingStatus || "").toLowerCase();
+    if (ratingStatus === "stale") return false;
+
+    return true;
+  }
+
   function playerInitials(player) {
     var name = String(player && player.name || "FR").trim();
     return name.split(/\s+/).slice(0, 2).map(function (part) {
@@ -5445,7 +5473,19 @@
 
     loadData("players")
       .then(function (players) {
-        var filtered = players.filter(config.match).sort(function (a, b) {
+        // GÜVENİLİRLİK SÜZGECİ — kural services/cardCredibility.js ile aynı.
+        //
+        // Statik ön render doğrulanmamış kartları elemesi işe yaramazdı: JS
+        // yüklendiği anda istemci aynı kayıtları geri basardı. Süzgeç bu
+        // yüzden iki yerde de var.
+        var credible = players.filter(isPublishablePlayerCard);
+        var hiddenCount = players.length - credible.length;
+        if (hiddenCount > 0 && window.console && console.warn) {
+          console.warn("[futbolradar:card-hidden] " + hiddenCount +
+            " oyuncu kartı doğrulanmadığı için gizlendi (sağlayıcı kimliği/kaynak eksik).");
+        }
+
+        var filtered = credible.filter(config.match).sort(function (a, b) {
           return playerAiScore(b) - playerAiScore(a);
         });
 

@@ -23,6 +23,8 @@ const { calculateMatchRadar, normalizeText } = require("../services/matchRadarSe
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
 const { getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigFixtureService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
+const { filterPlayerCards, logRemovedCards } = require("../services/cardCredibility.js");
+const { fixtureTeamNames } = require("../services/superLigTeams.js");
 
 const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
 const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
@@ -418,14 +420,71 @@ function staticMomentumRows() {
   return momentum.slice().sort((left, right) => Number(left.rank) - Number(right.rank)).map((row) => `<div class="table-row" data-card="momentum" data-team="${escapeHtml(row.team)}"><span>${escapeHtml(row.rank)}</span><b>${escapeHtml(row.team)}</b><span>${escapeHtml(row.momentum)}</span><span>${escapeHtml(row.formScore)}</span><span>${escapeHtml(row.goalSignal)}</span><span>${escapeHtml(row.risk)}</span></div>`).join("");
 }
 
+/**
+ * GÖRÜNÜR KART GÜVENİLİRLİĞİ (bkz. services/cardCredibility.js)
+ *
+ * Denetim sonucu: 110 oyuncu kaydının HİÇBİRİ yayın barını geçmiyor —
+ * 102'sinde sağlayıcı kimliği hiç yok, 8'inde "mock-..." yer tutucu var.
+ * Ana sayfada görünen üç kart (Icardi, Aktürkoğlu, Dzeko) bu sekizden
+ * geliyordu; ikisi ayrıca ligde bile oynamıyordu (serbest oyuncu ve
+ * Schalke 04).
+ *
+ * Bu yüzden bölüm doldurulmuyor: doğrulanmış kayıt yoksa temiz bir boş
+ * durum basılıyor. Sayfayı doldurmak, okuyucuya doğrulanmamış bir puan
+ * göstermenin gerekçesi değil.
+ */
+function verifiedTrendPlayers(limit) {
+  const { kept, removed } = filterPlayerCards(topPlayers, {
+    trend: true,
+    leagueTeams: fixtureTeamNames()
+  });
+  logRemovedCards("homepage-trend-players", removed.slice(0, 5));
+  if (removed.length > 5) {
+    console.warn(`[futbolradar:card-hidden] scope=homepage-trend-players ...ve ${removed.length - 5} kayıt daha`);
+  }
+  return kept.slice(0, limit);
+}
+
+function emptyStateCard(title, note) {
+  return `<article class="card data-empty" data-card="empty-state"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(note)}</span></article>`;
+}
+
+function trendPlayerSlot(limit) {
+  const verified = verifiedTrendPlayers(limit);
+  if (!verified.length) {
+    return emptyStateCard(
+      "Veri bekleniyor",
+      "Trend oyuncu kartları yalnızca doğrulanmış, sağlayıcı kimliği olan güncel sezon verisinden üretilir. " +
+      "Kadro senkronu bu veriyi getirdiğinde bu alan otomatik dolar."
+    );
+  }
+  return verified.map(simplePlayerCard).join("");
+}
+
 function simplePlayerCard(player) {
   const rating = player.overallRating || player.aiRating || player.rating || "-";
   const age = player.computedAge || player.age || "Bilinmiyor";
   return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(player.currentTeam || player.team)} · ${escapeHtml(player.position)}</span><h2>${escapeHtml(player.name)}</h2></div><strong class="big-value player-rating-badge">${escapeHtml(rating)}</strong></div><div class="metric-grid compact"><span>Yaş <b>${escapeHtml(age)}</b></span><span>Dakika <b>${escapeHtml(player.minutesPlayed ?? "Veri yok")}</b></span><span>Piyasa <b>${escapeHtml(formatMarketValueEur(player.marketValueEur) || "Yakında")}</b></span></div><p>${escapeHtml(player.summary || "Profil metrikleri ve transfer geçmişi oyuncu sayfasında yer alır.")}</p><a class="detail-link" href="./oyuncular/${escapeHtml(player.id)}.html">Oyuncu profilini aç</a></article>`;
 }
 
-function playerSignals() {
-  const by = (field) => players.slice().sort((left, right) => Number(right[field] || 0) - Number(left[field] || 0))[0];
+/**
+ * Oyuncu sinyalleri de aynı bara tabi. Sinyal kartı bir oyuncuyu "en iyi"
+ * ilan ediyor; dayandığı kayıt doğrulanamıyorsa bu iddia yayımlanmamalı.
+ */
+function playerSignalsSlot() {
+  const { kept } = filterPlayerCards(players, { trend: true, leagueTeams: fixtureTeamNames() });
+  if (!kept.length) {
+    return emptyStateCard(
+      "Veri bekleniyor",
+      "Oyuncu sinyalleri doğrulanmış sezon istatistiğine dayanır; sağlayıcıdan bu veri geldiğinde alan dolar."
+    );
+  }
+  return playerSignals(kept);
+}
+
+function playerSignals(pool) {
+  const source = Array.isArray(pool) ? pool : players;
+  const by = (field) => source.slice().sort((left, right) => Number(right[field] || 0) - Number(left[field] || 0))[0];
   const cards = [
     ["AI rating", by("overallRating"), "overallRating"],
     ["Gol tehdidi", by("threatScore"), "threatScore"],
@@ -579,8 +638,8 @@ writePage("index.html", {
   "radar-signals": signalCards(),
   "team-radar": topTeams.slice(0, 4).map(staticTeamCard).join(""),
   "home-standings": staticHomeStandingRows(),
-  "player-radar": topPlayers.slice(0, 3).map(simplePlayerCard).join(""),
-  "player-signals": playerSignals(),
+  "player-radar": trendPlayerSlot(3),
+  "player-signals": playerSignalsSlot(),
   "news-preview": newsCards(3),
   "analysis-preview": analysisCards()
 }, fixtureFreshness);
@@ -613,7 +672,7 @@ writePage("takimlar.html", {
 }, teamFreshness);
 
 writePage("oyuncu-radari.html", {
-  "players-page": topPlayers.slice(0, 6).map(simplePlayerCard).join("")
+  "players-page": trendPlayerSlot(6)
 }, playerFreshness);
 
 writePage("mac-detay.html", {
