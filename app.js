@@ -579,14 +579,69 @@
     }).join("").toUpperCase() || "FR";
   }
 
-  function playerAvatarHtml(player, size) {
+  // OYUNCU FOTOĞRAFI — kural services/playerPhotoService.js ile aynı.
+  //
+  // Fotoğraf yalnızca lisanslı kaynaktan gelir: API-Football aboneliğinin
+  // kendi medya sunucusu. Kazıma yok, rastgele host yok. safeImageUrl her
+  // http(s) adresini kabul ettiği için burada YETMEZ: beyaz liste ayrıca
+  // uygulanır, aksi hâlde veri dosyasına düşen herhangi bir adres yayına
+  // çıkardı.
+  var PLAYER_PHOTO_HOSTS = ["media.api-sports.io"];
+  var PLAYER_PHOTO_BASE = "https://media.api-sports.io/football/players";
+
+  function isAllowedPlayerPhotoUrl(value) {
+    try {
+      var url = new URL(String(value));
+      return url.protocol === "https:" && PLAYER_PHOTO_HOSTS.indexOf(url.hostname) !== -1;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // Yalnızca gerçek sağlayıcı kimliği. Bu depodaki kayıtların bir kısmı
+  // "mock-icardi-9" gibi yer tutucu kimlikler taşıyor; bunlardan adres
+  // üretmek kırık görsel ya da BAŞKA bir oyuncunun fotoğrafı demek olurdu.
+  function playerPhotoProviderId(player) {
+    var candidate = String((player && (player.providerId || player.playerId)) || "").trim();
+    return /^\d+$/.test(candidate) ? candidate : "";
+  }
+
+  function resolvePlayerPhotoUrl(player) {
+    if (player && player.photo && isAllowedPlayerPhotoUrl(player.photo)) {
+      return String(player.photo);
+    }
+    var id = playerPhotoProviderId(player);
+    return id ? PLAYER_PHOTO_BASE + "/" + id + ".png" : "";
+  }
+
+  function playerPhotoAlt(player, context) {
+    var name = String((player && player.name) || "").trim() || "Oyuncu";
+    var team = String((player && (player.currentTeam || player.team)) || "").trim();
+    if (context) return name + " — " + context;
+    return team ? name + ", " + team + " oyuncu fotoğrafı" : name + " oyuncu fotoğrafı";
+  }
+
+  function playerAvatarHtml(player, size, context) {
     var className = "player-avatar" + (size ? " " + size : "");
-    var photoUrl = player && player.photo ? safeImageUrl(player.photo) : "";
-    if (photoUrl) {
-      return '<span class="' + escapeHtml(className) + '"><img src="' + escapeHtml(photoUrl) + '" alt="" loading="lazy" decoding="async" /></span>';
+    var initials = escapeHtml(playerInitials(player));
+    var photoUrl = resolvePlayerPhotoUrl(player);
+
+    if (!photoUrl) {
+      // Yer tutucu: uydurma görsel yok, boş kutu da yok.
+      return '<span class="' + escapeHtml(className) + ' is-placeholder">' + initials + "</span>";
     }
 
-    return '<span class="' + escapeHtml(className) + '">' + escapeHtml(playerInitials(player)) + "</span>";
+    // onerror: sağlayıcı görseli 404 dönerse kırık ikon kalmasın, baş
+    // harflere düşülsün. Kart yüksekliği değişmediği için sayfa zıplamaz.
+    return (
+      '<span class="' + escapeHtml(className) + '">' +
+      '<img src="' + escapeHtml(photoUrl) + '" ' +
+      'alt="' + escapeHtml(playerPhotoAlt(player, context)) + '" ' +
+      'loading="lazy" decoding="async" width="96" height="96" ' +
+      'data-initials="' + initials + '" ' +
+      'onerror="this.parentNode.classList.add(\'is-placeholder\');this.replaceWith(document.createTextNode(this.dataset.initials||\'\'))" />' +
+      "</span>"
+    );
   }
 
   function badgesHtml(badges) {
@@ -5044,7 +5099,13 @@
       : "";
     return (
       '<article class="transfer-radar-card" data-card="transfer-record" data-transfer="' + escapeHtml(record.id || record.playerId) + '">' +
-      '<header><div class="player-card-title"><div><span class="card-kicker">' + escapeHtml(record.league || "Lig bilgisi yakında") + ' · ' + escapeHtml(transferRecordStatusLabel(record.status)) + '</span><h2>' + escapeHtml(record.playerName) + '</h2></div></div><strong>' + escapeHtml(formatProfileDate(record.date) || record.season || "Yakında") + '</strong></header>' +
+      // Transfer kaydında oyuncunun adı var ama görsel kimliği yoktu.
+      // playerAvatarHtml aynı lisans kuralına tabi: gerçek sağlayıcı kimliği
+      // yoksa baş harfler gösterilir, uydurma görsel yüklenmez.
+      '<header><div class="player-card-title">' +
+      playerAvatarHtml({ name: record.playerName, providerId: record.providerId || record.playerProviderId, currentTeam: record.toTeam },
+        null, record.playerName + ", " + (record.toTeam || "yeni kulüp") + " transferi") +
+      '<div><span class="card-kicker">' + escapeHtml(record.league || "Lig bilgisi yakında") + ' · ' + escapeHtml(transferRecordStatusLabel(record.status)) + '</span><h2>' + escapeHtml(record.playerName) + '</h2></div></div><strong>' + escapeHtml(formatProfileDate(record.date) || record.season || "Yakında") + '</strong></header>' +
       '<div class="transfer-route transfer-route-large"><b>' + escapeHtml(record.fromTeam || "Önceki kulüp bilinmiyor") + '</b><em>→</em><b>' + escapeHtml(record.toTeam || "Yeni kulüp bilinmiyor") + '</b></div>' +
       '<div class="transfer-radar-meta">' +
       compactMetricHtml("Mevki", record.position || "Bilinmiyor") +
@@ -6499,10 +6560,26 @@
    * baş harf rozeti. Yer tutucu bir kişi görseli üretilmez.
    */
   function tdPlayerFaceHtml(player) {
-    if (player.photo) {
-      return '<img class="td-face" src="' + escapeHtml(player.photo) + '" alt="" loading="lazy" decoding="async" width="34" height="34">';
+    // Lisans kuralı burada da geçerli: player.photo doğrudan kullanılmıyor,
+    // beyaz listeden geçiyor ya da gerçek sağlayıcı kimliğinden türetiliyor.
+    var photoUrl = resolvePlayerPhotoUrl(player);
+    var mono = escapeHtml(monogramOf(player.name));
+
+    if (!photoUrl) {
+      return '<span class="td-face is-mono" aria-hidden="true">' + mono + "</span>";
     }
-    return '<span class="td-face is-mono" aria-hidden="true">' + escapeHtml(monogramOf(player.name)) + "</span>";
+
+    // alt="" BİLEREK: bu küçük görsel, oyuncunun adıyla AYNI bağlantının
+    // içinde duruyor. Açıklayıcı bir alt verilseydi ekran okuyucu bağlantıyı
+    // "Ali Yılmaz oyuncu fotoğrafı Ali Yılmaz 24 yaş" diye okurdu. Adın
+    // bitişik olmadığı yerlerde (oyuncu kartı, transfer kartı) alt dolu.
+    return (
+      '<img class="td-face" src="' + escapeHtml(photoUrl) + '" alt="" ' +
+      'loading="lazy" decoding="async" width="34" height="34" ' +
+      'data-mono="' + mono + '" ' +
+      'onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),' +
+      '{className:\'td-face is-mono\',textContent:this.dataset.mono||\'\'}))">'
+    );
   }
 
   function tdLeadersHtml(team, players) {

@@ -15208,3 +15208,47 @@ body,
 
 .td-transfer-source:hover,
 .td-transfer-source:focus-visible { text-decoration: underline; }
+
+/* ---------------------------------------------------------------------------
+   OYUNCU FOTOĞRAFLARI
+   Görsel yalnızca lisanslı kaynaktan (API-Football medya sunucusu) gelir.
+   Kimliği olmayan oyuncuda uydurma görsel yüklenmez; baş harfler gösterilir.
+   Yer tutucu ile fotoğraf AYNI ölçüde durur, böylece görsel yüklendiğinde
+   ya da düştüğünde satır zıplamaz.
+--------------------------------------------------------------------------- */
+.player-avatar.is-placeholder,
+.td-face.is-mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.player-avatar img,
+.td-face {
+  object-fit: cover;
+  background: var(--soft);
+}
+
+.post-match-face {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  margin-bottom: 0.6rem;
+}
+
+.post-match-face.is-placeholder {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 1rem;
+}

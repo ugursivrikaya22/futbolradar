@@ -18,6 +18,7 @@ const domain = "https://www.futbolradar.com";
 const matches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
 const { buildMatchReport } = require("../services/matchReportService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
+const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 
 const fixturePool = curatedMatches();
 const finished = matches
@@ -108,10 +109,29 @@ function summarySection(report) {
   return `<article class="card post-match-summary-card"><span class="card-kicker">Maç özeti</span><h2>${escapeHtml(summary.headline)}</h2><p>${escapeHtml(summary.paragraph)}</p></article>`;
 }
 
+/**
+ * Öne çıkan oyuncunun görseli. Kural services/playerPhotoService.js'de:
+ * yalnızca lisanslı kaynak, gerçek sağlayıcı kimliği yoksa baş harfler.
+ *
+ * Buradaki alt DOLU: görsel, adın hemen bitişiğinde değil, kartın üstünde
+ * ayrı bir öge olarak duruyor.
+ */
+function playerPhotoHtml(player) {
+  const photo = resolvePlayerPhoto(player);
+  if (photo.isPlaceholder) {
+    return `<span class="post-match-face is-placeholder" aria-hidden="true">${escapeHtml(photo.initials)}</span>`;
+  }
+
+  return `<img class="post-match-face" src="${escapeHtml(photo.url)}" ` +
+    `alt="${escapeHtml(playerPhotoAlt(player, `${player.name}, maç sonrası öne çıkan oyuncu`))}" ` +
+    `loading="lazy" decoding="async" width="56" height="56">`;
+}
+
 function standoutSection(report) {
   const block = report.sections.standoutPlayers;
   if (block.status !== "ready") return noteCard(block.reason);
   return `<div class="post-match-standouts">${block.players.map((player) => `<article class="card post-match-standout" data-impact="${escapeHtml(player.impact)}">
+    ${playerPhotoHtml(player)}
     <span class="card-kicker">${escapeHtml(player.team)}</span>
     <h3>${escapeHtml(player.name)}</h3>
     <p>${escapeHtml(player.contribution)}</p>
