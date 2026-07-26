@@ -281,6 +281,12 @@ function validateDateParam(date) {
     return null;
   }
 
+  // "all" tarih filtresini kapatan özel değerdir: takım radarındaki fikstür
+  // kartı tek bir güne değil, takımın tüm doğrulanmış maçlarına bakar.
+  if (String(date).toLowerCase() === "all") {
+    return null;
+  }
+
   if (!/^\d{4}-\d{2}-\d{2}$/.test(String(date))) {
     return "date parametresi YYYY-MM-DD formatinda olmali.";
   }

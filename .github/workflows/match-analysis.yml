@@ -12,11 +12,14 @@ name: Match Analysis Automation
 #    because no APIFOOTBALL_API_KEY is configured — they activate
 #    automatically once real credentials are added as a secret.
 #
-# 2. lineup-refresh: a separate, lighter, more frequent job. It only calls
-#    the narrow refresh-official-lineups.mjs script, which itself limits
-#    scope to fixtures inside a 180-minute pre-kickoff window (capped at 20
-#    per run) — running it often is safe and not "aggressive polling"
-#    because the script is the one deciding whether there is anything to do.
+# 2. live-refresh: a separate, lighter, more frequent job (every 5 minutes).
+#    It refreshes official lineups before kickoff, syncs finished results and
+#    regenerates match reports, so a match that just ended gets its final
+#    analysis into the static output within minutes instead of waiting for
+#    the next daily run. Each script limits its own scope (the lineup refresh
+#    only touches fixtures inside a 180-minute pre-kickoff window, capped at
+#    20 per run), so frequent runs are not "aggressive polling" — the scripts
+#    decide whether there is anything to do and no-op otherwise.
 #
 # Every step in both jobs is a real gate: a failed step stops the job before
 # the commit step ever runs, so a bad sync/validation can never publish
@@ -28,9 +31,16 @@ on:
     - cron: "0 5 * * *"
     # 16:00 Europe/Istanbul - a few hours ahead of typical evening kickoffs.
     - cron: "0 13 * * *"
-    # Lineup refresh: every 30 minutes. The script itself decides whether
-    # any fixture is actually inside its refresh window before doing work.
-    - cron: "*/30 * * * *"
+    # Canlı döngü: 5 dakikada bir. Maç biten karşılaşmanın sonucunu, olay
+    # akışını ve maç raporunu tazeler. 5 dakika GitHub Actions'ın izin
+    # verdiği en sık aralıktır ve zamanlanmış işler yoğun saatlerde birkaç
+    # dakika gecikebilir; bu yüzden "maç sonu analizi 30-60 saniyede hazır"
+    # hedefi STATİK sayfalarda değil, açık sayfada çalışan istemci
+    # yoklamasıyla karşılanır (app.js: MATCH_DETAIL_POLL_MS ve
+    # MATCH_FINAL_ANALYSIS_DELAY_MS). Buradaki iş, sayfayı o an açmayan
+    # ziyaretçiler ve arama motorları için statik çıktıyı tazeler.
+    # Script kendi penceresine baktığı için çoğu koşuda hiçbir şey yapmaz.
+    - cron: "*/5 * * * *"
   workflow_dispatch: {}
 
 permissions:
@@ -42,7 +52,7 @@ concurrency:
 
 jobs:
   update-match-analyses:
-    if: github.event.schedule != '*/30 * * * *'
+    if: github.event.schedule != '*/5 * * * *'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -118,8 +128,8 @@ jobs:
             echo "No meaningful changes to commit."
           fi
 
-  lineup-refresh:
-    if: github.event.schedule == '*/30 * * * *'
+  live-refresh:
+    if: github.event.schedule == '*/5 * * * *'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -133,7 +143,7 @@ jobs:
       - name: Refresh official lineups (no-ops without a live provider key)
         run: node scripts/refresh-official-lineups.mjs --apply
 
-      # Maç biter bitmez sonucu çekip raporu üretir. Yarım saatlik döngüde
+      # Maç biter bitmez sonucu çekip raporu üretir. Beş dakikalık döngüde
       # olması, biten bir maçın raporunun ertesi güne kalmamasını sağlar.
       - name: Backfill missing API-Football fixture ids
         run: node scripts/backfill-provider-ids.mjs --apply
@@ -167,7 +177,7 @@ jobs:
           git config user.email "295430257+ugursivrikaya22@users.noreply.github.com"
           if [ -n "$(git status --porcelain)" ]; then
             git add -A
-            git commit -m "ci(matches): refresh official lineups"
+            git commit -m "ci(matches): refresh live results and match reports"
             git push
           else
             echo "No meaningful changes to commit."

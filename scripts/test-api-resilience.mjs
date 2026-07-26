@@ -676,4 +676,30 @@ await testHeadRequestSupport();
 await testApiKeyCandidateRecovery();
 await testVenueAuthority();
 
+/**
+ * date=all tarih filtresini kapatan sözleşmedir: takım radarındaki fikstür
+ * kartı tek bir güne değil, takımın tüm doğrulanmış maçlarına bakar. Bu
+ * davranış sessizce geri alınırsa kart maçı olan takımlarda bile boşalır,
+ * bu yüzden hem doğrulama katmanı hem sağlayıcı burada sınanır.
+ */
+async function testDateAllReturnsEveryMatch() {
+  assert.equal(utils.validateDateParam("all"), null, "date=all kabul edilmeli");
+  assert.equal(utils.validateDateParam("ALL"), null, "date=ALL büyük harfle de kabul edilmeli");
+  assert.ok(utils.validateDateParam("yarin"), "geçersiz tarih hâlâ reddedilmeli");
+  assert.equal(utils.validateDateParam("2026-07-23"), null, "geçerli tarih kabul edilmeli");
+
+  const { mockProvider } = await import("../services/providers/index.js");
+  const all = await mockProvider.getMatches({ date: "all" });
+  const singleDay = await mockProvider.getMatches({ date: "2026-07-25" });
+
+  assert.ok(all.length > singleDay.length, "date=all tek günden fazla maç döndürmeli");
+  assert.ok(singleDay.length > 0, "tek gün filtresi çalışmaya devam etmeli");
+  assert.ok(
+    singleDay.every((match) => String(match.kickoff || "").slice(0, 10) === "2026-07-25"),
+    "tek gün filtresi yalnızca o günü döndürmeli"
+  );
+}
+
+await testDateAllReturnsEveryMatch();
+
 console.log("FutbolRadar API resilience tests passed");
