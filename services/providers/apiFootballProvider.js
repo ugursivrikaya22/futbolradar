@@ -10,6 +10,9 @@ const {
   withTimeout
 } = require("../../api/_utils");
 const { competitions, matchesCompetition } = require("../competitionCatalog");
+// Bağımlılığı olmayan bir okuyucu; leagueResolver'ı require etmek sağlayıcı
+// ile resolver arasında döngü yaratırdı.
+const { readCachedLeague } = require("../leagueCache");
 
 const source = "FutbolRadar API-Football Live API";
 const DEFAULT_BASE_URL = "https://v3.football.api-sports.io";
@@ -292,9 +295,21 @@ async function providerFetchWithKey(path, params, apiKey, config) {
   return withTimeout(request, DEFAULT_TIMEOUT_MS);
 }
 
+/**
+ * Sıra: açık parametre → env → depoya commit edilmiş çözülmüş kimlik.
+ *
+ * Üçüncü basamak olmadan otomatik çözümlemenin faydası yalnızca kadro
+ * senkronuyla sınırlı kalıyordu: /api/matches, /api/standings ve sezon
+ * fikstürü hâlâ APIFOOTBALL_LEAGUE_ID istiyordu. Önbellek salt okunuyor,
+ * bu yüzden Vercel'in salt okunur dosya sisteminde de çalışır.
+ */
 function resolveLeague(value) {
   const config = getConfig();
-  return value || config.leagueId || "";
+  if (value) return value;
+  if (config.leagueId) return config.leagueId;
+
+  const cached = readCachedLeague();
+  return cached ? cached.leagueId : "";
 }
 
 function resolveSeason(value, dateHint) {

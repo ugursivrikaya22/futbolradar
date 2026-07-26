@@ -1,7 +1,16 @@
 const apiFootballProvider = require("./providers/apiFootballProvider");
 const { normalizeText } = require("./matchRadarService");
+const { fixtureTeamNames } = require("./superLigTeams");
 
 const MAX_ACCEPTABLE_DROP_RATIO = 0.2;
+
+/**
+ * Çekilen listenin, TFF fikstüründen bilinen on sekiz takımla en az bu kadar
+ * örtüşmesi beklenir. Eşik %60: sezon arası birkaç takım değişebilir (küme
+ * düşen/çıkan), ama çoğunluk tutmalıdır. Bambaşka bir ligde örtüşme sıfıra
+ * yakın çıkar.
+ */
+const MIN_LEAGUE_IDENTITY_OVERLAP = 0.6;
 
 function slug(value) {
   return normalizeText(value).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -64,6 +73,46 @@ function evaluateTeamListChange(previousTeams, fetchedTeams) {
 }
 
 /**
+ * KİMLİK KONTROLÜ — sayı doğru olsa da lig yanlış olabilir.
+ *
+ * evaluateTeamListChange yalnızca SAYILARA bakar. Yanlış bir lig kimliği
+ * (operatörün elle yazdığı hatalı bir env değeri ya da eskimiş bir önbellek)
+ * on sekiz takım döndürürse bu kontrolden sorunsuz geçer: gerçek Süper Lig
+ * kulüpleri isCurrentSuperLigTeam=false olarak işaretlenir, başka bir ligin
+ * kulüpleri güncel diye eklenir ve hepsi doğrulanmış veri gibi yayımlanır.
+ *
+ * Karşılaştırma için elimizde bağımsız bir doğruluk kaynağı var: TFF
+ * fikstüründen türeyen on sekiz takım adı (services/superLigTeams.js).
+ * Çekilen listenin bu adlarla yeterince örtüşmesi beklenir. Örtüşme düşükse
+ * sorun "lig küçüldü" değil, "yanlış ligi çektik"tir ve yazma durur.
+ */
+function evaluateLeagueIdentity(fetchedTeams) {
+  const fetched = Array.isArray(fetchedTeams) ? fetchedTeams : [];
+  const expected = new Set(fixtureTeamNames().map((name) => normalizeText(name)));
+
+  if (!expected.size || !fetched.length) {
+    // Beklenen liste yoksa kıyas yapılamaz; bu kontrol sessizce devre dışı
+    // kalır, mevcut sayı korumaları yürürlükte kalmaya devam eder.
+    return { safe: true, reason: null, overlap: null, expectedCount: expected.size };
+  }
+
+  const matched = fetched.filter((team) => expected.has(normalizeText(team && team.name)));
+  const overlap = matched.length / expected.size;
+
+  if (overlap < MIN_LEAGUE_IDENTITY_OVERLAP) {
+    return {
+      safe: false,
+      reason: `league-identity-mismatch-${Math.round(overlap * 100)}pct`,
+      overlap,
+      expectedCount: expected.size,
+      matchedNames: matched.map((team) => team.name)
+    };
+  }
+
+  return { safe: true, reason: null, overlap, expectedCount: expected.size };
+}
+
+/**
  * Additive merge: promoted teams are appended, teams missing from the fresh
  * fetch are flagged isCurrentSuperLigTeam=false but never deleted (profile
  * and history stay intact for relegated clubs). Never invents duplicate
@@ -119,7 +168,9 @@ function mergeTeamList(canonicalTeams, fetchedTeams) {
 module.exports = {
   fetchCurrentSuperLigTeams,
   evaluateTeamListChange,
+  evaluateLeagueIdentity,
   mergeTeamList,
   providerSyncConfig,
-  MAX_ACCEPTABLE_DROP_RATIO
+  MAX_ACCEPTABLE_DROP_RATIO,
+  MIN_LEAGUE_IDENTITY_OVERLAP
 };

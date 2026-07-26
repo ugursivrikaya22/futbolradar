@@ -7,9 +7,9 @@ import { missingSquadSyncConfig, reportMissingProviderConfig } from "./lib/provi
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const apiFootballProvider = require("../services/providers/apiFootballProvider.js");
-const { fetchCurrentSuperLigTeams, evaluateTeamListChange, mergeTeamList } = require("../services/teamSyncService.js");
+const { fetchCurrentSuperLigTeams, evaluateTeamListChange, evaluateLeagueIdentity, mergeTeamList } = require("../services/teamSyncService.js");
 const { fetchTeamSquad, buildSquadSnapshot, evaluateSquadSyncSafety, detectProviderIdConflicts } = require("../services/squadSyncService.js");
-const { resolveSuperLigLeagueId } = require("../services/leagueResolver.js");
+const { resolveSuperLigLeagueId, CACHE_PATH: LEAGUE_CACHE_PATH } = require("../services/leagueResolver.js");
 
 const TEAMS_PATH = path.join(root, "data", "teams.json");
 const SQUADS_PATH = path.join(root, "data", "super-lig-squads.json");
@@ -69,6 +69,27 @@ async function main() {
   const fetchResult = await fetchCurrentSuperLigTeams({ leagueId: leagueResolution.leagueId });
   if (fetchResult.status !== "fetched") {
     console.error(`Team fetch failed: ${fetchResult.reason}. Canonical data left untouched.`);
+    process.exitCode = 1;
+    return;
+  }
+
+  // Sayı koruması "lig küçüldü mü" sorusunu yanıtlar; kimlik koruması
+  // "doğru ligi mi çektik" sorusunu. İkincisi olmadan yanlış bir lig
+  // kimliği on sekiz takım döndürdüğü sürece fark edilmezdi.
+  const identityCheck = evaluateLeagueIdentity(fetchResult.teams);
+  if (!identityCheck.safe) {
+    console.error(`Lig kimliği doğrulaması başarısız: ${identityCheck.reason}. ` +
+      `Çekilen ${fetchResult.teams.length} takımdan yalnızca ${identityCheck.matchedNames.length} tanesi ` +
+      `TFF fikstüründeki ${identityCheck.expectedCount} Süper Lig takımıyla eşleşiyor. ` +
+      "Muhtemelen yanlış lig kimliği kullanılıyor. Hiçbir dosya yazılmadı.");
+
+    // Çözümleme önbellekten geldiyse önbellek yanlış demektir; bir sonraki
+    // koşuda aynı hatayı tekrarlamasın diye silinir.
+    if (leagueResolution.source === "cache" && fs.existsSync(LEAGUE_CACHE_PATH)) {
+      fs.unlinkSync(LEAGUE_CACHE_PATH);
+      console.error("Yanlış olduğu anlaşılan lig önbelleği silindi; sonraki koşu yeniden çözecek.");
+    }
+
     process.exitCode = 1;
     return;
   }

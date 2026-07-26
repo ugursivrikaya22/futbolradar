@@ -136,6 +136,29 @@ function unresolvedLeagueReport(resolution) {
   };
 }
 
+/** probeCredentials verdict'lerinin okunur karşılıkları. */
+const VERDICT_LABELS = {
+  ACCEPTED: "kabul edildi",
+  ACCEPTED_NO_DETAIL: "kabul edildi (plan ayrıntısı dönmedi)",
+  REJECTED: "reddedildi",
+  HTTP_ERROR: "HTTP hatası",
+  TRANSPORT_ERROR: "bağlantı kurulamadı"
+};
+
+function verdictLabel(candidate) {
+  const label = VERDICT_LABELS[candidate.verdict] || candidate.verdict || "bilinmeyen sonuç";
+  if (candidate.verdict === "REJECTED" && candidate.apiErrors) {
+    const detail = Array.isArray(candidate.apiErrors)
+      ? candidate.apiErrors.join("; ")
+      : Object.values(candidate.apiErrors).join("; ");
+    return `${label} — ${String(detail).slice(0, 120)}`;
+  }
+  if (candidate.verdict === "TRANSPORT_ERROR" && candidate.transportError) {
+    return `${label} — ${candidate.transportError}`;
+  }
+  return label;
+}
+
 function printBlockers(blockers) {
   line("");
   line("API-Football yapılandırması EKSİK — kadro senkronu çalıştırılmayacak.");
@@ -165,15 +188,24 @@ async function main() {
     line(`  Anahtar biçimi : ${credential.formatValid ? "geçerli görünüyor" : `beklenmedik (${credential.length} karakter)`}`);
   }
   line(`  Temel adres    : ${config.baseUrl}`);
-  line(`  Sezon          : ${config.season}${process.env.APIFOOTBALL_SEASON ? " (env)" : " (tarihten türetildi)"}`);
+  // Sezon takma adlarla da tanımlanabilir; tek bir ismi kontrol etmek
+  // env'den gelen bir değeri "tarihten türetildi" diye yanlış etiketliyordu.
+  const seasonFromEnv = ["APIFOOTBALL_SEASON", "API_FOOTBALL_SEASON"]
+    .find((name) => String(process.env[name] || "").trim() !== "");
+  line(`  Sezon          : ${config.season}${seasonFromEnv ? ` (${seasonFromEnv})` : " (tarihten türetildi)"}`);
 
   if (!credential.present) blockers.push(missingKeyReport());
   else if (!credential.formatValid) blockers.push(malformedKeyReport(credential));
 
-  // Lig kimliği: env → önbellek → (izin verilirse) sağlayıcı.
-  const resolution = wantResolve || config.leagueId || fs.existsSync(CACHE_PATH)
+  // Lig kimliği: env → önbellek → sağlayıcı.
+  //
+  // Anahtar varken çözümleme HER ZAMAN denenir. Daha önce yalnızca --resolve
+  // ile deneniyordu ve çözülmemiş kimlik engel sayılmadığı için ön kontrol
+  // "Hazır" diyordu — teşhis aracı, kadro senkronunun duracağı bir kurulumu
+  // sağlam gösteriyordu. Çağrı bir kez yapılır, sonuç önbelleğe yazılır.
+  const resolution = credential.present
     ? await resolveSuperLigLeagueId()
-    : { status: "unavailable", leagueId: null, source: null, reason: credential.present ? "not-resolved-yet" : "no-api-key", candidates: [] };
+    : { status: "unavailable", leagueId: null, source: null, reason: "no-api-key", candidates: [] };
 
   if (resolution.status === "resolved") {
     // Yalnızca çözülen kimlik basılır.
@@ -181,8 +213,6 @@ async function main() {
   } else if (!credential.present) {
     line("  Lig kimliği    : anahtar tanımlanınca otomatik çözülecek");
     // Anahtar zaten engel olarak listelendi; ikinci kez rapor edilmez.
-  } else if (resolution.reason === "not-resolved-yet") {
-    line("  Lig kimliği    : henüz çözülmedi (--resolve ile çöz)");
   } else {
     line("  Lig kimliği    : ÇÖZÜLEMEDİ");
     blockers.push(unresolvedLeagueReport(resolution));
@@ -193,9 +223,12 @@ async function main() {
     line("  Sağlayıcı doğrulaması (--probe)");
     const probe = await apiFootballProvider.probeCredentials();
     for (const candidate of probe.candidates || []) {
+      // probeCredentials'ın gerçek alanı `verdict`. Daha önce burada olmayan
+      // bir `ok` alanı okunuyordu ve GEÇERLİ bir anahtar "reddedildi" diye
+      // raporlanıyordu — teşhis aracının kendisi yanlış cevap veriyordu.
       // maskedKey sağlayıcı katmanında maskelenir; ham anahtar buraya gelmez.
       line(`    ${candidate.envNames.join(", ")}: HTTP ${candidate.httpStatus ?? "-"} ` +
-        `${candidate.ok ? "kabul edildi" : candidate.errorCode || "reddedildi"} (${candidate.maskedKey})`);
+        `${verdictLabel(candidate)} (${candidate.maskedKey})`);
     }
   }
 

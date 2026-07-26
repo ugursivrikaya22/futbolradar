@@ -375,13 +375,15 @@ async function testLooseMatchStillRefusesToGuess() {
   //
   // Not: adlardan biri bilinen listede olsaydı tam eşleşme kazanır ve bu
   // doğru olurdu — tam ad, alt dize benzerliğinden güçlü bir kanıttır.
-  // Bu yüzden senaryo bilerek iki BİLİNMEYEN ad kullanır.
+  // Bu yüzden senaryo bilerek iki BİLİNMEYEN ad kullanır. İkisi de erkek A
+  // takımı ligi görünümünde; kadınlar/altyapı süzgeci burada devreye girmez,
+  // ayırt etmenin bir yolu yoktur ve doğru davranış durmaktır.
   const cachePath = tempCache();
   const { server, baseUrl } = await startProviderDouble({
     "/leagues": () => ({
       response: [
         leagueEntry(SUPER_LIG_ID, "Süper Lig 2026-27"),
-        leagueEntry(888, "Kadınlar Süper Ligi")
+        leagueEntry(888, "Süper Lig Beyaz Grup")
       ]
     })
   });
@@ -427,8 +429,126 @@ async function testNarrowQueryFallsBackToCountryOnly() {
   }
 }
 
+async function testRuntimeUsesCachedLeagueId() {
+  // Otomatik çözümlemenin faydası kadro senkronuyla sınırlı kalmamalı:
+  // /api/matches, /api/standings ve sezon fikstürü de env değişkeni olmadan
+  // doğru ligi kullanabilmeli. Sağlayıcı, commit edilmiş önbelleği okur.
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "futbolradar-runtime-"));
+  fs.mkdirSync(path.join(dir, "data"), { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, "data", "api-football-league.json"),
+    JSON.stringify({ leagueId: SUPER_LIG_ID, leagueName: "Süper Lig", country: "Turkey" }),
+    "utf8"
+  );
+
+  received = [];
+  // Sunucu, kendisine hangi lig kimliğinin gönderildiğini kaydeder; iddia
+  // "hata vermedi" değil, "DOĞRU ligi sordu" olur.
+  const { server, baseUrl } = await startProviderDouble({
+    "/fixtures": () => ({ response: [] })
+  });
+
+  const previousCwd = process.cwd();
+  try {
+    process.chdir(dir);
+    await withEnv({ APIFOOTBALL_API_KEY: SECRET_KEY, APIFOOTBALL_API_BASE_URL: baseUrl }, async () => {
+      const providerPath = require.resolve("../services/providers/apiFootballProvider.js");
+      delete require.cache[require.resolve("../services/leagueCache.js")];
+      delete require.cache[providerPath];
+      const provider = require(providerPath);
+
+      // Env'de lig kimliği yok; sağlayıcı yine de çözülmüş kimliği bulmalı.
+      assert.equal(provider.getConfig().leagueId, "", "ön koşul: env'de kimlik olmamalı");
+
+      await provider.getSeasonFixtures({ season: "2026" });
+
+      const fixtureCall = received.find((request) => request.path === "/fixtures");
+      assert.ok(fixtureCall, "sezon fikstürü sorgusu yapılmalı");
+      assert.equal(
+        fixtureCall.query.league,
+        SUPER_LIG_ID,
+        "sağlayıcı, env'de kimlik yokken önbellekteki ligi sormalı"
+      );
+    });
+  } finally {
+    process.chdir(previousCwd);
+    await closeServer(server);
+    fs.rmSync(dir, { recursive: true, force: true });
+    delete require.cache[require.resolve("../services/leagueCache.js")];
+    delete require.cache[require.resolve("../services/providers/apiFootballProvider.js")];
+  }
+}
+
+async function testLooseMatchNeverPicksWomensOrYouthLeague() {
+  // Gevşek eşleşmenin en tehlikeli hâli: "Süper Lig" geçen TEK aday bir
+  // kadınlar ya da altyapı ligi olduğunda. Tek aday olduğu için belirsizlik
+  // kontrolüne takılmaz — seçilirse on sekiz erkek A takımı yerine bambaşka
+  // bir turnuvanın kadroları yayımlanır.
+  for (const name of ["Kadınlar Süper Ligi", "U19 Süper Lig", "Süper Lig Play-Off"]) {
+    const cachePath = tempCache();
+    const { server, baseUrl } = await startProviderDouble({
+      "/leagues": () => ({ response: [leagueEntry(901, name), leagueEntry(204, "1. Lig")] })
+    });
+
+    try {
+      await withEnv({ APIFOOTBALL_API_KEY: SECRET_KEY, APIFOOTBALL_API_BASE_URL: baseUrl }, async () => {
+        const { resolveSuperLigLeagueId } = freshResolver();
+        const result = await resolveSuperLigLeagueId({ cachePath });
+
+        assert.equal(result.status, "unavailable", `"${name}" Süper Lig sayılmamalı`);
+        assert.notEqual(result.leagueId, "901", `"${name}" seçilmemeli`);
+        assert.ok(!fs.existsSync(cachePath), `"${name}" önbelleğe yazılmamalı`);
+      });
+    } finally {
+      await closeServer(server);
+    }
+  }
+}
+
+async function testStaleCacheIsRevalidated() {
+  const { cacheIsUsable, CACHE_REVALIDATE_DAYS } = freshResolver();
+  const now = new Date("2026-07-26T12:00:00Z");
+
+  const fresh = { leagueId: "203", country: "Turkey", resolvedAt: "2026-07-20T12:00:00Z" };
+  assert.equal(cacheIsUsable(fresh, "Turkey", now), true, "yeni önbellek kullanılmalı");
+
+  const stale = new Date(now);
+  stale.setDate(stale.getDate() - (CACHE_REVALIDATE_DAYS + 5));
+  const old = { leagueId: "203", country: "Turkey", resolvedAt: stale.toISOString() };
+  assert.equal(cacheIsUsable(old, "Turkey", now), false,
+    "eski önbellek yeniden doğrulanmalı; yanlış bir kimlik depoya kalıcı donmamalı");
+
+  const otherCountry = { leagueId: "203", country: "Spain", resolvedAt: "2026-07-20T12:00:00Z" };
+  assert.equal(cacheIsUsable(otherCountry, "Turkey", now), false, "başka ülkenin önbelleği kullanılmamalı");
+}
+
+function testLeagueIdentityGuardRejectsWrongLeague() {
+  const require2 = createRequire(import.meta.url);
+  const { evaluateLeagueIdentity } = require2("../services/teamSyncService.js");
+  const { fixtureTeamNames } = require2("../services/superLigTeams.js");
+
+  const real = fixtureTeamNames().map((name) => ({ name }));
+  const correct = evaluateLeagueIdentity(real);
+  assert.equal(correct.safe, true, "gerçek Süper Lig listesi kabul edilmeli");
+
+  // Doğru SAYIDA ama bambaşka takımlar: sayı koruması bunu yakalayamaz.
+  const wrongLeague = real.map((_, index) => ({ name: `Yabancı Kulüp ${index + 1}` }));
+  const rejected = evaluateLeagueIdentity(wrongLeague);
+  assert.equal(rejected.safe, false, "yanlış ligin takımları reddedilmeli");
+  assert.ok(/league-identity-mismatch/.test(rejected.reason), `beklenen gerekçe, alınan: ${rejected.reason}`);
+
+  // Sezon arası birkaç takım değişebilir; çoğunluk tutuyorsa geçmeli.
+  const mostlyRight = real.slice(0, real.length - 3)
+    .concat([{ name: "Yeni Çıkan A" }, { name: "Yeni Çıkan B" }, { name: "Yeni Çıkan C" }]);
+  assert.equal(evaluateLeagueIdentity(mostlyRight).safe, true, "küme değişiklikleri engellenmemeli");
+}
+
 const tests = [
   testNoKeyStopsWithoutGuessing,
+  testRuntimeUsesCachedLeagueId,
+  testLooseMatchNeverPicksWomensOrYouthLeague,
+  testStaleCacheIsRevalidated,
+  testLeagueIdentityGuardRejectsWrongLeague,
   testSponsoredNameStillResolves,
   testLooseMatchStillRefusesToGuess,
   testNarrowQueryFallsBackToCountryOnly,
@@ -448,4 +568,5 @@ for (const test of tests) {
 
 console.log(`API-Football config tests passed (${tests.length} senaryo: anahtar yokluğu, env önceliği, ` +
   "otomatik çözümleme, önbellek, belirsizlik, eşleşmeme, sponsorlu ad, dar sorgu geri dönüşü, " +
-  "sağlayıcı hatası, anahtar sızıntısı, sezon).");
+  "kadınlar/altyapı ligi süzgeci, önbellek yeniden doğrulama, lig kimliği koruması, " +
+  "çalışma anında önbellek, sağlayıcı hatası, anahtar sızıntısı, sezon).");

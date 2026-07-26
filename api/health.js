@@ -11,6 +11,7 @@ const {
 } = require("./_utils");
 const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig, getProvider, getProviderChain, apiFootballProvider } = require("../services/providers");
 const { getConfig } = require("../services/providers/footballProvider");
+const { readCachedLeague } = require("../services/leagueCache");
 
 function presentEnvNames(names) {
   return names.filter((name) => String(process.env[name] || "").trim() !== "");
@@ -50,6 +51,7 @@ function buildDiagnostics(config) {
   const liveProviderConfigured = hasLiveProviderConfig();
   const liveProviderResources = Array.from(LIVE_PROVIDER_RESOURCES);
   const apiFootballConfig = apiFootballProvider.getConfig();
+  const cachedLeague = readCachedLeague();
 
   return {
     mode: liveProviderConfigured ? "live-ready" : "mock",
@@ -85,6 +87,13 @@ function buildDiagnostics(config) {
       credentialCandidateCount: apiFootballConfig.apiKeyCandidateCount,
       activeBaseUrl: apiFootballConfig.baseUrl,
       leagueIdConfigured: Boolean(apiFootballConfig.leagueId),
+      // Lig kimliği env'de olmayabilir ama çözülmüş ve depoya yazılmış
+      // olabilir. Yalnızca env'e bakmak, senkron "çözüldü" derken sağlık
+      // ucunun "yapılandırılmamış" demesine yol açıyordu.
+      leagueIdSource: apiFootballConfig.leagueId
+        ? "env"
+        : (cachedLeague ? "cache" : "unresolved"),
+      resolvedLeagueId: apiFootballConfig.leagueId || (cachedLeague ? cachedLeague.leagueId : null),
       resolvedSeason: apiFootballConfig.season
     },
     providerSelection: {

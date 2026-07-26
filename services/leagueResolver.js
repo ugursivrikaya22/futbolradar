@@ -30,6 +30,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const apiFootballProvider = require("./providers/apiFootballProvider");
 const { normalizeText } = require("./matchRadarService");
+const { resetLeagueCacheMemo } = require("./leagueCache");
 
 const CACHE_PATH = path.join(process.cwd(), "data", "api-football-league.json");
 
@@ -38,6 +39,27 @@ const TARGET_LEAGUE_NAMES = ["super lig", "superlig", "turkish super lig", "tren
 
 /** Önbellekte anahtar benzeri bir şey bulunursa dosya bozuk sayılır. */
 const KEY_SHAPED = /^[a-f0-9]{32}$/i;
+
+/** Önbellek bu kadar gün sonra sağlayıcıya yeniden doğrulatılır. */
+const CACHE_REVALIDATE_DAYS = 30;
+
+/**
+ * Genişletilmiş ("super lig" içeren) aramanın ASLA seçmemesi gereken adlar.
+ * Kadınlar ligi ya da U19 turnuvası da "Süper Lig" içerir; tek aday olarak
+ * kalırlarsa gevşek eşleşme onları seçerdi ve on sekiz erkek A takımı yerine
+ * bambaşka bir turnuvanın kadroları yayımlanırdı.
+ */
+const NON_SENIOR_MENS_MARKERS = [
+  "kadin", "kadinlar", "women", "womens", "feminin",
+  "u17", "u18", "u19", "u20", "u21", "u23",
+  "genc", "gencler", "youth", "junior", "akademi", "academy",
+  "kupa", "cup", "play off", "play-off", "playoff", "amator", "reserve"
+];
+
+function isSeniorMensLeague(name) {
+  const folded = normalizeText(name);
+  return !NON_SENIOR_MENS_MARKERS.some((marker) => folded.includes(marker));
+}
 
 function readCache(cachePath) {
   try {
@@ -54,10 +76,21 @@ function readCache(cachePath) {
  * sezona değişmez, sezonu şart koşmak her temmuzda gereksiz bir çağrı
  * doğururdu.
  */
-function cacheIsUsable(cache, country) {
+function cacheIsUsable(cache, country, now = new Date()) {
   if (!cache || !cache.leagueId) return false;
   if (KEY_SHAPED.test(String(cache.leagueId))) return false;
   if (cache.country && normalizeText(cache.country) !== normalizeText(country)) return false;
+
+  // Önbellek süresiz güvenilmez. Yanlış çözülmüş bir kimlik commit edilirse
+  // depoya kalıcı olarak donardı; yeniden doğrulama penceresi, hatanın en
+  // kötü ihtimalle bir ay içinde kendiliğinden düzelmesini sağlar. Doğru
+  // kimlik zaten aynı sonucu döndürür, maliyeti ayda bir çağrıdır.
+  const resolvedAt = Date.parse(cache.resolvedAt);
+  if (!Number.isNaN(resolvedAt)) {
+    const ageDays = (now.getTime() - resolvedAt) / 86400000;
+    if (ageDays > CACHE_REVALIDATE_DAYS) return false;
+  }
+
   return true;
 }
 
@@ -87,7 +120,10 @@ function selectSuperLig(leagues) {
   if (exact.length === 1) return { league: exact[0], candidates: exact, matched: true };
   if (exact.length > 1) return { league: null, candidates: exact, matched: true };
 
-  const loose = all.filter((league) => normalizeText(league.name).includes("super lig"));
+  // Gevşek eşleşme yalnızca erkek A takımı liglerinde arar: kadınlar ve
+  // altyapı turnuvaları tek aday olarak kalsa bile seçilmez.
+  const loose = all.filter((league) =>
+    normalizeText(league.name).includes("super lig") && isSeniorMensLeague(league.name));
   if (loose.length === 1) return { league: loose[0], candidates: loose, matched: true };
   if (loose.length > 1) return { league: null, candidates: loose, matched: true };
 
@@ -188,6 +224,9 @@ async function resolveSuperLigLeagueId(options = {}) {
     };
   }
 
+  // Sağlayıcı katmanı önbelleği süreç içinde hatırlıyor; yeni değer aynı
+  // süreçte hemen görünsün diye bellek sıfırlanır.
+  resetLeagueCacheMemo();
   writeCache(cachePath, {
     leagueId: league.id,
     leagueName: league.name,
@@ -210,6 +249,7 @@ async function resolveSuperLigLeagueId(options = {}) {
 
 module.exports = {
   CACHE_PATH,
+  CACHE_REVALIDATE_DAYS,
   TARGET_LEAGUE_NAMES,
   resolveSuperLigLeagueId,
   selectSuperLig,

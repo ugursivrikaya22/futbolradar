@@ -34,6 +34,7 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(scriptDir, "..");
 const SYNC_SCRIPT = path.join(repoRoot, "scripts", "sync-super-lig-squads.mjs");
 const CANONICAL_SCRIPT = path.join(repoRoot, "scripts", "sync-canonical-players.mjs");
+const PREFLIGHT_SCRIPT = path.join(repoRoot, "scripts", "preflight-api-football.mjs");
 
 const SECRET_KEY = "abcdef0123456789abcdef0123456789";
 const SUPER_LIG_ID = 203;
@@ -82,6 +83,11 @@ function startProviderDouble() {
 
     if (req.headers["x-apisports-key"] !== SECRET_KEY) {
       send({ errors: ["Error/Missing application key."], response: [] });
+      return;
+    }
+
+    if (url.pathname === "/status") {
+      send({ response: { subscription: { plan: "Pro", active: true }, requests: { current: 12, limit_day: 7500 } } });
       return;
     }
 
@@ -146,16 +152,24 @@ function makeWorkspace() {
   return dir;
 }
 
-function runScript(script, cwd, env) {
+function runScript(script, cwd, env, args = ["--apply"]) {
   return new Promise((resolve) => {
     execFile(
       process.execPath,
-      [script, "--apply"],
+      [script, ...args],
       { cwd, env: { ...process.env, ...env }, timeout: 120000 },
       (error, stdout, stderr) => resolve({ code: error ? (error.code ?? 1) : 0, stdout, stderr })
     );
   });
 }
+
+/** Anahtarın hiçbir varyantı ortamdan miras alınmasın. */
+const BLANK_CREDENTIALS = {
+  APIFOOTBALL_API_KEY: "", API_FOOTBALL_API_KEY: "", APIFOOTBALL_KEY: "",
+  API_FOOTBALL_KEY: "", API_SPORTS_API_KEY: "", APISPORTS_API_KEY: "",
+  APIFOOTBALL_LEAGUE_ID: "", API_FOOTBALL_LEAGUE_ID: "",
+  APIFOOTBALL_LEAGUEID: "", API_SPORTS_LEAGUE_ID: ""
+};
 
 function runSync(cwd, env) {
   return runScript(SYNC_SCRIPT, cwd, env);
@@ -325,11 +339,142 @@ async function testSquadsFlowIntoCanonicalPlayerData() {
   }
 }
 
+/**
+ * Ön kontrol, teşhis aracının kendisi. Yanlış cevap vermesi, engelin
+ * kendisinden daha pahalıya mal olur: daha önce burada olmayan bir alan
+ * okunduğu için GEÇERLİ bir anahtar "reddedildi" diye raporlanıyordu.
+ */
+async function testPreflightProbeReportsValidKeyAsAccepted() {
+  const workspace = makeWorkspace();
+  const { server, baseUrl } = await startProviderDouble();
+
+  try {
+    const result = await runScript(PREFLIGHT_SCRIPT, workspace, {
+      APIFOOTBALL_API_KEY: SECRET_KEY,
+      APIFOOTBALL_API_BASE_URL: baseUrl,
+      APIFOOTBALL_LEAGUE_ID: ""
+    }, ["--probe"]);
+
+    assert.equal(result.code, 0, `geçerli yapılandırmada ön kontrol geçmeli:\n${result.stdout}`);
+    assert.ok(
+      /kabul edildi/.test(result.stdout),
+      `geçerli anahtar kabul edilmiş olarak raporlanmalı, çıktı:\n${result.stdout}`
+    );
+    assert.ok(
+      !/reddedildi/.test(result.stdout),
+      `geçerli anahtar reddedilmiş gösterilmemeli, çıktı:\n${result.stdout}`
+    );
+    assert.ok(result.stdout.includes(`Lig kimliği: ${SUPER_LIG_ID}`) ||
+      result.stdout.includes(`${SUPER_LIG_ID} (provider)`), "çözülen lig kimliği yazılmalı");
+
+    // Maskeleme: tam anahtar hiçbir yerde görünmemeli.
+    assert.ok(!result.stdout.includes(SECRET_KEY), "ön kontrol anahtarı yazmamalı");
+    assert.ok(!result.stderr.includes(SECRET_KEY), "ön kontrol anahtarı stderr'e yazmamalı");
+  } finally {
+    await closeServer(server);
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+}
+
+/** CI kapısının dayandığı çıktı: eksik yapılandırmada ready=false. */
+async function testPreflightWritesCiGateOutput() {
+  const workspace = makeWorkspace();
+  const outputFile = path.join(workspace, "gh-output");
+  fs.writeFileSync(outputFile, "", "utf8");
+
+  const result = await runScript(PREFLIGHT_SCRIPT, workspace, {
+    ...BLANK_CREDENTIALS,
+    GITHUB_ACTIONS: "true",
+    GITHUB_OUTPUT: outputFile
+  }, []);
+
+  try {
+    assert.notEqual(result.code, 0, "eksik yapılandırmada ön kontrol sıfır dönmemeli");
+
+    const output = fs.readFileSync(outputFile, "utf8");
+    assert.ok(/^ready=false$/m.test(output), `ready=false yazılmalı, alınan: ${JSON.stringify(output)}`);
+    assert.ok(!/^ready=true$/m.test(output), "eksik yapılandırmada ready=true yazılmamalı");
+
+    // Kapı 'true' ile karşılaştırdığı için 'false' ve boş değer aynı yöne
+    // düşer: kadro senkronu atlanır. Bu, tasarımın güvenli tarafı.
+    assert.ok(
+      result.stdout.includes("APIFOOTBALL_API_KEY"),
+      "eksik değişken adıyla bildirilmeli"
+    );
+  } finally {
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+}
+
+/**
+ * En sinsi arıza: yanlış lig kimliği DOĞRU SAYIDA takım döndürür. Sayı
+ * koruması bunu göremez — gerçek Süper Lig kulüpleri "artık ligde değil"
+ * diye işaretlenir, başka bir ligin kulüpleri güncel diye eklenir ve hepsi
+ * doğrulanmış veri gibi yayımlanır. Kimlik koruması burada devreye girmeli.
+ */
+async function testWrongLeagueWithRightTeamCountIsRejected() {
+  const workspace = makeWorkspace();
+
+  const server = http.createServer((req, res) => {
+    const url = new URL(req.url, "http://127.0.0.1");
+    const send = (body) => {
+      res.writeHead(200, { "content-type": "application/json" });
+      res.end(JSON.stringify(body));
+    };
+
+    if (req.headers["x-apisports-key"] !== SECRET_KEY) {
+      send({ errors: ["Error/Missing application key."], response: [] });
+      return;
+    }
+
+    if (url.pathname === "/teams") {
+      // Tam on sekiz takım — ama hiçbiri Süper Lig kulübü değil.
+      send({
+        response: Array.from({ length: 18 }, (_, index) => ({
+          team: { id: 5000 + index, name: `FC Yabancı ${index + 1}`, country: "Turkey" },
+          venue: { name: "Stadyum" }
+        }))
+      });
+      return;
+    }
+
+    send({ response: [] });
+  });
+
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const baseUrl = `http://127.0.0.1:${server.address().port}`;
+
+  try {
+    const result = await runSync(workspace, {
+      APIFOOTBALL_API_KEY: SECRET_KEY,
+      APIFOOTBALL_API_BASE_URL: baseUrl,
+      APIFOOTBALL_LEAGUE_ID: "204"
+    });
+
+    assert.notEqual(result.code, 0, "yanlış lig kabul edilmemeli");
+    assert.ok(
+      /league-identity-mismatch/.test(result.stderr) || /Lig kimliği doğrulaması başarısız/.test(result.stderr),
+      `kimlik uyuşmazlığı bildirilmeli, stderr:\n${result.stderr}`
+    );
+
+    const teams = JSON.parse(fs.readFileSync(path.join(workspace, "data", "teams.json"), "utf8"));
+    const squads = JSON.parse(fs.readFileSync(path.join(workspace, "data", "super-lig-squads.json"), "utf8"));
+    assert.equal(teams.length, 0, "yanlış ligden takım yazılmamalı");
+    assert.equal(squads.length, 0, "yanlış ligden kadro yazılmamalı");
+  } finally {
+    await closeServer(server);
+    fs.rmSync(workspace, { recursive: true, force: true });
+  }
+}
+
 const tests = [
   testFullSyncPopulatesAllTeams,
+  testWrongLeagueWithRightTeamCountIsRejected,
   testMissingKeyBlocksAndWritesNothing,
   testWrongLeagueIdDoesNotSilentlyProduceEmptyData,
-  testSquadsFlowIntoCanonicalPlayerData
+  testSquadsFlowIntoCanonicalPlayerData,
+  testPreflightProbeReportsValidKeyAsAccepted,
+  testPreflightWritesCiGateOutput
 ];
 
 for (const test of tests) {

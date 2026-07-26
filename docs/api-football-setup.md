@@ -47,6 +47,24 @@ Birden fazla eşleşme çıkarsa ya da hiç çıkmazsa **tahmin edilmez**: çöz
 durur ve adaylar kimlikleriyle listelenir. Yanlış bir lig kimliği, kimliğin
 hiç olmamasından daha kötüdür.
 
+Kadınlar ligi, altyapı (U19/U21) ve play-off turnuvaları da adında "Süper Lig"
+taşıyabilir. Genişletilmiş arama bunları hiçbir koşulda seçmez — tek aday
+olarak kalsalar bile.
+
+### Yanlış lig kimliğine karşı üç katman
+
+Kimlik yalnızca doğru çözülmekle kalmaz, sonucu da denetlenir:
+
+1. **Kimlik doğrulaması.** Çekilen takım listesi, TFF fikstüründen bilinen on
+   sekiz Süper Lig takımıyla karşılaştırılır. Örtüşme %60'ın altındaysa sorun
+   "lig küçüldü" değil "yanlış ligi çektik"tir: yazma durur, hiçbir dosyaya
+   dokunulmaz. Bu, yanlış bir ligin *doğru sayıda* takım döndürdüğü durumu
+   yakalar — sayı koruması tek başına bunu göremez.
+2. **Önbellek kendini iptal eder.** Kimlik doğrulaması önbellekten gelen bir
+   kimlikle başarısız olursa önbellek silinir; sonraki koşu sıfırdan çözer.
+3. **Yeniden doğrulama penceresi.** Önbellek 30 günden eskiyse sağlayıcıya
+   yeniden sorulur. Yanlış çözülmüş bir kimlik depoya kalıcı olarak donmaz.
+
 ---
 
 ## 2. Nereye yazılır?
@@ -150,12 +168,17 @@ API-Football protokolünü konuşan yerel bir sunucu kurar; bu bir test
 çiftidir, siteye giden bir veri kaynağı değildir ve ürettiği hiçbir kayıt
 `data/` altına yazılmaz.
 
-- `scripts/test-api-football-config.mjs` — anahtar yokluğu, env önceliği,
-  otomatik çözümleme, önbellek kullanımı, belirsizlik, eşleşmeme, sağlayıcı
-  hatası, anahtar sızıntısı, sezon türetme.
-- `scripts/test-squad-sync-e2e.mjs` — gerçek senkron scriptini geçici bir
-  çalışma dizininde koşturur; 18 takımın ve kadrolarının yazıldığını,
-  yapılandırma eksikken hiçbir dosyaya dokunulmadığını ve anahtarın
-  stdout/stderr/dosyalara sızmadığını doğrular.
+- `scripts/test-api-football-config.mjs` (16 senaryo) — anahtar yokluğu, env
+  önceliği, otomatik çözümleme, önbellek kullanımı ve yeniden doğrulama,
+  belirsizlikte durma, eşleşmeme, sponsorlu ad, kadınlar/altyapı ligi
+  süzgeci, dar sorgu geri dönüşü, lig kimliği koruması, çalışma anında
+  önbellek okuma, sağlayıcı hatası, anahtar sızıntısı, sezon türetme.
+- `scripts/test-squad-sync-e2e.mjs` (6 senaryo) — gerçek senkron ve ön
+  kontrol scriptlerini geçici bir çalışma dizininde koşturur; 18 takımın ve
+  kadrolarının yazıldığını, canonical oyuncu verisine geçtiğini, yanlış bir
+  ligin *doğru sayıda* takım döndürdüğünde bile reddedildiğini, yapılandırma
+  eksikken hiçbir dosyaya dokunulmadığını, CI kapısının `ready=false`
+  yazdığını ve anahtarın stdout/stderr/dosyalara sızmadığını doğrular.
 
-İkisi de `npm test` zincirindedir.
+İkisi de `npm test` zincirindedir ve ortam değişkenine duyarlı testlerden
+önce koşarlar, böylece yerelde bir anahtar tanımlıyken de çalışırlar.
