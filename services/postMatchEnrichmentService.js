@@ -63,6 +63,22 @@ function hasValue(value) {
  * Bu yüzden eşleştirme muhafazakâr: iki takım adı da eşleşmeli VE skor
  * uyuşmalı. Skor, iki farklı maçı ayırt eden en güçlü bağımsız sinyal;
  * aynı gün aynı takımların iki maçı olmaz ama ad benzerliği yanıltabilir.
+ *
+ * KAYITTAKİ SAYISAL KİMLİK DE BİR İDDİADIR, KANIT DEĞİL.
+ *
+ * Bu modül ilk sürümünde `providerId` sayısalsa çözümlemeyi hiç yapmadan
+ * o kimliği kabul ediyordu. `goztepe-rudes-2026-07-26` kaydında elle
+ * girilmiş `2542013` kimliği sağlayıcının o tarihteki fikstür listesinde
+ * hiç yok; dört uç nokta da boş döndü ve maç, "yüksek güven" etiketiyle
+ * %0 kapsama bağlandı. Yani kayıt doğrulanmış görünürken aslında hiçbir
+ * şeye bağlı değildi — sessiz bir yanlış bağlama, gürültülü bir
+ * çözümsüzlükten daha zararlı.
+ *
+ * Artık kayıttaki kimlik de aynı kanıt eşiğinden geçiyor: sağlayıcının o
+ * tarihteki listesinde BULUNACAK, iki takım adı tutacak, tarih tutacak ve
+ * kürasyonda skor varsa skor da tutacak. Geçemezse kimlik REDDEDİLİR ve
+ * normal tarih+ad+skor yolu denenir; reddedilen kimliğe sessizce geri
+ * dönülmez.
  * ------------------------------------------------------------------ */
 
 /** Sağlayıcı ve kürasyon takım adlarını karşılaştırılabilir hâle getirir. */
@@ -92,6 +108,74 @@ function curatedScore(match) {
 }
 
 /**
+ * Bir tarih/zaman değerini Europe/Istanbul takvim gününe (YYYY-MM-DD)
+ * indirger. Kürasyon saatsiz tarih ("2026-07-17") de tutabiliyor, sağlayıcı
+ * ise her zaman offsetli ISO gönderiyor; ikisini aynı ölçeğe çekmeden
+ * karşılaştırmak, saat dilimi farkını "farklı maç" gibi okurdu.
+ */
+function istanbulDayKey(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return null;
+  // Saatsiz tarih zaten gün anahtarıdır; Date'e sokup UTC'ye kaydırmıyoruz.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return null;
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(parsed);
+}
+
+/**
+ * İki tarihin aynı karşılaşmaya ait olup olamayacağı. Bir günlük tolerans
+ * var: gece yarısını aşan başlama saatleri (23:45 TSİ) sağlayıcının UTC
+ * gününde bir gün öncesine düşebiliyor. İki gün ve üzeri fark artık aynı
+ * karşılaşma değildir.
+ */
+function datesMatch(left, right) {
+  const a = istanbulDayKey(left);
+  const b = istanbulDayKey(right);
+  if (!a || !b) return false;
+  if (a === b) return true;
+  const diff = Math.abs(Date.parse(`${a}T00:00:00Z`) - Date.parse(`${b}T00:00:00Z`));
+  return Number.isFinite(diff) && diff <= 24 * 60 * 60 * 1000;
+}
+
+/**
+ * Tek bir sağlayıcı fikstürünün kürasyonlu kayıtla aynı karşılaşma olup
+ * olmadığını denetler: takımlar, tarih ve (kürasyonda varsa) skor.
+ *
+ * @returns {{ok: boolean, reason: string}}
+ */
+function verifyFixtureAgainstMatch(match, fixture) {
+  const teams = (fixture && fixture.teams) || {};
+  if (!teamsMatch(match && match.homeTeam, teams.home && teams.home.name) ||
+    !teamsMatch(match && match.awayTeam, teams.away && teams.away.name)) {
+    return { ok: false, reason: "takım adları uyuşmuyor" };
+  }
+
+  const providerDate = ((fixture && fixture.fixture) || {}).date;
+  if (!datesMatch(match && match.kickoff, providerDate)) {
+    return { ok: false, reason: "tarih uyuşmuyor" };
+  }
+
+  const wanted = curatedScore(match);
+  if (wanted.home === null || wanted.away === null) {
+    // Kürasyonda skor yok: takım+tarih ile yetiniyoruz ama bunu güven
+    // seviyesinde saklamıyoruz (çağıran taraf "medium" olarak işaretliyor).
+    return { ok: true, reason: "takımlar ve tarih eşleşti; kürasyonda skor yok" };
+  }
+
+  const got = providerScore(fixture);
+  if (got.home !== wanted.home || got.away !== wanted.away) {
+    return { ok: false, reason: "skor uyuşmuyor" };
+  }
+  return { ok: true, reason: "takımlar, tarih ve skor eşleşti" };
+}
+
+function fixtureIdOf(candidate) {
+  const id = ((candidate && candidate.fixture) || {}).id;
+  return id === null || id === undefined || id === "" ? null : String(id);
+}
+
+/**
  * Kürasyonlu maçı sağlayıcı fikstür listesinden çözer.
  *
  * @returns {{fixtureId: string|null, confidence: string, reason: string}}
@@ -99,30 +183,73 @@ function curatedScore(match) {
 function resolveProviderFixture(match, candidates) {
   const list = Array.isArray(candidates) ? candidates : [];
 
-  // Zaten sayısal bir sağlayıcı kimliği varsa çözümlemeye gerek yok.
+  // 1. KAYITTAKİ SAYISAL KİMLİK — kabul değil, doğrulama konusu.
+  //
   // API-Football kimlikleri yalnızca rakamdır; başka sağlayıcıdan gelmiş
-  // bir kimlik (ör. TheSportsDB'nin harfli kimliği) bu uç noktada
-  // kullanılamaz ve çözümleme yine gerekir.
+  // harfli bir kimlik (ör. TheSportsDB) bu uç noktada zaten kullanılamaz.
+  // Sayısal olanı ise sağlayıcının o günkü listesinde bulup takım/tarih/skor
+  // ile sınıyoruz. Sınamayı geçemezse reddediliyor ve sebebi, çözümlemenin
+  // devamına taşınıyor: operatör hangi kimliğin neden atıldığını görmeli.
   const existing = String((match && match.providerId) || "").trim();
+  let rejectedNote = "";
+
   if (/^\d+$/.test(existing)) {
-    return { fixtureId: existing, confidence: "high", reason: "kayıtta sayısal sağlayıcı kimliği var" };
+    if (!list.length) {
+      // Doğrulayacak liste yok. "Doğrulanmadı" ile "yanlış" aynı şey değil;
+      // çağıran taraf tarih listesini çekip yeniden çözümlemeli.
+      return {
+        fixtureId: null,
+        confidence: "none",
+        reason: `kayıttaki ${existing} kimliği doğrulanmadı: sağlayıcı aday listesi yok`
+      };
+    }
+
+    const claimed = list.find((candidate) => fixtureIdOf(candidate) === existing);
+    if (!claimed) {
+      rejectedNote = `kayıttaki ${existing} kimliği REDDEDİLDİ (sağlayıcının o tarihteki listesinde yok)`;
+    } else {
+      const verdict = verifyFixtureAgainstMatch(match, claimed);
+      if (verdict.ok) {
+        const scored = curatedScore(match);
+        return {
+          fixtureId: existing,
+          confidence: scored.home === null || scored.away === null ? "medium" : "high",
+          reason: `kayıttaki kimlik doğrulandı: ${verdict.reason}`
+        };
+      }
+      rejectedNote = `kayıttaki ${existing} kimliği REDDEDİLDİ (${verdict.reason})`;
+    }
   }
 
+  // 2. NORMAL YOL — ad + tarih + skor.
+  //
+  // Reddedilen kimlik aday havuzundan ÇIKARILIYOR. Aksi hâlde kimlik
+  // doğrulamasında elenen fikstür, denetimi daha zayıf olan bu yoldan
+  // geri sızabilirdi: "reddet, sonra aynı şeyi başka kapıdan kabul et"
+  // sessiz geri dönüşün ta kendisi olurdu.
+  //
+  // Tarih denetimi burada da uygulanıyor. Aday listesi pratikte tek bir
+  // güne ait bir sorgudan geliyor ama çözümleyici çağıranın disiplinine
+  // güvenmemeli; doğruluğu kendi içinde taşımalı.
   const wanted = curatedScore(match);
   const nameMatches = list.filter((fixture) => {
+    if (rejectedNote && fixtureIdOf(fixture) === existing) return false;
     const teams = (fixture && fixture.teams) || {};
     return teamsMatch(match.homeTeam, teams.home && teams.home.name) &&
-      teamsMatch(match.awayTeam, teams.away && teams.away.name);
+      teamsMatch(match.awayTeam, teams.away && teams.away.name) &&
+      datesMatch(match && match.kickoff, ((fixture && fixture.fixture) || {}).date);
   });
 
+  const withNote = (reason) => (rejectedNote ? `${rejectedNote}; ${reason}` : reason);
+
   if (!nameMatches.length) {
-    return { fixtureId: null, confidence: "none", reason: "sağlayıcı listesinde takım eşleşmesi yok" };
+    return { fixtureId: null, confidence: "none", reason: withNote("sağlayıcı listesinde takım eşleşmesi yok") };
   }
 
   // Skor doğrulaması. Kürasyonda skor yoksa eşleştirme yapılmaz: tek
   // sinyalle (ad) bağlanmak, yanlış maça bağlanma riskini kabul etmek olur.
   if (wanted.home === null || wanted.away === null) {
-    return { fixtureId: null, confidence: "none", reason: "kürasyonlu skor yok; ad tek başına yeterli değil" };
+    return { fixtureId: null, confidence: "none", reason: withNote("kürasyonlu skor yok; ad tek başına yeterli değil") };
   }
 
   const scoreMatches = nameMatches.filter((fixture) => {
@@ -131,19 +258,22 @@ function resolveProviderFixture(match, candidates) {
   });
 
   if (scoreMatches.length === 1) {
-    const fixture = scoreMatches[0].fixture || {};
+    const fixtureId = fixtureIdOf(scoreMatches[0]);
+    if (!fixtureId) {
+      return { fixtureId: null, confidence: "none", reason: withNote("eşleşen adayda fikstür kimliği yok") };
+    }
     return {
-      fixtureId: fixture.id ? String(fixture.id) : null,
+      fixtureId,
       confidence: "high",
-      reason: "takım adları ve skor eşleşti"
+      reason: withNote("takım adları ve skor eşleşti")
     };
   }
 
   if (scoreMatches.length > 1) {
-    return { fixtureId: null, confidence: "none", reason: `belirsiz: ${scoreMatches.length} aday eşleşti` };
+    return { fixtureId: null, confidence: "none", reason: withNote(`belirsiz: ${scoreMatches.length} aday eşleşti`) };
   }
 
-  return { fixtureId: null, confidence: "none", reason: "takım eşleşti ama skor uyuşmadı" };
+  return { fixtureId: null, confidence: "none", reason: withNote("takım eşleşti ama skor uyuşmadı") };
 }
 
 /* ------------------------------------------------------------------ *
@@ -473,6 +603,8 @@ module.exports = {
   PROVIDER_NAME,
   isCompleted,
   teamsMatch,
+  datesMatch,
+  verifyFixtureAgainstMatch,
   resolveProviderFixture,
   normalizeEvents,
   normalizeGoals,

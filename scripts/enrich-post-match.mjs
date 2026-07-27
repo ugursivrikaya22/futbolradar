@@ -123,7 +123,10 @@ async function main() {
   console.log(`Tamamlanmış fikstür: ${completed.length}`);
 
   const next = { ...store };
-  const summary = { resolved: 0, unresolved: 0, enriched: 0, skippedCached: 0, refused: 0, failed: 0 };
+  const summary = {
+    resolved: 0, unresolved: 0, enriched: 0, skippedCached: 0,
+    refused: 0, failed: 0, rejectedIds: 0
+  };
   const unresolvedList = [];
 
   for (const match of completed) {
@@ -139,19 +142,37 @@ async function main() {
     console.log(`\n[${match.id}]`);
 
     // 1. Sağlayıcı kimliğini çöz.
+    //
+    // Kayıtta sayısal bir `providerId` OLSA BİLE tarih listesi çekiliyor:
+    // o kimlik artık doğrulanmadan kabul edilmiyor (bkz.
+    // postMatchEnrichmentService/resolveProviderFixture). Aday listesi
+    // olmadan doğrulama da yapılamaz, dolayısıyla liste her maç için
+    // gerekli. Ek maliyet yok denecek kadar az: `fetchWithCache` aynı
+    // tarihi paylaşan maçlar için tek çağrı yapıyor.
+    const date = String(match.kickoff || "").slice(0, 10);
     let resolution = resolveProviderFixture(match, []);
-    if (!resolution.fixtureId) {
-      const date = String(match.kickoff || "").slice(0, 10);
-      if (date) {
-        const candidates = await fetchSection(
-          "fikstür çözümlemesi",
-          "match-detail",
-          { date },
-          () => apiFootballProvider.getFixturesByDate({ date })
-        );
-        await sleep(PROVIDER_REQUEST_GAP_MS);
-        if (candidates.ok) resolution = resolveProviderFixture(match, candidates.data);
+    if (date) {
+      const candidates = await fetchSection(
+        "fikstür çözümlemesi",
+        "match-detail",
+        { date },
+        () => apiFootballProvider.getFixturesByDate({ date })
+      );
+      await sleep(PROVIDER_REQUEST_GAP_MS);
+      if (candidates.ok) {
+        resolution = resolveProviderFixture(match, candidates.data);
+        console.log(`  aday fikstür: ${Array.isArray(candidates.data) ? candidates.data.length : 0} (tarih ${date})`);
       }
+    }
+
+    // Kayıttaki kimlik doğrulamayı geçemediyse bunu ayrı bir satır olarak
+    // basıyoruz. Sebep zaten `resolution.reason` içinde ama kürasyon
+    // hatasının günlükte aranabilir tek bir etiketi olmalı: bu satır,
+    // "data/matches.json'daki providerId yanlış" demenin kısa yolu.
+    const curatedProviderId = String(match.providerId || "").trim();
+    if (/^\d+$/.test(curatedProviderId) && curatedProviderId !== resolution.fixtureId) {
+      summary.rejectedIds += 1;
+      console.log(`  KAYITTAKİ KİMLİK KULLANILMADI: ${curatedProviderId} → ${resolution.fixtureId || "çözülemedi"}`);
     }
 
     if (!resolution.fixtureId) {
@@ -234,7 +255,8 @@ async function main() {
 
   console.log(`\nÖzet: çözülen ${summary.resolved} · çözülemeyen ${summary.unresolved} · ` +
     `zenginleşen ${summary.enriched} · önbellekten atlanan ${summary.skippedCached} · ` +
-    `reddedilen ${summary.refused} · sağlayıcı hatası ${summary.failed}`);
+    `reddedilen ${summary.refused} · sağlayıcı hatası ${summary.failed} · ` +
+    `doğrulanamayan kayıt kimliği ${summary.rejectedIds}`);
 
   if (unresolvedList.length) {
     console.log("\nSağlayıcı kimliği çözülemeyen maçlar (kürasyonlu veri korunuyor):");

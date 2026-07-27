@@ -19,19 +19,44 @@ Kürasyonlu maçların çoğunda API-Football fikstür kimliği yok. Çözümlem
 **muhafazakâr**: yanlış maça bağlanmak, hiç bağlanmamaktan çok daha kötüdür
 — başka bir karşılaşmanın golleri ve dizilişi bu maçın raporuna yazılırdı.
 
+Her maç için önce o günün fikstür listesi çekilir (`/fixtures?date=`),
+sonra aşağıdaki sıra uygulanır:
+
 | Sıra | Koşul | Sonuç |
 | --- | --- | --- |
-| 1 | Kayıtta **sayısal** `providerId` var | Doğrudan kullanılır |
-| 2 | Tarih sorgusu + **iki takım adı** eşleşir **ve skor uyuşur** | Çözülür (`high`) |
-| 3 | Ad eşleşir, skor uyuşmaz | **Bağlanmaz** |
-| 4 | Kürasyonlu skor yok | **Bağlanmaz** (tek sinyal yetmez) |
-| 5 | Birden çok aday aynı skorla eşleşir | **Bağlanmaz** (belirsiz) |
+| 1 | Kayıtta **sayısal** `providerId` var, listede bulunuyor, **takımlar + tarih + skor** tutuyor | Kabul (`high`) |
+| 2 | Aynı, ama kürasyonda skor yok (takım + tarih tutuyor) | Kabul (`medium`) |
+| 3 | Kayıttaki kimlik listede **yok** ya da takım/tarih/skor **tutmuyor** | **REDDEDİLİR**, 4. adıma düşülür |
+| 4 | **İki takım adı** + **tarih** eşleşir **ve skor uyuşur** | Çözülür (`high`) |
+| 5 | Ad eşleşir, skor uyuşmaz | **Bağlanmaz** |
+| 6 | Kürasyonlu skor yok | **Bağlanmaz** (tek sinyal yetmez) |
+| 7 | Birden çok aday aynı skorla eşleşir | **Bağlanmaz** (belirsiz) |
+
+### Kayıttaki kimlik neden doğrulanıyor?
+
+`data/matches.json` içindeki `providerId` elle girilebiliyor ve **bir iddia,
+kanıt değil**. `goztepe-rudes-2026-07-26` kaydındaki `2542013` kimliği
+sağlayıcının o tarihteki 73 fikstürünün hiçbirine karşılık gelmiyordu; eski
+çözümleyici onu doğrulamadan "yüksek güven" ile kabul ediyor, dört uç nokta
+da boş dönüyor ve maç **%0 kapsamla doğrulanmış görünüyordu**. Sessiz bir
+yanlış bağlama, gürültülü bir çözümsüzlükten daha zararlıdır.
+
+3. adımda reddedilen kimlik aday havuzundan **çıkarılır**: doğrulamada
+elenen fikstürün denetimi daha zayıf olan 4. yoldan geri sızması, reddin
+kendisini anlamsız kılardı. Kuru koşu günlüğü bunu ayrı bir satırla basar:
+
+```
+KAYITTAKİ KİMLİK KULLANILMADI: 2542013 → 1598546
+```
 
 Harfli kimlikler (ör. TheSportsDB'nin `blx8udpk…` biçimi) API-Football
-fikstür kimliği sayılmaz; o kayıtlar da 2. adımdan geçer.
+fikstür kimliği sayılmaz; o kayıtlar doğrudan 4. adımdan geçer.
 
 Takım adı karşılaştırması ek/kısaltma toleranslıdır (`Beşiktaş` ↔
-`Besiktas JK`), ama tek başına asla yeterli değildir.
+`Besiktas JK`), ama tek başına asla yeterli değildir. Tarih karşılaştırması
+Europe/Istanbul takvim gününe indirgenir ve **bir gün** tolerans taşır —
+gece yarısını aşan başlama saatleri sağlayıcının UTC gününde bir gün
+öncesine düşebiliyor.
 
 ## Bölümler ve doldurma kuralı
 
@@ -104,8 +129,9 @@ iddiayı geri getirir.
   geçer (TTL, tek uçuş, 429'da bayat servis).
 - **Aralık:** çağrılar arasında 250 ms.
 
-Maç başına 4 çağrı (+ kimlik çözümlemesi gerekiyorsa 1). Dokuz tamamlanmış
-fikstür için ilk tam koşu ≈ 40 istek.
+Maç başına 4 çağrı + 1 kimlik doğrulaması. Tarih sorgusu önbellekten geçtiği
+için aynı güne düşen maçlar tek çağrıyı paylaşır. Dokuz tamamlanmış fikstür
+için ilk tam koşu ≈ 43 istek.
 
 ## Güvenlik kapıları
 
@@ -113,6 +139,7 @@ fikstür için ilk tam koşu ≈ 40 istek.
 | --- | --- |
 | Anahtar yok | Adıyla bildirilir, çıkış kodu 1, hiçbir dosya yazılmaz |
 | Kimlik çözülemedi | Maç atlanır, kürasyonlu rapor korunur, gerekçe listelenir |
+| **Kayıttaki `providerId` doğrulanamadı** | **Reddedilir**, aday havuzundan çıkarılır, günlüğe ayrı satır düşer |
 | **Dört uç noktanın dördü de hata verdi** | **Hiçbir şey yazılmaz** — kesinti, kapsam değildir |
 | Kapsam düştü | Yazma reddedilir, mevcut kayıt korunur |
 | Kürasyon müdahalesi var | Kapsam düşse bile yazılır (bilinçli karar) |
