@@ -157,6 +157,33 @@ jobs:
           APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
         run: node scripts/sync-match-results.mjs --apply
 
+      # MAÇ SONU ZENGİNLEŞTİRME — ŞİMDİLİK YALNIZCA KURU KOŞU.
+      #
+      # Bu adım BİLEREK `--apply` TAŞIMIYOR. Amacı veri yazmak değil,
+      # boru hattını gerçek kimlik doğrulamalı yanıtlarla KANITLAMAK:
+      # hangi kürasyonlu maç hangi sağlayıcı fikstürüne bağlanıyor, hangi
+      # bölüm doluyor, hangisi sağlayıcı kapsamı yüzünden boş kalıyor.
+      #
+      # Bağlama doğruluğu göz kontrolü gerektiriyor: yanlış fikstüre
+      # bağlanmak, başka bir karşılaşmanın gollerini ve dizilişini bu maçın
+      # raporuna yazmak demek. Çözümleme skor doğrulaması yapıyor ama
+      # kanıtı görmeden yazmaya geçmek, o kontrolü atlamak olurdu.
+      # Günlükler temiz çıktığında `--apply` ayrı bir kararla eklenir.
+      #
+      # Anahtar dışında env yok: maç sonu uç noktalarının hepsi fikstür
+      # kimliğiyle çalışıyor (/fixtures/events, /lineups, /statistics,
+      # /players), lig kimliği gerekmiyor.
+      #
+      # continue-on-error: diğer sağlayıcı adımlarıyla aynı gerekçe —
+      # kuru koşunun başarısızlığı hiçbir veriyi bozmaz ve site
+      # derlemesini durdurmamalı.
+      - name: Verify post-match enrichment (dry run, no writes)
+        if: steps.apifootball.outputs.ready == 'true'
+        continue-on-error: true
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
+        run: npm run enrich:post-match
+
       - name: Validate match analyses
         run: node scripts/validate-match-analyses.mjs
 
