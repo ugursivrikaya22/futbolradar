@@ -140,7 +140,15 @@ function playerPositionGroup(player) {
   if (source.includes("kaleci") || source.includes("goal")) return "kaleci";
   if (source.includes("def") || source.includes("stoper") || source.includes("bek") || source.includes("savun")) return "defans";
   if (source.includes("orta") || source.includes("mid")) return "orta saha";
-  if (source.includes("wing") || source.includes("kanat") || source.includes("forvet") || source.includes("santrfor") || source.includes("striker")) return "forvet";
+  // API-Football mevkiyi İngilizce kategoriyle gönderiyor ("Attacker",
+  // "Defender", "Midfielder", "Goalkeeper"). "attacker"/"forward" bu listede
+  // YOKTU: sağlayıcıdan gelen 125 hücumcu "diger" grubuna düşüyor ve 204
+  // kıyas sayfası tek analitik cümlesini "diger ve diger rolleri birlikte
+  // okunmalı" olarak basıyordu — içeriksiz bir satır. Eşleme, zaten var olan
+  // ve doğrulanmış veriyi yüzeye çıkarıyor; hiçbir şey uydurmuyor.
+  if (source.includes("wing") || source.includes("kanat") || source.includes("forvet")
+    || source.includes("santrfor") || source.includes("striker")
+    || source.includes("attack") || source.includes("forward")) return "forvet";
   return "diger";
 }
 

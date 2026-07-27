@@ -68,7 +68,15 @@ function playerPositionGroup(player) {
   if (source.includes("kaleci") || source.includes("goal")) return "kaleci";
   if (source.includes("def") || source.includes("stoper") || source.includes("bek") || source.includes("savun")) return "defans";
   if (source.includes("orta") || source.includes("mid")) return "orta saha";
-  if (source.includes("wing") || source.includes("kanat") || source.includes("forvet") || source.includes("santrfor") || source.includes("striker")) return "forvet";
+  // API-Football mevkiyi İngilizce kategoriyle gönderiyor ("Attacker",
+  // "Defender", "Midfielder", "Goalkeeper"). "attacker"/"forward" bu listede
+  // YOKTU: sağlayıcıdan gelen 125 hücumcu "diger" grubuna düşüyor ve 204
+  // kıyas sayfası tek analitik cümlesini "diger ve diger rolleri birlikte
+  // okunmalı" olarak basıyordu — içeriksiz bir satır. Eşleme, zaten var olan
+  // ve doğrulanmış veriyi yüzeye çıkarıyor; hiçbir şey uydurmuyor.
+  if (source.includes("wing") || source.includes("kanat") || source.includes("forvet")
+    || source.includes("santrfor") || source.includes("striker")
+    || source.includes("attack") || source.includes("forward")) return "forvet";
   return "diger";
 }
 
@@ -207,6 +215,25 @@ function buildPairs() {
  * Geçmeyen cümle hiç kurulmaz; yerine tire ya da "yakında" da basılmaz.
  */
 function fieldComparable(left, right, key) {
+  // KAYIT KAPISI + ALAN KAPISI — ikisi birden.
+  //
+  // İlk düzeltme yalnızca ALAN kapısını uyguluyordu ve kaydın kendisini
+  // sormuyordu. Sonuç 19 sayfada şuydu: iki mini kartın İKİSİ de
+  // data-player-verified="false" basılıyor ("Doğrulanmış kayıt bekleniyor"),
+  // ama aralarındaki Kıyas Özeti "X piyasa değeri okumasında daha güçlü
+  // sinyal veriyor" diyordu. Değerler mock-* sağlayıcı kimliği taşıyan eski
+  // kayıtlardan geliyordu: gerçek bir piyasa değerleri var ve oynanmışlık
+  // kanıtı taşıdıkları için statsAreVerified'ı geçiyorlar, ama kayıt kapısını
+  // GEÇEMİYORLAR.
+  //
+  // Bu bir zaman bombasıydı: istatistik senkronu 479 sağlayıcı kaydına
+  // statsVerifiedAt yazdığı anda, marketValueEur'u null olan o kayıtlarda
+  // Number(null) = 0 sonlu bir sayı olduğu için karşılaştırma açılıyor ve
+  // iddia 19 sayfadan ~1176 sayfaya yayılıyordu. Kapıyı senkron ÖNCESİNDE
+  // kapatmak, sonradan 1176 indekslenmiş sayfadan iddia geri çekmekten
+  // ölçülemeyecek kadar ucuz.
+  if (!publicPlayerView(left).verified) return false;
+  if (!publicPlayerView(right).verified) return false;
   if (!restrictedFieldIsPublishable(left, key)) return false;
   if (!restrictedFieldIsPublishable(right, key)) return false;
   const leftValue = Number(left[key]);
