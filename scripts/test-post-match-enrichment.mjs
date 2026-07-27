@@ -408,6 +408,35 @@ assert.ok(fs.existsSync(overridesPath), "kürasyon geçersiz kılma dosyası bul
 const overrides = JSON.parse(fs.readFileSync(overridesPath, "utf8"));
 assert.ok(Array.isArray(overrides._readme), "geçersiz kılma dosyası kullanım notu taşımalı");
 
+/* ------------------------------------------------------------------ *
+ * 10. KÜRASYONLU KİMLİK, SAĞLAYICI TARAFINDAN ÇÖZÜLENLE ÇELİŞEMEZ
+ *
+ * `goztepe-rudes-2026-07-26` kaydı iki kimlik taşıyordu: elle girilmiş
+ * eski `providerId: "2542013"` ve backfill adımının sağlayıcıdan çözüp
+ * yazdığı `providerIds.apiFootball: "1598546"`. İkisi çelişiyordu ve
+ * çelişki hiçbir yerde alarm üretmiyordu — zenginleştirme eski alanı
+ * okuyup boş bir fikstüre bağlanıyor, kayıt "%0 kapsam" diye
+ * görünüyordu.
+ *
+ * `withProviderId` çakışan bir değeri ASLA ezmediği için isim alanlı
+ * kimlik sağlayıcı doğrulamasının kalıcı kaydıdır. Eski alan ondan
+ * sapıyorsa sapan taraf eski alandır. Bu tek iddia, düzeltilen kimliğin
+ * sessizce geri dönmesini engelliyor.
+ * ------------------------------------------------------------------ */
+
+const { isApiFootballId } = require("../services/providerIdentityService.js");
+const curatedMatches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
+
+assert.deepEqual(
+  curatedMatches
+    .filter((match) => isApiFootballId(match.providerId) &&
+      match.providerIds && match.providerIds.apiFootball &&
+      String(match.providerIds.apiFootball) !== String(match.providerId))
+    .map((match) => `${match.id}: providerId=${match.providerId} ≠ providerIds.apiFootball=${match.providerIds.apiFootball}`),
+  [],
+  "kürasyonlu providerId, sağlayıcıdan çözülmüş providerIds.apiFootball ile çelişemez"
+);
+
 /**
  * SAYFA RENDER ENTEGRASYONU BU DEĞİŞİKLİĞE DAHİL DEĞİL.
  *
