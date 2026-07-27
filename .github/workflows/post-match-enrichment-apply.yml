@@ -1,0 +1,131 @@
+name: Post-Match Enrichment Apply (guarded, manual only)
+
+# TEK YAZMA YOLU — ve elle açılan tek kapı.
+#
+# `scripts/enrich-post-match.mjs --apply` bu depoda veri yazan tek
+# zenginleştirme komutu. Match Analysis Automation iş akışı onu BİLEREK
+# yalnızca kuru koşu olarak çağırıyor; yazma yetkisi oraya hiç
+# verilmedi çünkü o iş akışı günde iki kez ve beş dakikada bir
+# kendiliğinden çalışıyor.
+#
+# Bu dosya ayrı durmasının sebebi tam olarak bu: burada `schedule` YOK,
+# `push` YOK, `pull_request` YOK. Tek tetikleyici `workflow_dispatch` ve
+# o da onay dizesi olmadan hiçbir şey yapmıyor. Yanlışlıkla çalıştırmak
+# için önce bu dosyaya bir tetikleyici eklemek gerekir.
+#
+# Zincir, her halkası gerçek bir kapı olacak şekilde sıralı:
+#
+#   onay dizesi → preflight (--probe) → kuru koşu → kapı denetimi
+#   → apply → üretilen JSON denetimi → dosya kapsamı denetimi
+#   → yalnızca automation/* dalına commit
+#
+# Herhangi bir halka düşerse iş akışı orada durur ve hiçbir şey
+# push edilmez. `main`'e ASLA yazılmaz: çıktı her zaman koşu kimliğiyle
+# adlandırılmış bir automation dalına gider, oradan gözden geçirmeye.
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Yazmayı onaylamak için tam olarak APPLY_VERIFIED_POST_MATCH_7 yazın. Başka her değer koşuyu no-op yapar."
+        required: true
+        default: ""
+
+# Yalnızca automation dalını push etmek için. Bu iş akışı main'e yazmaz.
+permissions:
+  contents: write
+
+concurrency:
+  group: post-match-enrichment-apply
+  cancel-in-progress: false
+
+jobs:
+  apply-post-match-enrichment:
+    runs-on: ubuntu-latest
+    # ONAY KAPISI. Dize birebir eşleşmezse iş HİÇ başlamaz — adımlar
+    # atlanmaz, iş kurulmaz bile. Boş dispatch (varsayılan "") burada durur.
+    if: github.event.inputs.confirm == 'APPLY_VERIFIED_POST_MATCH_7'
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # PREFLIGHT GERÇEK BİR KAPI: continue-on-error YOK.
+      # --probe olmadan yalnızca anahtarın varlığı doğrulanırdı; iptal
+      # edilmiş ya da kotası dolmuş bir anahtar kapıyı açar, kuru koşu
+      # boş döner ve "kapsam düştü" gibi görünürdü. Sağlayıcıya gerçekten
+      # sorup cevabı doğruluyoruz.
+      - name: Preflight API-Football configuration
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
+          APIFOOTBALL_LEAGUE_ID: ${{ secrets.APIFOOTBALL_LEAGUE_ID }}
+          APIFOOTBALL_SEASON: ${{ secrets.APIFOOTBALL_SEASON }}
+        run: node scripts/preflight-api-football.mjs --resolve --probe
+
+      # 1. KURU KOŞU — hiçbir şey yazmaz, çıktısı kapının girdisi olur.
+      - name: Dry run (no writes)
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
+        run: |
+          set -o pipefail
+          npm run enrich:post-match 2>&1 | tee dry-run.log
+
+      # 2. KAPI — kuru koşu çıktısı taban çizgisini karşılıyor mu?
+      #    Bağlamalar, maç başına kapsam, bölüm tablosu, dolu/eksik
+      #    toplamları, dışlanan iki maç ve yasaklı fikstür kimliği.
+      - name: Gate check (dry run output)
+        run: node scripts/verify-enrichment-gate.mjs --log=dry-run.log
+
+      # 3. YAZMA — buraya yalnızca yukarıdaki dört kapı da açıksa gelinir.
+      - name: Apply enrichment
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
+        run: node scripts/enrich-post-match.mjs --apply
+
+      # 4. ÜRETİLEN JSON aynı ölçütten bir kez daha geçer. Kuru koşu ile
+      #    yazma arasında sağlayıcı cevabı değişmiş olabilir; kapıyı
+      #    yalnızca yazımdan önce kontrol etmek bu aralığı kör bırakırdı.
+      - name: Gate check (written store)
+        run: node scripts/verify-enrichment-gate.mjs --store=data/match-enrichment.json
+
+      # 5. DOSYA KAPSAMI. Bu koşunun tek meşru çıktısı
+      #    data/match-enrichment.json. Başka herhangi bir dosya
+      #    değiştiyse (kadro, oyuncu, ticker, üretilmiş HTML) bir yerde
+      #    beklenmeyen bir yan etki var demektir ve commit edilmez.
+      - name: Verify only the enrichment store changed
+        run: |
+          CHANGED="$(git status --porcelain | awk '{print $2}' | sort | tr '\n' ' ' | sed 's/ $//')"
+          echo "Değişen dosyalar: ${CHANGED:-<yok>}"
+          if [ "$CHANGED" != "data/match-enrichment.json" ]; then
+            echo "::error::Beklenen tek dosya data/match-enrichment.json; bulunan: ${CHANGED:-<yok>}"
+            exit 1
+          fi
+
+      # 6. Yalnızca automation dalına, yalnızca o tek dosya.
+      #    `git add -A` KULLANILMIYOR: yol açıkça yazılıyor ki ileride
+      #    ortaya çıkacak bir yan etki sessizce commit'e giremesin.
+      - name: Commit to automation branch
+        run: |
+          BRANCH="automation/post-match-enrichment-${{ github.run_id }}"
+          git config user.name "ugursivrikaya22"
+          git config user.email "295430257+ugursivrikaya22@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add data/match-enrichment.json
+          git commit -m "data(post-match): ilk doğrulanmış zenginleştirme deposu (koşu ${{ github.run_id }})"
+          git push -u origin "$BRANCH"
+          echo "::notice::Veri dalı hazır: $BRANCH — gözden geçirme için PR açılabilir."
+
+      - name: Upload enrichment store artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: match-enrichment-${{ github.run_id }}
+          path: data/match-enrichment.json
+          if-no-files-found: error
