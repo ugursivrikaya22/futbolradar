@@ -20,6 +20,30 @@ const { buildMatchReport } = require("../services/matchReportService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 const { buildPostMatchIntelligence } = require("../services/postMatchIntelligence.js");
+const { enrichmentSection } = require("../services/postMatchEnrichmentView.js");
+
+/**
+ * Sağlayıcı zenginleştirme deposu — SALT OKUNUR.
+ *
+ * Dosya `scripts/enrich-post-match.mjs --apply` tarafından yazılıyor ve
+ * henüz hiç yazılmadı. Yokluğu bir hata değil, normal durum: o zaman
+ * hiçbir rapora zenginleştirme bölümü eklenmiyor. Bu script dosyayı
+ * asla yazmaz, yalnızca okur.
+ */
+function readEnrichmentStore() {
+  const storePath = path.join(root, "data", "match-enrichment.json");
+  if (!fs.existsSync(storePath)) return {};
+  try {
+    const parsed = JSON.parse(fs.readFileSync(storePath, "utf8"));
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch (error) {
+    // Bozuk depo sayfayı çökertmemeli; bölüm açılmaz, sebep günlüğe düşer.
+    console.warn(`[post-match] match-enrichment.json okunamadı: ${error.message}`);
+    return {};
+  }
+}
+
+const enrichmentStore = readEnrichmentStore();
 
 const fixturePool = curatedMatches();
 const finished = matches
@@ -387,6 +411,12 @@ function pageHtml(report, match) {
   const summary = report.sections.summary;
   const lead = summary.status === "ready" ? summary.paragraph : (match.summary || "Maç verisi doğrulandıkça bu rapor genişler.");
 
+  // Boşken TEK BAYT bile eklemiyoruz: boş bir interpolasyon, deponun hiç
+  // yazılmadığı bugünkü durumda yirmi HTML dosyasına boş satır farkı
+  // basardı — anlamsız üretim gürültüsü.
+  const enrichmentHtml = enrichmentSection(enrichmentStore[match.id] || null);
+  const enrichmentBlock = enrichmentHtml ? `\n\n      ${enrichmentHtml}` : "";
+
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -493,7 +523,7 @@ function pageHtml(report, match) {
       <section class="post-match-section" aria-labelledby="rapor-istatistik">
         <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-istatistik">İstatistik analizi</h2><p>${escapeHtml(match.homeTeam)} ve ${escapeHtml(match.awayTeam)} verilerinin karşılaştırmalı okuması.</p></div></div>
         ${statisticsSection(report, match)}
-      </section>
+      </section>${enrichmentBlock}
 
       <section class="post-match-section" aria-labelledby="rapor-taktik">
         <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-taktik">Taktik değerlendirme</h2><p>Diziliş, oyun kontrolü ve müdahalelerin veriye dayalı okuması.</p></div></div>

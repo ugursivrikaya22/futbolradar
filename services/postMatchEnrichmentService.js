@@ -541,8 +541,29 @@ function buildEnrichment(match, bundle = {}, options = {}) {
     filledSections: filled,
     totalSections: SECTION_KEYS.length,
     coverage,
-    // Eşikler rapor katmanıyla aynı doktrini izliyor.
-    dataStatus: coverage >= 70 ? "complete" : coverage > 0 ? "partial" : "unavailable",
+    /**
+     * "TAM" DEMEK, EKSİK BÖLÜM YOK DEMEKTİR.
+     *
+     * Bu alan önce rapor katmanının yüzdelik eşiğini (`coverage >= 70`)
+     * kopyalıyordu. Sonuç, kendi kendisiyle çelişen bir kayıttı:
+     * Beşiktaş–Midtjylland %83 ile "complete" damgası alıyor, aynı kayıt
+     * `partialMessage` alanında "Oyuncu istatistikleri bekleniyor" diyordu.
+     * `dataStatus === "complete"` kontrolüne bakan bir tüketici, o mesajı
+     * gizlemekte haklı olurdu — ve sayfa, ölçülmemiş bir bölümü ölçülmüş
+     * gibi göstermiş olurdu.
+     *
+     * Yüzdelik eşik burada zaten yanlış araçtı: altı bölümün üçü
+     * (`summary`, `goals`, `events`) TEK bir uç noktadan türüyor, yani
+     * yüzde bağımsız sinyalleri saymıyor. Eşiği ayarlamak yerine
+     * kaldırdık: "complete" artık yalnızca ALTI bölüm de doluyken
+     * veriliyor. `coverage` sayısı ayrımı zaten taşıyor, `partialMessage`
+     * da neyin eksik olduğunu adıyla söylüyor; hiçbir bilgi kaybolmuyor.
+     *
+     * Değişmez: `dataStatus === "complete"` ⟺ `partialMessage === null`.
+     */
+    dataStatus: filled === SECTION_KEYS.length
+      ? "complete"
+      : filled > 0 ? "partial" : "unavailable",
     observedAt,
     // Kısmi kapsamda okuyucuya gösterilecek tek cümle.
     partialMessage: coverage === 100

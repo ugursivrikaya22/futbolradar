@@ -307,6 +307,72 @@ assert.equal(partial.sections.lineups.status, "awaiting");
 assert.equal(partial.sections.lineups.value, null, "boş bölüm değer taşımamalı");
 assert.ok(partial.sections.lineups.message, "boş bölüm sessiz kalmamalı");
 
+/* --- 5a. %70–99 BANDI: "TAM" DEĞİLDİR ---------------------------------
+ *
+ * `dataStatus` bir dönem rapor katmanının yüzdelik eşiğini kopyalıyordu
+ * (`coverage >= 70 → complete`). Beşiktaş–Midtjylland kaydı %83 ile
+ * "complete" damgası alıyor ama aynı kayıt `partialMessage` alanında
+ * "Oyuncu istatistikleri bekleniyor" diyordu — kendi kendisiyle çelişen
+ * bir kayıt. `dataStatus === "complete"` kontrolüne bakan bir tüketici o
+ * mesajı gizlemekte haklı olurdu.
+ *
+ * Bu banda ait hiçbir test yoktu; sınıflandırma denetimsizdi. Aşağıdaki
+ * süpürme her ulaşılabilir dolu-bölüm sayısını sabitliyor ve tek bir
+ * değişmezi kilitliyor: "complete" ⟺ eksik bölüm yok.
+ * ------------------------------------------------------------------- */
+
+const eventPayload = [{ time: { elapsed: 21 }, type: "Goal", detail: "Normal Goal", team: { name: "G" }, player: { name: "A" } }];
+const cardOnlyPayload = [{ time: { elapsed: 60 }, type: "Card", detail: "Yellow Card", team: { name: "G" }, player: { name: "A" } }];
+const lineupPayload = [{ team: { name: "G" }, startXI: Array.from({ length: 11 }, (_, i) => ({ player: { name: `P${i}` } })), substitutes: [] }];
+const teamStatsPayload = [
+  { team: { name: "G" }, statistics: [{ type: "Ball Possession", value: "62%" }] },
+  { team: { name: "R" }, statistics: [{ type: "Ball Possession", value: "38%" }] }
+];
+const playerStatsPayload = [{ team: { name: "G" }, players: [{ player: { id: 1, name: "A" }, statistics: [{ games: { minutes: 90 } }] }] }];
+
+const BAND_CASES = [
+  { label: "hiç veri", bundle: {}, filled: 0, coverage: 0, status: "unavailable" },
+  // Kart var gol yok: özet ve olaylar dolu, goller boş kalıyor.
+  { label: "yalnızca kart", bundle: { events: cardOnlyPayload }, filled: 2, coverage: 33, status: "partial" },
+  { label: "yalnızca olaylar", bundle: { events: eventPayload }, filled: 3, coverage: 50, status: "partial" },
+  { label: "olaylar + diziliş", bundle: { events: eventPayload, lineups: lineupPayload }, filled: 4, coverage: 67, status: "partial" },
+  // %83 — eski eşiğin "complete" dediği bant. Beşiktaş–Midtjylland bu.
+  { label: "oyuncu istatistiği hariç hepsi", bundle: { events: eventPayload, lineups: lineupPayload, teamStats: teamStatsPayload }, filled: 5, coverage: 83, status: "partial" },
+  { label: "altı bölüm de dolu", bundle: { events: eventPayload, lineups: lineupPayload, teamStats: teamStatsPayload, playerStats: playerStatsPayload }, filled: 6, coverage: 100, status: "complete" }
+];
+
+for (const testCase of BAND_CASES) {
+  const record = buildEnrichment(curated, testCase.bundle, { fixtureId: "111" });
+  assert.equal(record.filledSections, testCase.filled, `${testCase.label}: dolu bölüm sayısı`);
+  assert.equal(record.coverage, testCase.coverage, `${testCase.label}: kapsam`);
+  assert.equal(record.dataStatus, testCase.status, `${testCase.label}: %${record.coverage} için durum`);
+
+  const awaiting = SECTION_KEYS.filter((key) => record.sections[key].status !== "ready");
+
+  // DEĞİŞMEZ: "complete" ⟺ eksik bölüm yok ⟺ kısmi mesaj yok.
+  assert.equal(
+    record.dataStatus === "complete",
+    awaiting.length === 0,
+    `${testCase.label}: "complete" yalnızca eksik bölüm yokken verilmeli`
+  );
+  assert.equal(
+    record.dataStatus === "complete",
+    record.partialMessage === null,
+    `${testCase.label}: "complete" ile kısmi mesaj bir arada bulunamaz`
+  );
+}
+
+// %70–99 bandı ADIYLA sabitleniyor: eski eşiğin yanlış sınıfladığı tek durum.
+const band83 = buildEnrichment(curated, {
+  events: eventPayload, lineups: lineupPayload, teamStats: teamStatsPayload
+}, { fixtureId: "1556543" });
+assert.equal(band83.coverage, 83);
+assert.equal(band83.dataStatus, "partial", "%83 'complete' sayılmamalı — oyuncu istatistikleri eksik");
+assert.ok(/Oyuncu istatistikleri/.test(band83.partialMessage), "eksik bölüm adıyla bildirilmeli");
+assert.equal(band83.sections.playerStats.status, "awaiting");
+assert.equal(band83.sections.playerStats.value, null);
+assert.equal(band83.sections.playerStats.provenance, null, "boş bölüm sağlayıcı kökeni taşımamalı");
+
 // Hiç veri yok: bölümler gizlenmez, tek cümlelik açıklama basılır.
 const empty = buildEnrichment(curated, {}, {});
 assert.equal(empty.coverage, 0);
@@ -409,6 +475,85 @@ const overrides = JSON.parse(fs.readFileSync(overridesPath, "utf8"));
 assert.ok(Array.isArray(overrides._readme), "geçersiz kılma dosyası kullanım notu taşımalı");
 
 /* ------------------------------------------------------------------ *
+ * 9a. SUNUM KATMANI — depo artık OKUNUYOR
+ *
+ * `data/match-enrichment.json` bugüne kadar hiçbir yerde okunmuyordu;
+ * yazıcısı, testi ve dokümanı dışında dosyaya dokunan yoktu. Yazılsa
+ * bile hiçbir sayfaya ulaşmayacaktı. Bu bölüm sunum sözleşmesini
+ * kilitliyor.
+ * ------------------------------------------------------------------ */
+
+const view = require("../services/postMatchEnrichmentView.js");
+
+// KAYIT YOKSA BÖLÜM DE YOK. Zenginleştirilmemiş maçta boş kutu açılmaz:
+// veri gelmedi değil, İSTENMEDİ.
+assert.equal(view.enrichmentSection(null), "", "kayıt yoksa bölüm basılmamalı");
+assert.equal(view.enrichmentSection(undefined), "", "tanımsız kayıt bölüm açmamalı");
+assert.equal(view.enrichmentSection({}), "", "bölümsüz kayıt bölüm açmamalı");
+
+const renderedFull = view.enrichmentSection(full);
+const renderedPartial = view.enrichmentSection(band83);
+
+// Dolu kayıt: durum, kapsam ve fikstür kimliği görünür.
+assert.match(renderedFull, /Doğrulanmış maç sonu verisi/, "başlık basılmalı");
+assert.match(renderedFull, /data-enrichment-status="complete"/);
+assert.match(renderedFull, /6\/6 bölüm \(%100\)/, "kapsam sayısı basılmalı");
+assert.match(renderedFull, /API-Football fikstür kimliği: 111/);
+
+// DOLU BÖLÜM KÖKENİNİ TAŞIR.
+for (const key of SECTION_KEYS) {
+  assert.match(renderedFull, new RegExp(`data-section="${key}" data-status="ready"`), `${key} dolu olarak işaretlenmeli`);
+}
+assert.match(renderedFull, /enrichment-provenance/, "dolu bölüm köken satırı taşımalı");
+assert.match(renderedFull, /API-Football/, "sağlayıcı adı yazılmalı");
+
+// EKSİK BÖLÜM SAYI TAŞIMAZ — %83 kaydında oyuncu istatistikleri eksik.
+assert.match(renderedPartial, /data-section="playerStats" data-status="awaiting"/);
+assert.match(renderedPartial, /Oyuncu istatistikleri/, "eksik bölüm adıyla anılmalı");
+assert.match(renderedPartial, /enrichment-partial/, "kısmi mesaj basılmalı");
+assert.doesNotMatch(renderedPartial, /data-enrichment-status="complete"/, "%83 'complete' olarak render edilmemeli");
+
+/**
+ * "0", ÖLÇÜM İDDİASIDIR.
+ *
+ * Eksik bölümün satırında hiçbir rakam bulunamaz: "0 oyuncu" yazmak,
+ * sağlayıcı oyuncu verisi göndermediğinde "hiç oyuncu oynamadı" gibi
+ * okunur. Aşağıdaki kontrol eksik satırları ayıklayıp içlerinde rakam
+ * arıyor.
+ */
+const awaitingRows = renderedPartial.match(/<li class="enrichment-row is-awaiting"[\s\S]*?<\/li>/g) || [];
+assert.ok(awaitingRows.length >= 1, "eksik bölüm satırı bulunmalı");
+for (const row of awaitingRows) {
+  const body = row.replace(/data-section="[^"]*"/g, "").replace(/data-status="[^"]*"/g, "");
+  assert.doesNotMatch(body, /\d/, `eksik bölüm satırı rakam taşımamalı: ${body.slice(0, 120)}`);
+  assert.doesNotMatch(body, /enrichment-provenance/, "eksik bölüm sağlayıcı kökeni taşımamalı");
+}
+
+// Ölçülemeyen büyüklük için rakam UYDURULMAZ.
+assert.equal(view.measuredCount("teamStats", { statistics: [] }), null, "boş istatistik satırı sayı basmamalı");
+assert.equal(view.measuredCount("playerStats", []), null, "oyuncusuz kayıt sayı basmamalı");
+assert.equal(view.measuredCount("summary", { basis: "events" }), null, "özet sayılabilir büyüklük taşımaz");
+assert.equal(view.measuredCount("events", [{ minute: 1 }]), "1 olay");
+
+// HTML kaçışı: sağlayıcı metni ham basılmaz.
+const injected = view.enrichmentSection({
+  ...band83,
+  partialMessage: '<script>alert("x")</script>'
+});
+assert.doesNotMatch(injected, /<script>/, "sağlayıcı metni kaçışsız basılmamalı");
+
+// ÜRETİCİ BAĞLANTISI: depo salt okunur biçimde okunmalı ve sayfaya girmeli.
+const generator = fs.readFileSync(path.join(root, "scripts", "generate-post-match-pages.mjs"), "utf8");
+assert.match(generator, /enrichmentSection\(enrichmentStore\[match\.id\] \|\| null\)/, "bölüm sayfaya eklenmeli");
+assert.match(generator, /readEnrichmentStore/, "depo okuyucusu bulunmalı");
+assert.match(generator, /if \(!fs\.existsSync\(storePath\)\) return \{\}/, "dosya yokken üretim durmamalı");
+assert.doesNotMatch(
+  generator,
+  /writeFileSync\([^)]*match-enrichment/,
+  "üretici zenginleştirme deposuna YAZMAMALI — salt okunur"
+);
+
+/* ------------------------------------------------------------------ *
  * 10. KÜRASYONLU KİMLİK, SAĞLAYICI TARAFINDAN ÇÖZÜLENLE ÇELİŞEMEZ
  *
  * `goztepe-rudes-2026-07-26` kaydı iki kimlik taşıyordu: elle girilmiş
@@ -451,4 +596,5 @@ assert.deepEqual(
 console.log(`OK maç sonu zenginleştirme · ${SECTION_KEYS.length} bölüm · ` +
   "kimlik çözümlemesi (kayıttaki kimlik dahil takım+tarih+skor doğrulamalı), " +
   "ölçülmüş alan süzgeci, kürasyon geçersiz kılma, kısmi mesaj, " +
+  "dataStatus bandı (%70–99 'tam' değildir), salt okunur sayfa entegrasyonu, " +
   "yazma güvenliği (kuru koşuda sıfır yazma), kesinti ayrımı");
