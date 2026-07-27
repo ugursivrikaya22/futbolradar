@@ -853,6 +853,50 @@ async function getFixtureStatistics(query) {
   return responseItems(payload);
 }
 
+/**
+ * MAÇ BAZINDA OYUNCU İSTATİSTİĞİ (/fixtures/players).
+ *
+ * Maç sonu zenginleştirmesinin eksik ayağıydı: olaylar, dizilişler ve takım
+ * istatistikleri için uç nokta vardı, oyuncu istatistiği için yoktu. Bu uç
+ * nokta oyuncu başına dakika, gol, asist, şut, pas, ikili mücadele ve
+ * SAĞLAYICININ ÖLÇTÜĞÜ maç derecesini döndürüyor.
+ *
+ * Ham yanıt takım -> oyuncu listesi biçiminde; normalleştirme
+ * postMatchEnrichmentService tarafında yapılıyor çünkü yayın kapısı orada.
+ */
+async function getFixturePlayers(query) {
+  const fixtureId = query && query.fixtureId;
+  if (!fixtureId) {
+    throw new ProviderError("PROVIDER_QUERY_MISSING", "Mac oyuncu istatistigi icin fixtureId query gerekli.");
+  }
+
+  const payload = await providerFetch("/fixtures/players", { fixture: fixtureId });
+  return responseItems(payload);
+}
+
+/**
+ * Bir tarihteki fikstürleri döndürür — kimlik ÇÖZÜMLEMESİ için.
+ *
+ * Kürasyonlu maçların çoğunda sağlayıcı kimliği yok (9 tamamlanmış maçın
+ * 7'sinde). Zenginleştirme yapabilmek için önce o kimliği bulmak gerekiyor:
+ * tarih + iki takım adı ile eşleştirme. Ham fikstür nesnesi döndürülüyor
+ * çünkü eşleştirici takım adlarının yanı sıra skoru da doğrulama için
+ * kullanıyor.
+ */
+async function getFixturesByDate(query) {
+  const date = query && query.date;
+  if (!date) {
+    throw new ProviderError("PROVIDER_QUERY_MISSING", "Fikstür çözümlemesi için date query gerekli.");
+  }
+
+  const payload = await providerFetch("/fixtures", compactParams({
+    date,
+    league: query.league || undefined,
+    season: query.season || undefined
+  }));
+  return responseItems(payload);
+}
+
 function normalizeFixtureLineups(items) {
   return (Array.isArray(items) ? items : []).map((item) => ({
     team: teamName(item.team),
@@ -1255,6 +1299,8 @@ module.exports = {
   getLineups,
   getFixtureEvents,
   getFixtureStatistics,
+  getFixturePlayers,
+  getFixturesByDate,
   getPredictions,
   getMatchDetail,
   normalizeFixture,

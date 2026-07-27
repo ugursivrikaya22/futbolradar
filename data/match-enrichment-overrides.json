@@ -1,0 +1,31 @@
+{
+  "_readme": [
+    "MANUEL KÜRASYON GEÇERSİZ KILMA — maç sonu zenginleştirmesi.",
+    "",
+    "Bu dosyadaki bir bölüm, sağlayıcıdan gelen aynı bölümü EZER ve sayfada",
+    "kaynağı 'FutbolRadar kürasyon (manuel)' olarak işaretlenir.",
+    "",
+    "Ne zaman kullanılır: sağlayıcı ölçülebilir biçimde yanlış veri gönderdiğinde",
+    "(yanlış gol dakikası, eksik oyuncu, hatalı diziliş). Alternatif, yanlış veriyi",
+    "yayımlamak olurdu.",
+    "",
+    "Ne zaman KULLANILMAZ: veri eksik diye doldurmak için. Eksik bölüm 'veri",
+    "bekleniyor' olarak kalır; buraya elle uydurulmuş değer girmek, sitenin",
+    "tamamında kaldırılan doğrulanmamış iddiayı geri getirir.",
+    "",
+    "Biçim: { \"<match-id>\": { \"<section>\": <value> } }",
+    "Bölümler: summary, goals, events, lineups, teamStats, playerStats",
+    "Değer şekli, services/postMatchEnrichmentService.js normalleştiricilerinin",
+    "çıktısıyla aynı olmalı (bkz. docs/post-match-enrichment.md).",
+    "",
+    "Örnek:",
+    "  \"goztepe-rudes-2026-07-26\": {",
+    "    \"events\": [",
+    "      { \"minute\": 21, \"type\": \"Goal\", \"detail\": \"Normal Goal\",",
+    "        \"team\": \"Göztepe\", \"player\": \"Ege Yıldırım\" }",
+    "    ]",
+    "  }",
+    "",
+    "Bu dosyada '_' ile başlayan anahtarlar yok sayılır."
+  ]
+}
