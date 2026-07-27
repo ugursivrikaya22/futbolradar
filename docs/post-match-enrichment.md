@@ -95,6 +95,47 @@ Sayfa iki katmanda bildirir:
 
 Kapsam yüzdesi `data-enrichment-coverage` olarak da basılır.
 
+### `dataStatus`: "tam", eksik bölüm yok demektir
+
+| Durum | Koşul |
+| --- | --- |
+| `complete` | **Altı bölümün altısı da dolu** |
+| `partial` | En az bir bölüm dolu, en az biri eksik |
+| `unavailable` | Hiçbir bölüm dolu değil |
+
+Bu alan bir dönem rapor katmanının yüzdelik eşiğini (`coverage >= 70`)
+kopyalıyordu. Sonuç kendi kendisiyle çelişen bir kayıttı:
+Beşiktaş–Midtjylland %83 ile `complete` damgası alıyor, aynı kayıt
+`partialMessage` alanında "Oyuncu istatistikleri bekleniyor" diyordu.
+`dataStatus === "complete"` kontrolüne bakan bir tüketici o mesajı
+gizlemekte haklı olurdu — ve sayfa ölçülmemiş bir bölümü ölçülmüş gibi
+gösterirdi.
+
+Yüzdelik eşik burada zaten yanlış araçtı: altı bölümün üçü (`summary`,
+`goals`, `events`) **tek bir uç noktadan** (`/fixtures/events`) türüyor.
+Yani `coverage` bağımsız sinyalleri saymıyor; dört uç noktanın katkısı
+3/1/1/1. "%50 kapsam" pratikte "dört uç noktadan biri veri döndürdü"
+demek.
+
+Değişmez: `dataStatus === "complete"` ⟺ `partialMessage === null`.
+%70–99 bandı testlerle sabitlenmiştir.
+
+## Sayfa entegrasyonu (salt okunur)
+
+`scripts/generate-post-match-pages.mjs` depoyu **yalnızca okur**;
+`services/postMatchEnrichmentView.js` tek bir kaydı HTML'e çevirir.
+
+- **Kayıt yoksa bölüm de yok.** Zenginleştirilmemiş maçın raporunda boş
+  bir "veri bekleniyor" kutusu açılmaz: o maç için sağlayıcıdan veri
+  *istenmedi*, gelmemiş değil.
+- **Dolu bölüm kökenini taşır**: sağlayıcı adı, fikstür kimliği, gözlem
+  zamanı.
+- **Eksik bölüm rakam taşımaz.** "0 oyuncu" yazmak, sağlayıcı oyuncu
+  verisi göndermediğinde "hiç oyuncu oynamadı" gibi okunur. Eksik satırda
+  hiçbir sayı üretilmez — bu bir testle zorlanır.
+
+Depo dosyası yoksa üretim durmaz; hiçbir rapora bölüm eklenmez.
+
 ## Köken (provenance)
 
 Her dolu bölüm kaynağını taşır: `API-Football` veya `FutbolRadar kürasyon
