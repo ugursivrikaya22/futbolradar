@@ -211,8 +211,25 @@ async function main() {
 
     next[match.id] = enrichment;
     summary.enriched += 1;
+
+    // KURU KOŞUNUN ASIL ÇIKTISI BU SATIRLAR.
+    //
+    // Dry-run hiçbir şey yazmadığı için tek ürünü günlüktür: hangi maç
+    // hangi fikstüre bağlandı, hangi bölüm doldu, hangisi boş kaldı.
+    // "dolu: 3/6" demek yetmiyor — hangi üçü olduğu bilinmeden bağlamanın
+    // doğru olup olmadığı ve neyin sağlayıcı sınırı olduğu ayırt edilemez.
     const ready = SECTION_KEYS.filter((key) => enrichment.sections[key].status === "ready");
-    console.log(`  kapsam %${enrichment.coverage} · dolu: ${ready.join(", ") || "yok"}`);
+    const awaiting = SECTION_KEYS.filter((key) => enrichment.sections[key].status !== "ready");
+    console.log(`  kapsam %${enrichment.coverage} (${ready.length}/${SECTION_KEYS.length}) · durum: ${enrichment.dataStatus}`);
+    console.log(`  DOLU  : ${ready.join(", ") || "—"}`);
+    console.log(`  EKSİK : ${awaiting.join(", ") || "—"}`);
+    if (failedFetches) {
+      console.log(`  UÇ NOKTA HATASI: ${failedFetches}/${endpoints.length}`);
+    }
+    const overridden = SECTION_KEYS.filter((key) => enrichment.sections[key].overridden);
+    if (overridden.length) {
+      console.log(`  KÜRASYON MÜDAHALESİ: ${overridden.join(", ")}`);
+    }
   }
 
   console.log(`\nÖzet: çözülen ${summary.resolved} · çözülemeyen ${summary.unresolved} · ` +
@@ -222,6 +239,21 @@ async function main() {
   if (unresolvedList.length) {
     console.log("\nSağlayıcı kimliği çözülemeyen maçlar (kürasyonlu veri korunuyor):");
     for (const item of unresolvedList) console.log(`  - ${item.id}: ${item.reason}`);
+  }
+
+  // BÖLÜM BAZINDA KAPSAM TABLOSU.
+  //
+  // "Neyin sağlayıcı sınırı olduğu" sorusunun cevabı bu tablo: bir bölüm
+  // maçların çoğunda boşsa bu bizim hatamız değil, sağlayıcının o turnuva
+  // seviyesindeki kapsamıdır. Maç bazında bakarken bu örüntü görünmüyor.
+  const evaluated = Object.values(next).filter((entry) => entry && entry.sections);
+  if (evaluated.length) {
+    console.log("\nBölüm bazında kapsam:");
+    for (const key of SECTION_KEYS) {
+      const filled = evaluated.filter((entry) => entry.sections[key] && entry.sections[key].status === "ready").length;
+      const pct = Math.round((filled / evaluated.length) * 100);
+      console.log(`  ${key.padEnd(12)} ${String(filled).padStart(2)}/${evaluated.length}  %${pct}`);
+    }
   }
 
   if (!args.apply) {
