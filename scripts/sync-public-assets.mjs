@@ -32,6 +32,7 @@ for (const file of [
   "competitions.json",
   "fixture-calendar.json",
   "match-analyses.json",
+  "match-enrichment.json",
   "matches.json",
   "momentum.json",
   "news.json",

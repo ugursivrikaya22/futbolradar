@@ -16,6 +16,22 @@ const require = createRequire(import.meta.url);
 const domain = "https://www.futbolradar.com";
 
 const matches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
+/**
+ * MAÇ SONU ZENGİNLEŞTİRME DEPOSU (scripts/enrich-post-match.mjs üretir).
+ *
+ * Yoksa boş nesne: zenginleştirme koşmamışsa sayfa kürasyonlu raporla
+ * eskisi gibi üretilir, hiçbir bölüm kaybolmaz.
+ */
+const enrichmentStore = (() => {
+  const file = path.join(root, "data", "match-enrichment.json");
+  if (!fs.existsSync(file)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch (error) {
+    console.warn(`[post-match] match-enrichment.json okunamadı: ${error.message}`);
+    return {};
+  }
+})();
 const { buildMatchReport } = require("../services/matchReportService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
@@ -468,6 +484,8 @@ function pageHtml(report, match) {
 
       ${kpiSection(match)}
 
+      ${enrichmentSections(match.id)}
+
       <section class="post-match-section" aria-labelledby="rapor-ozet">
         <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-ozet">Maç özeti</h2><p>Sonuç, goller ve karşılaşmanın künyesi.</p></div></div>
         ${summarySection(report)}
@@ -564,6 +582,86 @@ function replaceOrInsert(file, startMarker, endMarker, content, beforeNeedle) {
  * geldiği okuyucudan gizlenmiyor. Kapsaması düşük bir rapor da yayımlanır —
  * ama düşük olduğu söylenerek.
  */
+/**
+ * SAĞLAYICI ZENGİNLEŞTİRME BÖLÜMLERİ.
+ *
+ * Her bölüm YALNIZCA doğrulanmış alanla dolar. Dolmayan bölüm gizlenmez:
+ * ne beklendiği adıyla yazılır. Sessizce kaybolan bir bölüm, okuyucuya
+ * "bu maçta diziliş yoktu" gibi görünür; oysa olan şey verinin gelmemesi.
+ *
+ * Köken (provenance) her dolu bölümde basılır: veri sağlayıcıdan mı yoksa
+ * kürasyondan mı geldi, ne zaman gözlendi.
+ */
+function enrichmentSections(matchId) {
+  const enrichment = enrichmentStore[matchId];
+  if (!enrichment) return "";
+
+  const blocks = [];
+  for (const key of ["events", "lineups", "teamStats", "playerStats"]) {
+    const section = enrichment.sections && enrichment.sections[key];
+    if (!section) continue;
+    blocks.push(enrichmentBlock(key, section));
+  }
+
+  if (!blocks.length) return "";
+
+  const partial = enrichment.partialMessage
+    ? `<p class="post-match-partial" data-partial-coverage>${escapeHtml(enrichment.partialMessage)}</p>`
+    : "";
+
+  return `<section class="post-match-section post-match-enrichment" aria-labelledby="saglayici-veri" data-enrichment-coverage="${escapeHtml(enrichment.coverage)}">
+        <div class="section-head"><div class="section-title"><span class="section-kicker">Sağlayıcı verisi</span><h2 id="saglayici-veri">Maç sonu detayları</h2><p>Olaylar, dizilişler ve ölçülmüş istatistikler.</p></div><span class="post-match-coverage-badge">Kapsam %${escapeHtml(enrichment.coverage)}</span></div>
+        ${partial}
+        ${blocks.join("\n        ")}
+      </section>`;
+}
+
+function provenanceLine(section) {
+  if (!section.provenance) return "";
+  const stamp = String(section.provenance.observedAt || "").slice(0, 10);
+  const origin = section.overridden ? "FutbolRadar kürasyon (manuel)" : section.provenance.source;
+  return `<p class="post-match-provenance">Kaynak: ${escapeHtml(origin)}${stamp ? ` · ${escapeHtml(stamp)}` : ""}</p>`;
+}
+
+function enrichmentBlock(key, section) {
+  if (section.status !== "ready") {
+    return `<article class="data-empty" data-card="empty-state" data-enrichment="${escapeHtml(key)}">
+          <strong>${escapeHtml(section.label)}</strong>
+          <span>${escapeHtml(section.message || "Doğrulanmış veri bekleniyor.")}</span>
+        </article>`;
+  }
+
+  return `<article class="post-match-enrichment-block" data-enrichment="${escapeHtml(key)}" data-source="${escapeHtml(section.source)}">
+          <h3>${escapeHtml(section.label)}</h3>
+          ${enrichmentBody(key, section.value)}
+          ${provenanceLine(section)}
+        </article>`;
+}
+
+function enrichmentBody(key, value) {
+  if (key === "events") {
+    return `<ul class="post-match-event-list">${value.map((event) => {
+      const minute = `${event.minute}'${event.extraMinute ? `+${event.extraMinute}` : ""}`;
+      const who = [event.player, event.assist ? `(asist: ${event.assist})` : ""].filter(Boolean).join(" ");
+      return `<li><span class="event-minute">${escapeHtml(minute)}</span><span class="event-type">${escapeHtml(event.detail || event.type)}</span><span class="event-team">${escapeHtml(event.team || "")}</span><span class="event-player">${escapeHtml(who)}</span></li>`;
+    }).join("")}</ul>`;
+  }
+
+  if (key === "lineups") {
+    return value.map((lineup) => `<div class="post-match-lineup"><h4>${escapeHtml(lineup.team)}${lineup.formation ? ` · ${escapeHtml(lineup.formation)}` : ""}</h4>${lineup.coach ? `<p class="muted-copy">Teknik sorumlu: ${escapeHtml(lineup.coach)}</p>` : ""}<ol>${lineup.startXI.map((player) => `<li>${player.number ? `<b>${escapeHtml(player.number)}</b> ` : ""}${escapeHtml(player.name)}${player.position ? ` <em>${escapeHtml(player.position)}</em>` : ""}</li>`).join("")}</ol>${lineup.substitutes.length ? `<p class="post-match-subs"><span>Yedekler:</span> ${escapeHtml(lineup.substitutes.join(", "))}</p>` : ""}</div>`).join("");
+  }
+
+  if (key === "teamStats") {
+    return `<table class="post-match-stat-table"><thead><tr><th>${escapeHtml(value.homeTeam)}</th><th>İstatistik</th><th>${escapeHtml(value.awayTeam)}</th></tr></thead><tbody>${value.statistics.map((row) => `<tr><td>${escapeHtml(row.home ?? "—")}</td><th scope="row">${escapeHtml(row.label || row.key)}</th><td>${escapeHtml(row.away ?? "—")}</td></tr>`).join("")}</tbody></table>`;
+  }
+
+  if (key === "playerStats") {
+    return value.map((team) => `<div class="post-match-player-stats"><h4>${escapeHtml(team.team)}</h4><table class="post-match-stat-table"><thead><tr><th>Oyuncu</th><th>Dk</th><th>G</th><th>A</th><th>Şut</th><th>Derece</th></tr></thead><tbody>${team.players.map((player) => `<tr><td>${escapeHtml(player.name)}</td><td>${escapeHtml(player.minutes ?? "—")}</td><td>${escapeHtml(player.goals ?? "—")}</td><td>${escapeHtml(player.assists ?? "—")}</td><td>${escapeHtml(player.shots ?? "—")}</td><td>${escapeHtml(player.rating ?? "—")}</td></tr>`).join("")}</tbody></table></div>`).join("");
+  }
+
+  return "";
+}
+
 function recentReportsBlock(entries) {
   const recent = entries.slice(0, 4);
   if (!recent.length) return "";
