@@ -188,18 +188,19 @@ function rootLandingConfig(slug) {
   return configs[slug];
 }
 
-function updateSitemapIndexability(file, shouldIndex) {
-  if (shouldIndex) return;
-  const canonical = `https://www.futbolradar.com/${file}`;
-  for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
-    if (!fs.existsSync(sitemapPath)) continue;
-    const xml = fs.readFileSync(sitemapPath, "utf8");
-    const next = xml.replace(/\s*<url>[\s\S]*?<\/url>/g, (block) => {
-      return block.includes(`<loc>${canonical}</loc>`) ? "" : block;
-    });
-    fs.writeFileSync(sitemapPath, next, "utf8");
-  }
-}
+/**
+ * SİTE HARİTASI ARTIK BU BETİKTE YAZILMIYOR.
+ *
+ * sitemap.xml altı ayrı betik tarafından, düzenli ifadelerle karşılıklı
+ * olarak yamanıyordu. Hayatta kalma koşulu iki boşluklu girinti
+ * sözleşmesiydi ve zincirin ortasındaki tam-yeniden-yazan betik, tek
+ * başına koştuğunda 323 URL'yi sessizce siliyordu.
+ *
+ * Tek yetkili üretici: scripts/generate-sitemap.mjs — build'in en sonunda
+ * koşar, URL'leri dosya sisteminden türetir ve noindex sayfaları eler.
+ * Bu betiğin site haritasını bilmesine gerek yok: sayfayı diske yazması
+ * yeterli.
+ */
 
 function replaceFile(file, transform) {
   const source = path.join(root, file);
@@ -248,7 +249,6 @@ for (const slug of [
       .replace(/<section class="grid" data-api-section="player-landing"[\s\S]*?<\/section>/, `<section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${slug}">${content}</section>`);
     return shouldIndex ? withContent : withContent.replace('content="index,follow"', 'content="noindex,follow"');
   });
-  updateSitemapIndexability(`${slug}.html`, shouldIndex);
 }
 
 const sortedTransfers = transfers.slice().sort((left, right) => String(right.date || "").localeCompare(String(left.date || "")));
@@ -259,6 +259,5 @@ const transferContent = sortedTransfers.length
 replaceFile("transfer-radari.html", (html) => html
   .replace(/<span data-landing-count>[^<]*<\/span>/, `<span data-landing-count>${sortedTransfers.length} transfer kaydı</span>`)
   .replace(/<section class="grid" data-api-section="player-landing"[\s\S]*?<\/section>/, `<section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="transfer-radari">${transferContent}</section>`));
-updateSitemapIndexability("transfer-radari.html", sortedTransfers.length >= 2);
 
 console.log(`Prerendered ${players.length} player profiles and SEO landing lists`);

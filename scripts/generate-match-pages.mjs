@@ -203,11 +203,11 @@ function pageHtml(match) {
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:url" content="${canonical}" />
-    <meta property="og:image" content="${domain}/assets/og-image.svg" />
+    <meta property="og:image" content="${domain}/assets/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
     <script type="application/ld+json">${JSON.stringify(schema)}</script>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="../site.webmanifest" />
@@ -238,19 +238,19 @@ function sitemapEntry(match) {
   return `  <url>\n    <loc>${domain}/mac/${slugValue}.html</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.85</priority>\n  </url>`;
 }
 
-function updateSitemap(matches) {
-  const sitemapPath = path.join(root, "sitemap.xml");
-  if (!fs.existsSync(sitemapPath)) {
-    return;
-  }
-
-  const current = fs.readFileSync(sitemapPath, "utf8");
-  const retained = (current.match(/  <url>[\s\S]*?  <\/url>/g) || [])
-    .filter((entry) => !entry.includes(`${domain}/mac/`));
-  const content = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${retained.concat(matches.map(sitemapEntry)).join("\n")}\n</urlset>\n`;
-  fs.writeFileSync(sitemapPath, content, "utf8");
-  fs.writeFileSync(path.join(root, "public", "sitemap.xml"), content, "utf8");
-}
+/**
+ * SİTE HARİTASI ARTIK BU BETİKTE YAZILMIYOR.
+ *
+ * sitemap.xml altı ayrı betik tarafından, düzenli ifadelerle karşılıklı
+ * olarak yamanıyordu. Hayatta kalma koşulu iki boşluklu girinti
+ * sözleşmesiydi ve zincirin ortasındaki tam-yeniden-yazan betik, tek
+ * başına koştuğunda 323 URL'yi sessizce siliyordu.
+ *
+ * Tek yetkili üretici: scripts/generate-sitemap.mjs — build'in en sonunda
+ * koşar, URL'leri dosya sisteminden türetir ve noindex sayfaları eler.
+ * Bu betiğin site haritasını bilmesine gerek yok: sayfayı diske yazması
+ * yeterli.
+ */
 
 fs.mkdirSync(outDir, { recursive: true });
 fs.mkdirSync(publicOutDir, { recursive: true });
@@ -272,5 +272,4 @@ for (const match of confirmedFixtures) {
   fs.writeFileSync(path.join(publicOutDir, file), html, "utf8");
 }
 
-updateSitemap(confirmedFixtures);
 console.log(`Generated ${confirmedFixtures.length} static match analysis pages`);

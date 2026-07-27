@@ -292,11 +292,11 @@ function pageHtml(page) {
     <meta property="og:url" content="${url}" />
     <meta property="og:title" content="${escapeHtml(page.title)}" />
     <meta property="og:description" content="${escapeHtml(page.description)}" />
-    <meta property="og:image" content="${domain}/assets/og-image.svg" />
+    <meta property="og:image" content="${domain}/assets/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(page.title)}" />
     <meta name="twitter:description" content="${escapeHtml(page.description)}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
     <script type="application/ld+json">${JSON.stringify(schema)}</script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
@@ -324,23 +324,19 @@ function writePage(page) {
   fs.writeFileSync(path.join(root, "public", page.file), html, "utf8");
 }
 
-function upsertSitemap(files) {
-  const sitemapPath = path.join(root, "sitemap.xml");
-  let xml = fs.readFileSync(sitemapPath, "utf8");
-  for (const file of files) {
-    const loc = `${domain}/${file}`;
-    const escapedLoc = loc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    xml = xml.replace(new RegExp(`  <url>\\s*<loc>${escapedLoc}<\\/loc>[\\s\\S]*?<\\/url>`, "g"), "");
-    xml = xml.replace("</urlset>", `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${updatedAt}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n</urlset>`);
-  }
-  fs.writeFileSync(sitemapPath, xml, "utf8");
-  fs.writeFileSync(path.join(root, "public", "sitemap.xml"), xml, "utf8");
-}
+/**
+ * SİTE HARİTASI ARTIK BU BETİKTE YAZILMIYOR.
+ *
+ * sitemap.xml altı ayrı betik tarafından, düzenli ifadelerle karşılıklı
+ * olarak yamanıyordu. Hayatta kalma koşulu iki boşluklu girinti
+ * sözleşmesiydi ve zincirin ortasındaki tam-yeniden-yazan betik, tek
+ * başına koştuğunda 323 URL'yi sessizce siliyordu.
+ *
+ * Tek yetkili üretici: scripts/generate-sitemap.mjs — build'in en sonunda
+ * koşar, URL'leri dosya sisteminden türetir ve noindex sayfaları eler.
+ * Bu betiğin site haritasını bilmesine gerek yok: sayfayı diske yazması
+ * yeterli.
+ */
 
 pages.forEach(writePage);
-upsertSitemap([
-  ...pages.map((page) => page.file),
-  "fenerbahce-gornik-zabrze-mac-analizi.html",
-  "en-iyi-super-lig-oyunculari.html"
-]);
 console.log(`Generated ${pages.length} football trend SEO pages`);

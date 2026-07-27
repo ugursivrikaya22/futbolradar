@@ -70,7 +70,7 @@ const apiCacheHeaders = {
   "/api/analyses": "public, s-maxage=3600, stale-while-revalidate=21600",
   "/api/health": "no-store"
 };
-const staticAssets = ["/sitemap.xml", "/robots.txt", "/page.css", "/app.js", "/site.js", "/site.webmanifest", "/assets/og-image.svg"];
+const staticAssets = ["/sitemap.xml", "/robots.txt", "/page.css", "/app.js", "/site.js", "/site.webmanifest", "/assets/og-image.png", "/assets/og-image.svg"];
 const secretMarkers = [
   "X-Auth-Token",
   "FOOTBALL_API_KEY=",

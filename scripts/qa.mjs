@@ -429,7 +429,7 @@ function checkSeoAndLinks() {
     expect(Boolean(description), `${page}: missing meta description`);
     expect(canonical === expectedUrl, `${page}: canonical mismatch`);
     expect(ogUrl === expectedUrl, `${page}: og:url mismatch`);
-    expect(ogImage === "https://www.futbolradar.com/assets/og-image.svg", `${page}: og:image mismatch`);
+    expect(ogImage === "https://www.futbolradar.com/assets/og-image.png", `${page}: og:image mismatch`);
     expect(["index,follow", "noindex,follow"].includes(robots), `${page}: robots directive is invalid`);
     expect(Boolean(ogTitle), `${page}: missing og:title`);
     expect(Boolean(ogDescription), `${page}: missing og:description`);
@@ -585,10 +585,125 @@ function checkSeoAndLinks() {
     }
   }
 
+  // ── SİTE HARİTASI KAPSAMI: TÜM SİTE ─────────────────────────────────────
+  //
+  // Yukarıdaki döngü yalnızca elle tutulan 68 yolu denetliyordu — 3281
+  // URL'nin %2,1'i. İçinde 0 adet mac/, 0 adet mac-raporu/ ve 0 adet
+  // karsilastirma/ vardı. Tam olarak bu yüzden, site haritasını yeniden
+  // yazan betiğin tek başına koştuğunda 323 URL'yi sessizce silmesi
+  // denetimden geçebiliyordu: silinen her şey kör noktadaydı.
+  //
+  // Kapsam denetimi artık KÜME EŞİTLİĞİ: diskteki her yayımlanabilir sayfa
+  // site haritasında olmalı ve site haritasındaki her URL diskte bir
+  // yayımlanabilir sayfaya karşılık gelmeli. Aradaki her fark hatadır.
+  const sitemapLocs = new Set(
+    [...sitemap.matchAll(/<loc>https:\/\/www\.futbolradar\.com\/(.*?)<\/loc>/g)]
+      .map((match) => match[1] || "index.html")
+  );
+
+  const SITEMAP_SKIP_DIRS = new Set([
+    "public", "node_modules", ".git", ".github", "scripts", "services",
+    "lib", "data", "api", "server", "components", "assets", "docs"
+  ]);
+
+  function walkSiteHtml(dir, collected = []) {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.name.startsWith(".")) continue;
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (SITEMAP_SKIP_DIRS.has(entry.name)) continue;
+        walkSiteHtml(full, collected);
+      } else if (entry.name.endsWith(".html")) {
+        collected.push(path.relative(root, full).split(path.sep).join("/"));
+      }
+    }
+    return collected;
+  }
+
+  const allSiteHtml = walkSiteHtml(root);
+  const expectedInSitemap = new Set();
+  const expectedExcluded = [];
+
+  for (const file of allSiteHtml) {
+    const html = fs.readFileSync(path.join(root, file), "utf8");
+    // Aynı kural generate-sitemap.mjs ile birebir: sayfa olmayan dosyalar
+    // (arama motoru doğrulama saplaması) ve noindex sayfalar dışarıda.
+    if (!/<html[\s>]/i.test(html) || !/<title[\s>]/i.test(html)) {
+      expectedExcluded.push(file);
+      continue;
+    }
+    if (/content="noindex/i.test(html)) {
+      expectedExcluded.push(file);
+      continue;
+    }
+    expectedInSitemap.add(file);
+  }
+
+  const missingFromSitemap = [...expectedInSitemap].filter((file) => !sitemapLocs.has(file));
+  const staleInSitemap = [...sitemapLocs].filter((loc) => !expectedInSitemap.has(loc));
+
+  expect(
+    missingFromSitemap.length === 0,
+    `sitemap missing ${missingFromSitemap.length} indexable page(s), e.g. ${missingFromSitemap.slice(0, 5).join(", ")}`
+  );
+  expect(
+    staleInSitemap.length === 0,
+    `sitemap lists ${staleInSitemap.length} URL(s) that are noindex or absent from disk, e.g. ${staleInSitemap.slice(0, 5).join(", ")}`
+  );
+
+  // Kapsamın kendisi de bir eşik: site haritası aniden küçülürse (bir
+  // üreticinin sessizce URL düşürmesi) bu satır kırılır.
+  expect(
+    sitemapLocs.size >= 3000,
+    `sitemap shrank unexpectedly: ${sitemapLocs.size} URLs (expected >= 3000)`
+  );
+
+  // Her dizin türü temsil edilmeli. Küme eşitliği bunu zaten yakalar, ama
+  // bu satır hatayı ADIYLA bildirir: hangi içerik ailesinin tamamen
+  // düştüğü, 3000 URL'lik bir diff okumadan görünür.
+  for (const [label, prefix, minimum] of [
+    ["player profiles", "oyuncular/", 500],
+    ["comparisons", "karsilastirma/", 2000],
+    ["match pages", "mac/", 250],
+    ["post-match reports", "mac-raporu/", 5]
+  ]) {
+    const count = [...sitemapLocs].filter((loc) => loc.startsWith(prefix)).length;
+    expect(count >= minimum, `sitemap has only ${count} ${label} (expected >= ${minimum})`);
+  }
+
+  // noindex sayfalar site haritasında OLMAMALI (çelişkili sinyal).
+  for (const file of expectedExcluded) {
+    expect(!sitemapLocs.has(file), `sitemap must exclude non-indexable page ${file}`);
+  }
+
   const robots = fs.readFileSync(path.join(root, "robots.txt"), "utf8");
   expect(robots.includes("Sitemap: https://www.futbolradar.com/sitemap.xml"), "robots.txt missing sitemap URL");
-  expect(fs.existsSync(path.join(root, "assets", "og-image.svg")), "missing assets/og-image.svg");
-  expect(fs.existsSync(path.join(root, "public", "assets", "og-image.svg")), "missing public/assets/og-image.svg");
+  // OG GÖRSELİ PNG OLMALI — sosyal tarayıcılar SVG kabul etmiyor.
+  //
+  // Site tek paylaşım görseli olarak og-image.svg kullanıyordu; Facebook,
+  // X, LinkedIn, WhatsApp ve Slack `image/svg+xml` içeriğini atıyor, yani
+  // 3287 sayfanın hiçbirinde önizleme oluşmuyordu. SVG kaynak olarak
+  // korunuyor (yedek ve yeniden üretim için), ama etiketler PNG'yi
+  // göstermeli.
+  for (const asset of ["og-image.png", "og-image.svg"]) {
+    expect(fs.existsSync(path.join(root, "assets", asset)), `missing assets/${asset}`);
+    expect(fs.existsSync(path.join(root, "public", "assets", asset)), `missing public/assets/${asset}`);
+  }
+  const ogPng = fs.readFileSync(path.join(root, "assets", "og-image.png"));
+  expect(
+    ogPng.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])),
+    "assets/og-image.png is not a valid PNG"
+  );
+  // Boyut, sosyal platformların istediği 1200x630 olmalı (IHDR'den okunur).
+  expect(ogPng.readUInt32BE(16) === 1200 && ogPng.readUInt32BE(20) === 630,
+    `og-image.png must be 1200x630, got ${ogPng.readUInt32BE(16)}x${ogPng.readUInt32BE(20)}`);
+  // 8 MB üstü görselleri bazı tarayıcılar reddediyor.
+  expect(ogPng.length < 8 * 1024 * 1024, "og-image.png exceeds 8MB social crawler limit");
+  // Hiçbir sayfa SVG'yi og:image olarak göstermemeli.
+  expect(
+    !fs.readFileSync(path.join(root, "index.html"), "utf8").includes('og:image" content="https://www.futbolradar.com/assets/og-image.svg'),
+    "index.html still points og:image at the SVG"
+  );
   expect(fs.existsSync(path.join(root, "site.webmanifest")), "missing site.webmanifest");
   expect(fs.existsSync(path.join(root, "public", "site.webmanifest")), "missing public/site.webmanifest");
 }

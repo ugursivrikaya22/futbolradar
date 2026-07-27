@@ -374,14 +374,14 @@ function pageHtml(pair) {
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:url" content="${canonical}" />
-    <meta property="og:image" content="${domain}/assets/og-image.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image" content="${domain}/assets/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
     <script type="application/ld+json">
       ${JSON.stringify({
         "@context": "https://schema.org",
@@ -505,14 +505,14 @@ function comparisonIndexHtml(pairs) {
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:url" content="${canonical}" />
-    <meta property="og:image" content="${domain}/assets/og-image.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image" content="${domain}/assets/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
     <script type="application/ld+json">
       ${JSON.stringify({
         "@context": "https://schema.org",
@@ -591,14 +591,19 @@ const indexHtml = comparisonIndexHtml(pairs);
 fs.writeFileSync(path.join(root, "oyuncu-karsilastirmalari.html"), indexHtml, "utf8");
 fs.writeFileSync(path.join(root, "public", "oyuncu-karsilastirmalari.html"), indexHtml, "utf8");
 
-for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
-  if (!fs.existsSync(sitemapPath)) continue;
-  const current = fs.readFileSync(sitemapPath, "utf8");
-  const retained = (current.match(/  <url>[\s\S]*?  <\/url>/g) || [])
-    .filter((entry) => !entry.includes(`${domain}/karsilastirma/`));
-  const entries = pairs.map((pair) => `  <url>\n    <loc>${domain}/karsilastirma/${pair.slug}.html</loc>\n    <lastmod>${pairLastmod(pair)}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.65</priority>\n  </url>`);
-  const content = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${retained.concat(entries).join("\n")}\n</urlset>\n`;
-  fs.writeFileSync(sitemapPath, content, "utf8");
-}
+/**
+ * SİTE HARİTASI ARTIK BU BETİKTE YAZILMIYOR.
+ *
+ * Buradaki blok, site haritasını "koruyarak yeniden yazan" beş betikten
+ * biriydi: kendi URL'lerini silip yeniden ekliyor, geri kalanını
+ * `/  <url>[\s\S]*?  <\/url>/g` düzenli ifadesiyle taşıyordu. Bu, iki
+ * boşluklu girinti sözleşmesine bağımlı bir mimariydi — girintiyi
+ * değiştiren herhangi bir üretici, kendi URL'lerini sessizce kaybederdi.
+ *
+ * Tek yetkili üretici: scripts/generate-sitemap.mjs. URL'leri dosya
+ * sisteminden türetiyor ve lastmod'u aynı şekilde her kıyasın iki
+ * oyuncusunun doğrulama tarihinden hesaplıyor, yani buradaki davranış
+ * korunuyor — yalnızca tek bir yerde yaşıyor.
+ */
 
 console.log(`Generated ${pairs.length} static player comparison pages and index`);

@@ -440,14 +440,14 @@ function pageHtml(report, match) {
     <meta property="og:url" content="${url}" />
     <meta property="og:title" content="${escapeHtml(seo.title)}" />
     <meta property="og:description" content="${escapeHtml(seo.description)}" />
-    <meta property="og:image" content="${domain}/assets/og-image.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image" content="${domain}/assets/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(seo.title)}" />
     <meta name="twitter:description" content="${escapeHtml(seo.description)}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
     <script type="application/ld+json">${JSON.stringify(schema)}</script>
     <link rel="icon" href="${depth}favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="${depth}site.webmanifest" />
@@ -643,22 +643,19 @@ function addReportIndex(entries) {
   );
 }
 
-function upsertSitemap(paths) {
-  const sitemapPath = path.join(root, "sitemap.xml");
-  if (!fs.existsSync(sitemapPath)) return;
-  let xml = fs.readFileSync(sitemapPath, "utf8");
-  for (const relative of paths) {
-    const loc = `${domain}/${relative}`;
-    if (xml.includes(`<loc>${loc}</loc>`)) continue;
-    // Çok satırlı biçim zorunlu: generate-player-comparison-pages.mjs sitemap'i
-    // yeniden yazarken yalnızca "  <url> ... \n  </url>" kalıbına uyan
-    // girdileri koruyor, tek satırlık girdiler sessizce düşüyor.
-    const entry = `  <url>\n    <loc>${loc}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
-    xml = xml.replace("</urlset>", `${entry}\n</urlset>`);
-  }
-  fs.writeFileSync(sitemapPath, xml, "utf8");
-  fs.writeFileSync(path.join(root, "public", "sitemap.xml"), xml, "utf8");
-}
+/**
+ * SİTE HARİTASI ARTIK BU BETİKTE YAZILMIYOR.
+ *
+ * sitemap.xml altı ayrı betik tarafından, düzenli ifadelerle karşılıklı
+ * olarak yamanıyordu. Hayatta kalma koşulu iki boşluklu girinti
+ * sözleşmesiydi ve zincirin ortasındaki tam-yeniden-yazan betik, tek
+ * başına koştuğunda 323 URL'yi sessizce siliyordu.
+ *
+ * Tek yetkili üretici: scripts/generate-sitemap.mjs — build'in en sonunda
+ * koşar, URL'leri dosya sisteminden türetir ve noindex sayfaları eler.
+ * Bu betiğin site haritasını bilmesine gerek yok: sayfayı diske yazması
+ * yeterli.
+ */
 
 // ── Üretim ──────────────────────────────────────────────────────────────────
 const generated = [];
@@ -704,7 +701,6 @@ if (generated.length) {
     '<section class="container section section-player-radar"'
   );
   addReportIndex(generated);
-  upsertSitemap(generated.map((entry) => entry.report.seo.path));
 }
 
 const complete = generated.filter((entry) => entry.report.dataStatus === "complete").length;

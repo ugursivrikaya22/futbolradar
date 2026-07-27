@@ -43,4 +43,12 @@ for (const file of [
 ]) {
   fs.copyFileSync(path.join(root, "data", file), path.join(publicDir, "data", file));
 }
+// OG görselleri: PNG yayımlanan varlık, SVG kaynak/yedek olarak taşınır.
+for (const asset of ["og-image.png", "og-image.svg"]) {
+  const from = path.join(root, "assets", asset);
+  if (!fs.existsSync(from)) continue;
+  const toDir = path.join(publicDir, "assets");
+  if (!fs.existsSync(toDir)) fs.mkdirSync(toDir, { recursive: true });
+  fs.copyFileSync(from, path.join(toDir, asset));
+}
 console.log("Synced public assets");

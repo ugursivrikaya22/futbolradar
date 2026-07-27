@@ -378,14 +378,14 @@ function pageHtml(page) {
     <meta property="og:url" content="${url}" />
     <meta property="og:title" content="${page.title}" />
     <meta property="og:description" content="${page.description}" />
-    <meta property="og:image" content="${domain}/assets/og-image.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image" content="${domain}/assets/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${page.title}" />
     <meta name="twitter:description" content="${page.description}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
     <script type="application/ld+json">${JSON.stringify(schema)}</script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
@@ -430,111 +430,21 @@ function writePage(page) {
   fs.writeFileSync(path.join(root, "public", page.file), html, "utf8");
 }
 
-/**
- * noindex SÜZGECİ BURADA DA GEÇERLİ — asimetri sessiz bir tuzaktı.
- *
- * generatedPlayerPages() noindex taşıyan profilleri sitemap'ten eliyor,
- * bu fonksiyon elemiyordu. Bugün fark yaratmıyor (hiçbir kıyas sayfası
- * noindex değil), ama ince içerik politikası gereği bir gün kıyas
- * sayfalarına noindex basılırsa sitemap onları listelemeye devam ederdi.
- *
- * "noindex + sitemap'te listeli" çelişkili bir sinyaldir: sitemap
- * taranmasını ister, sayfa indekslenmemeyi söyler. Search Console bunu
- * "Sitemap'te gönderildi ama indekslenmedi" hatası olarak raporlar ve
- * kasıtlı bir karar, kaza gibi görünür.
- *
- * Süzgeci şimdi simetrik hâle getirmek, o kararı tek satırlık bir
- * değişikliğe indiriyor.
- */
-function generatedComparisonPages() {
-  const dir = path.join(root, "karsilastirma");
-  if (!fs.existsSync(dir)) {
-    return [];
-  }
-
-  return fs.readdirSync(dir)
-    .filter((file) => file.endsWith(".html"))
-    .filter((file) => !/content="noindex/.test(fs.readFileSync(path.join(dir, file), "utf8")))
-    .sort()
-    .map((file) => `karsilastirma/${file}`);
-}
-
-// Every generated player page belongs in the sitemap. Scanning the directory
-// keeps it correct as squads grow instead of relying on a hand-kept list.
-// Alias files are skipped: they are noindex redirects to the canonical
-// profile, and listing a redirect in a sitemap is a crawl error.
-function generatedPlayerPages() {
-  const dir = path.join(root, "oyuncular");
-  if (!fs.existsSync(dir)) {
-    return [];
-  }
-
-  return fs.readdirSync(dir)
-    .filter((file) => file.endsWith(".html"))
-    .filter((file) => !/content="noindex/.test(fs.readFileSync(path.join(dir, file), "utf8")))
-    .sort()
-    .map((file) => `oyuncular/${file}`);
-}
-
-function sitemapXml(files) {
-  const comparisonPages = generatedComparisonPages();
-  const playerPages = generatedPlayerPages();
-  const core = [
-    "index.html",
-    "bugunun-maclari.html",
-    "super-lig-fikstur.html",
-    "canli-skor.html",
-    "puan-durumu.html",
-    "takimlar.html",
-    "oyuncu-radari.html",
-    "oyuncu-karsilastirmalari.html",
-    "players/position/forvet.html",
-    "players/league/super-lig.html",
-    "oyuncular/forvetler.html",
-    "oyuncular/kaleciler.html",
-    "oyuncular/defanslar.html",
-    "oyuncular/orta-sahalar.html",
-    "oyuncular/genc-yetenekler.html",
-    "oyuncular/en-iyi-oyuncular.html",
-    ...playerPages,
-    ...comparisonPages,
-    "momentum.html",
-    "analizler.html",
-    "haberler.html",
-    "gol-kralligi.html",
-    "asist-kralligi.html",
-    "derbi-radari.html",
-    "haftanin-maclari.html",
-    "mac-merkezi.html",
-    "istatistik-merkezi.html",
-    "oyuncu-liderleri.html",
-    "takim-trendleri.html",
-    "futbol-radar-rehberi.html",
-    "gunun-radar-bulteni.html",
-    // Indexable and linked from four pages, but was never listed here.
-    "transfer-izleme.html",
-    ...files
-  ];
-  const unique = [...new Set(core)];
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${unique.map((file) => {
-  const loc = file === "index.html" ? `${domain}/` : `${domain}/${file}`;
-  const priority = file === "index.html" ? "1.0" : file.includes("karsilastirma/") ? "0.65" : file.includes("oyuncular/") ? "0.7" : "0.8";
-  return `  <url>
-    <loc>${loc}</loc>
-    <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>${priority}</priority>
-  </url>`;
-}).join("\n")}
-</urlset>
-`;
-}
 
 const pages = [...seoPages, ...playerSeoPages, ...legalPages];
 pages.forEach(writePage);
-const sitemap = sitemapXml(pages.map((page) => page.file));
-fs.writeFileSync(path.join(root, "sitemap.xml"), sitemap, "utf8");
-fs.writeFileSync(path.join(root, "public", "sitemap.xml"), sitemap, "utf8");
+
+/**
+ * SİTE HARİTASI ARTIK BURADA YAZILMIYOR — bu betik en tehlikelisiydi.
+ *
+ * sitemapXml() dosyayı BAŞTAN kuruyor ve mac/, mac-raporu/ ile dokuz kök
+ * sayfadan haberdar değil. Zincirin ortasında koştuğu için sonraki
+ * üreticiler kendi URL'lerini geri ekliyordu; ama bu betik TEK BAŞINA
+ * çalıştırıldığında (ya da build sırası değiştiğinde) 323 URL sessizce
+ * siliniyordu — sitenin zamana en duyarlı içeriği, hatasız biçimde.
+ *
+ * Tek yetkili üretici: scripts/generate-sitemap.mjs. Build'in en sonunda
+ * koşar ve URL'leri dosya sisteminden türetir, böylece hiçbir üreticinin
+ * site haritasını bilmesi gerekmez.
+ */
 console.log(`Generated ${pages.length} static SEO/trust pages`);
