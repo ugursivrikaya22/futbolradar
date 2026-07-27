@@ -5,6 +5,9 @@
  *   • Sağlayıcı kimliği YANLIŞ maça bağlanmaz — ad tek başına yetmez, skor
  *     da uyuşmalı. Yanlış maça bağlanmak, başka bir karşılaşmanın gollerini
  *     bu maçın raporuna yazmak demek.
+ *   • KAYITTAKİ sayısal kimlik de kanıt değil iddiadır: sağlayıcının o
+ *     tarihteki listesinde bulunmalı, takım/tarih/skor tutmalı. Tutmazsa
+ *     reddedilir ve reddedilen kimliğe başka kapıdan geri dönülmez.
  *   • Yalnızca ÖLÇÜLMÜŞ alan yayımlanır; gönderilmeyen alan yamaya girmez.
  *   • Oynamamış oyuncu satır açmaz (sıfır dakika + sıfır ölçüm, "oynadı ve
  *     üretemedi" gibi okunur).
@@ -14,8 +17,10 @@
  */
 
 import assert from "node:assert/strict";
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
@@ -23,7 +28,7 @@ const root = process.cwd();
 const enrichment = require("../services/postMatchEnrichmentService.js");
 
 const {
-  SECTION_KEYS, isCompleted, resolveProviderFixture, normalizeEvents, normalizeGoals,
+  SECTION_KEYS, isCompleted, resolveProviderFixture, datesMatch, normalizeEvents, normalizeGoals,
   normalizeLineups, normalizeTeamStats, normalizePlayerStats, applyOverride,
   buildEnrichment, shouldReplaceEnrichment
 } = enrichment;
@@ -48,15 +53,100 @@ const curated = {
   status: "FINISHED", score: { home: 1, away: 1 }, kickoff: "2026-07-26T19:00:00+03:00"
 };
 
-function fixtureCandidate(id, home, away, hg, ag) {
-  return { fixture: { id }, teams: { home: { name: home }, away: { name: away } }, goals: { home: hg, away: ag } };
+function fixtureCandidate(id, home, away, hg, ag, date = "2026-07-26T12:00:00+00:00") {
+  return {
+    fixture: { id, date },
+    teams: { home: { name: home }, away: { name: away } },
+    goals: { home: hg, away: ag }
+  };
 }
 
-// Sayısal kimlik varsa çözümlemeye hiç gidilmez.
+/* --- 2a. KAYITTAKİ SAYISAL KİMLİK KÖRÜ KÖRÜNE GÜVENİLMEZ ---------------
+ *
+ * `goztepe-rudes-2026-07-26` kaydında elle girilmiş `2542013` kimliği
+ * sağlayıcının o tarihteki listesinde hiç yoktu; eski çözümleyici onu
+ * doğrulamadan "yüksek güven" ile kabul ediyor, dört uç nokta da boş
+ * dönüyor ve maç %0 kapsamla yanlış bir fikstüre bağlanmış görünüyordu.
+ * Aşağıdaki dört durum o regresyonu kilitliyor.
+ * ------------------------------------------------------------------- */
+
+// (1) DOĞRU sayısal kimlik — listede var, takım/tarih/skor tutuyor → kabul.
+const acceptedNumeric = resolveProviderFixture({ ...curated, providerId: "1598546" }, [
+  fixtureCandidate(1598546, "Goztepe", "Rudes", 1, 1),
+  fixtureCandidate(1598547, "Başka", "Takım", 0, 0)
+]);
+assert.equal(acceptedNumeric.fixtureId, "1598546", "doğrulanan sayısal kimlik kabul edilmeli");
+assert.equal(acceptedNumeric.confidence, "high");
+assert.match(acceptedNumeric.reason, /doğrulandı/, "kabul gerekçesi doğrulamaya dayanmalı");
+
+// (2) YANLIŞ sayısal kimlik — sağlayıcının o tarihteki listesinde yok ve
+//     yerine geçecek doğrulanmış aday da yok → çözülmemiş kalır.
+const strayId = resolveProviderFixture({ ...curated, providerId: "2542013" }, [
+  fixtureCandidate(1598999, "Başka", "Takım", 0, 0)
+]);
+assert.equal(strayId.fixtureId, null, "listede olmayan kayıt kimliği kabul edilmemeli");
+assert.match(strayId.reason, /2542013/, "reddedilen kimlik gerekçede adıyla geçmeli");
+assert.match(strayId.reason, /REDDEDİLDİ/, "reddin kendisi günlükte görünür olmalı");
+
+// (3) YANLIŞ sayısal kimlik + doğrulanmış alternatif → alternatif seçilir,
+//     reddedilen kimliğe sessizce dönülmez.
+const replaced = resolveProviderFixture({ ...curated, providerId: "2542013" }, [
+  fixtureCandidate(1598546, "Goztepe", "Rudes", 1, 1)
+]);
+assert.equal(replaced.fixtureId, "1598546", "doğrulanmış aday reddedilen kimliğin yerine geçmeli");
+assert.match(replaced.reason, /2542013/, "değişimin sebebi gerekçede kalmalı");
+
+// (4) Listede VAR ama başka bir karşılaşma (takımlar tutmuyor) → reddedilir.
+const wrongTeams = resolveProviderFixture({ ...curated, providerId: "777" }, [
+  fixtureCandidate(777, "Trabzonspor", "Rudes", 1, 1)
+]);
+assert.equal(wrongTeams.fixtureId, null, "takımı tutmayan kayıt kimliği kabul edilmemeli");
+assert.match(wrongTeams.reason, /takım adları uyuşmuyor/);
+
+// (5) Listede var, takımlar tutuyor ama TARİH başka gün → reddedilir.
+const wrongDate = resolveProviderFixture({ ...curated, providerId: "778" }, [
+  fixtureCandidate(778, "Goztepe", "Rudes", 1, 1, "2026-08-02T12:00:00+00:00")
+]);
+assert.equal(wrongDate.fixtureId, null, "tarihi tutmayan kayıt kimliği kabul edilmemeli");
+assert.match(wrongDate.reason, /tarih uyuşmuyor/);
+
+// (6) Listede var, takım+tarih tutuyor ama SKOR başka → reddedilir.
+const wrongScore = resolveProviderFixture({ ...curated, providerId: "779" }, [
+  fixtureCandidate(779, "Goztepe", "Rudes", 3, 0)
+]);
+assert.equal(wrongScore.fixtureId, null, "skoru tutmayan kayıt kimliği kabul edilmemeli");
+assert.match(wrongScore.reason, /skor uyuşmuyor/);
+
+// (7) Aday listesi hiç yoksa kimlik ne kabul ne mahkûm edilir; çağıran
+//     tarafın listeyi çekip yeniden çözmesi gerektiği söylenir.
+const unverifiable = resolveProviderFixture({ ...curated, providerId: "1598546" }, []);
+assert.equal(unverifiable.fixtureId, null, "doğrulanmadan kimlik döndürülmemeli");
+assert.match(unverifiable.reason, /aday listesi yok/);
+
+// (8) Kürasyonda skor yoksa takım+tarih ile kabul edilir ama güven düşer.
+const noCuratedScore = resolveProviderFixture(
+  { ...curated, providerId: "1598546", score: {} },
+  [fixtureCandidate(1598546, "Goztepe", "Rudes", 1, 1)]
+);
+assert.equal(noCuratedScore.fixtureId, "1598546");
+assert.equal(noCuratedScore.confidence, "medium", "skorla çapraz kontrol edilemeyen kimlik 'high' olmamalı");
+
+// Tarih toleransı: gece yarısını aşan başlama saatleri UTC gününde bir gün
+// öncesine düşebiliyor; iki gün fark artık aynı karşılaşma değildir.
+assert.equal(datesMatch("2026-07-26T00:30:00+03:00", "2026-07-25T21:30:00+00:00"), true);
+assert.equal(datesMatch("2026-07-26", "2026-07-26T12:00:00+00:00"), true);
+assert.equal(datesMatch("2026-07-26", "2026-07-28T12:00:00+00:00"), false);
+assert.equal(datesMatch("", "2026-07-26T12:00:00+00:00"), false, "tarih yoksa doğrulama geçmemeli");
+
+// Doğrulama yordamı tek başına da doğru cevap vermeli (kürasyon araçları
+// bu yüklemi doğrudan kullanacak).
 assert.equal(
-  resolveProviderFixture({ ...curated, providerId: "2542013" }, []).fixtureId,
-  "2542013",
-  "kayıttaki sayısal kimlik kullanılmalı"
+  enrichment.verifyFixtureAgainstMatch(curated, fixtureCandidate(1598546, "Goztepe", "Rudes", 1, 1)).ok,
+  true
+);
+assert.equal(
+  enrichment.verifyFixtureAgainstMatch(curated, fixtureCandidate(1598546, "Goztepe", "Rudes", 2, 0)).ok,
+  false
 );
 
 // Başka sağlayıcının harfli kimliği API-Football'da kullanılamaz.
@@ -259,6 +349,45 @@ assert.ok(/failedFetches === endpoints\.length/.test(runner), "tam kesinti kapsa
 assert.ok(/coverage === 100/.test(runner), "tam kapsamlı kayıt için sağlayıcıya tekrar gidilmemeli");
 assert.ok(/getFixturePlayers/.test(runner), "oyuncu istatistiği uç noktası çağrılmalı");
 
+/* --- 7a. KURU KOŞU HİÇBİR ŞEY YAZMAZ ---------------------------------
+ *
+ * İki ayrı kanıt: (a) yazma çağrısının kaynak kodda dry-run kapısının
+ * ARKASINDA durduğu, (b) betiği gerçekten çalıştırınca data/ altındaki
+ * hiçbir dosyanın değişmediği. (b) burada yalnızca anahtarsız yolu
+ * kanıtlıyor — anahtarlı kuru koşu GitHub Actions'ta doğrulanıyor.
+ * ------------------------------------------------------------------- */
+
+assert.equal(/apply:\s*false/.test(runner), true, "--apply varsayılan olarak kapalı olmalı");
+const dryGuardAt = runner.indexOf("if (!args.apply)");
+const writeAt = runner.indexOf("atomicWrite(ENRICHMENT_PATH");
+assert.ok(dryGuardAt > -1, "dry-run kapısı bulunmalı");
+assert.ok(writeAt > dryGuardAt, "yazma çağrısı dry-run kapısının arkasında olmalı");
+assert.equal(
+  (runner.match(/atomicWrite\(ENRICHMENT_PATH/g) || []).length,
+  1,
+  "tek bir yazma noktası olmalı; ikinci bir çıkış kapıyı atlatabilir"
+);
+
+const dataDir = path.join(root, "data");
+function snapshotData() {
+  return fs.readdirSync(dataDir).sort().map((name) => {
+    const filePath = path.join(dataDir, name);
+    if (!fs.statSync(filePath).isFile()) return `${name}:dir`;
+    return `${name}:${crypto.createHash("sha256").update(fs.readFileSync(filePath)).digest("hex")}`;
+  }).join("\n");
+}
+
+const beforeRun = snapshotData();
+const dryRun = spawnSync(process.execPath, [path.join(root, "scripts", "enrich-post-match.mjs")], {
+  cwd: root,
+  encoding: "utf8",
+  // Anahtarı kasten VERMİYORUZ: bu testin işi ağ değil, yazma güvenliği.
+  env: { ...process.env, APIFOOTBALL_API_KEY: "", API_FOOTBALL_KEY: "", RAPIDAPI_KEY: "" }
+});
+assert.equal(snapshotData(), beforeRun, "kuru koşu data/ altında hiçbir dosyayı değiştirmemeli");
+assert.equal(dryRun.status, 1, "anahtar yokken çıkış kodu düşmeli");
+assert.ok(/APIFOOTBALL_API_KEY/.test(dryRun.stdout + dryRun.stderr), "eksik yapılandırma adıyla bildirilmeli");
+
 /* ------------------------------------------------------------------ *
  * 8. SAĞLAYICI UÇ NOKTALARI
  * ------------------------------------------------------------------ */
@@ -291,5 +420,6 @@ assert.ok(Array.isArray(overrides._readme), "geçersiz kılma dosyası kullanım
  */
 
 console.log(`OK maç sonu zenginleştirme · ${SECTION_KEYS.length} bölüm · ` +
-  "kimlik çözümlemesi (skor doğrulamalı), ölçülmüş alan süzgeci, kürasyon geçersiz kılma, " +
-  "kısmi mesaj, yazma güvenliği, kesinti ayrımı");
+  "kimlik çözümlemesi (kayıttaki kimlik dahil takım+tarih+skor doğrulamalı), " +
+  "ölçülmüş alan süzgeci, kürasyon geçersiz kılma, kısmi mesaj, " +
+  "yazma güvenliği (kuru koşuda sıfır yazma), kesinti ayrımı");
