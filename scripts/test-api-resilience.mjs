@@ -11,6 +11,11 @@ const playersHandler = require("../api/players");
 const matchesHandler = require("../api/matches");
 const mockProvider = require("../services/providers/mockProvider");
 const { resetProviderHealth } = require("../services/liveDataService");
+// Sağlayıcı yanıt önbelleği (kota koruması) süreç içinde yaşıyor. Testler
+// sağlayıcı ÇAĞRI SAYISINI gözleyerek davranış doğruladığı için önbellek
+// bloklar arasında temizlenmeli; aksi hâlde bir testin yanıtı diğerine
+// sızar ve sayım yanıltıcı olur.
+const { clearProviderCache } = require("../services/providerCache");
 
 function fakeResponse() {
   return {
@@ -456,11 +461,18 @@ async function testApiKeyCandidateRecovery() {
       };
     };
 
+    clearProviderCache();
     const matches = await apiFootball.getMatches({ date: "2026-07-25" });
     assert.equal(matches.length, 1);
     assert.equal(usedKeys[0], goodKey, "gecerli bicimli anahtar once denenmeli");
 
     // Çalışan anahtar hatırlanmalı: ikinci istek tek çağrıyla dönmeli.
+    //
+    // Yanıt önbelleği burada TEMİZLENİYOR çünkü ölçülen şey anahtar
+    // hafızası, yanıt önbelleği değil. Önbellek dursaydı ikinci çağrı
+    // sağlayıcıya hiç gitmez ve test doğrulamak istediği davranışı
+    // gözleyemezdi.
+    clearProviderCache();
     usedKeys.length = 0;
     await apiFootball.getMatches({ date: "2026-07-25" });
     assert.deepEqual(usedKeys, [goodKey], "dogrulanan anahtar surec icinde hatirlanmali");

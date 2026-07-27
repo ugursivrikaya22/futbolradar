@@ -14,6 +14,7 @@ const { competitions, matchesCompetition } = require("../competitionCatalog");
 // ile resolver arasında döngü yaratırdı.
 const { readCachedLeague } = require("../leagueCache");
 const { canonicalizeStatistics } = require("../matchStatisticsSchema");
+const { fetchWithCache } = require("../providerCache");
 const { createHash } = require("node:crypto");
 
 const source = "FutbolRadar API-Football Live API";
@@ -676,11 +677,27 @@ async function getFixtures(query) {
   const liveValue = live === true || live === "1" || live === "true" ? "all" : (live || null);
   const date = liveValue || fixtureId ? undefined : (query && query.date) || todayInIstanbul();
 
-  const payload = await providerFetch("/fixtures", {
-    id: fixtureId,
-    date,
-    live: liveValue || undefined
-  });
+  // KOTA KORUMASI (services/providerCache.js)
+  //
+  // Bu yol sitedeki en sık çağrılan sağlayıcı çağrısı: istemci 20 saniyede
+  // bir canlı skor yokluyor ve CDN önbelleği 10 saniyede bir düşüyor. Her
+  // ıska doğrudan API-Football'a gidiyordu; ücretsiz paketin günlük 100
+  // isteklik kotası tek bir maç gününde tükenebilir.
+  //
+  // Önbellek üç şey sağlıyor: TTL içinde tekrar sormama, eşzamanlı
+  // isteklerin tek çağrıya indirgenmesi ve 429/kesinti anında son BAŞARILI
+  // yanıtın sınırlı süre servis edilmesi. Uydurma veri üretmiyor — yalnızca
+  // gerçek bir yanıtın tekrar kullanılması.
+  const cacheResource = liveValue ? "matches-live" : "matches";
+  const { data: payload } = await fetchWithCache(
+    cacheResource,
+    { id: fixtureId, date, live: liveValue },
+    () => providerFetch("/fixtures", {
+      id: fixtureId,
+      date,
+      live: liveValue || undefined
+    })
+  );
   const matches = responseItems(payload).map(normalizeFixture);
   const supportedMatches = filterSupportedCompetitions(matches);
   const filteredMatches = league && competition

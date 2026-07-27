@@ -2267,6 +2267,75 @@
    * Tamamı maçın olay kaydından okunur; olay yoksa rozet basılmaz — kart
    * hiçbir koşulda üretilmiş bir gösterge göstermez.
    */
+  // --- CLIENT-MATCH-GATE:start ---
+  // MAÇ YAYIN UYGUNLUĞU (services/matchEligibility.js ile aynı kural)
+  //
+  // Kural sunucuda vardı, İSTEMCİDE YOKTU. Ön render ve bant üretimi
+  // filterPublishable'dan geçiyordu; tarayıcı ise /api/matches'ten geleni
+  // olduğu gibi basıyordu. Oyuncu tarafındaki kaçağın birebir aynısı:
+  // sunucu süzüyor, istemci hidrasyonda geri boyuyor.
+  //
+  // Bugün pratikte uydurma maç görünmüyor çünkü kürasyonlu yedek sağlayıcı
+  // data/matches.json'daki gerçek maçları veriyor. Ama ZORLAMA yoktu:
+  // sağlayıcı zinciri "mock" ile bitiyor ve istemcide tek bir kaynak
+  // kontrolü bulunmuyordu. Bu blok o zorlamayı ekliyor.
+  //
+  // scripts/test-live-match-gate.mjs bu bloğu app.js'ten söküp çalıştırır ve
+  // sunucu modülüyle karşılaştırır; ayrışma build'de kırılır.
+  var CLIENT_APPROVED_MATCH_SOURCES = ["manual_verified", "official_club",
+    "api-football", "football-data", "thesportsdb"];
+  var CLIENT_MATCH_IDENTITY_FIELDS = ["homeTeam", "awayTeam", "kickoff"];
+
+  function matchTeamValue(value) {
+    if (value && typeof value === "object") {
+      return String(value.name || value.team || value.shortName || "").trim();
+    }
+    return String(value === null || value === undefined ? "" : value).trim();
+  }
+
+  /**
+   * Bir maç kaydı yayımlanabilir mi?
+   *
+   * Kimlik (iki takım + başlama saati) ve ONAYLI KAYNAK aranır. Kaynağı
+   * onaylı olmayan kayıt — "mock" dahil — hiçbir koşulda basılmaz. Ayrıntı
+   * eksikliği (skor, dakika, lig adı) ELEME SEBEBİ DEĞİLDİR: maç yayımlanır
+   * ve eksik alan "Veri bekleniyor" olarak işaretlenir. Uydurma skor
+   * üretilmez, sessiz tire basılmaz.
+   */
+  function isPublishableMatch(match) {
+    if (!match || typeof match !== "object") return false;
+
+    for (var i = 0; i < CLIENT_MATCH_IDENTITY_FIELDS.length; i += 1) {
+      var field = CLIENT_MATCH_IDENTITY_FIELDS[i];
+      var value = field === "kickoff"
+        ? String(match.kickoff === null || match.kickoff === undefined ? "" : match.kickoff).trim()
+        : matchTeamValue(match[field]);
+      if (!value) return false;
+    }
+
+    if (Number.isNaN(new Date(match.kickoff).getTime())) return false;
+
+    var source = String(match.source || "").toLowerCase();
+    if (CLIENT_APPROVED_MATCH_SOURCES.indexOf(source) === -1) return false;
+
+    // Yer tutucu kimlik: gerçek sağlayıcı kimliği "mock-" ile başlamaz.
+    if (/^mock[-_]/i.test(String(match.providerId || match.id || ""))) return false;
+
+    return true;
+  }
+
+  function filterPublishableMatches(matches) {
+    var list = Array.isArray(matches) ? matches : [];
+    var kept = list.filter(isPublishableMatch);
+    var hidden = list.length - kept.length;
+    if (hidden > 0 && window.console && console.warn) {
+      console.warn("[futbolradar:match-hidden] " + hidden +
+        " maç doğrulanmamış kaynak/kimlik nedeniyle gizlendi.");
+    }
+    return kept;
+  }
+  // --- CLIENT-MATCH-GATE:end ---
+
   // VERİ BEKLENİYOR
   //
   // Bir maçın ayrıntısı sağlayıcıdan gelmediğinde fikstür artık gizlenmiyor
@@ -2623,11 +2692,17 @@
   }
 
   function renderTodayMatchesPreview(matches) {
-    if (!Array.isArray(matches) || !matches.length) {
-      return "";
+    // Kaynağı onaylı olmayan kayıt basılmaz; kalan yoksa temiz boş durum.
+    var publishable = filterPublishableMatches(matches);
+    if (!publishable.length) {
+      return matchEmptyStateHtml(
+        "Bugün için doğrulanmış maç yok",
+        formatMatchDate(todayInIstanbul()) + " için onaylı sağlayıcıdan maç verisi gelmedi. " +
+        "Veri geldiğinde bu alan otomatik dolar."
+      );
     }
 
-    return matches.slice().sort(function (left, right) {
+    return publishable.slice().sort(function (left, right) {
       function rank(match) {
         var status = String(match.status || match.providerStatus || "").toUpperCase();
         if (isLiveMatch(match)) return 0;
@@ -2954,15 +3029,21 @@
   // hiç göremiyordu. Canlı maç varsa o gösterilir; yoksa günün sonuçları
   // ve başlayacak maçlar listelenir.
   function renderLiveScoreSection(matches) {
-    var list = Array.isArray(matches) ? matches : [];
+    var list = filterPublishableMatches(matches);
     var liveMatches = list.filter(isLiveMatch);
 
     if (liveMatches.length) {
       return renderMatchesByLeague(liveMatches, renderLiveMatch);
     }
 
+    // Canlı maç yok VE gösterilecek başka doğrulanmış maç da yok: boş
+    // bırakmak yerine ne olduğunu söyleyen temiz bir durum basılır.
     if (!list.length) {
-      return "";
+      return matchEmptyStateHtml(
+        "Şu an canlı maç yok",
+        formatMatchDate(todayInIstanbul()) + " için onaylı sağlayıcıdan canlı maç verisi gelmedi. " +
+        "Maç başladığında skor ve dakika otomatik güncellenir."
+      );
     }
 
     var finished = list.filter(function (match) {
