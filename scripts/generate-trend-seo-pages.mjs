@@ -4,7 +4,34 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
-const updatedAt = "2026-07-22";
+
+/**
+ * GÜNCELLEME TARİHİ SABİT DEĞİL — hem sitemap lastmod hem JSON-LD
+ * dateModified bu değerden besleniyor.
+ *
+ * `"2026-07-22"` sabiti, sayfa her yeniden üretildiğinde bile aynı kalıyordu.
+ * Donmuş bir dateModified, yapılandırılmış veride yanlış bir OLGU beyanıdır
+ * (sitemap lastmod'dan daha ağır bir kusur: arama motoru bunu doğrudan
+ * içerik tazeliği olarak yutar).
+ *
+ * Derleme zamanı da yazılamaz — içerik değişmediği hâlde "güncellendi"
+ * demek, alanın tamamen yok sayılmasına yol açan suistimalin ta kendisi.
+ * Dürüst kaynak, sayfanın dayandığı verinin doğrulanma zamanı.
+ */
+const updatedAt = (() => {
+  try {
+    const freshness = JSON.parse(fs.readFileSync(path.join(root, "data", "freshness.json"), "utf8"));
+    const records = (freshness && freshness.records) || {};
+    const stamps = Object.values(records)
+      .map((record) => String((record && (record.verifiedAt || record.fetchedAt)) || "").slice(0, 10))
+      .filter((value) => /^\d{4}-\d{2}-\d{2}$/.test(value))
+      .sort();
+    if (stamps.length) return stamps[stamps.length - 1];
+  } catch (error) {
+    // Tazelik dosyası okunamıyorsa üretim durmamalı.
+  }
+  return "2026-07-22";
+})();
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 

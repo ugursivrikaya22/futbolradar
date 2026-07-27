@@ -7,7 +7,7 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { getPlayers } = require("../services/playerService.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
-const { publicPlayerView } = require("../services/cardCredibility.js");
+const { publicPlayerView, verifiedRadarAxes } = require("../services/cardCredibility.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const outDir = path.join(root, "oyuncular");
 const publicOutDir = path.join(root, "public", "oyuncular");
@@ -100,7 +100,30 @@ function playerDescription(player, view) {
   const potential = fields.potentialRating;
   const ratingPhrase = rating ? `, overall rating ${rating}` : "";
   const potentialPhrase = potential ? `, potansiyel ${potential}` : "";
-  return `${player.name}; ${playerTeamMetaPhrase(player)}, mevki ${player.position}. Transfer geçmişi${ratingPhrase}${potentialPhrase} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
+
+  // "Transfer geçmişi" ve "radar metrikleri" KOŞULSUZ vaat ediliyordu.
+  //
+  // Puan doğru biçimde kapıya bağlanmıştı ama bu iki ifade her açıklamada
+  // duruyordu: 479 profil transfer geçmişi vaat ediyor, 589 kaydın yalnızca
+  // 22'sinde transfer geçmişi var. Radar metrikleri de ölçüm gelene kadar
+  // yayımlanmıyor. Arama sonucundan tıklayan okuyucu ikisini de bulamıyor.
+  //
+  // Açıklama artık yalnızca sayfada GERÇEKTEN olan şeyi sayar.
+  const parts = [];
+  if (Array.isArray(player.transferHistory) && player.transferHistory.length) {
+    parts.push("Transfer geçmişi");
+  }
+  if (verifiedRadarAxes(player).length) {
+    parts.push("radar metrikleri");
+  }
+
+  const detailPhrase = parts.length
+    ? `${parts.join(" ve ")}${ratingPhrase}${potentialPhrase} ile FutbolRadar'da analiz edilir.`
+    : (ratingPhrase || potentialPhrase
+      ? `Overall${ratingPhrase.replace(", overall rating", "")}${potentialPhrase} verisiyle FutbolRadar'da izlenir.`
+      : "Kadro bilgisi FutbolRadar'da doğrulanmış sağlayıcı kaydıyla izlenir.");
+
+  return `${player.name}; ${playerTeamMetaPhrase(player)}, mevki ${player.position}. ${detailPhrase}`;
 }
 
 function playerCurrentTeam(player) {
@@ -213,9 +236,13 @@ function pageHtml(player) {
     ? (playerNeedsTransferReview(player) ? description : player.summary || description)
     : description;
   const canonical = `https://www.futbolradar.com/oyuncular/${player.id}.html`;
-  // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
-  // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
-  const overall = view.verified ? (player.overallRating || player.aiRating || player.rating || "-") : null;
+  // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir.
+  //
+  // KAYIT KAPISI YETMEZ. Eski hâl `view.verified` ile korunuyordu ama değeri
+  // HAM kayıttan okuyordu; kimliği doğrulanmış 479 profilde derece hâlâ
+  // kısıtlıyken "Overall 18" basılıyordu — ratingService'in türettiği
+  // varsayılan, ölçüm değil. Değer artık kapıdan geçen alanlardan gelir.
+  const overall = view.fields.overallRating || view.fields.aiRating || view.fields.rating || null;
 
   return `<!doctype html>
 <html lang="tr">
@@ -247,8 +274,15 @@ function pageHtml(player) {
           {
             "@type": "Person",
             name: player.name,
-            nationality: player.nationality,
-            height: player.height,
+            // null DEĞER YAZILMAZ. 581 profil `"height": null` basıyordu;
+            // yapılandırılmış veride null, "bu özellik yok" değil "bu
+            // özelliğin değeri null" demektir ve doğrulayıcılar bunu hata
+            // olarak işaretler. Alanı hiç yazmamak doğru olan.
+            ...(player.nationality ? { nationality: player.nationality } : {}),
+            ...(player.height ? { height: player.height } : {}),
+            // Doğrulanmış kimlik alanları zaten sayfada görünüyor; schema'da
+            // da bulunmaları tutarlılık sağlar ve uydurma iddia taşımazlar.
+            ...(player.birthDate ? { birthDate: player.birthDate } : {}),
             // memberOf YALNIZCA doğrulanmış kayıtta. Doğrulanmamış bir
             // kulüp iddiasını schema.org ile beyan etmek, onu makine
             // okunur bir olguya dönüştürür — görünür metinden daha kalıcı
@@ -294,10 +328,11 @@ function pageHtml(player) {
             <h1>${escapeHtml(player.name)}</h1>
             <p class="lead">${escapeHtml(lead)}</p>
           </div>
-          ${view.verified
+          ${overall !== null
+            // Derece yalnızca ALAN kapısını da geçtiyse basılır.
             ? `<span class="hero-meta">Overall ${escapeHtml(overall)} · ${escapeHtml(player.position)} · ${escapeHtml(age)}</span>`
-            // Doğrulanmamış kayıtta puan gösterilmez. Yaş ve mevki bağımsız
-            // olarak güvenli bilgiler: kulüpten ve sezondan bağımsızlar.
+            // Ölçülmemiş derece gösterilmez. Yaş ve mevki bağımsız olarak
+            // güvenli bilgiler: kulüpten ve sezondan bağımsızlar.
             : `<span class="hero-meta">${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)}</span>`}
         </div>
       </section>

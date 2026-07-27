@@ -5,7 +5,7 @@ import { createRequire } from "node:module";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
-const { publicPlayerView } = require("../services/cardCredibility.js");
+const { publicPlayerView, verifiedRadarAxes } = require("../services/cardCredibility.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 
@@ -124,29 +124,26 @@ function profileContent(player) {
     ["Dakika", f.minutesPlayed ?? f.minutes],
     ["Piyasa", f.marketValue || (f.marketValueEur !== undefined ? formatMarketValueEur(f.marketValueEur) : null)]
   ].filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== "");
-  const radar = player.radar || {};
-  // Axes are null until real performance data exists; rendering them anyway
-  // produces bare labels with no value, so drop them and fall back to the
-  // "yakinda" note below.
-  // Radar anahtarları veri modelinde İngilizce; sayfada ham anahtar
-  // ("finishing", "pressing") görünüyordu. Türkçe etiketler tek yerde.
-  const RADAR_LABELS = {
-    finishing: "Bitiricilik",
-    creativity: "Yaratıcılık",
-    pressing: "Pres",
-    tempo: "Tempo",
-    consistency: "İstikrar",
-    passing: "Pas",
-    dribbling: "Top sürme",
-    defending: "Savunma",
-    aerial: "Hava topu",
-    speed: "Hız"
-  };
-  const radarItems = Object.entries(radar)
-    .filter(([key]) => key !== "dataConfidence")
-    .filter(([, value]) => Number.isFinite(Number(value)) && value !== null && value !== "")
+  // RADAR ÇUBUKLARI DA KAPIDAN GEÇER — burası kaçmıştı.
+  //
+  // Ölçü ızgarası (yukarıda) doğru biçimde view.fields'tan kuruluyordu, ama
+  // bu satırlar HAM `player.radar` nesnesini okuyordu. Sonuç 479 profilde
+  // şu satırdı:
+  //
+  //     overall 18   form 24   attack 0   Yaratıcılık 0   defense 0
+  //
+  // Üç ayrı kusur birden: (1) sayılar ratingService'in türettiği
+  // varsayılanlar, ölçüm değil; (2) "attack 0 / defense 0", ölçüm yokluğunun
+  // sıfır kılığına girmiş hâli — okuyucu bunu "hücumu sıfır" diye okur;
+  // (3) RADAR_LABELS'ta karşılığı olmayan anahtarlar ham İngilizce olarak
+  // basılıyordu ("overall", "form", "attack", "defense").
+  //
+  // verifiedRadarAxes yalnızca alan kapısını geçen ekseni döndürür ve
+  // etiketi Türkçe verir; geçen eksen yoksa dizi boş döner ve aşağıdaki
+  // "yakında" notu basılır.
+  const radarItems = verifiedRadarAxes(player)
     .slice(0, 5)
-    .map(([key, value]) => `<span>${escapeHtml(RADAR_LABELS[key] || key)} <b>${escapeHtml(value)}</b></span>`)
+    .map((axis) => `<span>${escapeHtml(axis.label)} <b>${escapeHtml(axis.value)}</b></span>`)
     .join("");
   // İşaret, QA ve denetimin "bu sayfa doğrulanmış bir kayda mı dayanıyor"
   // sorusunu yanıtladığı tek yer; doğrulanmamış dalda basılıyor ama

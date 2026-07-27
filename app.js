@@ -3800,13 +3800,50 @@
     );
   }
 
+  /**
+   * YAPILANDIRILMIŞ VERİ, GÖRÜNÜR METİNDEN DAHA SIKI KAPIYA TABİDİR.
+   *
+   * Bu fonksiyon sayfadaki JSON-LD'yi hidrasyonda YENİDEN YAZIYORDU ve
+   * yazdığı her alanı ham kayıttan okuyordu: memberOf kulüp iddiası,
+   * "AI Rating", "Gol Tehdidi", "Yaratıcılık", "Pres Gücü". Ön render bu
+   * sayıları doğru biçimde gizliyordu; JS yüklendiği anda hepsi geri
+   * geliyor ve makine okunur OLGUya dönüşüyordu.
+   *
+   * Görünür bir sayı okuyucuyu yanıltır; yapılandırılmış veri arama
+   * motorunun bilgi grafiğine girer ve orada kalır. Bu yüzden alan kapısı
+   * burada istisnasız uygulanır: ölçülmemiş özellik hiç yazılmaz, boş
+   * dizeyle de yazılmaz (boş PropertyValue geçersiz yapılandırılmış veridir).
+   */
   function updatePlayerDetailSchema(player) {
     var schema = document.querySelector('script[type="application/ld+json"]');
-    var team = playerCurrentTeam(player);
-
     if (!schema) {
       return;
     }
+
+    // Kayıt kapısını geçmeyen oyuncu için JSON-LD'ye hiç dokunulmaz: ön
+    // renderin bastığı (doğrulanmış) yapı korunur.
+    if (!isPublishablePlayerCard(player)) {
+      return;
+    }
+
+    var properties = [];
+    function addProperty(name, key) {
+      var value = verifiedField(player, key);
+      if (value === undefined) return;
+      properties.push({ "@type": "PropertyValue", name: name, value: value });
+    }
+
+    var rating = verifiedField(player, "aiRating");
+    if (rating === undefined) rating = verifiedField(player, "rating");
+    if (rating !== undefined) {
+      properties.push({ "@type": "PropertyValue", name: "AI Rating", value: rating });
+    }
+    addProperty("Gol Tehdidi", "threatScore");
+    addProperty("Yaratıcılık", "creativityScore");
+    addProperty("Pres Gücü", "pressingScore");
+
+    var team = verifiedField(player, "currentTeam");
+    if (team === undefined) team = verifiedField(player, "team");
 
     schema.textContent = JSON.stringify({
       "@context": "https://schema.org",
@@ -3823,12 +3860,8 @@
       jobTitle: player.position || "Football Player",
       url: "https://www.futbolradar.com/oyuncular/" + encodeURIComponent(player.id) + ".html",
       description: playerInsight(player),
-      additionalProperty: [
-        { "@type": "PropertyValue", name: "AI Rating", value: player.aiRating || player.rating || "" },
-        { "@type": "PropertyValue", name: "Gol Tehdidi", value: player.threatScore || "" },
-        { "@type": "PropertyValue", name: "Yaratıcılık", value: player.creativityScore || "" },
-        { "@type": "PropertyValue", name: "Pres Gücü", value: player.pressingScore || "" }
-      ]
+      // Boş dizi hiç yazılmaz: "additionalProperty": [] anlamsız bir düğüm.
+      additionalProperty: properties.length ? properties : undefined
     });
   }
 
@@ -3883,7 +3916,13 @@
     var names = selected.map(function (player) { return player.name; });
     var titleBase = names.join(" vs ");
     var title = titleBase + " Karşılaştırması | FutbolRadar";
-    var description = titleBase + " oyuncu karşılaştırması; AI rating, form, gol tehdidi, yaratıcılık, pres gücü, piyasa değeri ve transfer verileriyle okunur.";
+    // AÇIKLAMA SAYFADA OLANI ANLATIR. Eski metin "AI rating, form, gol
+    // tehdidi, yaratıcılık, pres gücü, piyasa değeri ve transfer verileriyle
+    // okunur" diyordu; bu alanların hiçbiri ölçülmemişken yayımlanmıyor.
+    // Üretici tarafındaki açıklama düzeltilmişti, hidrasyon onu geri
+    // getiriyordu — düzeltmenin istemci ayağı.
+    var description = titleBase + " oyuncu karşılaştırması; rol ve kulüp okuması. " +
+      "Performans ve piyasa karşılaştırması, doğrulanmış ölçüm geldiğinde yayımlanır.";
     var h1 = document.querySelector(".hero h1");
     var lead = document.querySelector(".hero .lead");
     var meta = document.querySelector(".hero-meta");
@@ -3908,15 +3947,36 @@
       meta.textContent = selected.length + " oyunculu radar karşılaştırması";
     }
 
+    // ÖN RENDERİN YAPILANDIRILMIŞ VERİSİ YOK EDİLMEZ.
+    //
+    // Bu blok, statik kıyas sayfalarındaki Article + BreadcrumbList
+    // grafiğinin üstüne yazıp yerine tek bir WebPage düğümü koyuyordu.
+    // Sonuç 2314 sayfada yapılandırılmış verinin KAYBIydı: breadcrumb
+    // işaretlemesi siliniyor, geriye sayfanın gösterdiğinden fazlasını
+    // iddia eden bir açıklama kalıyordu.
+    //
+    // Statik sayfanın grafiği zaten o sayfaya özel ve doğru; dokunulmaz.
+    // Şema yalnızca DİNAMİK kıyas kabuğunda (oyuncu-karsilastir.html,
+    // noindex) yazılır — orada ön render edilmiş bir grafik yok.
     if (schema) {
-      schema.textContent = JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "WebPage",
-        name: title,
-        url: window.location.href,
-        description: description,
-        inLanguage: "tr-TR"
-      });
+      var existing = null;
+      try {
+        existing = JSON.parse(schema.textContent);
+      } catch (error) {
+        existing = null;
+      }
+
+      var isPrerenderedGraph = existing && (existing["@graph"] || existing["@type"] === "Article");
+      if (!isPrerenderedGraph) {
+        schema.textContent = JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          name: title,
+          url: window.location.href,
+          description: description,
+          inLanguage: "tr-TR"
+        });
+      }
     }
   }
 

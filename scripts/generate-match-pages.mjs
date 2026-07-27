@@ -139,7 +139,29 @@ function pageHtml(match) {
   const awayTeam = getTeam(match.awayTeam);
   const title = `${match.homeTeam} - ${match.awayTeam} Maç Önü Analizi | FutbolRadar`;
   const dateLabel = match.kickoff ? formatFreshnessDate(match.kickoff) : (match.dateRange || "Tarih ve saat bekleniyor");
-  const description = `${match.homeTeam} - ${match.awayTeam} Süper Lig maç öncesi analizi; form, radar puanı, kadro durumu ve kilit oyuncu etkisiyle FutbolRadar'da.`;
+  // AÇIKLAMA SAYFANIN GERÇEKTEN GÖSTERDİĞİNİ ANLATIR.
+  //
+  // Sabit metin 306 maç sayfasında "form, radar puanı, kadro durumu ve kilit
+  // oyuncu etkisi" vaat ediyordu. Sezon başlamadığı için maçların çoğunda
+  // radar kapsamı %0 ve sayfa "Veri bekleniyor / Puan için yeterli bileşen
+  // yok" basıyor. Arama sonucundan gelen okuyucu vaat edilen dört şeyin
+  // hiçbirini bulamıyordu.
+  //
+  // Fikstür bilgisi (takımlar, hafta, turnuva, tarih) her zaman gerçek;
+  // analiz yalnızca ölçülmüş bileşen varsa vaat edilir.
+  const hasRadarReading = Boolean(radar && (
+    Number(radar.homeScore) > 0 || Number(radar.awayScore) > 0 ||
+    Number(radar.coverage) > 0
+  ));
+  const stageLabel = match.round ? `${match.round}. hafta` : (match.stage || "");
+  const fixtureLine = [match.league || "Süper Lig", stageLabel, dateLabel]
+    .filter(Boolean).join(" · ");
+
+  const description = hasRadarReading
+    ? `${match.homeTeam} - ${match.awayTeam} maç öncesi analizi; ${fixtureLine}. ` +
+      "Ölçülmüş radar bileşenleri ve güven düzeyiyle FutbolRadar'da."
+    : `${match.homeTeam} - ${match.awayTeam} maç bilgisi; ${fixtureLine}. ` +
+      "Maç öncesi radar okuması, doğrulanmış bileşen verisi geldiğinde yayımlanır.";
   const schema = {
     "@context": "https://schema.org",
     "@graph": [

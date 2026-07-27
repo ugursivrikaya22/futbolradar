@@ -6,11 +6,27 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
-const { publicPlayerView } = require("../services/cardCredibility.js");
+const { publicPlayerView, restrictedFieldIsPublishable } = require("../services/cardCredibility.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const outDir = path.join(root, "karsilastirma");
 const publicOutDir = path.join(root, "public", "karsilastirma");
 const domain = "https://www.futbolradar.com";
+
+/**
+ * Oyuncu veri kümesinin doğrulama zamanı — kayıt bazında damga bulunmayan
+ * sayfalar için son çare. Derleme zamanı DEĞİL: bkz. pairLastmod().
+ */
+const datasetVerifiedAt = (() => {
+  try {
+    const freshness = JSON.parse(fs.readFileSync(path.join(root, "data", "freshness.json"), "utf8"));
+    const stamp = freshness && freshness.records && freshness.records.players &&
+      (freshness.records.players.verifiedAt || freshness.records.players.fetchedAt);
+    if (stamp) return String(stamp).slice(0, 10);
+  } catch (error) {
+    // Tazelik dosyası okunamıyorsa sitemap üretimi durmamalı.
+  }
+  return "2026-07-13";
+})();
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -169,27 +185,67 @@ function buildPairs() {
  * İki taraf da doğrulanmadıkça yalnızca rol okuması kalıyor — bu, kayıttan
  * değil mevkiden türeyen ve tartışmasız bir ifade.
  */
-function comparisonInsight(left, right) {
-  const bothVerified = publicPlayerView(left).verified && publicPlayerView(right).verified;
-  const roleLine = `${playerPositionGroup(left)} ve ${playerPositionGroup(right)} rolleri birlikte okunmalı; tek skor karar için yeterli değil.`;
+/**
+ * KAYIT KAPISI ALAN KAPISI DEĞİLDİR — bu ayrım burada kaçmıştı.
+ *
+ * Yukarıdaki kural doğru yazılmıştı ama yanlış kapıya bağlanmıştı:
+ * `publicPlayerView(x).verified` KAYDIN kimliğinin doğrulandığını söyler
+ * (ad, kulüp, mevki, yaş — kadro uç noktasından). Derecelendirme ve piyasa
+ * değeri o kayıtta HÂLÂ kısıtlı; kadro senkronu ikisini de göndermiyor.
+ *
+ * Sonuç, 735 sayfada şu iki cümleydi:
+ *   "X overall rating tarafinda onde gorunuyor."
+ *   "X piyasa değeri okumasında daha güçlü sinyal veriyor."
+ *
+ * İlki türetilmiş bir varsayılandan (ratingService'in ürettiği sayı)
+ * hesaplanıyordu. İkincisi daha kötüsüydü: marketValueEur her iki tarafta
+ * da yok, `|| 0` ikisini de sıfıra indiriyor, `0 - 0 >= 0` her zaman doğru
+ * oluyor ve cümle DAİMA soldaki oyuncuyu seçiyordu. Yani iddia ölçüme değil,
+ * argüman sırasına dayanıyordu.
+ *
+ * Artık her cümle kendi alanının ALAN kapısını ayrı ayrı geçmek zorunda.
+ * Geçmeyen cümle hiç kurulmaz; yerine tire ya da "yakında" da basılmaz.
+ */
+function fieldComparable(left, right, key) {
+  if (!restrictedFieldIsPublishable(left, key)) return false;
+  if (!restrictedFieldIsPublishable(right, key)) return false;
+  const leftValue = Number(left[key]);
+  const rightValue = Number(right[key]);
+  return Number.isFinite(leftValue) && Number.isFinite(rightValue);
+}
 
-  if (!bothVerified) {
+function comparisonInsight(left, right) {
+  const roleLine = `${playerPositionGroup(left)} ve ${playerPositionGroup(right)} rolleri birlikte okunmalı; tek skor karar için yeterli değil.`;
+  const lines = [];
+
+  // Derece kıyası: her iki kayıtta da ÖLÇÜLMÜŞ derece şart.
+  const ratingField = ["overallRating", "aiRating", "rating"]
+    .find((key) => fieldComparable(left, right, key));
+  if (ratingField) {
+    const leader = Number(left[ratingField]) >= Number(right[ratingField]) ? left : right;
+    lines.push(`${leader.name} overall rating tarafinda onde gorunuyor.`);
+  }
+
+  // Piyasa kıyası: ölçülmüş piyasa değeri şart. Eşitlikte kimse "önde"
+  // değildir — eski hâl eşitliği soldaki oyuncunun üstünlüğü sayıyordu.
+  if (fieldComparable(left, right, "marketValueEur")) {
+    const leftValue = Number(left.marketValueEur);
+    const rightValue = Number(right.marketValueEur);
+    if (leftValue !== rightValue) {
+      const marketLeader = leftValue > rightValue ? left : right;
+      lines.push(`${marketLeader.name} piyasa değeri okumasında daha güçlü sinyal veriyor.`);
+    }
+  }
+
+  if (!lines.length) {
     return [
-      "Bu kıyasın performans ve piyasa okuması, iki oyuncunun da doğrulanmış sağlayıcı kaydı geldiğinde yayımlanacak.",
+      "Bu kıyasın performans ve piyasa okuması, iki oyuncunun da doğrulanmış ölçümü geldiğinde yayımlanacak.",
       roleLine
     ];
   }
 
-  const ratingDiff = playerRating(left) - playerRating(right);
-  const marketDiff = Number(left.marketValueEur || 0) - Number(right.marketValueEur || 0);
-  const leader = ratingDiff >= 0 ? left : right;
-  const marketLeader = marketDiff >= 0 ? left : right;
-
-  return [
-    `${leader.name} overall rating tarafinda onde gorunuyor.`,
-    `${marketLeader.name} piyasa değeri okumasında daha güçlü sinyal veriyor.`,
-    roleLine
-  ];
+  lines.push(roleLine);
+  return lines;
 }
 
 /**
@@ -235,12 +291,73 @@ function playerMiniCard(player) {
   </article>`;
 }
 
+/**
+ * AÇIKLAMA SAYFADA OLANI ANLATIR — olmasını istediğimizi değil.
+ *
+ * Sabit açıklama her sayfada "AI rating, form, gol tehdidi, yaratıcılık,
+ * pres gücü, piyasa değeri ve transfer bilgileriyle analiz edilir" diyordu.
+ * Bu alanların hiçbiri ölçülmediği için sayfada YOKTU: 2314 açıklamanın
+ * tamamı, arama sonucunda tıklayan okuyucuya bulamayacağı şeyi vaat
+ * ediyordu. Arama motoru için bu bir uyumsuzluk sinyali; okuyucu için
+ * doğrudan yanlış beyan.
+ *
+ * Açıklama artık kıyasın GERÇEKTEN gösterdiği alanlardan kurulur.
+ */
+function comparisonDescription(left, right, insights) {
+  const head = `${left.name} ve ${right.name} oyuncu karşılaştırması`;
+  const hasMeasuredReading = insights.some((line) =>
+    /overall rating|piyasa değeri okumasında/.test(line));
+
+  if (hasMeasuredReading) {
+    return `${head}; doğrulanmış sağlayıcı verisiyle rol, kulüp ve ölçülmüş performans okuması FutbolRadar'da.`;
+  }
+
+  // Kulüp de doğrulamaya tabidir. Kart yüzeyinde `verified` ile korunuyor;
+  // açıklamada korunmazsa aynı iddia meta etiketine sızar — üstelik arama
+  // sonucunda kartın kendisinden daha görünür bir yere.
+  const clubs = [left, right]
+    .filter((player) => publicPlayerView(player).verified)
+    .map((player) => playerTeamDisplay(player))
+    .filter(Boolean)
+    .join(" - ");
+
+  return `${head}: ${clubs ? `${clubs}, ` : ""}mevki ve rol karşılaştırması. ` +
+    "Performans ve piyasa okuması, doğrulanmış ölçüm geldiğinde yayımlanır.";
+}
+
+/**
+ * lastmod GERÇEK DEĞİŞİM TARİHİDİR — sabit bir dize değil.
+ *
+ * Sitemap'teki 2314 kıyas girdisi `2026-07-13` sabitini taşıyordu. Sayfa
+ * içeriği bundan sonra defalarca değişti (kapı sertleştirmeleri, açıklama
+ * düzeltmesi) ama sitemap "13 Temmuz'dan beri hiçbir şey değişmedi" demeye
+ * devam etti. Donmuş bir lastmod, arama motoruna yeniden taramaya değmez
+ * sinyali verir ve zamanla girdiyi tarama sırasının dibine düşürür.
+ *
+ * DERLEME ZAMANI DA KULLANILAMAZ: her derlemede bugünü yazmak, içerik
+ * değişmediği hâlde "güncellendi" demektir — sitemap'in en çok suistimal
+ * edilen alanı budur ve arama motoru bunu öğrenip alanı tamamen yok sayar.
+ *
+ * Dürüst kaynak, sayfanın DAYANDIĞI verinin doğrulama zamanı: kıyasın iki
+ * oyuncusundan en son doğrulananı. Veri durduğunda tarih durur, veri
+ * güncellendiğinde tarih ilerler.
+ */
+function pairLastmod(pair) {
+  const stamps = [pair.left, pair.right]
+    .map((player) => String((player && (player.lastVerifiedAt || player.lastSyncedAt)) || ""))
+    .map((value) => value.slice(0, 10))
+    .filter((value) => /^\d{4}-\d{2}-\d{2}$/.test(value))
+    .sort();
+
+  return stamps.length ? stamps[stamps.length - 1] : datasetVerifiedAt;
+}
+
 function pageHtml(pair) {
   const { left, right, slug, reasons } = pair;
   const title = `${left.name} vs ${right.name} | Oyuncu Karşılaştırması | FutbolRadar`;
-  const description = `${left.name} ve ${right.name} oyuncu karşılaştırması; AI rating, form, gol tehdidi, yaratıcılık, pres gücü, piyasa değeri ve transfer bilgileriyle FutbolRadar'da analiz edilir.`;
   const canonical = `${domain}/karsilastirma/${slug}.html`;
   const insights = comparisonInsight(left, right);
+  const description = comparisonDescription(left, right, insights);
 
   return `<!doctype html>
 <html lang="tr">
@@ -479,7 +596,7 @@ for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "publ
   const current = fs.readFileSync(sitemapPath, "utf8");
   const retained = (current.match(/  <url>[\s\S]*?  <\/url>/g) || [])
     .filter((entry) => !entry.includes(`${domain}/karsilastirma/`));
-  const entries = pairs.map((pair) => `  <url>\n    <loc>${domain}/karsilastirma/${pair.slug}.html</loc>\n    <lastmod>2026-07-13</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.65</priority>\n  </url>`);
+  const entries = pairs.map((pair) => `  <url>\n    <loc>${domain}/karsilastirma/${pair.slug}.html</loc>\n    <lastmod>${pairLastmod(pair)}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.65</priority>\n  </url>`);
   const content = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${retained.concat(entries).join("\n")}\n</urlset>\n`;
   fs.writeFileSync(sitemapPath, content, "utf8");
 }

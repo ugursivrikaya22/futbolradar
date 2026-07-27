@@ -4,7 +4,34 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
-const today = "2026-07-22";
+
+/**
+ * SITEMAP lastmod — sabit dize değil, verinin doğrulama zamanı.
+ *
+ * Buradaki değer `"2026-07-22"` olarak sabitlenmişti ve 653 girdiye
+ * değişmeden basılıyordu. Donmuş bir lastmod arama motoruna "burada
+ * hiçbir şey değişmiyor" der ve girdiyi yeniden tarama sırasının dibine
+ * düşürür.
+ *
+ * Derleme zamanı da kullanılamaz: içerik değişmediği hâlde her derlemede
+ * "güncellendi" demek, alanın tamamen yok sayılmasına yol açan
+ * suistimalin ta kendisi. Dürüst kaynak, sayfaların dayandığı veri
+ * kümesinin doğrulanma zamanıdır — veri durduğunda tarih de durur.
+ */
+const today = (() => {
+  try {
+    const freshness = JSON.parse(fs.readFileSync(path.join(root, "data", "freshness.json"), "utf8"));
+    const records = (freshness && freshness.records) || {};
+    const stamps = Object.values(records)
+      .map((record) => String((record && (record.verifiedAt || record.fetchedAt)) || "").slice(0, 10))
+      .filter((value) => /^\d{4}-\d{2}-\d{2}$/.test(value))
+      .sort();
+    if (stamps.length) return stamps[stamps.length - 1];
+  } catch (error) {
+    // Tazelik dosyası okunamıyorsa üretim durmamalı.
+  }
+  return "2026-07-22";
+})();
 
 const nav = `
     ${siteHeader({ base: "./" })}`;
@@ -403,6 +430,22 @@ function writePage(page) {
   fs.writeFileSync(path.join(root, "public", page.file), html, "utf8");
 }
 
+/**
+ * noindex SÜZGECİ BURADA DA GEÇERLİ — asimetri sessiz bir tuzaktı.
+ *
+ * generatedPlayerPages() noindex taşıyan profilleri sitemap'ten eliyor,
+ * bu fonksiyon elemiyordu. Bugün fark yaratmıyor (hiçbir kıyas sayfası
+ * noindex değil), ama ince içerik politikası gereği bir gün kıyas
+ * sayfalarına noindex basılırsa sitemap onları listelemeye devam ederdi.
+ *
+ * "noindex + sitemap'te listeli" çelişkili bir sinyaldir: sitemap
+ * taranmasını ister, sayfa indekslenmemeyi söyler. Search Console bunu
+ * "Sitemap'te gönderildi ama indekslenmedi" hatası olarak raporlar ve
+ * kasıtlı bir karar, kaza gibi görünür.
+ *
+ * Süzgeci şimdi simetrik hâle getirmek, o kararı tek satırlık bir
+ * değişikliğe indiriyor.
+ */
 function generatedComparisonPages() {
   const dir = path.join(root, "karsilastirma");
   if (!fs.existsSync(dir)) {
@@ -411,6 +454,7 @@ function generatedComparisonPages() {
 
   return fs.readdirSync(dir)
     .filter((file) => file.endsWith(".html"))
+    .filter((file) => !/content="noindex/.test(fs.readFileSync(path.join(dir, file), "utf8")))
     .sort()
     .map((file) => `karsilastirma/${file}`);
 }
