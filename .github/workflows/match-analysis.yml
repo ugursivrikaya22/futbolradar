@@ -131,6 +131,28 @@ jobs:
       - name: Merge synced squads into canonical player data
         run: node scripts/sync-canonical-players.mjs --apply
 
+      # ÖLÇÜM AYRI UÇ NOKTADAN GELİR.
+      #
+      # Kadro senkronu (/players/squads) yalnızca kimlik getiriyor: ad,
+      # mevki, yaş, forma numarası, fotoğraf. Derecelendirme, dakika, gol
+      # ve asist GÖNDERMİYOR. Bu yüzden Oyuncu Radarı'nın çizecek ekseni,
+      # ana sayfa etki bloğunun sıralayacak sayısı yoktu ve ikisi de boş
+      # durum basıyordu — doğru davranış, ama eksik veri.
+      #
+      # Sezon istatistiği ve gerçek maç derecesi /players uç noktasından
+      # gelir; bu adım onu çeker. continue-on-error: kadro senkronuyla
+      # aynı gerekçe — güvenlik kapısı yazmayı reddettiğinde (yarım çekim,
+      # ölçüm yokluğu) adım sıfırdan farklı kod döndürür, bu DOĞRUDUR ve
+      # hiçbir veri yazılmaz; zincirin geri kalanı durmamalı.
+      - name: Sync measured player statistics
+        if: steps.apifootball.outputs.ready == 'true'
+        continue-on-error: true
+        env:
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
+          APIFOOTBALL_LEAGUE_ID: ${{ secrets.APIFOOTBALL_LEAGUE_ID }}
+          APIFOOTBALL_SEASON: ${{ secrets.APIFOOTBALL_SEASON }}
+        run: node scripts/sync-player-statistics.mjs --apply
+
       - name: Validate team/player data
         run: |
           node scripts/validate-player-data.mjs
