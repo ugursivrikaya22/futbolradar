@@ -12,6 +12,8 @@ const {
 const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig, getProvider, getProviderChain, apiFootballProvider } = require("../services/providers");
 const { getConfig } = require("../services/providers/footballProvider");
 const { readCachedLeague } = require("../services/leagueCache");
+const { providerCacheStats, DEFAULT_TTLS, MAX_STALE_ON_ERROR_MS } = require("../services/providerCache");
+const { ratingIsVerified, statsAreVerified, evaluatePlayerCard } = require("../services/cardCredibility");
 
 function presentEnvNames(names) {
   return names.filter((name) => String(process.env[name] || "").trim() !== "");
@@ -42,6 +44,62 @@ function credentialShape(names) {
         blank: trimmed === ""
       };
     });
+}
+
+/**
+ * YAYIN HAZIRLIĞI: "bu dağıtım gerçek veri gösterecek mi?"
+ *
+ * Anahtarın tanımlı olması yetmiyor. Oyuncu Radarı ve ana sayfa etki bloğu
+ * ÖLÇÜLMÜŞ veri arıyor; ölçüm ayrı bir uç noktadan (/players) geliyor ve
+ * ayrı bir koşuyla (sync-player-statistics) yazılıyor. Anahtar tanımlıyken
+ * bile o koşu hiç çalışmadıysa yüzeyler doğru biçimde boş durum basar ve
+ * bu, sağlık ucundan görünmüyordu.
+ *
+ * Buradaki sayılar veri kümesinden HESAPLANIR, elle girilmez: dağıtımdan
+ * sonra tek bir istekle "radar dolacak mı" sorusu cevaplanabilir.
+ *
+ * Oyuncu kaydı okunamazsa sağlık ucu ÇÖKMEZ; alan null döner. Tanı ucunun
+ * kendisi bir kesinti kaynağı olmamalı.
+ */
+function playerDataReadiness() {
+  let players;
+  try {
+    players = require("../data/players.json");
+  } catch (error) {
+    return { available: false, reason: "players-dataset-unreadable" };
+  }
+
+  if (!Array.isArray(players)) {
+    return { available: false, reason: "players-dataset-not-an-array" };
+  }
+
+  let gatePassing = 0;
+  let measuredRating = 0;
+  let measuredStats = 0;
+
+  for (const player of players) {
+    if (evaluatePlayerCard(player).publishable) gatePassing += 1;
+    if (ratingIsVerified(player)) measuredRating += 1;
+    if (statsAreVerified(player)) measuredStats += 1;
+  }
+
+  return {
+    available: true,
+    total: players.length,
+    // Kimliği doğrulanmış: kart çizilebilir (ad, kulüp, mevki, yaş).
+    gatePassing,
+    // Ölçülmüş: radar ekseni ve sıralama bunlardan üretilir.
+    measuredRating,
+    measuredStats,
+    // Radar ve etki bloğunun dolu görüneceği tek koşul.
+    radarWillRender: measuredRating > 0,
+    // Sonraki adım metni sağlayıcı anahtarının DEĞİŞKEN ADINI içermez.
+    // Sağlık ucu tanı amaçlı paylaşılan bir yüzey; hangi değişkenlerin
+    // hedefleneceğini saymak gereksiz bir ipucu. Kurulum belgeye bırakılır.
+    nextAction: measuredRating > 0
+      ? "Ölçülmüş derece mevcut; Oyuncu Radarı ve ana sayfa etki bloğu dolu render ediliyor."
+      : "Ölçülmüş derece yok; yüzeyler temiz boş durum basıyor. Doldurmak için istatistik senkronunu çalıştırın: docs/player-statistics-operations.md"
+  };
 }
 
 function buildDiagnostics(config) {
@@ -96,6 +154,14 @@ function buildDiagnostics(config) {
       resolvedLeagueId: apiFootballConfig.leagueId || (cachedLeague ? cachedLeague.leagueId : null),
       resolvedSeason: apiFootballConfig.season
     },
+    // Kota koruması: canlı skor yolunun sağlayıcıya ne sıklıkta gittiği.
+    providerCache: {
+      ...providerCacheStats(),
+      liveTtlMs: DEFAULT_TTLS["matches-live"],
+      dailyTtlMs: DEFAULT_TTLS.matches,
+      maxStaleOnErrorMs: MAX_STALE_ON_ERROR_MS
+    },
+    playerData: playerDataReadiness(),
     providerSelection: {
       primaryProviderEnv: process.env.FOOTBALL_PRIMARY_PROVIDER || null,
       matchProviderEnv: process.env.FOOTBALL_MATCH_PROVIDER || null,
