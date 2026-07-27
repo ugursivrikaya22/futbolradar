@@ -154,11 +154,23 @@ function sourceMetadata(record) {
 const SAFE_FIELDS = ["id", "slug", "name", "fullName", "position", "secondaryPosition",
   "nationality", "birthDate", "computedAge", "age", "heightCm", "height", "preferredFoot"];
 
-/** Doğrulama olmadan asla yayımlanmayacak alanlar. */
+/**
+ * Doğrulama olmadan asla yayımlanmayacak alanlar.
+ *
+ * İLERİ İSTATİSTİKLER DE BURADA (xg, xa, şut, kilit pas, pres, ikili
+ * mücadele, kart, isabet yüzdeleri). Son denetimde bu alanlar listede
+ * yoktu; oysa kart yüzeyi hepsini basıyordu. Listede olmayan alan
+ * publicPlayerView tarafından hiç değerlendirilmiyor, dolayısıyla
+ * "kısıtlı değil" sayılıp ham kayıttan geçiyordu. Bunlar sağlayıcının
+ * ölçtüğü değerlerdir; ölçüm gelmedikçe yayımlanamazlar.
+ */
 const RESTRICTED_FIELDS = [
   "aiRating", "rating", "overallRating", "potentialRating", "formRating",
   "marketValue", "marketValueEur",
   "minutes", "minutesPlayed", "appearances", "goals", "assists",
+  "xg", "xa", "shots", "keyPasses", "pressures", "press", "duels", "duelsWon",
+  "yellowCards", "redCards", "passAccuracy", "shotsPerGame",
+  "tacklesPerGame", "interceptionsPerGame",
   "currentTeam", "team", "currentTeamId", "squadStatus", "number",
   "threatScore", "creativityScore", "pressingScore", "continuityScore", "tempoScore",
   "form", "formChange", "trend", "trendDirection", "impact",
@@ -196,7 +208,12 @@ const RATING_FIELDS = new Set([
 ]);
 
 const COUNTING_STAT_FIELDS = new Set([
-  "minutes", "minutesPlayed", "appearances", "goals", "assists"
+  "minutes", "minutesPlayed", "appearances", "goals", "assists",
+  // İleri istatistikler de ölçümdür: sağlayıcı istatistik uç noktası
+  // çağrılmadıysa bunların hiçbiri gerçek değildir.
+  "xg", "xa", "shots", "keyPasses", "pressures", "press", "duels", "duelsWon",
+  "yellowCards", "redCards", "passAccuracy", "shotsPerGame",
+  "tacklesPerGame", "interceptionsPerGame"
 ]);
 
 const MARKET_VALUE_FIELDS = new Set(["marketValue", "marketValueEur"]);
@@ -211,8 +228,26 @@ const MARKET_VALUE_FIELDS = new Set(["marketValue", "marketValueEur"]);
  */
 const MAINTAINED_RATING_STATUS = new Set(["verified", "current"]);
 
+/**
+ * SAĞLAYICININ ÖLÇTÜĞÜ DERECE — kadro senkronunun türettiğinden farklıdır.
+ *
+ * API-Football'un /players uç noktası sezon istatistiğiyle birlikte GERÇEK
+ * bir maç derecesi (games.rating) döndürür. Bu ölçülmüş bir değerdir ve
+ * yayımlanabilir. Ama tek başına "provider" dizesi yeterli sayılamaz:
+ * ratingStatus serbest metin, ve bir kaydın o dizeyi ölçüm olmadan taşıması
+ * mümkün. Bu yüzden köken damgası da aranır — damgayı yalnızca istatistik
+ * senkronu, sağlayıcı gerçekten bir derece gönderdiğinde yazar.
+ */
+const PROVIDER_MEASURED_RATING_STATUS = new Set(["provider", "measured"]);
+
+function hasRatingProvenance(player) {
+  return Boolean(player && (player.ratingVerifiedAt || player.ratingSource));
+}
+
 function ratingIsVerified(player) {
-  return MAINTAINED_RATING_STATUS.has(String((player && player.ratingStatus) || "").toLowerCase());
+  const status = String((player && player.ratingStatus) || "").toLowerCase();
+  if (MAINTAINED_RATING_STATUS.has(status)) return true;
+  return PROVIDER_MEASURED_RATING_STATUS.has(status) && hasRatingProvenance(player);
 }
 
 /**
@@ -299,6 +334,77 @@ function publicPlayerView(player, options = {}) {
   };
 }
 
+/**
+ * RADAR EKSENLERİ ÖLÇÜMDEN GELİR, TÜRETMEDEN DEĞİL.
+ *
+ * Radarın eski hâli her ekseni doldurmak zorundaydı: ölçüm yoksa zincirleme
+ * yedeklerle bir sayı üretiliyordu ve iki eksen (Disiplin 72, Veri 68) hiç
+ * ölçülmeden sabit yazılıydı. Altı eksenli dolu bir grafik, arkasında tek
+ * bir ölçüm olmasa bile "ölçülmüş profil" gibi okunur — radarın kendisi bir
+ * iddiadır.
+ *
+ * Kural: bir eksen yalnızca dayandığı alan yayın kapısını geçiyorsa çizilir.
+ * Geçen eksen yoksa radar HİÇ çizilmez; eksik eksen sıfırla ya da tireyle
+ * doldurulmaz.
+ *
+ * @returns {Array<{key: string, label: string, value: number}>}
+ */
+const RADAR_AXES = [
+  { key: "form", label: "Form", field: "formRating" },
+  { key: "attack", label: "Hücum", field: "threatScore" },
+  { key: "creativity", label: "Yaratıcılık", field: "creativityScore" },
+  { key: "pressing", label: "Pres", field: "pressingScore" },
+  { key: "continuity", label: "Süreklilik", field: "continuityScore" },
+  { key: "tempo", label: "Tempo", field: "tempoScore" }
+];
+
+function verifiedRadarAxes(player) {
+  if (!player || typeof player !== "object") return [];
+
+  const axes = [];
+  for (const axis of RADAR_AXES) {
+    const raw = player[axis.field];
+    if (raw === null || raw === undefined || String(raw).trim() === "") continue;
+    if (!restrictedFieldIsPublishable(player, axis.field)) continue;
+    const value = Number(raw);
+    if (!Number.isFinite(value)) continue;
+    axes.push({ key: axis.key, label: axis.label, value });
+  }
+  return axes;
+}
+
+/**
+ * SIRALAMA DA BİR İDDİADIR.
+ *
+ * "En yüksek AI rating" diyen bir kart, o oyuncuyu diğerlerinin üstüne
+ * koyar. Sıralama ölçülmemiş bir alandan yapılırsa kartın başlığı yanlıştır
+ * — kart üstünde tek bir sayı basılmasa bile. Ana sayfadaki üç "trend"
+ * kartının üç yedek kaleci olmasının sebebi tam buydu: sıralama, kadro
+ * senkronunun türettiği overallRating varsayılanından yapılıyordu.
+ *
+ * Bu yüzden sıralama yalnızca ALANI YAYIN KAPISINI GEÇEN kayıtlar arasında
+ * yapılır. Geçen kayıt yoksa liste boş döner ve çağıran taraf boş durum
+ * basar.
+ */
+function rankByVerifiedMetric(players, field, options = {}) {
+  const evaluate = options.trend ? evaluateTrendPlayerCard : evaluatePlayerCard;
+  const eligible = [];
+
+  for (const player of Array.isArray(players) ? players : []) {
+    if (!evaluate(player, options).publishable) continue;
+    const raw = player && player[field];
+    if (raw === null || raw === undefined || String(raw).trim() === "") continue;
+    if (!restrictedFieldIsPublishable(player, field)) continue;
+    const value = Number(raw);
+    if (!Number.isFinite(value)) continue;
+    eligible.push({ player, value });
+  }
+
+  eligible.sort((left, right) => right.value - left.value);
+  const limit = Number.isFinite(options.limit) ? options.limit : eligible.length;
+  return eligible.slice(0, limit);
+}
+
 /** Listeyi süzer; elenenleri gerekçesiyle döndürür. */
 function filterPlayerCards(players, options = {}) {
   const evaluate = options.trend ? evaluateTrendPlayerCard : evaluatePlayerCard;
@@ -325,6 +431,9 @@ module.exports = {
   restrictedFieldIsPublishable,
   ratingIsVerified,
   statsAreVerified,
+  verifiedRadarAxes,
+  rankByVerifiedMetric,
+  RADAR_AXES,
   MAX_VERIFICATION_AGE_DAYS,
   hasRealProviderId,
   evaluatePlayerCard,

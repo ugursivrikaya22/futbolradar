@@ -572,6 +572,7 @@
     return '<div class="tag-row">' + (Array.isArray(tags) ? tags.map(tagHtml).join("") : "") + "</div>";
   }
 
+  // --- CLIENT-CREDIBILITY-GATE:start ---
   // GÖRÜNÜR KART GÜVENİLİRLİĞİ (services/cardCredibility.js ile aynı kural)
   //
   // Denetim: 110 oyuncu kaydının hiçbiri barı geçmiyor — 102'sinde sağlayıcı
@@ -582,6 +583,37 @@
   // Bar: gerçek sağlayıcı kimliği + kaynak bağlantısı + doğrulama zamanı.
   // Biri eksikse kart çizilmez; sayfayı doldurmak doğrulanmamış bir sayı
   // göstermenin gerekçesi değildir.
+  //
+  // KAYIT KAPISI ALAN KAPISI DEĞİLDİR — bu ayrım son denetimin bulduğu açık.
+  //
+  // İstemcide yalnızca kayıt kapısı vardı. Ön render, kadro senkronundan
+  // gelen 479 kaydın derecesini ve sayaçlarını doğru biçimde gizliyordu; ama
+  // JS yüklendiği anda istemci aynı kayıtları HAM olarak yeniden basıyordu:
+  // rozette overallRating 34 (ratingStatus "estimated" — türetilmiş bir
+  // varsayılan), "Gol 0", "Dakika 0" ve dolu bir radar. Statik HTML denetimi
+  // temiz rapor veriyordu çünkü kaçak yalnızca hidrasyondan sonra vardı.
+  //
+  // Bu yüzden alan kapısı da istemciye taşındı. Kural sunucudakiyle birebir
+  // aynı; scripts/test-client-gate-parity.mjs iki uygulamayı tüm veri kümesi
+  // üzerinde karşılaştırıp ayrışmayı build'de kırar.
+  var CLIENT_MAINTAINED_RATING_STATUS = ["verified", "current"];
+  var CLIENT_PROVIDER_MEASURED_RATING_STATUS = ["provider", "measured"];
+
+  var CLIENT_PROVIDER_SUPPLIED_FIELDS = ["currentTeam", "team", "currentTeamId",
+    "squadStatus", "number", "providerId", "photo"];
+  var CLIENT_RATING_FIELDS = ["aiRating", "rating", "overallRating", "potentialRating",
+    "formRating", "threatScore", "creativityScore", "pressingScore", "continuityScore",
+    "tempoScore", "form", "formChange", "trend", "trendDirection", "impact"];
+  var CLIENT_COUNTING_STAT_FIELDS = ["minutes", "minutesPlayed", "appearances", "goals", "assists",
+    "xg", "xa", "shots", "keyPasses", "pressures", "press", "duels", "duelsWon",
+    "yellowCards", "redCards", "passAccuracy", "shotsPerGame",
+    "tacklesPerGame", "interceptionsPerGame"];
+  var CLIENT_MARKET_VALUE_FIELDS = ["marketValue", "marketValueEur"];
+
+  function inList(list, value) {
+    return list.indexOf(value) !== -1;
+  }
+
   function isPublishablePlayerCard(player) {
     if (!player) return false;
 
@@ -599,6 +631,64 @@
 
     return true;
   }
+
+  // Derece: elle bakımı yapılan kayıt, ya da sağlayıcının GERÇEKTEN ölçtüğü
+  // derece (köken damgası olmadan "provider" dizesi tek başına yetmez).
+  function clientRatingIsVerified(player) {
+    var status = String(player && player.ratingStatus || "").toLowerCase();
+    if (inList(CLIENT_MAINTAINED_RATING_STATUS, status)) return true;
+    return inList(CLIENT_PROVIDER_MEASURED_RATING_STATUS, status) &&
+      Boolean(player && (player.ratingVerifiedAt || player.ratingSource));
+  }
+
+  // Sayaçlar: açık köken işareti, ya da sentezlenemeyen kanıt — oynanmışlık.
+  // Tamamı sıfır olan bir satır "oynadı ve üretemedi" ile "hiç ölçülmedi"
+  // arasında ayrım taşımaz; güvenli yön yayımlamamaktır.
+  function clientStatsAreVerified(player) {
+    if (!player) return false;
+    if (player.statsVerifiedAt || player.statsSource || player.statsFetchedAt) return true;
+    return Number(player.appearances) > 0 ||
+      Number(player.minutesPlayed) > 0 ||
+      Number(player.minutes) > 0;
+  }
+
+  function clientFieldIsPublishable(player, key) {
+    if (inList(CLIENT_PROVIDER_SUPPLIED_FIELDS, key)) return true;
+    if (inList(CLIENT_RATING_FIELDS, key)) return clientRatingIsVerified(player);
+    if (inList(CLIENT_COUNTING_STAT_FIELDS, key)) return clientStatsAreVerified(player);
+    if (inList(CLIENT_MARKET_VALUE_FIELDS, key)) return clientStatsAreVerified(player);
+    return false;
+  }
+
+  /**
+   * Bir alanın YAYIMLANABİLİR değeri; geçemiyorsa undefined.
+   *
+   * Çağıran taraf undefined'ı sıfıra ya da tireye çevirmez — alan hiç
+   * basılmaz. "0 gol", sağlayıcı hiç gol verisi göndermediğinde "oynadı ve
+   * atamadı" gibi okunur; ölçülmemiş bir iddiadır.
+   *
+   * KAYIT kapısı burada da uygulanır. Alan kuralı tek başına yetmez:
+   * publicPlayerView kapıyı geçemeyen kayıtta HİÇBİR kısıtlı alanı
+   * yayımlamıyor. Çağıranların çoğu listeyi zaten süzüyor ama bu fonksiyonun
+   * kendi kendine güvenli olması gerekiyor — süzülmemiş tek bir çağrı,
+   * eleme gerekçesi ne olursa olsun alanı geri açardı.
+   */
+  function verifiedField(player, key) {
+    if (!player) return undefined;
+    if (!isPublishablePlayerCard(player)) return undefined;
+    var value = player[key];
+    if (value === null || value === undefined || String(value).trim() === "") return undefined;
+    if (!clientFieldIsPublishable(player, key)) return undefined;
+    return value;
+  }
+
+  function verifiedNumber(player, key) {
+    var value = verifiedField(player, key);
+    if (value === undefined) return undefined;
+    var numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : undefined;
+  }
+  // --- CLIENT-CREDIBILITY-GATE:end ---
 
   function playerInitials(player) {
     var name = String(player && player.name || "FR").trim();
@@ -744,53 +834,92 @@
     );
   }
 
+  /**
+   * Metrik ızgarası yalnızca ÖLÇÜLMÜŞ alanları basar.
+   *
+   * Eski hâli her metriği koşulsuz basıyordu ve playerStats() eksik alanları
+   * sıfırla dolduruyordu: kadro senkronundan gelen kayıtlarda "Dakika 0,
+   * Gol 0, Asist 0, xG 0" satırları çıkıyordu. Bunlar ölçüm değil, ölçüm
+   * yokluğunun sıfır kılığına girmiş hâliydi.
+   *
+   * Yaş kimlik bilgisidir (SAFE_FIELDS) ve doğrulamaya tabi değildir.
+   */
   function playerMetricsHtml(player, compact) {
-    var stats = playerStats(player);
-    var metrics = [
-      { label: "Overall", value: player.overallRating || player.aiRating || player.rating },
+    var overall = verifiedField(player, "overallRating");
+    if (overall === undefined) overall = verifiedField(player, "aiRating");
+    if (overall === undefined) overall = verifiedField(player, "rating");
+
+    var candidates = [
+      { label: "Overall", value: overall },
       { label: "Yaş", value: playerAge(player) },
-      { label: "Piyasa", value: playerMarketValue(player) },
-      { label: "Dakika", value: stats.minutesPlayed },
-      { label: "Gol", value: stats.goals },
-      { label: "Asist", value: stats.assists },
-      { label: "xG", value: stats.xg },
-      { label: "xA", value: stats.xa },
-      { label: "Şut", value: player.shots },
-      { label: "Kilit pas", value: stats.keyPasses },
-      { label: "Pres", value: stats.pressures },
-      { label: "İkili", value: playerMetric(player, "duels", "duelsWon") }
+      { label: "Piyasa", value: verifiedField(player, "marketValueEur") !== undefined ||
+        verifiedField(player, "marketValue") !== undefined ? playerMarketValue(player) : undefined },
+      { label: "Dakika", value: verifiedField(player, "minutesPlayed") },
+      { label: "Gol", value: verifiedField(player, "goals") },
+      { label: "Asist", value: verifiedField(player, "assists") },
+      { label: "xG", value: verifiedField(player, "xg") },
+      { label: "xA", value: verifiedField(player, "xa") },
+      { label: "Şut", value: verifiedField(player, "shots") },
+      { label: "Kilit pas", value: verifiedField(player, "keyPasses") },
+      { label: "Pres", value: verifiedField(player, "pressures") },
+      { label: "İkili", value: verifiedField(player, "duelsWon") }
     ];
 
+    var metrics = candidates.filter(function (metric) {
+      return metric.value !== undefined && metric.value !== null && String(metric.value).trim() !== "";
+    });
+
     if (compact) {
-      metrics = [metrics[0], metrics[1], metrics[3]];
+      metrics = metrics.slice(0, 3);
     }
+
+    // Tek bir ölçülmüş metrik yoksa ızgara hiç basılmaz: boş bir çerçeve
+    // ya da sıfır dolu satırlar, ölçüm yokluğunu ölçüm gibi gösterirdi.
+    if (!metrics.length) return "";
 
     return '<div class="player-metrics">' + metrics.map(function (metric) {
       return compactMetricHtml(metric.label, metric.value);
     }).join("") + "</div>";
   }
 
-  function playerRadarRows(player) {
-    return [
-      { label: "Form", value: radarMetric(player, "form", "Form") },
-      { label: "Hücum", value: radarMetric(player, "attack", "Hücum") },
-      { label: "Yaratıcılık", value: radarMetric(player, "creativity", "Yaratıcılık") },
-      { label: "Savunma", value: radarMetric(player, "defense", "Savunma") },
-      { label: "Potansiyel", value: radarMetric(player, "potential", "Potansiyel") },
-      { label: "Veri", value: radarMetric(player, "dataConfidence", "Veri") }
-    ];
+  /**
+   * RADAR EKSENLERİ ÖLÇÜMDEN GELİR (services/cardCredibility.js: RADAR_AXES).
+   *
+   * Eski hâli her ekseni doldurmak zorundaydı: ölçüm yoksa zincirleme
+   * yedeklerle bir sayı üretiliyor, iki eksen (Disiplin 72, Veri 68) ise hiç
+   * ölçülmeden sabit yazılıyordu. Altı eksenli dolu bir grafik, arkasında tek
+   * ölçüm olmasa bile "ölçülmüş profil" gibi okunur — radarın kendisi bir
+   * iddiadır.
+   *
+   * Artık yalnızca yayın kapısını geçen eksen çizilir. Geçen eksen yoksa
+   * dizi boş döner ve radar hiç basılmaz.
+   */
+  var CLIENT_RADAR_AXES = [
+    { key: "formRating", label: "Form" },
+    { key: "threatScore", label: "Hücum" },
+    { key: "creativityScore", label: "Yaratıcılık" },
+    { key: "pressingScore", label: "Pres" },
+    { key: "continuityScore", label: "Süreklilik" },
+    { key: "tempoScore", label: "Tempo" }
+  ];
 
-    return [
-      { label: "Bitiricilik", value: radarMetric(player, "finishing", "Bitiricilik") },
-      { label: "Yaratıcılık", value: radarMetric(player, "creativity", "Yaratıcılık") },
-      { label: "Pres", value: radarMetric(player, "pressing", "Pres") },
-      { label: "Tempo", value: radarMetric(player, "tempo", "Tempo") },
-      { label: "Süreklilik", value: radarMetric(player, "consistency", "Süreklilik") }
-    ];
+  function playerRadarRows(player) {
+    var rows = [];
+    for (var i = 0; i < CLIENT_RADAR_AXES.length; i += 1) {
+      var axis = CLIENT_RADAR_AXES[i];
+      var value = verifiedNumber(player, axis.key);
+      if (value === undefined) continue;
+      rows.push({ label: axis.label, value: value });
+    }
+    return rows;
   }
 
   function playerRadarHtml(player, compact) {
     var rows = playerRadarRows(player);
+
+    // Ölçülmüş eksen yoksa radar çizilmez. Boş bir grafik iskeleti ya da
+    // sıfırlanmış barlar basmak, ölçüm yokluğunu ölçüm gibi gösterirdi.
+    if (!rows.length) return "";
 
     if (compact) {
       rows = rows.slice(0, 3);
@@ -900,6 +1029,20 @@
     var leftRows = playerRadarRows(left);
     var rightRows = right ? playerRadarRows(right) : null;
     var thirdRows = third ? playerRadarRows(third) : null;
+
+    // Eksensiz grafik çizilmez: eksenleri ve alanı boş bir SVG, ölçüm
+    // yokluğunu "her eksende sıfır" gibi gösterirdi. Grafiğin dayandığı
+    // ölçüm yoksa yerine ne olduğunu söyleyen temiz bir not basılır.
+    if (!leftRows.length) {
+      return (
+        '<section class="player-radar-chart is-empty" aria-label="' + escapeHtml(title || "Oyuncu radar grafiği") + '">' +
+        '<div class="radar-chart-head"><span>Radar Grafik</span><strong>' + escapeHtml(title || (left && left.name) || "") + "</strong></div>" +
+        '<p class="radar-chart-empty">Radar grafiği ölçülmüş sezon istatistiğine dayanır. ' +
+        "Sağlayıcıdan bu oyuncu için doğrulanmış ölçüm geldiğinde grafik otomatik çizilir.</p>" +
+        "</section>"
+      );
+    }
+
     var grids = [0.25, 0.5, 0.75, 1].map(function (scale) {
       return '<polygon class="radar-grid-ring" points="' + radarGridPoints(leftRows, scale) + '"></polygon>';
     }).join("");
@@ -912,8 +1055,8 @@
       grids +
       radarAxisHtml(leftRows) +
       '<polygon class="radar-area radar-area-left" points="' + radarPoints(leftRows, 1) + '"></polygon>' +
-      (rightRows ? '<polygon class="radar-area radar-area-right" points="' + radarPoints(rightRows, 1) + '"></polygon>' : "") +
-      (thirdRows ? '<polygon class="radar-area radar-area-third" points="' + radarPoints(thirdRows, 1) + '"></polygon>' : "") +
+      (rightRows && rightRows.length ? '<polygon class="radar-area radar-area-right" points="' + radarPoints(rightRows, 1) + '"></polygon>' : "") +
+      (thirdRows && thirdRows.length ? '<polygon class="radar-area radar-area-third" points="' + radarPoints(thirdRows, 1) + '"></polygon>' : "") +
       '<circle class="radar-center" cx="120" cy="120" r="4"></circle>' +
       "</svg>" +
       "</div>" +
@@ -1267,14 +1410,18 @@
   }
 
   function profileRadarSnapshotHtml(player) {
+    // Ölçülmemiş satır basılmaz: eskiden playerScore zinciri her satırı
+    // sıfırla dolduruyordu ve "Gol tehdidi 0" ölçüm gibi okunuyordu.
     var rows = [
-      ["Overall", playerAiScore(player)],
+      ["Overall", verifiedNumber(player, "overallRating")],
       ["Form", radarMetric(player, "form")],
       ["Potansiyel", radarMetric(player, "potential")],
-      ["Gol tehdidi", playerScore(player, "threatScore")],
-      ["Yaratıcılık", playerScore(player, "creativityScore")],
+      ["Gol tehdidi", verifiedNumber(player, "threatScore")],
+      ["Yaratıcılık", verifiedNumber(player, "creativityScore")],
       ["Veri güveni", radarMetric(player, "dataConfidence")]
-    ];
+    ].filter(function (row) { return row[1] !== undefined; });
+
+    if (!rows.length) return "";
 
     return (
       '<section class="profile-radar-snapshot" aria-label="Radar hizli ozeti">' +
@@ -1514,27 +1661,54 @@
     };
   }
 
+  /**
+   * RADAR DEĞERLERİ ÖLÇÜMDEN GELİR — üretilmez.
+   *
+   * Eski hâli her ekseni doldurmak ZORUNDAYDI. İki eksen hiç ölçülmeden
+   * sabit yazılıydı (discipline 72, dataConfidence 68), geri kalanı ise
+   * zincirleme yedeklerle bir sayı üretiyordu; ölçüm yoksa playerScore
+   * sonunda 0 döndürüyordu. Sonuç: her oyuncunun dolu bir radar profili
+   * vardı ve hiçbirinin arkasında ölçüm yoktu.
+   *
+   * Artık ölçülmemiş eksen `undefined` döner. Karşılaştırmalar (>= 82 gibi)
+   * undefined ile false verir — ölçülmemiş bir oyuncunun "potansiyeli
+   * yüksek" sınıfına girmemesi doğru davranıştır. Basan taraf undefined'ı
+   * sıfıra çevirmez, satırı hiç basmaz.
+   *
+   * `player.radar` alanı da doğrulamaya tabidir: kayıt kapıyı geçmiyorsa
+   * içindeki hazır değerler de yayımlanmaz.
+   */
   function playerRadar(player) {
-    var radar = player && player.radar && typeof player.radar === "object" ? player.radar : {};
+    var gated = player && isPublishablePlayerCard(player);
+    var radar = gated && player.radar && typeof player.radar === "object" ? player.radar : {};
+
+    function axis(radarKey, field) {
+      if (radar[radarKey] != null) return Number(radar[radarKey]);
+      return verifiedNumber(player, field);
+    }
 
     return {
-      overall: radar.overall != null ? radar.overall : playerAiScore(player),
-      form: radar.form != null ? radar.form : playerScore(player, "formRating", playerScore(player, "impact")),
-      attack: radar.attack != null ? radar.attack : playerScore(player, "threatScore", radar.finishing),
-      creativity: radar.creativity != null ? radar.creativity : playerScore(player, "creativityScore"),
-      defense: radar.defense != null ? radar.defense : playerScore(player, "defensiveRating", radar.pressing),
-      discipline: radar.discipline != null ? radar.discipline : 72,
-      durability: radar.durability != null ? radar.durability : playerScore(player, "continuityScore", radar.consistency),
-      potential: radar.potential != null ? radar.potential : playerScore(player, "potentialRating"),
-      transferValue: radar.transferValue != null ? radar.transferValue : 0,
-      dataConfidence: radar.dataConfidence != null ? radar.dataConfidence : 68,
-      finishing: radar.finishing != null ? radar.finishing : playerScore(player, "threatScore"),
-      pressing: radar.pressing != null ? radar.pressing : playerScore(player, "pressingScore"),
-      tempo: radar.tempo != null ? radar.tempo : playerScore(player, "tempoScore"),
-      consistency: radar.consistency != null ? radar.consistency : playerScore(player, "continuityScore")
+      overall: axis("overall", "overallRating"),
+      form: axis("form", "formRating"),
+      attack: axis("attack", "threatScore"),
+      creativity: axis("creativity", "creativityScore"),
+      defense: axis("defense", "defensiveRating"),
+      durability: axis("durability", "continuityScore"),
+      potential: axis("potential", "potentialRating"),
+      finishing: axis("finishing", "threatScore"),
+      pressing: axis("pressing", "pressingScore"),
+      tempo: axis("tempo", "tempoScore"),
+      consistency: axis("consistency", "continuityScore"),
+      // Disiplin, veri güveni ve transfer değeri için sağlayıcıdan gelen bir
+      // ölçüm YOK. Eskiden sabit yazılıyorlardı; artık ölçüm gelene kadar
+      // yokturlar.
+      discipline: radar.discipline != null ? Number(radar.discipline) : undefined,
+      dataConfidence: radar.dataConfidence != null ? Number(radar.dataConfidence) : undefined,
+      transferValue: radar.transferValue != null ? Number(radar.transferValue) : undefined
     };
   }
 
+  /** Ölçülmemiş eksen için undefined döner — sıfır DEĞİL. */
   function radarMetric(player, key, label) {
     var radar = playerRadar(player);
     var aliases = {
@@ -1547,8 +1721,10 @@
       "Süreklilik": "durability",
       "Tempo": "form"
     };
-    var resolved = radar[key] != null ? key : aliases[key] || aliases[label] || key;
-    return playerScore(radar, resolved, radar[label]);
+    var resolved = radar[key] !== undefined ? key : (aliases[key] || aliases[label] || key);
+    var value = radar[resolved];
+    if (value === undefined && label) value = radar[label];
+    return Number.isFinite(value) ? value : undefined;
   }
 
   function playerMetric(player, primary, secondary) {
@@ -3464,22 +3640,43 @@
     );
   }
 
+  /**
+   * Yalnızca ölçülmüş alanları basan etiket listesi.
+   *
+   * Eskiden "Gol -" / "Asist -" basılıyordu. Tire, ölçüm yokluğunu bir
+   * ölçüm satırı gibi gösteriyor: okuyucu "gol atmamış" diye okur. Alan
+   * doğrulanmadıysa etiket hiç üretilmez.
+   */
+  function verifiedCountingTags(player) {
+    var tags = [];
+    var goals = verifiedField(player, "goals");
+    if (goals !== undefined) tags.push({ label: "Gol " + goals, variant: "green" });
+    var assists = verifiedField(player, "assists");
+    if (assists !== undefined) tags.push({ label: "Asist " + assists, variant: "" });
+    return tags;
+  }
+
   function renderPlayerHomeCard(player) {
     var team = playerTeamDisplay(player);
     var position = displayValue(player.position, "Mevki bekleniyor");
+    // Rozet ve trend, kapıyı geçemeyen kayıtta HİÇ basılmaz. Eski hâl
+    // player.aiRating'i doğrudan yazıyordu; kadro senkronundan gelen
+    // kayıtlarda bu, ratingService'in türettiği bir varsayılandı.
+    var rating = verifiedField(player, "overallRating");
+    if (rating === undefined) rating = verifiedField(player, "aiRating");
+    if (rating === undefined) rating = verifiedField(player, "rating");
+    var trend = verifiedField(player, "trend");
 
     return (
       '<article class="player-card" data-card="player-radar" data-player="' + escapeHtml(player.id) + '">' +
-      '<header><div class="player-card-title">' + playerAvatarHtml(player) + '<div><h3>' + escapeHtml(player.name) + "</h3><span>" + escapeHtml(team) + " - " + escapeHtml(position) + '</span></div></div><strong class="rating">' + escapeHtml(player.aiRating) + "</strong></header>" +
-      '<span class="trend">Trend: ' + escapeHtml(player.trend) + "</span>" +
+      '<header><div class="player-card-title">' + playerAvatarHtml(player) + '<div><h3>' + escapeHtml(player.name) + "</h3><span>" + escapeHtml(team) + " - " + escapeHtml(position) + "</span></div></div>" +
+      (rating === undefined ? "" : '<strong class="rating">' + escapeHtml(rating) + "</strong>") + "</header>" +
+      (trend === undefined ? "" : '<span class="trend">Trend: ' + escapeHtml(trend) + "</span>") +
       badgesHtml(playerBadges(player)) +
       playerMetricsHtml(player, true) +
       playerRadarHtml(player, true) +
-      tagsHtml([
-        { label: "Gol " + (player.goals == null ? "-" : player.goals), variant: "green" },
-        { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
-      ].concat(playerRatingTags(player))) +
-      formDotsHtml(player.form) +
+      tagsHtml(verifiedCountingTags(player).concat(playerRatingTags(player))) +
+      formDotsHtml(verifiedField(player, "form")) +
        '<div class="player-actions compact"><a class="detail-link" href="' + escapeHtml(playerProfileHref(player.id)) + '">Profil</a><a class="detail-link ghost" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '">Kıyasla</a></div>' +
       "</article>"
     );
@@ -3487,13 +3684,21 @@
 
   function renderPlayerPageCard(player) {
     var team = playerTeamDisplay(player);
-    var rating = displayValue(player.overallRating || player.aiRating || player.rating);
+    // Puan rozeti: ölçülmemişse rozet HİÇ çizilmez. displayValue eskiden
+    // yokluğu tireye çeviriyordu, ama bu kart için asıl sorun tire değildi —
+    // kadro senkronundan gelen kayıtlarda rozet DOLU çıkıyordu (overallRating
+    // 34, ratingStatus "estimated"). Ölçüm değil, türetme.
+    var rating = verifiedField(player, "overallRating");
+    if (rating === undefined) rating = verifiedField(player, "aiRating");
+    if (rating === undefined) rating = verifiedField(player, "rating");
+    var impact = verifiedNumber(player, "impact");
     var position = displayValue(player.position, "Mevki bekleniyor");
     var role = playerPositionGroupLabel(playerPositionGroup(player));
 
     return (
       '<article class="card player-detail-card" data-card="player" data-player="' + escapeHtml(player.id) + '">' +
-      '<div class="card-head player-card-header"><div class="player-card-title">' + playerAvatarHtml(player) + '<div><span class="card-kicker">' + escapeHtml(team) + " - " + escapeHtml(position) + " - " + escapeHtml(role) + "</span><h2>" + escapeHtml(player.name) + '</h2></div></div><strong class="big-value player-rating-badge">' + escapeHtml(rating) + "</strong></div>" +
+      '<div class="card-head player-card-header"><div class="player-card-title">' + playerAvatarHtml(player) + '<div><span class="card-kicker">' + escapeHtml(team) + " - " + escapeHtml(position) + " - " + escapeHtml(role) + "</span><h2>" + escapeHtml(player.name) + "</h2></div></div>" +
+      (rating === undefined ? "" : '<strong class="big-value player-rating-badge">' + escapeHtml(rating) + "</strong>") + "</div>" +
       '<p class="player-summary">' + escapeHtml(playerInsight(player)) + "</p>" +
       playerStatusRowHtml(player) +
       playerMetaGridHtml(player) +
@@ -3501,13 +3706,10 @@
        '<div class="player-card-scout-note"><span>' + escapeHtml(playerHasTransferHistory(player) ? "Transfer geçmişi var" : "Transfer geçmişi yakında") + '</span><strong>' + escapeHtml(playerScoutingSummary(player)) + "</strong></div>" +
       badgesHtml(playerBadges(player)) +
       playerMetricsHtml(player) +
-      formDotsHtml(player.form) +
-      barRowHtml("Etki", player.impact, player.impact) +
+      formDotsHtml(verifiedField(player, "form")) +
+      (impact === undefined ? "" : barRowHtml("Etki", impact, impact)) +
       playerRadarHtml(player) +
-      tagsHtml([
-        { label: "Gol " + (player.goals == null ? "-" : player.goals), variant: "green" },
-        { label: "Asist " + (player.assists == null ? "-" : player.assists), variant: "" }
-      ].concat(player.tags || [], playerRatingTags(player))) +
+      tagsHtml(verifiedCountingTags(player).concat(player.tags || [], playerRatingTags(player))) +
       '<div class="player-actions">' +
       '<a class="detail-link" href="' + escapeHtml(playerProfileHref(player.id)) + '">Detay</a>' +
        '<a class="detail-link" href="' + escapeHtml(playerCompareHref("?p1=" + encodeURIComponent(player.id))) + '" data-compare-add="' + escapeHtml(player.id) + '">Karşılaştırmaya ekle</a>' +
@@ -3828,14 +4030,19 @@
   }
 
   function playerPrimaryWeapon(player) {
+    // "Ana silah" bir sıralama iddiasıdır: ölçülmemiş alanlardan seçilirse
+    // hepsi sıfır olur ve listedeki ilk satır kazanır — ölçüm değil, dizi
+    // sırası. Ölçülmüş alan yoksa iddia hiç kurulmaz.
     var metrics = [
-      ["Gol tehdidi", playerScore(player, "threatScore")],
-      ["Yaratıcılık", playerScore(player, "creativityScore")],
-      ["Pres gucu", playerScore(player, "pressingScore")],
+      ["Gol tehdidi", verifiedNumber(player, "threatScore")],
+      ["Yaratıcılık", verifiedNumber(player, "creativityScore")],
+      ["Pres gucu", verifiedNumber(player, "pressingScore")],
       ["Form", radarMetric(player, "form")],
-      ["Süreklilik", playerScore(player, "continuityScore")]
-    ].sort(function (a, b) { return Number(b[1] || 0) - Number(a[1] || 0); });
+      ["Süreklilik", verifiedNumber(player, "continuityScore")]
+    ].filter(function (row) { return row[1] !== undefined; })
+      .sort(function (a, b) { return b[1] - a[1]; });
 
+    if (!metrics.length) return "Ölçüm bekleniyor";
     return metrics[0][0] + " " + displayValue(metrics[0][1]);
   }
 
@@ -4086,26 +4293,73 @@
     );
   }
 
+  /**
+   * ANA SAYFA OYUNCU ETKİ BLOĞU — sıralama da bir iddiadır.
+   *
+   * Eski hâli iki ayrı yerden uyduruyordu:
+   *   1. Ölçüm yoksa skoru SENTEZLİYORDU — "gol tehdidi" için
+   *      xg*12 + goals*6, "yaratıcılık" için keyPasses*4 + assists*8.
+   *      Sağlayıcı hiçbirini göndermediğinde bunlar 0*12 + 0*6 = 0 olur ve
+   *      sıralama tamamen anlamsızlaşır.
+   *   2. Sıralamayı kapıdan geçmeyen alandan yapıyordu. "En yüksek AI
+   *      rating" başlıklı kart, kart üstünde tek sayı basılmasa bile o
+   *      oyuncuyu diğerlerinin üstüne koyar — ölçülmemiş bir üstünlük
+   *      iddiası.
+   *
+   * Yeni kural: her sinyal YALNIZCA kendi ölçülmüş alanından sıralanır.
+   * O alan hiçbir kayıtta ölçülmemişse sinyal kartı hiç üretilmez. Hiçbir
+   * sinyal üretilemiyorsa blok temiz bir boş durum basar.
+   */
+  var CLIENT_PLAYER_SIGNALS = [
+    { title: "En yüksek AI rating", field: "overallRating", href: "./oyuncu-radari.html?filter=rating-80" },
+    { title: "En yüksek gol tehdidi", field: "threatScore", href: "./oyuncu-radari.html?filter=gol-tehdidi" },
+    { title: "En yaratıcı oyuncu", field: "creativityScore", href: "./oyuncu-radari.html?filter=yaraticilik" },
+    { title: "En güçlü pres oyuncusu", field: "pressingScore", href: "./oyuncu-radari.html?filter=pres-gucu" },
+    { title: "Yükselen oyuncu", field: "formChange", href: "./oyuncu-radari.html?filter=yukselen" }
+  ];
+
+  function topByVerifiedField(players, field) {
+    var best = null;
+    var bestValue = -Infinity;
+    for (var i = 0; i < players.length; i += 1) {
+      var value = verifiedNumber(players[i], field);
+      if (value === undefined || value <= bestValue) continue;
+      best = players[i];
+      bestValue = value;
+    }
+    return best ? { player: best, value: bestValue } : null;
+  }
+
+  function playerSignalsEmptyStateHtml() {
+    return (
+      '<article class="card data-empty" data-card="empty-state" data-empty-reason="player-signals-unverified">' +
+      "<strong>Veri bekleniyor</strong>" +
+      "<span>Oyuncu etki sinyalleri yalnızca sağlayıcının ölçtüğü sezon istatistiğinden üretilir. " +
+      "Doğrulanmış ölçüm geldiğinde bu alan otomatik dolar.</span>" +
+      "</article>"
+    );
+  }
+
   function renderPlayerSignals(players) {
-    if (!Array.isArray(players) || !players.length) {
-      return "";
+    var pool = (Array.isArray(players) ? players : []).filter(isPublishablePlayerCard);
+    if (!pool.length) {
+      return playerSignalsEmptyStateHtml();
     }
 
-    var highestRating = topPlayer(players, playerAiScore);
-    var goalThreat = topPlayer(players, function (player) { return playerScore(player, "threatScore", Number(player.xg) * 12 + Number(player.goals) * 6); });
-    var creative = topPlayer(players, function (player) { return playerScore(player, "creativityScore", Number(player.keyPasses) * 4 + Number(player.assists) * 8); });
-    var presser = topPlayer(players, function (player) { return playerScore(player, "pressingScore", Number(player.pressures)); });
-    var rising = topPlayer(players.filter(function (player) { return playerMatchesSignal(player, "yukselen"); }), function (player) {
-      return Number(player.formChange || 0) * 10 + Number(player.impact || 0);
-    });
+    var cards = [];
+    for (var i = 0; i < CLIENT_PLAYER_SIGNALS.length; i += 1) {
+      var signal = CLIENT_PLAYER_SIGNALS[i];
+      var top = topByVerifiedField(pool, signal.field);
+      if (!top) continue;
+      var label = signal.field === "formChange" && top.value > 0 ? "+" + top.value : top.value;
+      cards.push(playerSignalCard(signal.title, top.player, label, signal.href));
+    }
 
-    return [
-      playerSignalCard("En yüksek AI rating", highestRating, playerAiScore(highestRating), "./oyuncu-radari.html?filter=rating-80"),
-      playerSignalCard("En yüksek gol tehdidi", goalThreat, playerScore(goalThreat, "threatScore"), "./oyuncu-radari.html?filter=gol-tehdidi"),
-      playerSignalCard("En yaratıcı oyuncu", creative, playerScore(creative, "creativityScore"), "./oyuncu-radari.html?filter=yaraticilik"),
-      playerSignalCard("En güçlü pres oyuncusu", presser, playerScore(presser, "pressingScore"), "./oyuncu-radari.html?filter=pres-gucu"),
-      playerSignalCard("Yükselen oyuncu", rising, rising ? "+" + displayValue(rising.formChange) : "-", "./oyuncu-radari.html?filter=yukselen")
-    ].join("");
+    if (!cards.length) {
+      return playerSignalsEmptyStateHtml();
+    }
+
+    return cards.join("");
   }
 
   function renderRadarSignal(signal) {
@@ -4520,13 +4774,29 @@
     });
   }
 
+  /**
+   * Ölçülmemiş kayıt sıralamanın SONUNA düşer, başına değil.
+   *
+   * Ham çıkarma (b - a) ölçülmemiş eksende NaN üretir; NaN döndüren bir
+   * karşılaştırıcı sıralamayı tanımsız hâle getirir ve liste rastgele
+   * görünür. Ayrıca ölçülmemiş kaydı sıfır sayıp öne almak da yanlış:
+   * "form sırasına göre" başlıklı bir liste, ölçümü olmayanı ölçümü
+   * olanın üstüne koymamalı.
+   */
+  function compareVerifiedDesc(left, right) {
+    if (left === undefined && right === undefined) return 0;
+    if (left === undefined) return 1;
+    if (right === undefined) return -1;
+    return right - left;
+  }
+
   function sortPlayers(players, sortKey) {
     var sorters = {
-      rating: function (a, b) { return playerAiScore(b) - playerAiScore(a); },
+      rating: function (a, b) { return compareVerifiedDesc(verifiedNumber(a, "overallRating"), verifiedNumber(b, "overallRating")); },
       age: function (a, b) { return Number(playerAge(a) || 999) - Number(playerAge(b) || 999); },
-      market: function (a, b) { return Number(b.marketValueEur || 0) - Number(a.marketValueEur || 0); },
-      form: function (a, b) { return radarMetric(b, "form") - radarMetric(a, "form"); },
-      potential: function (a, b) { return radarMetric(b, "potential") - radarMetric(a, "potential"); },
+      market: function (a, b) { return compareVerifiedDesc(verifiedNumber(a, "marketValueEur"), verifiedNumber(b, "marketValueEur")); },
+      form: function (a, b) { return compareVerifiedDesc(radarMetric(a, "form"), radarMetric(b, "form")); },
+      potential: function (a, b) { return compareVerifiedDesc(radarMetric(a, "potential"), radarMetric(b, "potential")); },
       updated: function (a, b) { return String(b.transferUpdatedAt || b.lastUpdated || "").localeCompare(String(a.transferUpdatedAt || a.lastUpdated || "")); },
       team: function (a, b) { return playerCurrentTeam(a).localeCompare(playerCurrentTeam(b), "tr"); }
     };
@@ -5485,17 +5755,38 @@
             " oyuncu kartı doğrulanmadığı için gizlendi (sağlayıcı kimliği/kaynak eksik).");
         }
 
+        // SIRALAMA ÖLÇÜLMÜŞ DERECEDEN YAPILIR.
+        //
+        // playerAiScore ham kayıttan okuyordu; kadro senkronundan gelen
+        // kayıtlarda bu, ratingService'in türettiği varsayılandı (34, 31,
+        // 37...). Liste "en iyiden en kötüye" gibi görünüyordu ama sıralama
+        // hiçbir ölçüme dayanmıyordu. Derecesi ölçülmemiş kayıtlar artık
+        // sıralamaya girmez; ada göre kararlı biçimde en sona alınır.
         var filtered = credible.filter(config.match).sort(function (a, b) {
-          return playerAiScore(b) - playerAiScore(a);
+          var left = verifiedNumber(a, "overallRating");
+          var right = verifiedNumber(b, "overallRating");
+          if (left === undefined && right === undefined) {
+            return String(a.name || "").localeCompare(String(b.name || ""), "tr");
+          }
+          if (left === undefined) return 1;
+          if (right === undefined) return -1;
+          return right - left;
         });
 
         if (count) {
           count.textContent = filtered.length + " oyuncu listeleniyor";
         }
 
+        // Boş durum: bayat statik HTML'e dönmek yerine ne olduğunu söyleyen
+        // temiz bir kart. staticFallback, ön renderin bastığı kartları
+        // taşıyor; doğrulanmış kayıt kalmadığında onları geri boyamak
+        // kaldırılan iddiayı geri getirirdi.
         if (!filtered.length) {
-          target.innerHTML = staticFallback;
-          target.dataset.state = "fallback";
+          target.innerHTML = '<article class="card data-empty" data-card="empty-state" ' +
+            'data-empty-reason="no-verified-players"><strong>Veri bekleniyor</strong>' +
+            "<span>Bu liste yalnızca sağlayıcı kimliği ve doğrulanmış kaynağı olan oyuncu " +
+            "kayıtlarından üretilir. Doğrulanmış kayıt geldiğinde liste otomatik dolar.</span></article>";
+          target.dataset.state = "empty";
           return;
         }
 

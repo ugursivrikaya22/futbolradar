@@ -23,7 +23,7 @@ const { calculateMatchRadar, normalizeText } = require("../services/matchRadarSe
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
 const { getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigFixtureService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
-const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
+const { filterPlayerCards, logRemovedCards, publicPlayerView, rankByVerifiedMetric } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
 
 const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
@@ -449,12 +449,52 @@ function emptyStateCard(title, note) {
   return `<article class="card data-empty" data-card="empty-state"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(note)}</span></article>`;
 }
 
+/**
+ * BAŞLIK DA BİR İDDİADIR.
+ *
+ * Ana sayfadaki bölümün başlığı "Formda ve yükselişte olan oyuncular —
+ * rating, gol tehdidi ve yaratıcılıkla öne çıkan profiller". Bu, kart
+ * üstünde tek bir sayı basılmasa bile ÖLÇÜLMÜŞ bir üstünlük iddiasıdır.
+ *
+ * Kimlik doğrulaması (ad, kulüp, mevki, yaş — kadro uç noktasından) bu
+ * iddiayı karşılamaz. Kimliğe göre süzüp alfabetik ilk üçü basmak, bu
+ * başlığın altında "A. Ablak, A. Akkaynak, A. Antunes formda" demektir;
+ * kartlar temiz olsa bile bölümün kendisi yanlış olur. Denetimin bulduğu
+ * üç yedek kaleci de aynı hatanın başka bir kılığıydı — sıralama
+ * türetilmiş bir varsayılandan yapılıyordu.
+ *
+ * Bu yüzden trend bölümü ÖLÇÜLMÜŞ performans arar: derecesi doğrulanmış
+ * oyuncular, kendi aralarında sıralı. Ölçüm yoksa bölüm boş durum basar.
+ * Kadro listesi ayrı bir yüzeydir (rosterPlayerSlot) ve iddia taşımaz.
+ */
 function trendPlayerSlot(limit) {
+  const ranked = rankByVerifiedMetric(verifiedTrendPlayers(Infinity), "overallRating", { limit });
+  if (!ranked.length) {
+    return emptyStateCard(
+      "Veri bekleniyor",
+      "Trend oyuncu kartları yalnızca sağlayıcının ölçtüğü sezon derecesinden sıralanır. " +
+      "Ölçülmüş performans verisi geldiğinde bu alan otomatik dolar."
+    );
+  }
+  return ranked.map((entry) => simplePlayerCard(entry.player)).join("");
+}
+
+/**
+ * KADRO LİSTESİ — sıralama iddiası taşımaz.
+ *
+ * Oyuncu Radarı sayfası "Tüm oyuncular" listesidir; en iyiyi seçmez,
+ * kadroyu gösterir. Kimliği doğrulanmış kayıt (ad, kulüp, mevki, yaş —
+ * hepsi sağlayıcının kadro uç noktasından) burada meşrudur ve gizlenmesi
+ * için sebep yok. Kart üstünde ölçülmemiş hiçbir sayı basılmaz.
+ *
+ * Sıra alfabetiktir ve bunu bir üstünlük sırası sanmak mümkün değildir.
+ */
+function rosterPlayerSlot(limit) {
   const verified = verifiedTrendPlayers(limit);
   if (!verified.length) {
     return emptyStateCard(
       "Veri bekleniyor",
-      "Trend oyuncu kartları yalnızca doğrulanmış, sağlayıcı kimliği olan güncel sezon verisinden üretilir. " +
+      "Oyuncu listesi yalnızca doğrulanmış, sağlayıcı kimliği olan kadro verisinden üretilir. " +
       "Kadro senkronu bu veriyi getirdiğinde bu alan otomatik dolar."
     );
   }
@@ -498,24 +538,53 @@ function simplePlayerCard(player) {
  */
 function playerSignalsSlot() {
   const { kept } = filterPlayerCards(players, { trend: true, leagueTeams: fixtureTeamNames() });
-  if (!kept.length) {
+  // Kayıt kapısını geçen oyuncu OLSA BİLE sinyal üretilemeyebilir: sinyalin
+  // dayandığı ölçüm (derece, gol tehdidi, yaratıcılık) hiçbir kayıtta
+  // doğrulanmamış olabilir. Bu yüzden boşluk kontrolü kart üretiminden
+  // SONRA da yapılır.
+  const markup = kept.length ? playerSignals(kept) : "";
+  if (!markup) {
     return emptyStateCard(
       "Veri bekleniyor",
       "Oyuncu sinyalleri doğrulanmış sezon istatistiğine dayanır; sağlayıcıdan bu veri geldiğinde alan dolar."
     );
   }
-  return playerSignals(kept);
+  return markup;
 }
 
+/**
+ * KAYIT KAPISI ALAN KAPISINI KAPSAMAZ.
+ *
+ * Eski hâli `filterPlayerCards` ile HANGİ oyuncuların gösterileceğini
+ * süzüyor, sonra sıralamayı ve basılan sayıyı HAM kayıttan okuyordu
+ * (`player[field]`). Kaydın kaynağının doğrulanmış olması üstündeki
+ * derecelendirmeyi doğrulamaz: kadro uç noktası derece göndermiyor,
+ * normalizePlayer alanı varsayılanla dolduruyor.
+ *
+ * Artık hem sıralama hem basılan değer `rankByVerifiedMetric` üzerinden
+ * gidiyor: alan yayın kapısını geçmiyorsa oyuncu sıralamaya hiç girmez ve
+ * o sinyal kartı üretilmez.
+ */
 function playerSignals(pool) {
   const source = Array.isArray(pool) ? pool : players;
-  const by = (field) => source.slice().sort((left, right) => Number(right[field] || 0) - Number(left[field] || 0))[0];
-  const cards = [
-    ["AI rating", by("overallRating"), "overallRating"],
-    ["Gol tehdidi", by("threatScore"), "threatScore"],
-    ["Yaratıcılık", by("creativityScore"), "creativityScore"]
+  const definitions = [
+    ["AI rating", "overallRating"],
+    ["Gol tehdidi", "threatScore"],
+    ["Yaratıcılık", "creativityScore"]
   ];
-  return cards.map(([label, player, field]) => `<article class="card player-signal-card"><span class="card-kicker">${escapeHtml(label)}</span><h3>${escapeHtml(player.name)}</h3><strong>${escapeHtml(player[field] || "-" )}</strong><p>${escapeHtml(player.currentTeam || player.team)} · ${escapeHtml(player.position)}</p><a href="./oyuncular/${escapeHtml(player.id)}.html">Profili aç</a></article>`).join("");
+
+  const cards = [];
+  for (const [label, field] of definitions) {
+    const [top] = rankByVerifiedMetric(source, field, { limit: 1 });
+    if (!top) continue;
+    const { player, value } = top;
+    const view = publicPlayerView(player);
+    const club = view.fields.currentTeam || view.fields.team || "";
+    const meta = [club, player.position].filter(Boolean).join(" · ");
+    cards.push(`<article class="card player-signal-card"><span class="card-kicker">${escapeHtml(label)}</span><h3>${escapeHtml(player.name)}</h3><strong>${escapeHtml(value)}</strong><p>${escapeHtml(meta)}</p><a href="./oyuncular/${escapeHtml(player.id)}.html">Profili aç</a></article>`);
+  }
+
+  return cards.join("");
 }
 
 function analysisCards() {
@@ -653,7 +722,29 @@ function writePage(file, slots, freshness) {
 const confirmed = allFixtures();
 const topFixtures = confirmed.slice(0, 3);
 const topTeams = teams.slice().sort((left, right) => Number(right.momentum) - Number(left.momentum));
-const topPlayers = players.slice().sort((left, right) => Number(right.overallRating || 0) - Number(left.overallRating || 0));
+/**
+ * "EN İYİ" SIRALAMASI ÖLÇÜLMÜŞ DERECEDEN YAPILIR.
+ *
+ * Eski hâli ham `overallRating` alanından sıralıyordu. Kadro senkronundan
+ * gelen 479 kaydın hiçbirinde ölçülmüş derece yok; alan ratingService'in
+ * türettiği varsayılanla dolu (34, 31, 37...). Sonuç: ana sayfadaki üç
+ * "trend oyuncu" kartı üç yedek kaleciydi (17-19 yaşında), çünkü sıralama
+ * anlamsız bir sayıdan yapılıyordu. Kartların üstünde puan basılmıyordu —
+ * ama SEÇİMİN KENDİSİ bir iddiaydı ve o iddia ölçülmemişti.
+ *
+ * Artık derecesi doğrulanmış kayıtlar önce ve kendi aralarında sıralı gelir;
+ * geri kalanlar ada göre kararlı sırada arkaya düşer. Doğrulanmış derece
+ * yoksa liste "en iyi" iddiası taşımaz, yalnızca kararlı bir kadro listesi
+ * olur ve kart üstünde zaten hiçbir ölçüm basılmaz.
+ */
+const rankedByVerifiedRating = rankByVerifiedMetric(players, "overallRating");
+const rankedIds = new Set(rankedByVerifiedRating.map((entry) => entry.player.id));
+const topPlayers = [
+  ...rankedByVerifiedRating.map((entry) => entry.player),
+  ...players
+    .filter((player) => !rankedIds.has(player.id))
+    .sort((left, right) => String(left.name || "").localeCompare(String(right.name || ""), "tr"))
+];
 
 writePage("index.html", {
   "featured-match": staticFeaturedFixture(),
@@ -697,7 +788,8 @@ writePage("takimlar.html", {
 }, teamFreshness);
 
 writePage("oyuncu-radari.html", {
-  "players-page": trendPlayerSlot(6)
+  // Radar sayfası kadro listesidir, "en iyi" seçimi değil.
+  "players-page": rosterPlayerSlot(6)
 }, playerFreshness);
 
 writePage("mac-detay.html", {
