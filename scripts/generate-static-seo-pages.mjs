@@ -6,6 +6,41 @@ const root = process.cwd();
 const domain = "https://www.futbolradar.com";
 const today = "2026-07-22";
 
+/**
+ * TAZELİK SİNYALİ SAYFANIN RİTMİNE UYMALI.
+ *
+ * Site haritası bugüne kadar 3281 URL'nin TAMAMINA `weekly` yazıyordu —
+ * canlı skor sayfasına da. Dakikada değişen bir sayfaya "haftada bir
+ * değişir" demek, tarayıcıya tam da gelmemesi gereken zamanı söylemek
+ * oluyor: canlı skor aramalarında görünürlük tam olarak tazelikten
+ * geliyor ve sinyal onu baltalıyordu.
+ *
+ * Sınıflandırma sayfanın GERÇEK ritmine göre. Uydurma bir "always"
+ * yazmıyoruz: yalnızca sağlayıcıdan sürekli beslenen sayfalar `hourly`,
+ * günlük programa bağlı olanlar `daily`, kalanı `weekly`.
+ */
+const LIVE_PAGES = new Set([
+  "canli-skor.html",
+  "bugunun-maclari.html"
+]);
+
+const DAILY_PAGES = new Set([
+  "index.html",
+  "mac-merkezi.html",
+  "haftanin-maclari.html",
+  "bugunku-mac-tahminleri.html",
+  "gunun-radar-bulteni.html",
+  "super-lig-fikstur.html",
+  "puan-durumu.html",
+  "momentum.html"
+]);
+
+function changeFrequency(file) {
+  if (LIVE_PAGES.has(file)) return "hourly";
+  if (DAILY_PAGES.has(file)) return "daily";
+  return "weekly";
+}
+
 const nav = `
     ${siteHeader({ base: "./" })}`;
 
@@ -476,11 +511,14 @@ function sitemapXml(files) {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${unique.map((file) => {
   const loc = file === "index.html" ? `${domain}/` : `${domain}/${file}`;
-  const priority = file === "index.html" ? "1.0" : file.includes("karsilastirma/") ? "0.65" : file.includes("oyuncular/") ? "0.7" : "0.8";
+  const priority = file === "index.html" ? "1.0"
+    : LIVE_PAGES.has(file) ? "0.9"
+    : file.includes("karsilastirma/") ? "0.65"
+    : file.includes("oyuncular/") ? "0.7" : "0.8";
   return `  <url>
     <loc>${loc}</loc>
     <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>${changeFrequency(file)}</changefreq>
     <priority>${priority}</priority>
   </url>`;
 }).join("\n")}

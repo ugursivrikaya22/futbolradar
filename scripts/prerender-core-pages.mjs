@@ -612,11 +612,34 @@ function replaceSlot(html, target, content) {
   return `${html.slice(0, elementStart)}${wrapped}${html.slice(elementEnd + closing.length)}`;
 }
 
+/**
+ * TAZELİK DAMGASI MAKİNE OKUNUR OLMALI.
+ *
+ * Damga bugüne kadar yalnızca "Son kontrol: 24 Temmuz 2026 15:27 TSİ"
+ * biçiminde basılıyordu. İnsan için doğru, tarayıcı için okunamaz: Türkçe
+ * ay adı ve "TSİ" eki hiçbir standart tarih biçimine uymuyor. Canlı skor
+ * gibi tazeliğin sıralamayı doğrudan belirlediği bir sayfada, tarihin
+ * ayrıştırılamaması sinyali tamamen kaybettiriyor.
+ *
+ * Görünen metin aynı kalıyor; yanına `<time datetime>` ekleniyor. Değer
+ * UYDURULMUYOR — kaynağı sağlayıcı doğrulama damgasının kendisi; yoksa
+ * `<time>` hiç basılmıyor.
+ */
+function freshnessStamp(freshness) {
+  const raw = (freshness && (freshness.verifiedAt || freshness.fetchedAt)) || null;
+  const label = `Son kontrol: ${formatFreshnessDate(raw)}`;
+  const parsed = raw ? new Date(raw) : null;
+  if (!parsed || Number.isNaN(parsed.getTime())) return escapeHtml(label);
+  return `Son kontrol: <time datetime="${escapeHtml(parsed.toISOString())}">${escapeHtml(formatFreshnessDate(raw))}</time>`;
+}
+
 function updateMetaLabels(html, freshness) {
-  const label = `Son kontrol: ${formatFreshnessDate(freshness.verifiedAt || freshness.fetchedAt)}`;
+  const stamp = freshnessStamp(freshness);
+  // `[\s\S]*?` — damga artık iç içe `<time>` taşıyabildiği için eski
+  // `[^<]*` deseni ikinci koşuda eşleşmiyordu ve damga donup kalırdı.
   return html
-    .replace(/<span class="hero-meta">(?:Son güncelleme|Son kontrol):[^<]*<\/span>/g, `<span class="hero-meta">${escapeHtml(label)}</span>`)
-    .replace(/<span class="data-stamp">(?:Son güncelleme|Son kontrol):[^<]*<\/span>/g, `<span class="data-stamp">${escapeHtml(label)}</span>`);
+    .replace(/<span class="hero-meta">(?:Son güncelleme|Son kontrol):[\s\S]*?<\/span>/g, `<span class="hero-meta">${stamp}</span>`)
+    .replace(/<span class="data-stamp">(?:Son güncelleme|Son kontrol):[\s\S]*?<\/span>/g, `<span class="data-stamp">${stamp}</span>`);
 }
 
 const noindexShellPages = new Set([
