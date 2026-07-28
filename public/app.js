@@ -711,17 +711,38 @@
     );
   }
 
+  /**
+   * Oyuncu kartındaki tek bir ölçüm kutusu.
+   *
+   * Eksik alan artık sessiz bir tire değil. Tire iki ayrı durumu aynı
+   * gösteriyordu: "bu ölçülmedi" ile "bu sıfır". Yayın kapısı ölçülmemiş
+   * alanları zaten kaldırıyor (services/cardCredibility.js), dolayısıyla
+   * buraya boş gelen her alan ÖLÇÜLMEMİŞ demektir ve öyle yazılır.
+   *
+   * `is-awaiting` sınıfı görsel ağırlığı da düşürür: ölçülmemiş bir alan,
+   * ölçülmüş bir değerle aynı vurguda durmamalı.
+   */
   function compactMetricHtml(label, value) {
+    var missing = value === undefined || value === null || value === "";
+
     return (
-      '<div class="player-metric">' +
+      '<div class="player-metric' + (missing ? " is-awaiting" : "") + '">' +
       "<span>" + escapeHtml(label) + "</span>" +
-      "<b>" + escapeHtml(displayValue(value)) + "</b>" +
+      "<b>" + escapeHtml(missing ? AWAITING_LABEL : value) + "</b>" +
       "</div>"
     );
   }
 
+  /**
+   * Profil alanının gösterilecek değeri.
+   *
+   * Varsayılan eksik-metni artık "Bilinmiyor" değil "Veri bekleniyor":
+   * "bilinmiyor" alanın hiç ölçülemeyeceğini ima ediyordu, oysa bu kayıtların
+   * çoğunda ölçüm yalnızca HENÜZ gelmedi. Çağıran özel bir metin verirse o
+   * korunur.
+   */
   function profileValue(value, fallback) {
-    return value === undefined || value === null || value === "" ? (fallback || "Bilinmiyor") : value;
+    return value === undefined || value === null || value === "" ? (fallback || AWAITING_LABEL) : value;
   }
 
   function profileItemHtml(label, value, fallback) {
@@ -1233,7 +1254,7 @@
       compactMetricHtml("Mevki", player.position) +
       compactMetricHtml("Yaş", playerAge(player)) +
       compactMetricHtml("Uyruk", player.nationality) +
-      compactMetricHtml("Piyasa", playerMarketValue(player) || "Yakında") +
+      compactMetricHtml("Piyasa", playerMarketValue(player)) +
       compactMetricHtml("Lig", player.league) +
       "</div>"
     );
@@ -1242,8 +1263,8 @@
   function playerProfileHeroHtml(player, team) {
     var score = displayValue(player.overallRating || player.aiRating || player.rating);
     var age = playerAge(player);
-    var market = playerMarketValue(player) || "Piyasa değeri yakında";
-    var teamLine = playerTeamEyebrow(player) + " - " + (player.league || "Lig bilgisi yakinda");
+    var market = playerMarketValue(player) || AWAITING_LABEL;
+    var teamLine = playerTeamEyebrow(player) + " - " + (player.league || AWAITING_LABEL);
 
     return (
       '<header class="profile-hero profile-hero-pro">' +
@@ -1259,7 +1280,7 @@
       "</div></div></div>" +
       '<aside class="profile-score-card" aria-label="Oyuncu radarı özeti">' +
       "<span>Overall</span><strong>" + escapeHtml(score) + "</strong>" +
-      "<p>" + escapeHtml(player.position || "Mevki yakında") + " - Yaş " + escapeHtml(displayValue(age)) + "</p>" +
+      "<p>" + escapeHtml(player.position || AWAITING_LABEL) + " - Yaş " + escapeHtml(displayValue(age)) + "</p>" +
       "<em>" + escapeHtml(market) + "</em>" +
       "</aside>" +
       "</header>"
@@ -1292,7 +1313,7 @@
 
   function playerDataStatusLabel(player) {
     if (!player || !player.dataStatus) {
-      return "Yakında";
+      return AWAITING_LABEL;
     }
 
     if (player.dataStatus === "manually_verified") {
@@ -3992,7 +4013,7 @@
         profileItemHtml("Mevki", player.position),
         profileItemHtml("Yaş", age),
         profileItemHtml("Uyruk", player.nationality),
-        profileItemHtml("Piyasa değeri", marketValue, "Piyasa değeri yakında"),
+        profileItemHtml("Piyasa değeri", marketValue),
         profileItemHtml("Veri durumu", playerDataStatusLabel(player), "Yakinda"),
         profileItemHtml("Transfer kaydi", playerHasTransferHistory(player) ? player.transferHistory.length + " kayit" : "Yakinda"),
         profileItemHtml("Rating durumu", statusLabel(player.ratingStatus, "rating"), "Yakinda")
@@ -4028,7 +4049,7 @@
       profileSectionHtml("Kariyer", [
         profileItemHtml(teamLabel, visibleTeam),
         profileItemHtml("Eski kulüpler", playerFormerTeams(player), "Yakında"),
-        profileItemHtml("Piyasa değeri", marketValue, "Piyasa değeri yakında"),
+        profileItemHtml("Piyasa değeri", marketValue),
         profileItemHtml("Sözleşme", player.contractUntil, "Yakında"),
         profileItemHtml("Transfer güncellemesi", formatProfileDate(player.transferUpdatedAt || player.lastUpdated), "Yakında"),
         profileItemHtml("Kayıt durumu", playerDataStatusLabel(player), "Yakında"),
@@ -4046,7 +4067,7 @@
       ]) +
       '<section class="profile-section"><h2>Radar Profili</h2>' + playerRadarChartHtml(player, null, player.name + " radar profili") + playerRadarHtml(player) + "</section>" +
       '<section class="profile-section"><h2>AI Rating Notu</h2><p class="profile-note">' + escapeHtml(player.ratingExplanation || "Bu rating; dakika, gol/asist, form, disiplin ve veri güvenilirliği bileşenlerinden hesaplanır.") + "</p></section>" +
-      scoutingListSectionHtml("Guclu Yonler", player.strengths, "Guclu yonler yakinda") +
+      scoutingListSectionHtml("Guclu Yonler", player.strengths, AWAITING_LABEL) +
       scoutingListSectionHtml("Gelisim Alanlari", player.weaknesses, "Gelisim alani sinyali yok") +
       transferTimelineHtml(player) +
       formerTeamsHtml(player) +
@@ -4575,7 +4596,27 @@
     target.dataset.state = "loading";
 
     loadData("players")
-      .then(function (players) {
+      .then(function (allPlayers) {
+        // GÜVENİLİRLİK SÜZGECİ — kural services/cardCredibility.js ile aynı.
+        //
+        // Bu yol süzgeci ATLIYORDU. Oyuncu landing sayfaları (bkz. aşağıdaki
+        // initPlayerLanding) ve oyuncu detayı kaydı eliyor, oyuncu radarı
+        // elemiyordu; sonuç, /oyuncu-radari.html üzerinde "mock-" sağlayıcı
+        // kimlikli ve kaynak bağlantısı olmayan kayıtların piyasa değeri ve
+        // rating ile çizilmesiydi. Statik ön render temizdi, istemci hidrasyonu
+        // aynı kayıtları geri basıyordu.
+        //
+        // Süzgeç zincirin BAŞINDA: filtre listeleri, özet metrikler ve
+        // karşılaştırma tepsisi de yalnızca doğrulanmış kayıtları görsün.
+        // Özet metrik doğrulanmamış kayıtlar üzerinden hesaplanırsa, tek tek
+        // gizlenen sayılar toplamda geri sızar.
+        var players = allPlayers.filter(isPublishablePlayerCard);
+        var hiddenCount = allPlayers.length - players.length;
+        if (hiddenCount > 0 && window.console && console.warn) {
+          console.warn("[futbolradar:card-hidden] " + hiddenCount +
+            " oyuncu kartı doğrulanmadığı için gizlendi (sağlayıcı kimliği/kaynak eksik).");
+        }
+
         populatePlayerSelect(teamSelect, uniqueSortedBy(players, playerCurrentTeam), "Tüm takımlar");
         populatePlayerSelect(leagueSelect, uniqueSorted(players, "league"), "Tüm ligler");
         populatePlayerSelect(positionSelect, uniqueSorted(players, "position"), "Tüm mevkiler");
@@ -5032,7 +5073,7 @@
 
   function renderTransferRadarCard(player) {
     var latest = latestTransferEvent(player);
-    var fromTeam = latest && latest.fromTeam ? latest.fromTeam : "Eski kulup yakinda";
+    var fromTeam = latest && latest.fromTeam ? latest.fromTeam : AWAITING_LABEL;
     var toTeam = latest && latest.toTeam ? latest.toTeam : playerCurrentTeam(player);
     var teams = Array.isArray(player.formerTeams) ? player.formerTeams.slice(0, 4) : [];
     var heat = transferHeatScore(player);
@@ -5041,7 +5082,7 @@
 
     return (
       '<article class="transfer-radar-card" data-card="transfer-player" data-player="' + escapeHtml(player.id) + '">' +
-      '<header><div class="player-card-title">' + playerAvatarHtml(player) + '<div><span class="card-kicker">' + escapeHtml(player.league || "Lig yakinda") + "</span><h2>" + escapeHtml(player.name) + "</h2></div></div>" +
+      '<header><div class="player-card-title">' + playerAvatarHtml(player) + '<div><span class="card-kicker">' + escapeHtml(player.league || AWAITING_LABEL) + "</span><h2>" + escapeHtml(player.name) + "</h2></div></div>" +
       '<strong>' + escapeHtml(displayValue(playerMarketValue(player) || "Yakinda")) + "</strong></header>" +
       '<div class="transfer-watch-brief">' +
       '<div><span>Transfer sicakligi</span><strong>' + escapeHtml(heat) + '</strong><em>' + escapeHtml(heatLabel) + '</em></div>' +
@@ -6014,9 +6055,15 @@
 
     target.dataset.state = "loading";
 
-    loadData("players").then(function (players) {
-      if (!Array.isArray(players) || !players.length) {
-        setEmpty(target, "Karşılaştırma için oyuncu yok", "Oyuncu listesi şu anda boş görünüyor.");
+    loadData("players").then(function (allPlayers) {
+      // Kıyas ekranı iki kaydı YAN YANA sayı olarak gösteriyor; doğrulanmamış
+      // bir kayıt buraya girdiğinde karşılaştırmanın kendisi uydurma olur.
+      // Süzgeç oyuncu radarı ve landing sayfalarıyla aynı.
+      var players = Array.isArray(allPlayers) ? allPlayers.filter(isPublishablePlayerCard) : [];
+
+      if (!players.length) {
+        setEmpty(target, "Karşılaştırma için doğrulanmış oyuncu yok",
+          "Kıyaslama yalnızca kaynağı ve sağlayıcı kimliği doğrulanmış kayıtlarla yapılır.");
         return;
       }
 

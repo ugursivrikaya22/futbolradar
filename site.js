@@ -195,6 +195,143 @@
       .replace(/'/g, "&#039;");
   }
 
+  /* --------------------------------------------------------------------------
+     Oyuncu sonucu kartı
+
+     Arama sonucu eskiden yalnızca ad ve tek satırlık altyazıydı: "Osimhen"
+     yazan biri sadece "Osimhen" görüyordu. Artık takım, mevki, yaş, piyasa
+     değeri, temel istatistikler ve bir güven etiketi taşıyan kart çiziliyor.
+
+     UYDURMA YOK: kartın verisi derleme sırasında yayın kapısından geçirilip
+     search-index.json'a gömülüyor (services/playerCardView.js). Burada
+     yalnızca çiziliyor. Dizinde bulunmayan yuva ÖLÇÜLMEMİŞ demektir ve
+     "Veri bekleniyor" basılır — tire ya da sıfır değil, çünkü "0 gol"
+     ölçülmemiş bir kayıtta "oynadı, atamadı" diye okunur.
+     ------------------------------------------------------------------------ */
+  var CARD_AWAITING_LABEL = "Veri bekleniyor";
+
+  /** services/playerCardView.js içindeki CARD_SLOTS ile aynı sıra ve adlar. */
+  var CARD_SLOT_LABELS = {
+    team: "Takım",
+    position: "Mevki",
+    age: "Yaş",
+    marketValue: "Piyasa değeri",
+    rating: "Rating",
+    goals: "Gol",
+    assists: "Asist",
+    appearances: "Maç",
+    minutes: "Dakika",
+    nationality: "Uyruk"
+  };
+
+  /** Panelde yer sınırlı; kartta bu yuvalar gösterilir. */
+  var CARD_VISIBLE_SLOTS = ["team", "position", "age", "marketValue", "rating", "goals", "assists"];
+
+  var CONFIDENCE_LABELS = {
+    high: "Yüksek güven",
+    medium: "Orta güven",
+    low: "Sınırlı güven",
+    none: "Doğrulanmadı"
+  };
+
+  function cardInitials(name) {
+    return String(name || "")
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(function (part) {
+        return part.charAt(0).toLocaleUpperCase("tr");
+      })
+      .join("");
+  }
+
+  /**
+   * Oyuncu görseli: baş harfler HER ZAMAN çizilir, fotoğraf onun ÜSTÜNE
+   * biner.
+   *
+   * Önce JS'li bir yedek denendi (`error` olayını yakalayıp düğümü baş
+   * harflerle değiştirmek) ve tarayıcıda çalışmadı: kaynak yükleme hatası
+   * köpürmüyor, yakalama aşamasındaki dinleyiciye de ulaşmadı; sonuç, kırık
+   * fotoğrafta boş bir daireydi. Katmanlı çözüm olay zamanlamasına hiç
+   * bağlı değil — fotoğraf gelmezse altındaki baş harfler zaten görünür,
+   * gelirse üstünü kapatır.
+   */
+  function cardAvatarHtml(card, title) {
+    var initials = '<span class="search-card-initials" aria-hidden="true">' + escapeHtml(cardInitials(title)) + "</span>";
+
+    if (!card || !card.photo) {
+      return '<span class="search-card-avatar">' + initials + "</span>";
+    }
+
+    return (
+      '<span class="search-card-avatar">' + initials +
+      '<img class="search-card-photo" src="' + escapeHtml(card.photo) +
+      '" alt="' + escapeHtml(title) + ' oyuncu fotoğrafı" loading="lazy" decoding="async" width="44" height="44" />' +
+      "</span>"
+    );
+  }
+
+  function cardStatHtml(card, slot) {
+    var values = (card && card.values) || {};
+    var has = Object.prototype.hasOwnProperty.call(values, slot);
+    var label = CARD_SLOT_LABELS[slot] || slot;
+
+    return (
+      '<div class="search-card-stat' + (has ? "" : " is-awaiting") + '">' +
+      "<dt>" + escapeHtml(label) + "</dt>" +
+      "<dd>" + escapeHtml(has ? values[slot] : CARD_AWAITING_LABEL) + "</dd>" +
+      "</div>"
+    );
+  }
+
+  function cardSourceHtml(card) {
+    if (!card || !card.source) {
+      return "";
+    }
+    var when = card.verifiedOn ? " · " + card.verifiedOn : "";
+    return '<p class="search-card-source">Kaynak: ' + escapeHtml(card.source) + escapeHtml(when) + "</p>";
+  }
+
+  function playerCardHtml(entry, base) {
+    var card = entry.card || {};
+    var level = card.confidence || "none";
+    var confidence = CONFIDENCE_LABELS[level] || CONFIDENCE_LABELS.none;
+
+    return (
+      '<a class="site-search-option site-search-card" role="option" href="' +
+      escapeHtml(base + entry.href) + '" data-confidence="' + escapeHtml(level) + '">' +
+      '<span class="search-card-head">' +
+      cardAvatarHtml(card, entry.title) +
+      "<span><strong>" + escapeHtml(entry.title) + "</strong>" +
+      '<span class="search-card-sub">' + escapeHtml(entry.subtitle || "Oyuncu profili") + "</span></span>" +
+      '<em class="search-card-confidence">' + escapeHtml(confidence) + "</em>" +
+      "</span>" +
+      '<dl class="search-card-stats">' +
+      CARD_VISIBLE_SLOTS.map(function (slot) {
+        return cardStatHtml(card, slot);
+      }).join("") +
+      "</dl>" +
+      cardSourceHtml(card) +
+      "</a>"
+    );
+  }
+
+  function simpleOptionHtml(entry, base) {
+    var badge = entry.badge || (entry.type === "team" ? "TKM" : entry.type === "player" ? "OYN" : "SYF");
+
+    return (
+      '<a class="site-search-option" role="option" href="' +
+      escapeHtml(base + entry.href) +
+      '"><i aria-hidden="true">' +
+      escapeHtml(badge) +
+      "</i><strong>" +
+      escapeHtml(entry.title) +
+      "</strong><span>" +
+      escapeHtml(entry.subtitle || "") +
+      "</span></a>"
+    );
+  }
+
   function setupSearch(form) {
     var input = form.querySelector(".site-search-input");
     var panel = form.querySelector(".site-search-panel");
@@ -238,18 +375,12 @@
 
       panel.innerHTML = matches
         .map(function (entry) {
-          var badge = entry.badge || (entry.type === "team" ? "TKM" : entry.type === "player" ? "OYN" : "SYF");
-          return (
-            '<a class="site-search-option" role="option" href="' +
-            escapeHtml(base + entry.href) +
-            '"><i aria-hidden="true">' +
-            escapeHtml(badge) +
-            "</i><strong>" +
-            escapeHtml(entry.title) +
-            "</strong><span>" +
-            escapeHtml(entry.subtitle || "") +
-            "</span></a>"
-          );
+          // Kart verisi olmayan oyuncu kaydı (eski dizin sürümü) tek satırlık
+          // biçime düşer: sonuç kaybolmaktansa sade görünür.
+          if (entry.type === "player" && entry.card) {
+            return playerCardHtml(entry, base);
+          }
+          return simpleOptionHtml(entry, base);
         })
         .join("");
       panel.hidden = false;

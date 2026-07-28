@@ -1,6 +1,7 @@
 const { getProvider, mockProvider } = require("../services/providers");
 const { mergeProviderPlayers } = require("../services/playerService");
 const { enrichPlayerRating } = require("../services/ratingService");
+const { buildPlayerCard } = require("../services/playerCardView");
 const { findCompetition, providerLeagueValue } = require("../services/competitionCatalog");
 const {
   DEFAULT_TIMEOUT_MS,
@@ -186,6 +187,24 @@ module.exports = async function handler(req, res) {
   }
 
   data = applyPlayerFilters(data.map((player) => enrichPlayerRating(player)), localQuery);
+
+  // `view=card` kart görünüm modelini döndürür (services/playerCardView.js).
+  //
+  // Neden ayrı bir uç nokta değil: Vercel Hobby planında 12 serverless
+  // fonksiyon sınırı dolu (api/ altındaki her dosya bir fonksiyon; `_`
+  // önekliler hariç). Yeni bir /api/search dosyası derlemeyi kırardı.
+  //
+  // Kart, ham kaydın yanında DEĞİL, onun YERİNE döner: kartın tamamı yayın
+  // kapısından geçmiş alanlardan oluşur, ham kayıt ise geçmemiş alanları da
+  // taşır. İkisini birlikte göndermek, istemcinin yanlışlıkla ham alana
+  // uzanmasına kapı açardı.
+  //
+  // Sağlayıcı zinciri yukarıda olduğu gibi çalışır: canlı sağlayıcı veri
+  // döndürdüğünde kart o veriden kurulur, döndürmediğinde kürasyonlu
+  // kayıttan. Ölçüm gelmeyen alan iki durumda da "bekleniyor" kalır.
+  if (["card", "cards"].includes(normalizeText(query.view))) {
+    return sendSuccess(res, data.map((player) => buildPlayerCard(player)), source);
+  }
 
   return sendSuccess(res, data, source);
 };

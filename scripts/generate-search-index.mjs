@@ -17,6 +17,7 @@ import { NAV_PRIMARY, NAV_SECONDARY } from "./lib/layout.mjs";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { publicPlayerView } = require("../services/cardCredibility.js");
+const { buildSearchCard } = require("../services/playerCardView.js");
 const { mergeSuperLigTeams } = require("../services/superLigTeams.js");
 
 function readJson(file) {
@@ -114,12 +115,21 @@ for (const player of asArray(readJson("players.json"), "players")) {
   const verified = publicPlayerView(player).verified;
   const club = verified ? (player.team || player.club || "") : "";
   const position = player.position || player.role || "";
+
+  // Sonuç artık tek satırlık bir bağlantı değil, kart. Kartın verisi burada,
+  // derleme sırasında ve yayın kapısından geçirilerek hazırlanır; istemci
+  // kendi kuralını yeniden hesaplamaz, dolayısıyla dizinde gizlenmiş bir
+  // alanı tarayıcıda geri boyayamaz.
+  //
+  // Ölçülmemiş alanlar dizine YAZILMAZ, yalnızca `awaiting` listesinde
+  // adlarıyla taşınır — arayüz onlara "Veri bekleniyor" basar.
   push({
     type: "player",
     badge: "OYN",
     href,
     title: player.name,
-    subtitle: [club, position].filter(Boolean).join(" · ") || "Oyuncu profili"
+    subtitle: [club, position].filter(Boolean).join(" · ") || "Oyuncu profili",
+    card: buildSearchCard(player)
   });
 }
 

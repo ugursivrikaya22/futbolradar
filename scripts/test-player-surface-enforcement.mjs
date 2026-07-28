@@ -257,6 +257,32 @@ function testHydrationCannotRepaintBlockedData() {
   // İkinci savunma hattı: kayıt düzeyinde süzgeç.
   assert.ok(app.includes("isPublishablePlayerCard(player)"), "istemcide kayıt düzeyi süzgeç bulunmalı");
 
+  // ...ve süzgecin BİR YERDE bulunması yetmez: oyuncu verisi yükleyen HER
+  // hidrasyon yolu onu uygulamalı.
+  //
+  // Regresyon: bu test yalnızca "süzgeç dosyada var mı" diye bakıyordu ve
+  // geçiyordu; oysa /oyuncu-radari.html hidrasyonu süzgeci hiç çağırmıyordu.
+  // Statik çıktı temizdi, JS yüklenince "mock-" kimlikli kayıtlar piyasa
+  // değeri ve rating ile geri boyanıyordu — testin kapatması gereken tam da
+  // buydu.
+  const HYDRATION_CALL = 'loadData("players")';
+  const WINDOW_LINES = 60;
+  const lines = app.split("\n");
+
+  for (let index = 0; index < lines.length; index += 1) {
+    if (!lines[index].includes(HYDRATION_CALL)) continue;
+
+    const windowText = lines.slice(index, index + WINDOW_LINES).join("\n");
+    // İstatistik merkezi oyuncu KARTI çizmiyor, yalnızca filtre seçenekleri
+    // dolduruyor; kart süzgeci orada anlamlı değil.
+    if (/data-stat-filter/.test(windowText)) continue;
+
+    assert.ok(
+      windowText.includes("isPublishablePlayerCard"),
+      `app.js:${index + 1} — oyuncu verisi yükleyen bu yol güvenilirlik süzgecini uygulamıyor`
+    );
+  }
+
   // Ön render kararı gerçekten gömüyor mu?
   const sample = fs.readFileSync(path.join(root, "oyuncular", `${players[0].id}.html`), "utf8");
   assert.ok(/data-player-verified="(true|false)"/.test(sample), "ön render kararı iskelete gömmeli");
