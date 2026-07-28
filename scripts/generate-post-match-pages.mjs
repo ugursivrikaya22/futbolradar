@@ -10,6 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import { statementsMarqueeHtml, statementsListHtml } from "./lib/statementsView.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -21,6 +22,11 @@ const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 const { buildPostMatchIntelligence } = require("../services/postMatchIntelligence.js");
 const { enrichmentSection } = require("../services/postMatchEnrichmentView.js");
+const {
+  publishableStatements,
+  logExcludedStatements,
+  statementTickerItems
+} = require("../services/matchStatementsService.js");
 
 /**
  * Sağlayıcı zenginleştirme deposu — SALT OKUNUR.
@@ -383,6 +389,26 @@ function editorialSection(match) {
       </section>`;
 }
 
+/**
+ * Maç sonu açıklamaları: sayfanın başında kayan şerit, gövdesinde tam liste.
+ *
+ * Bölüm doğrulanmış açıklama yokken de basılır ve "Kaynaklardan bekleniyor"
+ * der. Gizlemek, okuyucuya "kimse konuşmadı" diye okunurdu.
+ */
+function statementsBlocks(match) {
+  const result = publishableStatements(match);
+  logExcludedStatements(`post-match:${match.id}`, result.excluded);
+
+  const feed = statementTickerItems([match], { limit: 6 });
+  const awaitingNote = "Bu karşılaşma için doğrulanmış bir teknik direktör ya da futbolcu açıklaması henüz yayımlanmadı.";
+
+  return {
+    marquee: statementsMarqueeHtml(feed, { awaitingNote }),
+    list: statementsListHtml(result, { awaitingNote }),
+    count: result.statements.length
+  };
+}
+
 function kpiSection(match) {
   const pick = (type) => (match.statistics || []).find((row) => String(row.type).toLocaleLowerCase("tr-TR") === type.toLocaleLowerCase("tr-TR"));
   const tiles = [];
@@ -416,6 +442,11 @@ function pageHtml(report, match) {
   // basardı — anlamsız üretim gürültüsü.
   const enrichmentHtml = enrichmentSection(enrichmentStore[match.id] || null);
   const enrichmentBlock = enrichmentHtml ? `\n\n      ${enrichmentHtml}` : "";
+
+  // Maç sonu açıklamaları: şerit sayfanın başında, tam liste gövdesinde.
+  // İkisi de aynı doğrulanmış listeden üretilir; şerit kısaltır, liste
+  // alıntının tamamını ve kaynağını gösterir.
+  const statements = statementsBlocks(match);
 
   const schema = {
     "@context": "https://schema.org",
@@ -496,6 +527,8 @@ function pageHtml(report, match) {
         </div>
       </section>
 
+      ${statements.marquee}
+
       ${kpiSection(match)}
 
       <section class="post-match-section" aria-labelledby="rapor-ozet">
@@ -524,6 +557,11 @@ function pageHtml(report, match) {
         <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-istatistik">İstatistik analizi</h2><p>${escapeHtml(match.homeTeam)} ve ${escapeHtml(match.awayTeam)} verilerinin karşılaştırmalı okuması.</p></div></div>
         ${statisticsSection(report, match)}
       </section>${enrichmentBlock}
+
+      <section class="post-match-section" aria-labelledby="rapor-aciklama">
+        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-aciklama">Maç sonu açıklamaları</h2><p>Teknik direktör ve futbolcuların maç sonrası sözleri; yalnızca kaynağı gösterilebilen alıntılar.</p></div></div>
+        ${statements.list}
+      </section>
 
       <section class="post-match-section" aria-labelledby="rapor-taktik">
         <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-taktik">Taktik değerlendirme</h2><p>Diziliş, oyun kontrolü ve müdahalelerin veriye dayalı okuması.</p></div></div>
@@ -642,6 +680,46 @@ function addInternalLinks(report, match) {
 }
 
 /**
+ * ANA SAYFA: canlı maç alanının altında kısa "Maç Sonu Açıklamaları" şeridi.
+ *
+ * Şerit BİRDEN ÇOK maçtan beslenir (en yeni biten maçtan geriye), çünkü ana
+ * sayfa tek bir maçın sayfası değil. Doğrulanmış hiç alıntı yoksa şerit
+ * kaldırılmaz; "Kaynaklardan bekleniyor" der ve okuyucu bunun bir veri
+ * durumu olduğunu görür.
+ */
+function addHomeStatementsMarquee(entries) {
+  const reportPathById = new Map(entries.map(({ report, match }) => [match.id, report.seo.path]));
+  const matches = entries.map(({ match }) => match);
+
+  const feed = statementTickerItems(matches, {
+    limit: 6,
+    href: (match) => {
+      const reportPath = reportPathById.get(match.id);
+      return reportPath ? `./${reportPath}` : null;
+    }
+  });
+
+  const marquee = statementsMarqueeHtml(feed, {
+    awaitingNote: "Son tamamlanan maçlar için doğrulanmış bir teknik direktör ya da futbolcu açıklaması henüz yayımlanmadı."
+  });
+
+  // Başlık ayrı bir <h2> değil: şeridin kendi rozeti zaten "Maç Sonu
+  // Açıklamaları" yazıyor ve aria-label aynı adı taşıyor. Görsel olarak
+  // gizlenmiş ikinci bir başlık, ekran okuyucuda aynı şeyi iki kez okuturdu.
+  const block = `<section class="container section home-statements" aria-label="Maç Sonu Açıklamaları">
+    ${marquee}
+  </section>`;
+
+  replaceOrInsert(
+    "index.html",
+    "<!-- match-statements:start -->",
+    "<!-- match-statements:end -->",
+    block,
+    '<section class="container section home-post-match"'
+  );
+}
+
+/**
  * Raporların tümünü Maç Merkezi'nden listeler. Hem kullanıcı için giriş
  * noktası, hem de her raporun en az bir iç bağlantıyla taranabilir olmasını
  * sağlar; aksi halde yalnızca sitemap üzerinden erişilebilir kalırlardı.
@@ -723,6 +801,7 @@ for (const match of finished) {
 
 if (generated.length) {
   addInternalLinks(generated[0].report, generated[0].match);
+  addHomeStatementsMarquee(generated);
   // Ana sayfadaki tek "son rapor" vitrinini, son raporların listesiyle
   // değiştirir. Vitrin bloğunun kendisi addInternalLinks içinde duruyor;
   // bu blok onun altına, ayrı bir işaretleyici arasına yazılıyor.

@@ -12254,6 +12254,205 @@ body .container {
   }
 }
 
+/* --------------------------------------------------------------------------
+   MAÇ SONU AÇIKLAMALARI
+
+   Kayan şerit (ana sayfa canlı alan + maç sayfası başı) ve tam liste (maç
+   sayfası). Doğrulanmış alıntı yoksa şerit kaldırılmaz, "Kaynaklardan
+   bekleniyor" kutusu görünür — sessiz boşluk "kimse konuşmadı" diye okunurdu.
+   -------------------------------------------------------------------------- */
+.statements-marquee {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 10px 12px;
+  background: rgba(var(--surface-rgb), 0.6);
+}
+
+.statements-badge {
+  flex: none;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: rgba(11, 143, 90, 0.1);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.statements-viewport {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+
+.statements-viewport.is-empty {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.statements-track {
+  display: flex;
+  width: max-content;
+  animation: statements-scroll 48s linear infinite;
+}
+
+.statements-marquee:hover .statements-track,
+.statements-marquee:focus-within .statements-track {
+  animation-play-state: paused;
+}
+
+.statements-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-inline-end: 10px;
+}
+
+.statements-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.statements-who {
+  color: var(--green);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.statements-quote {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-style: italic;
+}
+
+.statements-sep {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--glass-border);
+}
+
+@keyframes statements-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Hareket duyarlılığı: azaltılmış hareket tercihinde şerit durur ve
+   içerik yatay kaydırmayla okunur kalır. */
+@media (prefers-reduced-motion: reduce) {
+  .statements-track {
+    animation: none;
+  }
+
+  .statements-viewport {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .statements-group[aria-hidden="true"] {
+    display: none;
+  }
+}
+
+.statements-awaiting {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  padding: 4px 0;
+}
+
+.statements-awaiting strong {
+  color: var(--text);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.statements-awaiting span {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.statements-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.statement-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  background: rgba(var(--surface-rgb), 0.6);
+}
+
+.statement-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 8px;
+}
+
+.statement-head strong {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.statement-role,
+.statement-team {
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.statement-role {
+  background: rgba(11, 143, 90, 0.1);
+  color: var(--green);
+}
+
+.statement-team {
+  background: rgba(var(--surface-rgb), 0.8);
+  color: var(--muted);
+}
+
+.statement-quote {
+  margin: 0;
+  border-inline-start: 3px solid rgba(11, 143, 90, 0.35);
+  padding-inline-start: 10px;
+  color: var(--text);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+}
+
+.statement-source {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.statement-source a {
+  color: var(--green);
+  font-weight: 650;
+}
+
 .site-search-empty {
   padding: 12px;
   color: var(--muted);

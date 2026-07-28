@@ -7894,6 +7894,153 @@
     );
   }
 
+  /* ------------------------------------------------------------------------
+     MAÇ SONU AÇIKLAMALARI (kural services/matchStatementsService.js ile aynı)
+
+     Bu içerik sağlayıcıdan gelmiyor; tamamen editoryal. Bir maç istatistiğini
+     yanlış yazmak sayı hatasıdır, bir insanın ağzına söylemediği cümleyi
+     koymak başka bir şeydir — bu yüzden kapı sert ve istemcide de aynen
+     tekrarlanıyor: ön renderde elenen bir alıntıyı hidrasyon geri basamaz.
+
+     Kişi, rol, takım, alıntı ve İZLENEBİLİR kaynak bağlantısı zorunlu;
+     status "verified" olmayan kayıt geçmez. Bilinmeyen rol "yetkili" gibi bir
+     şeye yuvarlanmaz, kayıt elenir.
+     --------------------------------------------------------------------- */
+  var STATEMENTS_AWAITING_LABEL = "Kaynaklardan bekleniyor";
+  var STATEMENT_ROLE_LABELS = { manager: "Teknik direktör", player: "Futbolcu" };
+  var STATEMENT_ROLE_ALIASES = {
+    manager: "manager", "teknik direktor": "manager", "teknik direktör": "manager",
+    coach: "manager", "head-coach": "manager",
+    player: "player", futbolcu: "player", oyuncu: "player"
+  };
+
+  var STATEMENT_FINISHED_STATUSES = ["FINISHED", "FT", "AET", "PEN"];
+
+  function statementRole(value) {
+    return STATEMENT_ROLE_ALIASES[normalizeSearchText(value)] || null;
+  }
+
+  function publishableStatements(match) {
+    // Maç bitmediyse "maç sonu açıklaması" diye bir şey yoktur; başlığın
+    // kendisi bir iddia olurdu.
+    var status = String((match && (match.status || match.providerStatus)) || "").toUpperCase();
+    if (!match || STATEMENT_FINISHED_STATUSES.indexOf(status) === -1) {
+      return [];
+    }
+
+    var raw = Array.isArray(match.statements) ? match.statements : [];
+    var seen = Object.create(null);
+    var out = [];
+
+    raw.forEach(function (item) {
+      if (!item) return;
+
+      var person = String(item.person || item.name || "").trim();
+      var team = String(item.team || "").trim();
+      var quote = String(item.quote || "").trim();
+      var sourceName = String(item.sourceName || "").trim();
+      var sourceUrl = String(item.sourceUrl || "").trim();
+      var role = statementRole(item.role);
+
+      if (!person || !role || !team || !quote || !sourceName) return;
+      if (!/^https?:\/\//i.test(sourceUrl)) return;
+      if (normalizeSearchText(item.status) !== "verified") return;
+
+      var key = normalizeSearchText(person) + "|" + normalizeSearchText(quote);
+      if (seen[key]) return;
+      seen[key] = true;
+
+      out.push({
+        person: person, role: role, roleLabel: STATEMENT_ROLE_LABELS[role],
+        team: team, quote: quote, sourceName: sourceName, sourceUrl: sourceUrl,
+        publishedAt: String(item.publishedAt || "").trim() || null
+      });
+    });
+
+    return out.sort(function (left, right) {
+      return String(right.publishedAt || "").localeCompare(String(left.publishedAt || ""));
+    });
+  }
+
+  function statementsAwaitingHtml(note) {
+    return (
+      '<div class="statements-awaiting" data-statements-state="awaiting">' +
+      "<strong>" + escapeHtml(STATEMENTS_AWAITING_LABEL) + "</strong>" +
+      "<span>" + escapeHtml(note || "Doğrulanmış bir maç sonu açıklaması yayımlandığında burada gösterilecek.") + "</span>" +
+      "</div>"
+    );
+  }
+
+  function statementQuotePreview(quote) {
+    var value = String(quote || "");
+    if (value.length <= 120) return value;
+    var cut = value.slice(0, 120);
+    var lastSpace = cut.lastIndexOf(" ");
+    return (lastSpace > 72 ? cut.slice(0, lastSpace) : cut).replace(/\s+$/, "") + "…";
+  }
+
+  /** Sayfa başındaki kayan şerit. */
+  function mdStatementsMarqueeHtml(detail) {
+    var statements = publishableStatements(detail);
+    var label = "Maç Sonu Açıklamaları";
+    var inner;
+
+    if (statements.length) {
+      var track = statements.map(function (statement) {
+        return (
+          '<a class="statements-item" href="' + escapeHtml(statement.sourceUrl) + '" target="_blank" rel="noopener noreferrer">' +
+          '<span class="statements-who">' + escapeHtml(statement.person + " · " + statement.roleLabel + " · " + statement.team) + "</span>" +
+          '<span class="statements-quote">' + escapeHtml("“" + statementQuotePreview(statement.quote) + "”") + "</span>" +
+          "</a>"
+        );
+      }).join('<span class="statements-sep" aria-hidden="true"></span>');
+
+      inner =
+        '<div class="statements-viewport"><div class="statements-track">' +
+        '<div class="statements-group">' + track + "</div>" +
+        '<div class="statements-group" aria-hidden="true">' + track + "</div>" +
+        "</div></div>";
+    } else {
+      inner = '<div class="statements-viewport is-empty">' +
+        statementsAwaitingHtml("Bu karşılaşma için doğrulanmış bir teknik direktör ya da futbolcu açıklaması henüz yayımlanmadı.") +
+        "</div>";
+    }
+
+    return (
+      '<div class="statements-marquee" data-card="match-statements" aria-label="' + escapeHtml(label) + '">' +
+      '<span class="statements-badge">' + escapeHtml(label) + "</span>" + inner +
+      "</div>"
+    );
+  }
+
+  /** Tam liste: alıntının tamamı, kim söyledi, hangi kaynaktan. */
+  function mdStatementsSectionHtml(detail) {
+    var statements = publishableStatements(detail);
+
+    var body = statements.length
+      ? '<div class="statements-list" data-statements-state="ready">' + statements.map(function (statement) {
+        var when = statement.publishedAt ? String(statement.publishedAt).slice(0, 10) : "";
+        return (
+          '<article class="statement-card" data-role="' + escapeHtml(statement.role) + '">' +
+          '<header class="statement-head"><strong>' + escapeHtml(statement.person) + "</strong>" +
+          '<span class="statement-role">' + escapeHtml(statement.roleLabel) + "</span>" +
+          '<span class="statement-team">' + escapeHtml(statement.team) + "</span></header>" +
+          '<blockquote class="statement-quote">' + escapeHtml(statement.quote) + "</blockquote>" +
+          '<footer class="statement-source"><a href="' + escapeHtml(statement.sourceUrl) + '" target="_blank" rel="noopener noreferrer">' +
+          escapeHtml(statement.sourceName) + "</a>" + (when ? "<span>" + escapeHtml(when) + "</span>" : "") + "</footer>" +
+          "</article>"
+        );
+      }).join("") + "</div>"
+      : statementsAwaitingHtml("Bu karşılaşma için doğrulanmış bir teknik direktör ya da futbolcu açıklaması henüz yayımlanmadı.");
+
+    return mdSection(
+      "statements",
+      "Maç sonu açıklamaları",
+      "Teknik direktör ve futbolcuların sözleri; yalnızca kaynağı gösterilebilen alıntılar",
+      body
+    );
+  }
+
   function matchRawTitle(match) {
     return displayValue(match.homeTeam) + " - " + displayValue(match.awayTeam);
   }
@@ -8048,11 +8195,15 @@
       '<article class="match-detail-card card md-shell" data-card="match-detail" data-match="' + escapeHtml(detail.id) + '">' +
       mdScoreboardHtml(detail) +
       mdFactsHtml(detail) +
+      // Şerit künyenin hemen altında: maç bittiyse ilk okunacak şey sözlerdir.
+      // Tam liste aşağıda, kendi bölümünde.
+      mdStatementsMarqueeHtml(detail) +
       (detail.summary ? '<p class="md-lead">' + escapeHtml(detail.summary) + "</p>" : "") +
       mdTimelineHtml(detail) +
       mdLineupsHtml(detail) +
       mdStatisticsHtml(detail) +
       mdAnalysisHtml(detail) +
+      mdStatementsSectionHtml(detail) +
       mdPlayersHtml(detail) +
       // Mevcut radar işlevleri korunur: momentum/form anlık görüntüsü, sinyal
       // kartları, takım radar bağlantıları ve aksiyon paneli. Radar bölümü
