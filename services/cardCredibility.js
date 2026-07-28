@@ -19,6 +19,8 @@
  */
 
 /** Yer tutucu kimlik kalıbı. Gerçek sağlayıcı kimliği yalnızca rakamdır. */
+const { hasMojibake } = require("./textEncodingRepair.js");
+
 const MOCK_ID_PATTERN = /^mock[-_]/i;
 const REAL_PROVIDER_ID = /^\d+$/;
 
@@ -65,6 +67,22 @@ function evaluatePlayerCard(player, options = {}) {
   }
 
   if (!String(player.name || "").trim()) reasons.push("isim yok");
+
+  // 0. Adın kendisi bozuksa kart yayımlanmaz.
+  //
+  // Sağlayıcıdan bazı adlar UTF-8 baytları Latin-1 gibi çözülmüş hâlde
+  // geliyor ("Başkan" -> "BaÅkan"). Onarım önce denenir
+  // (services/textEncodingRepair.js); bayt kaybı yüzünden onarılamayanlar
+  // burada elenir. Gerekçe: bozuk bir ad eksik bir alan değil, YANLIŞ bir
+  // bilgidir — hem okuyucuya yanlış isim gösterir hem de kimlik ve URL
+  // addan türetildiği için /oyuncular/b-baa-kan-trabzonspor.html gibi kalıcı
+  // ve yanlış bir adres üretip site haritasına sokar.
+  //
+  // Kayıt veriden SİLİNMİYOR, yalnızca gizleniyor: sağlayıcı adı düzgün
+  // gönderdiği ilk senkronda kart kendiliğinden geri gelir.
+  if (hasMojibake(player.name) || String(player.name || "").includes("�")) {
+    reasons.push("ad kodlaması bozuk (onarılamadı)");
+  }
 
   // 1. Sağlayıcı kimliği: kaydın hangi gerçek oyuncuya karşılık geldiğini
   //    gösteremiyorsak, üstündeki hiçbir sayı doğrulanabilir değildir.
