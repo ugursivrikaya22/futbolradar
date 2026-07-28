@@ -9,7 +9,8 @@ const {
   reconcileSquadPlayer,
   markDepartedPlayers,
   evaluatePlayerCountGuard,
-  detectCanonicalDuplicates
+  detectCanonicalDuplicates,
+  detectUnmergedProviderTwins
 } = require("../services/playerCanonicalService.js");
 const { normalizeText } = require("../services/matchRadarService.js");
 
@@ -99,7 +100,12 @@ function main() {
     return;
   }
 
-  console.log(`Reconciled ${squadSnapshots.length} squad snapshot(s): ${created.length} new player(s), ${conflicts.length} currentTeam conflict(s), ${reviewQueue.length} name-collision review item(s).`);
+  // Birleştirilmemiş ikizler senkronu DURDURMAZ (bkz. detectUnmergedProviderTwins):
+  // birikmiş bir kopya yüzünden kadro senkronunun tamamen durması, veriyi
+  // düzeltmek yerine dondururdu. Kuyruğa yazılır, koşu özetinde sayılır.
+  const providerTwins = detectUnmergedProviderTwins(working);
+
+  console.log(`Reconciled ${squadSnapshots.length} squad snapshot(s): ${created.length} new player(s), ${conflicts.length} currentTeam conflict(s), ${reviewQueue.length} name-collision review item(s), ${providerTwins.length} unmerged provider twin(s).`);
   console.log(`Current Süper Lig player count: ${previousSuperLigCount} -> ${newSuperLigCount}.`);
   if (conflicts.length) {
     console.log("Conflicts (kept local value, flagged for review):");
@@ -112,8 +118,13 @@ function main() {
   }
 
   atomicWrite(PLAYERS_PATH, working);
-  if (reviewQueue.length || conflicts.length) {
-    atomicWrite(REVIEW_QUEUE_PATH, { generatedAt: new Date().toISOString(), conflicts, nameCollisions: reviewQueue });
+  if (reviewQueue.length || conflicts.length || providerTwins.length) {
+    atomicWrite(REVIEW_QUEUE_PATH, {
+      generatedAt: new Date().toISOString(),
+      conflicts,
+      nameCollisions: reviewQueue,
+      unmergedProviderTwins: providerTwins
+    });
     console.log(`Wrote ${path.relative(root, REVIEW_QUEUE_PATH)} (internal only — never synced to public/).`);
   }
   console.log(`Wrote ${path.relative(root, PLAYERS_PATH)}. Run "npm run build" to regenerate player profile pages, sitemap and public sync.`);

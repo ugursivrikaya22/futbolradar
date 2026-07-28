@@ -4,7 +4,13 @@ import { createRequire } from "node:module";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
-const { reconcileSquadPlayer, markDepartedPlayers, evaluatePlayerCountGuard, detectCanonicalDuplicates } = require("../services/playerCanonicalService.js");
+const {
+  reconcileSquadPlayer,
+  markDepartedPlayers,
+  evaluatePlayerCountGuard,
+  detectCanonicalDuplicates,
+  detectUnmergedProviderTwins
+} = require("../services/playerCanonicalService.js");
 const { getPlayers } = require("../services/playerService.js");
 
 let failures = 0;
@@ -80,9 +86,58 @@ const canonicalPlayers = getPlayers(rawPlayers);
   expect(detectCanonicalDuplicates(duplicated).length === 1, "a duplicate providerId across two records must be detected");
 }
 
+// --- Unmerged provider twins: the duplicate the hard gate cannot see ---
+{
+  // Editoryal kayıt tam ad + yer tutucu kimlik, sağlayıcı kaydı kısaltılmış
+  // ad + gerçek kimlik. Ne providerId ne slug çakışıyor; sert kapı bunu
+  // görmüyor, inceleme kuyruğu görmeli.
+  const roster = [
+    { id: "victor-osimhen", slug: "victor-osimhen", name: "Victor Osimhen", providerId: "mock-victor-osimhen", currentTeam: "Galatasaray" },
+    { id: "v-osimhen-galatasaray", slug: "v-osimhen-galatasaray", name: "V. Osimhen", providerId: "2780", currentTeam: "Galatasaray" }
+  ];
+  expect(detectCanonicalDuplicates(roster).length === 0, "the hard duplicate gate must stay quiet: neither providerId nor slug collides");
+
+  const twins = detectUnmergedProviderTwins(roster);
+  expect(twins.length === 1, "an editorial record and its provider twin must be reported once");
+  expect(twins[0].confidence === "high", "matching first initials must be reported as high confidence");
+  expect(twins[0].placeholder.id === "victor-osimhen", "the placeholder side must be the record carrying the mock provider id");
+  expect(twins[0].providerBacked.providerId === "2780", "the provider-backed side must carry the real numeric id");
+}
+
+{
+  // İki ayrı futbolcu aynı soyadını taşıyabilir. İkisi de gerçek sağlayıcı
+  // kimliğine sahipse bu bir kopya değil; kuyruğa girmemeli.
+  const brothers = [
+    { id: "deniz-aydogdu-eyupspor", name: "Deniz Aydogdu", providerId: "630293", currentTeam: "Eyüpspor" },
+    { id: "eren-aydogdu-eyupspor", name: "Eren Aydogdu", providerId: "630294", currentTeam: "Eyüpspor" }
+  ];
+  expect(detectUnmergedProviderTwins(brothers).length === 0, "two provider-backed players sharing a surname must not be reported as twins");
+}
+
+{
+  // Aynı soyadı, farklı takım: aynı oyuncu değil.
+  const differentTeams = [
+    { id: "a-player", name: "Ali Kaya", providerId: "mock-ali-kaya", currentTeam: "Samsunspor" },
+    { id: "b-player", name: "A. Kaya", providerId: "44444", currentTeam: "Trabzonspor" }
+  ];
+  expect(detectUnmergedProviderTwins(differentTeams).length === 0, "same surname at different clubs must not be reported as a twin");
+}
+
+{
+  // Baş harf tutmuyorsa eşleşme atılmaz ama "high" da denmez: sağlayıcı
+  // kısaltmaları her zaman ilk addan türemiyor.
+  const abbreviated = [
+    { id: "michael-murillo", name: "Michael Murillo", providerId: "mock-michael-murillo", currentTeam: "Beşiktaş" },
+    { id: "a-murillo-besiktas", name: "A. Murillo", providerId: "2973", currentTeam: "Beşiktaş" }
+  ];
+  const twins = detectUnmergedProviderTwins(abbreviated);
+  expect(twins.length === 1, "a surname match with mismatched initials must still surface for review");
+  expect(twins[0].confidence === "review", "mismatched initials must be downgraded to review confidence, never asserted as high");
+}
+
 if (failures) {
   console.error(`\n${failures} player canonical merge check(s) failed.`);
   process.exitCode = 1;
 } else {
-  console.log("Player canonical merge checks passed (named-player protection, review routing, new-player creation, departed flagging, count-drop guard, duplicate detection).");
+  console.log("Player canonical merge checks passed (named-player protection, review routing, new-player creation, departed flagging, count-drop guard, duplicate detection, unmerged provider twins).");
 }

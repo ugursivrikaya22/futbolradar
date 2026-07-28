@@ -3,10 +3,19 @@
  *
  * Bant iki doğrulanmış kaynaktan beslenir ve elle güncelleme gerektirmez:
  *
- *   1. Sitenin kendi doğrulanmış maç kaydı (data/matches.json). Bu kayıtlar
- *      yayın politikasından (services/matchEligibility.js) geçmiştir ve CI'ın
- *      beş dakikalık döngüsünde tazelenir; biten bir maçın skoru bandı
- *      kendiliğinden günceller.
+ *   1. Sitenin maç kaydı: elle doğrulanmış kayıtlar (data/matches.json) ile
+ *      sağlayıcı takvimi (data/fixture-calendar.json), sitenin geri kalanıyla
+ *      AYNI birleştirme kuralından (services/matchCalendarMerge.js) geçirilip
+ *      aynı yayın politikasına (services/matchEligibility.js) tabi tutulur.
+ *      Bant eskiden yalnızca data/matches.json'u okuyordu; o dosya elle
+ *      kürasyonlu olduğu için sağlayıcının doğruladığı biten bir maç (örn.
+ *      bir Avrupa kupası karşılaşması) kürasyon yetişene kadar banda hiç
+ *      girmiyor, bant da fikstür sayfaları güncelken saatlerce eski kalıyordu.
+ *
+ *      Kredibilite kapısı korunuyor: banda YALNIZCA publishState "complete"
+ *      olan maçlar girer. Ayrıntısı doğrulanmayı bekleyen bir sağlayıcı kaydı
+ *      fikstür listesinde "Veri bekleniyor" olarak görünür ama "Son Dakika"
+ *      bandında bitmiş bir sonuç gibi sunulmaz.
  *   2. Doğrulanmış transfer hareketleri (data/transfers.json, status
  *      "confirmed" ve kaynak bağlantısı olanlar).
  *   3. Editoryal haber kayıtları (data/news.json), yalnızca status "verified"
@@ -39,6 +48,8 @@ const {
   logDuplicateTransfers,
   involvesSuperLigTeam
 } = require("../../services/transferService.js");
+const { mergeCuratedWithCalendar } = require("../../services/matchCalendarMerge.js");
+const { annotateMatch, PUBLISH_STATE } = require("../../services/matchEligibility.js");
 
 const root = process.cwd();
 
@@ -101,13 +112,37 @@ function hasScore(match) {
     score.away !== null && score.away !== undefined;
 }
 
+/**
+ * Kürasyonlu kayıtlar ve sağlayıcı takvimi, sitenin geri kalanıyla aynı
+ * kuraldan geçirilip birleştirilir.
+ *
+ * Dosyalar her çağrıda diskten taze okunuyor: bant CI'ın beş dakikalık
+ * döngüsünde yeniden üretiliyor ve o turda senkronlanan sonucu görmesi
+ * gerekiyor. (services/providers/mockProvider.js aynı kuralı kullanır ama
+ * veri setlerini modül yüklenirken `require` ettiği için sonucu süreç
+ * boyunca dondurur.)
+ */
+function mergedMatches() {
+  const curated = asArray(readJson("matches.json", []), "matches");
+  const calendar = asArray(readJson("fixture-calendar.json", {}), "matches");
+  return mergeCuratedWithCalendar(curated, calendar);
+}
+
 /** Maç kayıtları: canlı skor, biten sonuç ve bugünün başlama saatleri. */
 function matchItems(now) {
-  const matches = asArray(readJson("matches.json", []), "matches");
   const items = [];
 
-  for (const match of matches) {
-    if (!match || !match.homeTeam || !match.awayTeam) continue;
+  for (const raw of mergedMatches()) {
+    if (!raw || !raw.homeTeam || !raw.awayTeam) continue;
+
+    // Yayın politikası bandın kendi kuralı değil: fikstür yüzeyleriyle aynı
+    // yerden geliyor. Elenen kayıt banda hiç girmez.
+    const match = annotateMatch(raw, { now });
+    if (!match) continue;
+
+    // Ayrıntısı doğrulanmayı bekleyen kayıt fikstür listesinde görünür ama
+    // "Son Dakika" bandında kesinleşmiş bir sonuç gibi sunulmaz.
+    if (match.publishState !== PUBLISH_STATE.COMPLETE) continue;
 
     const status = String(match.status || "").toUpperCase();
     const stamp = match.lastVerifiedAt || match.fetchedAt || match.kickoff;

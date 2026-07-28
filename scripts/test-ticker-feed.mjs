@@ -20,7 +20,10 @@ const root = process.cwd();
 const STATE_FILE = path.join(root, "data", "ticker-state.json");
 
 function withTempData(mutate, run) {
-  const files = ["matches.json", "transfers.json", "news.json"];
+  // fixture-calendar.json de listede: bant artık kürasyonlu kayıtlarla
+  // sağlayıcı takvimini birleştirdiği için "tüm kaynaklar boşaldı" senaryosu
+  // takvimi de boşaltmadan kurulamıyor.
+  const files = ["matches.json", "transfers.json", "news.json", "fixture-calendar.json"];
   const backups = new Map();
 
   for (const file of files) {
@@ -66,16 +69,45 @@ function testNotCrowded() {
 }
 
 function testFreshBadgeIsATimeClaim() {
+  // Sabit girdiyle sınanıyor: kural veri setinin o günkü içeriğine bağlı
+  // olmamalı. Test daha önce gerçek veriyi sabit bir tarihten okuyordu ve
+  // banda yeni bir sonuç eklendiğinde "artık taze değil" dalı kırılıyordu —
+  // kural bozulmadığı hâlde.
+  const kickoff = "2026-07-26T18:00:00+03:00";
+  const withFixture = (run) => withTempData(
+    (files) => {
+      const [matches, transfers, news, calendar] = files;
+      fs.writeFileSync(matches, JSON.stringify([{
+        id: "taze-sonuc",
+        competitionId: "avrupa-ligi",
+        league: "Avrupa Ligi",
+        kickoff,
+        homeTeam: "Beşiktaş",
+        awayTeam: "FC Midtjylland",
+        status: "FINISHED",
+        score: { home: 1, away: 0 },
+        source: "manual_verified",
+        dataStatus: "verified",
+        lastVerifiedAt: kickoff
+      }]), "utf8");
+      fs.writeFileSync(transfers, "[]", "utf8");
+      fs.writeFileSync(news, "[]", "utf8");
+      fs.writeFileSync(calendar, "[]", "utf8");
+      if (fs.existsSync(STATE_FILE)) fs.unlinkSync(STATE_FILE);
+    },
+    run
+  );
+
   // Taze içerik: rozet "Son Dakika".
-  const fresh = buildTickerFeed({ now: new Date("2026-07-26T20:00:00+03:00") });
+  const fresh = withFixture(() => buildTickerFeed({ now: new Date("2026-07-26T20:00:00+03:00") }));
   assert.equal(fresh.badge, "Son Dakika", "taze içerikte rozet Son Dakika olmalı");
   assert.equal(fresh.fresh, true);
 
   // Aynı veri, çok ileri bir tarihten bakıldığında artık taze değil:
   // rozet sessizce nötrleşmeli, "Son Dakika" iddiası sürdürülmemeli.
-  const later = new Date("2026-07-26T20:00:00+03:00");
+  const later = new Date(kickoff);
   later.setHours(later.getHours() + FRESH_WINDOW_HOURS + 6);
-  const stale = buildTickerFeed({ now: later });
+  const stale = withFixture(() => buildTickerFeed({ now: later }));
   assert.notEqual(stale.badge, "Son Dakika", "eski içerikte Son Dakika rozeti kalmamalı");
   assert.equal(stale.fresh, false);
 }
@@ -148,9 +180,10 @@ function testStaleEditorialNewsIsDropped() {
   // "Son Dakika" bandında haftalar öncesinin başlığı yanıltıcıdır.
   const result = withTempData(
     (files) => {
-      const [matches, transfers, news] = files;
+      const [matches, transfers, news, calendar] = files;
       fs.writeFileSync(matches, "[]", "utf8");
       fs.writeFileSync(transfers, "[]", "utf8");
+      fs.writeFileSync(calendar, "[]", "utf8");
       fs.writeFileSync(news, JSON.stringify([{
         id: "eski",
         title: "Çok eski bir başlık",
@@ -169,13 +202,91 @@ function testStaleEditorialNewsIsDropped() {
   );
 }
 
+/**
+ * Bant, fikstür yüzeyleriyle aynı birleştirilmiş listeyi okumalı.
+ *
+ * Regresyon: bant yalnızca data/matches.json'u okuyordu. O dosya elle
+ * kürasyonlu olduğu için sağlayıcının doğruladığı biten bir maç kürasyon
+ * yetişene kadar banda hiç girmiyordu; fikstür sayfaları güncelken bant
+ * saatlerce eski kalıyor ve "Son Dakika" rozeti sessizce "Gündem"e düşüyordu.
+ */
+function testProviderConfirmedResultReachesBand() {
+  const result = withTempData(
+    (files) => {
+      const [matches, transfers, news, calendar] = files;
+      fs.writeFileSync(matches, "[]", "utf8");
+      fs.writeFileSync(transfers, "[]", "utf8");
+      fs.writeFileSync(news, "[]", "utf8");
+      fs.writeFileSync(calendar, JSON.stringify({
+        matches: [{
+          id: "provider-avrupa-2026-07-30",
+          competitionId: "avrupa-ligi",
+          league: "Avrupa Ligi",
+          kickoff: "2026-07-30T20:00:00+03:00",
+          homeTeam: "FC Midtjylland",
+          awayTeam: "Beşiktaş",
+          status: "FINISHED",
+          score: { home: 1, away: 2 },
+          source: "thesportsdb"
+        }]
+      }), "utf8");
+      if (fs.existsSync(STATE_FILE)) fs.unlinkSync(STATE_FILE);
+    },
+    () => buildTickerFeed({ now: new Date("2026-07-30T23:00:00+03:00") })
+  );
+
+  assert.ok(
+    result.items.some((item) => item.text === "FC Midtjylland 1-2 Beşiktaş"),
+    "sağlayıcının doğruladığı biten maç banda girmeli"
+  );
+}
+
+/**
+ * Kredibilite kapısı: sağlayıcı kaydı yayımlanabilir olsa da ayrıntısı
+ * doğrulanmayı bekliyorsa "Son Dakika" bandında kesinleşmiş bir sonuç gibi
+ * sunulmaz. (Hazırlık maçlarında sağlayıcı verisi sık sık eksik ve çelişkili
+ * geliyor; fikstür listesinde "Veri bekleniyor" olarak görünür.)
+ */
+function testAwaitingVerificationResultStaysOutOfBand() {
+  const result = withTempData(
+    (files) => {
+      const [matches, transfers, news, calendar] = files;
+      fs.writeFileSync(matches, "[]", "utf8");
+      fs.writeFileSync(transfers, "[]", "utf8");
+      fs.writeFileSync(news, "[]", "utf8");
+      fs.writeFileSync(calendar, JSON.stringify({
+        matches: [{
+          id: "provider-hazirlik-2026-07-30",
+          competitionId: "hazirlik-maci",
+          league: "Hazırlık Maçı",
+          kickoff: "2026-07-30T20:00:00+03:00",
+          homeTeam: "Kasımpaşa",
+          awayTeam: "Hull City",
+          status: "FINISHED",
+          score: { home: 2, away: 2 },
+          source: "thesportsdb"
+        }]
+      }), "utf8");
+      if (fs.existsSync(STATE_FILE)) fs.unlinkSync(STATE_FILE);
+    },
+    () => buildTickerFeed({ now: new Date("2026-07-30T23:00:00+03:00") })
+  );
+
+  assert.ok(
+    !result.items.some((item) => item.text === "Kasımpaşa 2-2 Hull City"),
+    "doğrulanmayı bekleyen hazırlık maçı sonucu banda girmemeli"
+  );
+}
+
 testOnlyVerifiedSources();
 testNotCrowded();
 testFreshBadgeIsATimeClaim();
 testFallbackKeepsLastVerified();
 testFallbackWritesInternalTimestamp();
 testStaleEditorialNewsIsDropped();
+testProviderConfirmedResultReachesBand();
+testAwaitingVerificationResultStaysOutOfBand();
 testUnchangedFeedDoesNotRewriteState();
 testFallbackDoesNotRewriteWhileOutageContinues();
 
-console.log("Ticker feed tests passed (doğrulanmış kaynak, tazelik rozeti, yedek koruma, yaş sınırı).");
+console.log("Ticker feed tests passed (doğrulanmış kaynak, tazelik rozeti, yedek koruma, yaş sınırı, sağlayıcı sonucu, doğrulama kapısı).");

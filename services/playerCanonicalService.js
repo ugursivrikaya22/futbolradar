@@ -184,6 +184,95 @@ function detectCanonicalDuplicates(players) {
 }
 
 /**
+ * AYNI OYUNCUNUN BİRLEŞTİRİLMEMİŞ İKİZLERİ.
+ *
+ * detectCanonicalDuplicates() sert bir kapı: aynı providerId ya da aynı slug
+ * iki kez görünürse senkron durur. Ama gerçek hayattaki kopya bu değil.
+ * Gerçek kopya şu biçimde: editoryal kayıt tam adı ve YER TUTUCU bir
+ * sağlayıcı kimliği taşıyor ("Victor Osimhen" / "mock-victor-osimhen"),
+ * sağlayıcıdan senkronlanan kayıt ise kısaltılmış adı ve GERÇEK sayısal
+ * kimliği ("V. Osimhen" / "2780"). İkisi de aynı takımda, ikisi de ayrı
+ * profil sayfası üretiyor. Ne providerId ne slug çakıştığı için sert kapı
+ * bunları hiç görmüyordu — kopyalar sessizce birikiyordu.
+ *
+ * Bu fonksiyon SENKRONU DURDURMAZ. Amacı görünmezliği bitirmek: eşleşmeleri
+ * inceleme kuyruğuna yazar, birleştirme kararı insanda kalır. Otomatik
+ * birleştirme bilinçli olarak yapılmıyor — hangi kaydın kazanacağı
+ * (editoryal metrikler mi, gerçek sağlayıcı kimliği mi) kayıttan kayda
+ * değişiyor ve yanlış seçim doğrulanmış veriyi siler.
+ *
+ * Eşleşme ölçütü dar tutuldu ki kuyruk yanlış pozitifle dolmasın: aynı
+ * takım + aynı soyadı + biri yer tutucu kimlikli, diğeri gerçek sağlayıcı
+ * kimlikli. İki sağlayıcı kaydı birbiriyle eşleşmez, yani aynı soyadını
+ * taşıyan iki ayrı futbolcu (Eyüpspor'daki Aydogdu kardeşler gibi) kuyruğa
+ * girmez. Baş harf de tutuyorsa güven "high", tutmuyorsa "review" — ad
+ * kısaltmaları her zaman ilk addan türemiyor (Michael Amir Murillo
+ * sağlayıcıda "A. Murillo").
+ */
+const PLACEHOLDER_PROVIDER_ID = /^mock[-_]/i;
+
+function isPlaceholderProviderId(value) {
+  const id = String(value || "").trim();
+  return id === "" || PLACEHOLDER_PROVIDER_ID.test(id);
+}
+
+function nameParts(player) {
+  return normalizeText(player && player.name)
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+function surnameKey(player) {
+  const parts = nameParts(player);
+  return parts.length ? parts[parts.length - 1] : "";
+}
+
+function firstInitial(player) {
+  const parts = nameParts(player);
+  return parts.length > 1 ? parts[0].slice(0, 1) : "";
+}
+
+function detectUnmergedProviderTwins(players) {
+  const groups = new Map();
+
+  for (const player of Array.isArray(players) ? players : []) {
+    const surname = surnameKey(player);
+    const team = normalizeText(player && (player.currentTeam || player.team));
+    if (!surname || !team) continue;
+
+    const key = `${team}|${surname}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(player);
+  }
+
+  const twins = [];
+
+  for (const [key, group] of groups) {
+    if (group.length < 2) continue;
+
+    const placeholders = group.filter((player) => isPlaceholderProviderId(player.providerId));
+    const providerBacked = group.filter((player) => !isPlaceholderProviderId(player.providerId));
+    if (!placeholders.length || !providerBacked.length) continue;
+
+    for (const placeholder of placeholders) {
+      for (const provider of providerBacked) {
+        const initialsMatch = firstInitial(placeholder) === firstInitial(provider);
+        twins.push({
+          type: "unmerged-provider-twin",
+          key,
+          confidence: initialsMatch ? "high" : "review",
+          team: placeholder.currentTeam || placeholder.team || null,
+          placeholder: { id: placeholder.id, name: placeholder.name, providerId: placeholder.providerId || null },
+          providerBacked: { id: provider.id, name: provider.name, providerId: provider.providerId || null }
+        });
+      }
+    }
+  }
+
+  return twins;
+}
+
+/**
  * Detailed per-player stat calls are the most request-budget-expensive part
  * of a sync, so they're prioritized rather than fetched for everyone at
  * once: players already placed in an upcoming fixture's probable lineup
@@ -222,6 +311,7 @@ module.exports = {
   markDepartedPlayers,
   evaluatePlayerCountGuard,
   detectCanonicalDuplicates,
+  detectUnmergedProviderTwins,
   MIN_SAFE_SUPER_LIG_PLAYER_COUNT,
   MAX_ACCEPTABLE_PLAYER_DROP_RATIO
 };
