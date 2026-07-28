@@ -12,6 +12,25 @@ const outDir = path.join(root, "karsilastirma");
 const publicOutDir = path.join(root, "public", "karsilastirma");
 const domain = "https://www.futbolradar.com";
 
+/**
+ * Kıyas sayfalarının site haritası tarihi sabit bir dizeydi ("2026-07-13").
+ * Sayfa içeriği oyuncu verisinden üretiliyor; tarih de oradan gelmeli, yoksa
+ * oyuncu verisi tazelendiğinde site haritası eski tarihi göstermeye devam
+ * eder. Bilinmiyorsa "bugün" uydurulmaz, durağan tarih korunur.
+ */
+const STATIC_CONTENT_DATE = "2026-07-13";
+
+function playerDataDate() {
+  try {
+    const freshness = JSON.parse(fs.readFileSync(path.join(root, "data", "freshness.json"), "utf8"));
+    const record = freshness && freshness.records && freshness.records.players;
+    const date = String((record && (record.verifiedAt || record.fetchedAt)) || "").slice(0, 10);
+    return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : STATIC_CONTENT_DATE;
+  } catch {
+    return STATIC_CONTENT_DATE;
+  }
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -235,10 +254,49 @@ function playerMiniCard(player) {
   </article>`;
 }
 
+/**
+ * ARAMA SONUCU SINIRLARI.
+ *
+ * Başlık ve açıklama tek bir sabit şablondan üretiliyordu; şablon kısa
+ * isimlerde doğru uzunluktaydı ama uzun isim çiftlerinde taşıyordu
+ * (başlıklarda 75, açıklamalarda 185 karaktere kadar). Arama motoru fazlasını
+ * kesiyor ve sonuç cümlenin ortasında bitiyordu.
+ *
+ * Çözüm kesme değil, sığan en zengin varyantı seçmek: isimler asla
+ * kırpılmaz, sığmayan yalnızca şablonun kendi eki olur. Böylece kısa
+ * isimler tam metni korur, uzun isimler bütün ama daha kısa bir metin alır.
+ */
+const TITLE_LIMIT = 60;
+const DESCRIPTION_LIMIT = 158;
+
+function pickWithinLimit(variants, limit) {
+  return variants.find((value) => value.length <= limit) || variants[variants.length - 1];
+}
+
+function comparisonTitle(left, right) {
+  const pairLabel = `${left.name} vs ${right.name}`;
+  return pickWithinLimit([
+    `${pairLabel} | Oyuncu Karşılaştırması | FutbolRadar`,
+    `${pairLabel} | Oyuncu Karşılaştırması`,
+    `${pairLabel} | FutbolRadar`,
+    pairLabel
+  ], TITLE_LIMIT);
+}
+
+function comparisonDescription(left, right) {
+  const pairLabel = `${left.name} ve ${right.name}`;
+  return pickWithinLimit([
+    `${pairLabel} oyuncu karşılaştırması; AI rating, form, gol tehdidi, yaratıcılık, pres gücü, piyasa değeri ve transfer bilgileriyle FutbolRadar'da analiz edilir.`,
+    `${pairLabel} karşılaştırması; AI rating, form, gol tehdidi, yaratıcılık ve piyasa değeri FutbolRadar'da yan yana.`,
+    `${pairLabel} karşılaştırması; AI rating, form ve piyasa değeri FutbolRadar'da yan yana.`,
+    `${pairLabel} oyuncu karşılaştırması FutbolRadar'da.`
+  ], DESCRIPTION_LIMIT);
+}
+
 function pageHtml(pair) {
   const { left, right, slug, reasons } = pair;
-  const title = `${left.name} vs ${right.name} | Oyuncu Karşılaştırması | FutbolRadar`;
-  const description = `${left.name} ve ${right.name} oyuncu karşılaştırması; AI rating, form, gol tehdidi, yaratıcılık, pres gücü, piyasa değeri ve transfer bilgileriyle FutbolRadar'da analiz edilir.`;
+  const title = comparisonTitle(left, right);
+  const description = comparisonDescription(left, right);
   const canonical = `${domain}/karsilastirma/${slug}.html`;
   const insights = comparisonInsight(left, right);
 
@@ -479,7 +537,8 @@ for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "publ
   const current = fs.readFileSync(sitemapPath, "utf8");
   const retained = (current.match(/  <url>[\s\S]*?  <\/url>/g) || [])
     .filter((entry) => !entry.includes(`${domain}/karsilastirma/`));
-  const entries = pairs.map((pair) => `  <url>\n    <loc>${domain}/karsilastirma/${pair.slug}.html</loc>\n    <lastmod>2026-07-13</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.65</priority>\n  </url>`);
+  const lastmod = playerDataDate();
+  const entries = pairs.map((pair) => `  <url>\n    <loc>${domain}/karsilastirma/${pair.slug}.html</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.65</priority>\n  </url>`);
   const content = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${retained.concat(entries).join("\n")}\n</urlset>\n`;
   fs.writeFileSync(sitemapPath, content, "utf8");
 }

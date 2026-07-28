@@ -4,7 +4,63 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
-const today = "2026-07-22";
+
+/**
+ * `lastmod` DA BİR TAZELİK İDDİASIDIR.
+ *
+ * Bu değer sabit bir dizeydi ("2026-07-22"). Sayfalar her gün yeniden
+ * üretilmesine rağmen site haritası tarayıcıya "22 Temmuz'dan beri
+ * değişmedi" diyordu — hem de canlı skor ve günün maçları için. changefreq
+ * doğru ritmi söylüyor, lastmod ise onu yalanlıyordu.
+ *
+ * Çözüm "her koşuda bugünü yaz" DEĞİL: içeriği değişmemiş bir sayfaya her
+ * gün yeni bir tarih yazmak da tarayıcıya yanlış bilgi vermek olur ve
+ * sinyalin tamamen yok sayılmasına yol açar. Tarih, sayfanın GERÇEKTEN
+ * gösterdiği verinin doğrulama zamanından türetiliyor
+ * (data/freshness.json):
+ *
+ *   - maç/fikstür/canlı sayfalar -> matches.verifiedAt
+ *   - oyuncu listeleri           -> players.verifiedAt
+ *   - hukuki/durağan sayfalar    -> STATIC_CONTENT_DATE (gerçekten değişmiyor)
+ *
+ * Böylece maç verisi tazelendiği gün lastmod ilerler, tazelenmediği gün
+ * yerinde kalır.
+ */
+
+/** Metin içeriği veriye bağlı olmayan sayfaların son gerçek düzenlemesi. */
+const STATIC_CONTENT_DATE = "2026-07-22";
+
+function readFreshness() {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, "data", "freshness.json"), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function verifiedDate(freshness, key, fallback) {
+  const record = freshness && freshness.records && freshness.records[key];
+  const stamp = record && (record.verifiedAt || record.fetchedAt);
+  const date = String(stamp || "").slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : fallback;
+}
+
+const freshness = readFreshness();
+const matchDataDate = verifiedDate(freshness, "matches", STATIC_CONTENT_DATE);
+const playerDataDate = verifiedDate(freshness, "players", STATIC_CONTENT_DATE);
+const newsDataDate = verifiedDate(freshness, "news", STATIC_CONTENT_DATE);
+const transferDataDate = verifiedDate(freshness, "transfers", STATIC_CONTENT_DATE);
+
+/** İçeriği doğrudan haber/transfer akışından gelen sayfalar. */
+const NEWS_PAGES = new Set(["haberler.html"]);
+const TRANSFER_PAGES = new Set([
+  "transfer-radari.html",
+  "transfer-izleme.html",
+  "fenerbahce-transfer-radar.html",
+  "galatasaray-transfer-radar.html",
+  "super-lig-transferleri-2026-2027.html",
+  "transfer-sezonu-ne-zaman-bitiyor.html"
+]);
 
 /**
  * TAZELİK SİNYALİ SAYFANIN RİTMİNE UYMALI.
@@ -39,6 +95,20 @@ function changeFrequency(file) {
   if (LIVE_PAGES.has(file)) return "hourly";
   if (DAILY_PAGES.has(file)) return "daily";
   return "weekly";
+}
+
+/**
+ * Sayfanın hangi veri kümesinden beslendiğine göre son değişiklik tarihi.
+ * Bilinmeyen bir sayfaya "bugün" yazılmaz; durağan tarih korunur.
+ */
+function lastModified(file) {
+  if (NEWS_PAGES.has(file)) return newsDataDate;
+  if (TRANSFER_PAGES.has(file)) return transferDataDate;
+  if (LIVE_PAGES.has(file) || DAILY_PAGES.has(file)) return matchDataDate;
+  if (file.startsWith("oyuncular/") || file.startsWith("players/")) return playerDataDate;
+  if (/oyuncu|forvet|kaleci|defans|orta-saha|genc-yetenek|gol-kralligi|asist-kralligi/.test(file)) return playerDataDate;
+  if (/mac|fikstur|form-durumu|momentum|derbi|transfer|puan|takim|analiz|radar|lig/.test(file)) return matchDataDate;
+  return STATIC_CONTENT_DATE;
 }
 
 const nav = `
@@ -517,7 +587,7 @@ ${unique.map((file) => {
     : file.includes("oyuncular/") ? "0.7" : "0.8";
   return `  <url>
     <loc>${loc}</loc>
-    <lastmod>${today}</lastmod>
+    <lastmod>${lastModified(file)}</lastmod>
     <changefreq>${changeFrequency(file)}</changefreq>
     <priority>${priority}</priority>
   </url>`;
