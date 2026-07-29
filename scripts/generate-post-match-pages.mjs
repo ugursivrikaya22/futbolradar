@@ -454,12 +454,25 @@ function pageHtml(report, match) {
       },
       {
         "@type": "Article",
-        headline: seo.title,
+        // Başlık arama sonucunda kesilmesin diye marka eki düşürülüyor;
+        // `headline` sayfanın H1'i ile aynı iddiayı taşımalı.
+        headline: `${match.homeTeam} ${score.home ?? ""}-${score.away ?? ""} ${match.awayTeam} Maç Raporu`,
         description: seo.description,
         datePublished: match.lastVerifiedAt || match.kickoff,
         dateModified: match.lastVerifiedAt || match.kickoff,
         mainEntityOfPage: url,
-        publisher: { "@type": "Organization", name: "FutbolRadar", url: domain }
+        inLanguage: "tr-TR",
+        // Yazar kurumun kendisi: rapor bir kişi tarafından değil, doğrulanmış
+        // maç verisinden üretiliyor. Uydurma bir yazar adı yazılmıyor.
+        author: { "@type": "Organization", name: "FutbolRadar", url: domain },
+        image: `${domain}/assets/og-image.svg`,
+        about: { "@type": "SportsEvent", name: `${match.homeTeam} - ${match.awayTeam}` },
+        publisher: {
+          "@type": "Organization",
+          name: "FutbolRadar",
+          url: domain,
+          logo: { "@type": "ImageObject", url: `${domain}/favicon.svg` }
+        }
       },
       {
         "@type": "BreadcrumbList",

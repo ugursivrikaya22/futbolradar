@@ -844,19 +844,43 @@ function buildNextMatchOutlook(match, context) {
 function buildSeo(match, summary) {
   const score = scoreLine(match) || "";
   const competition = match.league || "Futbol";
-  const title = `${match.homeTeam} ${score} ${match.awayTeam} Maç Raporu ve İstatistikleri | FutbolRadar`;
+
+  /**
+   * BAŞLIK BÜTÇESİ.
+   *
+   * Sabit kalıp ("… Maç Raporu ve İstatistikleri | FutbolRadar") uzun takım
+   * adlarında 74 karaktere çıkıyor ve arama sonucunda "ve İstatistikleri |
+   * FutbolRadar" kısmı kesiliyordu: okuyucu yarım bir başlık görüyordu.
+   * Skor ve "Maç Raporu" her durumda korunur; ek bilgi sığdığı kadar eklenir.
+   */
+  const core = `${match.homeTeam} ${score} ${match.awayTeam} Maç Raporu`;
+  const title = [
+    `${core} ve İstatistikleri | FutbolRadar`,
+    `${core} ve İstatistikleri`,
+    `${core} | FutbolRadar`,
+    core
+  ].find((candidate) => candidate.length <= 65) || core;
+
+  // Künye açıklamanın başına giriyor: lig ve tarih hem aramada aranan
+  // bilgiler hem de raporlar arasındaki en güvenilir ayırt edici alanlar.
+  // Bazı raporlarda gol/istatistik kaydı seyrek olduğu için açıklama 82
+  // karaktere kadar düşüyor ve arama sonucunda yarım bir cümle görünüyordu.
+  const dateLabel = formatTrDate(match.kickoff || match.date);
+  const context = [competition, dateLabel].filter(Boolean).join(", ");
 
   const parts = [];
   if (summary.status === "ready") {
-    parts.push(`${match.homeTeam} ${score} ${match.awayTeam} maç raporu`);
+    parts.push(`${match.homeTeam} ${score} ${match.awayTeam} maç raporu${context ? ` (${context})` : ""}`);
     const goals = goalEvents(match)
       .map((event) => playerFromDetail(event.detail))
       .filter(Boolean);
     if (goals.length) parts.push(`goller: ${[...new Set(goals)].join(", ")}`);
     if ((match.statistics || []).length) parts.push("xG, şut ve pas istatistikleri");
-    parts.push("kırılma anları ve sonraki maç");
+    parts.push("kırılma anları, maç sonu açıklamaları ve sonraki maç");
   } else {
-    parts.push(`${match.homeTeam} - ${match.awayTeam} maç raporu ve doğrulanmış maç verileri`);
+    parts.push(
+      `${match.homeTeam} - ${match.awayTeam} maç raporu${context ? ` (${context})` : ""} ve doğrulanmış maç verileri`
+    );
   }
 
   let description = `${parts.join(", ")}.`;

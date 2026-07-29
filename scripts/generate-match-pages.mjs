@@ -151,6 +151,107 @@ function relatedComparison(match) {
   return `<a class="match-related-card" href="../oyuncu-karsilastir.html?players=${escapeHtml(candidate.left.id)},${escapeHtml(candidate.right.id)}"><span>Aynı rol kıyası</span><strong>${escapeHtml(candidate.left.name)} vs ${escapeHtml(candidate.right.name)}</strong><p>Maç öncesi benzer rol profillerini yan yana oku.</p></a>`;
 }
 
+/**
+ * BAŞLIK BÜTÇESİ.
+ *
+ * Başlık "Gençlerbirliği - Fenerbahçe Maç Analizi | 1. Hafta Trendyol Süper
+ * Lig | FutbolRadar" biçimindeydi: 83 karakter. Arama sonucunda yaklaşık 60
+ * karakterden sonrası kesiliyor, yani lig ve marka hiç görünmüyor, üstelik
+ * kesik bir cümle görünüyordu.
+ *
+ * Çözüm sabit bir kalıp değil, bir BÜTÇE: takım adları uzunsa ek bilgi
+ * düşer, kısaysa daha fazlası sığar. Anahtar kelime ("Maç Analizi") her
+ * durumda başta kalır.
+ *
+ * Ligin kısa adı kullanılıyor ("Süper Lig"); sponsorlu tam ad sayfa
+ * gövdesinde ve yapılandırılmış veride korunuyor. Kısaltma bir uydurma
+ * değil, ligin yaygın adı ve aranan biçimi.
+ */
+const TITLE_BUDGET = 65;
+const DESCRIPTION_BUDGET = 158;
+const SHORT_LEAGUE = "Süper Lig";
+
+function buildTitle(heading, match) {
+  const round = String(match.roundLabel || "").trim();
+  const candidates = [
+    round ? `${heading} | ${SHORT_LEAGUE} ${round} | FutbolRadar` : null,
+    `${heading} | ${SHORT_LEAGUE} | FutbolRadar`,
+    `${heading} | FutbolRadar`,
+    heading
+  ].filter(Boolean);
+
+  return candidates.find((candidate) => candidate.length <= TITLE_BUDGET) || heading;
+}
+
+/**
+ * Açıklama 189 karakterdi ve arama sonucunda ortasından kesiliyordu.
+ * Parçalar sığdığı sürece eklenir; hiçbiri uydurulmaz — hepsi fikstür
+ * kaydında zaten yazan alanlar.
+ */
+function buildDescription(heading, match, dateLabel) {
+  const lead = `${heading}: ${[match.roundLabel, dateLabel].filter(Boolean).join(", ")}.`;
+  const detail = " İki takımın form durumu, radar puanı, kadro eksikleri ve kilit oyuncuları.";
+  const full = `${lead}${detail}`;
+
+  if (full.length <= DESCRIPTION_BUDGET) return full;
+  if (lead.length <= DESCRIPTION_BUDGET) return lead;
+  return `${lead.slice(0, DESCRIPTION_BUDGET - 3).replace(/[\s,;:]+$/, "")}...`;
+}
+
+/**
+ * YAPILANDIRILMIŞ VERİ — EKSİK OLAY YAYIMLANMAZ.
+ *
+ * Sayfa bugüne kadar her fikstür için `SportsEvent` basıyordu; oysa
+ * fikstür kaydında ne başlama saati ne saha var (`data/super-lig-fixtures.json`
+ * yalnızca hafta aralığı taşıyor: "14-17 Ağustos 2026"). Arama motorunun
+ * Event için zorunlu saydığı `startDate` ve `location` yoksa, işaretleme
+ * zenginleştirme üretmez; yalnızca 306 URL için "eksik alan" hatası üretir.
+ *
+ * İki seçenek vardı: eksik alanı uydurmak ya da olay iddiasını hiç
+ * kurmamak. Uydurma tarih, sitenin tamamında uygulanan kuralı kırardı.
+ * Bu yüzden:
+ *   • doğrulanmış başlama saati VARSA -> tam SportsEvent
+ *   • yoksa                            -> WebPage (sayfa gerçekte odur)
+ *
+ * Fikstüre saat girdiği gün üst blok kendiliğinden SportsEvent'e döner;
+ * burada değiştirilecek bir şey kalmaz.
+ */
+function eventNode(match, canonical, description) {
+  const teams = [
+    { "@type": "SportsTeam", name: match.homeTeam },
+    { "@type": "SportsTeam", name: match.awayTeam }
+  ];
+
+  if (!match.kickoff) {
+    return {
+      "@type": "WebPage",
+      name: `${match.homeTeam} - ${match.awayTeam} Maç Analizi`,
+      url: canonical,
+      description,
+      inLanguage: "tr-TR",
+      isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${domain}/` },
+      about: teams
+    };
+  }
+
+  return {
+    "@type": "SportsEvent",
+    name: `${match.homeTeam} - ${match.awayTeam}`,
+    url: canonical,
+    description,
+    startDate: match.kickoff,
+    eventStatus: "https://schema.org/EventScheduled",
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    sport: "Football",
+    homeTeam: teams[0],
+    awayTeam: teams[1],
+    competitor: teams,
+    superEvent: { "@type": "SportsEvent", name: `${match.league} ${match.season}` },
+    // Saha yalnızca doğrulanmışsa yazılır; "bilinmiyor" bir konum değildir.
+    ...(match.venue ? { location: { "@type": "StadiumOrArena", name: match.venue } } : {})
+  };
+}
+
 function pageHtml(match) {
   const slugValue = pageSlug(match);
   const canonical = `${domain}/mac/${slugValue}.html`;
@@ -161,9 +262,9 @@ function pageHtml(match) {
   // SEO başlığı ve açıklaması maça özgü: hafta, lig ve takım adları
   // değişkenlerden gelir, iki sayfa aynı başlığı taşımaz.
   const heading = `${match.homeTeam} - ${match.awayTeam} Maç Analizi`;
-  const title = `${heading} | ${match.roundLabel} ${match.league} | FutbolRadar`;
   const dateLabel = match.kickoff ? formatFreshnessDate(match.kickoff) : (match.dateRange || "Tarih ve saat bekleniyor");
-  const description = `${match.homeTeam} - ${match.awayTeam} ${match.league} maç analizi (${match.roundLabel}, ${dateLabel}); iki takımın form durumu, radar puanı, kadro eksikleri ve kilit oyuncu okuması FutbolRadar'da.`;
+  const title = buildTitle(heading, match);
+  const description = buildDescription(heading, match, dateLabel);
 
   // Maç sonu açıklamaları: oynanmış maç kaydı varsa ona bağlanır, yoksa
   // bölüm "doğrulanmış açıklama bekleniyor" der. Bölüm hiç gizlenmez.
@@ -180,23 +281,12 @@ function pageHtml(match) {
     "@context": "https://schema.org",
     "@graph": [
       ...statementsSchema(matchStatements, canonical),
-      {
-        "@type": "SportsEvent",
-        name: `${match.homeTeam} - ${match.awayTeam}`,
-        url: canonical,
-        description,
-        eventStatus: "https://schema.org/EventScheduled",
-        competitor: [
-          { "@type": "SportsTeam", name: match.homeTeam },
-          { "@type": "SportsTeam", name: match.awayTeam }
-        ],
-        sport: "Football"
-      },
+      eventNode(match, canonical, description),
       {
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: `${domain}/` },
-          { "@type": "ListItem", position: 2, name: "Süper Lig Fikstürü", item: `${domain}/super-lig-fikstur.html` },
+          { "@type": "ListItem", position: 2, name: "Süper Lig Maç Analizleri", item: `${domain}/super-lig-mac-analizleri.html` },
           { "@type": "ListItem", position: 3, name: `${match.homeTeam} - ${match.awayTeam}`, item: canonical }
         ]
       }
@@ -219,6 +309,10 @@ function pageHtml(match) {
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:url" content="${canonical}" />
     <meta property="og:image" content="${domain}/assets/og-image.svg" />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="${escapeHtml(`${match.homeTeam} - ${match.awayTeam} maç analizi`)}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
@@ -231,7 +325,7 @@ function pageHtml(match) {
   <body class="subpage match-analysis-page">
     ${siteHeader({ base: "../" })}
     <main class="container">
-      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../super-lig-fikstur.html">Süper Lig Fikstürü</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
+      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../super-lig-mac-analizleri.html">Süper Lig Maç Analizleri</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
       <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(match.league)}</span><h1>${escapeHtml(heading)}</h1><p class="lead">${escapeHtml(radar.lead)}</p></div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>
       <section class="match-freshness-strip" aria-label="Fikstür durumu"><div><span>Fikstür durumu</span><b>${escapeHtml(freshnessLabel(freshness))}</b></div><div><span>Son kontrol</span><b>${escapeHtml(formatFreshnessDate(freshness.verifiedAt || freshness.fetchedAt))}</b></div><div><span>Güven</span><b>${escapeHtml(confidenceLabel(freshness.confidence))}</b></div></section>
       <section class="match-radar-board" aria-label="Maç öncesi radar puanları">${radarCard(match.homeTeam, radar.home, homeTeam)}${radarCard(match.awayTeam, radar.away, awayTeam)}</section>

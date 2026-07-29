@@ -3,6 +3,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 
 const root = process.cwd();
+const domain = "https://www.futbolradar.com";
 const require = createRequire(import.meta.url);
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
@@ -785,7 +786,119 @@ function updateRobotsDirective(html, file) {
   );
 }
 
-function writePage(file, slots, freshness) {
+/**
+ * ANA SAYFA YAPILANDIRILMIŞ VERİSİ.
+ *
+ * Ana sayfa yalnızca bir `WebSite` düğümü taşıyordu; sayfanın asıl konusu
+ * olan "bugünün maçları" arama motoruna hiç bildirilmiyordu.
+ *
+ * Üç düğüm üretilir:
+ *   WebSite       — site kimliği ve site içi arama eylemi
+ *   Organization   — yayıncı varlığı (logo ve sosyal hesaplarla)
+ *   ItemList       — BUGÜNÜN maçları, her biri SportsEvent
+ *
+ * UYDURMA YOK: ItemList yalnızca doğrulanmış başlama saati olan maçlardan
+ * kurulur. Bugün maç yoksa düğüm HİÇ üretilmez — boş bir liste yayımlamak,
+ * "bugün maç yok" iddiasını arama motoruna yazmak olurdu ve o iddia
+ * verimizin değil, senkron zamanlamamızın sonucu olabilir.
+ */
+const ORGANIZATION_SAME_AS = [
+  "https://x.com/futbolradar",
+  "https://www.instagram.com/futbolradar",
+  "https://www.youtube.com/@futbolradar"
+];
+
+function homeSchemaJson() {
+  const today = istanbulToday();
+
+  const nodes = [
+    {
+      "@type": "WebSite",
+      "@id": `${domain}/#website`,
+      name: "FutbolRadar",
+      url: `${domain}/`,
+      description: "Canlı skor, bugünün maçları, maç analizleri, takım formu ve oyuncu istatistikleri platformu.",
+      publisher: { "@id": `${domain}/#organization` },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${domain}/oyuncu-radari.html?search={search_term_string}`,
+        "query-input": "required name=search_term_string"
+      },
+      inLanguage: "tr-TR"
+    },
+    {
+      "@type": "Organization",
+      "@id": `${domain}/#organization`,
+      name: "FutbolRadar",
+      url: `${domain}/`,
+      logo: { "@type": "ImageObject", url: `${domain}/favicon.svg` },
+      sameAs: ORGANIZATION_SAME_AS
+    }
+  ];
+
+  // Başlama saati doğrulanmamış maç olay olarak yayımlanmaz: `startDate`
+  // arama motorunun Event için zorunlu saydığı alan ve uydurulamaz.
+  const todayMatches = curatedMatches()
+    .filter((match) => String(match.kickoff || "").slice(0, 10) === today)
+    .filter((match) => match.kickoff && match.homeTeam && match.awayTeam)
+    .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)));
+
+  if (todayMatches.length) {
+    nodes.push({
+      "@type": "ItemList",
+      name: "Bugünün maçları",
+      numberOfItems: todayMatches.length,
+      itemListElement: todayMatches.map((match, index) => {
+        const status = String(match.status || "SCHEDULED").toUpperCase();
+        const eventStatus = status === "FINISHED"
+          ? "https://schema.org/EventCompleted"
+          : status === "POSTPONED"
+            ? "https://schema.org/EventPostponed"
+            : status === "CANCELLED"
+              ? "https://schema.org/EventCancelled"
+              : "https://schema.org/EventScheduled";
+
+        return {
+          "@type": "ListItem",
+          position: index + 1,
+          item: {
+            "@type": "SportsEvent",
+            name: `${match.homeTeam} - ${match.awayTeam}`,
+            startDate: match.kickoff,
+            eventStatus,
+            eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+            sport: "Football",
+            homeTeam: { "@type": "SportsTeam", name: match.homeTeam },
+            awayTeam: { "@type": "SportsTeam", name: match.awayTeam },
+            url: `${domain}/${matchDetailLink(match).replace(/^\.\//, "")}`,
+            ...(match.league ? { superEvent: { "@type": "SportsEvent", name: match.league } } : {}),
+            // Saha yalnızca doğrulanmışsa yazılır; sağlayıcıdan gelen
+            // teyitsiz saha bilgisi (providerVenue) buraya girmez.
+            ...(match.venue && match.venue !== "Açıklanmadı"
+              ? { location: { "@type": "StadiumOrArena", name: match.venue } }
+              : {})
+          }
+        };
+      })
+    });
+  }
+
+  return JSON.stringify({ "@context": "https://schema.org", "@graph": nodes });
+}
+
+/** Sayfanın `<head>` bölümündeki işaretleyici bloğunu değiştirir. */
+function replaceMarkerBlock(html, marker, content) {
+  const start = `<!-- prerender:${marker}:start -->`;
+  const end = `<!-- prerender:${marker}:end -->`;
+  if (!html.includes(start) || !html.includes(end)) return html;
+
+  const expression = new RegExp(
+    `${start.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\s\\S]*?${end.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`
+  );
+  return html.replace(expression, `${start}\n${content}\n    ${end}`);
+}
+
+function writePage(file, slots, freshness, options = {}) {
   const sourcePath = path.join(root, file);
   if (!fs.existsSync(sourcePath)) {
     return;
@@ -794,6 +907,11 @@ function writePage(file, slots, freshness) {
   let html = fs.readFileSync(sourcePath, "utf8");
   Object.entries(slots).forEach(([target, content]) => {
     html = replaceSlot(html, target, content);
+  });
+  // `<head>` içindeki bloklar `data-api-target` yuvası taşıyamaz (script
+  // etiketi bir kart değil); işaretleyici ile değiştirilir.
+  Object.entries(options.markers || {}).forEach(([marker, content]) => {
+    html = replaceMarkerBlock(html, marker, content);
   });
   html = updateMetaLabels(html, freshness);
   html = updateRobotsDirective(html, file);
@@ -820,7 +938,11 @@ writePage("index.html", {
   "player-signals": playerSignalsSlot(),
   "news-preview": newsCards(3),
   "analysis-preview": analysisCards()
-}, fixtureFreshness);
+}, fixtureFreshness, {
+  markers: {
+    "home-schema": `    <script type="application/ld+json">${homeSchemaJson()}</script>`
+  }
+});
 
 writePage("haberler.html", {
   "news-page": newsCards()

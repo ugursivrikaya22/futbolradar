@@ -56,6 +56,11 @@ function rootPages() {
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 const pick = (html, expression) => (html.match(expression) || [])[1] || "";
 
+/** Arama sonucunda kesilmeyen başlık sınırı. */
+const TITLE_BUDGET = 65;
+const DESCRIPTION_MIN = 60;
+const DESCRIPTION_MAX = 160;
+
 function testHomepageIdentity() {
   const html = read("index.html");
   assert.equal(
@@ -65,13 +70,77 @@ function testHomepageIdentity() {
   );
 
   const description = pick(html, /<meta name="description" content="([^"]*)"/);
-  assert.ok(description.length >= 80, "ana sayfa açıklaması fazla kısa");
-  assert.ok(description.length <= 320, "ana sayfa açıklaması fazla uzun");
+  assert.ok(description.length >= DESCRIPTION_MIN, "ana sayfa açıklaması fazla kısa");
+  assert.ok(
+    description.length <= DESCRIPTION_MAX,
+    `ana sayfa açıklaması arama sonucunda kesilir (${description.length} karakter)`
+  );
   for (const keyword of ["canlı skor", "bugünün maçları", "takım formu"]) {
     assert.ok(
       description.toLocaleLowerCase("tr").includes(keyword),
       `ana sayfa açıklamasında "${keyword}" geçmeli`
     );
+  }
+}
+
+/**
+ * ANA SAYFA H1'İ ANAHTAR KELİME TAŞIMALI.
+ *
+ * H1 "Canlı skor.Maç merkezi." idi: "maç merkezi" aranan bir ifade değil ve
+ * iki `<span>` arasında boşluk olmadığı için tarayıcı metni bitişik okuyordu.
+ */
+function testHomepageHeading() {
+  const html = read("index.html");
+  const h1 = pick(html, /<h1[^>]*>([\s\S]*?)<\/h1>/).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+
+  assert.ok(h1, "ana sayfada H1 yok");
+  assert.ok(!/\w\.\w/.test(h1), `H1 metni bitişik okunuyor: "${h1}"`);
+
+  const folded = h1.toLocaleLowerCase("tr");
+  assert.ok(
+    ["canlı skor", "bugünün maçları"].some((keyword) => folded.includes(keyword)),
+    `H1 hedef sorguyu taşımıyor: "${h1}"`
+  );
+}
+
+/**
+ * ANA SAYFA YAPILANDIRILMIŞ VERİSİ.
+ *
+ * WebSite ve Organization her zaman; bugünün maçları listesi ise YALNIZCA
+ * gerçek kayıt varsa. Boş bir ItemList yayımlamak "bugün maç yok" iddiasını
+ * arama motoruna yazmak olurdu ve o iddia verimizin değil, senkron
+ * zamanlamamızın sonucu olabilir.
+ */
+function testHomepageStructuredData() {
+  const html = read("index.html");
+  const raw = pick(html, /<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+
+  let parsed;
+  assert.doesNotThrow(() => { parsed = JSON.parse(raw); }, "ana sayfa yapılandırılmış verisi geçersiz JSON");
+
+  const graph = Array.isArray(parsed["@graph"]) ? parsed["@graph"] : [parsed];
+  const types = graph.map((node) => node["@type"]);
+
+  assert.ok(types.includes("WebSite"), "WebSite düğümü yok");
+  assert.ok(types.includes("Organization"), "Organization düğümü yok");
+
+  const organization = graph.find((node) => node["@type"] === "Organization");
+  assert.ok(organization.logo, "Organization logosu yok");
+  assert.ok(Array.isArray(organization.sameAs) && organization.sameAs.length, "Organization sameAs yok");
+
+  const list = graph.find((node) => node["@type"] === "ItemList");
+  if (!list) return; // Bugün doğrulanmış maç yok: düğüm üretilmemesi doğru.
+
+  assert.ok(list.itemListElement.length, "boş ItemList yayımlanmamalı");
+  assert.equal(list.numberOfItems, list.itemListElement.length, "ItemList sayacı listeyle uyuşmuyor");
+
+  for (const entry of list.itemListElement) {
+    const event = entry.item;
+    assert.equal(event["@type"], "SportsEvent", "liste öğesi SportsEvent olmalı");
+    assert.ok(event.name && event.name.includes("-"), "maç adı iki takımı taşımalı");
+    assert.ok(event.startDate, `"${event.name}": başlama saati olmayan maç olay olarak yayımlanmamalı`);
+    assert.ok(!Number.isNaN(Date.parse(event.startDate)), `"${event.name}": başlama saati okunamıyor`);
+    assert.ok(event.homeTeam && event.awayTeam, `"${event.name}": takım düğümleri eksik`);
   }
 }
 
@@ -194,17 +263,22 @@ function testRobotsTxt() {
 }
 
 /**
- * Maç sayfaları: dinamik başlık/açıklama/H1 ve geçerli SportsEvent verisi.
- * Yapılandırılmış veri UYDURULMAZ — yalnızca sayfada zaten yazan alanlar.
+ * MAÇ DETAY SAYFALARI — başlık/açıklama/H1 ve yapılandırılmış veri.
+ *
+ * Örnekleme değil, TAMAMI denetlenir: 306 maç önü sayfası tek bir şablondan
+ * üretiliyor ve şablon bozulduğunda hepsi birden bozulur.
+ *
+ * Yapılandırılmış veride tek kural: EKSİK OLAY YAYIMLANMAZ. Arama motoru
+ * Event için `startDate` zorunlu sayıyor; fikstürde saat yoksa sayfa
+ * `SportsEvent` değil `WebPage` bildirir. Uydurma tarih yazmak, 306 URL'de
+ * "eksik alan" hatası üretmekten de kötüdür.
  */
 function testMatchPagesCarryDynamicSeo() {
-  const samples = [
-    ...listHtml("mac").slice(0, 6),
-    ...listHtml("mac-raporu")
-  ];
-  assert.ok(samples.length, "ön koşul: üretilmiş maç sayfası olmalı");
+  const samples = [...listHtml("mac"), ...listHtml("mac-raporu")];
+  assert.ok(samples.length >= 100, "ön koşul: maç sayfaları üretilmiş olmalı");
 
   const titles = new Set();
+  const descriptions = new Set();
 
   for (const file of samples) {
     const html = fs.readFileSync(file, "utf8");
@@ -214,10 +288,20 @@ function testMatchPagesCarryDynamicSeo() {
     const h1 = pick(html, /<h1[^>]*>([^<]*)<\/h1>/);
 
     assert.ok(title.trim(), `${name}: başlık yok`);
+    assert.ok(
+      title.length <= TITLE_BUDGET,
+      `${name}: başlık arama sonucunda kesilir (${title.length} karakter) — "${title}"`
+    );
     assert.ok(!titles.has(title), `${name}: başlık başka bir maç sayfasıyla aynı`);
     titles.add(title);
 
-    assert.ok(description.length >= 60, `${name}: meta açıklaması fazla kısa`);
+    assert.ok(
+      description.length >= DESCRIPTION_MIN && description.length <= DESCRIPTION_MAX,
+      `${name}: meta açıklama uzunluğu uygunsuz (${description.length})`
+    );
+    assert.ok(!descriptions.has(description), `${name}: açıklama başka bir maç sayfasıyla aynı`);
+    descriptions.add(description);
+
     assert.ok(h1.includes("-"), `${name}: H1 iki takımı da içermeli — "${h1}"`);
     assert.ok(html.includes('<html lang="tr">'), `${name}: dil etiketi Türkçe olmalı`);
 
@@ -227,8 +311,50 @@ function testMatchPagesCarryDynamicSeo() {
 
     const graph = Array.isArray(parsed["@graph"]) ? parsed["@graph"] : [parsed];
     const event = graph.find((node) => node && node["@type"] === "SportsEvent");
-    assert.ok(event, `${name}: SportsEvent düğümü yok`);
-    assert.ok(event.name && event.name.includes("-"), `${name}: SportsEvent adı eksik`);
+    const page = graph.find((node) => node && node["@type"] === "WebPage");
+
+    assert.ok(event || page, `${name}: ne SportsEvent ne WebPage düğümü var`);
+
+    if (event) {
+      assert.ok(event.name && event.name.includes("-"), `${name}: SportsEvent adı eksik`);
+      assert.ok(
+        event.startDate,
+        `${name}: başlama saati olmayan SportsEvent yayımlanmamalı — WebPage bildirilmeli`
+      );
+      assert.ok(!Number.isNaN(Date.parse(event.startDate)), `${name}: startDate okunamıyor`);
+      assert.ok(event.homeTeam && event.awayTeam, `${name}: SportsEvent takım düğümleri eksik`);
+    }
+
+    // Breadcrumb işaretlemesi görünür yolla aynı olmalı; ayrışırsa arama
+    // motoru işaretlemeyi yok sayar.
+    const crumbs = graph.find((node) => node && node["@type"] === "BreadcrumbList");
+    assert.ok(crumbs, `${name}: BreadcrumbList yok`);
+    for (const item of crumbs.itemListElement) {
+      assert.ok(item.name && item.item, `${name}: breadcrumb öğesi eksik`);
+      if (item.position === 2) {
+        assert.ok(
+          html.includes(`>${item.name}</a>`),
+          `${name}: breadcrumb işaretlemesi görünür yolla uyuşmuyor ("${item.name}")`
+        );
+      }
+    }
+  }
+}
+
+/** Maç raporlarında Article düğümü kaynağını ve yazarını bildirmeli. */
+function testMatchReportArticleNode() {
+  for (const file of listHtml("mac-raporu")) {
+    const html = fs.readFileSync(file, "utf8");
+    const name = path.relative(root, file);
+    const parsed = JSON.parse(pick(html, /<script type="application\/ld\+json">([\s\S]*?)<\/script>/));
+    const graph = Array.isArray(parsed["@graph"]) ? parsed["@graph"] : [parsed];
+    const article = graph.find((node) => node && node["@type"] === "Article");
+
+    assert.ok(article, `${name}: Article düğümü yok`);
+    for (const field of ["headline", "description", "datePublished", "author", "image", "publisher", "inLanguage"]) {
+      assert.ok(article[field], `${name}: Article.${field} eksik`);
+    }
+    assert.ok(!Number.isNaN(Date.parse(article.datePublished)), `${name}: datePublished okunamıyor`);
   }
 }
 
@@ -242,6 +368,8 @@ function listHtml(relative) {
 }
 
 testHomepageIdentity();
+testHomepageHeading();
+testHomepageStructuredData();
 testEveryPageHasCoreTags();
 testCanonicalPointsAtItself();
 testTitlesAndDescriptionsAreUnique();
@@ -250,8 +378,10 @@ testHomepageLinksToIntentPages();
 testSitemapIntegrity();
 testRobotsTxt();
 testMatchPagesCarryDynamicSeo();
+testMatchReportArticleNode();
 
 console.log(
-  "SEO surface tests passed (ana sayfa kimliği, temel etiketler, canonical doğruluğu, benzersizlik, " +
-  "arama niyeti sayfaları, iç bağlantı, site haritası bütünlüğü, robots, dinamik maç SEO'su)."
+  "SEO surface tests passed (ana sayfa kimliği + H1 + yapılandırılmış veri, temel etiketler, " +
+  "canonical doğruluğu, benzersizlik, arama niyeti sayfaları, iç bağlantı, site haritası bütünlüğü, " +
+  "robots, maç detay başlık bütçesi ve eksik-olay koruması)."
 );
