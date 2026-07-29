@@ -365,6 +365,55 @@ function testHighScoreAlwaysExplains() {
   }
 }
 
+/**
+ * "YÜKSEK İLGİ" ETİKETİ — kuralın kendisi, eşiği değil.
+ *
+ * Denetim (2026-07): bu kuralın testi yalnızca HIGH_INTEREST_THRESHOLD
+ * sabitini doğruluyordu; "Yüksek ilgi" dizesi hiçbir test dosyasında
+ * geçmiyordu ve tek ilgili iddia `if (priority.score >= ...)` bloğunun
+ * içindeydi. Koşullu bir iddia, koşul hiç gerçekleşmediğinde de "geçer" —
+ * yani kuralı koruyormuş gibi görünüp korumaz.
+ *
+ * Bu senaryo kuralın İKİ YÖNÜNÜ de kurguyla sabitliyor: eşik üstünde ve başka
+ * gerekçesi olmayan maç bu etiketi ALIR, eşik altındaki maç ALMAZ (gerekçe
+ * uydurulmaz).
+ */
+function testHighInterestLabelIsActuallyPrinted() {
+  // Bilerek seçilmiş kurgu: iki tanınmış kulüp ama ikisi de "dünya devi"
+  // eşiğinin altında, Türk takımı yok, derbi yok, canlı değil, editör
+  // seçimi değil — geriye tek bir gerekçe kalmalı.
+  const anonymousBigMatch = {
+    id: "yuksek-ilgi", homeTeam: "Juventus", awayTeam: "Napoli",
+    league: "UEFA Şampiyonlar Ligi", competitionId: "sampiyonlar-ligi",
+    kickoff: at("21:00"), status: "SCHEDULED"
+  };
+
+  const priority = matchPriority(anonymousBigMatch, { now: NOW });
+  assert.ok(
+    priority.score >= HIGH_INTEREST_THRESHOLD,
+    `ön koşul: kurgu eşiğin üstünde olmalı (puan ${priority.score}, eşik ${HIGH_INTEREST_THRESHOLD})`
+  );
+  assert.equal(priority.reasons.length, 1, `başka gerekçe olmamalı: ${JSON.stringify(priority.reasons)}`);
+  assert.equal(priority.reasons[0].key, "highInterest");
+  assert.equal(priority.reasons[0].label, "Yüksek ilgi");
+  assert.equal(priority.primaryReason.label, "Yüksek ilgi");
+
+  // Eşiğin ALTINDA gerekçe UYDURULMAZ: boş gerekçe, yanlış gerekçeden iyidir.
+  const quiet = { ...anonymousBigMatch, id: "sessiz", league: "Hazırlık Maçı", competitionId: "hazirlik-maci" };
+  const quietPriority = matchPriority(quiet, { now: NOW });
+  assert.ok(quietPriority.score < HIGH_INTEREST_THRESHOLD, "ön koşul: kurgu eşiğin altında olmalı");
+  assert.deepEqual(quietPriority.reasons, [], "eşik altındaki maça gerekçe uydurulmamalı");
+  assert.equal(quietPriority.primaryReason, null);
+
+  // Gerçek gerekçesi olan maç bu etiketi ALMAZ: "Yüksek ilgi" bir yedek, bir
+  // ek değil. Derbi hem eşiğin üstünde hem de kendi gerekçesini taşır.
+  const derby = matchPriority(DERBY, { now: NOW });
+  assert.ok(
+    !derby.reasons.some((reason) => reason.key === "highInterest"),
+    "gerekçesi olan maça ayrıca 'Yüksek ilgi' yazılmamalı"
+  );
+}
+
 /** Turnuva ağırlıkları doğru sırada olmalı. */
 function testCompetitionWeightOrder() {
   const ucl = competitionProfile({ competitionId: "sampiyonlar-ligi", league: "UEFA Şampiyonlar Ligi" }).weight;
@@ -443,6 +492,7 @@ testLowPriorityStaysVisible();
 testEditorialOverride();
 testNoStandingsClaimWithoutStandings();
 testHighScoreAlwaysExplains();
+testHighInterestLabelIsActuallyPrinted();
 testCompetitionWeightOrder();
 testUnknownClubStillScores();
 testClientMirrorsWeights();

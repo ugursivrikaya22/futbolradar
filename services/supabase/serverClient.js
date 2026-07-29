@@ -12,9 +12,13 @@
  *      görünmez kalır ve bir gün gerçekten sızdıran bir yola dönüşür.
  *   2. Yalnızca api/ ve scripts/ bu dosyayı require eder. app.js ve
  *      tarayıcıya giden hiçbir dosya etmez.
- *   3. scripts/test-supabase-layer.mjs yayımlanan çıktının tamamını
- *      (app.js, tüm HTML, public/) tarar ve ne anahtar ADININ ne de JWT
- *      biçiminde bir değerin geçmediğini doğrular.
+ *   3. scripts/verify-published-secrets.mjs DERLEME ZİNCİRİNİN SON ADIMI
+ *      olarak yayımlanan çıktının tamamını tarar ve ne anahtar ADININ ne de
+ *      JWT / sb_secret_ biçiminde bir değerin geçmediğini doğrular; bulursa
+ *      derlemeyi düşürür. scripts/test-supabase-layer.mjs aynı taramayı
+ *      çağırır ama onun yerine geçmez: testler dağıtım zincirinin parçası
+ *      değil, dolayısıyla koruma yalnızca testte yaşasaydı anahtarların
+ *      tanımlı olduğu üretim derlemesinde hiç çalışmazdı.
  *
  * ÜÇÜ DE GEREKLİ. Birincisi kazayı, ikincisi alışkanlığı, üçüncüsü ikisinin
  * de kaçırdığını yakalar.

@@ -96,6 +96,29 @@ function testInsufficientData() {
 
   assert.equal(formPercent(null), null, "kayıt yoksa yüzde null olmalı");
   assert.equal(formPercent({ form: [] }), null, "boş seri yüzde üretmemeli");
+
+  // TEK TARAFIN FORMU DA YETMEZ. "Avantaj" bir farktır ve farkın iki ucu
+  // olur; taraflardan biri ölçülemiyorsa karşılaştırma hiç yapılmaz.
+  const onlyHome = matchSignal(scheduled, {
+    homeTeam: { name: "A", ...form(["win", "win", "win"]) },
+    awayTeam: null
+  });
+  assert.equal(onlyHome.label, SIGNAL_LABELS.insufficient,
+    "tek takımın formu bilinirken bile sinyal 'Veri yetersiz' olmalı");
+
+  const onlyAway = matchSignal(scheduled, {
+    homeTeam: null,
+    awayTeam: { name: "B", ...form(["win", "win", "win"]) }
+  });
+  assert.equal(onlyAway.label, SIGNAL_LABELS.insufficient);
+
+  // Gerekçe cümlesi de doğru olmalı: "iki takımın da kaydı yok" demek,
+  // ev sahibinin üç maçlık doğrulanmış formu VARKEN yanlış bir cümledir.
+  assert.equal(onlyHome.basis, onlyAway.basis, "gerekçe her iki yönde de aynı olmalı");
+  assert.ok(
+    /en az biri/.test(onlyHome.basis),
+    `gerekçe eksikliğin tek taraflı olabileceğini söylemeli: "${onlyHome.basis}"`
+  );
 }
 
 /** Canlı ve biten maçta durum kaydından okunur. */

@@ -33,6 +33,7 @@ const {
 const {
   MIN_COVERAGE,
   evaluateAnalysisRecord,
+  logUnreadyAnalyses,
   matchAnalysisTarget
 } = require("../services/matchAnalysisAvailability.js");
 const { LOW_COVERAGE_THRESHOLD } = require("../services/analysisCoverageService.js");
@@ -179,6 +180,56 @@ function testAnalysisButtonNeedsRealContent() {
   assert.ok(measuredTarget.href.includes("gs-fb"), measuredTarget.href);
 }
 
+/**
+ * GİZLENEN DÜĞME GÜNLÜĞE YAZILIR — ve iki taraf aynı satırı basar.
+ *
+ * Bu kural defterde kayıtlıydı ama hiçbir test onu koşturmuyordu ve kaydın
+ * "surfaces" alanı BOŞTU. Oysa kuralı fiilen uygulayan yer belliydi: app.js
+ * ile aynasının öne çıkan analiz kartı. Kaydın uygulanan yüzeyi gizleyip
+ * yalnızca servis fonksiyonunu anlatması, kuralı aramaya gelen kişiyi yanlış
+ * dosyaya gönderiyordu.
+ *
+ * Test iki şeyi birden koruyor: servis fonksiyonunun bastığı satır biçimi ve
+ * istemcinin AYNI biçimi kullanması. Biçim ayrışırsa günlükleri okuyan bir
+ * kişi iki ayrı olay sanar.
+ */
+function testUnreadyAnalysesAreLogged() {
+  const lines = [];
+  const original = console.warn;
+  console.warn = (line) => lines.push(String(line));
+  try {
+    logUnreadyAnalyses("test-kapsami", [
+      { id: "gs-fb", reason: "kapsam yetersiz: %21 (en az %40)" },
+      { id: "bjk-ts", reason: "kapsam ölçülmemiş" }
+    ]);
+    logUnreadyAnalyses("bos-liste", []);
+    logUnreadyAnalyses("tanimsiz-liste", null);
+  } finally {
+    console.warn = original;
+  }
+
+  assert.equal(lines.length, 2, "her gizlenen düğme bir satır basmalı, fazlası değil");
+  assert.equal(
+    lines[0],
+    '[futbolradar:analysis-unready] scope=test-kapsami id=gs-fb reason="kapsam yetersiz: %21 (en az %40)"',
+    lines[0]
+  );
+  assert.ok(lines[1].includes('id=bjk-ts'), lines[1]);
+
+  // İstemci aynı biçimi taşımalı — kuralı gerçekten uygulayan yüzey burası.
+  for (const file of ["app.js", "public/app.js"]) {
+    const source = fs.readFileSync(path.join(root, file), "utf8");
+    assert.ok(
+      source.includes('"[futbolradar:analysis-unready] scope='),
+      `${file}: gizlenen analiz düğmesi günlüğe yazılmalı`
+    );
+    assert.ok(
+      /if \(!readiness\.ready\) \{[\s\S]{0,200}?analysis-unready/.test(source),
+      `${file}: günlük satırı düğmenin gizlendiği yerde basılmalı`
+    );
+  }
+}
+
 /** Depodaki gerçek analiz kayıtları kuraldan geçmeli (ya da geçmemeli). */
 function testRealAnalysisRecordsAreJudged() {
   const raw = require("../data/match-analyses.json");
@@ -277,6 +328,7 @@ const tests = [
   testHeadlineSaysTheRightThing,
   testDisplayOrder,
   testAnalysisButtonNeedsRealContent,
+  testUnreadyAnalysesAreLogged,
   testRealAnalysisRecordsAreJudged,
   testClientMirrorsBothRules,
   testPublishedCardsCarryHonestLinks
@@ -285,4 +337,5 @@ const tests = [
 for (const test of tests) test();
 
 console.log(`Match card integrity tests passed (${tests.length} senaryo: kapı-başlık eşdeğerliği, ` +
-  "başlık doğruluğu, görüntüleme sırası, analiz barı, gerçek kayıtlar, istemci eşliği, dürüst bağlantı etiketi).");
+  "başlık doğruluğu, görüntüleme sırası, analiz barı, gizlenen düğme günlüğü, gerçek kayıtlar, " +
+  "istemci eşliği, dürüst bağlantı etiketi).");

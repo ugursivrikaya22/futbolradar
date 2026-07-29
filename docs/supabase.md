@@ -34,12 +34,28 @@ Servis anahtarı için **üç katmanlı koruma** var ve üçü de gerekli:
    Sessizce anon'a düşmek daha nazik olurdu ama tehlikeli: yanlış yapılandırma
    görünmez kalırdı.
 2. Yalnızca `api/` ve `scripts/` bu modülleri `require` eder. `app.js` etmez.
-3. `scripts/test-supabase-layer.mjs` yayımlanan çıktının tamamını (`app.js`,
-   tüm HTML, `public/`) tarar ve ne anahtar **adının** ne de JWT biçiminde bir
-   **değerin** geçmediğini doğrular.
+3. `scripts/verify-published-secrets.mjs` **derleme zincirinin son adımı
+   olarak** yayımlanan çıktının tamamını (kökteki ve `public/` altındaki her
+   `.html` ile her `.js`, üretilmiş sayfa klasörleri dahil) tarar ve ne anahtar
+   **adının** ne de JWT / `sb_secret_` biçiminde bir **değerin** geçmediğini
+   doğrular. Sızıntı bulursa derlemeyi düşürür.
 
 Birincisi kazayı, ikincisi alışkanlığı, üçüncüsü ikisinin de kaçırdığını
 yakalar.
+
+Üçüncü katmanın **derlemede** yaşaması bir düzeltmedir, bir ayrıntı değil:
+tarama daha önce yalnızca `scripts/test-supabase-layer.mjs` içindeydi ve
+testler `npm run build` ile Vercel dağıtımının parçası değil. Yani sızıntının
+gerçekten olabileceği tek ortamda — anahtarların **tanımlı** olduğu üretim
+derlemesinde — hiç çalışmıyordu; anahtarsız CI'da ise boşuna geçiyordu.
+Tarama tek bir yerde (`scripts/lib/publishedSecretScan.mjs`) yaşar; test aynı
+taramayı çağırır, onun yerine geçmez.
+
+Aynı sebeple **yönetim paneli** artık değişken adı, anahtar uzunluğu ya da
+proje sunucu adı basmıyor: `yonetim-paneli.html` herkese açık statik bir
+sayfadır (`noindex` bir erişim denetimi değildir) ve bu üç bilgi saldırgana
+hedef verir. Panelde yalnızca "Tanımlı / Eksik" bayrağı var; tanılamanın yeri
+hız sınırlı `/api/supabase-health` ucudur.
 
 ## Ortam değişkenleri
 

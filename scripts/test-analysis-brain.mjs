@@ -284,6 +284,8 @@ const THRESHOLD_PROBES = [
   { rule: "match.display.gate", name: "FINISHED_STATUSES", constant: "FINISHED_STATUSES" },
   { rule: "match.display.gate", name: "LIVE_STATUSES", constant: "LIVE_STATUSES" },
   { rule: "match.priority.high-interest-label", name: "HIGH_INTEREST_THRESHOLD", export: "HIGH_INTEREST_THRESHOLD" },
+  { rule: "match.priority.score", name: "ELITE_CLUB_POPULARITY", export: "ELITE_CLUB_POPULARITY" },
+  { rule: "match.priority.score", name: "GIANT_COMPETITION_WEIGHT", export: "GIANT_COMPETITION_WEIGHT" },
   { rule: "match.priority.club-floor", name: "DEFAULT_CLUB_POPULARITY", export: "DEFAULT_CLUB_POPULARITY" },
   { rule: "match.priority.club-floor", name: "TURKISH_BIG_FOUR", export: "TURKISH_BIG_FOUR" },
   { rule: "match.priority.competition-weight", name: "SUPER_LIG_WEIGHT", export: "SUPER_LIG_WEIGHT" },
@@ -388,6 +390,18 @@ function testThresholdsMatchTheirSource() {
       thresholdValue(priorityRule, `WEIGHTS.${key}`),
       WEIGHTS[key],
       `match.priority.score: WEIGHTS.${key} defterle kaynak arasında ayrışmış`
+    );
+  }
+
+  // Vitrin bantları da tek tek değil TAMAMI karşılaştırılır: eksik bir bant,
+  // yanlış bir bant kadar zararlı — defter var olmayan bir kademe anlatır ya
+  // da var olanı gizler.
+  const { SPOTLIGHT } = require(path.join(root, "services/matchPriorityService.js"));
+  for (const key of ["EDITORIAL", "TOP", "TURKISH", "NONE"]) {
+    assert.equal(
+      thresholdValue(priorityRule, `SPOTLIGHT.${key}`),
+      SPOTLIGHT[key],
+      `match.priority.score: SPOTLIGHT.${key} defterle kaynak arasında ayrışmış`
     );
   }
 
@@ -775,8 +789,26 @@ function testAdminPanelPrintsOnlyMeasuredNumbers() {
   const html = read(ADMIN_PAGE);
   const state = brain.brainState({ now: NOW });
 
+  // PANEL HİDRE EDİLMEZ, ÖN RENDER EDİLİR.
+  //
+  // Bloklar eskiden `data-api-target="brain-…"` ve `data-static-fallback`
+  // taşıyordu. Sitenin geri kalanında bunlar GERÇEK bir hidrasyon
+  // sözleşmesidir: app.js o adları arar ve alanı canlı veriyle tazeler. Ama
+  // "brain-" önekli hiçbir bağlantı tanımı yok — panelin kendi metni de
+  // "canlı bir gösterge değil" diyor. Karşılığı olmayan bir sözleşme, bir
+  // sonraki okuyucuyu var olmayan bir hidrasyon yolunu aramaya gönderir.
+  // Bu yüzden bloklar artık ne olduklarını söyleyen bir adla işaretli.
+  assert.ok(
+    !/data-api-target="brain-/.test(html),
+    "panel hidrasyon sözleşmesi taklit etmemeli: 'brain-' önekli bir data-api-target yok"
+  );
+  assert.ok(
+    !html.includes("data-static-fallback"),
+    "panelde canlı tazeleme yok; 'static fallback' işareti yanıltıcı"
+  );
+
   // Ön render gerçekten çalışmış mı: her veri alanı dolu olmalı.
-  const targets = [...html.matchAll(/data-api-target="([^"]+)"/g)].map((match) => match[1]);
+  const targets = [...html.matchAll(/data-prerender-block="([^"]+)"/g)].map((match) => match[1]);
   assert.ok(targets.length >= 8, "panelde beklenen veri alanları yok");
   for (const target of targets) {
     const marker = new RegExp(`prerender:${target}:start([\\s\\S]*?)prerender:${target}:end`);
@@ -1009,9 +1041,117 @@ async function testReportStatusEndpoint() {
 }
 
 /* ------------------------------------------------------------------ */
+/* 12. Katalog defterin görünümü mü, üçüncü bir kopya mı?              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * DOKÜMAN ÜÇÜNCÜ BİR KARAR NOKTASI OLAMAZ.
+ *
+ * Denetim (2026-07): docs/rules-catalogue.md 49 kuralın sayısal eşiklerini
+ * ELLE üçüncü kez yazıyordu (birinci: services/*.js, ikinci: defter). İlk
+ * ikisinin eşliği testThresholdsMatchTheirSource ile korunuyordu; dokümanı
+ * hiçbir test okumuyordu. Bir eşik serviste değiştiğinde defter ve test
+ * güncelleniyor, doküman sessizce yalan söylemeye başlıyordu.
+ *
+ * Doküman artık defterden ÜRETİLİYOR. Bu test o sözleşmeyi koruyor: dosya,
+ * üreticinin şu andaki çıktısıyla birebir aynı olmalı. Elle yapılmış bir
+ * düzenleme burada görünür; sessizce kalamaz.
+ */
+async function testCatalogueIsGeneratedFromTheRegistry() {
+  const { renderCatalogue, CATALOGUE_PATH } = await import("./generate-rules-catalogue.mjs");
+
+  assert.ok(exists(CATALOGUE_PATH), `katalog dosyası yok — ${CATALOGUE_PATH}`);
+  assert.equal(
+    read(CATALOGUE_PATH),
+    renderCatalogue(registry),
+    `${CATALOGUE_PATH} defterden üretilmiş hâliyle ayrışmış — ` +
+    "elle düzenlenmiş olabilir. `node scripts/generate-rules-catalogue.mjs` ile yenileyin."
+  );
+
+  // Üretim derleme zincirinde koşmalı; koşmayan bir üretici, dokümanı
+  // güncellemediği hâlde güncelliyormuş gibi görünür.
+  const build = JSON.parse(read("package.json")).scripts.build;
+  assert.ok(
+    build.includes("scripts/generate-rules-catalogue.mjs"),
+    'katalog üreticisi package.json "build" zincirinde koşmalı'
+  );
+
+  // Üreticinin gerçekten defteri okuduğunu kanıtla: değişen bir defter,
+  // değişen bir katalog üretmeli.
+  const altered = JSON.parse(JSON.stringify(registry));
+  altered.rules[0].title = "Denetim örneği: değişmiş başlık";
+  assert.notEqual(
+    renderCatalogue(altered),
+    renderCatalogue(registry),
+    "üretici defterdeki değişikliği yansıtmıyor"
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* 13. TypeScript okuyucusu şemayı UYGULAR, yeniden tanımlamaz          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * lib/analysis KATMANI ŞEMANIN İKİNCİ TANIMI OLAMAZ.
+ *
+ * Denetim (2026-07): `lib/analysis/ruleRegistry.ts` zorunlu alan listesini
+ * elle sayıyordu — `["id","domain","title","statement","rationale","module",
+ * "entry"]` — oysa `rules/schema.json` aynı listeyi artı dört alanla
+ * tanımlıyordu. İki taraf arasında hiçbir bağ yoktu; şemaya yeni bir zorunlu
+ * alan eklendiğinde TypeScript katmanı sessizce ayrışır ve eksik defteri
+ * "geçerli" ilan ederdi. `tsc --noEmit` bunu göremez: derlenip derlenmediğine
+ * bakar, ne doğruladığına değil.
+ *
+ * Bu test o bağın yerinde durduğunu doğrular. Katman derlenmeden okunuyor
+ * (depoda TS çalışma zamanı yok); aranan şey davranış değil, KAYNAĞIN
+ * şemadan türetiyor olması.
+ */
+function testTypedReaderDerivesItsRulesFromTheSchema() {
+  const source = read("lib/analysis/ruleRegistry.ts");
+
+  assert.ok(
+    /import schemaDocument from "\.\.\/\.\.\/rules\/schema\.json"/.test(source),
+    "tipli okuyucu rules/schema.json dosyasını okumalı"
+  );
+  assert.ok(
+    /schemaDocument\.definitions\.rule\b[\s\S]{0,400}?\.required/.test(source),
+    "zorunlu kural alanları şemadan türetilmeli"
+  );
+  assert.ok(
+    /schemaDocument\.definitions\.domain\.required/.test(source),
+    "zorunlu alan (domain) alanları şemadan türetilmeli"
+  );
+  assert.ok(
+    /definitions\.rule[\s\S]{0,400}?\.properties/.test(source),
+    "alanın türü (dize / dizi) de şemadan okunmalı"
+  );
+
+  // Elle sayılmış bir liste geri gelmemeli: şemadaki alan adlarından üç ya da
+  // daha fazlası ARDIŞIK dize sabiti olarak yazılmışsa bu ikinci bir tanımdır.
+  const hardcoded = source.match(/\[\s*(?:"[a-zA-Z]+"\s*,\s*){2,}"[a-zA-Z]+"\s*\]/g) || [];
+  for (const literal of hardcoded) {
+    const names = literal.match(/"([a-zA-Z]+)"/g).map((value) => value.replace(/"/g, ""));
+    const fromSchema = names.filter((name) => schema.definitions.rule.required.includes(name));
+    assert.ok(
+      fromSchema.length < 3,
+      `lib/analysis/ruleRegistry.ts şema alanlarını elle sayıyor: ${literal}`
+    );
+  }
+
+  // Katmanın giriş noktası doğrulayıcıyı gerçekten dışa aktarmalı; aksi hâlde
+  // "defter doğrulanıyor" cümlesinin karşılığı olmaz.
+  const index = read("lib/analysis/index.ts");
+  for (const symbol of ["registryProblems", "isRuleRegistry", "getRegistry"]) {
+    assert.ok(index.includes(symbol), `lib/analysis/index.ts eksik: ${symbol}`);
+  }
+}
+
+/* ------------------------------------------------------------------ */
 
 const tests = [
   testRegistryMatchesSchema,
+  testCatalogueIsGeneratedFromTheRegistry,
+  testTypedReaderDerivesItsRulesFromTheSchema,
   testRuleIdentityIsUnique,
   testEveryRulePointsAtRealCode,
   testEveryDeclaredTestExists,
@@ -1037,5 +1177,6 @@ for (const test of tests) {
 console.log(`Analysis brain tests passed (${tests.length} senaryo: şema uyumu, benzersiz kimlik, ` +
   "gerçek modül ve entry, var olan test dosyası, kaynakla eşleşen eşikler, rapor durumu şablonu, " +
   "güven etiketi şablonu, bekleme metinleri, defter denetimi, uydurma sayı yok, panel gizliliği, " +
-  "panelin Türkçesi, ölçülmüş sayı, bahis dili yasağı, önbellek politikaları, beyin ucu, rapor durumu ucu) — " +
+  "panelin Türkçesi, ölçülmüş sayı, bahis dili yasağı, önbellek politikaları, beyin ucu, rapor durumu ucu, " +
+  "üretilmiş katalog, şemadan türeyen tipli okuyucu) — " +
   `${registry.rules.length} kural / ${registry.domains.length} alan doğrulandı.`);

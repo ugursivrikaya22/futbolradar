@@ -2307,7 +2307,7 @@
       key: "insufficient",
       label: SIGNAL_LABELS.insufficient,
       tone: "awaiting",
-      basis: "İki takımın da doğrulanmış form kaydı henüz oluşmadı."
+      basis: "Form okuması için iki takımın da doğrulanmış kaydı gerekiyor; en az biri henüz oluşmadı."
     };
   }
 

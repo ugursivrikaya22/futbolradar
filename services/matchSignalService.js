@@ -113,6 +113,10 @@ function matchSignal(match, context = {}) {
   const homeForm = formPercent(home);
   const awayForm = formPercent(away);
 
+  // KARŞILAŞTIRMA İÇİN İKİSİ DE GEREKLİ. Tek takımın formunu bilmek bir form
+  // sinyali üretmeye yetmez: "avantaj" bir farktır, farkın da iki ucu olur.
+  // Bu yüzden taraflardan HERHANGİ BİRİNİN kaydı MIN_FORM_MATCHES'e
+  // ulaşmıyorsa bu blok atlanır ve sinyal "Veri yetersiz" olur.
   if (homeForm !== null && awayForm !== null) {
     const gap = homeForm - awayForm;
 
@@ -155,7 +159,7 @@ function matchSignal(match, context = {}) {
   return {
     key: "insufficient",
     label: SIGNAL_LABELS.insufficient,
-    basis: "İki takımın da doğrulanmış form kaydı henüz oluşmadı.",
+    basis: "Form okuması için iki takımın da doğrulanmış kaydı gerekiyor; en az biri henüz oluşmadı.",
     tone: "awaiting"
   };
 }

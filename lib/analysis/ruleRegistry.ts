@@ -25,9 +25,18 @@
  * içindeki `verifyRegistry()`; aynı denetimi burada tekrarlamak ikinci bir
  * karar noktası yaratır ve iki taraf zamanla ayrışırdı. Zaten bu katman
  * dosya sistemine bakamaz: lib/ altında Node API'si kullanılmıyor.
+ *
+ * ZORUNLU ALANLAR BURADA TANIMLANMAZ, ŞEMADAN OKUNUR. Denetim (2026-07) bu
+ * dosyanın zorunlu alan listesini elle saydığını buldu: `rules/schema.json`
+ * o listeyi zaten tanımlıyordu ve iki taraf arasında hiçbir bağ yoktu. Şemaya
+ * yeni bir zorunlu alan eklendiğinde bu dosya sessizce ayrışır, "defter
+ * geçerli" der ve kimse fark etmezdi — tam olarak defterin var olma sebebine
+ * aykırı bir durum. Artık liste de, alanın dize mi dizi mi olduğu da şemadan
+ * türetiliyor; buradaki kod şemayı UYGULAR, yeniden tanımlamaz.
  */
 
 import registryDocument from "../../rules/registry.json";
+import schemaDocument from "../../rules/schema.json";
 
 import type {
   Rule,
@@ -42,6 +51,22 @@ import type {
  * yerde güvenilmesin, tek geçiş yolu aşağıdaki doğrulama olsun.
  */
 const RAW: unknown = registryDocument;
+
+/**
+ * Şemanın kural tanımı — zorunlu alanların ve tiplerinin TEK kaynağı.
+ *
+ * `minLength: 0` ya da hiç `minLength` taşımayan bir dize alanı BOŞ olabilir
+ * (`test` böyle: kuralın henüz testi yoksa boş dize bırakılır ve bu kabul
+ * edilmiş bir boşluktur). Şema bunu zaten söylüyor; burada tekrar karar
+ * vermek yerine okunuyor.
+ */
+type SchemaField = { readonly type?: string; readonly minLength?: number };
+
+const RULE_SCHEMA = schemaDocument.definitions.rule;
+const REQUIRED_RULE_FIELDS: readonly string[] = RULE_SCHEMA.required;
+const RULE_FIELD_SCHEMA = RULE_SCHEMA.properties as Readonly<Record<string, SchemaField>>;
+
+const REQUIRED_DOMAIN_FIELDS: readonly string[] = schemaDocument.definitions.domain.required;
 
 /* ------------------------------------------------------------------ */
 /* İlkel doğrulayıcılar                                                */
@@ -116,10 +141,41 @@ function domainProblems(value: unknown, where: string): string[] {
   if (!isRecord(value)) return [`${where}: alan kaydı bir nesne değil`];
 
   const problems: string[] = [];
-  for (const field of ["id", "title", "summary"] as const) {
+  for (const field of REQUIRED_DOMAIN_FIELDS) {
     if (!isFilledText(value[field])) problems.push(`${where}: "${field}" alanı boş ya da dize değil`);
   }
   return problems;
+}
+
+/**
+ * Şemadaki tek bir zorunlu alanın kontrolü.
+ *
+ * Alanın dize mi dizi mi olduğu ve boş bırakılıp bırakılamayacağı şemadan
+ * okunuyor. Tanımadığı bir tiple karşılaşırsa SESSİZ KALMAZ, sorun yazar —
+ * aksi hâlde şemaya eklenen yeni bir alan türü burada hiç denetlenmediği
+ * hâlde "geçti" görünürdü.
+ */
+function requiredFieldProblems(record: Record<string, unknown>, field: string, where: string): string[] {
+  const spec: SchemaField = RULE_FIELD_SCHEMA[field] ?? {};
+  const found = record[field];
+
+  if (found === undefined) return [`${where}: "${field}" alanı yok`];
+
+  if (spec.type === "string") {
+    if (typeof found !== "string") return [`${where}: "${field}" alanı dize değil`];
+    // Boş `test` bir hata DEĞİL, kabul edilmiş bir boşluktur; şema bunu
+    // `minLength` yazmayarak söylüyor.
+    if ((spec.minLength ?? 0) > 0 && !isFilledText(found)) {
+      return [`${where}: "${field}" alanı boş bırakılamaz`];
+    }
+    return [];
+  }
+
+  if (spec.type === "array") {
+    return isArray(found) ? [] : [`${where}: "${field}" alanı dizi değil`];
+  }
+
+  return [`${where}: "${field}" alanının şemadaki türü tanınmıyor (${String(spec.type)})`];
 }
 
 function ruleProblems(value: unknown, where: string): string[] {
@@ -127,36 +183,23 @@ function ruleProblems(value: unknown, where: string): string[] {
 
   const problems: string[] = [];
 
-  for (const field of [
-    "id",
-    "domain",
-    "title",
-    "statement",
-    "rationale",
-    "module",
-    "entry"
-  ] as const) {
-    if (!isFilledText(value[field])) problems.push(`${where}: "${field}" alanı boş ya da dize değil`);
+  for (const field of REQUIRED_RULE_FIELDS) {
+    problems.push(...requiredFieldProblems(value, field, where));
   }
 
-  // Boş `test` bir hata DEĞİL, kabul edilmiş bir boşluktur: kuralın henüz
-  // testi yok ve defter bunu gizlemek yerine yazıyor. Bu yüzden "dolu metin"
-  // değil yalnızca "dize" aranıyor.
-  if (typeof value.test !== "string") problems.push(`${where}: "test" alanı dize değil`);
-
-  if (!isArray(value.thresholds)) {
-    problems.push(`${where}: "thresholds" alanı dizi değil`);
-  } else {
+  // Dizi ELEMANLARININ içeriği şemanın `items` kuralının uygulanmasıdır;
+  // yukarıdaki döngü yalnızca "dizi mi?" sorusunu cevaplar.
+  if (isArray(value.thresholds)) {
     value.thresholds.forEach((threshold, index) => {
       problems.push(...thresholdProblems(threshold, `${where} · thresholds[${index}]`));
     });
   }
 
   // Boş dizi "bu kural metin basmaz" demektir; dizinin kendisi zorunlu.
-  if (!isFilledTextArray(value.vocabulary)) {
+  if (isArray(value.vocabulary) && !isFilledTextArray(value.vocabulary)) {
     problems.push(`${where}: "vocabulary" dolu metinlerden oluşan bir dizi olmalı`);
   }
-  if (!isFilledTextArray(value.surfaces)) {
+  if (isArray(value.surfaces) && !isFilledTextArray(value.surfaces)) {
     problems.push(`${where}: "surfaces" dolu metinlerden oluşan bir dizi olmalı`);
   }
 
