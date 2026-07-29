@@ -51,6 +51,7 @@ const {
   involvesSuperLigTeam
 } = require("./transferService.js");
 const { publishableStatements, logExcludedStatements } = require("./matchStatementService.js");
+const { isDisplayableMatch } = require("./matchEligibility.js");
 
 /** "Son Dakika" rozetinin geçerli sayıldığı pencere. */
 const FRESH_WINDOW_HOURS = 36;
@@ -184,9 +185,16 @@ function resultHref(match) {
 
 // ── Kaynaklar ───────────────────────────────────────────────────────────────
 
-/** Oynanmakta olan maçların anlık skoru. */
+/**
+ * Oynanmakta olan maçların anlık skoru.
+ *
+ * `hasScore` kontrolü zaten vardı; kapı (services/matchEligibility.js) burada
+ * da uygulanıyor ki bant ile sayfa listeleri AYNI maç kümesini göstersin.
+ * İkisi ayrışırsa bantta görünen bir maç sayfada bulunamaz.
+ */
 function liveItems({ now }) {
   return matchPool()
+    .filter((match) => isDisplayableMatch(match, now))
     .filter((match) => LIVE_STATUSES.includes(String(match.status || "").toUpperCase()))
     .filter((match) => hasScore(match))
     .filter((match) => hoursSince(matchStamp(match), now) <= MAX_AGE_HOURS)
@@ -210,6 +218,7 @@ function todayItems({ now }) {
   const today = istanbulDay(now);
 
   return matchPool()
+    .filter((match) => isDisplayableMatch(match, now))
     .filter((match) => String(match.kickoff || "").slice(0, 10) === today)
     .filter((match) => {
       const status = String(match.status || "SCHEDULED").toUpperCase();
@@ -231,6 +240,7 @@ function todayItems({ now }) {
 /** Biten maçların skoru. */
 function resultItems({ now }) {
   return matchPool()
+    .filter((match) => isDisplayableMatch(match, now))
     .filter((match) => FINISHED_STATUSES.includes(String(match.status || "").toUpperCase()))
     .filter((match) => hasScore(match))
     .filter((match) => hoursSince(matchStamp(match), now) <= MAX_AGE_HOURS)

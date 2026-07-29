@@ -16030,3 +16030,47 @@ body,
     font-size: 0.62rem;
   }
 }
+
+/* ----------------------------------------------------------------------------
+   ÖNE ÇIKMA GEREKÇESİ — maç kartı
+   Kart neden üstte olduğunu söylemeli; sıralama sessiz kalırsa okuyucu
+   listeyi rastgele sanır. Gerekçesi olmayan kartta etiket hiç basılmaz.
+   -------------------------------------------------------------------------- */
+.fixture-priority {
+  justify-self: start;
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+  background: rgba(var(--surface-rgb), 0.078);
+  color: var(--text-soft);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.fixture-priority.is-live {
+  background: rgba(200, 30, 45, 0.096);
+  color: var(--live);
+}
+
+.fixture-priority.is-derby {
+  background: rgba(200, 30, 45, 0.075);
+  color: var(--live);
+}
+
+.fixture-priority.is-turkishInEurope {
+  background: rgba(13, 148, 136, 0.088);
+  color: var(--cyan);
+}
+
+.fixture-priority.is-editorial,
+.fixture-priority.is-highInterest {
+  background: rgba(11, 143, 90, 0.075);
+  color: var(--green);
+}
+
+/* Kart ızgarası: etiket üst satırın hemen altında, kendi satırında durur. */
+.fixture-card > .fixture-priority {
+  margin-top: -2px;
+}

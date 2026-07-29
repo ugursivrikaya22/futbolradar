@@ -28,6 +28,8 @@ const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../ser
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
 const { matchSignal } = require("../services/matchSignalService.js");
 const { displayLeagueName } = require("../services/leagueIdentity.js");
+const { filterDisplayable, logHiddenMatches } = require("../services/matchEligibility.js");
+const { rankMatches } = require("../services/matchPriorityService.js");
 
 /**
  * Maçın kalıcı sayfası. Var olmayan bir adrese bağlanmıyoruz: rapor
@@ -139,6 +141,31 @@ function staticMatchCard(match, variant) {
   </article>`;
 }
 
+
+/**
+ * GÖSTERİLEBİLİR VE ÖNCELİKLİ MAÇ HAVUZU — tek giriş noktası.
+ *
+ * İki kural burada birleşiyor:
+ *   1. KAPI  — başlama saati geçmiş ama skoru olmayan maç gizlenir
+ *              (services/matchEligibility.js). Uydurma 0-0 basılmaz.
+ *   2. SIRA  — kalanlar önceliğe göre dizilir; saat tek başına belirlemez
+ *              (services/matchPriorityService.js).
+ *
+ * Gizlenen her maç gerekçesiyle günlüğe yazılır: veri boşluğu sessiz kalmaz.
+ */
+function displayableRankedMatches(pool, scope, options = {}) {
+  const { matches, hidden } = filterDisplayable(pool, options.now);
+  logHiddenMatches(scope, hidden);
+  return rankMatches(matches, { teams, now: options.now });
+}
+
+/** Kartın "neden öne çıktı" etiketi. Gerekçesi yoksa etiket basılmaz. */
+function priorityReasonHtml(match) {
+  const reason = match && match.priority && match.priority.primaryReason;
+  if (!reason) return "";
+  return `<span class="fixture-priority is-${escapeHtml(reason.key)}">${escapeHtml(reason.label)}</span>`;
+}
+
 const MATCH_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
 
 function istanbulToday() {
@@ -177,10 +204,12 @@ function calendarProgramCards(limit) {
   // collapses the same fixture listed with the sides swapped. Reading the raw
   // calendar here rendered those duplicates into the static fallback, so the
   // homepage showed each neutral-venue friendly twice.
-  const upcoming = curatedMatches()
-    .filter((match) => String(match.kickoff || "").slice(0, 10) >= today)
-    .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
-    .slice(0, limit || 6);
+  // Kapı + öncelik: başlamış ama skorsuz maç listeye girmez, kalanlar
+  // saate göre değil ilgiye göre sıralanır.
+  const upcoming = displayableRankedMatches(
+    curatedMatches().filter((match) => String(match.kickoff || "").slice(0, 10) >= today),
+    "match-program"
+  ).slice(0, limit || 6);
 
   if (!upcoming.length) {
     return "";
@@ -279,6 +308,7 @@ function staticFixtureCard(match, meta) {
 
   return `<article class="fixture-card${isLive ? " is-live" : ""}${isFinal ? " is-final" : ""}" data-card="fixture" data-match="${escapeHtml(match.id)}">
     <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(match.league)}${escapeHtml(displayLeagueName(match.league, "Maç programı"))}</span><span class="fixture-card-state ${stateClass}">${isLive ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(stateLabel)}</span></div>
+    ${priorityReasonHtml(match)}
     <div class="fixture-card-rows">${staticFixtureRow(match.homeTeam, homeScore, awayScore)}${staticFixtureRow(match.awayTeam, awayScore, homeScore)}</div>
     <div class="fixture-card-foot fixture-card-foot-divider">${staticSignalHtml(match)}<a class="fixture-card-link" href="${escapeHtml(matchDetailLink(match))}" aria-label="${escapeHtml(`${match.homeTeam} - ${match.awayTeam} maç analizi`)}">Maç analizi</a></div>
   </article>`;
@@ -365,31 +395,17 @@ function staticFeaturedFixture() {
  */
 const FEATURED_TODAY_LIMIT = 5;
 
+/**
+ * Sıralama artık elle yazılmış bir statü/kapsam/saat zinciri değil,
+ * `services/matchPriorityService.js` puanı: kulüp ilgisi, turnuva ağırlığı,
+ * derbi/Avrupa bağlamı ve canlılık birlikte hesaplanıyor. Eski zincir
+ * 19:00'daki hazırlık maçını 21:00'daki Şampiyonlar Ligi eşleşmesinin
+ * üstünde tutuyordu.
+ */
 function featuredTodayMatches() {
   const today = istanbulToday();
-  const superLig = new Set(fixtureTeamNames().map((name) => normalizeText(name)));
-  const statusRank = (status) => {
-    const value = String(status || "SCHEDULED").toUpperCase();
-    if (value === "LIVE" || value === "IN_PLAY" || value === "HT") return 0;
-    if (value === "FINISHED") return 2;
-    return 1;
-  };
-
-  return curatedMatches()
-    .filter((match) => String(match.kickoff || "").slice(0, 10) === today)
-    .sort((left, right) => {
-      const rank = statusRank(left.status) - statusRank(right.status);
-      if (rank !== 0) return rank;
-
-      const involves = (match) =>
-        (superLig.has(normalizeText(match.homeTeam)) ? 1 : 0) +
-        (superLig.has(normalizeText(match.awayTeam)) ? 1 : 0);
-      const scope = involves(right) - involves(left);
-      if (scope !== 0) return scope;
-
-      return String(left.kickoff).localeCompare(String(right.kickoff));
-    })
-    .slice(0, FEATURED_TODAY_LIMIT);
+  const pool = curatedMatches().filter((match) => String(match.kickoff || "").slice(0, 10) === today);
+  return displayableRankedMatches(pool, "home-featured").slice(0, FEATURED_TODAY_LIMIT);
 }
 
 function featuredTodayBlock() {

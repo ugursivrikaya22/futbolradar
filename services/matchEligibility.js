@@ -263,8 +263,133 @@ function logDataGaps(scope, pending) {
   }
 }
 
+
+/**
+ * GÖRÜNTÜLEME KAPISI — "başlamış ama skoru yok" maçlar gizlenir.
+ * ---------------------------------------------------------------------------
+ * `evaluateMatch` bir maçın YAYIMLANABİLİR olup olmadığını söyler ve eksik
+ * alanları "veri bekleniyor" olarak işaretler. Bu doğru politika — ama tek
+ * bir durumda okuyucuya karşı çalışıyordu:
+ *
+ *   Başlama saati geçmiş bir maç, skoru olmadan listede durduğunda okuyucu
+ *   tam da aradığı şeyi bulamıyor. Skor tablosuna bakmanın SEBEBİ skordur;
+ *   "Veri bekleniyor" yazan bir satır o soruyu cevaplamıyor, üstelik maçın
+ *   0-0 gittiği ya da sitenin bozuk olduğu izlenimi veriyor.
+ *
+ * Kural, maçın hangi evrede olduğuna göre değişir:
+ *
+ *   başlamadan önce   -> GÖSTER (saat ve eşleşme zaten tam bilgi)
+ *   canlı + skor var  -> GÖSTER
+ *   bitmiş + skor var -> GÖSTER
+ *   başlamış + skor yok / durum bilinmiyor -> GİZLE
+ *
+ * Uydurma 0-0 basmıyoruz; sahte skor yerine SESSİZLİK tercih ediliyor ve
+ * gizlenen her maç gerekçesiyle iç günlüğe yazılıyor — veri boşluğu
+ * görünmez olmamalı.
+ *
+ * Bu kapı `evaluateMatch`in YERİNE geçmez, ÜSTÜNE biner: yayımlanamayan bir
+ * maç zaten buraya gelmez.
+ */
+
+/**
+ * Maç şu anda gösterilebilir mi?
+ *
+ * @param {object} match
+ * @param {Date|{now?: Date}} [currentTime] Değerlendirme anı (test için).
+ * @returns {{displayable: boolean, reason: string, phase: string}}
+ */
+function evaluateDisplayable(match, currentTime) {
+  if (!match || typeof match !== "object") {
+    return { displayable: false, reason: "kayıt yok", phase: "unknown" };
+  }
+
+  const now = currentTime instanceof Date
+    ? currentTime
+    : (currentTime && currentTime.now instanceof Date ? currentTime.now : new Date());
+
+  const kickoff = new Date(match.kickoff);
+  if (Number.isNaN(kickoff.getTime())) {
+    return { displayable: false, reason: "başlama saati okunamıyor", phase: "unknown" };
+  }
+
+  // Henüz başlamadı: saat ve eşleşme tek başına tam bir bilgidir.
+  if (now.getTime() < kickoff.getTime()) {
+    return { displayable: true, reason: "", phase: "upcoming" };
+  }
+
+  const scored = hasNumericScore(match);
+
+  if (isLive(match)) {
+    return scored
+      ? { displayable: true, reason: "", phase: "live" }
+      : { displayable: false, reason: "canlı maçın skoru yok", phase: "live" };
+  }
+
+  if (isFinished(match)) {
+    return scored
+      ? { displayable: true, reason: "", phase: "finished" }
+      : { displayable: false, reason: "biten maçın skoru yok", phase: "finished" };
+  }
+
+  // Başlama saati geçmiş ama kayıt ne canlı ne bitmiş diyor: elimizdeki veri
+  // maçın gerçek durumunu bilmiyor. Skoru varsa gösterilebilir (durum etiketi
+  // geç gelmiş olabilir), yoksa gizlenir.
+  if (scored) {
+    return { displayable: true, reason: "", phase: "unknown-status" };
+  }
+
+  return {
+    displayable: false,
+    reason: "başlama saati geçti, skor yok ve durum bilinmiyor",
+    phase: "unknown-status"
+  };
+}
+
+/** Kısa biçim: yalnızca evet/hayır. */
+function isDisplayableMatch(match, currentTime) {
+  return evaluateDisplayable(match, currentTime).displayable;
+}
+
+/**
+ * Gösterilebilir maçları süzer ve gizlenenleri gerekçesiyle döndürür.
+ * @returns {{matches: Array, hidden: Array<{id: string, reason: string, phase: string}>}}
+ */
+function filterDisplayable(matches, currentTime) {
+  const list = Array.isArray(matches) ? matches : [];
+  const visible = [];
+  const hidden = [];
+
+  for (const match of list) {
+    const verdict = evaluateDisplayable(match, currentTime);
+    if (verdict.displayable) {
+      visible.push(match);
+      continue;
+    }
+    hidden.push({
+      id: (match && match.id) || `${(match && match.homeTeam) || "?"}-${(match && match.awayTeam) || "?"}`,
+      reason: verdict.reason,
+      phase: verdict.phase
+    });
+  }
+
+  return { matches: visible, hidden };
+}
+
+/** İç günlük: gizlenen maçlar sessizce kaybolmasın. */
+function logHiddenMatches(scope, hidden) {
+  for (const item of hidden || []) {
+    console.warn(
+      `[futbolradar:match-hidden] scope=${scope} id=${item.id} phase=${item.phase} reason="${item.reason}"`
+    );
+  }
+}
+
 module.exports = {
   APPROVED_SOURCES,
+  evaluateDisplayable,
+  filterDisplayable,
+  isDisplayableMatch,
+  logHiddenMatches,
   REQUIRED_FIELDS,
   IDENTITY_FIELDS,
   PUBLISH_STATE,

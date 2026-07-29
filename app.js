@@ -2294,6 +2294,7 @@
       escapeHtml(meta.label) +
       "</span>" +
       "</div>" +
+      priorityReasonHtml(match) +
       '<div class="fixture-card-rows">' + fixtureRowHtml(match, "home") + fixtureRowHtml(match, "away") + "</div>" +
       chips +
       '<div class="fixture-card-foot fixture-card-foot-divider">' +
@@ -2558,21 +2559,207 @@
     );
   }
 
+  /**
+   * MAÇ ÖNCELİK PUANI (istemci aynası).
+   *
+   * Kural ve katsayılar services/matchPriorityService.js'de; buradaki tablo
+   * ondan TÜRETİLMİŞTİR ve scripts/test-match-priority.mjs iki tarafı
+   * karşılaştırır. Ayrışırlarsa kullanıcı sayfa yüklenirken bir sıra,
+   * JS çalıştıktan sonra başka bir sıra görür.
+   */
+  var PRIORITY_CONFIG = {"clubs": {"galatasaray": 100, "fenerbahce": 100, "besiktas": 100, "trabzonspor": 95, "basaksehir": 55, "istanbul basaksehir": 55, "samsunspor": 50, "goztepe": 50, "konyaspor": 48, "caykur rizespor": 45, "rizespor": 45, "alanyaspor": 45, "gaziantep fk": 45, "kasimpasa": 45, "eyupspor": 42, "kocaelispor": 42, "genclerbirligi": 42, "corum fk": 40, "erzurumspor fk": 40, "amed sportif faaliyetler": 45, "real madrid": 95, "barcelona": 95, "manchester city": 90, "liverpool": 90, "manchester united": 90, "bayern munih": 88, "bayern munich": 88, "paris saint-germain": 85, "psg": 85, "juventus": 82, "inter": 80, "milan": 80, "ac milan": 80, "arsenal": 82, "chelsea": 82, "atletico madrid": 78, "borussia dortmund": 78, "napoli": 75, "tottenham": 75, "ajax": 70, "benfica": 70, "porto": 68, "roma": 70, "atalanta": 65, "bayer leverkusen": 70, "olympique marsilya": 65, "marseille": 65, "sevilla": 65, "lazio": 65, "fiorentina": 60}, "defaultClub": 20, "superLigWeight": 85, "bigFour": ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"], "weights": {"clubs": 1, "competition": 1.2, "derby": 120, "turkishInEurope": 90, "titleRace": 60, "relegationRace": 35, "live": 400, "today": 60, "finished": -40}, "threshold": 240};
+
+  function priorityClubKey(name) {
+    return normalizeSearchText(name);
+  }
+
+  function priorityClubPopularity(name) {
+    var key = priorityClubKey(name);
+    if (!key) return PRIORITY_CONFIG.defaultClub;
+    if (PRIORITY_CONFIG.clubs[key] !== undefined) return PRIORITY_CONFIG.clubs[key];
+    var found = PRIORITY_CONFIG.defaultClub;
+    Object.keys(PRIORITY_CONFIG.clubs).some(function (candidate) {
+      if (key.indexOf(candidate) !== -1 || candidate.indexOf(key) !== -1) {
+        found = PRIORITY_CONFIG.clubs[candidate];
+        return true;
+      }
+      return false;
+    });
+    return found;
+  }
+
+  function priorityIsBigFour(name) {
+    var key = priorityClubKey(name);
+    return PRIORITY_CONFIG.bigFour.some(function (club) {
+      return key === club || key.indexOf(club) !== -1;
+    });
+  }
+
+  var PRIORITY_COMPETITIONS = [
+    { re: /sampiyonlar-ligi|champions league|şampiyonlar ligi/i, weight: 100, label: "Şampiyonlar Ligi" },
+    { re: /avrupa-ligi|europa league|avrupa ligi/i, weight: 80, label: "Avrupa Ligi" },
+    { re: /konferans|conference league/i, weight: 65, label: "Konferans Ligi" },
+    { re: /turkiye-kupasi|türkiye kupası|ziraat/i, weight: 70, label: "Türkiye Kupası" },
+    { re: /premier league/i, weight: 60, label: "Premier League" },
+    { re: /la ?liga/i, weight: 58, label: "La Liga" },
+    { re: /serie ?a/i, weight: 55, label: "Serie A" },
+    { re: /bundesliga/i, weight: 55, label: "Bundesliga" },
+    { re: /ligue ?1/i, weight: 50, label: "Ligue 1" },
+    { re: /hazirlik|hazırlık|friendly/i, weight: 10, label: "Hazırlık maçı" }
+  ];
+
+  var PRIORITY_EUROPEAN = /sampiyonlar-ligi|champions league|şampiyonlar ligi|avrupa-ligi|europa league|avrupa ligi|konferans|conference league|uefa/i;
+
+  function priorityCompetition(match) {
+    var haystack = String(match.competitionId || "") + " " + String(match.league || "");
+    for (var i = 0; i < PRIORITY_COMPETITIONS.length; i += 1) {
+      if (PRIORITY_COMPETITIONS[i].re.test(haystack)) {
+        return { weight: PRIORITY_COMPETITIONS[i].weight, label: PRIORITY_COMPETITIONS[i].label };
+      }
+    }
+    if (isSuperLigName(match.league) || /super-lig/i.test(String(match.competitionId || ""))) {
+      return { weight: PRIORITY_CONFIG.superLigWeight, label: SUPER_LIG_DISPLAY_NAME };
+    }
+    return { weight: 30, label: match.league || "Turnuva bilgisi bekleniyor" };
+  }
+
+  function matchPriority(match) {
+    if (!match) return { score: 0, reasons: [], primaryReason: null };
+
+    var W = PRIORITY_CONFIG.weights;
+    var reasons = [];
+    var score = ((priorityClubPopularity(match.homeTeam) + priorityClubPopularity(match.awayTeam)) / 2) * W.clubs;
+    score += priorityCompetition(match).weight * W.competition;
+
+    if (priorityIsBigFour(match.homeTeam) && priorityIsBigFour(match.awayTeam)) {
+      score += W.derby;
+      reasons.push({ key: "derby", label: "Derbi" });
+    }
+
+    var european = PRIORITY_EUROPEAN.test(String(match.competitionId || "") + " " + String(match.league || ""));
+    if (european && (isSuperLigName(match.league) || priorityIsBigFour(match.homeTeam) || priorityIsBigFour(match.awayTeam) ||
+      priorityClubPopularity(match.homeTeam) >= 40 || priorityClubPopularity(match.awayTeam) >= 40)) {
+      score += W.turkishInEurope;
+      reasons.push({ key: "turkishInEurope", label: "Avrupa'da Türk takımı" });
+    }
+
+    if (isLiveMatch(match)) {
+      score += W.live;
+      reasons.unshift({ key: "live", label: "Canlı" });
+    } else if (["FINISHED", "FT", "AET", "PEN"].indexOf(String(match.status || "").toUpperCase()) !== -1) {
+      score += W.finished;
+    } else if (String(match.kickoff || "").slice(0, 10) === todayInIstanbul()) {
+      score += W.today;
+    }
+
+    var editorial = Number(match.editorialPriority);
+    if (isFinite(editorial) && editorial !== 0) {
+      score += editorial;
+      reasons.push({ key: "editorial", label: "Editör seçimi" });
+    } else if (match.featured === true) {
+      score += 150;
+      reasons.push({ key: "editorial", label: "Editör seçimi" });
+    }
+
+    if (!reasons.length && score >= PRIORITY_CONFIG.threshold) {
+      reasons.push({ key: "highInterest", label: "Yüksek ilgi" });
+    }
+
+    return { score: Math.round(score), reasons: reasons, primaryReason: reasons[0] || null };
+  }
+
+  function rankMatchesByPriority(matches) {
+    return (Array.isArray(matches) ? matches : []).slice().map(function (match) {
+      match.priority = matchPriority(match);
+      return match;
+    }).sort(function (left, right) {
+      if (right.priority.score !== left.priority.score) return right.priority.score - left.priority.score;
+      return String(left.kickoff || "").localeCompare(String(right.kickoff || ""));
+    });
+  }
+
+  /** Kartın "neden öne çıktı" etiketi. Gerekçe yoksa etiket basılmaz. */
+  function priorityReasonHtml(match) {
+    var reason = match && match.priority && match.priority.primaryReason;
+    if (!reason) return "";
+    return '<span class="fixture-priority is-' + escapeHtml(reason.key) + '">' + escapeHtml(reason.label) + "</span>";
+  }
+
+  /**
+   * GÖRÜNTÜLEME KAPISI (istemci aynası).
+   *
+   * Kural services/matchEligibility.js'de; scripts/test-match-display.mjs iki
+   * tarafı karşılaştırır. Başlama saati geçmiş ama skoru olmayan maç
+   * listelerden çıkar — uydurma 0-0 basmak yerine sessizlik tercih edilir.
+   * Gizlenen maçlar tarayıcı konsoluna gerekçesiyle yazılır.
+   */
+  function matchHasNumericScore(match) {
+    var score = (match && match.score) || {};
+    return score.home !== null && score.home !== undefined && score.home !== "" && isFinite(Number(score.home)) &&
+      score.away !== null && score.away !== undefined && score.away !== "" && isFinite(Number(score.away));
+  }
+
+  function evaluateDisplayableMatch(match, currentTime) {
+    if (!match) return { displayable: false, reason: "kayıt yok", phase: "unknown" };
+
+    var now = currentTime instanceof Date ? currentTime : new Date();
+    var kickoff = new Date(match.kickoff);
+    if (isNaN(kickoff.getTime())) {
+      return { displayable: false, reason: "başlama saati okunamıyor", phase: "unknown" };
+    }
+    if (now.getTime() < kickoff.getTime()) {
+      return { displayable: true, reason: "", phase: "upcoming" };
+    }
+
+    var scored = matchHasNumericScore(match);
+    var status = String(match.status || "").toUpperCase();
+
+    if (isLiveMatch(match)) {
+      return scored
+        ? { displayable: true, reason: "", phase: "live" }
+        : { displayable: false, reason: "canlı maçın skoru yok", phase: "live" };
+    }
+    if (["FINISHED", "FT", "AET", "PEN"].indexOf(status) !== -1) {
+      return scored
+        ? { displayable: true, reason: "", phase: "finished" }
+        : { displayable: false, reason: "biten maçın skoru yok", phase: "finished" };
+    }
+    if (scored) return { displayable: true, reason: "", phase: "unknown-status" };
+    return {
+      displayable: false,
+      reason: "başlama saati geçti, skor yok ve durum bilinmiyor",
+      phase: "unknown-status"
+    };
+  }
+
+  function isDisplayableMatch(match, currentTime) {
+    return evaluateDisplayableMatch(match, currentTime).displayable;
+  }
+
+  function filterDisplayableMatches(matches, scope) {
+    var visible = [];
+    (Array.isArray(matches) ? matches : []).forEach(function (match) {
+      var verdict = evaluateDisplayableMatch(match);
+      if (verdict.displayable) { visible.push(match); return; }
+      if (window.console && console.warn) {
+        console.warn("[futbolradar:match-hidden] scope=" + scope +
+          " id=" + ((match && match.id) || "?") +
+          " phase=" + verdict.phase + ' reason="' + verdict.reason + '"');
+      }
+    });
+    return visible;
+  }
+
   function renderTodayMatchesPreview(matches) {
     if (!Array.isArray(matches) || !matches.length) {
       return "";
     }
 
-    return matches.slice().sort(function (left, right) {
-      function rank(match) {
-        var status = String(match.status || match.providerStatus || "").toUpperCase();
-        if (isLiveMatch(match)) return 0;
-        if (["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(status)) return 1;
-        return 2;
-      }
-
-      return rank(left) - rank(right) || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
-    }).slice(0, 8).map(renderFixtureCard).join("");
+    // Kapı önce (skorsuz başlamış maç görünmez), sıralama sonra: saat tek
+    // başına belirlemiyor, ilgi puanı belirliyor.
+    var visible = filterDisplayableMatches(matches, "home-today");
+    if (!visible.length) return "";
+    return rankMatchesByPriority(visible).slice(0, 8).map(renderFixtureCard).join("");
   }
 
   function renderMatchesPageSection(matches, analysesIndex) {
