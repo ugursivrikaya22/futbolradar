@@ -25,6 +25,28 @@ const { getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigF
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
+const { matchSignal } = require("../services/matchSignalService.js");
+
+/**
+ * Maçın kalıcı sayfası. Var olmayan bir adrese bağlanmıyoruz: rapor
+ * üretilmemişse canlı skor sayfası her zaman geçerli hedeftir.
+ */
+function matchReportPath(match) {
+  return match && match.id ? path.join(root, "mac-raporu", `${match.id}.html`) : null;
+}
+
+function hasPublishedAnalysis(match) {
+  if (match && match.analysisPage) return true;
+  const reportPath = matchReportPath(match);
+  return Boolean(reportPath && fs.existsSync(reportPath));
+}
+
+function matchDetailLink(match) {
+  const reportPath = matchReportPath(match);
+  if (reportPath && fs.existsSync(reportPath)) return `./mac-raporu/${match.id}.html`;
+  if (match && match.analysisPage) return `./${match.analysisPage}`;
+  return `./canli-skor.html#${match && match.id ? match.id : ""}`;
+}
 
 const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
 const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
@@ -211,24 +233,6 @@ function leagueMarkHtml(league) {
   return `<i class="league-mark league-mark-${hash % 5}" aria-hidden="true">${escapeHtml(initials)}</i>`;
 }
 
-function staticFormPercent(name) {
-  const team = teamByName(name);
-  const form = team && Array.isArray(team.form) ? team.form : null;
-
-  if (!form || !form.length) {
-    return null;
-  }
-
-  const earned = form.reduce((total, entry) => {
-    const result = String((entry && (entry.result || entry.label)) || "").toLowerCase();
-    if (result === "win" || result === "g") return total + 3;
-    if (result === "draw" || result === "b") return total + 1;
-    return total;
-  }, 0);
-
-  return Math.round((earned / (form.length * 3)) * 100);
-}
-
 function staticFixtureRow(name, score, otherScore) {
   const winner = score !== null && otherScore !== null && Number(score) > Number(otherScore);
   return `<div class="fixture-row${winner ? " is-winner" : ""}">` +
@@ -238,6 +242,30 @@ function staticFixtureRow(name, score, otherScore) {
     `</div>`;
 }
 
+/**
+ * Radar sinyali. Kural services/matchSignalService.js'de; burada yalnızca
+ * takım kayıtları verilip sonuç çizilir. Sinyal bir tahmin değil, eldeki
+ * kaydın okunuşudur ve oran/yüzde iddiası taşımaz.
+ */
+function staticSignalHtml(match) {
+  const signal = matchSignal(match, {
+    homeTeam: teamByName(match.homeTeam),
+    awayTeam: teamByName(match.awayTeam),
+    analysisReady: Boolean(match.analysisPage) || hasPublishedAnalysis(match)
+  });
+
+  return `<span class="fixture-signal is-${escapeHtml(signal.tone)}" title="${escapeHtml(signal.basis)}">` +
+    `<i aria-hidden="true"></i><span>${escapeHtml(signal.label)}</span></span>`;
+}
+
+/**
+ * KOMPAKT MAÇ KARTI (statik yedek).
+ *
+ * app.js'teki `renderFixtureCard` ile aynı iskelet: üstte lig ve saat/durum,
+ * ortada takımlar ve skor, altta radar sinyali + detay bağlantısı. JS
+ * yüklenmeden önce görünen kart ile yüklendikten sonraki kartın farklı
+ * olması, sayfanın kendi kendini düzelttiği izlenimi veriyordu.
+ */
 function staticFixtureCard(match, meta) {
   const { headlineValue, status, finalScore } = meta;
   const isLive = status === "LIVE";
@@ -247,17 +275,10 @@ function staticFixtureCard(match, meta) {
   const homeScore = finalScore ? Number(String(finalScore).split("-")[0]) : null;
   const awayScore = finalScore ? Number(String(finalScore).split("-")[1]) : null;
 
-  const homeForm = staticFormPercent(match.homeTeam);
-  const awayForm = staticFormPercent(match.awayTeam);
-  const formHtml = homeForm === null && awayForm === null
-    ? ""
-    : `<div class="fixture-metric"><span>Form (son 5)</span><b>${homeForm === null ? "–" : `%${homeForm}`} · ${awayForm === null ? "–" : `%${awayForm}`}</b></div>`;
-
-  return `<article class="fixture-card${isLive ? " is-live" : ""}" data-card="fixture" data-match="${escapeHtml(match.id)}">
-    <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(match.league)}${escapeHtml(match.league || "Maç programı")}</span><span class="fixture-card-state ${stateClass}">${escapeHtml(stateLabel)}</span></div>
+  return `<article class="fixture-card${isLive ? " is-live" : ""}${isFinal ? " is-final" : ""}" data-card="fixture" data-match="${escapeHtml(match.id)}">
+    <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(match.league)}${escapeHtml(match.league || "Maç programı")}</span><span class="fixture-card-state ${stateClass}">${isLive ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(stateLabel)}</span></div>
     <div class="fixture-card-rows">${staticFixtureRow(match.homeTeam, homeScore, awayScore)}${staticFixtureRow(match.awayTeam, awayScore, homeScore)}</div>
-    ${formHtml ? `<div class="fixture-card-meta">${formHtml}</div>` : ""}
-    <a class="fixture-card-action" href="./canli-skor.html">Analizi İncele</a>
+    <div class="fixture-card-foot fixture-card-foot-divider">${staticSignalHtml(match)}<a class="fixture-card-link" href="${escapeHtml(matchDetailLink(match))}">Detay</a></div>
   </article>`;
 }
 
@@ -323,6 +344,113 @@ function staticFeaturedFixture() {
       </div>
       <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Analizi İncele</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
     </div>${quickStats}`;
+}
+
+/**
+ * BUGÜNÜN ÖNE ÇIKAN 5 MAÇI.
+ *
+ * Ana sayfaya giren okuyucunun ilk saniyelerde görmesi gereken şey bu:
+ * bugün ne oynanıyor, hangisi canlı, saat kaçta. "Öne çıkan" bir editör
+ * tercihi değil, ÖLÇÜLEBİLİR bir sıralama:
+ *
+ *   1. Canlı maçlar (şu anda oynanıyor)
+ *   2. Başlayacak maçlar, saati yaklaşan önce
+ *   3. Tamamlanan maçlar
+ *
+ * Eşitlikte Süper Lig kulübü içeren karşılaşma öne alınır; sitenin kapsamı
+ * budur. Bugün doğrulanmış maç yoksa liste uydurulmaz, "veri bekleniyor"
+ * yazılır.
+ */
+const FEATURED_TODAY_LIMIT = 5;
+
+function featuredTodayMatches() {
+  const today = istanbulToday();
+  const superLig = new Set(fixtureTeamNames().map((name) => normalizeText(name)));
+  const statusRank = (status) => {
+    const value = String(status || "SCHEDULED").toUpperCase();
+    if (value === "LIVE" || value === "IN_PLAY" || value === "HT") return 0;
+    if (value === "FINISHED") return 2;
+    return 1;
+  };
+
+  return curatedMatches()
+    .filter((match) => String(match.kickoff || "").slice(0, 10) === today)
+    .sort((left, right) => {
+      const rank = statusRank(left.status) - statusRank(right.status);
+      if (rank !== 0) return rank;
+
+      const involves = (match) =>
+        (superLig.has(normalizeText(match.homeTeam)) ? 1 : 0) +
+        (superLig.has(normalizeText(match.awayTeam)) ? 1 : 0);
+      const scope = involves(right) - involves(left);
+      if (scope !== 0) return scope;
+
+      return String(left.kickoff).localeCompare(String(right.kickoff));
+    })
+    .slice(0, FEATURED_TODAY_LIMIT);
+}
+
+function featuredTodayBlock() {
+  const selected = featuredTodayMatches();
+
+  if (!selected.length) {
+    return `<article class="data-empty" data-card="empty-state">
+      <strong>Bugün için doğrulanmış maç bekleniyor</strong>
+      <span>Günün karşılaşmaları doğrulandığı anda saat, durum ve skorlarıyla burada listelenecek. Doğrulanmamış eşleşme gösterilmez.</span>
+      <div class="match-empty-actions">
+        <a class="detail-link" href="./super-lig-fikstur.html">Süper Lig fikstürünü aç</a>
+        <a class="detail-link ghost" href="./canli-skor.html">Canlı skor sayfası</a>
+      </div>
+    </article>`;
+  }
+
+  return selected.map((match) => {
+    const status = String(match.status || "SCHEDULED").toUpperCase();
+    const finalScore = match.score && match.score.home !== null && match.score.home !== undefined
+      && match.score.away !== null && match.score.away !== undefined
+      ? `${match.score.home}-${match.score.away}`
+      : null;
+    const headlineValue = status === "FINISHED" && finalScore ? finalScore : (match.time || "");
+    return staticFixtureCard(match, { headlineValue, isToday: true, status, finalScore });
+  }).join("");
+}
+
+/**
+ * TAKIM FORM SAYFALARI.
+ *
+ * Form sayfaları üretiliyordu ama ana sayfadan hiçbirine bağlantı yoktu;
+ * yalnızca site haritası üzerinden erişilebiliyorlardı. Bu blok dört büyük
+ * kulübün ve lig genelinin form sayfasını ana sayfaya bağlar.
+ *
+ * Kartta bir form iddiası YAZILMIYOR: burada gösterilecek sayı, sayfanın
+ * kendi doğrulanmış kaydından gelmeli. Kayıt varsa son maç serisi noktalarla
+ * gösterilir, yoksa "veri bekleniyor" yazılır - ikisinin arası yok.
+ */
+const FORM_PAGES = [
+  { team: "Galatasaray", file: "galatasaray-form-durumu.html", label: "Galatasaray Form Durumu" },
+  { team: "Fenerbahçe", file: "fenerbahce-form-durumu.html", label: "Fenerbahçe Form Durumu" },
+  { team: "Beşiktaş", file: "besiktas-form-durumu.html", label: "Beşiktaş Form Durumu" },
+  { team: "Trabzonspor", file: "trabzonspor-form-durumu.html", label: "Trabzonspor Form Durumu" },
+  { team: null, file: "super-lig-form-durumu.html", label: "Süper Lig Form Tablosu" }
+];
+
+function formLinksBlock() {
+  return FORM_PAGES.map((entry) => {
+    const team = entry.team ? teamByName(entry.team) : null;
+    const form = team && Array.isArray(team.form) ? team.form : [];
+
+    const body = entry.team
+      ? (form.length
+        ? formDots(form)
+        : '<span class="muted-copy">Form kaydı bekleniyor</span>')
+      : '<span class="muted-copy">18 takımın son maç serisi</span>';
+
+    return `<a class="home-form-link" href="./${escapeHtml(entry.file)}">
+      <span class="home-form-link-team">${escapeHtml(entry.team || "Süper Lig")}</span>
+      <strong>${escapeHtml(entry.label)}</strong>
+      ${body}
+    </a>`;
+  }).join("");
 }
 
 function matchProgramState(variant) {
@@ -680,6 +808,8 @@ const topPlayers = players.slice().sort((left, right) => Number(right.overallRat
 
 writePage("index.html", {
   "featured-match": staticFeaturedFixture(),
+  "today-top-matches": featuredTodayBlock(),
+  "home-form-links": formLinksBlock(),
   "home-trend-teams": trendTeamCards(),
   "home-transfer-watch": transferWatch(),
   "today-matches": matchProgramState("today"),
@@ -694,6 +824,43 @@ writePage("index.html", {
 
 writePage("haberler.html", {
   "news-page": newsCards()
+}, fixtureFreshness);
+
+/**
+ * ARAMA NİYETİ SAYFALARININ İÇERİĞİ.
+ *
+ * Kabukları `scripts/generate-static-seo-pages.mjs` yazıyor; gerçek maç
+ * listesi burada dolduruluyor çünkü maç verisi zaten bu dosyada okunuyor.
+ * İki kaynak arasında veri kopyalamak yerine, her dosya bildiği işi yapıyor.
+ */
+writePage("gunluk-mac-analizleri.html", {
+  "daily-analysis-matches": matchProgramState("today")
+}, fixtureFreshness);
+
+/**
+ * Süper Lig eşleşmelerinin kalıcı analiz sayfaları. Yalnızca onaylı
+ * eşleşmeler listelenir; tarih açıklanmamışsa saat yerine hafta aralığı
+ * yazılır ve uydurma bir başlama saati üretilmez.
+ */
+function superLigAnalysisLinks(limit) {
+  const upcoming = allFixtures().slice(0, limit || 12);
+
+  if (!upcoming.length) {
+    return `<article class="data-empty" data-card="empty-state">
+      <strong>Onaylı eşleşme bekleniyor</strong>
+      <span>Fikstür doğrulandığında her karşılaşmanın analiz sayfası burada listelenecek.</span>
+    </article>`;
+  }
+
+  return upcoming.map((match) => `<a class="home-form-link" href="./mac/${escapeHtml(matchSlug(match))}.html">
+    <span class="home-form-link-team">${escapeHtml(match.roundLabel)} · ${escapeHtml(match.dateRange)}</span>
+    <strong>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)} Maç Analizi</strong>
+    <span class="muted-copy">Form, kadro durumu ve radar okuması</span>
+  </a>`).join("");
+}
+
+writePage("super-lig-mac-analizleri.html", {
+  "super-lig-analysis-links": superLigAnalysisLinks(12)
 }, fixtureFreshness);
 
 writePage("bugunun-maclari.html", {

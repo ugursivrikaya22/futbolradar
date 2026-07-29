@@ -94,9 +94,11 @@ function baseFor(file) {
   return depth <= 0 ? "./" : "../".repeat(depth);
 }
 
-// Bant doğrulanmış kaynaklardan beslenir (maç sonuçları, onaylı transferler,
-// doğrulanmış editoryal haberler) ve tazelik denetiminden geçer: rozet ancak
-// gerçekten taze bir öğe varsa "Son Dakika" olur.
+// Bant doğrulanmış kaynaklardan beslenir (canlı skorlar, günün maçları, maç
+// sonuçları, maç sonu açıklamaları, onaylı transferler, doğrulanmış editoryal
+// haberler) ve tazelik denetiminden geçer: rozet ancak gerçekten canlı ya da
+// taze bir öğe varsa "Canlı"/"Son Dakika" olur. Hiç doğrulanmış öğe yoksa
+// bant kaldırılmaz, açıkça "veri bekleniyor" yazar.
 const tickerFeed = buildTickerFeed();
 const tickerItems = tickerFeed.items;
 const files = [...collectHtmlFiles(root), ...collectHtmlFiles(path.join(root, "public"))]
@@ -114,7 +116,12 @@ for (const file of files) {
   }
 
   const base = baseFor(file);
-  const ticker = newsTicker({ base, items: rebaseItems(tickerItems, base), badge: tickerFeed.badge });
+  const ticker = newsTicker({
+    base,
+    items: rebaseItems(tickerItems, base),
+    badge: tickerFeed.badge,
+    note: tickerFeed.note
+  });
   const headerBlock = ticker
     ? `${siteHeader({ base })}\n      <!-- shared-layout:ticker:start -->${ticker}<!-- shared-layout:ticker:end -->`
     : siteHeader({ base });
@@ -129,8 +136,16 @@ for (const file of files) {
   }
 }
 
+// Kaynak dökümü çıktıya yazılır: hangi kategorinin kaç öğe ürettiği ve kaçının
+// banda girdiği görünmezse, sessizce boşalmış bir kaynak fark edilmez.
+const sourceSummary = (tickerFeed.sourceReport || [])
+  .map((entry) => `${entry.id} ${entry.used}/${entry.available}`)
+  .join(", ");
+
 console.log(
   `Shared layout applied: ${updated} updated, ${skipped} without layout blocks, ` +
   `${tickerItems.length} ticker items (${tickerFeed.badge}` +
-  `${tickerFeed.usedFallback ? ", son doğrulanmış içerik korundu" : ""})`
+  `${tickerFeed.usedFallback ? ", son doğrulanmış içerik korundu" : ""}` +
+  `${tickerFeed.awaiting ? ", veri bekleniyor" : ""})` +
+  `${sourceSummary ? ` — kaynaklar: ${sourceSummary}` : ""}`
 );

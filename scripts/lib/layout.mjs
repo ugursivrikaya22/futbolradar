@@ -119,38 +119,64 @@ export function siteHeader(options = {}) {
 }
 
 /**
- * Üst çubuğun altındaki kayan son dakika bandı. Sonsuz döngü için içerik iki
- * kez basılır ve şerit %50 kaydırılır; bu sayede JavaScript olmadan da (CSS
- * animasyonu) kesintisiz akar. `:hover`/`:focus-within` durumunda durur.
+ * Üst çubuğun altındaki kayan futbol akışı bandı. Sonsuz döngü için içerik
+ * iki kez basılır ve şerit %50 kaydırılır; bu sayede JavaScript olmadan da
+ * (CSS animasyonu) kesintisiz akar. `:hover`/`:focus-within` durumunda durur.
  * Öğeler gerçek bağlantıdır - dekoratif değil, tıklanabilir.
+ *
+ * BANT KAYBOLMAZ. Öğe yoksa şerit sayfadan silinmiyor; açıkça "veri
+ * bekleniyor" yazan sabit bir satıra dönüyor. Bandın bir gün var bir gün yok
+ * olması, okuyucuya sitenin bozulduğunu düşündürüyordu; eksikliği söylemek
+ * kaybolmaktan dürüst.
+ *
+ * İçerik kararı burada verilmez: hangi öğe, hangi sıra, hangi rozet
+ * sorularının cevabı services/tickerService.js'den gelir.
  */
 export function newsTicker(options = {}) {
   const base = normalizeBase(options.base);
   const items = Array.isArray(options.items) ? options.items.filter(Boolean) : [];
-  // Rozet çağırandan gelir: "Son Dakika" bir zaman iddiasıdır ve yalnızca
-  // gerçekten taze içerik varsa yazılır. Taze içerik yoksa bant kaldırılmaz,
+  // Rozet çağırandan gelir: "Canlı" ve "Son Dakika" birer zaman iddiasıdır ve
+  // yalnızca gerçekten öyle bir öğe varsa yazılır. Yoksa bant kaldırılmaz,
   // rozet nötr "Gündem" olur — okuyucu gerçek ama eski başlık görür.
   const badge = typeof options.badge === "string" && options.badge.trim()
     ? options.badge.trim()
     : "Gündem";
+  const pulsing = badge === "Canlı" || badge === "Son Dakika";
+  const badgeMark = pulsing ? '<i class="live-pulse" aria-hidden="true"></i>' : "";
 
+  // Kaynakların tamamı boş: uydurma başlık üretmek yerine eksiklik yazılır.
   if (!items.length) {
-    return "";
+    const note = typeof options.note === "string" && options.note.trim()
+      ? options.note.trim()
+      : "Doğrulanmış futbol akışı bekleniyor.";
+
+    return `<div class="news-ticker is-awaiting" data-shared-layout="ticker" data-ticker-state="awaiting" aria-label="Futbol akışı durumu">
+      <div class="container-wide news-ticker-inner">
+        <span class="news-ticker-badge is-awaiting">Veri Bekleniyor</span>
+        <p class="news-ticker-awaiting">${escapeHtml(note)}</p>
+        <a class="news-ticker-all" href="${base}bugunun-maclari.html">Maç programı</a>
+      </div>
+    </div>`;
   }
 
   const renderItem = (item) => {
     const href = item.href ? item.href : `${base}haberler.html`;
     const external = /^https?:/i.test(href);
     const rel = external ? ' target="_blank" rel="noopener noreferrer"' : "";
-    const label = item.label ? `<span class="news-ticker-tag">${escapeHtml(item.label)}</span>` : "";
-    return `<a class="news-ticker-item" href="${escapeHtml(href)}"${rel}>${label}<span>${escapeHtml(item.text)}</span></a>`;
+    const kind = item.kind ? ` is-${escapeHtml(item.kind)}` : "";
+    const mark = item.kind === "live" ? '<i class="live-pulse" aria-hidden="true"></i>' : "";
+    const label = item.label
+      ? `<span class="news-ticker-tag${kind}">${mark}${escapeHtml(item.label)}</span>`
+      : "";
+    // `title` mobilde kırpılan uzun başlığın tamamını erişilebilir tutar.
+    return `<a class="news-ticker-item${kind}" href="${escapeHtml(href)}"${rel} title="${escapeHtml(item.text)}">${label}<span>${escapeHtml(item.text)}</span></a>`;
   };
 
   const track = items.map(renderItem).join('<span class="news-ticker-sep" aria-hidden="true"></span>');
 
-  return `<div class="news-ticker" data-shared-layout="ticker" aria-label="Son dakika futbol gündemi">
+  return `<div class="news-ticker" data-shared-layout="ticker" data-ticker-state="ready" aria-label="Güncel futbol akışı: canlı skorlar, günün maçları ve maç sonu açıklamaları">
       <div class="container-wide news-ticker-inner">
-        <span class="news-ticker-badge${badge === "Son Dakika" ? " is-live" : ""}">${badge === "Son Dakika" ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(badge)}</span>
+        <span class="news-ticker-badge${pulsing ? " is-live" : ""}">${badgeMark}${escapeHtml(badge)}</span>
         <div class="news-ticker-viewport">
           <div class="news-ticker-track">
             <div class="news-ticker-group">${track}</div>

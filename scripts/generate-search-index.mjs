@@ -42,6 +42,15 @@ function asArray(payload, ...keys) {
 const EXTRA_PAGES = [
   { href: "index.html", title: "Ana Sayfa", subtitle: "Canlı skor ve maç merkezi" },
   { href: "mac-merkezi.html", title: "Maç Merkezi", subtitle: "Tüm maç ekranları" },
+  // Arama niyeti sayfaları: site içi aramada da bulunabilmeliler, yoksa
+  // yalnızca Google üzerinden erişilen sayfalar olarak kalırlar.
+  { href: "gunluk-mac-analizleri.html", title: "Günlük Maç Analizleri", subtitle: "Bugünün maçları ve radar okuması" },
+  { href: "super-lig-mac-analizleri.html", title: "Süper Lig Maç Analizleri", subtitle: "Maç önü okuma ve raporlar" },
+  { href: "super-lig-form-durumu.html", title: "Süper Lig Form Durumu", subtitle: "18 takımın son maç serisi" },
+  { href: "galatasaray-form-durumu.html", title: "Galatasaray Form Durumu", subtitle: "Son maç serisi ve momentum" },
+  { href: "fenerbahce-form-durumu.html", title: "Fenerbahçe Form Durumu", subtitle: "Son maç serisi ve momentum" },
+  { href: "besiktas-form-durumu.html", title: "Beşiktaş Form Durumu", subtitle: "Son maç serisi ve momentum" },
+  { href: "trabzonspor-form-durumu.html", title: "Trabzonspor Form Durumu", subtitle: "Son maç serisi ve momentum" },
   { href: "oyuncu-karsilastirmalari.html", title: "Oyuncu Karşılaştırmaları", subtitle: "İki oyuncuyu kıyasla" },
   { href: "takim-trendleri.html", title: "Takım Trendleri", subtitle: "Form ve momentum" },
   { href: "oyuncu-trendleri.html", title: "Oyuncu Trendleri", subtitle: "Yükselen oyuncular" },

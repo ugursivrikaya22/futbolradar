@@ -2022,48 +2022,108 @@
     );
   }
 
-  function fixtureProbabilityHtml(match) {
-    var analysis = cardAnalysisIndex ? findAnalysisForMatch(cardAnalysisIndex, match) : null;
-    var probabilities = analysis && analysis.probabilities;
+  /**
+   * RADAR SİNYALİ — maç kartının tek satırlık okuması.
+   *
+   * Buradaki kural services/matchSignalService.js'in AYNISIDIR ve öyle
+   * kalmak zorundadır: scripts/test-match-signal.mjs iki tarafın etiket
+   * listesini karşılaştırır, ayrışırsa derleme kırılır. Etiketi değiştirmek
+   * gerekirse önce servis dosyası düzenlenir.
+   *
+   * Kart üzerinde eskiden "Tahmini kazanma · Ev %54" yazan bir çubuk vardı.
+   * Yüzde bir olasılık iddiasıdır ve kartta oran gibi okunuyordu; üstelik
+   * çoğu maçta hiç ölçülmemişti. Sinyal tahmin değil, eldeki kaydın okunuşu.
+   */
+  var SIGNAL_LABELS = {
+    homeForm: "Form avantajı ev sahibinde",
+    awayForm: "Form avantajı deplasmanda",
+    goals: "Gol eğilimi yüksek",
+    balanced: "Form dengesi yakın",
+    ready: "Analiz hazır",
+    live: "Maç sürüyor",
+    finished: "Maç tamamlandı",
+    insufficient: "Veri yetersiz"
+  };
 
-    if (!probabilities || typeof probabilities.homeWin !== "number") {
-      return "";
-    }
+  var SIGNAL_FORM_EDGE_POINTS = 20;
+  var SIGNAL_MIN_FORM_MATCHES = 3;
 
-    var home = Math.round(probabilities.homeWin);
-    var draw = Math.round(probabilities.draw);
-    var away = Math.round(probabilities.awayWin);
-    var favourite = home >= away ? "Ev" : "Dep";
-    var favouriteValue = Math.max(home, away);
-
-    return (
-      '<div class="fixture-metric">' +
-      "<span>Tahmini kazanma</span>" +
-      '<div class="fixture-bar" role="img" aria-label="Ev sahibi %' + home + ", beraberlik %" + draw + ", deplasman %" + away + '">' +
-      '<i style="width:' + home + '%"></i><i style="width:' + draw + '%"></i><i style="width:' + away + '%"></i>' +
-      "</div>" +
-      "<b>" + favourite + " %" + favouriteValue + "</b>" +
-      "</div>"
-    );
+  function signalFormPercent(name) {
+    var team = lookupTeam(name);
+    var form = team && Array.isArray(team.form) ? team.form : null;
+    // Üç maçtan az kayıt "form" saymaz; iki maçlık bir seriden avantaj
+    // çıkarmak ölçüden fazlasını iddia etmek olurdu.
+    if (!form || form.length < SIGNAL_MIN_FORM_MATCHES) return null;
+    return teamFormPercent(name);
   }
 
-  function fixtureFormHtml(match) {
-    var home = teamFormPercent(match.homeTeam);
-    var away = teamFormPercent(match.awayTeam);
+  function hasPositiveGoalTrend(name) {
+    var team = lookupTeam(name);
+    return Boolean(team) && String(team.goalTrend || "").toLocaleLowerCase("tr") === "pozitif";
+  }
 
-    if (home === null && away === null) {
-      return "";
+  function matchSignal(match) {
+    var status = String((match && match.status) || "").toUpperCase();
+    var analysisReady = Boolean(
+      (match && match.analysisPage) ||
+      (cardAnalysisIndex && findAnalysisForMatch(cardAnalysisIndex, match))
+    );
+
+    if (isLiveMatch(match)) {
+      return { key: "live", label: SIGNAL_LABELS.live, tone: "live", basis: "Maç durumu doğrulanmış kayıttan okundu." };
     }
 
+    if (["FINISHED", "FT", "AET", "PEN"].indexOf(status) !== -1) {
+      return analysisReady
+        ? { key: "ready", label: SIGNAL_LABELS.ready, tone: "ready", basis: "Bu karşılaşma için yayımlanmış maç raporu var." }
+        : { key: "finished", label: SIGNAL_LABELS.finished, tone: "neutral", basis: "Maç durumu doğrulanmış kayıttan okundu." };
+    }
+
+    var home = signalFormPercent(match.homeTeam);
+    var away = signalFormPercent(match.awayTeam);
+
+    if (home !== null && away !== null) {
+      var gap = home - away;
+
+      if (Math.abs(gap) >= SIGNAL_FORM_EDGE_POINTS) {
+        return {
+          key: gap > 0 ? "homeForm" : "awayForm",
+          label: gap > 0 ? SIGNAL_LABELS.homeForm : SIGNAL_LABELS.awayForm,
+          tone: "form",
+          basis: "Son maç puan oranı: " + displayValue(match.homeTeam) + " %" + home + ", " + displayValue(match.awayTeam) + " %" + away + "."
+        };
+      }
+
+      if (hasPositiveGoalTrend(match.homeTeam) && hasPositiveGoalTrend(match.awayTeam)) {
+        return { key: "goals", label: SIGNAL_LABELS.goals, tone: "goals", basis: "İki takımın da kayıtlı gol eğilimi pozitif." };
+      }
+
+      return {
+        key: "balanced",
+        label: SIGNAL_LABELS.balanced,
+        tone: "neutral",
+        basis: "Son maç puan oranları birbirine yakın: %" + home + " - %" + away + "."
+      };
+    }
+
+    if (analysisReady) {
+      return { key: "ready", label: SIGNAL_LABELS.ready, tone: "ready", basis: "Bu karşılaşma için yayımlanmış maç öncesi analiz sayfası var." };
+    }
+
+    return {
+      key: "insufficient",
+      label: SIGNAL_LABELS.insufficient,
+      tone: "awaiting",
+      basis: "İki takımın da doğrulanmış form kaydı henüz oluşmadı."
+    };
+  }
+
+  function fixtureSignalHtml(match) {
+    var signal = matchSignal(match);
     return (
-      '<div class="fixture-metric">' +
-      "<span>Form (son 5)</span>" +
-      "<b>" +
-      (home === null ? "–" : "%" + home) +
-      " · " +
-      (away === null ? "–" : "%" + away) +
-      "</b>" +
-      "</div>"
+      '<span class="fixture-signal is-' + escapeHtml(signal.tone) + '" title="' + escapeHtml(signal.basis) + '">' +
+      '<i aria-hidden="true"></i><span>' + escapeHtml(signal.label) + "</span>" +
+      "</span>"
     );
   }
 
@@ -2172,9 +2232,18 @@
     return chips.length ? '<div class="fixture-card-chips">' + chips.join("") + "</div>" : "";
   }
 
+  /**
+   * KOMPAKT MAÇ KARTI.
+   *
+   * Kartın işi hızlı taramaydı. Eski kart form yüzdesi, tahmini kazanma
+   * çubuğu ve 44px yüksekliğinde bir düğme taşıyordu; ekrana iki maç
+   * sığıyordu. Şimdi üç katman var ve fazlası yok:
+   *   üst    lig + saat/durum
+   *   orta   takımlar + skor (kartın en büyük ögesi)
+   *   alt    radar sinyali + detay bağlantısı, tek satırda
+   */
   function renderFixtureCard(match) {
     var meta = fixtureStatusMeta(match);
-    var metrics = fixtureFormHtml(match) + fixtureProbabilityHtml(match);
     var chips = fixtureLiveChipsHtml(match);
 
     return (
@@ -2189,8 +2258,10 @@
       "</div>" +
       '<div class="fixture-card-rows">' + fixtureRowHtml(match, "home") + fixtureRowHtml(match, "away") + "</div>" +
       chips +
-      (metrics ? '<div class="fixture-card-meta">' + metrics + "</div>" : "") +
-      '<a class="fixture-card-action" href="' + escapeHtml(matchDetailHref(match)) + '">Analizi İncele</a>' +
+      '<div class="fixture-card-foot fixture-card-foot-divider">' +
+      fixtureSignalHtml(match) +
+      '<a class="fixture-card-link" href="' + escapeHtml(matchDetailHref(match)) + '">Detay</a>' +
+      "</div>" +
       "</article>"
     );
   }
@@ -2401,10 +2472,11 @@
       '<div class="tag-row">' + coverageStatusChipHtml(analysis) + "</div>" +
       (analysis ? analysisDeepLinkHtml(match) : "");
 
-    return renderFixtureCard(match).replace(
-      '<a class="fixture-card-action"',
-      chips + '<a class="fixture-card-action"'
-    );
+    // Ek rozetler kartın alt satırının ÜSTÜNE giriyor. Bağlantı noktası
+    // `renderFixtureCard` gövdesindeki alt satırın açılış etiketi; kart
+    // düzeni değişirse burası da değişmeli, yoksa rozetler sessizce düşer.
+    var footMarker = '<div class="fixture-card-foot fixture-card-foot-divider">';
+    return renderFixtureCard(match).replace(footMarker, chips + footMarker);
   }
 
   function renderLiveMatch(match) {

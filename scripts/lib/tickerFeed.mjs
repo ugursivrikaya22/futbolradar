@@ -1,31 +1,20 @@
 /**
- * SON DAKİKA BANDI — beslenme kuralı
+ * SON DAKİKA BANDI — DERLEME KATMANI.
  *
- * Bant iki doğrulanmış kaynaktan beslenir ve elle güncelleme gerektirmez:
+ * İçerik kararı burada VERİLMEZ. Hangi kaynak, hangi sıra, hangi rozet
+ * sorularının tek yetkili cevabı `services/tickerService.js`. Bu dosya o
+ * cevabı alır ve derlemeye özgü tek bir sorumluluğu ekler:
  *
- *   1. Sitenin kendi doğrulanmış maç kaydı (data/matches.json). Bu kayıtlar
- *      yayın politikasından (services/matchEligibility.js) geçmiştir ve CI'ın
- *      beş dakikalık döngüsünde tazelenir; biten bir maçın skoru bandı
- *      kendiliğinden günceller.
- *   2. Doğrulanmış transfer hareketleri (data/transfers.json, status
- *      "confirmed" ve kaynak bağlantısı olanlar).
- *   3. Editoryal haber kayıtları (data/news.json), yalnızca status "verified"
- *      ve kaynak bağlantısı varsa.
+ *   VERİ GEÇİCİ YOKSA BANT BOŞALMAZ. Kaynaklar bir tur boyunca boş dönerse
+ *   (senkron hatası, sağlayıcı kesintisi) en son doğrulanmış liste
+ *   `data/ticker-state.json` üzerinden korunur ve durum iç zaman damgasıyla
+ *   kaydedilir. Okuyucu gerçek ama eski bir başlık görür, sahte bir "son
+ *   dakika" görmez. Hiç doğrulanmış kayıt yoksa uydurma da üretilmez: bant
+ *   açıkça "veri bekleniyor" der (`awaiting`).
  *
- * TAZELİK: "Son Dakika" bir zaman iddiasıdır. Bant daha önce on bir güne
- * kadar eski haberi bu rozetle gösteriyordu — içerik gerçekti ama sunum
- * yanıltıcıydı. Artık her öğenin bir zaman damgası olmak zorunda ve rozet
- * banttaki EN TAZE öğeye göre belirlenir:
- *   • en taze öğe FRESH_WINDOW_HOURS içindeyse  -> "Son Dakika"
- *   • değilse                                    -> "Gündem"
- * Hiçbir durumda uydurma başlık üretilmez.
- *
- * VERİ GEÇİCİ YOKSA: liste boşalırsa bant kaldırılmaz; en son doğrulanmış
- * öğeler korunur (data/ticker-state.json) ve durum iç zaman damgasıyla
- * kaydedilir. Okuyucu gerçek ama eski bir başlık görür, sahte bir "son
- * dakika" görmez.
- *
- * KALABALIK OLMASIN: bant en fazla MAX_ITEMS öğe taşır.
+ * Durum dosyası yalnızca içerik gerçekten değiştiğinde yazılır; aksi hâlde
+ * beş dakikalık CI turu sırf zaman damgası değişti diye bir commit ve
+ * ardından gereksiz bir dağıtım tetiklerdi.
  */
 
 import fs from "node:fs";
@@ -34,169 +23,17 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const {
-  publishableTransfers,
-  logExcludedTransfers,
-  logDuplicateTransfers,
-  involvesSuperLigTeam
-} = require("../../services/transferService.js");
+  AWAITING_NOTE,
+  FRESH_WINDOW_HOURS,
+  MAX_ITEMS,
+  SOURCES,
+  composeTickerFeed
+} = require("../../services/tickerService.js");
 
 const root = process.cwd();
-
-/** "Son Dakika" rozetinin geçerli sayıldığı pencere. */
-export const FRESH_WINDOW_HOURS = 36;
-
-/** Banda alınabilecek en eski içerik. Bundan eskisi hiç gösterilmez. */
-const MAX_AGE_HOURS = 24 * 7;
-
-/**
- * Transferler daha uzun ömürlü. Bir maç sonucu bir hafta sonra haber
- * değerini yitirir; transfer dönemi boyunca "X kulübe katıldı" bilgisi
- * geçerliliğini korur. Yedi günlük pencere, doğrulanmış transferlerin
- * banda hiç girememesine yol açıyordu.
- *
- * Bu, tazelik iddiasını gevşetmiyor: "Son Dakika" rozeti hâlâ banttaki EN
- * TAZE öğeye göre veriliyor, eski bir transfer tek başına o rozeti üretemez.
- */
-const TRANSFER_MAX_AGE_HOURS = 24 * 21;
-
-/**
- * Tek bir kategori bandı ele geçirmesin. Altı maç sonucu varken doğrulanmış
- * transferler hiç görünmüyordu; sıralama önceliği doğruydu ama sonuç
- * tek sesli bir banttı.
- */
-const MAX_MATCH_ITEMS = 4;
-const MIN_TRANSFER_SLOTS = 2;
-
-/** Bant en fazla bu kadar öğe taşır; şerit kalabalıklaşmamalı. */
-const MAX_ITEMS = 6;
-
 const STATE_FILE = path.join(root, "data", "ticker-state.json");
 
-function readJson(file, fallback) {
-  try {
-    return JSON.parse(fs.readFileSync(path.join(root, "data", file), "utf8"));
-  } catch {
-    return fallback;
-  }
-}
-
-function asArray(payload, ...keys) {
-  if (Array.isArray(payload)) return payload;
-  for (const key of keys) {
-    if (payload && Array.isArray(payload[key])) return payload[key];
-  }
-  return [];
-}
-
-function hoursSince(value, now) {
-  const time = Date.parse(value);
-  if (Number.isNaN(time)) return Infinity;
-  return (now.getTime() - time) / 3600000;
-}
-
-function hasScore(match) {
-  const score = match && match.score;
-  return Boolean(score) &&
-    score.home !== null && score.home !== undefined &&
-    score.away !== null && score.away !== undefined;
-}
-
-/** Maç kayıtları: canlı skor, biten sonuç ve bugünün başlama saatleri. */
-function matchItems(now) {
-  const matches = asArray(readJson("matches.json", []), "matches");
-  const items = [];
-
-  for (const match of matches) {
-    if (!match || !match.homeTeam || !match.awayTeam) continue;
-
-    const status = String(match.status || "").toUpperCase();
-    const stamp = match.lastVerifiedAt || match.fetchedAt || match.kickoff;
-    const age = hoursSince(stamp, now);
-    if (age > MAX_AGE_HOURS) continue;
-
-    const live = ["LIVE", "IN_PLAY", "1H", "2H", "HT", "HALFTIME", "ET"].includes(status);
-    const finished = ["FINISHED", "FT", "AET", "PEN"].includes(status);
-
-    if (live && hasScore(match)) {
-      items.push({
-        label: "Canlı",
-        text: `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`,
-        href: `canli-skor.html#${match.id}`,
-        at: stamp,
-        priority: 0
-      });
-    } else if (finished && hasScore(match)) {
-      items.push({
-        label: "Sonuç",
-        text: `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`,
-        href: `canli-skor.html#${match.id}`,
-        at: stamp,
-        priority: 1
-      });
-    }
-  }
-
-  return items;
-}
-
-/**
- * Doğrulanmış transferler.
- *
- * Yayın kuralı burada tekrarlanmıyor: services/transferService.js tek yetkili
- * nokta. Kural iki yerde ayrı ayrı yazılsaydı biri gevşediğinde diğeri fark
- * etmez ve bant ile takım sayfaları farklı şeyler gösterirdi.
- */
-function transferItems(now) {
-  const { transfers, excluded, duplicates } = publishableTransfers();
-  logExcludedTransfers("ticker", excluded);
-  logDuplicateTransfers("ticker", duplicates);
-
-  return transfers
-    // Bant Süper Lig gündemi: en az bir taraf lig kulübü olmalı. Giden
-    // transferde karşı taraf yabancı kulüp olabilir, o da lig haberidir.
-    .filter((item) => involvesSuperLigTeam(item))
-    .filter((item) => hoursSince(item.date, now) <= TRANSFER_MAX_AGE_HOURS)
-    .map((item) => ({
-      label: "Transfer",
-      // Yön açıkça yazılıyor: "kadrosunda" ifadesi gidenler için yanıltıcıydı.
-      text: `${item.playerName}, ${item.toTeam} kadrosuna katıldı (${item.type})`,
-      href: item.sourceUrl,
-      at: item.date,
-      priority: 2
-    }));
-}
-
-/** Editoryal haberler; yalnızca doğrulanmış ve kaynaklı olanlar. */
-function newsItems(now) {
-  const news = asArray(readJson("news.json", []), "news", "items");
-
-  return news
-    .filter((item) =>
-      item &&
-      item.title &&
-      String(item.status || "").toLowerCase() === "verified" &&
-      item.url)
-    .filter((item) => hoursSince(item.publishedAt, now) <= MAX_AGE_HOURS)
-    .map((item) => ({
-      label: item.category || "Gündem",
-      text: item.title,
-      href: item.url,
-      at: item.publishedAt,
-      priority: 3
-    }));
-}
-
-function dedupe(items) {
-  const seen = new Set();
-  const unique = [];
-  for (const item of items) {
-    const key = item.text.toLocaleLowerCase("tr");
-    if (seen.has(key)) continue;
-    seen.add(key);
-    unique.push(item);
-  }
-  return unique;
-}
+export { AWAITING_NOTE, FRESH_WINDOW_HOURS, MAX_ITEMS, SOURCES };
 
 /** İki listenin aynı içeriği taşıyıp taşımadığını karşılaştırmak için. */
 function signature(items) {
@@ -223,43 +60,21 @@ function writeState(state) {
 
 /**
  * Bandın içeriğini ve rozetini üretir.
- * @returns {{items: Array, badge: string, fresh: boolean, generatedAt: string, usedFallback: boolean}}
+ *
+ * @param {{now?: Date, sources?: Array}} options
+ * @returns {{items: Array, badge: string, fresh: boolean, live: boolean,
+ *            awaiting: boolean, note: string|null, generatedAt: string|null,
+ *            usedFallback: boolean, sourceReport: Array}}
  */
 export function buildTickerFeed(options = {}) {
   const now = options.now instanceof Date ? options.now : new Date();
-
-  const byRecency = (left, right) => String(right.at || "").localeCompare(String(left.at || ""));
-
-  const matches = dedupe(matchItems(now)).sort(byRecency);
-  const transfers = dedupe(transferItems(now)).sort(byRecency);
-  const news = dedupe(newsItems(now)).sort(byRecency);
-
-  // Kategori kotası: maç sonuçları bandı tek başına doldurmasın, doğrulanmış
-  // transferlere yer kalsın. Kota dolmazsa boş slot israf edilmez, kalan
-  // yerler önceliğe göre doldurulur.
-  const reservedForTransfers = Math.min(transfers.length, MIN_TRANSFER_SLOTS);
-  const matchQuota = Math.min(matches.length, MAX_MATCH_ITEMS, MAX_ITEMS - reservedForTransfers);
-
-  const picked = [
-    ...matches.slice(0, matchQuota),
-    ...transfers.slice(0, reservedForTransfers)
-  ];
-
-  // Kalan yerleri önceliğe göre doldur (kalan maçlar, transferler, haberler).
-  const rest = dedupe([...matches, ...transfers, ...news])
-    .filter((item) => !picked.includes(item))
-    .sort((left, right) => {
-      if (left.priority !== right.priority) return left.priority - right.priority;
-      return byRecency(left, right);
-    });
-
-  const items = dedupe([...picked, ...rest]).slice(0, MAX_ITEMS);
+  const feed = composeTickerFeed({ now, sources: options.sources });
   const previous = readState();
 
   // Doğrulanmış hiçbir öğe kalmadıysa son bilinen liste korunur. Bant boş
   // kalmaz ama uydurma da üretilmez: gösterilen her başlık daha önce
   // doğrulanmış gerçek bir kayıttır.
-  if (!items.length) {
+  if (feed.awaiting) {
     if (previous && Array.isArray(previous.items) && previous.items.length) {
       // fallbackSince kesintinin ilk görüldüğü andır; kesinti sürerken
       // yeniden yazılmaz, böylece her tur yeni bir commit üretmez.
@@ -275,11 +90,16 @@ export function buildTickerFeed(options = {}) {
         items: previous.items,
         badge: "Gündem",
         fresh: false,
+        live: false,
+        awaiting: false,
+        note: null,
         generatedAt: previous.generatedAt || null,
-        usedFallback: true
+        usedFallback: true,
+        sourceReport: feed.sourceReport
       };
     }
 
+    // Yedek de yok: bant kaldırılmıyor, eksiklik açıkça yazılıyor.
     if (!previous || previous.items?.length || !previous.fallbackSince) {
       writeState({
         items: [],
@@ -289,35 +109,46 @@ export function buildTickerFeed(options = {}) {
         fallbackReason: "doğrulanmış öğe yok"
       });
     }
-    return { items: [], badge: "Gündem", fresh: false, generatedAt: null, usedFallback: false };
+    return {
+      items: [],
+      badge: feed.badge,
+      fresh: false,
+      live: false,
+      awaiting: true,
+      note: feed.note || AWAITING_NOTE,
+      generatedAt: null,
+      usedFallback: false,
+      sourceReport: feed.sourceReport
+    };
   }
 
-  const newestAge = Math.min(...items.map((item) => hoursSince(item.at, now)));
-  const fresh = newestAge <= FRESH_WINDOW_HOURS;
-
-  // Durum dosyası yalnızca içerik gerçekten değiştiğinde yazılır. Aksi hâlde
-  // her beş dakikalık CI turu sırf zaman damgası değişti diye bir commit ve
-  // ardından gereksiz bir dağıtım tetiklerdi.
   const unchanged = previous &&
-    previous.fresh === fresh &&
-    signature(previous.items) === signature(items);
+    previous.fresh === feed.fresh &&
+    previous.badge === feed.badge &&
+    signature(previous.items) === signature(feed.items);
   const generatedAt = unchanged && previous.generatedAt ? previous.generatedAt : now.toISOString();
 
   if (!unchanged) {
     writeState({
-      items,
+      items: feed.items,
       generatedAt,
-      newestItemAgeHours: Number.isFinite(newestAge) ? Math.round(newestAge * 10) / 10 : null,
-      fresh,
+      newestItemAgeHours: feed.newestItemAgeHours,
+      badge: feed.badge,
+      fresh: feed.fresh,
+      live: feed.live,
       usedFallback: false
     });
   }
 
   return {
-    items,
-    badge: fresh ? "Son Dakika" : "Gündem",
-    fresh,
+    items: feed.items,
+    badge: feed.badge,
+    fresh: feed.fresh,
+    live: feed.live,
+    awaiting: false,
+    note: null,
     generatedAt,
-    usedFallback: false
+    usedFallback: false,
+    sourceReport: feed.sourceReport
   };
 }

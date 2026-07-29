@@ -26,6 +26,8 @@ const LIVE_PAGES = new Set([
 
 const DAILY_PAGES = new Set([
   "index.html",
+  "gunluk-mac-analizleri.html",
+  "super-lig-mac-analizleri.html",
   "mac-merkezi.html",
   "haftanin-maclari.html",
   "bugunku-mac-tahminleri.html",
@@ -48,6 +50,50 @@ const footer = `
     ${siteFooter({ base: "./" })}`;
 
 const seoPages = [
+  /**
+   * MAÇ ARAMA NİYETİ SAYFALARI.
+   *
+   * "Bugünün maçları", "canlı skor" ve "maç analizi" aramaları sitenin en
+   * yüksek hacimli giriş noktaları; ama iki niyet için hiç sayfa yoktu:
+   * "günlük maç analizleri" ve "Süper Lig maç analizleri". Bu iki sayfa o
+   * boşluğu kapatıyor.
+   *
+   * İçerikleri BURADA üretilmiyor: kabuk burada yazılıyor (başlık, açıklama,
+   * canonical, site haritası girdisi), gerçek maç listesi derlemenin ilerleyen
+   * adımında `scripts/prerender-core-pages.mjs` tarafından `data-api-target`
+   * yuvalarına yazılıyor. Böylece maç verisi tek yerden okunuyor ve bu
+   * dosya veri kaynaklarına hiç bağlanmıyor.
+   */
+  {
+    file: "gunluk-mac-analizleri.html",
+    title: "Günlük Maç Analizleri | Bugünün Maçları ve Canlı Skor | FutbolRadar",
+    description: "Günlük maç analizleri; bugünün maçları, canlı skorlar, başlama saatleri ve her karşılaşmanın form odaklı radar okuması tek sayfada.",
+    h1: "Günlük Maç Analizleri",
+    lead: "Bugün oynanan ve oynanacak karşılaşmaları saat, durum, skor ve radar sinyaliyle birlikte oku.",
+    slot: "daily-analysis-matches",
+    slotTitle: "Bugünün maçları ve analiz bağlantıları",
+    slotLead: "Canlı maçlar önce; ardından başlama saatine göre günün programı. Doğrulanmamış eşleşme listelenmez.",
+    related: [
+      ["./bugunun-maclari.html", "Bugünün maçları", "Günün tam programı"],
+      ["./canli-skor.html", "Canlı skor", "Devam eden maçların anlık skoru"],
+      ["./super-lig-mac-analizleri.html", "Süper Lig", "Lig maçlarının analiz sayfaları"]
+    ]
+  },
+  {
+    file: "super-lig-mac-analizleri.html",
+    title: "Süper Lig Maç Analizleri | Maç Önü Okuma ve Maç Raporları | FutbolRadar",
+    description: "Süper Lig maç analizleri; hafta hafta eşleşmelerin form, kadro ve radar okuması ile tamamlanan karşılaşmaların veri odaklı maç raporları.",
+    h1: "Süper Lig Maç Analizleri",
+    lead: "Süper Lig eşleşmelerinin maç öncesi radar okumasına ve tamamlanan maçların raporlarına buradan geç.",
+    slot: "super-lig-analysis-links",
+    slotTitle: "Maç analizi sayfaları",
+    slotLead: "Her eşleşmenin kalıcı analiz sayfası; form, kadro durumu ve radar puanı maç yaklaştıkça güncellenir.",
+    related: [
+      ["./super-lig-fikstur.html", "Fikstür", "Sezonun onaylı eşleşmeleri"],
+      ["./super-lig-form-durumu.html", "Takım formu", "18 takımın son maç serisi"],
+      ["./mac-merkezi.html", "Maç raporları", "Tamamlanan maçların analizleri"]
+    ]
+  },
   {
     file: "super-lig-form-durumu.html",
     title: "Süper Lig Form Durumu | Takım Momentum ve Son 5 Maç | FutbolRadar",
@@ -243,8 +289,8 @@ const legalPages = [
     title: "Kullanım Şartları | FutbolRadar",
     description: "FutbolRadar kullanım şartları; analiz verilerinin bilgilendirme amacıyla sunulduğunu ve bahis yönlendirmesi olmadığını belirtir.",
     h1: "Kullanım Şartları",
-    lead: "FutbolRadar verileri bilgilendirme ve analiz amaçlıdır; kesin tahmin veya bahis yönlendirmesi değildir.",
-    cards: ["Veriler hata veya gecikme içerebilir.", "Tahmin sinyalleri kesin sonuç vaadi taşımaz.", "Kullanıcı kararları kendi sorumluluğundadır."]
+    lead: "FutbolRadar verileri bilgilendirme ve analiz amaçlıdır; sonuç vaadi ya da bahis yönlendirmesi değildir.",
+    cards: ["Veriler hata veya gecikme içerebilir.", "Analiz sinyalleri sonuç vaadi taşımaz.", "Kullanıcı kararları kendi sorumluluğundadır."]
   },
   {
     file: "iletisim.html",
@@ -350,6 +396,32 @@ function landingExtraLinksHtml(page) {
       </section>`;
 }
 
+/**
+ * Veri yuvası olan sayfaların gövdesi. İçerik derlemenin ilerleyen adımında
+ * doldurulur; buraya yazılan boş durum, yuva doldurulamazsa okuyucunun
+ * göreceği dürüst karşılıktır — boş bir ızgara değil, sebebini söyleyen bir
+ * kart.
+ */
+function slotSectionHtml(page) {
+  if (!page.slot) return "";
+
+  return `<section class="section" aria-labelledby="${page.slot}-title">
+        <div class="section-head"><div class="section-title"><span class="section-kicker">FutbolRadar</span><h2 id="${page.slot}-title">${page.slotTitle}</h2><p>${page.slotLead}</p></div></div>
+        <div class="matches-grid" data-api-target="${page.slot}" data-static-fallback="true">
+          <article class="data-empty" data-card="empty-state"><strong>Doğrulanmış maç kaydı bekleniyor</strong><span>Eşleşmeler doğrulandığı anda saat, durum ve analiz bağlantılarıyla burada listelenecek.</span></article>
+        </div>
+      </section>`;
+}
+
+function relatedLinksHtml(page) {
+  if (!Array.isArray(page.related) || !page.related.length) return "";
+
+  return `<section class="trend-link-grid" aria-label="İlgili sayfalar">
+        ${page.related.map(([href, label, note]) =>
+          `<a href="${href}"><span>${label}</span><strong>${note}</strong></a>`).join("\n        ")}
+      </section>`;
+}
+
 function pageHtml(page) {
   const url = `${domain}/${page.file}`;
   const schema = {
@@ -417,7 +489,9 @@ ${nav}
       <section class="player-filter-note"><span data-landing-count>Oyuncu listesi hazırlanıyor</span></section>
       <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${page.landing}">
         <article class="data-empty" data-card="empty-state"><strong>Oyuncular yükleniyor</strong><span>Doğrulanmış oyuncu profilleri hazırlanıyor.</span></article>
-      </section>${landingExtraLinksHtml(page)}` : `<section class="grid three">${cardsHtml(page.cards)}</section>`}
+      </section>${landingExtraLinksHtml(page)}` : page.slot
+        ? `${slotSectionHtml(page)}\n      ${relatedLinksHtml(page)}`
+        : `<section class="grid three">${cardsHtml(page.cards)}</section>`}
       <section class="source-strip" aria-label="İlgili bağlantılar">
         <div><span>İlgili ekran</span><b><a href="./oyuncu-radari.html">Oyuncu Radarı</a></b></div>
         <div><span>Takım verisi</span><b><a href="./momentum.html">Momentum</a></b></div>

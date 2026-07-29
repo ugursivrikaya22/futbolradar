@@ -12188,12 +12188,60 @@ body .container {
 }
 
 .news-ticker-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;
   border-radius: 6px;
   padding: 2px 7px;
   background: rgba(11, 143, 90, 0.066);
   color: var(--green);
   font-size: var(--fs-xs);
   font-weight: 750;
+  white-space: nowrap;
+}
+
+/* Kategori rengi bir bilgi taşır: okuyucu şeride bakmadan da canlı skor ile
+   transfer haberini ayırabilmeli. Renkler tema değişkenlerinden gelir. */
+.news-ticker-tag.is-live {
+  background: rgba(200, 30, 45, 0.096);
+  color: var(--live);
+}
+
+.news-ticker-tag.is-today {
+  background: rgba(13, 148, 136, 0.082);
+  color: var(--cyan);
+}
+
+.news-ticker-tag.is-statement {
+  background: rgba(var(--surface-rgb), 0.092);
+  color: var(--text-soft);
+}
+
+.news-ticker-item.is-live span:last-child {
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Doğrulanmış öğe yokken bant kaybolmuyor: eksikliği yazan sabit satır.
+   Akmaz, yanıp sönmez - bir durum bildirimidir, haber değil. */
+.news-ticker.is-awaiting {
+  background: linear-gradient(90deg, rgba(var(--surface-rgb), 0.08), rgba(246, 250, 248, 0.6) 22%, rgba(246, 250, 248, 0.6));
+}
+
+.news-ticker-badge.is-awaiting {
+  background: rgba(var(--surface-rgb), 0.092);
+  color: var(--text-soft);
+}
+
+.news-ticker-awaiting {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .news-ticker-sep {
@@ -12616,6 +12664,183 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 
 .fixture-card-action:hover {
   background: rgba(13, 148, 136, 0.06);
+}
+
+/* ----------------------------------------------------------------------------
+   5b. KOMPAKT MAÇ KARTI
+   Kartın işi hızlı taramaydı, süslenmek değil. Eski kart 14px dolgu, üç ayrı
+   metrik satırı ve 44px yüksekliğinde bir düğme taşıyordu; ekrana iki maç
+   sığıyor, kullanıcı "bugün ne var" sorusunu görmek için kaydırmak zorunda
+   kalıyordu. Yoğunluk arttı, hiyerarşi korundu: lig ve saat üstte, takım ve
+   skor ortada ve en büyük, sinyal altta tek satır.
+
+   Izgara kuralları dosyanın SONUNDA (bkz. "MAÇ IZGARASI - SÜTUN SAYISI"):
+   daha aşağıdaki eski bir `auto-fill` kuralı aynı özgüllükte olduğu için
+   burada tanımlanan tablet kırılımını eziyordu.
+   -------------------------------------------------------------------------- */
+.fixture-card {
+  gap: 8px;
+  padding: 10px 12px 11px;
+}
+
+.fixture-card-top {
+  gap: 8px;
+  font-size: 0.68rem;
+}
+
+.fixture-card-state {
+  padding: 2px 8px;
+  font-weight: 800;
+}
+
+/* Saat ve skor aynı hizada, aynı genişlikte okunmalı. */
+.fixture-card-state,
+.fixture-row-score {
+  font-variant-numeric: tabular-nums;
+}
+
+.fixture-card-rows {
+  gap: 5px;
+}
+
+.fixture-row {
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.fixture-row img,
+.fixture-row .fixture-row-fallback {
+  width: 22px;
+  height: 22px;
+}
+
+.fixture-row-fallback {
+  border-radius: 6px;
+  font-size: 9px;
+}
+
+/* Takım adı ve skor kartın en okunaklı iki ögesi: küçültülmedi, büyütüldü. */
+.fixture-row-name {
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+.fixture-row-score {
+  min-width: 18px;
+  font-size: 1.06rem;
+  font-weight: 850;
+  text-align: right;
+}
+
+/* Canlı maç bir bakışta ayrılmalı: kalın kırmızı şerit + hafif zemin. */
+.fixture-card.is-live {
+  border-color: rgba(200, 30, 45, 0.28);
+  background:
+    linear-gradient(90deg, rgba(200, 30, 45, 0.05), transparent 42%),
+    var(--glass);
+}
+
+.fixture-card.is-live::before {
+  width: 4px;
+  background: var(--live);
+}
+
+.fixture-card.is-live .fixture-row-score {
+  color: var(--live);
+}
+
+/* Radar sinyali: tek satır, analiz dili. Oran ya da yüzde taşımaz. */
+.fixture-signal {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  border-top: 1px solid rgba(14, 26, 22, 0.069);
+  padding-top: 7px;
+  color: var(--text-soft);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.fixture-signal i {
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.fixture-signal span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fixture-signal.is-form i { background: var(--green); }
+.fixture-signal.is-goals i { background: var(--cyan); }
+.fixture-signal.is-ready i { background: var(--cyan); }
+.fixture-signal.is-live i { background: var(--live); }
+.fixture-signal.is-awaiting i { background: rgba(91, 107, 101, 0.5); }
+.fixture-signal.is-awaiting { color: var(--muted); }
+
+/* Kartın alt satırı: sinyal solda, bağlantı sağda. Ayrı bir düğme bloğu
+   yerine tek satır - dikeyde 44px kazanç, dokunma alanı korunur. */
+.fixture-card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.fixture-card-foot .fixture-signal {
+  flex: 1 1 auto;
+  border-top: 0;
+  padding-top: 0;
+}
+
+.fixture-card-link {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 2px;
+  color: var(--cyan);
+  font-size: 0.74rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.fixture-card-link:hover {
+  text-decoration: underline;
+}
+
+.fixture-card-foot-divider {
+  border-top: 1px solid rgba(14, 26, 22, 0.069);
+  padding-top: 7px;
+}
+
+/* Dokunmatikte hedef küçülmesin: mobilde alt satır biraz açılır. */
+@media (max-width: 600px) {
+  .fixture-card {
+    padding: 11px 12px 12px;
+  }
+
+  .fixture-card-link {
+    min-height: var(--tap);
+  }
+
+  .fixture-row-name {
+    font-size: 0.98rem;
+  }
+}
+
+/* Kart yüzeyi hareketi mobilde kapalı: kaydırırken kartların zıplaması
+   tarama hızını düşürüyordu. */
+@media (hover: none) {
+  .fixture-card:hover {
+    transform: none;
+  }
 }
 
 /* ----------------------------------------------------------------------------
@@ -13093,6 +13318,12 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   }
 }
 
+/* ---------------------------------------------------------------------------
+   BANT - MOBİL
+   Şerit dar ekranda da tam işlevli kalmalı: küçük ekranda bandı gizlemek,
+   siteye ilk giren mobil kullanıcıdan güncel akışı tamamen saklamak olurdu.
+   Yalnızca yoğunluk azalır - rozet kısalır, öğeler sıkışır, akış hızlanmaz.
+   -------------------------------------------------------------------------- */
 @media (max-width: 760px) {
   .news-ticker-all {
     display: none;
@@ -13100,6 +13331,40 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 
   .news-ticker-inner {
     grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--sp-2);
+    min-height: 36px;
+  }
+
+  .news-ticker-badge {
+    padding: 3px 8px;
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+  }
+
+  .news-ticker-group {
+    gap: var(--sp-2);
+    padding-right: var(--sp-2);
+  }
+
+  .news-ticker-item {
+    font-size: 0.78rem;
+    gap: 6px;
+  }
+
+  .news-ticker-tag {
+    padding: 2px 6px;
+    font-size: 0.6rem;
+  }
+
+  /* Dokunmatikte `:hover` yok; okumak isteyen kullanıcı için tek dokunuşla
+     duran bir şerit gerekiyor. `:active` şeridi parmak basılıyken durdurur. */
+  .news-ticker:active .news-ticker-track {
+    animation-play-state: paused;
+  }
+
+  .news-ticker-awaiting {
+    font-size: 0.78rem;
+    white-space: normal;
   }
 
   .fixture-card-meta {
@@ -15494,4 +15759,217 @@ body,
   font-size: 1.75rem;
   font-weight: 700;
   color: var(--text-soft);
+}
+
+/* ----------------------------------------------------------------------------
+   TAKIM FORM SAYFALARI - ANA SAYFA BAĞLANTI BLOĞU
+   Form sayfaları üretiliyordu ama ana sayfadan hiçbirine bağlantı yoktu.
+   Kartta form iddiası yazılmaz: kayıt varsa son maç serisi noktalarla
+   gösterilir, yoksa "veri bekleniyor" yazar.
+   -------------------------------------------------------------------------- */
+.home-form-links {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+
+.home-form-link {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 13px 14px;
+  background: var(--glass);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.home-form-link:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+}
+
+.home-form-link-team {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.home-form-link strong {
+  font-size: 0.92rem;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.home-form-link .form-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.home-form-link .muted-copy {
+  font-size: 0.74rem;
+}
+
+@media (max-width: 1100px) {
+  .home-form-links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .home-form-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   MAÇ SONU AÇIKLAMALARI
+   Teknik direktör ve futbolcu sözleri. Her kart kaynağını taşır; kaynaksız
+   söz bu bölüme hiç ulaşmaz (services/matchStatementService.js).
+   -------------------------------------------------------------------------- */
+.match-statement-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--sp-3);
+}
+
+.match-statement {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 16px;
+}
+
+.match-statement-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.match-statement-role {
+  border-radius: 6px;
+  padding: 2px 8px;
+  background: rgba(11, 143, 90, 0.066);
+  color: var(--green);
+  font-size: var(--fs-xs);
+  font-weight: 750;
+}
+
+.match-statement-speaker {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.match-statement-team {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+/* Söz alıntıdır: değiştirilmez, yeniden yazılmaz. Görsel dil de bunu
+   söylemeli - sol kenarda alıntı çizgisi. */
+.match-statement-quote {
+  margin: 0;
+  border-left: 3px solid rgba(11, 143, 90, 0.28);
+  padding: 2px 0 2px 12px;
+}
+
+.match-statement-quote p {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+
+.match-statement-foot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.match-statement-foot .detail-link {
+  margin-left: auto;
+  font-size: var(--fs-xs);
+}
+
+@media (max-width: 600px) {
+  .match-statement-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .match-statement-foot .detail-link {
+    margin-left: 0;
+  }
+}
+
+
+/* ----------------------------------------------------------------------------
+   MAÇ IZGARASI - SÜTUN SAYISI  (dosyanın sonunda olmak ZORUNDA)
+   ----------------------------------------------------------------------------
+   Bu kurallar bilerek en sonda. Yukarıda, `@media (max-width: 1180px)` içinde
+   `.matches-grid { grid-template-columns: repeat(auto-fill, minmax(260px,1fr)) }`
+   diyen eski bir kural var. Aynı özgüllükte olduğu için kaynak sırasında sonra
+   gelen kazanıyor ve tablet kırılımı (2 sütun) hiç uygulanmıyordu: 860px'te
+   yan yana üç kart çıkıyordu.
+
+   Hedef yoğunluk: masaüstünde 4, dar masaüstünde 3, tablette 2, mobilde 1.
+   -------------------------------------------------------------------------- */
+.matches-grid,
+.league-match-grid,
+.grid:has(> [data-card="fixture"]) {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--sp-3);
+}
+
+@media (max-width: 1280px) {
+  .matches-grid,
+  .league-match-grid,
+  .grid:has(> [data-card="fixture"]) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Tablet: iki sütun. Tek sütuna düşmek bu genişlikte ekranın yarısını boşa
+   harcıyordu; üç sütun ise kart içeriğini okunamayacak kadar daraltıyor. */
+@media (max-width: 960px) {
+  .matches-grid,
+  .league-match-grid,
+  .grid:has(> [data-card="fixture"]) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Mobil: tek sütun ama sıkı - kartlar arası boşluk da azalır. */
+@media (max-width: 600px) {
+  .matches-grid,
+  .league-match-grid,
+  .grid:has(> [data-card="fixture"]) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+}
+
+/* Canlı skor sayfasındaki "günün sonuçları" bloğu kendi ızgarasını taşıyor
+   (`.live-score-daily .matches-grid`, özgüllük 0-2-0) ve yukarıdaki genel
+   kuralı eziyor: 860px'te yan yana üç kart çıkıyordu. Aynı yoğunluk hedefi
+   burada da geçerli - tablette iki, mobilde tek sütun. */
+@media (max-width: 960px) {
+  .live-score-daily .matches-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .live-score-daily .matches-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
 }

@@ -21,6 +21,16 @@ const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 const { buildPostMatchIntelligence } = require("../services/postMatchIntelligence.js");
 const { enrichmentSection } = require("../services/postMatchEnrichmentView.js");
+const { publishableStatements, logExcludedStatements, statementsForMatch } =
+  require("../services/matchStatementService.js");
+const { statementsSection, statementsSchema } = require("../services/matchStatementsView.js");
+
+/**
+ * Maç sonu açıklamaları tek seferde okunur; her rapor kendi payını alır.
+ * Elenen kayıtlar sessizce kaybolmasın diye gerekçeleri bir kez yazılır.
+ */
+const preparedStatements = publishableStatements();
+logExcludedStatements("post-match", preparedStatements.excluded);
 
 /**
  * Sağlayıcı zenginleştirme deposu — SALT OKUNUR.
@@ -417,9 +427,19 @@ function pageHtml(report, match) {
   const enrichmentHtml = enrichmentSection(enrichmentStore[match.id] || null);
   const enrichmentBlock = enrichmentHtml ? `\n\n      ${enrichmentHtml}` : "";
 
+  // Maç sonu açıklamaları: kayıt yoksa bölüm gizlenmiyor, "doğrulanmış
+  // açıklama bekleniyor" yazıyor. Yapılandırılmış veriye ise SADECE gerçek
+  // söz varsa düğüm ekleniyor — arama motoruna boş iddia yazılmaz.
+  const matchStatements = statementsForMatch(match.id, { prepared: preparedStatements });
+  const statementsBlock = statementsSection(matchStatements, {
+    matchLabel: `${match.homeTeam} - ${match.awayTeam}`,
+    headingId: "rapor-aciklamalar"
+  });
+
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
+      ...statementsSchema(matchStatements, url),
       {
         "@type": "SportsEvent",
         name: `${match.homeTeam} - ${match.awayTeam}`,
@@ -534,6 +554,8 @@ function pageHtml(report, match) {
         <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-kirilma">Maçın kırılma anları</h2><p>Skoru ve oyunun seyrini değiştiren dakikalar.</p></div></div>
         ${turningPointsSection(report)}
       </section>
+
+      ${statementsBlock}
 
       <section class="post-match-section" aria-labelledby="rapor-puan">
         <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-puan">AI puanlaması</h2><p>Ölçülmüş istatistiklerden hesaplanan takım performans puanı.</p></div></div>

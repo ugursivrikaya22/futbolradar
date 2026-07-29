@@ -18,6 +18,27 @@ const {
   freshnessLabel,
   normalizeFreshness
 } = require("../services/freshnessService.js");
+const { publishableStatements, logExcludedStatements, statementsForMatch } =
+  require("../services/matchStatementService.js");
+const { statementsSection, statementsSchema } = require("../services/matchStatementsView.js");
+
+/**
+ * Fikstür kaydı ile oynanmış maç kaydı ayrı kimlikler taşıyor
+ * (`tff-tsl-2026-r01-...` ve `genclerbirligi-fenerbahce-2026-08-15`).
+ * Açıklamalar oynanmış maça bağlı olduğu için eşleştirme takım çifti
+ * üzerinden yapılır: maç henüz oynanmadıysa eşleşme bulunmaz ve bölüm
+ * dürüstçe "açıklama bekleniyor" der.
+ */
+const playedMatches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
+const preparedStatements = publishableStatements();
+logExcludedStatements("match-pages", preparedStatements.excluded);
+
+function playedMatchIdFor(match) {
+  const wanted = `${normalizeText(match.homeTeam)}|${normalizeText(match.awayTeam)}`;
+  const found = (Array.isArray(playedMatches) ? playedMatches : [])
+    .find((played) => `${normalizeText(played.homeTeam)}|${normalizeText(played.awayTeam)}` === wanted);
+  return found ? found.id : null;
+}
 
 const players = getPlayers(rawPlayers);
 const outDir = path.join(root, "mac");
@@ -137,12 +158,28 @@ function pageHtml(match) {
   const radar = calculateMatchRadar(match, { teams, players, squadStatus });
   const homeTeam = getTeam(match.homeTeam);
   const awayTeam = getTeam(match.awayTeam);
-  const title = `${match.homeTeam} - ${match.awayTeam} Maç Önü Analizi | FutbolRadar`;
+  // SEO başlığı ve açıklaması maça özgü: hafta, lig ve takım adları
+  // değişkenlerden gelir, iki sayfa aynı başlığı taşımaz.
+  const heading = `${match.homeTeam} - ${match.awayTeam} Maç Analizi`;
+  const title = `${heading} | ${match.roundLabel} ${match.league} | FutbolRadar`;
   const dateLabel = match.kickoff ? formatFreshnessDate(match.kickoff) : (match.dateRange || "Tarih ve saat bekleniyor");
-  const description = `${match.homeTeam} - ${match.awayTeam} Süper Lig maç öncesi analizi; form, radar puanı, kadro durumu ve kilit oyuncu etkisiyle FutbolRadar'da.`;
+  const description = `${match.homeTeam} - ${match.awayTeam} ${match.league} maç analizi (${match.roundLabel}, ${dateLabel}); iki takımın form durumu, radar puanı, kadro eksikleri ve kilit oyuncu okuması FutbolRadar'da.`;
+
+  // Maç sonu açıklamaları: oynanmış maç kaydı varsa ona bağlanır, yoksa
+  // bölüm "doğrulanmış açıklama bekleniyor" der. Bölüm hiç gizlenmez.
+  const playedId = playedMatchIdFor(match);
+  const matchStatements = playedId
+    ? statementsForMatch(playedId, { prepared: preparedStatements })
+    : [];
+  const statementsBlock = statementsSection(matchStatements, {
+    matchLabel: `${match.homeTeam} - ${match.awayTeam}`,
+    headingId: "mac-sonu-aciklamalari"
+  });
+
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
+      ...statementsSchema(matchStatements, canonical),
       {
         "@type": "SportsEvent",
         name: `${match.homeTeam} - ${match.awayTeam}`,
@@ -195,12 +232,13 @@ function pageHtml(match) {
     ${siteHeader({ base: "../" })}
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../super-lig-fikstur.html">Süper Lig Fikstürü</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
-      <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(match.league)}</span><h1>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</h1><p class="lead">${escapeHtml(radar.lead)}</p></div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>
+      <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(match.league)}</span><h1>${escapeHtml(heading)}</h1><p class="lead">${escapeHtml(radar.lead)}</p></div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>
       <section class="match-freshness-strip" aria-label="Fikstür durumu"><div><span>Fikstür durumu</span><b>${escapeHtml(freshnessLabel(freshness))}</b></div><div><span>Son kontrol</span><b>${escapeHtml(formatFreshnessDate(freshness.verifiedAt || freshness.fetchedAt))}</b></div><div><span>Güven</span><b>${escapeHtml(confidenceLabel(freshness.confidence))}</b></div></section>
       <section class="match-radar-board" aria-label="Maç öncesi radar puanları">${radarCard(match.homeTeam, radar.home, homeTeam)}${radarCard(match.awayTeam, radar.away, awayTeam)}</section>
       <p class="match-radar-disclaimer">${escapeHtml(radar.disclaimer)}</p>
       <section class="match-context-grid" aria-label="Maç bağlamı"><article class="card"><span class="card-kicker">${escapeHtml(match.homeTeam)}</span><h2>Form ve kadro</h2>${formHtml(homeTeam)}${squadHtml(match.homeTeam)}${keyPlayersHtml(match.homeTeam)}</article><article class="card"><span class="card-kicker">${escapeHtml(match.awayTeam)}</span><h2>Form ve kadro</h2>${formHtml(awayTeam)}${squadHtml(match.awayTeam)}${keyPlayersHtml(match.awayTeam)}</article></section>
-      <section class="match-related-grid" aria-label="İlgili radar ekranları">${relatedComparison(match)}<a class="match-related-card" href="../super-lig-fikstur.html"><span>Fikstür</span><strong>Sezon eşleşmeleri</strong><p>Onaylı eşleşmelerin tamamına dön.</p></a><a class="match-related-card" href="../momentum.html"><span>Takım formu</span><strong>Momentum tablosu</strong><p>Takım trendlerini ayrı ekranda karşılaştır.</p></a></section>
+      ${statementsBlock}
+      <section class="match-related-grid" aria-label="İlgili radar ekranları">${relatedComparison(match)}<a class="match-related-card" href="../super-lig-mac-analizleri.html"><span>Maç analizi</span><strong>Süper Lig maç analizleri</strong><p>Haftanın tüm eşleşmelerinin analiz sayfalarına geç.</p></a><a class="match-related-card" href="../super-lig-fikstur.html"><span>Fikstür</span><strong>Sezon eşleşmeleri</strong><p>Onaylı eşleşmelerin tamamına dön.</p></a><a class="match-related-card" href="../super-lig-form-durumu.html"><span>Takım formu</span><strong>Süper Lig form durumu</strong><p>İki takımın son maç serisini form tablosunda karşılaştır.</p></a></section>
     </main>
     ${siteFooter({ base: "../" })}
     <script src="../site.js" defer></script>
