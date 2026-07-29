@@ -21,6 +21,7 @@ const {
 const { publishableStatements, logExcludedStatements, statementsForMatch } =
   require("../services/matchStatementService.js");
 const { statementsSection, statementsSchema } = require("../services/matchStatementsView.js");
+const { displayLeagueName, SUPER_LIG_DISPLAY_NAME } = require("../services/leagueIdentity.js");
 
 /**
  * Fikstür kaydı ile oynanmış maç kaydı ayrı kimlikler taşıyor
@@ -163,19 +164,25 @@ function relatedComparison(match) {
  * düşer, kısaysa daha fazlası sığar. Anahtar kelime ("Maç Analizi") her
  * durumda başta kalır.
  *
- * Ligin kısa adı kullanılıyor ("Süper Lig"); sponsorlu tam ad sayfa
- * gövdesinde ve yapılandırılmış veride korunuyor. Kısaltma bir uydurma
- * değil, ligin yaygın adı ve aranan biçimi.
+ * Ligin adı her zaman resmî biçimiyle yazılır: "Trendyol Süper Lig".
+ * Kısaltma yok — lig adı bir marka ve sitenin her yüzeyinde aynı olmalı.
+ *
+ * Sıralama önemli: LİG ADI TAŞIYAN aday, MARKA taşıyandan önce gelir.
+ * "Trendyol Süper Lig" (18 karakter) çoğu maçta ikisinin birden sığmasına
+ * izin vermiyor; bu durumda arama hacmi olan lig adı kalır, marka düşer.
+ * Marka zaten alan adında ve arama sonucunda site adı olarak görünüyor.
  */
 const TITLE_BUDGET = 65;
 const DESCRIPTION_BUDGET = 158;
-const SHORT_LEAGUE = "Süper Lig";
 
 function buildTitle(heading, match) {
   const round = String(match.roundLabel || "").trim();
+  const league = displayLeagueName(match.league, SUPER_LIG_DISPLAY_NAME);
   const candidates = [
-    round ? `${heading} | ${SHORT_LEAGUE} ${round} | FutbolRadar` : null,
-    `${heading} | ${SHORT_LEAGUE} | FutbolRadar`,
+    round ? `${heading} | ${league} ${round} | FutbolRadar` : null,
+    `${heading} | ${league} | FutbolRadar`,
+    round ? `${heading} | ${league} ${round}` : null,
+    `${heading} | ${league}`,
     `${heading} | FutbolRadar`,
     heading
   ].filter(Boolean);
@@ -246,7 +253,7 @@ function eventNode(match, canonical, description) {
     homeTeam: teams[0],
     awayTeam: teams[1],
     competitor: teams,
-    superEvent: { "@type": "SportsEvent", name: `${match.league} ${match.season}` },
+    superEvent: { "@type": "SportsEvent", name: `${displayLeagueName(match.league)} ${match.season}` },
     // Saha yalnızca doğrulanmışsa yazılır; "bilinmiyor" bir konum değildir.
     ...(match.venue ? { location: { "@type": "StadiumOrArena", name: match.venue } } : {})
   };
@@ -286,7 +293,7 @@ function pageHtml(match) {
         "@type": "BreadcrumbList",
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: `${domain}/` },
-          { "@type": "ListItem", position: 2, name: "Süper Lig Maç Analizleri", item: `${domain}/super-lig-mac-analizleri.html` },
+          { "@type": "ListItem", position: 2, name: "Trendyol Süper Lig Maç Analizleri", item: `${domain}/super-lig-mac-analizleri.html` },
           { "@type": "ListItem", position: 3, name: `${match.homeTeam} - ${match.awayTeam}`, item: canonical }
         ]
       }
@@ -325,14 +332,14 @@ function pageHtml(match) {
   <body class="subpage match-analysis-page">
     ${siteHeader({ base: "../" })}
     <main class="container">
-      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../super-lig-mac-analizleri.html">Süper Lig Maç Analizleri</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
-      <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(match.league)}</span><h1>${escapeHtml(heading)}</h1><p class="lead">${escapeHtml(radar.lead)}</p></div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>
+      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../super-lig-mac-analizleri.html">Trendyol Süper Lig Maç Analizleri</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
+      <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(displayLeagueName(match.league))}</span><h1>${escapeHtml(heading)}</h1><p class="lead">${escapeHtml(radar.lead)}</p></div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>
       <section class="match-freshness-strip" aria-label="Fikstür durumu"><div><span>Fikstür durumu</span><b>${escapeHtml(freshnessLabel(freshness))}</b></div><div><span>Son kontrol</span><b>${escapeHtml(formatFreshnessDate(freshness.verifiedAt || freshness.fetchedAt))}</b></div><div><span>Güven</span><b>${escapeHtml(confidenceLabel(freshness.confidence))}</b></div></section>
       <section class="match-radar-board" aria-label="Maç öncesi radar puanları">${radarCard(match.homeTeam, radar.home, homeTeam)}${radarCard(match.awayTeam, radar.away, awayTeam)}</section>
       <p class="match-radar-disclaimer">${escapeHtml(radar.disclaimer)}</p>
       <section class="match-context-grid" aria-label="Maç bağlamı"><article class="card"><span class="card-kicker">${escapeHtml(match.homeTeam)}</span><h2>Form ve kadro</h2>${formHtml(homeTeam)}${squadHtml(match.homeTeam)}${keyPlayersHtml(match.homeTeam)}</article><article class="card"><span class="card-kicker">${escapeHtml(match.awayTeam)}</span><h2>Form ve kadro</h2>${formHtml(awayTeam)}${squadHtml(match.awayTeam)}${keyPlayersHtml(match.awayTeam)}</article></section>
       ${statementsBlock}
-      <section class="match-related-grid" aria-label="İlgili radar ekranları">${relatedComparison(match)}<a class="match-related-card" href="../super-lig-mac-analizleri.html"><span>Maç analizi</span><strong>Süper Lig maç analizleri</strong><p>Haftanın tüm eşleşmelerinin analiz sayfalarına geç.</p></a><a class="match-related-card" href="../super-lig-fikstur.html"><span>Fikstür</span><strong>Sezon eşleşmeleri</strong><p>Onaylı eşleşmelerin tamamına dön.</p></a><a class="match-related-card" href="../super-lig-form-durumu.html"><span>Takım formu</span><strong>Süper Lig form durumu</strong><p>İki takımın son maç serisini form tablosunda karşılaştır.</p></a></section>
+      <section class="match-related-grid" aria-label="İlgili radar ekranları">${relatedComparison(match)}<a class="match-related-card" href="../super-lig-mac-analizleri.html"><span>Maç analizi</span><strong>Trendyol Süper Lig maç analizleri</strong><p>Haftanın tüm eşleşmelerinin analiz sayfalarına geç.</p></a><a class="match-related-card" href="../super-lig-fikstur.html"><span>Fikstür</span><strong>Sezon eşleşmeleri</strong><p>Onaylı eşleşmelerin tamamına dön.</p></a><a class="match-related-card" href="../super-lig-form-durumu.html"><span>Takım formu</span><strong>Trendyol Süper Lig form durumu</strong><p>İki takımın son maç serisini form tablosunda karşılaştır.</p></a></section>
     </main>
     ${siteFooter({ base: "../" })}
     <script src="../site.js" defer></script>

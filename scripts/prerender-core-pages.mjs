@@ -27,6 +27,7 @@ const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
 const { matchSignal } = require("../services/matchSignalService.js");
+const { displayLeagueName } = require("../services/leagueIdentity.js");
 
 /**
  * Maçın kalıcı sayfası. Var olmayan bir adrese bağlanmıyoruz: rapor
@@ -125,7 +126,7 @@ function staticMatchCard(match, variant) {
   const awayScore = radar.away.score === null ? "Bekleniyor" : `${radar.away.score}/100`;
   const label = variant === "live" ? "Canlı maç yok" : match.roundLabel;
   const lead = variant === "live"
-    ? "Şu an doğrulanmış canlı Süper Lig maçı bulunmuyor. Sezonun onaylı ilk eşleşmelerini aşağıdan inceleyebilirsin."
+    ? "Şu an doğrulanmış canlı Trendyol Süper Lig maçı bulunmuyor. Sezonun onaylı ilk eşleşmelerini aşağıdan inceleyebilirsin."
     : "Eşleşme fikstürde yer alıyor; tarih, saat ve kadro bilgileri açıklandıkça bu sayfa güncellenecek.";
 
   return `<article class="card match-card static-match-card" data-card="fixture-preview" data-match="${escapeHtml(match.id)}">
@@ -277,7 +278,7 @@ function staticFixtureCard(match, meta) {
   const awayScore = finalScore ? Number(String(finalScore).split("-")[1]) : null;
 
   return `<article class="fixture-card${isLive ? " is-live" : ""}${isFinal ? " is-final" : ""}" data-card="fixture" data-match="${escapeHtml(match.id)}">
-    <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(match.league)}${escapeHtml(match.league || "Maç programı")}</span><span class="fixture-card-state ${stateClass}">${isLive ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(stateLabel)}</span></div>
+    <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(match.league)}${escapeHtml(displayLeagueName(match.league, "Maç programı"))}</span><span class="fixture-card-state ${stateClass}">${isLive ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(stateLabel)}</span></div>
     <div class="fixture-card-rows">${staticFixtureRow(match.homeTeam, homeScore, awayScore)}${staticFixtureRow(match.awayTeam, awayScore, homeScore)}</div>
     <div class="fixture-card-foot fixture-card-foot-divider">${staticSignalHtml(match)}<a class="fixture-card-link" href="${escapeHtml(matchDetailLink(match))}">Detay</a></div>
   </article>`;
@@ -337,7 +338,7 @@ function staticFeaturedFixture() {
       </div>`;
 
   return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}">
-      <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMarkHtml(featured.league)}${escapeHtml(featured.league || "Maç programı")}</span><span>${escapeHtml(`${dateLabel} · ${featured.venue || "Saha bilgisi bekleniyor"}`)}</span></div>
+      <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMarkHtml(featured.league)}${escapeHtml(displayLeagueName(featured.league, "Maç programı"))}</span><span>${escapeHtml(`${dateLabel} · ${featured.venue || "Saha bilgisi bekleniyor"}`)}</span></div>
       <div class="featured-fixture-board">
         ${side(featured.homeTeam)}
         <div class="featured-fixture-score"><b>${escapeHtml(headline)}</b><span>${escapeHtml(stateLabel)}</span></div>
@@ -358,7 +359,7 @@ function staticFeaturedFixture() {
  *   2. Başlayacak maçlar, saati yaklaşan önce
  *   3. Tamamlanan maçlar
  *
- * Eşitlikte Süper Lig kulübü içeren karşılaşma öne alınır; sitenin kapsamı
+ * Eşitlikte Trendyol Süper Lig kulübü içeren karşılaşma öne alınır; sitenin kapsamı
  * budur. Bugün doğrulanmış maç yoksa liste uydurulmaz, "veri bekleniyor"
  * yazılır.
  */
@@ -399,7 +400,7 @@ function featuredTodayBlock() {
       <strong>Bugün için doğrulanmış maç bekleniyor</strong>
       <span>Günün karşılaşmaları doğrulandığı anda saat, durum ve skorlarıyla burada listelenecek. Doğrulanmamış eşleşme gösterilmez.</span>
       <div class="match-empty-actions">
-        <a class="detail-link" href="./super-lig-fikstur.html">Süper Lig fikstürünü aç</a>
+        <a class="detail-link" href="./super-lig-fikstur.html">Trendyol Süper Lig fikstürünü aç</a>
         <a class="detail-link ghost" href="./canli-skor.html">Canlı skor sayfası</a>
       </div>
     </article>`;
@@ -432,7 +433,7 @@ const FORM_PAGES = [
   { team: "Fenerbahçe", file: "fenerbahce-form-durumu.html", label: "Fenerbahçe Form Durumu" },
   { team: "Beşiktaş", file: "besiktas-form-durumu.html", label: "Beşiktaş Form Durumu" },
   { team: "Trabzonspor", file: "trabzonspor-form-durumu.html", label: "Trabzonspor Form Durumu" },
-  { team: null, file: "super-lig-form-durumu.html", label: "Süper Lig Form Tablosu" }
+  { team: null, file: "super-lig-form-durumu.html", label: "Trendyol Süper Lig Form Tablosu" }
 ];
 
 function formLinksBlock() {
@@ -447,7 +448,7 @@ function formLinksBlock() {
       : '<span class="muted-copy">18 takımın son maç serisi</span>';
 
     return `<a class="home-form-link" href="./${escapeHtml(entry.file)}">
-      <span class="home-form-link-team">${escapeHtml(entry.team || "Süper Lig")}</span>
+      <span class="home-form-link-team">${escapeHtml(entry.team || "Trendyol Süper Lig")}</span>
       <strong>${escapeHtml(entry.label)}</strong>
       ${body}
     </a>`;
@@ -524,7 +525,7 @@ function trendTeamCards() {
     .map((team) => {
       const initials = fixtureTeamInitials(team.name);
       return `<article class="trend-card" data-card="trend-team" data-team="${escapeHtml(team.id)}">
-      <div class="trend-card-head"><span class="trend-card-avatar" aria-hidden="true">${escapeHtml(initials)}</span><span><strong>${escapeHtml(team.name)}</strong><span>${escapeHtml(team.league || "Takım")}</span></span><b class="trend-card-score">${escapeHtml(team.momentum ?? "–")}</b></div>
+      <div class="trend-card-head"><span class="trend-card-avatar" aria-hidden="true">${escapeHtml(initials)}</span><span><strong>${escapeHtml(team.name)}</strong><span>${escapeHtml(displayLeagueName(team.league, "Takım"))}</span></span><b class="trend-card-score">${escapeHtml(team.momentum ?? "–")}</b></div>
       ${formDots(team.form)}
       <dl class="trend-card-stats"><div><dt>Hücum</dt><dd>${escapeHtml(team.attack ?? "–")}</dd></div><div><dt>Savunma</dt><dd>${escapeHtml(team.defense ?? "–")}</dd></div><div><dt>Form</dt><dd>${escapeHtml(team.formScore ?? "–")}</dd></div></dl>
       <a class="fixture-card-action" href="./takim-detay.html?team=${encodeURIComponent(team.name)}">Takım radarını aç</a>
@@ -542,7 +543,7 @@ function staticHomeStandingRows() {
 }
 
 function standingsPreseason(compact) {
-  return `<div class="standings-empty${compact ? " compact" : ""}" data-card="standings-preseason"><span class="card-kicker">Süper Lig · 2026/27</span><strong>2026/27 sezonu henüz başlamadı</strong><p>Süper Lig 14 Ağustos'ta başlayacak. İlk maçlar tamamlandığında puan tablosu otomatik güncellenecek.</p><a class="detail-link" href="./super-lig-fikstur.html">Sezon fikstürünü aç</a></div>`;
+  return `<div class="standings-empty${compact ? " compact" : ""}" data-card="standings-preseason"><span class="card-kicker">Trendyol Süper Lig · 2026/27</span><strong>2026/27 sezonu henüz başlamadı</strong><p>Trendyol Süper Lig 14 Ağustos'ta başlayacak. İlk maçlar tamamlandığında puan tablosu otomatik güncellenecek.</p><a class="detail-link" href="./super-lig-fikstur.html">Sezon fikstürünü aç</a></div>`;
 }
 
 function staticMomentumRows() {
@@ -871,7 +872,7 @@ function homeSchemaJson() {
             homeTeam: { "@type": "SportsTeam", name: match.homeTeam },
             awayTeam: { "@type": "SportsTeam", name: match.awayTeam },
             url: `${domain}/${matchDetailLink(match).replace(/^\.\//, "")}`,
-            ...(match.league ? { superEvent: { "@type": "SportsEvent", name: match.league } } : {}),
+            ...(match.league ? { superEvent: { "@type": "SportsEvent", name: displayLeagueName(match.league) } } : {}),
             // Saha yalnızca doğrulanmışsa yazılır; sağlayıcıdan gelen
             // teyitsiz saha bilgisi (providerVenue) buraya girmez.
             ...(match.venue && match.venue !== "Açıklanmadı"
@@ -960,7 +961,7 @@ writePage("gunluk-mac-analizleri.html", {
 }, fixtureFreshness);
 
 /**
- * Süper Lig eşleşmelerinin kalıcı analiz sayfaları. Yalnızca onaylı
+ * Trendyol Süper Lig eşleşmelerinin kalıcı analiz sayfaları. Yalnızca onaylı
  * eşleşmeler listelenir; tarih açıklanmamışsa saat yerine hafta aralığı
  * yazılır ve uydurma bir başlama saati üretilmez.
  */
@@ -1013,11 +1014,11 @@ writePage("oyuncu-radari.html", {
 }, playerFreshness);
 
 writePage("mac-detay.html", {
-  "match-detail": `<article class="card match-detail-card"><span class="card-kicker">Süper Lig fikstürü</span><h2>Maç öncesi analiz sayfasını seç</h2><p>Onaylı eşleşmelerin form, kadro durumu ve radar puanı aynı kalıcı sayfada yer alır.</p><div class="match-empty-actions">${topFixtures.map((match) => `<a class="detail-link" href="./mac/${escapeHtml(matchSlug(match))}.html">${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</a>`).join("")}</div></article>`
+  "match-detail": `<article class="card match-detail-card"><span class="card-kicker">Trendyol Süper Lig fikstürü</span><h2>Maç öncesi analiz sayfasını seç</h2><p>Onaylı eşleşmelerin form, kadro durumu ve radar puanı aynı kalıcı sayfada yer alır.</p><div class="match-empty-actions">${topFixtures.map((match) => `<a class="detail-link" href="./mac/${escapeHtml(matchSlug(match))}.html">${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</a>`).join("")}</div></article>`
 }, fixtureFreshness);
 
 writePage("super-lig-fikstur.html", {
-  "super-lig-fixtures": `<section class="fixture-overview">${(fixtures.watchList || []).map((item) => `<article class="metric-tile"><strong>${escapeHtml(item.value)}</strong><span>${escapeHtml(item.label)}</span></article>`).join("")}</section><section class="fixture-note card"><span class="card-kicker">${escapeHtml(fixtures.league)} · ${escapeHtml(fixtures.season)}</span><h2>İlk iki haftanın eşleşmeleri açıklandı</h2><p>Tarih ve saat bilgileri açıklandıkça ilgili maç sayfaları güncellenecek.</p></section><section class="fixture-rounds">${fixtureRounds()}</section>`
+  "super-lig-fixtures": `<section class="fixture-overview">${(fixtures.watchList || []).map((item) => `<article class="metric-tile"><strong>${escapeHtml(item.value)}</strong><span>${escapeHtml(item.label)}</span></article>`).join("")}</section><section class="fixture-note card"><span class="card-kicker">${escapeHtml(displayLeagueName(fixtures.league))} · ${escapeHtml(fixtures.season)}</span><h2>İlk iki haftanın eşleşmeleri açıklandı</h2><p>Tarih ve saat bilgileri açıklandıkça ilgili maç sayfaları güncellenecek.</p></section><section class="fixture-rounds">${fixtureRounds()}</section>`
 }, fixtureFreshness);
 
 for (const file of noindexShellPages) {

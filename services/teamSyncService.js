@@ -1,4 +1,5 @@
 const apiFootballProvider = require("./providers/apiFootballProvider");
+const { SUPER_LIG_DISPLAY_NAME } = require("./leagueIdentity.js");
 const { normalizeText } = require("./matchRadarService");
 const { fixtureTeamNames } = require("./superLigTeams");
 
@@ -174,7 +175,7 @@ function mergeTeamList(canonicalTeams, fetchedTeams) {
         id: fetchedTeam.id || slug(fetchedTeam.name),
         providerId: fetchedTeam.providerId || null,
         name: fetchedTeam.name,
-        league: "Süper Lig",
+        league: SUPER_LIG_DISPLAY_NAME,
         isCurrentSuperLigTeam: true,
         lastProviderSeenAt: new Date().toISOString(),
         source: "api-football"

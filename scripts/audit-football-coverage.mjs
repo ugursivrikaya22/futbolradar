@@ -7,9 +7,9 @@ const require = createRequire(import.meta.url);
 const { getPlayers } = require("../services/playerService.js");
 const { generateProbableLineupForFixture } = require("../services/lineupPredictionService.js");
 const { normalizeText } = require("../services/matchRadarService.js");
+const { isSuperLigName } = require("../services/leagueIdentity.js");
 
 const OUTPUT_PATH = path.join(root, "data", "football-coverage-summary.json");
-const SUPER_LIG_LEAGUE_NAME = "Süper Lig";
 const MIN_STARTER_COVERAGE_FOR_LINEUP = 55;
 const CRITICAL_PLAYER_FLOOR = 100;
 const SAFE_PLAYER_TARGET = 300;
@@ -45,7 +45,10 @@ function main() {
   const matchAnalyses = readJson(path.join(root, "data", "match-analyses.json"), []);
 
   const players = getPlayers(rawPlayers);
-  const superLigTeams = teams.filter((team) => normalizeText(team.league) === normalizeText(SUPER_LIG_LEAGUE_NAME));
+  // Lig adı sponsor değişikliğiyle yeniden yazılabiliyor ("Süper Lig" ->
+  // "Trendyol Süper Lig"). Birebir eşitlik, ad değiştiği gün bu denetimin
+  // sıfır takım bulup kritik hata vermesine yol açardı.
+  const superLigTeams = teams.filter((team) => isSuperLigName(team.league));
   const superLigTeamNames = new Set(superLigTeams.map((team) => normalizeText(team.name)));
 
   const superLigPlayers = players.filter((player) => superLigTeamNames.has(normalizeText(player.currentTeam)));
@@ -79,7 +82,7 @@ function main() {
   const fixtureRoundMatchCount = (superLigFixtures.rounds || []).reduce((sum, round) => sum + (round.matches || []).length, 0);
   const now = Date.now();
   const upcomingLeagueFixtures = matches.filter((match) => {
-    const isLeague = normalizeText(match.league) === normalizeText(SUPER_LIG_LEAGUE_NAME);
+    const isLeague = isSuperLigName(match.league);
     const kickoffTime = match.kickoff ? new Date(match.kickoff).getTime() : NaN;
     const isScheduled = String(match.status || "").toUpperCase() === "SCHEDULED";
     return isLeague && isScheduled && Number.isFinite(kickoffTime) && kickoffTime >= now;

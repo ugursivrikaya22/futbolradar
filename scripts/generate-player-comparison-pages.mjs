@@ -5,6 +5,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
+const { displayLeagueName } = require("../services/leagueIdentity.js");
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
@@ -217,7 +218,7 @@ function playerMiniCard(player) {
   if (fields.currentTeam || fields.team) {
     verifiedRows.push(`<div><dt>Takım</dt><dd>${escapeHtml(playerTeamDisplay(player))}</dd></div>`);
   }
-  if (player.league) verifiedRows.push(`<div><dt>Lig</dt><dd>${escapeHtml(player.league)}</dd></div>`);
+  if (player.league) verifiedRows.push(`<div><dt>Lig</dt><dd>${escapeHtml(displayLeagueName(player.league))}</dd></div>`);
   if (rating) verifiedRows.push(`<div><dt>Overall</dt><dd>${escapeHtml(rating)}</dd></div>`);
   if (market) verifiedRows.push(`<div><dt>Piyasa</dt><dd>${escapeHtml(market)}</dd></div>`);
 
@@ -369,7 +370,7 @@ function comparisonIndexCard(pair) {
 
 function comparisonIndexHtml(pairs) {
   const title = "Oyuncu Karşılaştırmaları | Statik Kıyaslar | FutbolRadar";
-  const description = "FutbolRadar oyuncu karşılaştırmaları; Süper Lig oyuncularını AI rating, form, rol etkisi, piyasa değeri ve transfer sinyalleriyle yan yana inceler.";
+  const description = "FutbolRadar oyuncu karşılaştırmaları; Trendyol Süper Lig oyuncularını AI rating, form, rol etkisi, piyasa değeri ve transfer sinyalleriyle yan yana inceler.";
   const canonical = `${domain}/oyuncu-karsilastirmalari.html`;
   const topPairs = pairs.slice(0, 20);
 

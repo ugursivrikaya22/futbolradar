@@ -14,7 +14,7 @@
 export const NAV_PRIMARY = [
   { href: "bugunun-maclari.html", label: "Bugünün Maçları" },
   { href: "canli-skor.html", label: "Canlı Skor" },
-  { href: "super-lig-fikstur.html", label: "Süper Lig" },
+  { href: "super-lig-fikstur.html", label: "Trendyol Süper Lig" },
   { href: "analizler.html", label: "Analizler" },
   { href: "takimlar.html", label: "Takımlar" },
   { href: "puan-durumu.html", label: "Puan Durumu" }
@@ -205,7 +205,7 @@ export function siteFooter(options = {}) {
             <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 12 17 8"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
             <span class="brand-text"><b>Futbol</b>Radar</span>
           </a>
-          <p>Süper Lig ve Avrupa kupalarında canlı skor, maç programı, puan durumu, oyuncu istatistikleri ve doğrulanmış transfer hareketleri. Veriler resmî kaynaklardan derlenir, üretilmez.</p>
+          <p>Trendyol Süper Lig ve Avrupa kupalarında canlı skor, maç programı, puan durumu, oyuncu istatistikleri ve doğrulanmış transfer hareketleri. Veriler resmî kaynaklardan derlenir, üretilmez.</p>
           <div class="footer-social" aria-label="Sosyal medya">${social}</div>
         </div>
         <div class="footer-col">

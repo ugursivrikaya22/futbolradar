@@ -10,6 +10,8 @@
  * yüzden build çıktısı tekrarlanabilir ve diff'ler gürültüsüzdür.
  */
 
+const { displayLeagueName } = require("./leagueIdentity.js");
+
 const VOICELESS = new Set(["f", "s", "t", "k", "ç", "ş", "h", "p"]);
 const BACK_VOWELS = new Set(["a", "ı", "o", "u"]);
 const VOWELS = "aeıioöuüAEIİOÖUÜ";
@@ -843,7 +845,7 @@ function buildNextMatchOutlook(match, context) {
 // ── SEO ─────────────────────────────────────────────────────────────────────
 function buildSeo(match, summary) {
   const score = scoreLine(match) || "";
-  const competition = match.league || "Futbol";
+  const competition = displayLeagueName(match.league, "Futbol");
 
   /**
    * BAŞLIK BÜTÇESİ.

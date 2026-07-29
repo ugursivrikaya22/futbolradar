@@ -989,6 +989,44 @@
     return value === undefined || value === null || value === "" ? "-" : value;
   }
 
+  /**
+   * LİGİN ADI — tek doğru yazım.
+   *
+   * Kural services/leagueIdentity.js'de; buradaki mantık onun AYNISIDIR ve
+   * scripts/test-league-identity.mjs iki tarafı karşılaştırır. Sağlayıcıdan
+   * ya da eski kayıtlardan "Süper Lig" gelse bile ekrana "Trendyol Süper Lig"
+   * yazılır; iç anahtarlar (competitionId, URL) değişmez.
+   */
+  var SUPER_LIG_DISPLAY_NAME = "Trendyol Süper Lig";
+
+  function foldLeagueName(value) {
+    return String(value || "")
+      .toLocaleLowerCase("tr")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "");
+  }
+
+  var SUPER_LIG_NAME_KEYS = [
+    "Trendyol Süper Lig", "Süper Lig", "Super Lig", "Süper Ligi",
+    "Türkiye Süper Ligi", "Türk Süper Ligi", "Turkiye Super Ligi",
+    "Turkcell Süper Lig", "Spor Toto Süper Lig", "Turkish Super Lig",
+    "Turkish Super League", "super-lig"
+  ].map(foldLeagueName);
+
+  function isSuperLigName(value) {
+    var key = foldLeagueName(value);
+    if (!key) return false;
+    if (SUPER_LIG_NAME_KEYS.indexOf(key) !== -1) return true;
+    return /superlig(i)?$/.test(key);
+  }
+
+  function leagueLabel(value, fallback) {
+    var raw = String(value === undefined || value === null ? "" : value).trim();
+    if (!raw) return fallback === undefined ? "" : fallback;
+    return isSuperLigName(raw) ? SUPER_LIG_DISPLAY_NAME : raw;
+  }
+
   function calculateAgeFromBirthDate(birthDate) {
     if (!birthDate) {
       return null;
@@ -2250,7 +2288,7 @@
       '<article class="fixture-card' + (meta.live ? " is-live" : "") + (meta.finished ? " is-final" : "") +
       '" data-card="fixture" data-match="' + escapeHtml(match.id) + '">' +
       '<div class="fixture-card-top">' +
-      '<span class="fixture-card-league">' + leagueMarkHtml(match.league) + escapeHtml(displayValue(match.league)) + "</span>" +
+      '<span class="fixture-card-league">' + leagueMarkHtml(match.league) + escapeHtml(leagueLabel(match.league, "-")) + "</span>" +
       '<span class="fixture-card-state ' + meta.className + '">' +
       (meta.live ? '<i class="live-pulse" aria-hidden="true"></i>' : "") +
       escapeHtml(meta.label) +
@@ -2301,7 +2339,7 @@
     return (
       '<div class="featured-fixture' + (meta.live ? " is-live" : "") + '">' +
       '<div class="featured-fixture-head">' +
-      '<span class="featured-fixture-league">' + leagueMarkHtml(match.league) + escapeHtml(displayValue(match.league)) + "</span>" +
+      '<span class="featured-fixture-league">' + leagueMarkHtml(match.league) + escapeHtml(leagueLabel(match.league, "-")) + "</span>" +
       "<span>" + escapeHtml(match.venue || formatMatchDate(todayInIstanbul())) + "</span>" +
       "</div>" +
       '<div class="featured-fixture-board">' +
@@ -2430,7 +2468,7 @@
   function renderMatchesByLeague(matches, renderer) {
     var groups = new Map();
     matches.forEach(function (match) {
-      var league = match.league || "Diğer karşılaşmalar";
+      var league = leagueLabel(match.league, "Diğer karşılaşmalar");
       if (!groups.has(league)) {
         groups.set(league, []);
       }
@@ -2489,7 +2527,7 @@
     return (
       '<article class="card match-card live-score-card" data-card="live-match" data-match="' + escapeHtml(match.id) + '">' +
       '<div class="live-score-meta">' +
-      '<span class="live-score-league">' + escapeHtml(displayValue(match.league)) + '</span>' +
+      '<span class="live-score-league">' + escapeHtml(leagueLabel(match.league, "-")) + '</span>' +
       '<time class="live-score-time">' + escapeHtml(matchTimeLabel(match)) + '</time>' +
       '<span class="live-score-status live-score-status-' + statusSlug(match.status) + '">' +
       '<i class="live-pulse" aria-hidden="true"></i>' + escapeHtml(statusLabel) + (minuteLabel ? " · " + escapeHtml(minuteLabel) : "") +
@@ -2765,7 +2803,7 @@
     var awayTeam = matchTeam(match, "away");
 
     return '<article class="match-intelligence-card" data-card="today-radar-match" data-match="' + escapeHtml(match.id) + '">' +
-      '<div class="card-head"><span class="card-kicker">' + escapeHtml(match.league) + '</span><span>' +
+      '<div class="card-head"><span class="card-kicker">' + escapeHtml(leagueLabel(match.league)) + '</span><span>' +
       (live ? '<i class="live-pulse" aria-hidden="true"></i> ' : "") + escapeHtml(statusLabel) + "</span></div>" +
       '<h3 class="live-score-team-name-inline">' + teamLogoHtml(homeTeam) + escapeHtml(getTeamName(homeTeam)) + " - " + teamLogoHtml(awayTeam) + escapeHtml(getTeamName(awayTeam)) + "</h3>" +
       (analysis
@@ -3320,7 +3358,7 @@
           target.dataset.state = "fallback";
           return;
         }
-        setEmpty(target, "Fikstür bulunamadı", "Süper Lig fikstür verisi şu anda okunamıyor.");
+        setEmpty(target, "Fikstür bulunamadı", "Trendyol Süper Lig fikstür verisi şu anda okunamıyor.");
         return;
       }
 
@@ -3406,7 +3444,7 @@
         target.dataset.state = "fallback";
         return;
       }
-      setEmpty(target, "Fikstür yüklenemedi", "Süper Lig fikstür verisi geçici olarak okunamıyor.");
+      setEmpty(target, "Fikstür yüklenemedi", "Trendyol Süper Lig fikstür verisi geçici olarak okunamıyor.");
     });
   }
 
@@ -3509,11 +3547,11 @@
     var preseason = isSuperLigStandingsView() && todayInIstanbul() < SUPER_LIG_SEASON_START;
     var title = preseason ? "2026/27 sezonu henüz başlamadı" : "Puan durumu henüz oluşmadı";
     var text = preseason
-      ? "Süper Lig 14 Ağustos'ta başlayacak. İlk maçlar tamamlandığında puan tablosu otomatik güncellenecek."
+      ? "Trendyol Süper Lig 14 Ağustos'ta başlayacak. İlk maçlar tamamlandığında puan tablosu otomatik güncellenecek."
       : "İlk sonuçlar kesinleştiğinde sıralama ve puanlar burada gösterilecek.";
     return (
       '<div class="standings-empty' + (compact ? " compact" : "") + '" data-card="standings-preseason">' +
-      '<span class="card-kicker">Süper Lig · 2026/27</span><strong>' + escapeHtml(title) + '</strong><p>' + escapeHtml(text) + '</p>' +
+      '<span class="card-kicker">Trendyol Süper Lig · 2026/27</span><strong>' + escapeHtml(title) + '</strong><p>' + escapeHtml(text) + '</p>' +
       '<a class="detail-link" href="./super-lig-fikstur.html">Sezon fikstürünü aç</a></div>'
     );
   }
@@ -4567,7 +4605,11 @@
         return normalizeSearchText(value).indexOf(search) !== -1;
       });
       var teamOk = !state.team || playerCurrentTeam(player) === state.team;
-      var leagueOk = !state.league || player.league === state.league;
+      // Lig adı sponsor değişikliğiyle yeniden yazılabiliyor. Birebir
+      // eşitlik, "?league=Süper Lig" ile kaydedilmiş eski bağlantıların
+      // sessizce sıfır sonuç vermesine yol açardı.
+      var leagueOk = !state.league || player.league === state.league ||
+        (isSuperLigName(state.league) && isSuperLigName(player.league));
       var playerPosition = normalizeSearchText(player.position);
       var wantedPosition = normalizeSearchText(state.position);
       var positionOk = !wantedPosition || playerPosition === wantedPosition ||

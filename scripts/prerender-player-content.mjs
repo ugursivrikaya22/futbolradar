@@ -4,6 +4,7 @@ import { createRequire } from "node:module";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
+const { displayLeagueName, SUPER_LIG_DISPLAY_NAME } = require("../services/leagueIdentity.js");
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
@@ -159,7 +160,7 @@ function profileContent(player) {
     <div class="profile-section-head"><h2>Oyuncu özeti</h2><span>${escapeHtml(team(player))} · ${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)} yaş</span></div>
     <p>${escapeHtml(player.summary || "Oyuncunun formu, rol etkisi ve radar metrikleri birlikte okunur.")}</p>
     <div class="radar-mini-bars">${radarItems || "<span>Alt metrikler yakında</span>"}</div>
-    <div class="tag-row"><span class="tag green">Güncel takım: ${escapeHtml(team(player))}</span><span class="tag soft">${escapeHtml(player.league || "Süper Lig")}</span></div>
+    <div class="tag-row"><span class="tag green">Güncel takım: ${escapeHtml(team(player))}</span><span class="tag soft">${escapeHtml(displayLeagueName(player.league, SUPER_LIG_DISPLAY_NAME))}</span></div>
   </section>`;
 }
 

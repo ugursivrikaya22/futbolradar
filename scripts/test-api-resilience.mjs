@@ -3,6 +3,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const utils = require("../api/_utils");
+const { isSuperLigName } = require("../services/leagueIdentity.js");
 const footballData = require("../services/providers/footballProvider");
 const apiFootball = require("../services/providers/apiFootballProvider");
 const providers = require("../services/providers");
@@ -656,7 +657,9 @@ async function testPlayerLeagueSlugFallback() {
   assert.equal(response.payload.ok, true);
   assert.ok(Array.isArray(response.payload.data));
   assert.ok(response.payload.data.length > 0);
-  assert.ok(response.payload.data.every((player) => player.league === "Süper Lig"));
+  // Lig adı sponsor değişikliğiyle yeniden yazılabiliyor; testin ölçtüğü şey
+  // adın kendisi değil, "super-lig" kısa adının doğru lige çözülmesi.
+  assert.ok(response.payload.data.every((player) => isSuperLigName(player.league)));
 }
 
 async function testFootballDataCompetitionFallback() {

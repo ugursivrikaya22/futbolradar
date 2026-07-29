@@ -22,6 +22,7 @@
  */
 
 const fixtures = require("../data/super-lig-fixtures.json");
+const { SUPER_LIG_DISPLAY_NAME } = require("./leagueIdentity.js");
 const { normalizeText } = require("../api/_utils");
 
 function slug(value) {
@@ -51,7 +52,7 @@ function fixtureOnlyTeam(name) {
   return {
     id: slug(name),
     name,
-    league: fixtures.league || "Süper Lig",
+    league: fixtures.league || SUPER_LIG_DISPLAY_NAME,
     standingsSeason: fixtures.season || null,
     country: "Türkiye",
     coverage: "fixture-only",

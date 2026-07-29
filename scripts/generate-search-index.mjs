@@ -18,6 +18,7 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { mergeSuperLigTeams } = require("../services/superLigTeams.js");
+const { displayLeagueName } = require("../services/leagueIdentity.js");
 
 function readJson(file) {
   try {
@@ -45,8 +46,8 @@ const EXTRA_PAGES = [
   // Arama niyeti sayfaları: site içi aramada da bulunabilmeliler, yoksa
   // yalnızca Google üzerinden erişilen sayfalar olarak kalırlar.
   { href: "gunluk-mac-analizleri.html", title: "Günlük Maç Analizleri", subtitle: "Bugünün maçları ve radar okuması" },
-  { href: "super-lig-mac-analizleri.html", title: "Süper Lig Maç Analizleri", subtitle: "Maç önü okuma ve raporlar" },
-  { href: "super-lig-form-durumu.html", title: "Süper Lig Form Durumu", subtitle: "18 takımın son maç serisi" },
+  { href: "super-lig-mac-analizleri.html", title: "Trendyol Süper Lig Maç Analizleri", subtitle: "Maç önü okuma ve raporlar" },
+  { href: "super-lig-form-durumu.html", title: "Trendyol Süper Lig Form Durumu", subtitle: "18 takımın son maç serisi" },
   { href: "galatasaray-form-durumu.html", title: "Galatasaray Form Durumu", subtitle: "Son maç serisi ve momentum" },
   { href: "fenerbahce-form-durumu.html", title: "Fenerbahçe Form Durumu", subtitle: "Son maç serisi ve momentum" },
   { href: "besiktas-form-durumu.html", title: "Beşiktaş Form Durumu", subtitle: "Son maç serisi ve momentum" },
@@ -95,7 +96,7 @@ for (const team of mergeSuperLigTeams(curatedTeams)) {
     badge: "TKM",
     href: `takim-detay.html?team=${encodeURIComponent(team.name)}`,
     title: team.name,
-    subtitle: team.league || "Takım profili"
+    subtitle: displayLeagueName(team.league, "Takım profili")
   });
 }
 

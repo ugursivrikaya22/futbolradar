@@ -76,37 +76,37 @@ const seoPages = [
     related: [
       ["./bugunun-maclari.html", "Bugünün maçları", "Günün tam programı"],
       ["./canli-skor.html", "Canlı skor", "Devam eden maçların anlık skoru"],
-      ["./super-lig-mac-analizleri.html", "Süper Lig", "Lig maçlarının analiz sayfaları"]
+      ["./super-lig-mac-analizleri.html", "Trendyol Süper Lig", "Lig maçlarının analiz sayfaları"]
     ]
   },
   {
     file: "super-lig-mac-analizleri.html",
-    title: "Süper Lig Maç Analizleri | Maç Önü Okuma ve Maç Raporları | FutbolRadar",
-    description: "Süper Lig maç analizleri; hafta hafta eşleşmelerin form, kadro ve radar okuması ile tamamlanan karşılaşmaların veri odaklı maç raporları.",
-    h1: "Süper Lig Maç Analizleri",
-    lead: "Süper Lig eşleşmelerinin maç öncesi radar okumasına ve tamamlanan maçların raporlarına buradan geç.",
+    title: "Trendyol Süper Lig Maç Analizleri | FutbolRadar",
+    description: "Trendyol Süper Lig maç analizleri; hafta hafta eşleşmelerin form, kadro ve radar okuması ile tamamlanan karşılaşmaların veri odaklı maç raporları.",
+    h1: "Trendyol Süper Lig Maç Analizleri",
+    lead: "Trendyol Süper Lig eşleşmelerinin maç öncesi radar okumasına ve tamamlanan maçların raporlarına buradan geç.",
     slot: "super-lig-analysis-links",
     slotTitle: "Maç analizi sayfaları",
     slotLead: "Her eşleşmenin kalıcı analiz sayfası; form, kadro durumu ve radar puanı maç yaklaştıkça güncellenir.",
     related: [
       ["./super-lig-fikstur.html", "Fikstür", "Sezonun onaylı eşleşmeleri"],
-      ["./super-lig-form-durumu.html", "Takım formu", "18 takımın son maç serisi"],
+      ["./super-lig-form-durumu.html", "Takım formu", "Trendyol Süper Lig 18 takımın son maç serisi"],
       ["./mac-merkezi.html", "Maç raporları", "Tamamlanan maçların analizleri"]
     ]
   },
   {
     file: "super-lig-form-durumu.html",
-    title: "Süper Lig Form Durumu | Takım Momentum ve Son 5 Maç | FutbolRadar",
-    description: "Süper Lig form durumu sayfası; takımların son 5 maç ivmesi, hücum-savunma dengesi ve momentum sinyallerini gösterir.",
-    h1: "Süper Lig Form Durumu",
+    title: "Trendyol Süper Lig Form Durumu | Son 5 Maç | FutbolRadar",
+    description: "Trendyol Süper Lig form durumu; takımların son 5 maç ivmesi, hücum-savunma dengesi ve momentum sinyallerini gösterir.",
+    h1: "Trendyol Süper Lig Form Durumu",
     lead: "Takımların son formunu, momentum eğilimini ve maç önü veri sinyallerini birlikte oku.",
     cards: ["Son 5 maç formu", "Momentum değişimi", "Gol eğilimi"]
   },
   {
     file: "super-lig-momentum-siralamasi.html",
-    title: "Süper Lig Momentum Sıralaması | FutbolRadar",
-    description: "Süper Lig momentum sıralaması; form puanı, hücum üretimi, savunma dengesi ve trend açıklamasıyla güncellenir.",
-    h1: "Süper Lig Momentum Sıralaması",
+    title: "Trendyol Süper Lig Momentum Sıralaması | FutbolRadar",
+    description: "Trendyol Süper Lig momentum sıralaması; form puanı, hücum üretimi, savunma dengesi ve trend açıklamasıyla güncellenir.",
+    h1: "Trendyol Süper Lig Momentum Sıralaması",
     lead: "Momentum skoru, son form ve takım dengesinden üretilen FutbolRadar sinyalidir.",
     cards: ["Momentum puanı", "Trend yönü", "Hücum ve savunma"]
   },
@@ -120,9 +120,9 @@ const seoPages = [
   },
   {
     file: "super-lig-oyuncu-radari.html",
-    title: "Süper Lig Oyuncu Radarı | AI Rating ve Performans | FutbolRadar",
-    description: "Süper Lig oyuncu radarı; AI rating, gol tehdidi, yaratıcılık, pres gücü ve form sinyallerine göre oyuncuları listeler.",
-    h1: "Süper Lig Oyuncu Radarı",
+    title: "Trendyol Süper Lig Oyuncu Radarı | FutbolRadar",
+    description: "Trendyol Süper Lig oyuncu radarı; AI rating, gol tehdidi, yaratıcılık, pres gücü ve form sinyallerine göre oyuncuları listeler.",
+    h1: "Trendyol Süper Lig Oyuncu Radarı",
     lead: "Oyuncuları rating, mevki, takım, dakika ve performans radarına göre keşfet.",
     cards: ["AI rating", "Gol tehdidi", "Pres gücü"]
   },
@@ -196,10 +196,10 @@ const playerSeoPages = [
   {
     file: "en-iyi-super-lig-oyunculari.html",
     landing: "en-iyi-super-lig-oyunculari",
-    title: "En İyi Süper Lig Oyuncuları | AI Rating ve Oyuncu Radarı | FutbolRadar",
-    description: "En iyi Süper Lig oyuncularını AI rating, form, potansiyel, piyasa değeri ve oyuncu radar sinyallerine göre karşılaştırın.",
-    h1: "En İyi Süper Lig Oyuncuları",
-    lead: "Süper Lig oyuncularını AI rating, rol grubu, form, potansiyel ve radar etkisine göre karşılaştır.",
+    title: "En İyi Trendyol Süper Lig Oyuncuları | FutbolRadar",
+    description: "En iyi Trendyol Süper Lig oyuncularını AI rating, form, potansiyel, piyasa değeri ve oyuncu radar sinyallerine göre karşılaştırın.",
+    h1: "En İyi Trendyol Süper Lig Oyuncuları",
+    lead: "Trendyol Süper Lig oyuncularını AI rating, rol grubu, form, potansiyel ve radar etkisine göre karşılaştır.",
     cards: ["AI rating", "Radar profili", "Oyuncu karşılaştırma"]
   },
   {
@@ -251,9 +251,9 @@ const playerSeoPages = [
     file: "transfer-radari.html",
     landing: "transfer-radari",
     title: "Transfer Radarı | Güncel Gelen ve Giden Oyuncular | FutbolRadar",
-    description: "Transfer Radarı ile Süper Lig takımlarına gelen ve giden oyuncuları, bonservis bilgilerini ve doğrulama tarihlerini takip edin.",
+    description: "Transfer Radarı ile Trendyol Süper Lig takımlarına gelen ve giden oyuncuları, bonservis bilgilerini ve doğrulama tarihlerini takip edin.",
     h1: "Transfer Radarı",
-    lead: "Süper Lig'e gelen ve ligden ayrılan oyuncuları; tarih, kulüp ve bonservis ayrımıyla takip et.",
+    lead: "Trendyol Süper Lig'e gelen ve ligden ayrılan oyuncuları; tarih, kulüp ve bonservis ayrımıyla takip et.",
     cards: ["Güncel takım", "Transfer geçmişi", "Veri güveni"]
   },
   {

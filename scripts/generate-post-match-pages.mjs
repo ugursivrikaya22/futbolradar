@@ -24,6 +24,7 @@ const { enrichmentSection } = require("../services/postMatchEnrichmentView.js");
 const { publishableStatements, logExcludedStatements, statementsForMatch } =
   require("../services/matchStatementService.js");
 const { statementsSection, statementsSchema } = require("../services/matchStatementsView.js");
+const { displayLeagueName } = require("../services/leagueIdentity.js");
 
 /**
  * Maç sonu açıklamaları tek seferde okunur; her rapor kendi payını alır.
@@ -521,7 +522,7 @@ function pageHtml(report, match) {
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="${depth}index.html">Ana Sayfa</a><span>/</span><a href="${depth}mac-merkezi.html">Maç Merkezi</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
       <section class="post-match-hero">
-        <div class="post-match-heading"><span class="eyebrow">${escapeHtml(match.league)}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""}</span><h1>${escapeHtml(match.homeTeam)} ${escapeHtml(score.home ?? "")}-${escapeHtml(score.away ?? "")} ${escapeHtml(match.awayTeam)} Maç Raporu</h1><p>${escapeHtml(lead)}</p><div class="post-match-meta"><span>${escapeHtml(formatDate(match.kickoff))}</span>${match.venue && match.venue !== "Açıklanmadı" ? `<span>${escapeHtml(match.venue)}</span>` : ""}${match.referee ? `<span>Hakem: ${escapeHtml(match.referee)}</span>` : ""}<span>Veri kapsamı %${escapeHtml(report.coverage)}</span></div></div>
+        <div class="post-match-heading"><span class="eyebrow">${escapeHtml(displayLeagueName(match.league))}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""}</span><h1>${escapeHtml(match.homeTeam)} ${escapeHtml(score.home ?? "")}-${escapeHtml(score.away ?? "")} ${escapeHtml(match.awayTeam)} Maç Raporu</h1><p>${escapeHtml(lead)}</p><div class="post-match-meta"><span>${escapeHtml(formatDate(match.kickoff))}</span>${match.venue && match.venue !== "Açıklanmadı" ? `<span>${escapeHtml(match.venue)}</span>` : ""}${match.referee ? `<span>Hakem: ${escapeHtml(match.referee)}</span>` : ""}<span>Veri kapsamı %${escapeHtml(report.coverage)}</span></div></div>
         <div class="post-match-scoreboard" aria-label="Maç sonucu">
           <div><span class="team-monogram">${escapeHtml(monogram(match.homeTeam))}</span><strong>${escapeHtml(match.homeTeam)}</strong></div>
           <div class="post-match-score"><span>Maç sonucu</span><b>${escapeHtml(score.home ?? "-")}<i>-</i>${escapeHtml(score.away ?? "-")}</b>${Number.isFinite(Number(score.halftimeHome)) ? `<small>İlk yarı ${escapeHtml(score.halftimeHome)}-${escapeHtml(score.halftimeAway)}</small>` : ""}</div>
@@ -642,7 +643,7 @@ function recentReportsBlock(entries) {
       .filter((key) => report.sections[key] && report.sections[key].status === "ready").length;
 
     return `<a class="home-report-card" href="./${escapeHtml(report.seo.path)}">
-      <span class="home-report-meta">${escapeHtml(match.league)} · ${escapeHtml(formatDate(match.kickoff))}</span>
+      <span class="home-report-meta">${escapeHtml(displayLeagueName(match.league))} · ${escapeHtml(formatDate(match.kickoff))}</span>
       <strong class="home-report-score">${escapeHtml(`${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`)}</strong>
       <p class="home-report-line">${escapeHtml(line)}</p>
       <span class="home-report-coverage">${escapeHtml(`Veri kapsamı %${report.coverage}`)}${measured ? escapeHtml(` · ${measured}/3 ölçüm hazır`) : ""}</span>
@@ -667,9 +668,9 @@ function addInternalLinks(report, match) {
   const rating = report.sections.aiRating;
   const strip = rating.status === "ready"
     ? `${rating.home.team} ${rating.home.score} · ${rating.away.team} ${rating.away.score} performans puanı`
-    : `${match.league}${match.stage ? ` · ${match.stage}` : ""}`;
+    : `${displayLeagueName(match.league)}${match.stage ? ` · ${match.stage}` : ""}`;
 
-  const homeFeature = `<section class="container section home-post-match" aria-labelledby="home-post-match-title"><div class="section-head"><div class="section-title"><span class="section-kicker">Son maç raporu</span><h2 id="home-post-match-title">${escapeHtml(headline)}</h2><p>Özet, öne çıkan oyuncular, istatistik ve kırılma anlarıyla tamamlanan maçın veri odaklı okuması.</p></div><a class="section-link" href="./${escapeHtml(report.seo.path)}">Tam raporu aç</a></div><div class="home-post-match-shell"><div><span>${escapeHtml(match.league)}</span><strong>${escapeHtml(strip)}</strong></div><p>${escapeHtml(verdict)}</p><a class="detail-link" href="./${escapeHtml(report.seo.path)}">Raporu incele</a></div></section>`;
+  const homeFeature = `<section class="container section home-post-match" aria-labelledby="home-post-match-title"><div class="section-head"><div class="section-title"><span class="section-kicker">Son maç raporu</span><h2 id="home-post-match-title">${escapeHtml(headline)}</h2><p>Özet, öne çıkan oyuncular, istatistik ve kırılma anlarıyla tamamlanan maçın veri odaklı okuması.</p></div><a class="section-link" href="./${escapeHtml(report.seo.path)}">Tam raporu aç</a></div><div class="home-post-match-shell"><div><span>${escapeHtml(displayLeagueName(match.league))}</span><strong>${escapeHtml(strip)}</strong></div><p>${escapeHtml(verdict)}</p><a class="detail-link" href="./${escapeHtml(report.seo.path)}">Raporu incele</a></div></section>`;
   replaceOrInsert("index.html", "<!-- post-match-feature:start -->", "<!-- post-match-feature:end -->", homeFeature, '<section class="container section section-player-radar"');
 
   const teamFeature = `<section class="card team-latest-match"><span class="card-kicker">Son tamamlanan maç</span><div class="team-latest-match-score"><div><h2>${escapeHtml(headline)}</h2><p>${escapeHtml(verdict)}</p></div><strong>${escapeHtml(score)}</strong></div><a class="detail-link" href="./${escapeHtml(report.seo.path)}">Maç raporunu aç</a></section>`;
@@ -687,7 +688,7 @@ function addReportIndex(entries) {
     const summary = report.sections.summary;
     const line = summary.status === "ready" ? summary.headline : `${match.homeTeam} - ${match.awayTeam}`;
     return `<a class="match-report-card" href="./${escapeHtml(report.seo.path)}">
-      <span>${escapeHtml(match.league)} · ${escapeHtml(formatDate(match.kickoff))}</span>
+      <span>${escapeHtml(displayLeagueName(match.league))} · ${escapeHtml(formatDate(match.kickoff))}</span>
       <strong>${escapeHtml(match.homeTeam)} ${escapeHtml(score)} ${escapeHtml(match.awayTeam)}</strong>
       <p>${escapeHtml(line)}</p>
       <em>Veri kapsamı %${escapeHtml(report.coverage)}</em>

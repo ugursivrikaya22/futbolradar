@@ -87,7 +87,7 @@ const pages = [
   {
     file: "transfer-sezonu-ne-zaman-bitiyor.html",
     title: "Transfer Sezonu Ne Zaman Bitiyor? 2026-2027 Tarihleri | FutbolRadar",
-    description: "2026-2027 yaz transfer dönemi ne zaman bitiyor? Süper Lig yaz ve ara transfer tarihlerini, kalan süreyi ve transfer takibini inceleyin.",
+    description: "2026-2027 yaz transfer dönemi ne zaman bitiyor? Trendyol Süper Lig yaz ve ara transfer tarihlerini, kalan süreyi ve transfer takibini inceleyin.",
     h1: "Transfer Sezonu Ne Zaman Bitiyor?",
     lead: "2026-2027 sezonunda Türkiye'deki yaz transfer ve tescil dönemi 4 Eylül 2026'da sona erecek. Tarihleri, takip akışını ve doğrulanmış hareketleri tek ekranda oku.",
     facts: [
@@ -97,7 +97,7 @@ const pages = [
     ],
     body: () => `${section("2026-2027 transfer takvimi", "Takvim, Türkiye Futbol Federasyonunun ilan ettiği tescil dönemlerini gösterir.", `<div class="trend-timeline"><article><span>22 Haziran</span><div><h3>Yaz penceresi açıldı</h3><p>Kulüpler yeni sezon kadrolarını resmileştirmeye başladı.</p></div></article><article class="is-current"><span>22 Temmuz</span><div><h3>Transfer dönemi sürüyor</h3><p>FutbolRadar yalnızca doğrulanan kulüp değişikliklerini kesinleşmiş kayıt olarak gösterir.</p></div></article><article><span>4 Eylül</span><div><h3>Yaz penceresi kapanacak</h3><p>Son gün işlemleri tamamlandıktan sonra kadro görünümü yeniden doğrulanır.</p></div></article></div>`, "Resmî takvim")}${section("Transferleri nasıl takip ediyoruz?", "Güncel takım, eski kulüp, transfer tipi ve doğrulama tarihi ayrı alanlarda tutulur.", `<div class="trend-note"><strong>Söylenti ile kesinleşmiş transfer ayrılır.</strong><p>Bir kayıt doğrulanmadan oyuncu profilindeki güncel takım bilgisi değiştirilmez. Bedel açıklanmadıysa tahmini rakam yazılmaz.</p><a class="button primary" href="./transfer-radari.html">Transfer Radarını aç</a></div>`, "Veri güveni")}`,
     links: [
-      { href: "./super-lig-transferleri-2026-2027.html", kicker: "Sezon", title: "2026-2027 Süper Lig Transferleri", text: "Takım bazlı gelen ve giden oyuncuları gör." },
+      { href: "./super-lig-transferleri-2026-2027.html", kicker: "Sezon", title: "2026-2027 Trendyol Süper Lig Transferleri", text: "Takım bazlı gelen ve giden oyuncuları gör." },
       { href: "./galatasaray-transfer-radar.html", kicker: "Galatasaray", title: "Galatasaray Transfer Radar", text: "Kadro hareketlerini analiz görünümünde oku." },
       { href: "./fenerbahce-transfer-radar.html", kicker: "Fenerbahçe", title: "Fenerbahçe Transfer Radar", text: "Gelen oyuncuları ve kadro etkisini incele." },
       ...commonLinks.slice(0, 1)
@@ -105,9 +105,9 @@ const pages = [
   },
   {
     file: "super-lig-transferleri-2026-2027.html",
-    title: "2026-2027 Süper Lig Transferleri: Gelenler ve Gidenler | FutbolRadar",
-    description: "2026-2027 Süper Lig transferlerini takım, oyuncu, bonservis, geliş ve ayrılık yönüyle FutbolRadar Transfer Radar ekranında inceleyin.",
-    h1: "2026-2027 Süper Lig Transferleri",
+    title: "2026-2027 Trendyol Süper Lig Transferleri: Gelenler ve Gidenler | FutbolRadar",
+    description: "2026-2027 Trendyol Süper Lig transferlerini takım, oyuncu, bonservis, geliş ve ayrılık yönüyle FutbolRadar Transfer Radar ekranında inceleyin.",
+    h1: "2026-2027 Trendyol Süper Lig Transferleri",
     lead: "Takım bazlı gelen ve giden oyuncuları; güncel takım, transfer tipi, açıklanan bedel ve oyuncu profili bağlantılarıyla takip et.",
     facts: [
       { label: "Takip edilen kayıt", value: String(transfers.filter((item) => item.status === "confirmed").length), note: "Doğrulanmış transfer hareketi." },
@@ -210,7 +210,7 @@ const pages = [
     body: () => `${section("Gelenler ve gidenler", "Yalnızca doğrulanmış takım değişiklikleri listelenir.", `<div class="trend-transfer-grid">${transferCards(teamTransfers("Galatasaray"))}</div>`, "Galatasaray transferleri")}${section("Kadro ihtiyaç radarı", "Bu alan resmî transfer açıklaması değil, mevcut giriş ve çıkışların rol bazlı analizidir.", `<div class="trend-need-grid"><article><span>Santrfor</span><strong>Süreklilik</strong><p>Ayrılan santrfor sonrası ceza sahası bitiriciliği ve rol devamlılığı izleniyor.</p></article><article><span>Merkez orta saha</span><strong>Geçiş dengesi</strong><p>Yeni oyuncunun top kazanma ve pas güvenliği etkisi maç verisi oluştukça ölçülecek.</p></article><article><span>Kadro yapısı</span><strong>Dakika dağılımı</strong><p>Yeni sezon resmi maçları başlamadan kesin rol puanı üretilmez.</p></article></div>`, "AI uyum çerçevesi")}`,
     links: [
       { href: "./galatasaray-oyuncu-radari.html", kicker: "Kadro", title: "Galatasaray Oyuncu Radarı", text: "Güncel takım filtresiyle oyuncuları incele." },
-      { href: "./super-lig-transferleri-2026-2027.html", kicker: "Lig", title: "Süper Lig transferleri", text: "Diğer takımların hareketleriyle karşılaştır." },
+      { href: "./super-lig-transferleri-2026-2027.html", kicker: "Lig", title: "Trendyol Süper Lig transferleri", text: "Diğer takımların hareketleriyle karşılaştır." },
       { href: "./transfer-radari.html", kicker: "Filtre", title: "Transfer Radarı", text: "Tüm doğrulanmış kayıtları aç." },
       ...commonLinks.slice(1, 2)
     ]
@@ -230,7 +230,7 @@ const pages = [
     links: [
       { href: "./fenerbahce-oyuncu-radari.html", kicker: "Kadro", title: "Fenerbahçe Oyuncu Radarı", text: "Form ve rol sinyallerini incele." },
       { href: "./fenerbahce-avrupa-maclari.html", kicker: "Avrupa", title: "Fenerbahçe Avrupa maçları", text: "Kadro etkisini maç akışıyla birlikte oku." },
-      { href: "./super-lig-transferleri-2026-2027.html", kicker: "Lig", title: "Süper Lig transferleri", text: "Diğer takımların hareketleriyle karşılaştır." },
+      { href: "./super-lig-transferleri-2026-2027.html", kicker: "Lig", title: "Trendyol Süper Lig transferleri", text: "Diğer takımların hareketleriyle karşılaştır." },
       { href: "./transfer-radari.html", kicker: "Filtre", title: "Transfer Radarı", text: "Tüm doğrulanmış kayıtları aç." }
     ]
   }
