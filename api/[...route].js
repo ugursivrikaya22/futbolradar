@@ -4,6 +4,7 @@ const { enrichPlayerRating } = require("../services/ratingService");
 const { MODEL_VERSION: MATCH_PREDICTION_MODEL_VERSION } = require("../services/matchPredictionService");
 const { getFixtureWeeks, groupMatchesIntoWeeks } = require("../services/superLigFixtureService");
 const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
+const { supabaseHealth } = require("../services/supabase/health");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -14,8 +15,26 @@ const {
   sendJson,
   sendSuccess,
   setCachePolicy,
+  validateAnalyses,
+  validateMatchDetail,
+  validateOrSend,
   withTimeout
 } = require("./_utils");
+
+/**
+ * HER UCUN KENDİ ÖNBELLEK PENCERESİ VAR.
+ *
+ * Bu toplayıcı birden çok ucu tek işlevde topluyor; hepsine aynı pencereyi
+ * vermek, dakikalar içinde değişen bir yanıtı saatlerce taze sanmak (ya da
+ * tersine, günde bir değişen bir yanıtı boşuna yeniden hesaplamak) demek
+ * olurdu. Ayrı dosyada yaşarken her ucun taşıdığı politika burada da adıyla
+ * korunuyor; eşleşmeyen yol istemci uçlarının varsayılanına düşer.
+ */
+const ROUTE_CACHE_POLICIES = Object.freeze({
+  "match-analysis": "match-analysis",
+  analyses: "analyses",
+  "match-detail": "match-detail"
+});
 
 async function getPlayerData(query) {
   const provider = getProvider("players");
@@ -248,13 +267,111 @@ async function handleMatchAnalysis(req, res, query) {
   });
 }
 
+/**
+ * ANALİZ LİSTESİ UCU (eski api/analyses.js).
+ *
+ * Vercel Hobby planında api/ altındaki her dosya ayrı bir işlev sayılıyor ve
+ * sınır 12. Yeni uçlar (analysis-brain, report-status) eklendiğinde sınır
+ * aşıldı; scripts/qa.mjs bunu derlemeden önce yakalıyor. Bu iki sağlayıcı
+ * geçişi ucu, toplayıcının ZATEN yüklediği modüllerden başka hiçbir şeye
+ * ihtiyaç duymadığı için buraya taşındı: birleşme ne yeni bağımlılık ne de
+ * yeni soğuk başlangıç maliyeti getiriyor. Yol, yanıt biçimi ve önbellek
+ * penceresi birebir aynı kaldı — /api/analyses hâlâ /api/analyses.
+ */
+async function handleAnalyses(req, res, query) {
+  const provider = getProvider("analyses");
+  let data = [];
+
+  try {
+    data = await withTimeout(provider.getAnalyses(query), DEFAULT_TIMEOUT_MS);
+  } catch (error) {
+    return sendError(
+      res,
+      200,
+      error.message || "Analiz verisi provider katmanindan alinamadi.",
+      error.code || "PROVIDER_ERROR"
+    );
+  }
+
+  if (!validateOrSend(res, data, validateAnalyses)) {
+    return;
+  }
+
+  return sendSuccess(res, data, provider.source);
+}
+
+/**
+ * MAÇ DETAYI UCU (eski api/match-detail.js).
+ *
+ * Sağlayıcı sessizce devreye girmez: canlı sağlayıcı hata verirse ya da boş
+ * dönerse kürasyonlu kayıt korunur ve kaynak adı da kürasyonlu kaynağı
+ * gösterir. Yanıtın "kim söyledi" bilgisi, veriyi kimin verdiğiyle her zaman
+ * aynı kalmalı.
+ */
+async function handleMatchDetail(req, res, query) {
+  const provider = getProvider("match-detail");
+  const localDetail = await mockProvider.getMatchDetail(query);
+  let detail = localDetail;
+  let source = mockProvider.source;
+
+  try {
+    if (provider !== mockProvider && typeof provider.getMatchDetail === "function") {
+      const providerDetail = await withTimeout(provider.getMatchDetail(query), DEFAULT_TIMEOUT_MS);
+      if (providerDetail) {
+        detail = providerDetail;
+        source = provider.source;
+      }
+    }
+  } catch (error) {
+    detail = localDetail;
+    source = mockProvider.source;
+  }
+
+  const data = detail ? [detail] : [];
+
+  if (!validateOrSend(res, data, validateMatchDetail)) {
+    return;
+  }
+
+  return sendSuccess(res, data, source);
+}
+
+/**
+ * SUPABASE SAĞLIĞI.
+ *
+ * Kendi dosyası YOK ve olamaz: api/ dizini Vercel Hobby planının 12 fonksiyon
+ * sınırında. Yeni bir uç noktanın kendi dosyası olsaydı dağıtım tamamen
+ * başarısız olurdu — bu yüzden yönlendirici üzerinden servis ediliyor.
+ *
+ * `?probe=1` verilmedikçe AĞA ÇIKMAZ: her sağlık isteğinin veritabanına
+ * gitmesi gereksiz yük ve gereksiz gecikme olurdu.
+ *
+ * Anahtar değeri hiçbir koşulda yanıta girmez (services/supabase/health.js).
+ */
+async function handleSupabaseHealth(req, res, query) {
+  try {
+    const report = await supabaseHealth({
+      probe: String(query.probe || "") === "1" || String(query.probe || "") === "true"
+    });
+    return sendSuccess(res, [report], "FutbolRadar Supabase Health");
+  } catch (error) {
+    // Sağlık ucu çökmemeli: sorunu bildirmek onun işi.
+    return sendError(
+      res,
+      200,
+      (error && error.message) || "Supabase sağlık raporu üretilemedi.",
+      "SUPABASE_HEALTH_ERROR"
+    );
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (rejectUnsupportedMethod(req, res)) {
     return;
   }
 
   const route = routeName(req);
-  setCachePolicy(res, route === "match-analysis" ? "match-analysis" : "players");
+  setCachePolicy(res, ROUTE_CACHE_POLICIES[route] || "players");
   if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
@@ -277,6 +394,18 @@ module.exports = async function handler(req, res) {
 
   if (route === "super-lig-fixtures") {
     return handleSuperLigFixtures(req, res, query);
+  }
+
+  if (route === "analyses") {
+    return handleAnalyses(req, res, query);
+  }
+
+  if (route === "supabase-health") {
+    return handleSupabaseHealth(req, res, query);
+  }
+
+  if (route === "match-detail") {
+    return handleMatchDetail(req, res, query);
   }
 
   return sendError(res, 404, "API endpoint bulunamadi.", "API_ROUTE_NOT_FOUND");

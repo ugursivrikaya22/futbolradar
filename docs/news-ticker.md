@@ -20,18 +20,32 @@ data/*.json  ──▶  services/tickerService.js  ──▶  scripts/lib/ticker
 
 ## Kaynaklar
 
-| Kaynak | Öncelik | Dosya | Ne gösterir |
-| --- | --- | --- | --- |
-| `live` | 0 | `matches.json`, `fixture-calendar.json` | Oynanan maçın anlık skoru |
-| `today` | 1 | `matches.json`, `fixture-calendar.json` | Bugünün başlayacak maçları, saatiyle |
-| `result` | 2 | `matches.json`, `fixture-calendar.json` | Biten maçların skoru |
-| `statement` | 3 | `statements.json` | Maç sonu teknik direktör / futbolcu sözleri |
-| `transfer` | 4 | `transfers.json` | Onaylı transfer hareketleri |
-| `news` | 5 | `news.json` | Doğrulanmış editoryal haberler |
+| Kaynak | Öncelik | Kota (en az / en çok) | Dosya | Ne gösterir |
+| --- | --- | --- | --- | --- |
+| `live` | 0 | 2 / 4 | `matches.json`, `fixture-calendar.json` | Oynanan maçın anlık skoru |
+| `today` | 1 | 2 / 4 | `matches.json`, `fixture-calendar.json` | Bugünün başlayacak maçları, saatiyle |
+| `result` | 2 | 1 / 3 | `matches.json`, `fixture-calendar.json` | Biten maçların skoru |
+| `transfer` | 3 | 1 / 2 | `transfers.json` | Onaylı transfer hareketleri |
+| `statement` | 4 | 1 / 3 | `statements.json` | Maç sonu teknik direktör / futbolcu sözleri |
+| `news` | 5 | 1 / 2 | `news.json` | Doğrulanmış editoryal haberler |
+
+Sıra `services/agendaService.js` içindeki `TIER` sırasının aynısıdır: önce
+maçlar (canlı, bugün, sonuç), sonra kesinleşmiş transferler, sonra maç sonu
+açıklamaları, en sonda editoryal gündem. Bant ile bülten farklı sıra
+kullansaydı okuyucu aynı günün gündemini iki farklı düzende okurdu.
 
 Kota sistemi tek bir kategorinin bandı ele geçirmesini engeller: her dolu
 kategori en az `minSlots` kadar yer alır, kalan yerler önceliğe göre dolar.
-Bant en fazla `MAX_ITEMS` (10) öğe taşır.
+`minSlots` toplamı `MAX_ITEMS` değerini aşamaz — aşsaydı son kategoriler garantili
+yerini alamazdı ve `composeTickerFeed` bunu ayrıca doğrular. Bant en fazla
+`MAX_ITEMS` (10) öğe taşır.
+
+Yaş sınırı da kaynağa göre değişir: maç ve haber içeriği için `MAX_AGE_HOURS`
+(7 gün), transferler için `TRANSFER_MAX_AGE_HOURS` (21 gün). Bir maç sonucu
+bir hafta sonra haber değerini yitirir, "X kulübe katıldı" bilgisi ise
+transfer dönemi boyunca geçerli kalır. Bu tazelik iddiasını gevşetmez: rozet
+hâlâ banttaki **en taze** öğeye bakar, eski bir transfer tek başına "Son
+Dakika" üretemez.
 
 ## Öğe yapısı
 
@@ -39,15 +53,20 @@ Bant en fazla `MAX_ITEMS` (10) öğe taşır.
 
 ```js
 {
-  kind: "live" | "today" | "result" | "statement" | "transfer" | "news",
+  kind: "live" | "today" | "result" | "transfer" | "statement" | "news",
   label: "Canlı",            // rozet metni
   text: "Fenerbahçe 1-0 Galatasaray",
   href: "canli-skor.html#mac-id",
   at: "2026-08-10T21:00:00+03:00",  // ISO 8601, sıralama ve tazelik için
+  weight: 100,               // kulüp ilgisi × tazelik — kategori İÇİ sıra
   priority: 0,               // kaynağın önceliği
   source: "live"             // kaynağın kimliği (tanılama için)
 }
 ```
+
+Kategoriler arasındaki sırayı `priority`, kategori içindeki sırayı `weight`
+belirler; ağırlık eşitse tazelik karar verir. Tazelik tek ölçüt olduğunda
+aynı gün gelen iki transferden daha az aranan kulübünki öne geçebiliyordu.
 
 Dönen nesne:
 

@@ -16523,3 +16523,366 @@ body,
 :root[data-theme="dark"] .report-status.is-warn {
   color: #fbbf24;
 }
+
+/* ============================================================================
+   YÖNETİM PANELİ (yonetim-paneli.html · services/brainService.js)
+
+   Panel bir vitrin değil, bir ölçüm sayfası: kaç kural var, kaç maçın skoru
+   eksik, hangi kayıt dosyası ne zaman güncellendi. Bu yüzden site genelindeki
+   kart diline değil, YOĞUN ve TARANABİLİR bir düzene ihtiyacı var — okuyan
+   kişi bir sayıyı aramaya gelir, bir hikâye okumaya değil.
+
+   İki ayrım görsel olarak da taşınır:
+     · ÖLÇÜLDÜ  → sayı büyük ve koyu (.admin-stat b).
+     · ÖLÇEMEDİK → sayı hiç basılmaz, gerekçe cümlesi basılır
+                   (.admin-unmeasured). "0" ile "bilinmiyor" aynı görünürse
+                   panelin tek işi olan ayrım kaybolur.
+
+   Makine anahtarları (`quick-ready`, `bigFourMatch`, `data/matches.json`)
+   <code> ile yazılır: Türkçe bir ad değil, kaynaktaki adın kendisi olduğu
+   ilk bakışta anlaşılmalı.
+   ========================================================================== */
+.admin-page {
+  padding-bottom: var(--sp-12);
+}
+
+.admin-hero .lead {
+  max-width: 68ch;
+}
+
+/* Ölçüm zamanı satırı: panelin ne kadar eski olduğu ilk okunan bilgidir. */
+.admin-stamp {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-4);
+  margin: var(--sp-4) 0 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.admin-stamp-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-unknown {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.admin-section {
+  margin-top: var(--sp-10);
+}
+
+.admin-section .section-title p {
+  max-width: 72ch;
+  margin: var(--sp-2) 0 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.admin-block + .admin-block {
+  margin-top: var(--sp-6);
+}
+
+.admin-heading {
+  margin: var(--sp-6) 0 var(--sp-2);
+  font-size: var(--fs-md);
+}
+
+.admin-heading:first-child {
+  margin-top: 0;
+}
+
+.admin-count {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.admin-note {
+  max-width: 72ch;
+  margin: 0 0 var(--sp-3);
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* --- Ölçülmüş sayılar ---------------------------------------------------- */
+.admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.admin-stat {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--panel);
+}
+
+.admin-stat b {
+  color: var(--text);
+  font-size: var(--fs-xl);
+  font-weight: 900;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.admin-stat span {
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+/* Kaynak dosyası küçük yazılır ama gizlenmez: bir sayının nereden geldiğini
+   sormak zorunda kalmak, sayıya güvenmemek demektir. */
+.admin-stat em {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-style: normal;
+  overflow-wrap: anywhere;
+}
+
+/* --- Ölçülemeyen blok ---------------------------------------------------- */
+.admin-unmeasured {
+  display: grid;
+  gap: 6px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  padding: var(--sp-4);
+  background: rgba(var(--surface-rgb), 0.4);
+}
+
+.admin-unmeasured strong {
+  color: var(--text);
+  font-size: var(--fs-base);
+}
+
+.admin-unmeasured p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+}
+
+.admin-unmeasured em {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-style: normal;
+}
+
+/* --- Dağılım listeleri --------------------------------------------------- */
+.admin-dist {
+  display: grid;
+  gap: 0;
+  margin: 0 0 var(--sp-4);
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.admin-dist-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  min-height: 42px;
+  padding: 6px var(--sp-4);
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-dist-row:last-child {
+  border-bottom: 0;
+}
+
+.admin-dist-key {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.admin-dist-name {
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.admin-dist-row b {
+  flex: none;
+  color: var(--text);
+  font-size: var(--fs-md);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Not kartları (testsiz kural, takılan kayıt, hazır olmayan analiz) ---- */
+.admin-note-card {
+  display: grid;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: var(--sp-4);
+  background: rgba(var(--surface-rgb), 0.4);
+}
+
+.admin-note-card.is-warn {
+  border-left-color: var(--warn);
+}
+
+.admin-note-card strong {
+  font-size: var(--fs-base);
+}
+
+.admin-note-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.admin-idlist,
+.admin-reasons {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-reasons li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+}
+
+.admin-reasons span {
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+}
+
+.admin-idlist li {
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+}
+
+/* --- Durum rozeti -------------------------------------------------------- */
+.admin-flag-row {
+  margin: 0 0 var(--sp-3);
+}
+
+.admin-flag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  padding: 2px 10px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.admin-flag.is-ok {
+  background: rgba(11, 143, 90, 0.09);
+  border-color: rgba(11, 143, 90, 0.22);
+  color: var(--green);
+}
+
+.admin-flag.is-warn {
+  background: rgba(217, 119, 6, 0.1);
+  border-color: rgba(217, 119, 6, 0.24);
+  color: #b45309;
+}
+
+/* --- Tablolar (kural tablosu, kuyruk, dosya envanteri) ------------------- */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 9px var(--sp-3);
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-table th {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.admin-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-table td b {
+  display: block;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.admin-domain + .admin-domain {
+  margin-top: var(--sp-8);
+}
+
+/* Makine anahtarı: Türkçeleştirilmemiş olduğu görünsün. */
+.admin-page code {
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: var(--fs-xs);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .admin-stat-grid {
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  }
+
+  .admin-dist-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+    padding-block: var(--sp-2);
+  }
+}
+
+/* Koyu temada yalnızca sabit yazılmış renkler düzeltilir; geri kalan her şey
+   belirteçlerden geldiği için kendiliğinden döner. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .admin-flag.is-warn {
+    color: #fbbf24;
+  }
+
+  :root:not([data-theme]) .admin-stat,
+  :root:not([data-theme]) .admin-unmeasured,
+  :root:not([data-theme]) .admin-note-card {
+    background: rgba(var(--surface-rgb), 0.6);
+  }
+}
+
+:root[data-theme="dark"] .admin-flag.is-warn {
+  color: #fbbf24;
+}
+
+:root[data-theme="dark"] .admin-stat,
+:root[data-theme="dark"] .admin-unmeasured,
+:root[data-theme="dark"] .admin-note-card {
+  background: rgba(var(--surface-rgb), 0.6);
+}

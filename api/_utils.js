@@ -16,6 +16,18 @@ const CACHE_POLICIES = Object.freeze({
   signals: { maxAge: 120, stale: 600 },
   analyses: { maxAge: 3600, stale: 21600 },
   "match-analysis": { maxAge: 300, stale: 900 },
+  // Kural beyni derleme ritminde değişir: kayıt defteri ve boru hattı özeti
+  // bir okumadan diğerine saniyeler içinde farklılaşmaz. Beş dakikalık CDN
+  // penceresi, defteri her panel açılışında yeniden doğrulamayı (her kayıt
+  // için modül yükleme) önler.
+  "analysis-brain": { maxAge: 300, stale: 900 },
+  // Rapor durumu maç bitişinden sonraki ilk saatlerde dakikalar içinde
+  // değişiyor: "Hızlı rapor hazır" bir saat sonra "Tam analiz hazırlanıyor"
+  // oluyor. Bu yüzden maç listesiyle aynı kısa pencere — daha uzun bir
+  // önbellek, kapanmış bir durumu açık gösterirdi.
+  "report-status": { maxAge: 60, stale: 180 },
+  // Sağlık ucu önbelleğe alınmaz: yapılandırma durumu anlık sorulur.
+  "supabase-health": { noStore: true },
   health: { noStore: true }
 });
 const QUERY_VALUE_MAX_LENGTH = 160;
