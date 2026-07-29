@@ -75,38 +75,19 @@ const FULL_TIME_AFTER_KICKOFF_MINUTES = 115;
  */
 const FULL_COVERAGE_RATIO = 0.5;
 
-const REPORT_STATUS = Object.freeze({
-  quickReady: {
-    key: "quick-ready",
-    text: "Hızlı rapor hazır",
-    tone: "ok",
-    detail: "Kesin skor, gol akışı ve maç özeti yayımlandı. Tam analiz için veri bekleniyor."
-  },
-  fullProcessing: {
-    key: "full-processing",
-    text: "Tam analiz hazırlanıyor",
-    tone: "progress",
-    detail: "İstatistik ve oyuncu verisi işleniyor; rapor geldiği anda kendiliğinden genişleyecek."
-  },
-  fullReady: {
-    key: "full-ready",
-    text: "Tam analiz hazır",
-    tone: "ok",
-    detail: "Skor, istatistik, oyuncu ve taktik okuması tamamlandı."
-  },
-  partialFinal: {
-    key: "partial-final",
-    text: "Kısmi rapor · veri tamamlanmadı",
-    tone: "warn",
-    detail: "Bu maç için ek veri ulaşmadı. Rapor elde olan doğrulanmış veriyle son hâlini aldı."
-  },
-  unavailable: {
-    key: "unavailable",
-    text: "Veri yok",
-    tone: "warn",
-    detail: "Karşılaşmanın doğrulanmış skoru henüz ulaşmadı; rapor üretilemiyor."
-  }
-});
+/**
+ * DURUM CÜMLELERİ templates/report-status.json'da yaşıyor.
+ *
+ * Metin ile kararı ayırmanın nedeni tek: bu beş cümle okuyucunun gördüğü
+ * yüzdür ve üslubu bir gün düzeltilecektir. Düzeltmenin, hangi pencerede
+ * hangi durumun seçildiğine karar veren mantığa dokunmayı gerektirmemesi
+ * gerekir — yanlışlıkla eşiği kaydıran bir metin düzeltmesi, sessizce
+ * yanlış rapor durumu üretir.
+ *
+ * Şablon YALNIZCA cümleyi taşır. Anahtar adları, `key` değerleri ve sıra
+ * sözleşmedir; kural bu dosyada kalır.
+ */
+const REPORT_STATUS = Object.freeze(require("../templates/report-status.json").statuses);
 
 const STATUS_BY_KEY = Object.freeze(
   Object.fromEntries(Object.values(REPORT_STATUS).map((status) => [status.key, status]))

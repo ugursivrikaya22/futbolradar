@@ -163,7 +163,11 @@ function testFreshBadgeIsATimeClaim() {
  * sinyal olmaktan çıkar.
  */
 function testScheduledFixtureDoesNotClaimBreakingNews() {
-  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(new Date());
+  // HERMETİK: değerlendirme anı sabitlenir. Fikstür saati gerçek saate göre
+  // yorumlanırsa test gün içinde kendiliğinden bozulur — kickoff geçtikten
+  // sonra skorsuz maç görüntüleme kapısından geçemez ve ön koşul düşer.
+  const now = new Date("2026-07-29T12:00:00+03:00");
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(now);
   const feed = withTempData(
     (files) => {
       emptyAllSources(files);
@@ -177,7 +181,7 @@ function testScheduledFixtureDoesNotClaimBreakingNews() {
       }]), "utf8");
       if (fs.existsSync(STATE_FILE)) fs.unlinkSync(STATE_FILE);
     },
-    () => buildTickerFeed()
+    () => buildTickerFeed({ now })
   );
 
   assert.ok(feed.items.some((item) => item.kind === "today"), "ön koşul: program kaydı banda girmeli");
@@ -203,7 +207,9 @@ function testLiveBadgeIsALiveClaim() {
 
 /** Bugünün maçları saatiyle banda girmeli — bandın en çok sorulan sorusu. */
 function testTodayFixturesCarryKickoffTime() {
-  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(new Date());
+  // HERMETİK: bkz. testScheduledFixtureDoesNotClaimBreakingNews.
+  const now = new Date("2026-07-29T12:00:00+03:00");
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(now);
   const result = withTempData(
     (files) => {
       emptyAllSources(files);
@@ -217,7 +223,7 @@ function testTodayFixturesCarryKickoffTime() {
       }]), "utf8");
       if (fs.existsSync(STATE_FILE)) fs.unlinkSync(STATE_FILE);
     },
-    () => buildTickerFeed()
+    () => buildTickerFeed({ now })
   );
 
   const item = result.items.find((entry) => entry.kind === "today");

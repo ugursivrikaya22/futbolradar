@@ -14,20 +14,25 @@
  * okuyucunun kendi şüphesini kapatır.
  */
 
-const TRUST_LABELS = Object.freeze({
-  verified: { text: "Doğrulandı", tone: "verified", title: "Kaynağı ve doğrulama zamanı olan kayıt" },
-  // Bu üç metin services/transferService.js SOURCE_TYPES ile BİREBİR aynı
-  // olmalı: kaynak türü iki ayrı sözcükle anlatılırsa okuyucu aynı şeyin iki
-  // farklı şey olduğunu sanır. scripts/test-transfer-pipeline.mjs karşılaştırır.
-  official: { text: "Resmî açıklama", tone: "official", title: "Kulüp, federasyon veya konfederasyon açıklaması" },
-  media: { text: "Basın kaynağı", tone: "media", title: "Güvenilir basın kaydı" },
-  rumour: { text: "Söylenti", tone: "rumour", title: "Doğrulanmamış iddia — kesinleşmiş kayıt değildir" },
-  incomplete: { text: "Veri eksik", tone: "warn", title: "Bu kartın bazı alanları henüz doğrulanmadı" },
-  noScore: { text: "Skor yok", tone: "warn", title: "Karşılaşmanın doğrulanmış skoru henüz ulaşmadı" },
-  transferConfirmed: { text: "Transfer kesinleşti", tone: "verified", title: "Kulüp açıklaması veya güvenilir kayıtla kesinleşmiş transfer" },
-  live: { text: "Canlı", tone: "live", title: "Karşılaşma sürüyor" },
-  awaiting: { text: "Veri bekleniyor", tone: "warn", title: "Kayıt henüz ulaşmadı" }
-});
+/**
+ * SÖZ DAĞARCIĞININ METNİ templates/trust-labels.json'da yaşıyor.
+ *
+ * Etiket cümlesi okuyucuya bakan yüzdür; türetme kuralı ise bu dosyadadır.
+ * İkisini ayırmak, üslup düzeltmesinin yanlışlıkla türetme mantığına
+ * dokunmasını engelliyor — "Söylenti" yazan bir kartın hangi koşulda o
+ * etiketi aldığı, o cümleyi yeniden yazan kişinin kararı olmamalı.
+ *
+ * Şablonun kapsamı METİNLE SINIRLI: hangi anahtarın basılacağına, kaydın
+ * neyi taşıdığına ve neyin sessizce düşeceğine aşağıdaki fonksiyonlar
+ * karar verir. Söz dağarcığı yine kapalıdır — şablonda olmayan anahtar
+ * basılamaz.
+ *
+ * official/media/rumour metinleri services/transferService.js SOURCE_TYPES
+ * ile BİREBİR aynı olmalı: kaynak türü iki ayrı sözcükle anlatılırsa okuyucu
+ * aynı şeyin iki farklı şey olduğunu sanır. scripts/test-transfer-pipeline.mjs
+ * hem bu eşliği hem de app.js aynasını karşılaştırır.
+ */
+const TRUST_LABELS = Object.freeze(require("../templates/trust-labels.json").labels);
 
 /** Söz dağarcığı dışında bir etiket basılamaz. */
 function isKnownLabel(key) {

@@ -1,0 +1,161 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://futbolradar.dev/rules/schema.json",
+  "title": "FutbolRadar kural kayıt defteri",
+  "description": "rules/registry.json dosyasının biçimi. Kayıt defteri kuralı UYGULAMAZ; kuralın nerede yaşadığını, hangi eşiklerle çalıştığını ve hangi testin koruduğunu söyler. Tek yetkili karar noktası her zaman module alanındaki servis dosyasıdır.",
+  "type": "object",
+  "required": ["version", "domains", "rules"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "description": "Bu dosyanın şemasına göreli yol.",
+      "type": "string"
+    },
+    "version": {
+      "description": "Kayıt defteri biçim sürümü. Şema değişirse artar.",
+      "type": "string",
+      "pattern": "^[0-9]+$"
+    },
+    "domains": {
+      "description": "Kural alanları. Her kural tam olarak bir alana bağlıdır.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/domain" }
+    },
+    "rules": {
+      "description": "Kayıtlı kurallar. Doğrulanamayan kayıt buraya yazılmaz.",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/rule" }
+    }
+  },
+  "definitions": {
+    "domain": {
+      "type": "object",
+      "required": ["id", "title", "summary"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Alan kimliği. Kurallar bu değere referans verir.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "title": {
+          "description": "Alanın Türkçe başlığı — arayüzde görünür.",
+          "type": "string",
+          "minLength": 3
+        },
+        "summary": {
+          "description": "Alanın hangi soruyu cevapladığını anlatan tek cümlelik Türkçe özet.",
+          "type": "string",
+          "minLength": 10
+        }
+      }
+    },
+    "rule": {
+      "type": "object",
+      "required": [
+        "id",
+        "domain",
+        "title",
+        "statement",
+        "rationale",
+        "module",
+        "entry",
+        "thresholds",
+        "vocabulary",
+        "test",
+        "surfaces"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Nokta ayraçlı benzersiz kural kimliği, ör. \"match.display.gate\".",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9]*(\\.[a-z0-9][a-z0-9-]*)+$"
+        },
+        "domain": {
+          "description": "domains[].id değerlerinden biri.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "title": {
+          "description": "Kuralın Türkçe kısa başlığı.",
+          "type": "string",
+          "minLength": 3
+        },
+        "statement": {
+          "description": "Kuralın ne yaptığını söyleyen Türkçe ifade. Kaynak kodla birebir uyumlu olmalıdır.",
+          "type": "string",
+          "minLength": 20
+        },
+        "rationale": {
+          "description": "Kural NEDEN var: hangi somut hatayı önlüyor. \"Ne yaptığı\" değil, \"neden var olduğu\" yazılır.",
+          "type": "string",
+          "minLength": 20
+        },
+        "module": {
+          "description": "Kuralın yaşadığı GERÇEK dosya. Depo köküne göreli yol.",
+          "type": "string",
+          "pattern": "^(services|scripts|lib|api)/[A-Za-z0-9_./-]+\\.(js|mjs|ts)$"
+        },
+        "entry": {
+          "description": "module dosyasında GERÇEKTEN dışa aktarılan ad (fonksiyon ya da sabit).",
+          "type": "string",
+          "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$"
+        },
+        "thresholds": {
+          "description": "Kuralın kullandığı sayısal ya da kümesel eşikler. Değerler kaynaktakiyle aynı olmak zorundadır.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/threshold" }
+        },
+        "vocabulary": {
+          "description": "Kuralın basabileceği, kullanıcıya görünen Türkçe metinler. Boş dizi \"bu kural metin basmaz\" demektir.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "test": {
+          "description": "Kuralı koruyan GERÇEK test dosyası. Kuralın henüz testi yoksa boş dize bırakılır — uydurma test yolu yazılmaz.",
+          "type": "string",
+          "pattern": "^$|^scripts/test-[A-Za-z0-9_.-]+\\.mjs$"
+        },
+        "surfaces": {
+          "description": "Kuralın sonucunu gösteren ya da kuralı çağıran yüzeyler. Yıldız içeren desenler üretilen sayfa ailelerini anlatır.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "threshold": {
+      "type": "object",
+      "required": ["name", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Eşiğin kaynaktaki sabit adı ya da okunur karşılığı.",
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "description": "Eşiğin değeri. Sayı, dize, mantıksal değer ya da bunların dizisi olabilir.",
+          "anyOf": [
+            { "type": "number" },
+            { "type": "string" },
+            { "type": "boolean" },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [{ "type": "number" }, { "type": "string" }]
+              }
+            }
+          ]
+        },
+        "unit": {
+          "description": "Değerin birimi (saat, dakika, maç, yüzde…). Birimsiz eşiklerde yazılmaz.",
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

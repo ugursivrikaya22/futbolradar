@@ -1,0 +1,1078 @@
+{
+  "$schema": "./schema.json",
+  "version": "1",
+  "domains": [
+    {
+      "id": "match-visibility",
+      "title": "Maç görünürlüğü, sıralama ve sinyal",
+      "summary": "Bir karşılaşmanın yayımlanıp yayımlanmayacağına, listede nerede duracağına ve kartında hangi Türkçe sinyalin basılacağına karar veren kurallar."
+    },
+    {
+      "id": "report-core",
+      "title": "Maç raporu üretim koşulu",
+      "summary": "Bir maç için rapor sayfası açılmasının ön koşullarını belirleyen kurallar: neyin bilinmesi, neyin beklenmesi gerekir."
+    },
+    {
+      "id": "report-stages",
+      "title": "Rapor aşamaları",
+      "summary": "Üretilmiş bir raporun hangi aşamada olduğunu ve okuyucuya hangi cümleyle anlatılacağını belirleyen kurallar."
+    },
+    {
+      "id": "retry-schedule",
+      "title": "Yeniden deneme takvimi",
+      "summary": "Eksik veri için sağlayıcıya ne zaman, kaç kez ve hangi öncelikle geri dönüleceğini belirleyen kurallar."
+    }
+  ],
+  "rules": [
+    {
+      "id": "match.publish.identity-gate",
+      "domain": "match-visibility",
+      "title": "Kimliği eksik karşılaşma yayımlanmaz",
+      "statement": "Bir maç kaydı homeTeam, awayTeam ve okunabilir bir kickoff taşımıyorsa yayımlanmaz; evaluateMatch eligible:false döner ve gerekçe (\"kimlik alanı eksik: …\" / \"başlama saati okunamıyor\") kayda yazılır. Bu üç alan dışındaki eksiklikler eleme sebebi DEĞİLDİR.",
+      "rationale": "Eskiden eksik veriyle gelen her maç tamamen eleniyordu ve okuyucu açısından maç HİÇ VAR OLMAMIŞ oluyordu. Yeni kural iki soruyu ayırıyor — \"bu karşılaşma gerçek mi?\" ve \"ayrıntısı tam mı?\". Kimlik alanları olmadan dürüst bir fikstür satırı çizilemez, çünkü uydurma fikstür üretmiyoruz; ama verisi geç geldiği için hiçbir maç elenmez.",
+      "module": "services/matchEligibility.js",
+      "entry": "evaluateMatch",
+      "thresholds": [
+        { "name": "IDENTITY_FIELDS", "value": ["homeTeam", "awayTeam", "kickoff"] },
+        { "name": "REQUIRED_FIELDS", "value": "IDENTITY_FIELDS (geriye dönük uyumluluk için korunan takma ad)" }
+      ],
+      "vocabulary": [],
+      "test": "scripts/test-api-resilience.mjs",
+      "surfaces": [
+        "services/providers/mockProvider.js",
+        "scripts/prerender-core-pages.mjs",
+        "scripts/generate-post-match-pages.mjs"
+      ]
+    },
+    {
+      "id": "match.publish.approved-source",
+      "domain": "match-visibility",
+      "title": "Yalnızca onaylı kaynaktan gelen maç yayımlanır",
+      "statement": "match.source değeri APPROVED_SOURCES kümesinde değilse maç yayımlanmaz; \"mock\" dahil hiçbir onaysız kaynak sızamaz. Gerekçe \"kaynak onaylı değil: <kaynak>\" ya da kaynak boşsa \"kaynak onaylı değil: belirtilmemiş\" olur.",
+      "rationale": "Kaynak kodundaki yorum tek cümleyle söylüyor: uydurma fikstür üretmiyoruz. Kaynağı doğrulanamayan bir kayıt, sitenin var olmayan bir karşılaşmayı gerçekmiş gibi yayımlaması demektir; kaynak beyaz listesi bu tek hatayı kapatır.",
+      "module": "services/matchEligibility.js",
+      "entry": "APPROVED_SOURCES",
+      "thresholds": [
+        {
+          "name": "APPROVED_SOURCES",
+          "value": ["manual_verified", "official_club", "api-football", "football-data", "thesportsdb"]
+        }
+      ],
+      "vocabulary": [],
+      "test": "scripts/test-api-resilience.mjs",
+      "surfaces": [
+        "services/providers/mockProvider.js",
+        "scripts/prerender-core-pages.mjs"
+      ]
+    },
+    {
+      "id": "match.publish.awaiting-data",
+      "domain": "match-visibility",
+      "title": "Eksik alan maçı gizlemez, açıkça \"bekleniyor\" işaretlenir",
+      "statement": "Kimliği ve kaynağı sağlam bir maçta lig adı, durum, biten maçın skoru ya da doğrulama eksikse maç YİNE DE yayımlanır; publishState \"awaiting-data\" olur ve eksik her alan gaps dizisine kendi Türkçe etiketiyle yazılır. Eksiksiz kayıt \"complete\" olur.",
+      "rationale": "İki hata da adlandırılmış: eksik veri yüzünden maçı elemek maçı yok etmek, eksik alanı uydurmak ise sahte veri üretmektir. Üçüncü yol seçilmiş — alan boş bırakılmaz, AÇIKÇA \"bekleniyor\" gösterilir. annotateMatch/filterPublishable bu bilgiyi kaydın üzerine yazar ki her yüzey aynı bilgiyi görsün ve kendi kuralını uydurmasın.",
+      "module": "services/matchEligibility.js",
+      "entry": "evaluateMatch",
+      "thresholds": [
+        { "name": "PUBLISH_STATE.COMPLETE", "value": "complete" },
+        { "name": "PUBLISH_STATE.AWAITING_DATA", "value": "awaiting-data" },
+        { "name": "STALE_STATUS_HOURS", "value": 3.5, "unit": "saat" }
+      ],
+      "vocabulary": [
+        "Turnuva bilgisi bekleniyor",
+        "Maç durumu bekleniyor",
+        "Skor bekleniyor",
+        "Ayrıntılar doğrulanmayı bekliyor",
+        "Sonuç bekleniyor",
+        "Veri bekleniyor"
+      ],
+      "test": "scripts/test-api-resilience.mjs",
+      "surfaces": [
+        "services/providers/mockProvider.js",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.publish.stale-status",
+      "domain": "match-visibility",
+      "title": "Saati 3.5 saat geçmiş \"başlayacak\" kaydı sonuç bekliyor sayılır",
+      "statement": "Maç ne canlı ne bitmiş görünüyorsa ve başlama saatinin üzerinden STALE_STATUS_HOURS'tan fazla geçtiyse status alanı \"Sonuç bekleniyor\" boşluğuyla işaretlenir; kayıt elenmez.",
+      "rationale": "Başlama saati geçmiş ama hâlâ \"başlayacak\" diyen bir kayıt, elimizdeki verinin maçın gerçek durumunu bilmediğini gösterir. Bunu gizlemek yerine söylüyoruz — okuyucu maçın oynandığını bilir, sonucun henüz gelmediğini de görür.",
+      "module": "services/matchEligibility.js",
+      "entry": "STALE_STATUS_HOURS",
+      "thresholds": [
+        { "name": "STALE_STATUS_HOURS", "value": 3.5, "unit": "saat" }
+      ],
+      "vocabulary": ["Sonuç bekleniyor"],
+      "test": "scripts/test-api-resilience.mjs",
+      "surfaces": [
+        "services/providers/mockProvider.js",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.publish.friendly-verification",
+      "domain": "match-visibility",
+      "title": "Hazırlık maçının ayrıntısı doğrulanana kadar bekliyor işaretlenir",
+      "statement": "competitionId'sinde \"hazirlik\" ya da lig adında \"hazırlık\"/\"hazirlik\"/\"friendly\" geçen maçlarda dataStatus \"verified\" değilse verification boşluğu eklenir ve maç awaiting-data durumunda yayımlanır. Eskiden bu maçlar tamamen eleniyordu.",
+      "rationale": "Hazırlık ve alt seviye karşılaşmalarda sağlayıcı verisi sık sık eksik, geç ve çelişkili geliyor — takvim kaydı maç bittikten saatler sonra hâlâ \"SCHEDULED\" gösterebiliyor. Bu yüzden ham sağlayıcı kaydı yetmiyor; ama fikstürün kendisi de kaybolmuyor.",
+      "module": "services/matchEligibility.js",
+      "entry": "isFriendlyOrLowerTier",
+      "thresholds": [],
+      "vocabulary": ["Ayrıntılar doğrulanmayı bekliyor"],
+      "test": "scripts/test-api-resilience.mjs",
+      "surfaces": ["services/providers/mockProvider.js"]
+    },
+    {
+      "id": "match.publish.exclusion-logging",
+      "domain": "match-visibility",
+      "title": "Elenen ve eksik verili her maç iç günlüğe yazılır",
+      "statement": "filterPublishable elenenleri excluded, eksik alanlıları pending listesinde döndürür; logExcluded her eleneni `[futbolradar:match-excluded] scope=… id=… reason=\"…\"`, logDataGaps her eksik alanlıyı `[futbolradar:match-data-gap] scope=… id=… awaiting=\"…\"` satırıyla console.warn'a basar.",
+      "rationale": "Veri boşluğu sessiz kalmamalı. Kalıcı bir boşluk sağlayıcı tarafındaki bir sorunun tek işareti olabilir; sessizce düşen kayıt, fark edilmeyen bir veri arızası demektir.",
+      "module": "services/matchEligibility.js",
+      "entry": "logDataGaps",
+      "thresholds": [],
+      "vocabulary": [],
+      "test": "",
+      "surfaces": ["services/providers/mockProvider.js"]
+    },
+    {
+      "id": "match.display.gate",
+      "domain": "match-visibility",
+      "title": "Başlamış ama skoru olmayan maç listede gizlenir",
+      "statement": "Görüntüleme kapısı maçın evresine bakar: başlamadan önce GÖSTER; canlı + skor var GÖSTER; bitmiş + skor var GÖSTER; skoru okunamayan başlamış maç ya da durumu bilinmeyen skorsuz kayıt GİZLE. Skoru varsa durum etiketi geç gelmiş olsa bile maç gösterilir.",
+      "rationale": "Skor tablosuna bakmanın SEBEBİ skordur; başlamış bir maçın yanında \"Veri bekleniyor\" yazan satır o soruyu cevaplamıyor, üstelik maçın 0-0 gittiği ya da sitenin bozuk olduğu izlenimini veriyor. Uydurma 0-0 basmak yerine sessizlik seçiliyor. Kapı evaluateMatch'in yerine geçmez, üstüne biner.",
+      "module": "services/matchEligibility.js",
+      "entry": "evaluateDisplayable",
+      "thresholds": [
+        { "name": "FINISHED_STATUSES", "value": ["FINISHED", "FT", "AET", "PEN"] },
+        {
+          "name": "LIVE_STATUSES",
+          "value": ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"]
+        }
+      ],
+      "vocabulary": [],
+      "test": "scripts/test-match-display.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "services/tickerService.js",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.display.hidden-logging",
+      "domain": "match-visibility",
+      "title": "Gizlenen maç gerekçesi ve evresiyle günlüğe yazılır",
+      "statement": "filterDisplayable gizlenenleri {id, reason, phase} olarak döndürür; logHiddenMatches her birini `[futbolradar:match-hidden] scope=… id=… phase=… reason=\"…\"` satırıyla console.warn'a basar.",
+      "rationale": "Gizlenen her maç gerekçesiyle iç günlüğe yazılıyor — veri boşluğu görünmez olmamalı. Sessizce düşen maç, veri arızasının hiçbir izini bırakmaz.",
+      "module": "services/matchEligibility.js",
+      "entry": "logHiddenMatches",
+      "thresholds": [],
+      "vocabulary": [
+        "canlı maçın skoru yok",
+        "biten maçın skoru yok",
+        "başlama saati geçti, skor yok ve durum bilinmiyor",
+        "başlama saati okunamıyor",
+        "kayıt yok"
+      ],
+      "test": "scripts/test-match-display.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.card.headline",
+      "domain": "match-visibility",
+      "title": "Kartta basılacak başlık yoksa kart hiç çizilmez",
+      "statement": "matchHeadline gösterilebilir her maç için tam olarak bir zorunlu değer üretir: skor varsa \"3-1\" (canlıysa kind live / etiket \"Canlı skor\", değilse kind final / etiket \"Maç sonucu\"), skor yoksa İstanbul saatiyle başlama saati (kind time / etiket \"Başlama saati\"). Üretemezse null döner ve kart çizilmez.",
+      "rationale": "\"Günün Radar Maçı\" kartları yalnızca takım adlarını basıyordu — ne skor ne saat. Kart bozuk görünüyordu, çünkü bir maç kartının varlık sebebi olan sayı hiç yoktu. Kural şu eşdeğerlikle yaşıyor: GÖSTERİLEBİLİR <=> BASILACAK BİR BAŞLIK VAR; biri değişirse diğeri de değişmek zorunda ve test bunu doğruluyor.",
+      "module": "services/matchEligibility.js",
+      "entry": "matchHeadline",
+      "thresholds": [
+        { "name": "HEADLINE_KIND", "value": "{ LIVE: \"live\", FINAL: \"final\", TIME: \"time\" }" }
+      ],
+      "vocabulary": ["Canlı skor", "Maç sonucu", "Başlama saati"],
+      "test": "scripts/test-match-card-integrity.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.display.order",
+      "domain": "match-visibility",
+      "title": "Görüntüleme sırası: canlı → biten → başlayacak",
+      "statement": "orderForDisplay önce kapıdan geçenleri evresine göre dizer (live 0, finished 1, upcoming 2; gösterilemeyen HIDDEN_RANK 99). Aynı evrede varsa priorityOf belirler, o da eşitse başlayacak maçlarda en yakın saat önce, oynanmışlarda en yeni önce gelir.",
+      "rationale": "Okuyucu ana sayfaya \"şu anda ne oluyor?\" diye gelir. Şu an oynanan maç her zaman ilk sırada; biten maç sonucu merak edildiği için ikinci; başlayacak maç henüz bir şey söylemediği için üçüncü. Saat tek başına sıralamaz.",
+      "module": "services/matchEligibility.js",
+      "entry": "orderForDisplay",
+      "thresholds": [
+        { "name": "DISPLAY_RANK", "value": "{ live: 0, finished: 1, upcoming: 2 }" },
+        { "name": "HIDDEN_RANK", "value": 99 }
+      ],
+      "vocabulary": [],
+      "test": "scripts/test-match-card-integrity.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.priority.score",
+      "domain": "match-visibility",
+      "title": "Ana sayfa maçları saate değil öncelik puanına göre sıralar",
+      "statement": "matchPriority dört bileşenin toplamını üretir: kulüp ilgisi (iki tarafın ortalaması × 1.0), turnuva ağırlığı (× 1.2), maç bağlamı (derbi / Avrupa'da Türk takımı / zirve / düşme) ve canlılık (canlı +400, biten −40, bugün +60). Her bileşen aynı zamanda arayüzün basacağı gerekçeyi de üretir.",
+      "rationale": "Ana sayfa maçları YALNIZCA saate göre sıralıyordu, bu yüzden 19:00'daki bir hazırlık maçı 21:00'daki Şampiyonlar Ligi eşleşmesinin üstünde duruyordu. Saat bir sıralama ölçütü ama tek başına ilgi ölçütü değil. Gerekçelerin puanla birlikte üretilmesi, arayüzün \"neden öne çıktı\" etiketini uydurmak zorunda kalmamasını sağlıyor.",
+      "module": "services/matchPriorityService.js",
+      "entry": "matchPriority",
+      "thresholds": [
+        { "name": "WEIGHTS.clubs", "value": 1 },
+        { "name": "WEIGHTS.competition", "value": 1.2 },
+        { "name": "WEIGHTS.derby", "value": 120 },
+        { "name": "WEIGHTS.turkishInEurope", "value": 90 },
+        { "name": "WEIGHTS.titleRace", "value": 60 },
+        { "name": "WEIGHTS.relegationRace", "value": 35 },
+        { "name": "WEIGHTS.live", "value": 400 },
+        { "name": "WEIGHTS.today", "value": 60 },
+        { "name": "WEIGHTS.finished", "value": -40 }
+      ],
+      "vocabulary": ["Canlı", "Derbi", "Avrupa'da Türk takımı"],
+      "test": "scripts/test-match-priority.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "services/agendaService.js",
+        "services/tickerService.js",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.priority.standings-guard",
+      "domain": "match-visibility",
+      "title": "Sıralama yoksa zirve/düşme etiketi basılmaz",
+      "statement": "Zirve ve düşme hattı bonusu yalnızca iki takımın da doğrulanmış rank değeri varsa hesaplanır. \"Zirve mücadelesi\" ilk 4 sırayı paylaşan iki takım için, \"Düşme hattı\" ise en az 8 sıralı takım varken son 4 sıradaki iki takım için üretilir; sıralama yoksa bileşen hiç eklenmez ve gerekçe de yazılmaz.",
+      "rationale": "teams.json sezon başında rank: null taşıyor (standingsStatus: \"preseason\"). Sıralama yokken bu bonusu hesaplamak, olmayan bir mücadeleyi iddia etmek olurdu; \"Zirve mücadelesi\" etiketi arkasında sıralama olmadan basılmaz.",
+      "module": "services/matchPriorityService.js",
+      "entry": "matchPriority",
+      "thresholds": [
+        { "name": "zirve sıra eşiği", "value": "rank <= 4" },
+        { "name": "düşme sıra eşiği", "value": "rank > total - 4, total >= 8" },
+        { "name": "WEIGHTS.titleRace", "value": 60 },
+        { "name": "WEIGHTS.relegationRace", "value": 35 }
+      ],
+      "vocabulary": ["Zirve mücadelesi", "Düşme hattı"],
+      "test": "scripts/test-match-priority.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.priority.editorial-override",
+      "domain": "match-visibility",
+      "title": "Editoryal geçersiz kılma gerekçesini de basar",
+      "statement": "Maç kaydındaki sayısal editorialPriority (sıfır dışı) puana eklenir; yoksa featured === true ise sabit 150 eklenir. İki durumda da \"Editör seçimi\" gerekçesi listeye yazılır.",
+      "rationale": "Bu bir kaçış kapısı değil bilinçli bir araç: puanın yakalayamadığı bir gündem (kupa finali, veda maçı) elle öne alınabilir. Ama geçersiz kılma da gerekçe üretiyor — okuyucu maçın neden öne çıktığını, yani editör seçimi olduğunu görür; sessiz bir müdahale olmuyor.",
+      "module": "services/matchPriorityService.js",
+      "entry": "matchPriority",
+      "thresholds": [
+        { "name": "featured sabit katkısı", "value": 150 }
+      ],
+      "vocabulary": ["Editör seçimi"],
+      "test": "scripts/test-match-priority.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.priority.high-interest-label",
+      "domain": "match-visibility",
+      "title": "Gerekçesiz kalan yüksek puanlı maça \"Yüksek ilgi\" yazılır",
+      "statement": "Hiçbir bağlam gerekçesi üretilmemiş ama puanı HIGH_INTEREST_THRESHOLD'a ulaşmış maça \"Yüksek ilgi\" gerekçesi eklenir; böylece primaryReason boş kalmaz.",
+      "rationale": "Gerekçesi olmayan ama puanı yüksek maç da bir şey söylemeli. Kart öne çıkan bir maçı etiketsiz basarsa okuyucu sıralamanın nedenini göremez.",
+      "module": "services/matchPriorityService.js",
+      "entry": "HIGH_INTEREST_THRESHOLD",
+      "thresholds": [
+        { "name": "HIGH_INTEREST_THRESHOLD", "value": 240 }
+      ],
+      "vocabulary": ["Yüksek ilgi"],
+      "test": "scripts/test-match-priority.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.priority.competition-weight",
+      "domain": "match-visibility",
+      "title": "Turnuva ağırlık sırası ve lig adı etiketi",
+      "statement": "competitionProfile competitionId ve lig adını tarayarak turnuva ağırlığını ve etiketini belirler: Şampiyonlar Ligi 100 > Süper Lig 85 > Avrupa Ligi 80 > Türkiye Kupası 70 > Konferans Ligi 65 > Premier League 60 > La Liga 58 > Serie A / Bundesliga 55 > Ligue 1 50 > hazırlık 10. Eşleşme yoksa taban 30 ve etiket lig adı, o da yoksa \"Turnuva bilgisi bekleniyor\".",
+      "rationale": "Turnuva ağırlığı, saatin tek başına yapamadığı ayrımı yapıyor: hazırlık maçı ile Şampiyonlar Ligi eşleşmesi aynı listede eşit muamele görmemeli. Süper Lig ağırlığı ayrı tutuluyor çünkü lig adı varyantları leagueIdentity üzerinden çözülüyor ve etiket her zaman \"Trendyol Süper Lig\" basılıyor. Turnuva bilinmiyorsa uydurulmuyor, beklendiği söyleniyor.",
+      "module": "services/matchPriorityService.js",
+      "entry": "competitionProfile",
+      "thresholds": [
+        { "name": "SUPER_LIG_WEIGHT", "value": 85 },
+        { "name": "DEFAULT_COMPETITION_WEIGHT", "value": 30 },
+        { "name": "COMPETITION_WEIGHT (Şampiyonlar Ligi)", "value": 100 },
+        { "name": "COMPETITION_WEIGHT (Avrupa Ligi)", "value": 80 },
+        { "name": "COMPETITION_WEIGHT (Türkiye Kupası)", "value": 70 },
+        { "name": "COMPETITION_WEIGHT (Konferans Ligi)", "value": 65 },
+        { "name": "COMPETITION_WEIGHT (Hazırlık maçı)", "value": 10 }
+      ],
+      "vocabulary": [
+        "Şampiyonlar Ligi",
+        "Avrupa Ligi",
+        "Konferans Ligi",
+        "Türkiye Kupası",
+        "Trendyol Süper Lig",
+        "Hazırlık maçı",
+        "Turnuva bilgisi bekleniyor"
+      ],
+      "test": "scripts/test-match-priority.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.priority.no-elimination",
+      "domain": "match-visibility",
+      "title": "Düşük öncelikli maç elenmez, yalnızca aşağı iner",
+      "statement": "rankMatches her maça priority alanını ekler ve puana göre yüksekten düşüğe sıralar; puan eşitse başlama saati erken olan önce gelir. Hiçbir maç öncelik puanı düşük diye listeden çıkarılmaz.",
+      "rationale": "Öncelik bir görünürlük kapısı değil, bir sıralama ölçütü. Kapı ayrı bir dosyada (matchEligibility) yaşıyor; öncelik puanının eleme yetkisi olsaydı, aynı kararı iki yerde veren ikinci bir gizli kapı doğardı ve düşük ilgili ama gerçek bir maç sessizce kaybolurdu.",
+      "module": "services/matchPriorityService.js",
+      "entry": "rankMatches",
+      "thresholds": [],
+      "vocabulary": [],
+      "test": "scripts/test-match-priority.mjs",
+      "surfaces": ["scripts/prerender-core-pages.mjs"]
+    },
+    {
+      "id": "match.priority.club-floor",
+      "domain": "match-visibility",
+      "title": "Bilinmeyen kulüp sıfır puan almaz",
+      "statement": "clubPopularity havuzda tam ya da içeren eşleşme bulamazsa DEFAULT_CLUB_POPULARITY döner; katsayı hiçbir zaman sıfır olmaz, böylece maç yine görünür.",
+      "rationale": "Havuzda bulunmayan kulüpler için taban sıfır değil: maç yine görünür. Sıfır taban, ilgi tablosunda adı geçmeyen bir kulübün maçını fiilen görünmez kılardı — ilgi tablosu bir kalite sıralaması değil, takip edilme ölçüsü.",
+      "module": "services/matchPriorityService.js",
+      "entry": "clubPopularity",
+      "thresholds": [
+        { "name": "DEFAULT_CLUB_POPULARITY", "value": 20 },
+        { "name": "TURKISH_BIG_FOUR", "value": ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"] }
+      ],
+      "vocabulary": [],
+      "test": "scripts/test-match-priority.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "services/tickerService.js"
+      ]
+    },
+    {
+      "id": "match.signal.no-betting-language",
+      "domain": "match-visibility",
+      "title": "Sinyal etiketi bahis dili taşıyamaz",
+      "statement": "Hiçbir sinyal etiketinde FORBIDDEN_TERMS listesindeki kelimeler geçemez; isAllowedSignalLabel etiketi Türkçe küçük harfe indirip kontrol eder ve test her koşuda tüm SIGNAL_LABELS'ı bu kuraldan geçirir.",
+      "rationale": "Sinyal yalnızca analiz diliyle konuşur: sonuç vaadi, oran, yüzde ya da bahis çağrışımı taşıyan ifade üretilmez. İhlal hâlinde yapılacak şey de yazılı — yeni bir etiket eklerken listeyi gevşetmek değil, etiketi değiştirmek doğru olandır.",
+      "module": "services/matchSignalService.js",
+      "entry": "isAllowedSignalLabel",
+      "thresholds": [
+        {
+          "name": "FORBIDDEN_TERMS",
+          "value": ["banko", "kupon", "garanti", "kesin", "iddaa", "bahis", "oran", "tahmin"]
+        }
+      ],
+      "vocabulary": [],
+      "test": "scripts/test-match-signal.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.signal.closed-label-set",
+      "domain": "match-visibility",
+      "title": "Sinyal yalnızca kapalı etiket kümesinden üretilir ve dayanağını taşır",
+      "statement": "matchSignal SIGNAL_LABELS dışında etiket üretmez; her sinyal key, label, basis ve tone alanlarını birlikte döndürür. basis, etiketin hangi ölçüden çıktığını söyleyen tek cümledir ve boş olamaz.",
+      "rationale": "Kartta \"Tahmini kazanma · Ev %54\" yazan bir çubuk vardı; yüzde bir olasılık İDDİASIDIR, maç kartında oran gibi okunuyordu ve çoğu maçta hiç ölçülmemişti. Yerine geçen sinyal bir tahmin değil, eldeki kaydın okunuşudur — bu yüzden dayanağı basis alanında yazılı.",
+      "module": "services/matchSignalService.js",
+      "entry": "SIGNAL_LABELS",
+      "thresholds": [],
+      "vocabulary": [
+        "Form avantajı ev sahibinde",
+        "Form avantajı deplasmanda",
+        "Gol eğilimi yüksek",
+        "Form dengesi yakın",
+        "Analiz hazır",
+        "Maç sürüyor",
+        "Maç tamamlandı",
+        "Veri yetersiz"
+      ],
+      "test": "scripts/test-match-signal.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.signal.form-edge",
+      "domain": "match-visibility",
+      "title": "Form avantajı en az 3 maçlık kayıt ve 20 puanlık fark ister",
+      "statement": "formPercent, takımın form dizisi MIN_FORM_MATCHES'ten kısaysa null döner — sıfır değil. İki tarafın da form yüzdesi okunabiliyorsa fark mutlak değerce FORM_EDGE_POINTS'e ulaştığında \"Form avantajı ev sahibinde/deplasmanda\", ulaşmıyorsa \"Form dengesi yakın\" (iki tarafın da gol eğilimi pozitif ise \"Gol eğilimi yüksek\") basılır.",
+      "rationale": "\"Form kaydı yok\" ile \"hiç puan almamış\" aynı şey değildir, o yüzden eksik kayıt sıfır sayılmıyor. Fark eşiği ise küçük bir dalgalanmanın \"avantaj\" olarak sunulmasını engelliyor — ölçülmemiş bir üstünlük iddia edilmiyor.",
+      "module": "services/matchSignalService.js",
+      "entry": "matchSignal",
+      "thresholds": [
+        { "name": "FORM_EDGE_POINTS", "value": 20, "unit": "puan yüzdesi farkı" },
+        { "name": "MIN_FORM_MATCHES", "value": 3, "unit": "maç" }
+      ],
+      "vocabulary": [
+        "Form avantajı ev sahibinde",
+        "Form avantajı deplasmanda",
+        "Form dengesi yakın",
+        "Gol eğilimi yüksek"
+      ],
+      "test": "scripts/test-match-signal.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "match.signal.insufficient",
+      "domain": "match-visibility",
+      "title": "Ölçü yoksa sinyal de yok: \"Veri yetersiz\"",
+      "statement": "İki takımın da form kaydı okunamıyorsa ve yayımlanmış bir analiz/rapor sayfası da yoksa sinyal \"Veri yetersiz\" olur, tone \"awaiting\" döner ve basis \"İki takımın da doğrulanmış form kaydı henüz oluşmadı.\" cümlesini taşır. Canlı ve biten maçlarda durum doğrulanmış kayıttan okunur; biten maçın yayımlanmış raporu varsa \"Analiz hazır\" basılır.",
+      "rationale": "\"Veri yetersiz\" bir kusur itirafı değil, ölçümün kendisi — okuyucu neyin bilindiğini ve neyin bilinmediğini görür. Boş bir sinyal alanı ya da uydurulmuş bir okuma bunun yerini alamaz.",
+      "module": "services/matchSignalService.js",
+      "entry": "matchSignal",
+      "thresholds": [],
+      "vocabulary": [
+        "Veri yetersiz",
+        "İki takımın da doğrulanmış form kaydı henüz oluşmadı.",
+        "Maç sürüyor",
+        "Maç tamamlandı",
+        "Analiz hazır",
+        "Maç durumu doğrulanmış kayıttan okundu.",
+        "Bu karşılaşma için yayımlanmış maç raporu var.",
+        "Bu karşılaşma için yayımlanmış maç öncesi analiz sayfası var."
+      ],
+      "test": "scripts/test-match-signal.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "agenda.order.tier-boundary",
+      "domain": "match-visibility",
+      "title": "Gündem sırasında tür sınırı aşılmaz",
+      "statement": "Gündem kayıtları önce TİPE göre banda düşer (bigFourMatch 700, turkishInEurope 600, superLigMatch 500, confirmedTransfer 400, statement 300, matchReport 200, friendly 100); bant içi pay en fazla BAND kadar olabilir. Aralar 100 puan olduğu için hiçbir kayıt kendi bandının dışına taşamaz.",
+      "rationale": "Ana sayfa ve bülten yalnızca maç taşımıyor — transfer, maç sonu açıklaması ve rapor da aynı akışta. Aralarında bir sıra yoksa sıralamayı tesadüf belirler; üç gün önceki bir raporun bugünkü Galatasaray maçının üstünde durması bundan olur. Bant tavanı olmasaydı \"önce büyük maçlar\" sözü, yeterince yeni bir kaydın her zaman bozabileceği bir temenniye dönüşürdü.",
+      "module": "services/agendaService.js",
+      "entry": "TIER",
+      "thresholds": [
+        { "name": "TIER.bigFourMatch", "value": 700 },
+        { "name": "TIER.turkishInEurope", "value": 600 },
+        { "name": "TIER.superLigMatch", "value": 500 },
+        { "name": "TIER.confirmedTransfer", "value": 400 },
+        { "name": "TIER.statement", "value": 300 },
+        { "name": "TIER.matchReport", "value": 200 },
+        { "name": "TIER.friendly", "value": 100 },
+        { "name": "BAND", "value": 99 }
+      ],
+      "vocabulary": [
+        "Büyük dörtlü maçı",
+        "Türk takımı Avrupa'da",
+        "Trendyol Süper Lig",
+        "Kesinleşmiş transfer",
+        "Maç sonu açıklaması",
+        "Maç raporu",
+        "Hazırlık maçı"
+      ],
+      "test": "scripts/test-agenda-order.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "services/tickerService.js"
+      ]
+    },
+    {
+      "id": "agenda.order.match-tier",
+      "domain": "match-visibility",
+      "title": "Maçın bandı önce kulüp adına, sonra turnuvaya bakar",
+      "statement": "matchTier sırayla bakar: taraflardan biri büyük dörtlüdense bigFourMatch; Avrupa turnuvası + Türk kulübü ise turkishInEurope; lig adı Süper Lig ise superLigMatch; hazırlık maçı ya da Türk ligi ipucu taşımayan tanınmayan turnuva ise friendly.",
+      "rationale": "Büyük dörtlü Avrupa'da oynuyorsa iki kural da geçerli, ama kulüp adı daha güçlü bir sinyaldir ve okuyucu önce onu arar. En alt bandın gerekçesi de yazılı: Türk takımının olmadığı bir hazırlık maçı gündemin başına oturmamalı.",
+      "module": "services/agendaService.js",
+      "entry": "matchTier",
+      "thresholds": [
+        {
+          "name": "TURKISH_LEAGUE_HINT",
+          "value": "/süper lig|super lig|1\\.? lig|türkiye kupası|turkiye kupasi/i"
+        },
+        {
+          "name": "EUROPEAN_COMPETITIONS",
+          "value": "/şampiyonlar ligi|sampiyonlar ligi|champions league|avrupa ligi|europa league|konferans ligi|conference league|süper kupa|super cup/i"
+        }
+      ],
+      "vocabulary": [
+        "Büyük dörtlü maçı",
+        "Türk takımı Avrupa'da",
+        "Trendyol Süper Lig",
+        "Hazırlık maçı"
+      ],
+      "test": "scripts/test-agenda-order.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "services/tickerService.js"
+      ]
+    },
+    {
+      "id": "agenda.order.band-share",
+      "domain": "match-visibility",
+      "title": "Bant içi payı maçta öncelik, diğer türlerde tazelik belirler",
+      "statement": "Maç kayıtlarında bant payı öncelik puanının PRIORITY_SATURATION'a oranıyla (0–99 aralığına kırpılarak) hesaplanır; transfer, açıklama ve rapor kayıtlarında ise contentFreshness ağırlığıyla. Eşit puanda en yeni kayıt önce gelir, zaman damgası okunamayan kayıt en sona düşer.",
+      "rationale": "Tazelik ve öncelik yalnızca tür İÇİNDE sıralasın diye pay bant tavanıyla sınırlandırılmış; doyum noktası da bir maçın puanının bandını patlatmasını engelliyor. Böylece \"bir transfer ne kadar taze olursa olsun bir Galatasaray maçının üstüne çıkmaz\" sözü ölçülebilir bir kurala dönüşüyor.",
+      "module": "services/agendaService.js",
+      "entry": "agendaScore",
+      "thresholds": [
+        { "name": "PRIORITY_SATURATION", "value": 600 },
+        { "name": "BAND", "value": 99 }
+      ],
+      "vocabulary": [],
+      "test": "scripts/test-agenda-order.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "services/tickerService.js"
+      ]
+    },
+    {
+      "id": "agenda.order.unknown-type",
+      "domain": "match-visibility",
+      "title": "Tanınmayan gündem türü silinmez, en alta düşer",
+      "statement": "TYPE_TIER'da karşılığı olmayan bir tür için agendaScore score 0, tier \"unknown\" ve reason \"Sıralanmamış kayıt\" döndürür; kayıt listeden çıkarılmaz, yalnızca en sona iner.",
+      "rationale": "Tanınmayan tür en alta düşer; sessizce silinmez. Yeni bir içerik türü eklendiğinde bant tablosuna girmeyi unutmak, o türün gündemden görünmez biçimde kaybolmasına yol açardı — kayıt görünür kalıyor ki eksiklik fark edilsin.",
+      "module": "services/agendaService.js",
+      "entry": "agendaScore",
+      "thresholds": [
+        {
+          "name": "TYPE_TIER",
+          "value": "transfer→confirmedTransfer, statement→statement, report→matchReport"
+        }
+      ],
+      "vocabulary": ["Sıralanmamış kayıt"],
+      "test": "scripts/test-agenda-order.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "services/tickerService.js"
+      ]
+    },
+    {
+      "id": "analysis.button.coverage-gate",
+      "domain": "match-visibility",
+      "title": "Kapsamı %40'ın altındaki analiz \"Derin analiz\" düğmesi almaz",
+      "statement": "matchAnalysisTarget üç yolu sırayla dener: yayımlanmış rapor sayfası (label \"Maç raporu\"), maçın kendi analysisPage'i (label \"Derin analiz\") ya da kapsamı MIN_COVERAGE'a ulaşan ölçülmüş analiz kaydı (label \"Derin analiz\", hedef ./mac-detay.html?id=…). Hiçbiri yoksa ready:false, href:null döner ve düğme basılmaz.",
+      "rationale": "Kart bir satır üstte \"Analiz için doğrulanmış veri bekleniyor.\" yazarken hemen altında analiz sözü veren bir düğme duruyordu — düğme ya boş bir sayfaya ya da analiz olmayan bir yere gidiyordu. Bir düğme bir sözdür; arkasında içerik yoksa basılmaz. Bar da uydurulmuyor: projenin kendi LOW_COVERAGE_THRESHOLD değeri kullanılıyor, çünkü \"düşük\" bandındaki bir kayıt zaten sayfada \"veri yetersiz\" diyor.",
+      "module": "services/matchAnalysisAvailability.js",
+      "entry": "matchAnalysisTarget",
+      "thresholds": [
+        { "name": "MIN_COVERAGE", "value": 40, "unit": "% kapsam" },
+        {
+          "name": "LOW_COVERAGE_THRESHOLD (services/analysisCoverageService.js)",
+          "value": 40,
+          "unit": "% kapsam"
+        }
+      ],
+      "vocabulary": ["Derin analiz", "Maç raporu"],
+      "test": "scripts/test-match-card-integrity.mjs",
+      "surfaces": ["app.js", "public/app.js"]
+    },
+    {
+      "id": "analysis.button.unready-status",
+      "domain": "match-visibility",
+      "title": "Hazır olmayan durumdaki ve kapsamı ölçülmemiş analiz reddedilir",
+      "statement": "evaluateAnalysisRecord analysisStatus'u UNREADY_STATUS kümesindeyse kaydı hazır saymaz; kapsam hiç ölçülmemişse \"kapsam ölçülmemiş\", eşiğin altındaysa \"kapsam yetersiz: %<değer> (en az %40)\" gerekçesini döndürür. Kayıt yoksa \"analiz kaydı yok\".",
+      "rationale": "Denetim (2026-07): elimizdeki tek analiz kaydının kapsamı %21, veri güveni 9, yedi bileşeni eksik ve deplasman takımının gücü hiç ölçülmemişti — o kayıt bir analiz değil, bir analiz taslağıydı ve kart onu \"Derin Analiz\" diye sunuyordu. Eksik bilgi düğmeyi gizler, uydurma bir hedef üretmez.",
+      "module": "services/matchAnalysisAvailability.js",
+      "entry": "evaluateAnalysisRecord",
+      "thresholds": [
+        {
+          "name": "UNREADY_STATUS",
+          "value": ["pending", "unavailable", "failed", "queued", "draft"]
+        },
+        { "name": "MIN_COVERAGE", "value": 40, "unit": "% kapsam" }
+      ],
+      "vocabulary": [],
+      "test": "scripts/test-match-card-integrity.mjs",
+      "surfaces": ["app.js", "public/app.js", "data/match-analyses.json"]
+    },
+    {
+      "id": "analysis.button.unready-logging",
+      "domain": "match-visibility",
+      "title": "Düğmesi gizlenen maç günlüğe yazılır",
+      "statement": "logUnreadyAnalyses her gizlenen analiz düğmesini `[futbolradar:analysis-unready] scope=… id=… reason=\"…\"` satırıyla console.warn'a basar.",
+      "rationale": "Düğmesi gizlenen maç sessizce kaybolmasın. Analiz üretiminde kalıcı bir boşluk varsa bunun tek izi bu satır olabilir.",
+      "module": "services/matchAnalysisAvailability.js",
+      "entry": "logUnreadyAnalyses",
+      "thresholds": [],
+      "vocabulary": [],
+      "test": "",
+      "surfaces": []
+    },
+    {
+      "id": "fixture.week.confirmed-dates",
+      "domain": "match-visibility",
+      "title": "Hafta ancak her maçın ISO saati varsa \"tarihleri kesin\" sayılır",
+      "statement": "getFixtureWeeks bir haftayı hasConfirmedDates:true işaretlemek için haftanın boş olmamasını VE her maçın gerçek bir kickoff taşımasını arar. Tarih aralığı atanmamışsa etiket \"Tarih ve saat atamaları bekleniyor\" kalır; skoru olmayan maçın score alanı null bırakılır, 0-0 uydurulmaz.",
+      "rationale": "TFF henüz saat atamadığında fikstür yine yayımlanıyor ama \"kesinleşmiş\" gibi sunulmuyor. Skorun null bırakılması aynı ilkenin devamı: ölçülmemiş bir sayı yazılmaz, alanın boş olduğu açıkça görünür.",
+      "module": "services/superLigFixtureService.js",
+      "entry": "getFixtureWeeks",
+      "thresholds": [],
+      "vocabulary": ["Tarih ve saat atamaları bekleniyor", ". Hafta"],
+      "test": "scripts/test-super-lig-fixture-service.mjs",
+      "surfaces": ["scripts/prerender-core-pages.mjs", "api/[...route].js"]
+    },
+    {
+      "id": "fixture.week.round-required",
+      "domain": "match-visibility",
+      "title": "Hafta numarası bilinmeyen maç uydurma bir haftaya eklenmez",
+      "statement": "groupMatchesIntoWeeks sağlayıcıdan gelen düz maç listesini hafta numarasına göre gruplar; round değeri sayıya çevrilemeyen maçlar tahmin edilmeden düşürülür. Gruplanan haftanın tarih aralığı en erken/en geç kickoff'tan üretilir, hiç kickoff yoksa \"Tarih ve saat atamaları bekleniyor\" yazılır.",
+      "rationale": "Hafta numarası bilinmeyen maç tahmin edilerek bir haftaya oturtulmuyor, düşürülüyor. Bu grup kürasyonlu JSON'dan gelen haftalarla aynı FixtureWeek şeklini üretir ki canlı sağlayıcı verisi tam olarak aynı çizim hattından geçsin; yanlış haftaya oturtulan bir maç ise fikstürü sessizce bozardı.",
+      "module": "services/superLigFixtureService.js",
+      "entry": "groupMatchesIntoWeeks",
+      "thresholds": [],
+      "vocabulary": ["Tarih ve saat atamaları bekleniyor"],
+      "test": "scripts/test-super-lig-fixture-service.mjs",
+      "surfaces": ["api/[...route].js", "scripts/prerender-core-pages.mjs"]
+    },
+    {
+      "id": "fixture.week.default-round",
+      "domain": "match-visibility",
+      "title": "Varsayılan hafta, tarihi geçmemiş ilk haftadır",
+      "statement": "resolveDefaultRound yalnızca tarih aralığı ayrıştırılabilen haftalara bakar ve bitiş tarihi referans günü (Europe/Istanbul, YYYY-MM-DD) ile aynı veya sonra olan ilk haftayı seçer. Tarihli haftaların tamamı bittiyse, tarihi henüz atanmamış olsa bile bir sonraki haftaya geçer. Hafta yoksa 1 döner. parseDateRange tanımadığı etiket için tahmin yerine null döndürür.",
+      "rationale": "Bitmiş bir haftada takılıp kalmamak için varsayılan hafta ileri kayıyor. Ayrıştırılamayan tarih için null dönmesi de aynı ilkeye bağlı: \"Tarih ve saat atamaları bekleniyor\" gibi bir etiketten tarih uydurmak, okuyucuya var olmayan bir program sunmak olurdu.",
+      "module": "services/superLigFixtureService.js",
+      "entry": "resolveDefaultRound",
+      "thresholds": [{ "name": "TIMEZONE", "value": "Europe/Istanbul" }],
+      "vocabulary": [],
+      "test": "scripts/test-super-lig-fixture-service.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "fixture.status.unknown-defaults-scheduled",
+      "domain": "match-visibility",
+      "title": "Tanınmayan ham durum uydurulmadan SCHEDULED'e düşer",
+      "statement": "normalizeMatchStatus ham durumu STATUS_ALIASES üzerinden beş kanonik değerden birine indirger (SCHEDULED, LIVE, POSTPONED, FINISHED, CANCELLED); tabloda olmayan ya da hiç verilmemiş her değer SCHEDULED olur.",
+      "rationale": "Sağlayıcılar aynı durumu farklı kısaltmalarla gönderiyor (NS/TIMED, FT/AET/PEN, PST, CANC). Kanonik kümeye indirgemek, fikstür satırının basacağı Türkçe durum etiketinin tek bir yerden belirlenmesini sağlıyor; bilinmeyen bir kod için \"canlı\" ya da \"bitti\" varsaymak yerine en zararsız duruma düşülüyor.",
+      "module": "services/superLigFixtureService.js",
+      "entry": "normalizeMatchStatus",
+      "thresholds": [
+        {
+          "name": "STATUS_ALIASES",
+          "value": "SCHEDULED/NS/TIMED→SCHEDULED, LIVE/IN_PLAY/1H/2H/HT/ET→LIVE, FINISHED/FT/AET/PEN→FINISHED, POSTPONED/PST→POSTPONED, CANCELLED/CANC→CANCELLED"
+        }
+      ],
+      "vocabulary": [],
+      "test": "scripts/test-super-lig-fixture-service.mjs",
+      "surfaces": ["scripts/prerender-core-pages.mjs", "api/[...route].js"]
+    },
+    {
+      "id": "fixture.venue.verified-only",
+      "domain": "match-visibility",
+      "title": "Stadyum yalnızca kürasyonlu takım havuzundan gelir",
+      "statement": "Bir maçın stadyumu kaydında yoksa, ev sahibi takımın data/super-lig-fixtures.json içindeki teams havuzundaki venue alanından okunur. Takım havuzda yoksa findFixtureTeam null döner ve venue null kalır — stadyum uydurulmaz.",
+      "rationale": "Stadyum her maça kopyalanmak yerine takım havuzundan birleştiriliyor ve yalnızca bağımsız olarak doğrulandığında taşınıyor. Tek yetkili kayıt yeri olmasaydı, aynı kulübün stadı iki maçta farklı görünebilirdi.",
+      "module": "services/superLigFixtureService.js",
+      "entry": "findFixtureTeam",
+      "thresholds": [],
+      "vocabulary": [],
+      "test": "scripts/test-super-lig-fixture-service.mjs",
+      "surfaces": [
+        "scripts/prerender-core-pages.mjs",
+        "data/super-lig-fixtures.json"
+      ]
+    },
+    {
+      "id": "match.context.no-future-leak",
+      "domain": "match-visibility",
+      "title": "Maç öncesi bağlama yalnızca o maçtan ÖNCE bitmiş maçlar girer",
+      "statement": "eligiblePriorMatches yalnızca durumu FINISHED olan ve kendi başlama saati analiz edilen maçın başlama saatinden KESİNLİKLE önce olan karşılaşmaları alır; sonuçlar en yeniden eskiye sıralanır. Form, gol/savunma eğilimi, dinlenme günü ve fikstür yükü hep bu süzülmüş havuzdan hesaplanır.",
+      "rationale": "Bu, maç sonrası verinin maç öncesi analize sızmasına karşı korumadır. Süzgeç olmasaydı bir maçın kendi sonucu ya da sonrasındaki maçlar \"maç öncesi\" analizinin içine girer ve okuyucuya geleceği bilen sahte bir okuma sunulurdu.",
+      "module": "services/matchContextService.js",
+      "entry": "computeRecentForm",
+      "thresholds": [
+        { "name": "FINISHED_STATUSES", "value": ["FINISHED", "FT", "AET", "PEN"] },
+        { "name": "RECENT_FORM_LIMIT", "value": 5, "unit": "maç" }
+      ],
+      "vocabulary": [],
+      "test": "",
+      "surfaces": [
+        "scripts/generate-match-analyses.mjs",
+        "data/match-analyses.json"
+      ]
+    },
+    {
+      "id": "match.context.form-weight",
+      "domain": "match-visibility",
+      "title": "Hazırlık maçı forma tam ağırlıkla girmez",
+      "statement": "Ağırlıklı form puanı her sonucu iki çarpanla ölçer: tazelik (RECENCY_WEIGHTS, en yeni maç 1 → beşinci maç 0.68) ve turnuva türü (lig 1, Avrupa 0.85, kupa 0.85, hazırlık 0.6). Sınıflandırılamayan tür 1 sayılır.",
+      "rationale": "Lig dışı sonuçlar hâlâ sinyal taşır ama asla tam lig ağırlığında değildir; sert biçimde bastırılan tek durum hazırlık maçlarıdır. Hazırlık sonuçlarını lig sonucu gibi saymak, sezon öncesinde tamamen yanıltıcı bir form okuması üretirdi.",
+      "module": "services/matchContextService.js",
+      "entry": "computeRecentForm",
+      "thresholds": [
+        { "name": "RECENCY_WEIGHTS", "value": [1, 0.92, 0.84, 0.76, 0.68] },
+        {
+          "name": "FORM_WEIGHT_BY_COMPETITION_TYPE",
+          "value": "{ league: 1, europe: 0.85, cup: 0.85, friendly: 0.6 }"
+        }
+      ],
+      "vocabulary": [],
+      "test": "",
+      "surfaces": [
+        "scripts/generate-match-analyses.mjs",
+        "data/match-analyses.json"
+      ]
+    },
+    {
+      "id": "match.context.data-status",
+      "domain": "match-visibility",
+      "title": "Bağlamın veri durumu ve uyarıları örnek büyüklüğünden çıkar",
+      "statement": "Form özetinde hiç sonuç yoksa dataStatus \"insufficient\", 3'ten az sonuç varsa \"limited\", 3 ve üzeri varsa \"sufficient\" olur. Takım bağlamında güven puanı 60 ve üstü \"sufficient\", 25 ve üstü \"limited\", altı \"insufficient\" sayılır. Ayrıca uyarılar üretilir: hiç önceki maç yoksa \"no-prior-verified-matches\", 3'ten az maç varsa \"limited-recent-match-sample\", son maçların tamamı hazırlık maçıysa \"recent-form-is-friendlies-only\".",
+      "rationale": "Bu alanlar analizin ne kadarının gerçekten ölçüldüğünü taşıyor; aşağı akışta kapsam eşiği (analysis.button.coverage-gate) ve sayfadaki \"veri yetersiz\" ifadeleri bu değerlere dayanıyor. Uyarılar boşluğu adıyla kaydediyor: sessizce eksik bir örnek, sağlam bir okuma gibi sunulmuyor.",
+      "module": "services/matchContextService.js",
+      "entry": "buildMatchContext",
+      "thresholds": [
+        {
+          "name": "dataStatus (form)",
+          "value": "results.length >= 3 → sufficient, aksi hâlde limited; boşsa insufficient"
+        },
+        {
+          "name": "dataStatus (takım)",
+          "value": "confidence >= 60 → sufficient, >= 25 → limited, aksi hâlde insufficient"
+        },
+        { "name": "RECENT_FORM_LIMIT", "value": 5, "unit": "maç" }
+      ],
+      "vocabulary": [],
+      "test": "",
+      "surfaces": [
+        "scripts/generate-match-analyses.mjs",
+        "data/match-analyses.json"
+      ]
+    },
+    {
+      "id": "match.context.schedule-load",
+      "domain": "match-visibility",
+      "title": "Fikstür yükü 14 günlük pencereden okunur",
+      "statement": "computeScheduleLoad maçın başlama saatinden geriye SCHEDULE_LOAD_WINDOW_DAYS günlük pencerede oynanmış maç sayısını sayar; 5 ve üzeri \"high\", 3 ve üzeri \"medium\", altı \"low\" seviyesidir. Takım adı çözülemiyorsa ya da saat okunamıyorsa seviye \"unknown\" olur ve sayı sıfır kalır.",
+      "rationale": "Yük seviyesi sayfada bir yorum olarak görünüyor; ölçülemediğinde \"low\" demek yanlış bir rahatlık iddiası olurdu, o yüzden ayrı bir \"unknown\" hâli var — bilinmeyen, düşükle karıştırılmıyor.",
+      "module": "services/matchContextService.js",
+      "entry": "computeScheduleLoad",
+      "thresholds": [
+        { "name": "SCHEDULE_LOAD_WINDOW_DAYS", "value": 14, "unit": "gün" },
+        { "name": "high eşiği", "value": 5, "unit": "maç" },
+        { "name": "medium eşiği", "value": 3, "unit": "maç" }
+      ],
+      "vocabulary": [],
+      "test": "",
+      "surfaces": [
+        "scripts/generate-match-analyses.mjs",
+        "data/match-analyses.json"
+      ]
+    },
+    {
+      "id": "matchup.summary.no-data",
+      "domain": "match-visibility",
+      "title": "Güven sıfırsa karşılaştırma özeti üstünlük iddia etmez",
+      "statement": "buildMatchupSummary karşılaştırma yoksa ya da confidence 0 ise \"Maçı okumak için yeterli doğrulanmış veri henüz oluşmadı.\" cümlesini basar. Hiçbir bileşende üstünlük çıkmazsa \"İki takımın mevcut verileri birbirine yakın; belirgin bir üstünlük görünmüyor.\", üstünlük sayıları eşitse \"Takımlar mevcut bileşenlerde birbirini dengeliyor; maç öncesi net bir üstünlük yok.\" yazılır. Ancak bir taraf öne çıktığında en fazla iki alan adıyla birlikte \"bir adım önde görünüyor\" cümlesi kurulur.",
+      "rationale": "Özet cümlesi maçın nasıl biteceğini değil, ELDEKİ VERİNİN ne söylediğini anlatıyor: \"mevcut verilerde\" ifadesi her cümlede korunuyor ve sonuç vaadi ya da yüzde geçmiyor. Ölçüm yokken sessiz kalmak yerine eksikliğin kendisi yazılıyor.",
+      "module": "services/matchupService.js",
+      "entry": "buildMatchupSummary",
+      "thresholds": [],
+      "vocabulary": [
+        "Maçı okumak için yeterli doğrulanmış veri henüz oluşmadı.",
+        "İki takımın mevcut verileri birbirine yakın; belirgin bir üstünlük görünmüyor.",
+        "Takımlar mevcut bileşenlerde birbirini dengeliyor; maç öncesi net bir üstünlük yok.",
+        "Ev sahibi",
+        "Deplasman"
+      ],
+      "test": "",
+      "surfaces": [
+        "scripts/generate-match-analyses.mjs",
+        "data/match-analyses.json"
+      ]
+    },
+    {
+      "id": "matchup.advantage.balanced-threshold",
+      "domain": "match-visibility",
+      "title": "Ölçülemeyen bileşen üstünlük listesine girmez, küçük fark \"dengeli\" sayılır",
+      "statement": "generateMatchupAdvantages yedi bileşeni tarar; iki taraftan biri ölçülmemişse (null) o bileşen listeden düşer. Fark mutlak değerce 4'ten küçükse üstünlük \"balanced\" olur, aksi hâlde \"home\" ya da \"away\".",
+      "rationale": "Eksik ölçüm sıfır sayılsaydı, hiç veri olmayan bir alan otomatik olarak karşı tarafın üstünlüğü gibi görünürdü. Eşik ise ölçüm gürültüsünün \"üstünlük\" diye sunulmasını engelliyor.",
+      "module": "services/matchupService.js",
+      "entry": "generateMatchupAdvantages",
+      "thresholds": [
+        { "name": "advantageFor varsayılan eşiği", "value": 4, "unit": "puan farkı" }
+      ],
+      "vocabulary": [
+        "Hücum-savunma dengesi",
+        "Orta saha",
+        "Kanat alanları",
+        "Kaleciler",
+        "Yedek kulübesi",
+        "Form",
+        "Kadro devamlılığı"
+      ],
+      "test": "",
+      "surfaces": [
+        "scripts/generate-match-analyses.mjs",
+        "data/match-analyses.json"
+      ]
+    },
+    {
+      "id": "matchup.duels.lineup-required",
+      "domain": "match-visibility",
+      "title": "Kadro tahmini yoksa kilit eşleşme üretilmez",
+      "statement": "generateKeyDuels iki taraftan birinin lineup'ı yoksa ya da predictionStatus \"unavailable\" ise boş dizi döndürür. Aksi hâlde şablon listesinden en çok 5 düello üretir; puanı olmayan oyuncular aday havuzuna girmez ve aynı oyuncu iki düelloda tekrar kullanılmaz.",
+      "rationale": "Kadro bilinmeden \"kilit eşleşme\" yayımlamak, oynamayacak oyuncular üzerinden bir karşılaştırma uydurmak olurdu. Boş liste, uydurulmuş bir düellodan iyidir — bölüm sessizce yanlış dolmaz.",
+      "module": "services/matchupService.js",
+      "entry": "generateKeyDuels",
+      "thresholds": [
+        { "name": "en fazla düello", "value": 5 },
+        { "name": "düello denge eşiği", "value": 4, "unit": "birleşik puan farkı" },
+        { "name": "pozisyon dışı güven cezası", "value": 15, "unit": "güven puanı" }
+      ],
+      "vocabulary": [
+        "Santrfor - stoper eşleşmesi",
+        "Kanat - bek eşleşmesi",
+        "Deplasman santrforu - ev savunması",
+        "Orta saha mücadelesi",
+        "Kaleciler"
+      ],
+      "test": "",
+      "surfaces": [
+        "scripts/generate-match-analyses.mjs",
+        "data/match-analyses.json"
+      ]
+    },
+    {
+      "id": "matchup.comparison.confidence",
+      "domain": "match-visibility",
+      "title": "Karşılaştırma güveni yalnızca ölçülmüş bileşenlerden hesaplanır",
+      "statement": "buildComparison sekiz bileşeni ölçer; ağırlıklı güven ortalamasına yalnızca güveni sıfırdan büyük olan bileşenler girer. Hiçbiri ölçülmemişse güven 0 olur ve özet \"yeterli doğrulanmış veri yok\" cümlesine düşer.",
+      "rationale": "Ölçülmemiş bir bileşeni sıfır güvenle ortalamaya katmak, güven puanını gerçekte olduğundan düşük ama sıfırdan farklı gösterirdi; o zaman hiç veri yokken bile bir \"karşılaştırma\" yayımlanırdı. Bileşenlerin havuz dışında bırakılması, güvenin gerçekten ölçülen alanları temsil etmesini sağlıyor.",
+      "module": "services/matchupService.js",
+      "entry": "buildComparison",
+      "thresholds": [
+        {
+          "name": "COMPONENT_WEIGHTS",
+          "value": "homeAttackVsAwayDefense 16, awayAttackVsHomeDefense 16, midfield 14, wideAreas 10, goalkeepers 10, bench 10, form 14, availability 10"
+        },
+        { "name": "kaleci güven varsayımı", "value": 70, "unit": "güven puanı" },
+        { "name": "kadro devamlılığı cezası", "value": 15, "unit": "eksik oyuncu başına puan" }
+      ],
+      "vocabulary": [],
+      "test": "",
+      "surfaces": [
+        "scripts/generate-match-analyses.mjs",
+        "data/match-analyses.json"
+      ]
+    },
+    {
+      "id": "report.core.score-and-teams-gate",
+      "domain": "report-core",
+      "title": "Rapor için tek ön koşul: skor ve iki takım adı",
+      "statement": "Bir maç raporu ancak iki takım adı boş değilse VE score.home ile score.away sayısal ise üretilebilir. 0-0 geçerli bir skordur; skorun bir tarafı null/boş ise çekirdek eksik sayılır ve rapor üretilmez.",
+      "rationale": "Bunlar olmadan rapor diye bir şey yoktur. Çekirdek bölüm listesi tek bir öğeye (summary) indirgenmiş; skor ve takımları bilinen bir maçın raporsuz kalması, maçların günlerce \"takılı\" görünmesinin sebebiydi. Öte yandan skoru olmayan maç için sayfa açmak, boş bir belge yayımlamak olurdu.",
+      "module": "services/matchReportStages.js",
+      "entry": "hasReportableCore",
+      "thresholds": [
+        { "name": "CORE_SECTIONS.length", "value": 1, "unit": "bölüm" }
+      ],
+      "vocabulary": [
+        "Veri yok",
+        "Karşılaşmanın doğrulanmış skoru henüz ulaşmadı; rapor üretilemiyor."
+      ],
+      "test": "scripts/test-report-pipeline.mjs",
+      "surfaces": [
+        "services/matchReportService.js",
+        "services/reportRetrySchedule.js",
+        "scripts/generate-post-match-pages.mjs",
+        "scripts/plan-post-match-retries.mjs",
+        "mac-raporu/*.html"
+      ]
+    },
+    {
+      "id": "report.final.label-and-time-gate",
+      "domain": "report-core",
+      "title": "Canlı ve yarıda kalmış maç rapor almaz; gecikmiş etiket raporu engellemez",
+      "statement": "Durum etiketi FINISHED/FT/AET/PEN ise maç raporlanabilir. LIVE/IN_PLAY/PAUSED/HALFTIME/1H/HT/2H/ET/BT/P ise rapor ÜRETİLMEZ. POSTPONED/CANCELLED/CANCELED/ABANDONED/SUSPENDED/AWARDED/WO ise rapor ÜRETİLMEZ. Etiket bunların hiçbiri değilse (sessiz/bilinmeyen), maçın bitiş anı geçmişse rapor üretilir; bitiş anı yoksa ya da gelecekteyse üretilmez.",
+      "rationale": "İki ayrı hata birden önleniyor: (1) sağlayıcı FINISHED etiketini saatler sonra gönderirken kesin skoru çoktan yollamış oluyor — etiket gecikti diye maçı raporsuz bırakmak \"günlerce takılı maç\" tablosunun asıl sebebiydi; (2) canlı bir maçın skoru final skor değildir, 1-0'ken yazılan maç raporu 90. dakikada yanlış bir belgeye dönüşür. Bu yüzden etiket tek başına değil, zamanla birlikte okunuyor.",
+      "module": "services/matchReportStages.js",
+      "entry": "isReportableFinal",
+      "thresholds": [
+        { "name": "FULL_TIME_AFTER_KICKOFF_MINUTES", "value": 115, "unit": "dakika" }
+      ],
+      "vocabulary": [],
+      "test": "scripts/test-post-match-analysis.mjs",
+      "surfaces": [
+        "services/matchReportService.js",
+        "scripts/generate-post-match-pages.mjs",
+        "mac-raporu/*.html",
+        "public/mac-raporu/*.html"
+      ]
+    },
+    {
+      "id": "report.stage.status-sentence",
+      "domain": "report-stages",
+      "title": "Rapor durumu yüzde değil cümledir ve pencere kapandığında kesinleşir",
+      "statement": "Çekirdek özet hazır değilse durum \"unavailable\". Genişletilmiş bölümlerin oranı FULL_COVERAGE_RATIO'ya ulaşmışsa \"full-ready\" (aşama: full). Aksi hâlde: bitiş anı bilinmiyorsa ya da maç bitişinin üzerinden QUICK_WINDOW_MINUTES veya daha az geçmişse \"quick-ready\"; FULL_WINDOW_HOURS'a kadar \"full-processing\"; o pencere de kapandıysa \"partial-final\" — rapor son hâlini almıştır ve bir daha \"hazırlanıyor\" demez.",
+      "rationale": "Eskiden kapsam dokuz bölümün kaçının hazır olduğuna bakıyordu; kesin skoru, gollerini ve özetini taşıyan sapasağlam bir rapor \"%44\" ve \"1/3 ölçüm hazır\" diye etiketleniyordu. Bu ölçüm okuyucuya yanlış şey söylüyordu: raporun ÇEKİRDEĞİ tamdı, eksik olan zenginleştirmeydi. Üstelik veri hiç gelmeyeceği belli olduğunda bile aynı yüzde günlerce sayfada kalıyordu. Bir noktadan sonra eksik veri bir bekleyiş değil, bir sonuçtur ve öyle yazılır; sonsuza kadar \"hazırlanıyor\" yazan bir sayfa, yanlış bir sayfadır.",
+      "module": "services/matchReportStages.js",
+      "entry": "evaluateReportStage",
+      "thresholds": [
+        { "name": "QUICK_WINDOW_MINUTES", "value": 60, "unit": "dakika" },
+        { "name": "FULL_WINDOW_HOURS", "value": 6, "unit": "saat" },
+        { "name": "FULL_COVERAGE_RATIO", "value": 0.5, "unit": "oran" }
+      ],
+      "vocabulary": [
+        "Hızlı rapor hazır",
+        "Kesin skor, gol akışı ve maç özeti yayımlandı. Tam analiz için veri bekleniyor.",
+        "Tam analiz hazırlanıyor",
+        "İstatistik ve oyuncu verisi işleniyor; rapor geldiği anda kendiliğinden genişleyecek.",
+        "Tam analiz hazır",
+        "Skor, istatistik, oyuncu ve taktik okuması tamamlandı.",
+        "Kısmi rapor · veri tamamlanmadı",
+        "Bu maç için ek veri ulaşmadı. Rapor elde olan doğrulanmış veriyle son hâlini aldı.",
+        "Veri yok",
+        "Karşılaşmanın doğrulanmış skoru henüz ulaşmadı; rapor üretilemiyor."
+      ],
+      "test": "scripts/test-report-pipeline.mjs",
+      "surfaces": [
+        "services/matchReportService.js",
+        "services/reportRetrySchedule.js",
+        "scripts/generate-post-match-pages.mjs",
+        "mac-raporu/*.html",
+        "public/mac-raporu/*.html"
+      ]
+    },
+    {
+      "id": "report.stage.core-vs-extended-coverage",
+      "domain": "report-stages",
+      "title": "Kapsam çekirdek ve genişletilmiş olarak ayrı sayılır",
+      "statement": "Kapsam iki ayrı kovada ölçülür: çekirdek (yalnızca summary) ve genişletilmiş (standoutPlayers, momentum, signals, statistics, tactical, turningPoints, aiRating, nextMatch). Yalnızca status === \"ready\" olan bölüm sayılır. Genel yüzde (overall) geriye dönük uyumluluk için hesaplanır ama MANŞET DEĞİLDİR — sayfaya durum cümlesi basılır, yüzde ayrıntıda kalır.",
+      "rationale": "Bölümlerin sekizi sağlayıcıdan gelen zengin veri istiyor; hepsini aynı kefeye koyup tek bir yüzde basmak, çekirdeği tam olan raporu yarım gösteriyordu. Kapsam artık manşet değil.",
+      "module": "services/matchReportStages.js",
+      "entry": "stageCoverage",
+      "thresholds": [
+        { "name": "CORE_SECTIONS.length", "value": 1, "unit": "bölüm" },
+        { "name": "EXTENDED_SECTIONS.length", "value": 8, "unit": "bölüm" }
+      ],
+      "vocabulary": [],
+      "test": "scripts/test-report-pipeline.mjs",
+      "surfaces": [
+        "services/matchReportService.js",
+        "scripts/generate-post-match-pages.mjs",
+        "mac-raporu/*.html"
+      ]
+    },
+    {
+      "id": "report.status.no-invented-label",
+      "domain": "report-stages",
+      "title": "Tanınmayan durum anahtarı için etiket uydurulmaz",
+      "statement": "statusByKey yalnızca REPORT_STATUS içinde tanımlı beş anahtar için etiket döner; bilinmeyen anahtarda null döner ve çağıran taraf bir etiket uydurmak yerine hiçbir şey basmaz.",
+      "rationale": "Durum anahtarından etiket üretilir, bilinmeyen anahtar uydurulmaz. Depolanmış eski ya da bozuk bir durum anahtarının sayfada anlamlı bir cümleye dönüşmesi, ölçülmemiş bir iddiayı yayımlamak olurdu.",
+      "module": "services/matchReportStages.js",
+      "entry": "statusByKey",
+      "thresholds": [],
+      "vocabulary": [],
+      "test": "scripts/test-report-pipeline.mjs",
+      "surfaces": [
+        "scripts/generate-post-match-pages.mjs",
+        "scripts/plan-post-match-retries.mjs"
+      ]
+    },
+    {
+      "id": "report.retry.bounded-increasing-schedule",
+      "domain": "retry-schedule",
+      "title": "Her maç sınırlı sayıda ve artan aralıklarla yeniden denenir",
+      "statement": "Bir maç, bitişinden sonra RETRY_SCHEDULE_MINUTES takvimindeki dakikalarda denenir. Sıradaki denemenin vakti gelmediyse eylem WAIT'tir. Toplam deneme sayısı MAX_ATTEMPTS_PER_MATCH'e ulaştığında ya da takvim tükendiğinde eylem DONE olur ve maç sağlayıcıya bir daha sorulmaz.",
+      "rationale": "Zenginleştirme koşusu her beş dakikada tüm bitmiş maçlara bakıyordu; verisi hiç gelmeyecek bir maç günlerce yeniden sorgulanıp kota harcıyor, buna rağmen maç \"takılı\" kalıyordu çünkü sağlayıcıda o veri yoktu. Yoğun aralık ilk saatte tutuluyor, altıncı saatten sonra hiç denenmiyor.",
+      "module": "services/reportRetrySchedule.js",
+      "entry": "retryPlan",
+      "thresholds": [
+        { "name": "RETRY_SCHEDULE_MINUTES", "value": [10, 30, 60, 120, 240, 360], "unit": "dakika" },
+        { "name": "MAX_ATTEMPTS_PER_MATCH", "value": 6, "unit": "deneme" },
+        { "name": "MAX_ATTEMPTS_PER_RUN", "value": 12, "unit": "maç" }
+      ],
+      "vocabulary": [
+        "takvimde sırası gelmedi",
+        "takvim tükendi",
+        "deneme sınırı doldu (6)",
+        "maç henüz bitmedi",
+        "bitiş anı bilinmiyor"
+      ],
+      "test": "scripts/test-report-pipeline.mjs",
+      "surfaces": [
+        "scripts/plan-post-match-retries.mjs",
+        ".github/workflows/match-analysis.yml"
+      ]
+    },
+    {
+      "id": "report.retry.minimum-gap",
+      "domain": "retry-schedule",
+      "title": "Aynı maç iki deneme arasında en az sekiz dakika beklenir",
+      "statement": "Son denemenin üzerinden MIN_RETRY_GAP_MINUTES'ten az süre geçmişse eylem WAIT olur; kalan süre dueInMinutes ile bildirilir.",
+      "rationale": "Kota güvenliği: aynı maçın arka arkaya sorulması sağlayıcı kotasını harcarken yeni bilgi getirmiyor. Aynı maç çok sık sorulmaz.",
+      "module": "services/reportRetrySchedule.js",
+      "entry": "MIN_RETRY_GAP_MINUTES",
+      "thresholds": [
+        { "name": "MIN_RETRY_GAP_MINUTES", "value": 8, "unit": "dakika" }
+      ],
+      "vocabulary": ["son denemenin üstünden yeterli süre geçmedi"],
+      "test": "scripts/test-report-pipeline.mjs",
+      "surfaces": ["scripts/plan-post-match-retries.mjs"]
+    },
+    {
+      "id": "report.retry.missing-score-is-urgent",
+      "domain": "retry-schedule",
+      "title": "Skoru olmayan yeni maç takvimden bağımsız, en yüksek öncelikle sorulur",
+      "statement": "Çekirdek verisi (skor) olmayan bir maç BACKFILL_AFTER_HOURS'tan gençse eylem QUICK ve öncelik 100'dür — deneme takvimi beklenmez. BACKFILL_AFTER_HOURS'u geçmiş ve hâlâ skorsuzsa yavaş BACKFILL kuyruğuna (öncelik 1) düşer; bu kuyruğun koşu başına payı MAX_BACKFILL_PER_RUN ile sınırlıdır. BACKFILL_GIVE_UP_DAYS'i aşmışsa eylem DONE olur ve maç bir daha sorulmaz.",
+      "rationale": "Skor en acil veridir: onsuz rapor diye bir şey yok, bu yüzden takvimden bağımsız ve en yüksek öncelikle sorulur. 24 saatten eski kayıtlar ise aciliyeti olmayan kayıtlardır ve canlı kuyruğun önüne geçmemeleri gerekir. On dördüncü günden sonra denemeye devam etmek kota harcamaktan başka bir şey değildir — veri artık gelmeyecektir ve bunu söylemek, beklemeye devam etmekten dürüsttür.",
+      "module": "services/reportRetrySchedule.js",
+      "entry": "retryPlan",
+      "thresholds": [
+        { "name": "BACKFILL_AFTER_HOURS", "value": 24, "unit": "saat" },
+        { "name": "BACKFILL_GIVE_UP_DAYS", "value": 14, "unit": "gün" },
+        { "name": "MAX_BACKFILL_PER_RUN", "value": 4, "unit": "maç" },
+        { "name": "skor bekleyen maçın önceliği", "value": 100 },
+        { "name": "geri doldurma önceliği", "value": 1 }
+      ],
+      "vocabulary": [
+        "skor bekleniyor",
+        "24 saatten eski, skor hâlâ yok",
+        "veri gelmedi, takvim kapandı"
+      ],
+      "test": "scripts/test-report-pipeline.mjs",
+      "surfaces": [
+        "scripts/plan-post-match-retries.mjs",
+        ".github/workflows/match-analysis.yml"
+      ]
+    }
+  ]
+}

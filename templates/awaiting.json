@@ -1,0 +1,99 @@
+{
+  "$comment": "\"veri bekleniyor\" ailesi: ölçülmemiş bir alanın yerine basılan boş durum metinleri. Buraya yalnızca services/ içinde GERÇEKTEN kullanılan, kullanıcıya görünen cümleler girer — yenisi uydurulmaz.",
+  "texts": {
+    "data": {
+      "text": "Veri bekleniyor",
+      "modules": [
+        "services/matchEligibility.js",
+        "services/trustLabels.js"
+      ],
+      "usage": "Eksik alanın yerine basılan tek cümlelik bekleme ifadesi (AWAITING_LABEL ve awaiting güven etiketi)."
+    },
+    "league": {
+      "text": "Turnuva bilgisi bekleniyor",
+      "modules": [
+        "services/matchEligibility.js",
+        "services/matchPriorityService.js"
+      ],
+      "usage": "Maçın lig/turnuva adı doğrulanmadığında yayın boşluğu olarak işaretlenir."
+    },
+    "matchStatus": {
+      "text": "Maç durumu bekleniyor",
+      "modules": [
+        "services/matchEligibility.js"
+      ],
+      "usage": "Kayıtta durum etiketi (SCHEDULED/FINISHED vb.) yokken."
+    },
+    "score": {
+      "text": "Skor bekleniyor",
+      "modules": [
+        "services/matchEligibility.js"
+      ],
+      "usage": "Biten maçın doğrulanmış skoru gelmediğinde — skor asla uydurulmaz."
+    },
+    "verification": {
+      "text": "Ayrıntılar doğrulanmayı bekliyor",
+      "modules": [
+        "services/matchEligibility.js"
+      ],
+      "usage": "Hazırlık ve alt kademe maçlarında sağlayıcı verisi doğrulanana kadar."
+    },
+    "result": {
+      "text": "Sonuç bekleniyor",
+      "modules": [
+        "services/matchEligibility.js"
+      ],
+      "usage": "Başlama saati geçtiği hâlde kayıt hâlâ 'başlayacak' diyorsa."
+    },
+    "ticker": {
+      "text": "Doğrulanmış maç, skor ve açıklama akışı bekleniyor. Kaynak doğrulandığı anda bant kendiliğinden güncellenir.",
+      "modules": [
+        "services/tickerService.js"
+      ],
+      "usage": "Bant hiçbir doğrulanmış öğe bulamadığında; şerit gizlenmez, nedenini yazar."
+    },
+    "enrichment": {
+      "text": "Doğrulanmış veri bekleniyor",
+      "modules": [
+        "services/postMatchEnrichmentView.js"
+      ],
+      "usage": "Maç sonu zenginleştirmesinin hiçbir bölümü doğrulanmamışken."
+    },
+    "statements": {
+      "text": "Doğrulanmış açıklama bekleniyor",
+      "modules": [
+        "services/matchStatementsView.js"
+      ],
+      "usage": "Maç sonu açıklamaları bölümü boşken; bölüm gizlenmez, boş durum kartı basılır."
+    },
+    "freshness": {
+      "text": "Güncelleme bekleniyor",
+      "modules": [
+        "services/freshnessService.js"
+      ],
+      "usage": "Tazelik durumu 'pending' olan kayıtların etiketi."
+    },
+    "date": {
+      "text": "Tarih bekleniyor",
+      "modules": [
+        "services/contentFreshness.js",
+        "services/freshnessService.js"
+      ],
+      "usage": "Tarih damgası okunamadığında; yaklaşık bir tarih üretilmez."
+    },
+    "lastUpdated": {
+      "text": "Son güncelleme bekleniyor",
+      "modules": [
+        "services/contentFreshness.js"
+      ],
+      "usage": "Kartın 'Son güncelleme' satırı için damga yokken."
+    },
+    "fixtureDateRange": {
+      "text": "Tarih ve saat atamaları bekleniyor",
+      "modules": [
+        "services/superLigFixtureService.js"
+      ],
+      "usage": "Hafta için kesinleşmiş tarih aralığı yokken."
+    }
+  }
+}

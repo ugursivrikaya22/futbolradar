@@ -230,13 +230,21 @@ function matchPriority(match, options = {}) {
   }
 
   // 4. Canlılık ve gün.
-  if (isLive(match)) {
-    score += WEIGHTS.live;
-    reasons.unshift({ key: "live", label: "Canlı" });
-  } else if (isFinished(match)) {
-    score += WEIGHTS.finished;
-  } else if (String(match.kickoff || "").slice(0, 10) === istanbulDay(now)) {
-    score += WEIGHTS.today;
+  //
+  // `ignoreStatus` bu bölümü atlar ve geriye YAPISAL önem kalır: kim oynuyor,
+  // hangi turnuvada, derbi mi. Radar Puanı bunu ister, çünkü maç durumunu
+  // ayrı bir bileşen olarak zaten ölçüyor. İkisi birlikte sayılsaydı canlılık
+  // iki kez ağırlıklanır ve bileşen ağırlıkları iddia ettikleri şeyi
+  // ölçmezdi — canlı bir alt sıra maçı, bir derbinin üstüne çıkardı.
+  if (!options.ignoreStatus) {
+    if (isLive(match)) {
+      score += WEIGHTS.live;
+      reasons.unshift({ key: "live", label: "Canlı" });
+    } else if (isFinished(match)) {
+      score += WEIGHTS.finished;
+    } else if (String(match.kickoff || "").slice(0, 10) === istanbulDay(now)) {
+      score += WEIGHTS.today;
+    }
   }
 
   // 5. Editoryal geçersiz kılma.
