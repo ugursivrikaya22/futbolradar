@@ -19,6 +19,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { buildTickerFeed, FRESH_WINDOW_HOURS, MAX_ITEMS } from "./lib/tickerFeed.mjs";
 import { newsTicker } from "./lib/layout.mjs";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { publishableTransfers } = require("../services/transferService.js");
+const { publishableStatements } = require("../services/matchStatementService.js");
 
 const root = process.cwd();
 const STATE_FILE = path.join(root, "data", "ticker-state.json");
@@ -394,6 +399,117 @@ function testFallbackDoesNotRewriteWhileOutageContinues() {
   assert.equal(second, first, "kesinti sürerken durum dosyası her turda yeniden yazılmamalı");
 }
 
+
+/**
+ * BÜYÜK KULÜPLER KATEGORİ İÇİNDE ÖNE GEÇER.
+ *
+ * Bant her kategoride yalnızca tazeliğe göre diziliyordu: aynı gün gelen iki
+ * transferden hangisinin daha çok aranacağı hesaba katılmıyordu.
+ */
+function testBigClubsRankFirstWithinCategory() {
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(new Date());
+  const feed = withTempData(
+    (files) => {
+      emptyAllSources(files);
+      fs.writeFileSync(files[SOURCE_FILES.indexOf("matches.json")], JSON.stringify([
+        // Küçük kulüp maçı DAHA ERKEN saatte: tazelik tek ölçüt olsaydı öne geçerdi.
+        { id: "kucuk", homeTeam: "Çorum FK", awayTeam: "Erzurumspor FK", status: "SCHEDULED",
+          kickoff: `${today}T18:00:00+03:00`, time: "18:00" },
+        { id: "buyuk", homeTeam: "Galatasaray", awayTeam: "Fenerbahçe", status: "SCHEDULED",
+          kickoff: `${today}T21:00:00+03:00`, time: "21:00" }
+      ]), "utf8");
+      if (fs.existsSync(STATE_FILE)) fs.unlinkSync(STATE_FILE);
+    },
+    () => buildTickerFeed()
+  );
+
+  const todayItems = feed.items.filter((item) => item.kind === "today");
+  assert.ok(todayItems.length >= 2, "ön koşul: iki maç da banda girmeli");
+  assert.ok(
+    todayItems[0].text.includes("Galatasaray"),
+    `büyük kulüp maçı önce gelmeli, sıra: ${todayItems.map((item) => item.text).join(" | ")}`
+  );
+  assert.ok(todayItems[0].weight > todayItems[1].weight, "ağırlık farkı sıralamayı açıklamalı");
+}
+
+/** Her bant öğesi bir kulüp ağırlığı taşımalı; sıralama sessiz olmamalı. */
+function testEveryItemCarriesWeight() {
+  for (const item of buildTickerFeed().items) {
+    assert.equal(typeof item.weight, "number", `"${item.text}" ağırlık taşımıyor`);
+    assert.ok(item.weight >= 0, `"${item.text}" ağırlığı negatif olamaz`);
+  }
+}
+
+/**
+ * SKORSUZ CANLI MAÇ BANDA GİRMEZ.
+ *
+ * Bant ile sayfa listeleri aynı kapıdan geçmeli; ayrışsalardı bantta görünen
+ * bir maç sayfada bulunamazdı.
+ */
+function testTickerHidesLiveMatchWithoutScore() {
+  const feed = withTempData(
+    (files) => {
+      emptyAllSources(files);
+      fs.writeFileSync(files[SOURCE_FILES.indexOf("matches.json")], JSON.stringify([{
+        id: "skorsuz-canli",
+        homeTeam: "Galatasaray",
+        awayTeam: "Fenerbahçe",
+        status: "LIVE",
+        kickoff: "2026-07-29T19:00:00+03:00",
+        lastVerifiedAt: "2026-07-29T20:00:00+03:00"
+      }]), "utf8");
+      if (fs.existsSync(STATE_FILE)) fs.unlinkSync(STATE_FILE);
+    },
+    () => buildTickerFeed({ now: new Date("2026-07-29T20:30:00+03:00") })
+  );
+
+  assert.ok(
+    !feed.items.some((item) => item.kind === "live"),
+    "skoru olmayan maç bantta canlı olarak listelenmemeli"
+  );
+}
+
+/**
+ * GÜNÜN BÜLTENİ AYNI KAYNAKLARDAN BESLENİR.
+ *
+ * Sayfa yalnızca bağlantı listesiydi: adı "bülten" ama içinde o güne ait
+ * hiçbir veri yoktu. Üç bölüm de bantla aynı servislerden gelmeli, aksi
+ * hâlde bülten ile bant farklı şeyler söylerdi.
+ */
+function testDailyBulletinIsDataDriven() {
+  const file = path.join(root, "gunun-radar-bulteni.html");
+  if (!fs.existsSync(file)) return;
+  const html = fs.readFileSync(file, "utf8");
+
+  for (const slot of ["bulletin-matches", "bulletin-transfers", "bulletin-statements"]) {
+    assert.ok(html.includes(`data-api-target="${slot}"`), `bültende ${slot} yuvası yok`);
+    assert.ok(
+      html.includes(`<!-- prerender:${slot}:start -->`),
+      `${slot} yuvası derleme sırasında doldurulmamış`
+    );
+  }
+
+  // Doğrulanmış transfer varsa bültende de görünmeli.
+  const { transfers } = publishableTransfers();
+  if (transfers.length) {
+    assert.ok(
+      html.includes(transfers[0].playerName),
+      `en yeni doğrulanmış transfer bültende görünmüyor: ${transfers[0].playerName}`
+    );
+  }
+
+  // Açıklama yoksa bölüm gizlenmez, açıkça bekliyor der.
+  const { statements } = publishableStatements();
+  if (!statements.length) {
+    assert.ok(
+      /Doğrulanmış açıklama bekleniyor/.test(html),
+      "açıklama yokken bülten bekleme cümlesi yazmalı"
+    );
+  } else {
+    assert.ok(html.includes(statements[0].speaker), "doğrulanmış açıklama bültende görünmeli");
+  }
+}
+
 testOnlyVerifiedSources();
 testNotCrowded();
 testNoSingleCategoryDominates();
@@ -409,8 +525,13 @@ testFallbackKeepsLastVerified();
 testFallbackWritesInternalTimestamp();
 testUnchangedFeedDoesNotRewriteState();
 testFallbackDoesNotRewriteWhileOutageContinues();
+testBigClubsRankFirstWithinCategory();
+testEveryItemCarriesWeight();
+testTickerHidesLiveMatchWithoutScore();
+testDailyBulletinIsDataDriven();
 
 console.log(
   "Ticker feed tests passed (doğrulanmış kaynak, kategori kotası, canlı/tazelik rozeti, " +
-  "bugünün maçları, maç sonu açıklamaları, tıklanabilirlik, veri bekleniyor durumu, yedek koruma)."
+  "bugünün maçları, maç sonu açıklamaları, tıklanabilirlik, veri bekleniyor durumu, yedek koruma, " +
+  "kulüp ağırlığı, skorsuz canlı maç yasağı, günün bülteni veri bağı)."
 );

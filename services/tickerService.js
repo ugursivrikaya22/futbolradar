@@ -52,6 +52,7 @@ const {
 } = require("./transferService.js");
 const { publishableStatements, logExcludedStatements } = require("./matchStatementService.js");
 const { isDisplayableMatch } = require("./matchEligibility.js");
+const { clubPopularity } = require("./matchPriorityService.js");
 
 /** "Son Dakika" rozetinin geçerli sayıldığı pencere. */
 const FRESH_WINDOW_HOURS = 36;
@@ -183,6 +184,25 @@ function resultHref(match) {
   return `canli-skor.html#${match.id}`;
 }
 
+
+/**
+ * KULÜP AĞIRLIĞI — bant içi sıralama.
+ *
+ * Bant, her kategoride yalnızca tazeliğe göre diziliyordu: aynı gün gelen iki
+ * transferden hangisinin daha çok aranacağı hesaba katılmıyor, Galatasaray
+ * hareketi bir alt sıra kulübün hareketinin altında kalabiliyordu.
+ *
+ * Ağırlık `services/matchPriorityService.js`teki ilgi tablosundan geliyor —
+ * ayrı bir liste tutmak, iki tablonun zamanla ayrışması demekti. Öğenin
+ * ilgili kulüpleri arasından EN YÜKSEK değer alınır.
+ */
+function clubWeight(...names) {
+  const values = names
+    .filter(Boolean)
+    .map((name) => clubPopularity(name));
+  return values.length ? Math.max(...values) : 0;
+}
+
 // ── Kaynaklar ───────────────────────────────────────────────────────────────
 
 /**
@@ -201,6 +221,7 @@ function liveItems({ now }) {
     .map((match) => ({
       kind: "live",
       label: "Canlı",
+      weight: clubWeight(match.homeTeam, match.awayTeam),
       text: scoreText(match),
       href: `canli-skor.html#${match.id}`,
       at: matchStamp(match)
@@ -230,6 +251,7 @@ function todayItems({ now }) {
       return {
         kind: "today",
         label: "Bugün",
+        weight: clubWeight(match.homeTeam, match.awayTeam),
         text: `${time ? `${time} ` : ""}${match.homeTeam} - ${match.awayTeam}`,
         href: "bugunun-maclari.html",
         at: match.kickoff
@@ -247,6 +269,7 @@ function resultItems({ now }) {
     .map((match) => ({
       kind: "result",
       label: "Sonuç",
+      weight: clubWeight(match.homeTeam, match.awayTeam),
       text: scoreText(match),
       href: resultHref(match),
       at: matchStamp(match)
@@ -268,6 +291,7 @@ function statementItems({ now }) {
     .map((statement) => ({
       kind: "statement",
       label: statement.role === "player" ? "Futbolcu" : "Maç Sonu",
+      weight: clubWeight(statement.team),
       text: `${statement.speaker}: "${statement.quote}"`,
       href: statement.url,
       at: statement.publishedAt
@@ -293,6 +317,7 @@ function transferItems({ now }) {
     .map((item) => ({
       kind: "transfer",
       label: "Transfer",
+      weight: clubWeight(item.toTeam, item.fromTeam),
       // Yön açıkça yazılıyor: "kadrosunda" ifadesi gidenler için yanıltıcıydı.
       text: `${item.playerName}, ${item.toTeam} kadrosuna katıldı (${item.type})`,
       href: item.sourceUrl,
@@ -312,6 +337,7 @@ function newsItems({ now }) {
     .map((item) => ({
       kind: "news",
       label: item.category || "Gündem",
+      weight: clubWeight(item.team),
       text: item.title,
       href: item.url,
       at: item.publishedAt
@@ -348,6 +374,18 @@ function dedupe(items, seen = new Set()) {
 const byRecency = (left, right) => String(right.at || "").localeCompare(String(left.at || ""));
 
 /**
+ * Kategori içi sıralama: önce kulüp ağırlığı, sonra tazelik.
+ *
+ * Tazelik tek ölçüt olduğunda, aynı gün gelen iki transferden daha az
+ * aranan kulübünki öne geçebiliyordu. Ağırlık farkı yoksa tazelik belirler.
+ */
+const byInterest = (left, right) => {
+  const weight = (right.weight || 0) - (left.weight || 0);
+  if (weight !== 0) return weight;
+  return byRecency(left, right);
+};
+
+/**
  * Bandın içeriğini üretir.
  *
  * @param {{now?: Date, sources?: Array}} options
@@ -375,7 +413,7 @@ function composeTickerFeed(options = {}) {
 
     const items = dedupe(produced, seen)
       .map((item) => ({ ...item, source: source.id, priority: source.priority }))
-      .sort(byRecency)
+      .sort(byInterest)
       .slice(0, source.maxItems);
 
     loaded.push({ source, items });
@@ -397,7 +435,7 @@ function composeTickerFeed(options = {}) {
     .filter((item) => !picked.includes(item))
     .sort((left, right) => {
       if (left.priority !== right.priority) return left.priority - right.priority;
-      return byRecency(left, right);
+      return byInterest(left, right);
     });
 
   const items = [...picked, ...rest].slice(0, MAX_ITEMS);

@@ -30,6 +30,8 @@ const { matchSignal } = require("../services/matchSignalService.js");
 const { displayLeagueName } = require("../services/leagueIdentity.js");
 const { filterDisplayable, logHiddenMatches } = require("../services/matchEligibility.js");
 const { rankMatches } = require("../services/matchPriorityService.js");
+const { publishableTransfers, logExcludedTransfers, sourceTypeLabel } = require("../services/transferService.js");
+const { publishableStatements, logExcludedStatements } = require("../services/matchStatementService.js");
 
 /**
  * Maçın kalıcı sayfası. Var olmayan bir adrese bağlanmıyoruz: rapor
@@ -469,6 +471,71 @@ function formLinksBlock() {
       ${body}
     </a>`;
   }).join("");
+}
+
+
+/**
+ * GÜNÜN RADAR BÜLTENİ — günlük akış.
+ *
+ * Sayfa yalnızca bağlantı listesiydi: adı "bülten" ama içinde o güne ait
+ * hiçbir şey yoktu. Üç bölüm artık veriden geliyor ve her biri boşken
+ * uydurma satır değil, açık bir bekleme cümlesi basıyor.
+ *
+ * Sıralama bandın kuralıyla aynı: büyük kulüpler ve doğrulanmış kayıtlar
+ * önce. Ayrı bir sıralama yazsaydık bülten ile bant farklı şeyler söylerdi.
+ */
+function bulletinEmptyCard(title, text) {
+  return `<article class="data-empty" data-card="empty-state">
+    <strong>${escapeHtml(title)}</strong><span>${escapeHtml(text)}</span>
+  </article>`;
+}
+
+/** Bültenin transfer akışı: en yeni doğrulanmış hareketler. */
+function bulletinTransfers(limit) {
+  const { transfers, excluded } = publishableTransfers();
+  logExcludedTransfers("bulletin", excluded);
+
+  const selected = transfers.slice(0, limit || 5);
+  if (!selected.length) {
+    return bulletinEmptyCard(
+      "Doğrulanmış transfer bekleniyor",
+      "Kulüp açıklaması veya güvenilir kayıt ulaştığında bu alan güncellenecek. Söylenti kesinleşmiş transfer gibi gösterilmez."
+    );
+  }
+
+  return selected.map((transfer) => {
+    const typeLabel = sourceTypeLabel(transfer.sourceType);
+    const badge = typeLabel
+      ? `<span class="source-badge is-${escapeHtml(String(transfer.sourceType).toLowerCase())}">${escapeHtml(typeLabel)}</span>`
+      : "";
+    return `<article class="bulletin-row" data-card="transfer-record">
+      <div class="bulletin-row-head"><span class="bulletin-row-date">${escapeHtml(formatFreshnessDate(transfer.date) || transfer.date)}</span>${badge}</div>
+      <strong>${escapeHtml(transfer.playerName)}</strong>
+      <p class="bulletin-row-route">${escapeHtml(transfer.fromTeam)} → ${escapeHtml(transfer.toTeam)} · ${escapeHtml(transfer.type)}</p>
+      <a class="detail-link" href="${escapeHtml(transfer.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(transfer.sourceName)} kaynağını aç</a>
+    </article>`;
+  }).join("");
+}
+
+/** Bültenin maç sonu açıklamaları akışı. */
+function bulletinStatements(limit) {
+  const { statements, excluded } = publishableStatements();
+  logExcludedStatements("bulletin", excluded);
+
+  const selected = statements.slice(0, limit || 5);
+  if (!selected.length) {
+    return bulletinEmptyCard(
+      "Doğrulanmış açıklama bekleniyor",
+      "Teknik direktör ve futbolcu sözleri, kulüp veya resmî kaynak yayımladığı anda kaynağıyla birlikte burada listelenecek. Doğrulanmamış söz yayımlanmaz."
+    );
+  }
+
+  return selected.map((statement) => `<article class="bulletin-row" data-card="match-statement">
+    <div class="bulletin-row-head"><span class="bulletin-row-date">${escapeHtml(formatFreshnessDate(statement.publishedAt) || "")}</span><span class="source-badge is-official">${escapeHtml(statement.roleLabel)}</span></div>
+    <strong>${escapeHtml(statement.speaker)}</strong>
+    <blockquote class="bulletin-row-quote"><p>${escapeHtml(statement.quote)}</p></blockquote>
+    <a class="detail-link" href="${escapeHtml(statement.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(statement.sourceName)} kaynağını aç</a>
+  </article>`).join("");
 }
 
 function matchProgramState(variant) {
@@ -1006,6 +1073,13 @@ function superLigAnalysisLinks(limit) {
 
 writePage("super-lig-mac-analizleri.html", {
   "super-lig-analysis-links": superLigAnalysisLinks(12)
+}, fixtureFreshness);
+
+// Günün Radar Bülteni: adı "bülten" ama içinde o güne ait hiçbir veri yoktu.
+writePage("gunun-radar-bulteni.html", {
+  "bulletin-matches": matchProgramState("today"),
+  "bulletin-transfers": bulletinTransfers(5),
+  "bulletin-statements": bulletinStatements(5)
 }, fixtureFreshness);
 
 writePage("bugunun-maclari.html", {
