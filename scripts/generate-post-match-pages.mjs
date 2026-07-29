@@ -17,6 +17,7 @@ const domain = "https://www.futbolradar.com";
 
 const matches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
 const { buildMatchReport } = require("../services/matchReportService.js");
+const { isReportableFinal, REPORT_STATUS } = require("../services/matchReportStages.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 const { buildPostMatchIntelligence } = require("../services/postMatchIntelligence.js");
@@ -57,8 +58,19 @@ function readEnrichmentStore() {
 const enrichmentStore = readEnrichmentStore();
 
 const fixturePool = curatedMatches();
+
+/**
+ * RAPOR ÜRETİLECEK MAÇLAR.
+ *
+ * Eskiden yalnızca `status === "FINISHED"` etiketli kayıtlar alınıyordu.
+ * Sağlayıcı bu etiketi saatler sonra gönderirken kesin skoru çoktan yollamış
+ * oluyordu; skoru bilinen maçlar sırf etiket gecikti diye raporsuz kalıyor,
+ * "günlerce takılı maç" tablosu böyle oluşuyordu.
+ *
+ * Ölçüt artık veriye bakıyor: SKOR VE TAKIMLAR BİLİNİYORSA rapor üretilir.
+ */
 const finished = matches
-  .filter((match) => String(match.status || "").toUpperCase() === "FINISHED")
+  .filter((match) => isReportableFinal(match, new Date()))
   .sort((left, right) => String(right.kickoff || "").localeCompare(String(left.kickoff || "")));
 
 function escapeHtml(value) {
@@ -524,7 +536,7 @@ function pageHtml(report, match) {
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="${depth}index.html">Ana Sayfa</a><span>/</span><a href="${depth}mac-merkezi.html">Maç Merkezi</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
       <section class="post-match-hero">
-        <div class="post-match-heading"><span class="eyebrow">${escapeHtml(displayLeagueName(match.league))}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""}</span><h1>${escapeHtml(match.homeTeam)} ${escapeHtml(score.home ?? "")}-${escapeHtml(score.away ?? "")} ${escapeHtml(match.awayTeam)} Maç Raporu</h1><p>${escapeHtml(lead)}</p><div class="post-match-meta"><span>${escapeHtml(formatDate(match.kickoff))}</span>${match.venue && match.venue !== "Açıklanmadı" ? `<span>${escapeHtml(match.venue)}</span>` : ""}${match.referee ? `<span>Hakem: ${escapeHtml(match.referee)}</span>` : ""}<span>Veri kapsamı %${escapeHtml(report.coverage)}</span></div></div>
+        <div class="post-match-heading"><span class="eyebrow">${escapeHtml(displayLeagueName(match.league))}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""}</span><h1>${escapeHtml(match.homeTeam)} ${escapeHtml(score.home ?? "")}-${escapeHtml(score.away ?? "")} ${escapeHtml(match.awayTeam)} Maç Raporu</h1><p>${escapeHtml(lead)}</p><div class="post-match-meta"><span>${escapeHtml(formatDate(match.kickoff))}</span>${match.venue && match.venue !== "Açıklanmadı" ? `<span>${escapeHtml(match.venue)}</span>` : ""}${match.referee ? `<span>Hakem: ${escapeHtml(match.referee)}</span>` : ""}<span class="report-status is-${escapeHtml(report.statusTone)}" title="${escapeHtml(report.statusDetail)}">${escapeHtml(report.statusLabel)}</span><span>Veri kapsamı %${escapeHtml(report.coverage)}</span></div></div>
         <div class="post-match-scoreboard" aria-label="Maç sonucu">
           <div><span class="team-monogram">${escapeHtml(monogram(match.homeTeam))}</span><strong>${escapeHtml(match.homeTeam)}</strong></div>
           <div class="post-match-score"><span>Maç sonucu</span><b>${escapeHtml(score.home ?? "-")}<i>-</i>${escapeHtml(score.away ?? "-")}</b>${Number.isFinite(Number(score.halftimeHome)) ? `<small>İlk yarı ${escapeHtml(score.halftimeHome)}-${escapeHtml(score.halftimeAway)}</small>` : ""}</div>
@@ -641,14 +653,14 @@ function recentReportsBlock(entries) {
     const line = summary.status === "ready"
       ? summary.headline
       : `${match.homeTeam} - ${match.awayTeam}`;
-    const measured = ["momentum", "signals", "statistics"]
-      .filter((key) => report.sections[key] && report.sections[key].status === "ready").length;
-
+    // "1/3 ölçüm hazır" okuyucuya hiçbir şey söylemiyordu: hangi ölçüm, neden
+    // eksik, gelecek mi? Yerine raporun DURUMU yazılıyor — bir cümle, bir
+    // kesir değil (services/matchReportStages.js).
     return `<a class="home-report-card" href="./${escapeHtml(report.seo.path)}">
       <span class="home-report-meta">${escapeHtml(displayLeagueName(match.league))} · ${escapeHtml(formatDate(match.kickoff))}</span>
       <strong class="home-report-score">${escapeHtml(`${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`)}</strong>
       <p class="home-report-line">${escapeHtml(line)}</p>
-      <span class="home-report-coverage">${escapeHtml(`Veri kapsamı %${report.coverage}`)}${measured ? escapeHtml(` · ${measured}/3 ölçüm hazır`) : ""}</span>
+      <span class="report-status is-${escapeHtml(report.statusTone)}" title="${escapeHtml(report.statusDetail)}">${escapeHtml(report.statusLabel)}</span>
     </a>`;
   }).join("");
 
@@ -693,7 +705,7 @@ function addReportIndex(entries) {
       <span>${escapeHtml(displayLeagueName(match.league))} · ${escapeHtml(formatDate(match.kickoff))}</span>
       <strong>${escapeHtml(match.homeTeam)} ${escapeHtml(score)} ${escapeHtml(match.awayTeam)}</strong>
       <p>${escapeHtml(line)}</p>
-      <em>Veri kapsamı %${escapeHtml(report.coverage)}</em>
+      <em class="report-status is-${escapeHtml(report.statusTone)}" title="${escapeHtml(report.statusDetail)}">${escapeHtml(report.statusLabel)}</em>
     </a>`;
   }).join("");
 
@@ -775,5 +787,14 @@ if (generated.length) {
   upsertSitemap(generated.map((entry) => entry.report.seo.path));
 }
 
-const complete = generated.filter((entry) => entry.report.dataStatus === "complete").length;
-console.log(`Generated ${generated.length} match report page(s) (${complete} complete, ${generated.length - complete} partial)`);
+// KOŞU ÖZETİ aşama dağılımını gösterir: hangi maç hangi durumda takılı
+// kaldığı tek bakışta okunmalı, aksi hâlde "partial" yığını içinde kaybolur.
+const byStatus = new Map();
+for (const entry of generated) {
+  byStatus.set(entry.report.status, (byStatus.get(entry.report.status) || 0) + 1);
+}
+const breakdown = Object.values(REPORT_STATUS)
+  .filter((status) => byStatus.get(status.key))
+  .map((status) => `${status.key} ${byStatus.get(status.key)}`)
+  .join(", ");
+console.log(`Generated ${generated.length} match report page(s)${breakdown ? ` — ${breakdown}` : ""}`);

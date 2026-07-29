@@ -11,6 +11,7 @@
  */
 
 const { displayLeagueName } = require("./leagueIdentity.js");
+const { evaluateReportStage, hasReportableCore, isReportableFinal } = require("./matchReportStages.js");
 
 const VOICELESS = new Set(["f", "s", "t", "k", "ç", "ş", "h", "p"]);
 const BACK_VOWELS = new Set(["a", "ı", "o", "u"]);
@@ -894,9 +895,23 @@ function buildSeo(match, summary) {
   return { title, description, path, competition };
 }
 
-/** Tüm bölümleri tek raporda toplar. */
+/**
+ * Tüm bölümleri tek raporda toplar.
+ *
+ * ÜRETİM KOŞULU DEĞİŞTİ. Eskiden yalnızca `status === "FINISHED"` olan maç
+ * rapor alıyordu. Sağlayıcı durum etiketini saatler sonra göndermeye devam
+ * ederken kesin skoru çoktan yollamış oluyordu; skoru ve takımları bilinen
+ * maçlar sırf etiket gecikti diye raporsuz kalıyordu.
+ *
+ * Yeni koşul veriye bakıyor, etikete değil: SKOR VE TAKIMLAR BİLİNİYORSA
+ * rapor üretilir. Bu, "skor ve takımlar biliniyorsa temel rapor her zaman
+ * üretilsin" kuralının tek uygulama noktası.
+ */
 function buildMatchReport(match, context) {
-  if (!match || String(match.status || "").toUpperCase() !== "FINISHED") {
+  const reportNow = (context && context.now instanceof Date)
+    ? context.now
+    : (Date.parse((context && context.generatedAt) || "") ? new Date(context.generatedAt) : new Date());
+  if (!isReportableFinal(match, reportNow)) {
     return null;
   }
 
@@ -914,21 +929,34 @@ function buildMatchReport(match, context) {
     nextMatch: buildNextMatchOutlook(match, context)
   };
 
-  const readyCount = Object.values(sections).filter((section) => section.status === "ready").length;
-  const coverage = Math.round((readyCount / Object.keys(sections).length) * 100);
+  // AŞAMA VE DURUM tek yerde belirlenir (services/matchReportStages.js).
+  // Rapor artık "%44" gibi bir kesir değil, bir cümle taşıyor: hızlı rapor
+  // hazır / tam analiz hazırlanıyor / kısmi rapor / veri yok.
+  const stage = evaluateReportStage({ sections, match, now: reportNow });
 
   return {
     matchId: match.id,
     generatedAt: (context && context.generatedAt) || null,
     seo: buildSeo(match, summary),
     sections,
-    coverage,
-    dataStatus: coverage >= 70 ? "complete" : coverage >= 35 ? "partial" : "minimal"
+    // Genel kapsam korunuyor (mevcut çağıranlar ve testler okuyor) ama artık
+    // MANŞET DEĞİL: yüzey durum cümlesini basıyor, yüzde ayrıntıda kalıyor.
+    coverage: stage.coverage.overall,
+    stageCoverage: stage.coverage,
+    stage: stage.stage,
+    status: stage.status.key,
+    statusLabel: stage.status.text,
+    statusDetail: stage.status.detail,
+    statusTone: stage.status.tone,
+    minutesSinceFullTime: stage.ageMinutes,
+    dataStatus: stage.coverage.overall >= 70 ? "complete" : stage.coverage.overall >= 35 ? "partial" : "minimal"
   };
 }
 
 module.exports = {
   buildMatchReport,
+  hasReportableCore,
+  isReportableFinal,
   buildSummary,
   buildStandoutPlayers,
   buildStatisticsAnalysis,

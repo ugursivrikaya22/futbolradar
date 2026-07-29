@@ -16461,3 +16461,65 @@ body,
 :root[data-theme="dark"] .radar-match-card {
   background: rgba(var(--surface-rgb), 0.6);
 }
+
+/* ============================================================================
+   RAPOR DURUMU (services/matchReportStages.js)
+
+   Kartlarda "Veri kapsamı %44 · 1/3 ölçüm hazır" yazıyordu. Bu kesir okuyucuya
+   hiçbir şey söylemiyordu: hangi ölçüm, neden eksik, gelecek mi? Yerini bir
+   cümle aldı — hızlı rapor hazır / tam analiz hazırlanıyor / kısmi rapor /
+   veri yok.
+   ========================================================================== */
+.report-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: var(--radius-pill);
+  padding: 2px 9px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  font-style: normal;
+  line-height: 1.6;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.report-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+/* Hazır: hızlı rapor ya da tam analiz yayımlandı. */
+.report-status.is-ok {
+  background: rgba(11, 143, 90, 0.09);
+  border-color: rgba(11, 143, 90, 0.22);
+  color: var(--green);
+}
+
+/* Hazırlanıyor: veri yolda, pencere hâlâ açık. */
+.report-status.is-progress {
+  background: rgba(13, 148, 136, 0.085);
+  border-color: rgba(13, 148, 136, 0.2);
+  color: var(--cyan);
+}
+
+/* Kısmi / veri yok: bekleyiş değil, sonuç. */
+.report-status.is-warn {
+  background: rgba(217, 119, 6, 0.1);
+  border-color: rgba(217, 119, 6, 0.24);
+  color: #b45309;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .report-status.is-warn {
+    color: #fbbf24;
+  }
+}
+
+:root[data-theme="dark"] .report-status.is-warn {
+  color: #fbbf24;
+}

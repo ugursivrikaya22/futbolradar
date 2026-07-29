@@ -255,6 +255,14 @@ jobs:
         if: env.APIFOOTBALL_API_KEY != ''
         run: node scripts/sync-match-results.mjs --apply
 
+      # YENİDEN DENEME KUYRUĞU — hangi maçın zenginleştirilmesi gerektiğini
+      # takvime göre hesaplar ve deneme defterine işler. Kotayı bu adım
+      # korur: koşu başına kesin bir üst sınır uygular, aynı maçı sık sık
+      # sormaz ve tam analiz penceresi kapanan maçı bir daha sorgulamaz.
+      # Kendi başına sağlayıcıya GİTMEZ; yalnızca karar verir.
+      - name: Plan post-match retries
+        run: node scripts/plan-post-match-retries.mjs --apply
+
       - name: Regenerate match reports
         run: node scripts/generate-post-match-pages.mjs
 

@@ -38,14 +38,51 @@ const finished = {
   ]
 };
 
-function testOnlyFinishedMatchesGetReports() {
-  for (const status of ["SCHEDULED", "LIVE", "1H", "HT", "POSTPONED", ""]) {
+/**
+ * ÜRETİM KOŞULU: OYNANMIŞ VE SKORU KESİNLEŞMİŞ MAÇ.
+ *
+ * Kural etiketle birlikte ZAMANA da bakıyor. İki yön de korunuyor:
+ *
+ *   • Canlı bir maçın skoru FİNAL DEĞİLDİR — 1-0'ken yazılan rapor 90.
+ *     dakikada yanlış bir belgeye dönüşür. Oynanan, ertelenen ve iptal edilen
+ *     maçlar rapor almaz.
+ *   • Ama sağlayıcı "FINISHED" etiketini saatler sonra gönderirken kesin
+ *     skoru çoktan yollamış olabiliyor. Sırf etiket gecikti diye maçı
+ *     raporsuz bırakmak, maçların günlerce takılı kalmasının sebebiydi.
+ */
+function testOnlyPlayedMatchesGetReports() {
+  const now = new Date("2026-08-11T02:00:00+03:00");
+
+  // Oynanmakta olan ya da oynanmamış maç: rapor yok.
+  for (const status of ["LIVE", "1H", "HT", "2H", "ET", "POSTPONED", "CANCELLED"]) {
     assert.equal(
-      service.buildMatchReport({ ...finished, status }, {}), null,
+      service.buildMatchReport({ ...finished, status }, { now }), null,
       `"${status}" durumundaki maç için rapor üretilmemeli`
     );
   }
-  assert.ok(service.buildMatchReport(finished, {}), "tamamlanmış maç rapor almalı");
+
+  // Skoru olmayan maç: rapor yok — boş sayfa yayımlamaktansa hiç yayımlama.
+  assert.equal(
+    service.buildMatchReport({ ...finished, score: null }, { now }), null,
+    "skoru olmayan maç rapor almamalı"
+  );
+
+  // Başlama saati henüz geçmemiş, etiketi de sessiz: rapor yok.
+  assert.equal(
+    service.buildMatchReport(
+      { ...finished, status: "", kickoff: "2026-08-11T01:30:00+03:00" }, { now }
+    ),
+    null,
+    "henüz bitmemiş maç rapor almamalı"
+  );
+
+  // Etiket gecikmiş ama maç bitmiş ve skoru var: rapor ÜRETİLİR.
+  assert.ok(
+    service.buildMatchReport({ ...finished, status: "SCHEDULED" }, { now }),
+    "etiketi gecikmiş ama oynanmış maç raporsuz kalmamalı"
+  );
+
+  assert.ok(service.buildMatchReport(finished, { now }), "tamamlanmış maç rapor almalı");
 }
 
 function testMomentumIsDerivedFromRealEvents() {
@@ -172,7 +209,7 @@ function testRealMatchesProduceHonestCoverage() {
 }
 
 const tests = [
-  testOnlyFinishedMatchesGetReports,
+  testOnlyPlayedMatchesGetReports,
   testMomentumIsDerivedFromRealEvents,
   testMomentumRefusesWithoutEnoughTimedEvents,
   testMomentumConfidenceTracksSampleSize,
