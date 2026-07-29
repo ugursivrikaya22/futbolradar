@@ -4,6 +4,7 @@ import { createRequire } from "node:module";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
+const { sourceTypeLabel } = require("../services/transferService.js");
 const { displayLeagueName, SUPER_LIG_DISPLAY_NAME } = require("../services/leagueIdentity.js");
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
@@ -78,6 +79,19 @@ function playerCard(player, hrefPrefix = "./") {
   </article>`;
 }
 
+/**
+ * Kaynak türü rozeti: kulübün kendi duyurusu ile basın aktarımı kartta
+ * ayrışsın. Etiketler services/transferService.js'den geliyor; tanınmayan
+ * tür rozet üretmez.
+ */
+function sourceBadge(transfer) {
+  const key = String((transfer && transfer.sourceType) || "").toLowerCase();
+  const label = sourceTypeLabel(key);
+  if (!label) return "";
+  return `<span class="source-badge is-${escapeHtml(key)}">${escapeHtml(label)}` +
+    `${transfer.sourceName ? ` · ${escapeHtml(transfer.sourceName)}` : ""}</span>`;
+}
+
 function transferCard(transfer) {
   const fee = transfer.fee || (Number(transfer.feeEur) > 0 ? formatMarketValueEur(transfer.feeEur) : Number(transfer.feeEur) === 0 ? "Bedelsiz" : "Açıklanmadı");
   const date = new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(`${transfer.date}T12:00:00Z`));
@@ -91,7 +105,7 @@ function transferCard(transfer) {
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>${escapeHtml(transfer.position || "Bilinmiyor")}</b></article><article><span>Transfer tipi</span><b>${escapeHtml(transfer.type || "Açıklanmadı")}</b></article><article><span>Bonservis</span><b>${escapeHtml(fee)}</b></article><article><span>Sezon</span><b>${escapeHtml(transfer.season || "Yakında")}</b></article></div>
     ${transfer.note ? `<p class="transfer-note">${escapeHtml(transfer.note)}</p>` : ""}
     <p class="transfer-verification">Son kontrol: ${escapeHtml(new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(transfer.lastVerifiedAt || `${transfer.date}T12:00:00Z`)))}</p>
-    <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
+    <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span>${sourceBadge(transfer)}</div>
     <div class="player-actions">${sourceAction}<a class="detail-link ghost" href="./takimlar.html?team=${encodeURIComponent(transfer.toTeam || "")}">Takımı incele</a></div>
   </article>`;
 }

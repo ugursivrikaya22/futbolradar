@@ -7,6 +7,34 @@ const domain = "https://www.futbolradar.com";
 const today = "2026-07-22";
 
 /**
+ * TRANSFER RADARI TAZELİK DAMGASI.
+ *
+ * Sayfa "Veriler periyodik olarak güncellenir" diyordu — bu bir tazelik
+ * bilgisi değil, tazelik sorusundan kaçınmanın yolu. Okuyucunun sorusu
+ * "en son ne zaman kontrol edildi?" ve cevabı verinin kendisinde yazılı.
+ * Kayıt yoksa uydurma tarih basılmaz.
+ */
+function transferFreshnessLabel() {
+  let records = [];
+  try {
+    records = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
+  } catch {
+    return "Doğrulanmış transfer kaydı bekleniyor";
+  }
+
+  const stamps = (Array.isArray(records) ? records : [])
+    .map((item) => Date.parse(item && item.lastVerifiedAt))
+    .filter((value) => !Number.isNaN(value));
+  if (!stamps.length) return "Doğrulanmış transfer kaydı bekleniyor";
+
+  const latest = new Date(Math.max(...stamps));
+  const formatted = new Intl.DateTimeFormat("tr-TR", {
+    day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Istanbul"
+  }).format(latest);
+  return `Son kaynak kontrolü: <time datetime="${latest.toISOString()}">${formatted}</time>`;
+}
+
+/**
  * TAZELİK SİNYALİ SAYFANIN RİTMİNE UYMALI.
  *
  * Site haritası bugüne kadar 3281 URL'nin TAMAMINA `weekly` yazıyordu —
@@ -272,6 +300,7 @@ const playerSeoPages = [
   {
     file: "transfer-radari.html",
     landing: "transfer-radari",
+    heroMeta: transferFreshnessLabel(),
     title: "Transfer Radarı | Güncel Gelen ve Giden Oyuncular | FutbolRadar",
     description: "Transfer Radarı ile Trendyol Süper Lig takımlarına gelen ve giden oyuncuları, bonservis bilgilerini ve doğrulama tarihlerini takip edin.",
     h1: "Transfer Radarı",
@@ -509,7 +538,7 @@ ${nav}
             <h1>${page.h1}</h1>
             <p class="lead">${page.lead}</p>
           </div>
-          <span class="hero-meta">Veriler periyodik olarak güncellenir</span>
+          <span class="hero-meta">${page.heroMeta || "Veriler periyodik olarak güncellenir"}</span>
         </div>
       </section>
       ${page.landing ? `<section class="grid three">${cardsHtml(page.cards)}</section>${landingControlsHtml(page)}${landingDescriptionHtml(page)}

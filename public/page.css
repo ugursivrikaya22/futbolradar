@@ -15973,3 +15973,60 @@ body,
     gap: 10px;
   }
 }
+
+/* ----------------------------------------------------------------------------
+   KAYNAK TÜRÜ ROZETİ — transfer kartları
+   "Kaynak var" demek yetmiyordu: kulübün kendi duyurusu ile bir gazetenin
+   aktarımı kartta aynı görünüyordu. Rozet ikisini ayırır; söylenti zaten
+   yayımlanan listeye hiç ulaşmaz (services/transferService.js).
+   -------------------------------------------------------------------------- */
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: var(--radius-pill);
+  padding: 3px 9px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.source-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Resmî: tarafın kendi kanalı — en güçlü doğrulama. */
+.source-badge.is-official {
+  background: rgba(11, 143, 90, 0.088);
+  color: var(--green);
+}
+
+/* Basın: olayı aktarıyor, tarafı değil. */
+.source-badge.is-media {
+  background: rgba(13, 148, 136, 0.082);
+  color: var(--cyan);
+}
+
+/* Söylenti yayımlanmaz; rozet yine de tanımlı ki bir gün sızarsa
+   etiketsiz değil, açıkça söylenti olarak görünsün. */
+.source-badge.is-rumour {
+  background: rgba(var(--surface-rgb), 0.092);
+  color: var(--muted);
+}
+
+.trend-transfer-verified {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+@media (max-width: 600px) {
+  .source-badge {
+    padding: 3px 7px;
+    font-size: 0.62rem;
+  }
+}

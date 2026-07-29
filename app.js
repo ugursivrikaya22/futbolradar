@@ -5259,10 +5259,33 @@
       '</div>' +
       (record.note ? '<p class="transfer-note">' + escapeHtml(record.note) + '</p>' : "") +
       '<p class="transfer-verification">Son kontrol: ' + escapeHtml(formatProfileDate(record.lastVerifiedAt || record.date) || "Yakında") + '</p>' +
-      '<div class="player-status-row"><span class="status-badge ' + (normalizeSearchText(record.status) === "confirmed" ? "verified" : "pending") + '">' + escapeHtml(transferRecordStatusLabel(record.status)) + '</span></div>' +
+      '<div class="player-status-row"><span class="status-badge ' + (normalizeSearchText(record.status) === "confirmed" ? "verified" : "pending") + '">' + escapeHtml(transferRecordStatusLabel(record.status)) + '</span>' + transferSourceBadgeHtml(record) + '</div>' +
       '<div class="player-actions">' + sourceAction + '<a class="detail-link ghost" href="' + escapeHtml(siteHref("takimlar.html?team=" + encodeURIComponent(record.toTeam || ""))) + '">Takımı incele</a></div>' +
       '</article>'
     );
+  }
+
+  /**
+   * KAYNAK TÜRÜ ROZETİ.
+   *
+   * "Kaynak var" demek yetmiyordu: kulübün kendi duyurusu ile bir gazetenin
+   * aktarımı kartta aynı görünüyordu. Etiketler services/transferService.js
+   * SOURCE_TYPES ile AYNI; scripts/test-transfer-pipeline.mjs iki tarafı
+   * karşılaştırır. "rumour" hiçbir zaman yayımlanan listeye ulaşmaz ama
+   * etiketi burada tanımlı: ulaşırsa etiketsiz görünmesin.
+   */
+  var TRANSFER_SOURCE_TYPES = {
+    official: "Resmî açıklama",
+    media: "Basın kaynağı",
+    rumour: "Söylenti"
+  };
+
+  function transferSourceBadgeHtml(record) {
+    var key = String((record && record.sourceType) || "").toLowerCase();
+    var label = TRANSFER_SOURCE_TYPES[key];
+    if (!label) return "";
+    return '<span class="source-badge is-' + escapeHtml(key) + '">' + escapeHtml(label) +
+      (record.sourceName ? ' · ' + escapeHtml(record.sourceName) : "") + '</span>';
   }
 
   function renderHomeTransferFeed(records) {

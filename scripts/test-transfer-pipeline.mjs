@@ -12,6 +12,8 @@
  */
 
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
@@ -27,6 +29,7 @@ const base = {
   date: "2026-07-19",
   status: "confirmed",
   sourceName: "Kulüp açıklaması",
+  sourceType: "official",
   sourceUrl: "https://example.com/duyuru",
   lastVerifiedAt: "2026-07-20T12:00:00+03:00"
 };
@@ -230,6 +233,106 @@ async function testTickerCarriesAConfirmedTransfer() {
   }
 }
 
+/**
+ * KAYNAK TÜRÜ ZORUNLU VE SÖYLENTİ YAYIMLANMAZ.
+ *
+ * Denetimde her kaydın kaynağı vardı ama türü yoktu: kulübün kendi duyurusu
+ * ile bir gazetenin aktarımı kartta aynı ağırlıkta görünüyordu.
+ */
+function testSourceTypeIsMandatory() {
+  // Boş değer "zorunlu alan eksik", tanınmayan değer "tanınmayan kaynak türü"
+  // gerekçesiyle düşer. İkisi de doğru ret; ikisinde de gerekçe alanı söyler.
+  for (const sourceType of ["", null, undefined, "twitter", "forum", "bilinmiyor"]) {
+    const verdict = service.evaluateTransfer({ ...base, sourceType });
+    assert.equal(verdict.publishable, false, `"${sourceType}" kaynak türü kabul edilmemeli`);
+    assert.ok(
+      /kaynak türü|sourceType/i.test(verdict.reason),
+      `gerekçe kaynak türü alanını söylemeli: ${verdict.reason}`
+    );
+  }
+
+  for (const sourceType of service.PUBLISHABLE_SOURCE_TYPES) {
+    assert.equal(
+      service.evaluateTransfer({ ...base, sourceType }).publishable,
+      true,
+      `"${sourceType}" yayımlanabilir olmalı`
+    );
+  }
+}
+
+/** Söylenti, durumu "confirmed" yazılmış olsa bile yayımlanmaz. */
+function testRumourNeverPublishes() {
+  const verdict = service.evaluateTransfer({ ...base, status: "confirmed", sourceType: "rumour" });
+  assert.equal(verdict.publishable, false, "söylenti kaynağı yayımlanmamalı");
+  assert.ok(verdict.reason, "gerekçe yazılmalı");
+
+  // Gerçek veri dosyasında hiç söylenti bulunmamalı.
+  const { transfers } = service.publishableTransfers();
+  for (const transfer of transfers) {
+    assert.notEqual(transfer.sourceType, "rumour", `${transfer.id}: söylenti yayımlanmış`);
+    assert.ok(
+      service.PUBLISHABLE_SOURCE_TYPES.includes(transfer.sourceType),
+      `${transfer.id}: tanınmayan kaynak türü "${transfer.sourceType}"`
+    );
+  }
+}
+
+/**
+ * KAYNAK BELİRLİ BİR DUYURUYA GÖTÜRMELİ.
+ *
+ * Denetimde bir kayıt kaynak olarak kulübün ANA SAYFASINI gösteriyordu.
+ * Bağlantı geçerliydi ama hiçbir şeyi kanıtlamıyordu.
+ */
+function testSourceUrlMustPointAtAnAnnouncement() {
+  const rejected = [
+    "https://www.trabzonspor.org.tr",
+    "https://www.trabzonspor.org.tr/",
+    "https://www.trabzonspor.org.tr/tr",
+    "https://www.bjk.com.tr/en",
+    "not-a-url",
+    ""
+  ];
+  for (const sourceUrl of rejected) {
+    assert.equal(service.isTraceableUrl(sourceUrl), false, `"${sourceUrl}" kaynak sayılmamalı`);
+    assert.equal(service.evaluateTransfer({ ...base, sourceUrl }).publishable, false);
+  }
+
+  for (const sourceUrl of [
+    "https://www.bjk.com.tr/tr/haber/94750/tayyip-talha-sanuc.html",
+    "https://www.aa.com.tr/tr/spor/haber/3976842"
+  ]) {
+    assert.equal(service.isTraceableUrl(sourceUrl), true, `"${sourceUrl}" kaynak sayılmalı`);
+  }
+}
+
+/** Her yayımlanan kayıt okunabilir bir doğrulama zamanı taşımalı. */
+function testVerificationTimestampIsMandatory() {
+  assert.equal(
+    service.evaluateTransfer({ ...base, lastVerifiedAt: "belirsiz" }).publishable,
+    false,
+    "okunamayan doğrulama zamanı kabul edilmemeli"
+  );
+
+  const { transfers } = service.publishableTransfers();
+  for (const transfer of transfers) {
+    assert.ok(
+      !Number.isNaN(Date.parse(transfer.lastVerifiedAt)),
+      `${transfer.id}: doğrulama zamanı okunamıyor`
+    );
+  }
+}
+
+/** Kaynak türü etiketi istemci ve servis arasında ayrışmamalı. */
+function testClientMirrorsSourceTypes() {
+  const appJs = fs.readFileSync(path.join(process.cwd(), "app.js"), "utf8");
+  const block = appJs.match(/var TRANSFER_SOURCE_TYPES = \{([\s\S]*?)\};/);
+  assert.ok(block, "app.js içinde kaynak türü etiketleri bulunamadı");
+
+  const client = {};
+  for (const [, key, value] of block[1].matchAll(/(\w+):\s*"([^"]+)"/g)) client[key] = value;
+  assert.deepEqual(client, { ...service.SOURCE_TYPES }, "app.js ve servis kaynak türü etiketleri ayrışmış");
+}
+
 const tests = [
   testOnlyConfirmedIsPublished,
   testSuperLigRelevance,
@@ -240,7 +343,12 @@ const tests = [
   testIncomingOutgoingSplit,
   testRealDataIsPublishableAndTraceable,
   testAtLeastOneSuperLigTeamHasBothDirections,
-  testTickerCarriesAConfirmedTransfer
+  testTickerCarriesAConfirmedTransfer,
+  testSourceTypeIsMandatory,
+  testRumourNeverPublishes,
+  testSourceUrlMustPointAtAnAnnouncement,
+  testVerificationTimestampIsMandatory,
+  testClientMirrorsSourceTypes
 ];
 
 for (const test of tests) {
@@ -248,4 +356,5 @@ for (const test of tests) {
 }
 
 console.log(`Transfer pipeline tests passed (${tests.length} senaryo: yalnızca onaylı, Süper Lig ilgisi, izlenebilir kaynak, ` +
-  "zorunlu alanlar, tekilleştirme, gelen/giden ayrımı, gerçek veri, takım bağlantısı, bant bağlantısı, radar dönem sınırı).");
+  "zorunlu alanlar, tekilleştirme, gelen/giden ayrımı, gerçek veri, takım bağlantısı, bant bağlantısı, radar dönem sınırı, " +
+  "kaynak türü zorunluluğu, söylenti yasağı, duyuruya işaret eden kaynak, doğrulama zamanı, istemci-servis eşliği).");

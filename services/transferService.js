@@ -31,8 +31,30 @@ const { normalizeText } = require("./matchRadarService");
 /** Yalnızca bu durum yayımlanır. Geri kalanı söylentidir. */
 const PUBLISHABLE_STATUS = "confirmed";
 
+/**
+ * KAYNAK TÜRÜ — okuyucunun bilmesi gereken ayrım.
+ *
+ * "Kaynak var" demek yetmiyor: kulübün kendi duyurusu ile bir gazetenin
+ * aktarımı aynı ağırlıkta değil, söylenti ise hiç değil. Tür artık her
+ * kayıtta zorunlu ve arayüzde rozet olarak görünüyor.
+ *
+ *   official  Kulüp, federasyon ya da KAP gibi tarafın kendi kanalı
+ *   media     Haber ajansı / yayıncı; olayı aktarıyor, tarafı değil
+ *   rumour    Doğrulanmamış iddia — ASLA yayımlanmaz
+ */
+const SOURCE_TYPES = Object.freeze({
+  official: "Resmî açıklama",
+  media: "Basın kaynağı",
+  rumour: "Söylenti"
+});
+
+/** Yayımlanabilir kaynak türleri. `rumour` bilinçli olarak dışarıda. */
+const PUBLISHABLE_SOURCE_TYPES = Object.freeze(["official", "media"]);
+
 /** Kaynağı olmayan hareket yayımlanmaz. */
-const REQUIRED_FIELDS = ["playerName", "fromTeam", "toTeam", "type", "date", "sourceName", "sourceUrl"];
+const REQUIRED_FIELDS = [
+  "playerName", "fromTeam", "toTeam", "type", "date", "sourceName", "sourceUrl", "sourceType"
+];
 
 function readTransfers() {
   try {
@@ -44,13 +66,35 @@ function readTransfers() {
   }
 }
 
+/**
+ * İzlenebilir kaynak: yalnızca protokol değil, BELİRLİ bir sayfa.
+ *
+ * Denetimde bir kayıt kaynak olarak kulübün ANA SAYFASINI gösteriyordu
+ * ("https://www.trabzonspor.org.tr/tr"). Bağlantı geçerliydi ama hiçbir şeyi
+ * kanıtlamıyordu: okuyucu tıkladığında o transferi göremiyordu. Kaynak,
+ * iddianın kendisine götürmelidir.
+ */
 function isTraceableUrl(value) {
+  let url;
   try {
-    const url = new URL(String(value));
-    return url.protocol === "https:" || url.protocol === "http:";
+    url = new URL(String(value));
   } catch {
     return false;
   }
+
+  if (url.protocol !== "https:" && url.protocol !== "http:") return false;
+
+  // Ana sayfa ya da yalnızca dil kökü ("/", "/tr", "/en") bir duyuru değildir.
+  const segments = url.pathname.split("/").filter(Boolean);
+  if (!segments.length) return false;
+  if (segments.length === 1 && /^[a-z]{2}(-[a-z]{2})?$/i.test(segments[0])) return false;
+
+  return true;
+}
+
+/** Kaynak türü etiketi; bilinmeyen tür arayüze sızmaz. */
+function sourceTypeLabel(value) {
+  return SOURCE_TYPES[String(value || "").toLowerCase()] || null;
 }
 
 /**
@@ -73,7 +117,22 @@ function evaluateTransfer(transfer) {
   }
 
   if (!isTraceableUrl(transfer.sourceUrl)) {
-    return { publishable: false, reason: "kaynak bağlantısı izlenebilir değil" };
+    return { publishable: false, reason: "kaynak bağlantısı belirli bir duyuruya işaret etmiyor" };
+  }
+
+  const sourceType = String(transfer.sourceType || "").toLowerCase();
+  if (!SOURCE_TYPES[sourceType]) {
+    return { publishable: false, reason: `tanınmayan kaynak türü: ${transfer.sourceType || "belirtilmemiş"}` };
+  }
+
+  // Söylenti, durumu "confirmed" yazılmış olsa bile yayımlanmaz. İki alanın
+  // çelişmesi tek başına bir kayıt hatasıdır ve sessizce geçilmemeli.
+  if (!PUBLISHABLE_SOURCE_TYPES.includes(sourceType)) {
+    return { publishable: false, reason: `kaynak türü yayımlanabilir değil: ${sourceType}` };
+  }
+
+  if (Number.isNaN(Date.parse(transfer.lastVerifiedAt))) {
+    return { publishable: false, reason: "son doğrulama zamanı okunamıyor" };
   }
 
   if (Number.isNaN(Date.parse(`${transfer.date}T00:00:00Z`)) && Number.isNaN(Date.parse(transfer.date))) {
@@ -213,8 +272,12 @@ function logDuplicateTransfers(scope, duplicates) {
 }
 
 module.exports = {
+  PUBLISHABLE_SOURCE_TYPES,
   PUBLISHABLE_STATUS,
   REQUIRED_FIELDS,
+  SOURCE_TYPES,
+  isTraceableUrl,
+  sourceTypeLabel,
   evaluateTransfer,
   involvesSuperLigTeam,
   transferIdentity,

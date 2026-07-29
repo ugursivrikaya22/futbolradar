@@ -1,11 +1,31 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+
+const require = createRequire(import.meta.url);
+const { sourceTypeLabel } = require("../services/transferService.js");
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
-const updatedAt = "2026-07-22";
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
+
+/**
+ * "SON GÜNCELLEME" ELLE YAZILMAZ.
+ *
+ * Bu değer sabit bir dizeydi ("2026-07-22") ve veri her tazelendiğinde
+ * geride kalıyordu: sayfa 22 Temmuz diyorken kayıtlar 29 Temmuz'du.
+ * Elle tutulan bir tazelik damgası, tazeliğin kendisi hakkında yanlış
+ * bilgi veren tek alandır. Artık kayıtların EN SON doğrulama zamanından
+ * türetiliyor.
+ */
+const updatedAt = (() => {
+  const stamps = transfers
+    .map((item) => Date.parse(item && item.lastVerifiedAt))
+    .filter((value) => !Number.isNaN(value));
+  if (!stamps.length) return null;
+  return new Date(Math.max(...stamps)).toISOString().slice(0, 10);
+})();
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 
 const playerById = new Map(players.map((player) => [player.id, player]));
@@ -41,6 +61,14 @@ function playerLink(transfer) {
   return `<a class="detail-link" href="./oyuncular/${escapeHtml(player.id)}.html">Oyuncu profili</a>`;
 }
 
+/** Kaynak türü rozeti; etiketler services/transferService.js'den gelir. */
+function sourceBadge(transfer) {
+  const key = String((transfer && transfer.sourceType) || "").toLowerCase();
+  const label = sourceTypeLabel(key);
+  if (!label) return "";
+  return `<span class="source-badge is-${escapeHtml(key)}">${escapeHtml(label)}</span>`;
+}
+
 function transferCards(records) {
   if (!records.length) {
     return `<article class="data-empty trend-empty" data-card="empty-state"><strong>Doğrulanmış transfer kaydı henüz yok</strong><span>Kulüp açıklaması veya güvenilir kayıt ulaştığında bu alan güncellenecek. Söylentiler kesinleşmiş transfer gibi gösterilmez.</span></article>`;
@@ -49,10 +77,11 @@ function transferCards(records) {
   return records.map((transfer) => {
     const directionTeam = transfer.toTeam === "Serbest oyuncu" ? transfer.fromTeam : transfer.toTeam;
     return `<article class="trend-transfer-card" data-card="transfer-record" data-team="${escapeHtml(slugify(directionTeam))}">
-      <div class="trend-transfer-head"><span class="tag green">${escapeHtml(transfer.status === "confirmed" ? "Doğrulandı" : "Takipte")}</span><time datetime="${escapeHtml(transfer.date)}">${escapeHtml(formatDate(transfer.date))}</time></div>
+      <div class="trend-transfer-head"><span class="tag green">${escapeHtml(transfer.status === "confirmed" ? "Doğrulandı" : "Takipte")}</span>${sourceBadge(transfer)}<time datetime="${escapeHtml(transfer.date)}">${escapeHtml(formatDate(transfer.date))}</time></div>
       <div><span class="card-kicker">${escapeHtml(transfer.position || "Oyuncu")}</span><h3>${escapeHtml(transfer.playerName)}</h3></div>
       <div class="trend-transfer-route"><span>${escapeHtml(transfer.fromTeam)}</span><b aria-label="takım değişikliği">→</b><span>${escapeHtml(transfer.toTeam)}</span></div>
       <dl class="trend-mini-stats"><div><dt>Transfer tipi</dt><dd>${escapeHtml(transfer.type || "Açıklanmadı")}</dd></div><div><dt>Bedel</dt><dd>${escapeHtml(transfer.fee || "Açıklanmadı")}</dd></div></dl>
+      <p class="trend-transfer-verified">Son kontrol: ${escapeHtml(formatDate(transfer.lastVerifiedAt || transfer.date))}</p>
       <div class="trend-card-actions">${playerLink(transfer)}<a class="detail-link ghost" href="./transfer-radari.html">Transfer Radar</a></div>
     </article>`;
   }).join("");
