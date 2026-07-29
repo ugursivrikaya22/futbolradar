@@ -1,0 +1,33 @@
+-- ── 0006 · TAKILI MAÇ GÖRÜNÜMÜ SORGULAYANIN KİMLİĞİYLE ÇALIŞIR ──────────────
+--
+-- NEDEN AYRI BİR GÖÇ. 0003 göçü düzeltildi, ama düzeltilmiş bir göç dosyası
+-- YALNIZCA SIFIRDAN KURULAN veritabanını düzeltir. 0003'ü çoktan çalıştırmış
+-- bir projede görünüm hâlâ eski hâliyle duruyor; onu da düzeltmenin tek yolu
+-- yeni bir göç. Uygulanmış bir göçü sessizce değiştirip "düzeldi" saymak,
+-- düzelmemiş bir veritabanını düzelmiş sanmaktır.
+--
+-- SORUN NEYDİ. `public.stuck_matches` `security_invoker` olmadan
+-- tanımlanmıştı, yani SAHİBİNİN yetkisiyle çalışıyordu. 0005 göçü görünümün
+-- dayandığı `matches` ve `match_reports` tablolarına `force row level
+-- security` uyguluyor ve politikaları yalnızca `anon` ile `authenticated`
+-- rollerine veriyor. Sahip bu rollerden biri değil: FORCE altında politikalara
+-- tabi ama hiçbir politikanın hedefi değil. Böyle bir görünüm, gerçekte takılı
+-- maç olup olmadığından BAĞIMSIZ olarak boş dönebilir.
+--
+-- Bunun bedeli sessiz: scripts/sync-supabase.mjs boş listeyi okuyup "takılı
+-- maç yok" diye rapor ederdi. Ölçülmemiş bir sonucu ölçüm gibi sunmak, bu
+-- depoda kapatılması gereken tam olarak o hatadır.
+--
+-- ÇÖZÜM. Görünüm sorgulayanın kimliğiyle çalışır; RLS neyi gösteriyorsa onu
+-- gösterir. Servis anahtarıyla okunduğunda (senkron betiği böyle okuyor) RLS
+-- baypas edilir ve tablo gerçek durumu döndürür; anon anahtarla okunduğunda
+-- `matches` ve `match_reports` üzerindeki okuma politikaları geçerlidir.
+alter view public.stuck_matches set (security_invoker = true);
+
+-- Görünümün okuma yetkisi AÇIKÇA yazılıyor. 0005 tabloları tek tek dolaşıyor
+-- ama görünümler o döngüde yok (rls_status() de `relkind = 'r'` süzüyor), bu
+-- yüzden panelin "RLS · Her tabloda zorunlu" ifadesi bu görünümü KAPSAMAZ.
+-- Kapsamadığı için de kararın burada yazılı olması gerekiyor: görünüm yeni
+-- bir bilgi açığa çıkarmaz — dayandığı iki tablo zaten anon'a okumaya açık ve
+-- security_invoker sayesinde onların politikaları aynen geçerli.
+grant select on public.stuck_matches to anon, authenticated;

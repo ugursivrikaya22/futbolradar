@@ -356,7 +356,14 @@ function rankByRadarScore(matches, options = {}) {
     return 1;
   };
 
+  const spotlightOf = (entry) => matchPriority(entry.match, { ...options, now }).spotlight || 0;
+
   return scored.sort((left, right) => {
+    // VİTRİN BANDI her şeyin üstünde: büyük dörtlü maçı, turnuvası ve evresi
+    // ne olursa olsun ilk sırada. Bant geçilemez; puan bandın içinde sıralar.
+    const bySpotlight = spotlightOf(right) - spotlightOf(left);
+    if (bySpotlight !== 0) return bySpotlight;
+
     if (!options.pureScore) {
       const byPhase = phaseRank(left) - phaseRank(right);
       if (byPhase !== 0) return byPhase;

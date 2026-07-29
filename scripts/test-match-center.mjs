@@ -168,21 +168,31 @@ function testReasonsAreReadableText() {
   }
 }
 
-/** Sıralama: evre bandı önce, sonra puan. */
-function testRankingPutsLiveFirstThenScore() {
-  const pool = [
-    { id: "yaklasan-derbi", homeTeam: "Galatasaray", awayTeam: "Beşiktaş", league: "Trendyol Süper Lig",
-      kickoff: "2026-07-29T22:00:00+03:00", status: "SCHEDULED" },
-    { id: "canli-kucuk", homeTeam: "Çorum FK", awayTeam: "Erzurumspor FK", league: "Trendyol Süper Lig",
-      kickoff: "2026-07-29T19:00:00+03:00", status: "LIVE", score: { home: 0, away: 0 } }
-  ];
+/**
+ * SIRALAMA: VİTRİN BANDI → EVRE BANDI → PUAN.
+ *
+ * Büyük dörtlü bandı (services/matchPriorityService.js SPOTLIGHT) canlılığın
+ * da üstünde: kullanıcı "büyük dörtlü maçı turnuvası ne olursa olsun en üstte"
+ * dedi. Canlılık ortadan kalkmadı, bandın içine indi.
+ */
+function testRankingPutsSpotlightThenLive() {
+  const bigFourUpcoming = { id: "yaklasan-derbi", homeTeam: "Galatasaray", awayTeam: "Beşiktaş",
+    league: "Trendyol Süper Lig", kickoff: "2026-07-29T22:00:00+03:00", status: "SCHEDULED" };
+  const smallLive = { id: "canli-kucuk", homeTeam: "Çorum FK", awayTeam: "Erzurumspor FK",
+    league: "Trendyol Süper Lig", kickoff: "2026-07-29T19:00:00+03:00",
+    status: "LIVE", score: { home: 0, away: 0 } };
 
-  const ranked = rankByRadarScore(pool, { now: NOW, teams });
-  assert.equal(ranked[0].match.id, "canli-kucuk", "varsayılan sırada canlı maç önce gelmeli");
+  // Büyük dörtlü bandı canlılığın üstünde.
+  const ranked = rankByRadarScore([bigFourUpcoming, smallLive], { now: NOW, teams });
+  assert.equal(ranked[0].match.id, "yaklasan-derbi",
+    "büyük dörtlü maçı canlı alt sıra maçının üstünde olmalı");
 
-  // pureScore ile bant yok sayılır: önemli başlayacak maç öne geçebilir.
-  const pure = rankByRadarScore(pool, { now: NOW, teams, pureScore: true });
-  assert.equal(pure[0].match.id, "yaklasan-derbi", "saf puan sıralamasında derbi öne geçmeli");
+  // Bant DIŞINDA canlılık hâlâ belirleyici.
+  const smallUpcoming = { id: "yaklasan-kucuk", homeTeam: "Göztepe", awayTeam: "Kasımpaşa",
+    league: "Trendyol Süper Lig", kickoff: "2026-07-29T22:00:00+03:00", status: "SCHEDULED" };
+  const outsideBand = rankByRadarScore([smallUpcoming, smallLive], { now: NOW, teams });
+  assert.equal(outsideBand[0].match.id, "canli-kucuk",
+    "bant dışında canlı maç hâlâ önce gelmeli");
 }
 
 // ── Maç içgörüsü ────────────────────────────────────────────────────────────
@@ -369,7 +379,7 @@ const tests = [
   testMissingComponentLowersCoverageNotScore,
   testNoMeasurementMeansNoScore,
   testReasonsAreReadableText,
-  testRankingPutsLiveFirstThenScore,
+  testRankingPutsSpotlightThenLive,
   testEveryInsightCitesItsBasis,
   testInsightsReadTheActualTimeline,
   testNoScoreMeansNoInsight,
@@ -385,6 +395,6 @@ const tests = [
 for (const test of tests) test();
 
 console.log(`Match center tests passed (${tests.length} senaryo: ağırlık toplamı, kapsam taşıma, ` +
-  "eksik bileşen cezası yok, ölçüsüz puan yok, okunabilir gerekçe, sıralama, dayanaklı içgörü, " +
+  "eksik bileşen cezası yok, ölçüsüz puan yok, okunabilir gerekçe, vitrin+evre sıralaması, dayanaklı içgörü, " +
   "zaman çizgisi, skorsuz içgörü yok, kısmi okuma, gerçek 0-0, tahmin dili yok, mevki eşlemesi, " +
   "dürüst ölçülemezlik, kadro derinliği, temiz metin).");

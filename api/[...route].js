@@ -4,7 +4,7 @@ const { enrichPlayerRating } = require("../services/ratingService");
 const { MODEL_VERSION: MATCH_PREDICTION_MODEL_VERSION } = require("../services/matchPredictionService");
 const { getFixtureWeeks, groupMatchesIntoWeeks } = require("../services/superLigFixtureService");
 const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
-const { supabaseHealth } = require("../services/supabase/health");
+const { PROBE_TIMEOUT_MS, supabaseHealth } = require("../services/supabase/health");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -347,12 +347,24 @@ async function handleMatchDetail(req, res, query) {
  * gitmesi gereksiz yük ve gereksiz gecikme olurdu.
  *
  * Anahtar değeri hiçbir koşulda yanıta girmez (services/supabase/health.js).
+ *
+ * DIŞ SINIR DA VAR. health.js kendi sorgu bütçesini uyguluyor; buradaki
+ * withTimeout onun üstünde ikinci bir sınır. Sebep: sağlık ucunun sunucusuz
+ * işlev süre sınırını aşması, "sorunu bildirmek onun işi" sözünü boşa
+ * çıkarır — rapor üretmesi gereken uç, raporsuz düşen bir isteğe dönüşür.
+ * Pay bırakılıyor ki bütçe dolduğunda rapor YİNE DE dönebilsin; bu sarmalayıcı
+ * yalnızca beklenmedik bir takılmayı keser.
  */
+const SUPABASE_HEALTH_TIMEOUT_MS = PROBE_TIMEOUT_MS + DEFAULT_TIMEOUT_MS;
+
 async function handleSupabaseHealth(req, res, query) {
   try {
-    const report = await supabaseHealth({
-      probe: String(query.probe || "") === "1" || String(query.probe || "") === "true"
-    });
+    const report = await withTimeout(
+      supabaseHealth({
+        probe: String(query.probe || "") === "1" || String(query.probe || "") === "true"
+      }),
+      SUPABASE_HEALTH_TIMEOUT_MS
+    );
     return sendSuccess(res, [report], "FutbolRadar Supabase Health");
   } catch (error) {
     // Sağlık ucu çökmemeli: sorunu bildirmek onun işi.

@@ -1149,10 +1149,37 @@
     return /superlig(i)?$/.test(key);
   }
 
+  // UEFA KULÜP TURNUVALARI (services/leagueIdentity.js UEFA_COMPETITIONS ile aynı).
+  // Veri kısa ad taşıyor ("Konferans Ligi"), sağlayıcı İngilizcesini
+  // gönderiyor; arayüzde tek biçim yazılır.
+  var UEFA_COMPETITIONS = [
+    { display: "UEFA Şampiyonlar Ligi", variants: ["UEFA Şampiyonlar Ligi", "Şampiyonlar Ligi",
+      "Sampiyonlar Ligi", "UEFA Champions League", "Champions League", "sampiyonlar-ligi"] },
+    { display: "UEFA Avrupa Ligi", variants: ["UEFA Avrupa Ligi", "Avrupa Ligi",
+      "UEFA Europa League", "Europa League", "avrupa-ligi"] },
+    { display: "UEFA Konferans Ligi", variants: ["UEFA Konferans Ligi", "Konferans Ligi",
+      "UEFA Avrupa Konferans Ligi", "Avrupa Konferans Ligi", "UEFA Europa Conference League",
+      "UEFA Conference League", "Conference League", "konferans-ligi"] }
+  ].map(function (competition) {
+    return { display: competition.display, keys: competition.variants.map(foldLeagueName) };
+  });
+
+  function uefaCompetitionName(value) {
+    var key = foldLeagueName(value);
+    if (!key) return null;
+    for (var index = 0; index < UEFA_COMPETITIONS.length; index += 1) {
+      if (UEFA_COMPETITIONS[index].keys.indexOf(key) !== -1) return UEFA_COMPETITIONS[index].display;
+    }
+    return null;
+  }
+
   function leagueLabel(value, fallback) {
     var raw = String(value === undefined || value === null ? "" : value).trim();
     if (!raw) return fallback === undefined ? "" : fallback;
-    return isSuperLigName(raw) ? SUPER_LIG_DISPLAY_NAME : raw;
+    if (isSuperLigName(raw)) return SUPER_LIG_DISPLAY_NAME;
+    // Tanınmayan ad OLDUĞU GİBİ kalır: uydurma bir turnuva adı üretmek,
+    // yanlış adı düzeltmekten daha kötü.
+    return uefaCompetitionName(raw) || raw;
   }
 
   function calculateAgeFromBirthDate(birthDate) {
@@ -2768,7 +2795,7 @@
   }
 
   function matchPriority(match) {
-    if (!match) return { score: 0, reasons: [], primaryReason: null };
+    if (!match) return { score: 0, spotlight: 0, reasons: [], primaryReason: null };
 
     var W = PRIORITY_CONFIG.weights;
     var reasons = [];
@@ -2809,7 +2836,41 @@
       reasons.push({ key: "highInterest", label: "Yüksek ilgi" });
     }
 
-    return { score: Math.round(score), reasons: reasons, primaryReason: reasons[0] || null };
+    // VİTRİN BANDI (services/matchPriorityService.js SPOTLIGHT ile aynı):
+    // bir taraf büyük dörtlüdense maç, turnuvası ne olursa olsun bandın
+    // üstünde. Ağırlık değil bant — yeterince yüksek başka bir puan onu
+    // geçemesin diye.
+    // Editoryal seçim (2) büyük dörtlünün (1) de üstünde: "geçersiz kılma"
+    // tam olarak bu demek.
+    // VİTRİN BANTLARI (services/matchPriorityService.js SPOTLIGHT ile aynı):
+    //   3 editör seçimi · 2 büyük dörtlü + dünya devi · 1 Türk takımı · 0 diğer
+    // Bant 1'in varlığı "rastgele Avrupa maçı Türk takımının önüne geçmesin"
+    // kuralının kendisi.
+    var editorialPick = isFinite(Number(match.editorialPriority)) && Number(match.editorialPriority) !== 0;
+    var bigFourSide = priorityIsBigFour(match.homeTeam) || priorityIsBigFour(match.awayTeam);
+    var homePop = priorityClubPopularity(match.homeTeam);
+    var awayPop = priorityClubPopularity(match.awayTeam);
+    var globalGiant = !bigFourSide && homePop >= 85 && awayPop >= 85 &&
+      priorityCompetition(match).weight >= 80;
+    var turkishSide = isSuperLigName(match.league) ||
+      PRIORITY_CONFIG.clubs[priorityClubKey(match.homeTeam)] !== undefined ||
+      PRIORITY_CONFIG.clubs[priorityClubKey(match.awayTeam)] !== undefined;
+
+    var spotlight = (editorialPick || match.featured === true) ? 3
+      : (bigFourSide || globalGiant) ? 2
+      : turkishSide ? 1 : 0;
+
+    if (globalGiant) reasons.push({ key: "globalGiant", label: "Dünya devi" });
+    if (bigFourSide && !(priorityIsBigFour(match.homeTeam) && priorityIsBigFour(match.awayTeam))) {
+      reasons.push({ key: "bigFour", label: "Büyük dörtlü" });
+    }
+
+    return {
+      score: Math.round(score),
+      spotlight: spotlight,
+      reasons: reasons,
+      primaryReason: reasons[0] || null
+    };
   }
 
   function rankMatchesByPriority(matches) {
@@ -2817,6 +2878,10 @@
       match.priority = matchPriority(match);
       return match;
     }).sort(function (left, right) {
+      // BANT ÖNCE: büyük dörtlü maçı, turnuvası ne olursa olsun üstte.
+      if (right.priority.spotlight !== left.priority.spotlight) {
+        return right.priority.spotlight - left.priority.spotlight;
+      }
       if (right.priority.score !== left.priority.score) return right.priority.score - left.priority.score;
       return String(left.kickoff || "").localeCompare(String(right.kickoff || ""));
     });
@@ -2952,8 +3017,16 @@
     var visible = filterDisplayableMatches(matches, scope);
 
     return visible.map(function (match) {
-      return { match: match, rank: matchDisplayRank(match, currentTime) };
+      return {
+        match: match,
+        rank: matchDisplayRank(match, currentTime),
+        spotlight: matchPriority(match).spotlight
+      };
     }).sort(function (left, right) {
+      // Büyük dörtlü bandı evre bandının da ÜSTÜNDE: kullanıcı "turnuva ne
+      // olursa olsun en üstte" dedi ve bu, canlı olmayan bir büyük dörtlü
+      // maçının canlı bir alt sıra maçının önüne geçmesi demek.
+      if (left.spotlight !== right.spotlight) return right.spotlight - left.spotlight;
       if (left.rank !== right.rank) return left.rank - right.rank;
 
       var byPriority = matchPriority(right.match).score - matchPriority(left.match).score;

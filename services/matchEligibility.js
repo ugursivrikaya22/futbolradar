@@ -486,11 +486,20 @@ function displayRank(match, currentTime) {
 function orderForDisplay(matches, options = {}) {
   const currentTime = options.currentTime instanceof Date ? options.currentTime : new Date();
   const priorityOf = typeof options.priorityOf === "function" ? options.priorityOf : null;
+  const bandOf = typeof options.bandOf === "function" ? options.bandOf : null;
   const { matches: visible, hidden } = filterDisplayable(matches, currentTime);
 
   const ordered = visible
     .map((match) => ({ match, rank: displayRank(match, currentTime) }))
     .sort((left, right) => {
+      // İsteğe bağlı vitrin bandı: verilirse evre bandının da üstünde çalışır
+      // (services/matchPriorityService.js SPOTLIGHT). Çağıran vermezse sıra
+      // eskisi gibi evre bandıyla başlar.
+      if (bandOf) {
+        const byBand = bandOf(right.match) - bandOf(left.match);
+        if (byBand !== 0) return byBand;
+      }
+
       if (left.rank !== right.rank) return left.rank - right.rank;
 
       if (priorityOf) {

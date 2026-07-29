@@ -27,7 +27,7 @@ const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
 const { matchSignal } = require("../services/matchSignalService.js");
-const { displayLeagueName } = require("../services/leagueIdentity.js");
+const { displayLeagueName, isSuperLigName, isUefaCompetitionName } = require("../services/leagueIdentity.js");
 const { filterDisplayable, logHiddenMatches } = require("../services/matchEligibility.js");
 const { rankMatches } = require("../services/matchPriorityService.js");
 const { publishableTransfers, logExcludedTransfers, sourceTypeLabel } = require("../services/transferService.js");
@@ -422,10 +422,65 @@ const FEATURED_TODAY_LIMIT = 5;
  * 19:00'daki hazırlık maçını 21:00'daki Şampiyonlar Ligi eşleşmesinin
  * üstünde tutuyordu.
  */
+/**
+ * ANA KARTIN GARANTİSİ.
+ *
+ * Sıralama tek başına yetmiyor: ilk beşe kesme (`slice`) yapıldığında, o gün
+ * beşten fazla üst bant maçı varsa bir Türk takımının UEFA maçı listeden
+ * DÜŞEBİLİR. Kural "Türk takımı oynuyorsa ana kartta MUTLAKA yer alacak"
+ * diyor — "genelde yer alır" değil.
+ *
+ * Bu yüzden kesme sonrası bir GARANTİ adımı var: Süper Lig, Şampiyonlar Ligi,
+ * Avrupa Ligi ve Konferans Ligi'nde oynayan Türk takımlarının maçları listede
+ * yoksa, listenin en alttaki en düşük öncelikli maçının yerini alırlar.
+ *
+ * Garanti, sıralamayı EZMEZ: eklenen maç kendi öncelik sırasına yerleşir.
+ * Yalnızca listeden düşmesini engeller.
+ */
+function guaranteedTurkishMatches(ranked, limit) {
+  const selected = ranked.slice(0, limit);
+  const selectedIds = new Set(selected.map((match) => match.id));
+
+  // Kapsamdaki turnuvalar: kullanıcı bu dördünü tek tek saydı.
+  const inScope = (match) =>
+    isSuperLigName(match.league) || isUefaCompetitionName(match.league);
+
+  // Türk takımı listesi kanonik kaynaktan; ayrı bir liste tutulsaydı biri
+  // güncellenmeyi unutur ve o takımın maçı sessizce garantisiz kalırdı.
+  const turkishClubs = fixtureTeamNames().map((name) => String(name).toLocaleLowerCase("tr-TR"));
+  const isTurkishClub = (name) => {
+    const key = String(name || "").toLocaleLowerCase("tr-TR").trim();
+    return Boolean(key) && turkishClubs.some((club) => club === key || club.includes(key) || key.includes(club));
+  };
+
+  const missing = ranked.filter((match) =>
+    !selectedIds.has(match.id)
+    && inScope(match)
+    && (isTurkishClub(match.homeTeam) || isTurkishClub(match.awayTeam)));
+
+  if (!missing.length) return selected;
+
+  // Eksik olanlar en düşük öncelikli seçilmişlerin yerine geçer, sonra
+  // tamamı yeniden sıralanır — garanti sırayı bozmaz, yalnızca üyeliği
+  // güvenceye alır.
+  const keep = selected.slice(0, Math.max(0, limit - missing.length));
+  const merged = [...keep, ...missing].slice(0, limit);
+
+  for (const match of missing) {
+    if (!merged.some((item) => item.id === match.id)) continue;
+    console.warn(
+      `[futbolradar:featured-guarantee] ${match.id} ana karta garanti ile eklendi ` +
+      `(${match.league})`
+    );
+  }
+
+  return rankMatches(merged, { teams });
+}
+
 function featuredTodayMatches() {
   const today = istanbulToday();
   const pool = curatedMatches().filter((match) => String(match.kickoff || "").slice(0, 10) === today);
-  return displayableRankedMatches(pool, "home-featured").slice(0, FEATURED_TODAY_LIMIT);
+  return guaranteedTurkishMatches(displayableRankedMatches(pool, "home-featured"), FEATURED_TODAY_LIMIT);
 }
 
 function featuredTodayBlock() {

@@ -27,15 +27,45 @@ const EXPECTED_TABLES = Object.freeze([
   "ai_memory_documents", "ai_memory_chunks"
 ]);
 
-/** Bağlantı denemesi bu süreden uzun sürerse sağlık ucu beklemez. */
+/**
+ * SORGU BÜTÇESİ — sağlık ucu bu süreden uzun beklemez.
+ *
+ * Bu sabit bir süre yalnızca YAZILIYDI, hiçbir yerde uygulanmıyordu: gerçek
+ * zaman aşımı restClient'ın istek BAŞINA uyguladığı 6 saniyeydi ve tablolar
+ * sırayla sorgulanıyordu. On bir tablo, en kötü durumda altmış saniyeden uzun
+ * sürebiliyordu — yani "sağlık ucu beklemez" cümlesi kodun uygulamadığı bir
+ * sınırı anlatıyordu. Sunucusuz işlev süre sınırını aşan bir sağlık ucu ise
+ * "sorunu bildirmek onun işi" sözünü boşa çıkarır: kendisi sorun olur.
+ *
+ * Artık bütçe GERÇEKTEN uygulanıyor ve TOPLAM: bağlantı denemesi ve tablo
+ * taraması bu süreyi birlikte paylaşır. Bütçe dolduğunda yanıtı gelmemiş
+ * tablolar SESSİZCE DÜŞMEZ — `reachable: null` ile "ölçülemedi" olarak
+ * işaretlenir. "Okunamadı" ile "ölçülemedi" farklı cevaplardır; ikisini
+ * birleştirmek, ölçmediğimiz bir tabloyu bozuk ilan etmek olurdu.
+ */
 const PROBE_TIMEOUT_MS = 4000;
 
 function nowIso() {
   return new Date().toISOString();
 }
 
+/** Verilen sürede bitmezse `fallback` ile dönen yarış. Söz iptal edilmez. */
+function withBudget(promise, budgetMs, fallback) {
+  let timer = null;
+  const budget = new Promise((resolve) => {
+    timer = setTimeout(() => resolve(fallback), Math.max(0, budgetMs));
+    if (timer && typeof timer.unref === "function") timer.unref();
+  });
+  return Promise.race([promise, budget]).finally(() => clearTimeout(timer));
+}
+
 /**
- * Bağlantı denemesi. Tek ve ucuz bir sorgu: en küçük tablodan tek satır.
+ * Bağlantı denemesi. Tek ve ucuz bir sorgu: kural tablosundan tek satır.
+ *
+ * Tablo seçimi boyuta göre değil ERİŞİLEBİLİRLİĞE göre: `analysis_rules`
+ * her kurulumda dolu olması beklenen ve anon'a okumaya açık tek tablo, yani
+ * "bağlanabiliyor muyuz?" sorusunu en az başka sebeple bulandıran seçenek.
+ * `limit: 1` sayesinde satır sayısı sorgunun maliyetini değiştirmiyor.
  *
  * Hata YUTULMAZ — sağlığın işi sorunu göstermek. Ama hata mesajı sağlayıcıdan
  * geldiği gibi taşınır, başlıklar taşınmaz (anahtar oradaydı).
@@ -72,6 +102,11 @@ async function probeConnection() {
  * Bir tablo okunamıyorsa bu iki şeyden biri demek: ya kurulmamış (göç
  * çalıştırılmamış) ya da RLS onu kapatıyor. İkisi farklı sorunlar ve hata
  * kodu ayırt etmemizi sağlıyor; bu yüzden gerekçe olduğu gibi taşınıyor.
+ *
+ * SORGULAR PARALEL. On bir tabloyu sırayla sormak, tek bir yavaş tablonun
+ * kalan onunu da beklettiği anlamına geliyordu; oysa bunlar birbirinden
+ * bağımsız sayım sorguları. Paralel çalışınca toplam süre en yavaş tablonun
+ * süresi kadar oluyor ve bütçe gerçekten bir üst sınır hâline geliyor.
  */
 async function probeTables(options = {}) {
   if (!isEnabled()) {
@@ -82,14 +117,24 @@ async function probeTables(options = {}) {
   if (!client) return { attempted: false, tables: [], reason: "Okuma istemcisi kurulamadı" };
 
   const wanted = Array.isArray(options.tables) ? options.tables : EXPECTED_TABLES;
-  const tables = [];
+  const budgetMs = Number.isFinite(options.budgetMs) ? options.budgetMs : PROBE_TIMEOUT_MS;
 
-  for (const table of wanted) {
+  // Başlangıç değeri "ölçülemedi": bütçe dolduğunda yanıtı gelmemiş tablo bu
+  // hâliyle kalır. Sessizce listeden düşseydi, sorulmamış bir tablo sorunsuz
+  // görünürdü.
+  const results = new Map(wanted.map((table) => [table, {
+    table,
+    reachable: null,
+    rows: null,
+    reason: `ölçülemedi: sorgu bütçesi (${budgetMs} ms) doldu`
+  }]));
+
+  const queries = wanted.map(async (table) => {
     try {
       const count = await client.from(table).count();
-      tables.push({ table, reachable: true, rows: count, reason: "" });
+      results.set(table, { table, reachable: true, rows: count, reason: "" });
     } catch (error) {
-      tables.push({
+      results.set(table, {
         table,
         reachable: false,
         rows: null,
@@ -97,9 +142,17 @@ async function probeTables(options = {}) {
         code: (error && error.code) || null
       });
     }
-  }
+  });
 
-  return { attempted: true, tables, reason: "" };
+  const completed = await withBudget(Promise.all(queries).then(() => true), budgetMs, false);
+
+  return {
+    attempted: true,
+    tables: wanted.map((table) => results.get(table)),
+    budgetMs,
+    budgetExhausted: !completed,
+    reason: ""
+  };
 }
 
 /**
@@ -172,16 +225,43 @@ async function supabaseHealth(options = {}) {
     return report;
   }
 
-  report.connection = await probeConnection();
+  // BÜTÇE TOPLAM. Bağlantı denemesi ne kadar sürdüyse tablo taramasına o kadar
+  // az kalır; sağlık ucunun toplam süresi PROBE_TIMEOUT_MS'i aşmaz.
+  const budgetMs = Number.isFinite(options.budgetMs) ? options.budgetMs : PROBE_TIMEOUT_MS;
+  const startedAt = Date.now();
+
+  report.connection = await withBudget(
+    probeConnection(),
+    budgetMs,
+    { attempted: true, ok: false, reason: `Bağlantı denemesi ${budgetMs} ms bütçesini aştı` }
+  );
 
   if (report.connection.ok) {
-    report.schema = await probeTables(options);
-    report.rls = await probeRls();
+    const remainingMs = Math.max(0, budgetMs - (Date.now() - startedAt));
+    report.schema = await probeTables({ ...options, budgetMs: remainingMs });
+    report.rls = await withBudget(
+      probeRls(),
+      Math.max(0, budgetMs - (Date.now() - startedAt)),
+      { attempted: true, rows: [], unprotected: [], reason: "ölçülemedi: sorgu bütçesi doldu" }
+    );
 
-    const missing = (report.schema.tables || []).filter((row) => !row.reachable).map((row) => row.table);
+    // "Okunamadı" ile "ölçülemedi" ayrı raporlanır: ilki bir arıza, ikincisi
+    // bir boşluk. İkisini birleştirmek, hiç sormadığımız tabloyu bozuk ilan
+    // etmek olurdu.
+    const missing = (report.schema.tables || [])
+      .filter((row) => row.reachable === false).map((row) => row.table);
+    const unmeasured = (report.schema.tables || [])
+      .filter((row) => row.reachable === null).map((row) => row.table);
+
     if (missing.length) {
       report.warnings.push(
         `Okunamayan tablo: ${missing.join(", ")}. Göçler uygulanmamış ya da RLS erişimi kapatıyor olabilir.`
+      );
+    }
+    if (unmeasured.length) {
+      report.warnings.push(
+        `Ölçülemeyen tablo: ${unmeasured.join(", ")}. Sorgu bütçesi doldu; bu tabloların durumu ` +
+        "bilinmiyor — sağlam oldukları anlamına GELMEZ."
       );
     }
     if (report.rls.unprotected && report.rls.unprotected.length) {
@@ -200,5 +280,6 @@ module.exports = {
   probeConnection,
   probeRls,
   probeTables,
-  supabaseHealth
+  supabaseHealth,
+  withBudget
 };

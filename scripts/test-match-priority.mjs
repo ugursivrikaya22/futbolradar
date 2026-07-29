@@ -28,7 +28,8 @@ const {
   clubPopularity,
   competitionProfile,
   matchPriority,
-  rankMatches
+  rankMatches,
+  SPOTLIGHT
 } = require("../services/matchPriorityService.js");
 
 const NOW = new Date("2026-07-29T18:00:00+03:00");
@@ -43,11 +44,214 @@ const LIVE_FRIENDLY = { id: "live", homeTeam: "Kasımpaşa", awayTeam: "Hull Cit
 const rank = (list) => rankMatches(list, { now: NOW }).map((item) => item.id);
 const reasonKeys = (match) => matchPriority(match, { now: NOW }).reasons.map((item) => item.key);
 
-/** Canlı maç her şeyin üstünde. */
-function testLiveGoesTop() {
-  const order = rank([FRIENDLY, UCL_TR, DERBY, LIVE_FRIENDLY]);
-  assert.equal(order[0], "live", `canlı maç en üstte olmalı, sıra: ${order.join(" > ")}`);
+/**
+ * CANLI MAÇ, VİTRİN BANDININ İÇİNDE EN ÜSTTE.
+ *
+ * ÖNCELİK DEĞİŞTİ. Eskiden canlı maç koşulsuz en üstteydi. Yeni kural, büyük
+ * dörtlünün maçını turnuvası ne olursa olsun en üste alıyor — yani bant,
+ * canlılığın da üstünde. Bu bilinçli bir tercih: bu siteye gelen kişi önce
+ * kendi takımını arar.
+ *
+ * Canlılık ortadan kalkmadı, bandın İÇİNE indi: büyük dörtlü maçları kendi
+ * arasında, diğerleri kendi arasında canlıyı öne alır.
+ */
+function testLiveGoesTopWithinItsBand() {
+  // Büyük dörtlü yokken canlı maç hâlâ en üstte.
+  const withoutBigFour = rank([FRIENDLY, SMALL_LEAGUE, LIVE_FRIENDLY]);
+  assert.equal(withoutBigFour[0], "live",
+    `büyük dörtlü yokken canlı maç en üstte olmalı, sıra: ${withoutBigFour.join(" > ")}`);
   assert.ok(reasonKeys(LIVE_FRIENDLY).includes("live"), "canlı maç gerekçe taşımalı");
+
+  // Büyük dörtlü varken bant kazanır: canlı maç bandın altına iner.
+  const withBigFour = rank([FRIENDLY, UCL_TR, DERBY, LIVE_FRIENDLY]);
+  // Sayı yerine SABİT: bantlar değiştiğinde test kırılmasın, kural kırılsın.
+  assert.equal(matchPriority(DERBY, { now: NOW }).spotlight, SPOTLIGHT.TOP);
+  assert.ok(
+    matchPriority(LIVE_FRIENDLY, { now: NOW }).spotlight < SPOTLIGHT.TOP,
+    "canlı hazırlık maçı en üst bantta olmamalı"
+  );
+  assert.ok(
+    withBigFour.indexOf("derby") < withBigFour.indexOf("live"),
+    `büyük dörtlü maçı canlı maçın üstünde olmalı, sıra: ${withBigFour.join(" > ")}`
+  );
+
+  // Bandın içinde canlılık hâlâ belirleyici: canlı derbi, başlamamış derbinin üstünde.
+  const liveDerby = { ...DERBY, id: "canli-derbi", status: "LIVE", score: { home: 1, away: 0 } };
+  const upcomingBigFour = { ...UCL_TR, id: "yaklasan-buyuk" };
+  const inBand = rank([upcomingBigFour, liveDerby]);
+  assert.equal(inBand[0], "canli-derbi", `bant içinde canlı maç önce gelmeli, sıra: ${inBand.join(" > ")}`);
+}
+
+
+/**
+ * BÜYÜK DÖRTLÜ HER ZAMAN EN ÜSTTE — TURNUVA NE OLURSA OLSUN.
+ *
+ * Puanlama tek başına bunu sağlamıyordu: turnuva ağırlığı kulüp ağırlığından
+ * baskın çıkabiliyor ve bir Galatasaray hazırlık maçı, iki orta sıra takımın
+ * lig maçının ALTINA düşüyordu. Sayılarla doğru, okuyucuyla yanlış.
+ *
+ * Bu yüzden büyük dörtlü bir AĞIRLIK değil, bir BANT. Ağırlık olsaydı
+ * yeterince yüksek başka bir puan onu geçebilirdi; bant geçilemez.
+ */
+function testBigFourAlwaysRanksFirst() {
+  const competitions = [
+    "Hazırlık maçı", "Türkiye Kupası", "Trendyol Süper Lig",
+    "UEFA Avrupa Ligi", "UEFA Şampiyonlar Ligi"
+  ];
+
+  // Rakipler: en ağır turnuvada ve CANLI, ama DÜNYA DEVİ DEĞİL.
+  //
+  // Dev maçlar bilinçli olarak dışarıda: onlar tek istisna ve ayrı testte
+  // (testOnlyWorldClassGiantsAreTheException) ölçülüyor. Burada ölçülen iddia
+  // "büyük dörtlü, dev olmayan her şeyin üstünde".
+  const rivals = [
+    { id: "ucl-canli", homeTeam: "Ajax", awayTeam: "Benfica",
+      league: "UEFA Şampiyonlar Ligi", competitionId: "sampiyonlar-ligi",
+      kickoff: at("21:00"), status: "LIVE", score: { home: 1, away: 1 } },
+    { id: "orta-sira", homeTeam: "Göztepe", awayTeam: "Kasımpaşa",
+      league: "Trendyol Süper Lig", competitionId: "super-lig",
+      kickoff: at("20:00"), status: "SCHEDULED" }
+  ];
+
+  for (const club of ["Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor"]) {
+    for (const league of competitions) {
+      const bigFour = {
+        id: "buyuk", homeTeam: club, awayTeam: "Rudeš",
+        league, kickoff: at("23:30"), status: "SCHEDULED"
+      };
+      const order = rank([...rivals, bigFour]);
+      assert.equal(
+        order[0], "buyuk",
+        `${club} · ${league}: büyük dörtlü maçı en üstte olmalı, sıra: ${order.join(" > ")}`
+      );
+      assert.equal(matchPriority(bigFour, { now: NOW }).spotlight, SPOTLIGHT.TOP);
+    }
+  }
+
+  // Deplasmanda olması fark etmemeli.
+  const away = rank([rivals[0],
+    { id: "deplasman", homeTeam: "Rudeš", awayTeam: "Beşiktaş",
+      league: "Hazırlık maçı", kickoff: at("23:30"), status: "SCHEDULED" }]);
+  assert.equal(away[0], "deplasman", "deplasmandaki büyük dörtlü de en üstte olmalı");
+
+  // Bant DIŞINDA sıralama değişmemeli: bant, bandın dışını etkilemez.
+  const others = rank(rivals);
+  assert.equal(others[0], "orta-sira",
+    "Türk takımı bandı, bant dışındaki canlı Avrupa maçının üstünde kalmalı");
+}
+
+/** Bant içinde puan hâlâ sıralar. */
+function testWithinSpotlightScoreStillOrders() {
+  const order = rank([
+    { id: "hazirlik", homeTeam: "Trabzonspor", awayTeam: "Rudeš",
+      league: "Hazırlık maçı", kickoff: at("22:00"), status: "SCHEDULED" },
+    DERBY
+  ]);
+  assert.equal(order[0], "derby", "bant içinde derbi hazırlık maçının üstünde olmalı");
+}
+
+/** Editoryal seçim bandın da üstünde: geçersiz kılma gerçekten geçersiz kılmalı. */
+function testEditorialBeatsTheSpotlightBand() {
+  const editorial = { ...FRIENDLY, id: "editor", editorialPriority: 500 };
+  assert.equal(matchPriority(editorial, { now: NOW }).spotlight, SPOTLIGHT.EDITORIAL);
+  assert.equal(matchPriority(DERBY, { now: NOW }).spotlight, SPOTLIGHT.TOP);
+  assert.ok(SPOTLIGHT.EDITORIAL > SPOTLIGHT.TOP, "editör bandı en üstte olmalı");
+
+  const order = rank([DERBY, editorial]);
+  assert.equal(order[0], "editor", `editör seçimi büyük dörtlünün üstünde olmalı, sıra: ${order.join(" > ")}`);
+
+  const featured = { ...FRIENDLY, id: "vitrin", featured: true };
+  assert.equal(matchPriority(featured, { now: NOW }).spotlight, SPOTLIGHT.EDITORIAL);
+}
+
+/** İstemci aynı bandı aynı sırayla uygulamalı. */
+function testClientMirrorsSpotlight() {
+  const app = fs.readFileSync(path.join(process.cwd(), "app.js"), "utf8");
+  assert.ok(/spotlight/.test(app), "app.js vitrin bandını taşımalı");
+  assert.ok(
+    /right\.priority\.spotlight !== left\.priority\.spotlight/.test(app),
+    "istemci sıralaması bandı önce okumalı"
+  );
+  assert.ok(
+    /if \(left\.spotlight !== right\.spotlight\) return right\.spotlight - left\.spotlight;/.test(app),
+    "radar bölümü sıralaması da bandı önce okumalı"
+  );
+  assert.ok(/editorialPick \|\| match\.featured === true/.test(app),
+    "istemci editoryal bandı tanımalı");
+}
+
+
+/**
+ * TEK İSTİSNA: DÜNYA ÇAPI DEV MAÇ — VE RASTGELE AVRUPA MAÇI DEĞİL.
+ *
+ * "Rastgele Avrupa maçı Türk takımının önüne geçmeyecek" kuralı, dev maç
+ * tanımının darlığında yaşıyor: İKİ TARAF DA seçkin kulüp olmalı. Real
+ * Madrid'in bir eleme turu rakibiyle maçı dev maç değildir.
+ */
+function testOnlyWorldClassGiantsAreTheException() {
+  const giant = { id: "dev", homeTeam: "Real Madrid", awayTeam: "Barcelona",
+    league: "UEFA Şampiyonlar Ligi", competitionId: "sampiyonlar-ligi",
+    kickoff: at("22:00"), status: "SCHEDULED" };
+  const randomEuropean = { id: "rastgele", homeTeam: "Real Madrid", awayTeam: "Rudeš",
+    league: "UEFA Şampiyonlar Ligi", competitionId: "sampiyonlar-ligi",
+    kickoff: at("22:00"), status: "SCHEDULED" };
+  const turkishInEurope = { id: "samsun", homeTeam: "Samsunspor", awayTeam: "AEK Athens",
+    league: "UEFA Konferans Ligi", competitionId: "konferans-ligi",
+    kickoff: at("21:00"), status: "SCHEDULED" };
+
+  assert.equal(matchPriority(giant, { now: NOW }).spotlight, SPOTLIGHT.TOP,
+    "iki tarafı da seçkin olan maç dev maçtır");
+  assert.equal(matchPriority(randomEuropean, { now: NOW }).spotlight, SPOTLIGHT.NONE,
+    "tek tarafı büyük olan Avrupa maçı dev maç değildir");
+  assert.equal(matchPriority(turkishInEurope, { now: NOW }).spotlight, SPOTLIGHT.TURKISH,
+    "Türk takımı kendi bandında olmalı");
+
+  // RASTGELE AVRUPA MAÇI TÜRK TAKIMININ ÖNÜNE GEÇEMEZ — puanı yüksek olsa bile.
+  const order = rank([randomEuropean, turkishInEurope, SMALL_LEAGUE]);
+  assert.ok(
+    order.indexOf("rastgele") > order.indexOf("samsun"),
+    `rastgele Avrupa maçı Türk takımının önüne geçmemeli, sıra: ${order.join(" > ")}`
+  );
+  assert.ok(
+    order.indexOf("rastgele") > order.indexOf("small"),
+    `rastgele Avrupa maçı Süper Lig maçının da önüne geçmemeli, sıra: ${order.join(" > ")}`
+  );
+
+  // Dev maç istisnası çalışıyor: büyük dörtlünün hazırlık maçının üstüne çıkabilir.
+  const bigFourFriendly = { id: "gs-hazirlik", homeTeam: "Galatasaray", awayTeam: "Rudeš",
+    league: "Hazırlık maçı", kickoff: at("22:00"), status: "SCHEDULED" };
+  const withGiant = rank([bigFourFriendly, giant]);
+  assert.equal(withGiant[0], "dev", "dünya devi maçı istisna olarak öne geçebilmeli");
+
+  // Ama büyük dörtlünün GERÇEK maçı devin üstünde kalır.
+  assert.equal(rank([DERBY, giant])[0], "derby", "büyük dörtlü derbisi devin üstünde olmalı");
+}
+
+/** Üç UEFA turnuvası da kapsamda ve tam adıyla gösterilmeli. */
+function testUefaCompetitionsAreCoveredAndNamed() {
+  const { displayLeagueName, isUefaCompetitionName } = require("../services/leagueIdentity.js");
+
+  const expected = {
+    "UEFA Şampiyonlar Ligi": ["Şampiyonlar Ligi", "UEFA Champions League", "sampiyonlar-ligi"],
+    "UEFA Avrupa Ligi": ["Avrupa Ligi", "UEFA Europa League", "avrupa-ligi"],
+    "UEFA Konferans Ligi": ["Konferans Ligi", "UEFA Conference League", "konferans-ligi"]
+  };
+
+  for (const [display, variants] of Object.entries(expected)) {
+    for (const variant of variants) {
+      assert.equal(displayLeagueName(variant), display,
+        `"${variant}" arayüzde "${display}" olarak gösterilmeli`);
+      assert.equal(isUefaCompetitionName(variant), true);
+    }
+    // Turnuva ağırlıklandırmada da tanınmalı; tanınmazsa sıralamaya giremez.
+    assert.ok(
+      competitionProfile({ league: display }).weight > 0,
+      `${display} turnuva ağırlığı taşımalı`
+    );
+  }
+
+  // Süper Lig kapsamda ve kendi adıyla.
+  assert.equal(displayLeagueName("Süper Lig"), "Trendyol Süper Lig");
 }
 
 /** Derbi öne çıkar ve gerekçesi yazılır. */
@@ -225,7 +429,13 @@ function testHomepageTopSlotsArePrioritised() {
   }
 }
 
-testLiveGoesTop();
+testLiveGoesTopWithinItsBand();
+testBigFourAlwaysRanksFirst();
+testWithinSpotlightScoreStillOrders();
+testEditorialBeatsTheSpotlightBand();
+testClientMirrorsSpotlight();
+testOnlyWorldClassGiantsAreTheException();
+testUefaCompetitionsAreCoveredAndNamed();
 testDerbyIsSurfaced();
 testTurkishSideInEuropeIsSurfaced();
 testTimeAloneDoesNotDominate();
@@ -241,5 +451,6 @@ testHomepageTopSlotsArePrioritised();
 console.log(
   "Match priority tests passed (canlı üstte, derbi öne çıkar, Avrupa'da Türk takımı öne çıkar, " +
   "saat tek başına belirlemez, düşük öncelik elenmez, editoryal geçersiz kılma, sıralamasız iddia yok, " +
-  "gerekçe zorunluluğu, turnuva ağırlıkları, bilinmeyen kulüp, istemci eşliği, ana sayfa denetimi)."
+  "gerekçe zorunluluğu, turnuva ağırlıkları, bilinmeyen kulüp, istemci eşliği, ana sayfa denetimi, " +
+  "büyük dörtlü bandı, bant içi sıralama, editoryal geçersiz kılma bandı, istemci bant eşliği)."
 );

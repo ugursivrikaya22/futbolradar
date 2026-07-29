@@ -173,7 +173,10 @@ function createClient(options = {}) {
               apikey: key,
               Authorization: `Bearer ${key}`,
               Prefer: "count=exact",
-              // 0'dan küçük aralık: hiç satır gövdesi istemiyoruz.
+              // HEAD isteği zaten gövde döndürmez; `Range: 0-0` yalnızca
+              // sayfalama penceresini tek satıra daraltır ki PostgREST tam
+              // sayımı hesaplarken gereksiz iş yapmasın. Sayının kendisi
+              // aşağıda `content-range` başlığından okunuyor.
               Range: "0-0"
             }
           }),

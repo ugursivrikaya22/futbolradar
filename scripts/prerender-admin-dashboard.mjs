@@ -486,12 +486,19 @@ for (const problem of state.rules.verification.problems) {
  * SUPABASE BÖLÜMÜ.
  *
  * Derleme zamanında AĞA ÇIKMAZ: derleme, bir dış servisin o anki durumuna
- * bağlı olmamalı. Burada yalnızca YAPILANDIRMA raporlanır — hangi değişken
- * tanımlı, biçimi sağlam mı, kaç tablo bekleniyor. Canlı bağlantı durumu
- * `/api/supabase-health?probe=1` ucundan okunur.
+ * bağlı olmamalı. Burada yalnızca YAPILANDIRMANIN VARLIĞI raporlanır.
+ * Canlı bağlantı durumu `/api/supabase-health?probe=1` ucundan okunur.
  *
- * ANAHTAR DEĞERİ BASILMAZ. describeConfig() zaten değeri döndürmüyor; burada
- * da yalnızca varlık, ad ve uzunluk gösteriliyor.
+ * BU SAYFA HERKESE AÇIK. Yönetim panelini koruyan tek şey bir `noindex`
+ * etiketi; robots.txt "Allow: /" diyor ve önünde kimlik doğrulaması yok.
+ * Yani buraya basılan her şey yayımlanmış sayılır.
+ *
+ * Bu yüzden değişken ADI, anahtar UZUNLUĞU ve proje SUNUCU ADI artık
+ * basılmıyor. Üçü de anahtar değerinin kendisi değil ama üçü de saldırgana
+ * hedef veriyor: hangi projeye, hangi değişken adıyla, kaç karakterlik bir
+ * anahtarla saldırılacağını söylüyor. Bunlar çalışma zamanı TANILAMASIDIR ve
+ * yeri hız sınırı olan /api/supabase-health ucudur — statik bir sayfa değil.
+ * Panelde yalnızca "Tanımlı / Eksik" bayrağı kalıyor; o da bir sır taşımıyor.
  */
 function supabaseBlock() {
   const config = describeConfig();
@@ -500,15 +507,11 @@ function supabaseBlock() {
     `<span class="admin-flag is-${ok ? "ok" : "warn"}">${escapeHtml(ok ? okText : warnText)}</span>`;
 
   const rows = [
-    ["Proje adresi", config.url.configured, config.url.envName, config.url.host || "Tanımlı değil"],
-    ["Anon anahtar", config.anonKey.configured, config.anonKey.envName,
-      config.anonKey.shape.length ? `${config.anonKey.shape[0].length} karakter` : "Tanımlı değil"],
-    ["Servis anahtarı", config.serviceKey.configured, config.serviceKey.envName,
-      config.serviceKey.shape.length ? `${config.serviceKey.shape[0].length} karakter` : "Tanımlı değil"]
-  ].map(([label, ok, envName, detail]) =>
-    `<tr><td>${escapeHtml(label)}</td><td>${flag(ok, "Tanımlı", "Eksik")}</td>` +
-    `<td>${envName ? code(envName) : '<span class="admin-note">—</span>'}</td>` +
-    `<td>${escapeHtml(detail)}</td></tr>`).join("");
+    ["Proje adresi", config.url.configured],
+    ["Anon anahtar", config.anonKey.configured],
+    ["Servis anahtarı", config.serviceKey.configured]
+  ].map(([label, ok]) =>
+    `<tr><td>${escapeHtml(label)}</td><td>${flag(ok, "Tanımlı", "Eksik")}</td></tr>`).join("");
 
   const warnings = [];
   if (!config.configured) {
@@ -533,8 +536,11 @@ function supabaseBlock() {
         "derleme dış servise bağlı olmasın diye burada ağa çıkılmıyor.")}</p></div>`;
 
   return [
-    panelHeading("Kimlik bilgileri", "Değerler gösterilmez; yalnızca varlık ve biçim."),
-    `<div class="table-scroll"><table class="admin-table"><thead><tr><th>Alan</th><th>Durum</th><th>Değişken</th><th>Ayrıntı</th></tr></thead><tbody>${rows}</tbody></table></div>`,
+    panelHeading("Kimlik bilgileri", "Yalnızca varlık gösterilir; değer, değişken adı ve uzunluk gösterilmez."),
+    `<div class="table-scroll"><table class="admin-table"><thead><tr><th>Alan</th><th>Durum</th></tr></thead><tbody>${rows}</tbody></table></div>`,
+    `<p class="admin-note">${escapeHtml(
+      "Değişken adları, anahtar uzunlukları ve proje adresi bu sayfaya basılmaz: sayfa " +
+      "herkese açıktır. Bu tanılamalar /api/supabase-health ucundan okunur.")}</p>`,
     warningHtml,
     panelHeading("Şema", "Göç dosyalarında tanımlı tablolar."),
     statGrid([

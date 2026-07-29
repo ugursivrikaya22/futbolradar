@@ -62,13 +62,65 @@ function testVariantsResolveToOneName() {
   }
 }
 
-/** Başka ligler dokunulmadan geçmeli — denetleyici aşırı yakalamamalı. */
+/**
+ * TANINMAYAN LİGLER DOKUNULMADAN GEÇMELİ — denetleyici aşırı yakalamamalı.
+ *
+ * Kapsam genişledi: artık üç UEFA turnuvası da tek biçime çevriliyor
+ * (aşağıdaki testUefaCompetitionsAreCanonical). Ama tanınmayan her ad OLDUĞU
+ * GİBİ kalmalı — uydurma bir turnuva adı üretmek, yanlış adı düzeltmekten
+ * daha kötüdür.
+ */
 function testOtherLeaguesPassThrough() {
-  for (const value of ["Premier League", "Şampiyonlar Ligi", "Avrupa Ligi", "1. Lig", "Hazırlık Maçı", "La Liga"]) {
+  for (const value of ["Premier League", "1. Lig", "Hazırlık Maçı", "La Liga", "Serie A", "Bundesliga"]) {
     assert.equal(isSuperLigName(value), false, `"${value}" Süper Lig sayılmamalı`);
     assert.equal(displayLeagueName(value), value, `"${value}" değiştirilmemeli`);
   }
   assert.equal(displayLeagueName("", "Lig bilgisi bekleniyor"), "Lig bilgisi bekleniyor");
+}
+
+/**
+ * ÜÇ UEFA TURNUVASI TEK BİÇİMDE GÖSTERİLİR.
+ *
+ * Veri dosyalarında kısa ad ("Konferans Ligi"), sağlayıcıda İngilizcesi
+ * ("UEFA Conference League"), kürasyonda ikisi karışıktı. Okuyucu için sorun:
+ * "Konferans Ligi" ile "UEFA Konferans Ligi" aynı turnuva ama iki ayrı şey
+ * gibi okunuyordu.
+ */
+function testUefaCompetitionsAreCanonical() {
+  const { isUefaCompetitionName } = require("../services/leagueIdentity.js");
+
+  const expected = {
+    "UEFA Şampiyonlar Ligi": ["Şampiyonlar Ligi", "Sampiyonlar Ligi",
+      "UEFA Champions League", "Champions League", "sampiyonlar-ligi"],
+    "UEFA Avrupa Ligi": ["Avrupa Ligi", "UEFA Europa League", "Europa League", "avrupa-ligi"],
+    "UEFA Konferans Ligi": ["Konferans Ligi", "Avrupa Konferans Ligi",
+      "UEFA Europa Conference League", "UEFA Conference League",
+      "Conference League", "konferans-ligi"]
+  };
+
+  for (const [display, variants] of Object.entries(expected)) {
+    // Kanonik ad kendisine eşlenmeli (idempotent).
+    assert.equal(displayLeagueName(display), display, `"${display}" kendisine eşlenmeli`);
+    for (const variant of variants) {
+      assert.equal(displayLeagueName(variant), display,
+        `"${variant}" arayüzde "${display}" olarak gösterilmeli`);
+      assert.equal(isUefaCompetitionName(variant), true, `"${variant}" UEFA turnuvası sayılmalı`);
+      // UEFA turnuvası Süper Lig ile karıştırılmamalı.
+      assert.equal(isSuperLigName(variant), false, `"${variant}" Süper Lig sayılmamalı`);
+    }
+  }
+
+  assert.equal(isUefaCompetitionName("Premier League"), false);
+  assert.equal(isUefaCompetitionName(""), false);
+}
+
+/** İstemci aynı turnuva adlarını basmalı. */
+function testClientMirrorsUefaNames() {
+  const app = fs.readFileSync(path.join(process.cwd(), "app.js"), "utf8");
+  for (const display of ["UEFA Şampiyonlar Ligi", "UEFA Avrupa Ligi", "UEFA Konferans Ligi"]) {
+    assert.ok(app.includes(display), `app.js "${display}" adını taşımalı`);
+  }
+  assert.ok(/function uefaCompetitionName\(/.test(app), "app.js UEFA ad çözümleyicisini tanımlamalı");
 }
 
 /** Veri dosyalarındaki lig alanı doğru adı taşımalı. */
@@ -207,6 +259,8 @@ function listGenerated(relative, limit) {
 testCanonicalName();
 testVariantsResolveToOneName();
 testOtherLeaguesPassThrough();
+testUefaCompetitionsAreCanonical();
+testClientMirrorsUefaNames();
 testDataFilesUseCanonicalName();
 testInternalKeysUnchanged();
 testPublishedPagesUseCanonicalName();

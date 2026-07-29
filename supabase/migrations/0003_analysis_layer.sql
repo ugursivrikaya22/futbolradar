@@ -192,7 +192,17 @@ create index if not exists analysis_jobs_match_idx on public.analysis_jobs (matc
 --
 -- Takılı sayılma koşulu: maç oynanmış, ama ya raporu hiç yok ya da altı
 -- saatlik pencere kapandığı hâlde hâlâ "hazırlanıyor" diyor.
-create or replace view public.stuck_matches as
+--
+-- SECURITY INVOKER ZORUNLU. Varsayılan görünüm, SORGULAYANIN değil SAHİBİNİN
+-- yetkisiyle çalışır. 0005 göçü dayandığı iki tabloya (matches, match_reports)
+-- `force row level security` uyguluyor ve politikaları yalnızca anon ile
+-- authenticated rollerine veriyor; sahip bu rollerin hiçbiri değil. Sahip
+-- yetkisiyle çalışan bir görünüm o durumda gerçek duruma bakmaksızın BOŞ
+-- dönebilir — ve boş dönen bir "takılı maç" listesi, hiç takılı maç yokmuş
+-- gibi okunur. Ölçülmemiş bir sonucu ölçüm diye sunmamak için görünüm
+-- sorgulayanın kimliğiyle çalışır; RLS neyi gösteriyorsa onu gösterir.
+create or replace view public.stuck_matches
+with (security_invoker = true) as
 select
   m.id                as match_id,
   m.home_team,

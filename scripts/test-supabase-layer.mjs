@@ -23,6 +23,11 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import {
+  JWT_PATTERN,
+  SECRET_KEY_PATTERN,
+  scanPublishedOutput
+} from "./lib/publishedSecretScan.mjs";
 
 const require = createRequire(import.meta.url);
 const root = process.cwd();
@@ -31,51 +36,58 @@ const config = require("../services/supabase/config.js");
 const { SupabaseError, buildQuery, createClient } = require("../services/supabase/restClient.js");
 const serverClient = require("../services/supabase/serverClient.js");
 const { createBrowserClient } = require("../services/supabase/browserClient.js");
-const { EXPECTED_TABLES, supabaseHealth } = require("../services/supabase/health.js");
+const {
+  EXPECTED_TABLES,
+  PROBE_TIMEOUT_MS,
+  supabaseHealth,
+  withBudget
+} = require("../services/supabase/health.js");
 const repositories = require("../services/supabase/repositories.js");
 
 const MIGRATIONS_DIR = path.join(root, "supabase", "migrations");
 
-/** JWT biçimi: sızmış bir anahtarı metin içinde tanımak için. */
-const JWT_PATTERN = /\bey[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}\.[A-Za-z0-9_-]{16,}\b/;
-const SECRET_KEY_PATTERN = /\bsb_secret_[A-Za-z0-9_-]{10,}\b/;
-
 /**
  * SERVİS ANAHTARI YAYIMLANAN ÇIKTIYA SIZMAMALI.
  *
- * Bu testin taradığı dosyalar tarayıcıya gidenlerin tamamı: istemci betiği,
- * her HTML sayfası ve public/ aynası. Ne anahtar ADI ne de bir JWT değeri
- * bulunmamalı.
+ * Tarama artık scripts/lib/publishedSecretScan.mjs içinde yaşıyor ve DERLEME
+ * ZİNCİRİ de aynı taramayı çağırıyor (scripts/verify-published-secrets.mjs).
+ * Sebep: testler `npm run build` ve Vercel dağıtımının parçası değil, yani
+ * tarama yalnızca burada dursaydı sızıntının gerçekten olabileceği tek yerde —
+ * anahtarların tanımlı olduğu üretim derlemesinde — hiç çalışmazdı.
+ *
+ * Bu test o taramanın SÖZLEŞMESİNİ korur: çıktı temiz mi ve tarayıcı
+ * gerçekten bir şeye bakıyor mu.
  */
 function testServiceKeyNeverReachesTheBrowser() {
-  const targets = [];
+  const { files, problems } = scanPublishedOutput(root);
 
-  const appJs = path.join(root, "app.js");
-  if (fs.existsSync(appJs)) targets.push(appJs);
+  assert.ok(files > 5, "ön koşul: taranacak yayımlanmış dosya olmalı");
+  assert.deepEqual(problems, [], `yayımlanan çıktıda sır bulundu:\n- ${problems.join("\n- ")}`);
 
-  for (const dir of [root, path.join(root, "public")]) {
-    if (!fs.existsSync(dir)) continue;
-    for (const file of fs.readdirSync(dir)) {
-      if (file.endsWith(".html")) targets.push(path.join(dir, file));
-    }
-  }
+  // Tarayıcının gerçekten bir şeye baktığını kanıtla: sızıntı örneği
+  // yakalanmıyorsa yukarıdaki "temiz" bir şey ifade etmez.
+  const leak = `SUPABASE_SERVICE_ROLE_KEY = ey${"a".repeat(20)}.ey${"b".repeat(20)}.${"c".repeat(20)}`;
+  assert.ok(JWT_PATTERN.test(leak), "JWT deseni örnek sızıntıyı yakalamalı");
+  assert.ok(
+    config.SERVICE_KEY_ENV_NAMES.some((name) => leak.includes(name)),
+    "değişken adı listesi örnek sızıntıyı yakalamalı"
+  );
+  assert.ok(SECRET_KEY_PATTERN.test("sb_secret_abcdefghijklmno"), "sb_secret_ deseni yakalamalı");
+}
 
-  assert.ok(targets.length > 5, "ön koşul: taranacak yayımlanmış dosya olmalı");
+/** Derleme zinciri sır taramasını gerçekten koşturmalı. */
+function testSecretScanRunsInTheBuildChain() {
+  const build = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")).scripts.build;
+  assert.ok(
+    build.includes("scripts/verify-published-secrets.mjs"),
+    'sır taraması package.json "build" zincirinde koşmalı — aksi hâlde üretimde hiç çalışmaz'
+  );
 
-  for (const file of targets) {
-    const content = fs.readFileSync(file, "utf8");
-    const name = path.relative(root, file);
-
-    for (const envName of config.SERVICE_KEY_ENV_NAMES) {
-      assert.ok(
-        !content.includes(envName),
-        `${name}: servis anahtarı değişken adı "${envName}" yayımlanan dosyada geçiyor`
-      );
-    }
-
-    assert.ok(!JWT_PATTERN.test(content), `${name}: JWT biçiminde bir değer sızmış olabilir`);
-    assert.ok(!SECRET_KEY_PATTERN.test(content), `${name}: sb_secret_ biçiminde anahtar sızmış`);
-  }
+  // Sıra da önemli: tarama, çıktıyı DEĞİŞTİREN son adımdan sonra gelmeli.
+  assert.ok(
+    build.indexOf("scripts/verify-published-secrets.mjs") > build.indexOf("npm run postprocess"),
+    "sır taraması son işlemlerden SONRA koşmalı; erken koşarsa sonraki adımın sızdırdığını göremez"
+  );
 }
 
 /** Tarayıcıya giden istemci betiği Supabase sunucu modüllerini çağırmamalı. */
@@ -304,11 +316,28 @@ function testSchemaMirrorsApplicationRules() {
   assert.ok(/players_provider_id_numeric/.test(sql), "sağlayıcı kimliği kısıtı olmalı");
 }
 
-/** Takılı maç görünümü tanımlı olmalı — sözün ölçüsü. */
+/**
+ * Takılı maç görünümü tanımlı VE OKUNABİLİR olmalı — sözün ölçüsü.
+ *
+ * Görünümün metinde var olması yetmiyordu: `security_invoker` olmadan
+ * tanımlanmış bir görünüm SAHİBİNİN yetkisiyle çalışır ve 0005'in `force row
+ * level security` uyguladığı tablolar üzerinde, gerçek durumdan bağımsız
+ * olarak boş dönebilir. Boş dönen bir takılı-maç listesi "takılı maç yok"
+ * diye okunur; ölçülmemiş bir sonucu ölçüm gibi sunmak tam olarak budur.
+ */
 function testStuckMatchViewExists() {
   const { sql } = migrationSql();
   assert.ok(/create or replace view public\.stuck_matches/.test(sql), "takılı maç görünümü olmalı");
   assert.ok(/full-processing/.test(sql), "görünüm takılı durumu tanımalı");
+
+  assert.ok(
+    /create or replace view public\.stuck_matches\s*\nwith \(security_invoker = true\)/.test(sql),
+    "görünüm sorgulayanın kimliğiyle çalışmalı (security_invoker)"
+  );
+  assert.ok(
+    /alter view public\.stuck_matches set \(security_invoker = true\)/.test(sql),
+    "önceden kurulmuş veritabanları için de security_invoker uygulanmalı"
+  );
 }
 
 /** Satır eşlemeleri şema kısıtlarını ihlal etmemeli. */
@@ -356,8 +385,48 @@ function testExpectedTablesMatchMigrations() {
   }
 }
 
+
+/**
+ * SENKRONUN YAZDIĞI DEĞERLER ŞEMANIN TANIDIĞI DEĞERLER OLMALI.
+ *
+ * Bu sınıf hatanın tamamı üretimde ortaya çıkar: Supabase yapılandırılmadan
+ * hiçbir şey yazılmadığı için yerelde ve CI'da sessiz kalır, anahtar
+ * tanımlandığı ilk gün yazma hatasına döner.
+ *
+ * Denetim (bu turda): senkron `severity: "error"` yazıyordu; şema yalnızca
+ * info/warning/blocking tanıyor.
+ */
+function testSyncValuesMatchSchemaConstraints() {
+  const sync = fs.readFileSync(path.join(root, "scripts", "sync-supabase.mjs"), "utf8");
+  const { sql } = migrationSql();
+
+  const allowed = (constraint) => {
+    const match = sql.match(new RegExp(`${constraint}[\\s\\S]*?in \\(([^)]+)\\)`));
+    assert.ok(match, `şemada kısıt bulunamadı: ${constraint}`);
+    return match[1].split(",").map((value) => value.trim().replace(/^'|'$/g, ""));
+  };
+
+  const severities = allowed("data_coverage_severity_known");
+  for (const [, value] of sync.matchAll(/severity:\s*"([^"]+)"/g)) {
+    assert.ok(
+      severities.includes(value),
+      `senkron tanınmayan severity yazıyor: "${value}" (şema: ${severities.join(", ")})`
+    );
+  }
+
+  // Aynı denetim depolar için de: rapor durumu ve güven değerleri.
+  const repositoriesSource = fs.readFileSync(
+    path.join(root, "services", "supabase", "repositories.js"), "utf8");
+  const confidences = allowed("radar_scores_confidence_known");
+  for (const [, value] of repositoriesSource.matchAll(/confidence:\s*"([^"]+)"/g)) {
+    assert.ok(confidences.includes(value), `tanınmayan confidence: "${value}"`);
+  }
+}
+
 const tests = [
   testServiceKeyNeverReachesTheBrowser,
+  testSyncValuesMatchSchemaConstraints,
+  testSecretScanRunsInTheBuildChain,
   testClientBundleDoesNotImportServerModules,
   testServiceKeyReadThrowsInBrowser,
   testBrowserClientRejectsSecretKey,
@@ -380,7 +449,7 @@ for (const test of tests) {
   await test();
 }
 
-console.log(`Supabase layer tests passed (${tests.length} senaryo: anahtar sızıntısı yok, istemci ayrımı, ` +
+console.log(`Supabase layer tests passed (${tests.length} senaryo: anahtar sızıntısı yok, derleme kapısı, istemci ayrımı, ` +
   "tarayıcı koruması, gizli anahtar reddi, değer sızdırmayan rapor, public ön ek uyarısı, " +
   "yapılandırmasız çalışma, filtresiz yazma reddi, temiz hata, sorgu kaçışı, tablo tanımları, " +
   "RLS kapsaması, şema-uygulama eşliği, takılı maç görünümü, satır eşlemeleri, kapsam sözleşmesi).");

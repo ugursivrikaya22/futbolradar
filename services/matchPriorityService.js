@@ -67,6 +67,61 @@ const DEFAULT_CLUB_POPULARITY = 20;
 /** Türkiye'nin dört büyüğü — derbi tanımının dayanağı. */
 const TURKISH_BIG_FOUR = Object.freeze(["galatasaray", "fenerbahce", "besiktas", "trabzonspor"]);
 
+/**
+ * VİTRİN BANDI — büyük dörtlü her zaman en üstte.
+ *
+ * Puanlama tek başına bunu sağlamıyordu: turnuva ağırlığı kulüp ağırlığından
+ * baskın çıkabiliyor ve bir Galatasaray hazırlık maçı, iki orta sıra takımın
+ * Trendyol Süper Lig maçının ALTINA düşüyordu. Sayılarla bakınca doğru
+ * (turnuva daha değerli), okuyucuyla bakınca yanlış: bu siteye gelen kişi
+ * önce kendi takımını arar ve onu turnuva önemine göre aramaz.
+ *
+ * Bu yüzden büyük dörtlü bir AĞIRLIK değil, bir BANT. Ağırlık olsaydı
+ * yeterince yüksek başka bir puan onu geçebilirdi; bant geçilemez.
+ * Turnuva — Şampiyonlar Ligi, Avrupa Ligi, Süper Lig, kupa ya da hazırlık —
+ * bandın İÇİNDE sıralar, bandı değiştirmez.
+ */
+/**
+ * VİTRİN BANTLARI — dört kademe.
+ *
+ *   EDITORIAL (3)  Editörün elle öne çıkardığı maç. "Geçersiz kılma" gerçekten
+ *                  her şeyi geçersiz kılmalı, yoksa özellik sessizce ölür.
+ *   TOP (2)        Büyük dörtlü VE dünya çapı dev maçlar. Aynı bantta
+ *                  oldukları için aralarında puan karar verir: bir Galatasaray
+ *                  lig maçı Real Madrid-Barcelona'nın üstünde kalır, bir
+ *                  Galatasaray hazırlık maçı ise altına düşer. İstenen istisna
+ *                  tam olarak bu.
+ *   TURKISH (1)    Büyük dörtlü dışındaki Türk takımları — Süper Lig'de ya da
+ *                  UEFA turnuvalarında. Bu bant, "rastgele Avrupa maçı Türk
+ *                  takımının önüne geçmeyecek" kuralının kendisi: bant 0'daki
+ *                  hiçbir maç bant 1'i geçemez.
+ *   NONE (0)       Diğer her şey.
+ */
+const SPOTLIGHT = Object.freeze({
+  EDITORIAL: 3,
+  TOP: 2,
+  BIG_FOUR: 2,
+  GLOBAL_GIANT: 2,
+  TURKISH: 1,
+  NONE: 0
+});
+
+/**
+ * DÜNYA DEVİ MAÇ — tek istisna, dar tanım.
+ *
+ * "Rastgele Avrupa maçı Türk takımının önüne geçmeyecek" kuralı bu tanımın
+ * darlığında yaşıyor. İki koşul BİRDEN gerekli:
+ *
+ *   1. İKİ TARAF DA seçkin kulüp (Real, Barça, City, Liverpool, United,
+ *      Bayern, PSG düzeyinde). Tek tarafı büyük olan bir eşleşme dev maç
+ *      değildir — Real Madrid'in bir eleme turu rakibiyle maçı öyle sayılsaydı
+ *      "rastgele Avrupa maçı" kapıdan girerdi.
+ *   2. Turnuva Şampiyonlar Ligi ya da Avrupa Ligi düzeyinde. Konferans Ligi
+ *      bu eşiğin altında: orada dev eşleşme oluşmuyor.
+ */
+const ELITE_CLUB_POPULARITY = 85;
+const GIANT_COMPETITION_WEIGHT = 80;
+
 /** Turnuva ağırlıkları; anahtar `competitionId` ya da lig adıyla eşleşir. */
 const COMPETITION_WEIGHT = Object.freeze([
   { match: /sampiyonlar-ligi|champions league|şampiyonlar ligi/i, weight: 100, label: "Şampiyonlar Ligi" },
@@ -193,7 +248,7 @@ function standingsContext(match, teams) {
  */
 function matchPriority(match, options = {}) {
   if (!match || typeof match !== "object") {
-    return { score: 0, reasons: [], primaryReason: null, competition: "" };
+    return { score: 0, spotlight: SPOTLIGHT.NONE, reasons: [], primaryReason: null, competition: "" };
   }
 
   const now = options.now instanceof Date ? options.now : new Date();
@@ -257,13 +312,50 @@ function matchPriority(match, options = {}) {
     reasons.push({ key: "editorial", label: "Editör seçimi" });
   }
 
-  // Gerekçesi olmayan ama puanı yüksek maç da bir şey söylemeli.
+  // VİTRİN BANDI.
+  //
+  // Editoryal seçim büyük dörtlünün de ÜSTÜNDE — çünkü "geçersiz kılma"
+  // tam olarak bu demek. Bant editör tarafından aşılamasaydı elle öne çıkarma
+  // özelliği, büyük dörtlü oynadığı her gün sessizce çalışmaz olurdu.
+  const editorialPick = Number.isFinite(Number(match.editorialPriority))
+    && Number(match.editorialPriority) !== 0;
+  const bigFourSide = isBigFour(match.homeTeam) || isBigFour(match.awayTeam);
+  const globalGiant = !bigFourSide
+    && homePopularity >= ELITE_CLUB_POPULARITY
+    && awayPopularity >= ELITE_CLUB_POPULARITY
+    && competition.weight >= GIANT_COMPETITION_WEIGHT;
+
+  // Büyük dörtlü dışındaki Türk takımları da bandın içinde: Samsunspor'un
+  // Konferans Ligi maçı, rastgele bir Avrupa eşleşmesinin altına düşmemeli.
+  const turkishSide2 = isSuperLigTeam(match.homeTeam, options) || isSuperLigTeam(match.awayTeam, options);
+
+  const spotlight = (editorialPick || match.featured === true)
+    ? SPOTLIGHT.EDITORIAL
+    : (bigFourSide || globalGiant)
+      ? SPOTLIGHT.TOP
+      : turkishSide2
+        ? SPOTLIGHT.TURKISH
+        : SPOTLIGHT.NONE;
+
+  if (globalGiant) {
+    reasons.push({ key: "globalGiant", label: "Dünya devi" });
+  }
+
+  // Derbi zaten daha özel bir gerekçe; ikisi birden yazılmaz.
+  if (bigFourSide && !bigFourPair) {
+    reasons.push({ key: "bigFour", label: "Büyük dörtlü" });
+  }
+
+  // Gerekçe fallback'i EN SONA: vitrin gerekçeleri (dünya devi, büyük dörtlü)
+  // yazıldıktan sonra bakılmalı, yoksa gerçek gerekçesi olan bir maç
+  // "Yüksek ilgi" diye etiketlenir.
   if (!reasons.length && score >= HIGH_INTEREST_THRESHOLD) {
     reasons.push({ key: "highInterest", label: "Yüksek ilgi" });
   }
 
   return {
     score: Math.round(score),
+    spotlight,
     reasons,
     primaryReason: reasons[0] || null,
     competition: competition.label
@@ -309,6 +401,10 @@ function rankMatches(matches, options = {}) {
   return (Array.isArray(matches) ? matches : [])
     .map((match) => ({ ...match, priority: matchPriority(match, options) }))
     .sort((left, right) => {
+      // BANT ÖNCE: büyük dörtlü maçı, turnuvası ne olursa olsun üstte.
+      if (right.priority.spotlight !== left.priority.spotlight) {
+        return right.priority.spotlight - left.priority.spotlight;
+      }
       if (right.priority.score !== left.priority.score) {
         return right.priority.score - left.priority.score;
       }
@@ -318,6 +414,10 @@ function rankMatches(matches, options = {}) {
 
 module.exports = {
   CLUB_POPULARITY,
+  ELITE_CLUB_POPULARITY,
+  GIANT_COMPETITION_WEIGHT,
+  SPOTLIGHT,
+  isBigFour,
   COMPETITION_WEIGHT,
   DEFAULT_CLUB_POPULARITY,
   HIGH_INTEREST_THRESHOLD,

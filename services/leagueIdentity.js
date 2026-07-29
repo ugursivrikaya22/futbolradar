@@ -75,15 +75,71 @@ function isSuperLigName(value) {
  * Sunum katmanı bunu çağırdığı sürece veri dosyalarındaki eski yazımlar
  * ekrana sızmaz.
  */
+/**
+ * UEFA KULÜP TURNUVALARI — aynı tek-kaynak kuralı.
+ *
+ * Veri dosyalarında kısa ad geçiyor ("Şampiyonlar Ligi"), sağlayıcı yanıtında
+ * İngilizcesi ("UEFA Champions League"), kürasyon kayıtlarında ikisi karışık.
+ * Okuyucu için sorun şu: "Konferans Ligi" ile "UEFA Konferans Ligi" aynı şey
+ * ama iki farklı turnuva gibi okunuyor ve hangisinin gerçek olduğu belirsiz
+ * kalıyor.
+ *
+ * Kural Süper Lig ile aynı: iç anahtar (competitionId "sampiyonlar-ligi")
+ * DEĞİŞMEZ; ekrana yazılan ad tek biçimdir.
+ */
+const UEFA_COMPETITIONS = Object.freeze([
+  {
+    display: "UEFA Şampiyonlar Ligi",
+    variants: ["UEFA Şampiyonlar Ligi", "Şampiyonlar Ligi", "Sampiyonlar Ligi",
+      "UEFA Champions League", "Champions League", "sampiyonlar-ligi"]
+  },
+  {
+    display: "UEFA Avrupa Ligi",
+    variants: ["UEFA Avrupa Ligi", "Avrupa Ligi", "UEFA Europa League",
+      "Europa League", "avrupa-ligi"]
+  },
+  {
+    display: "UEFA Konferans Ligi",
+    variants: ["UEFA Konferans Ligi", "Konferans Ligi", "UEFA Avrupa Konferans Ligi",
+      "Avrupa Konferans Ligi", "UEFA Europa Conference League",
+      "UEFA Conference League", "Conference League", "konferans-ligi"]
+  }
+]);
+
+/** Bir ad hangi UEFA turnuvasına ait? Değilse null. */
+function uefaCompetition(value) {
+  const key = fold(value);
+  if (!key) return null;
+  return UEFA_COMPETITIONS.find((competition) =>
+    competition.variants.some((variant) => fold(variant) === key)) || null;
+}
+
+function isUefaCompetitionName(value) {
+  return Boolean(uefaCompetition(value));
+}
+
+/**
+ * Ekrana yazılacak turnuva adı.
+ *
+ * Süper Lig ve üç UEFA turnuvası tek biçime çevrilir; tanınmayan adlar
+ * OLDUĞU GİBİ kalır — uydurma bir ad üretmek, yanlış adı düzeltmekten daha
+ * kötüdür.
+ */
 function displayLeagueName(value, fallback = "") {
   const raw = String(value || "").trim();
   if (!raw) return fallback;
-  return isSuperLigName(raw) ? SUPER_LIG_DISPLAY_NAME : raw;
+  if (isSuperLigName(raw)) return SUPER_LIG_DISPLAY_NAME;
+
+  const uefa = uefaCompetition(raw);
+  return uefa ? uefa.display : raw;
 }
 
 module.exports = {
   SUPER_LIG_DISPLAY_NAME,
   SUPER_LIG_NAME_VARIANTS,
+  UEFA_COMPETITIONS,
   displayLeagueName,
-  isSuperLigName
+  isSuperLigName,
+  isUefaCompetitionName,
+  uefaCompetition
 };
