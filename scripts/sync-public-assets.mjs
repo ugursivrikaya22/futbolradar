@@ -17,6 +17,7 @@ for (const file of [
   "transfer-sezonu-ne-zaman-bitiyor.html",
   "super-lig-transferleri-2026-2027.html",
   "fenerbahce-gornik-zabrze-mac-analizi.html",
+  "gornik-zabrze-fenerbahce-mac-analizi.html",
   "gornik-zabrze-fenerbahce-rovans-ne-zaman.html",
   "uefa-ulke-puani-siralamasi.html",
   "sampiyonlar-ligi-on-eleme-maclari.html",

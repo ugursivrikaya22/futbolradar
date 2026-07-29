@@ -4,7 +4,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
-const updatedAt = "2026-07-22";
+const updatedAt = "2026-07-30";
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 
@@ -124,20 +124,20 @@ const pages = [
   },
   {
     file: "gornik-zabrze-fenerbahce-rovans-ne-zaman.html",
-    title: "Górnik Zabrze Fenerbahçe Rövanş Maçı Ne Zaman? | FutbolRadar",
-    description: "Górnik Zabrze Fenerbahçe rövanş maçı 29 Temmuz 2026'da. İlk maç sonucu, tur senaryosu ve maç öncesi veri notlarını inceleyin.",
-    h1: "Górnik Zabrze Fenerbahçe Rövanş Maçı Ne Zaman?",
-    lead: "Şampiyonlar Ligi ikinci eleme turu rövanşı 29 Temmuz 2026'da oynanacak. Fenerbahçe ilk maçtan taşıdığı 1-0 avantajla Polonya'ya gidiyor.",
+    title: "Górnik Zabrze Fenerbahçe Rövanş Maçı Sonucu: 1-1 | FutbolRadar",
+    description: "Górnik Zabrze Fenerbahçe rövanş maçı 29 Temmuz 2026'da 1-1 bitti. Fenerbahçe toplam skorda 2-1 ile 3. eleme turuna yükseldi; maç verilerini inceleyin.",
+    h1: "Górnik Zabrze Fenerbahçe Rövanş Maçı Sonucu",
+    lead: "Şampiyonlar Ligi ikinci eleme turu rövanşı 29 Temmuz 2026'da oynandı: Fenerbahçe, Górnik Zabrze deplasmanında 1-1 berabere kaldı ve toplam skorda 2-1'lik üstünlükle adını üçüncü eleme turuna yazdırdı.",
     facts: [
-      { label: "Rövanş tarihi", value: "29 Temmuz 2026", note: "UEFA ikinci eleme turu rövanş günü." },
-      { label: "İlk maç", value: "Fenerbahçe 1-0 Górnik", note: "Talisca'nın golüyle gelen skor avantajı." },
-      { label: "Tur senaryosu", value: "Beraberlik yeterli", note: "Toplam skor eşitlenirse karşılaşma uzatmaya gider." }
+      { label: "Rövanş sonucu", value: "1-1", note: "Talisca (12', pen.) ve Sacek (45+10') golleri." },
+      { label: "Toplam skor", value: "2-1", note: "Fenerbahçe iki maç sonunda turu geçti." },
+      { label: "Sıradaki tur", value: "Sturm Graz", note: "3. eleme turu; ilk maç 4/5 Ağustos haftasında." }
     ],
-    body: () => `${section("Rövanş öncesi veri özeti", "İlk maçın sonucu avantaj sağlıyor; fakat tek gollük fark turu kesinleştirmiyor.", `<div class="trend-data-table"><div class="trend-table-row head"><span>Gösterge</span><span>Fenerbahçe</span><span>Górnik Zabrze</span></div><div class="trend-table-row"><span>İlk maç skoru</span><b>1</b><b>0</b></div><div class="trend-table-row"><span>İlk maç xG</span><b>1,54</b><b>0,06</b></div><div class="trend-table-row"><span>İlk maç şut</span><b>15</b><b>2</b></div></div>`, "Maç önü")}${section("Momentum nasıl okunmalı?", "Rövanş momentumu yalnızca ilk maç skorundan üretilmez.", `<div class="trend-note"><strong>Canlı kadro ve yeni maç verisi bekleniyor.</strong><p>Kesin ilk 11, sakatlık ve son antrenman bilgisi doğrulanmadan yapay bir momentum yüzdesi gösterilmez. İlk maçta Fenerbahçe oyun kontrolünü elinde tuttu; rövanşta skor koruma tercihi ile hücum devamlılığı birlikte izlenecek.</p></div>`, "Analiz notu")}`,
+    body: () => `${section("Rövanş veri özeti", "Fenerbahçe erken penaltıyla öne geçti; ev sahibi şut sayısında üstündü ama toplam skoru çeviremedi.", `<div class="trend-data-table"><div class="trend-table-row head"><span>Gösterge</span><span>Fenerbahçe</span><span>Górnik Zabrze</span></div><div class="trend-table-row"><span>Rövanş skoru</span><b>1</b><b>1</b></div><div class="trend-table-row"><span>İsabetli şut</span><b>2</b><b>6</b></div><div class="trend-table-row"><span>Topla oynama</span><b>%52</b><b>%48</b></div><div class="trend-table-row"><span>Pas isabeti</span><b>%86</b><b>%79</b></div></div>`, "Maç sonu")}${section("Rövanş nasıl okunmalı?", "Skor üstünlüğü ilk maçta kurulan avantajın yönetilmesiyle korundu.", `<div class="trend-note"><strong>Tur, iki maçlık planın sonucuydu.</strong><p>Kadıköy'de kurulan 1-0'lık avantaj, Polonya'da VAR incelemesi sonrası kazanılan erken penaltıyla güvenceye alındı. Górnik Zabrze isabetli şutta 6-2 önde tamamladı; Mert Günok'un kurtarışları ve ceza sahası direnci farkı kapattı. Maçın tüm istatistik, kadro ve kırılma anları rövanş analizinde.</p><a class="button primary" href="./gornik-zabrze-fenerbahce-mac-analizi.html">Rövanş analizini aç</a></div>`, "Analiz notu")}`,
     links: [
+      { href: "./gornik-zabrze-fenerbahce-mac-analizi.html", kicker: "Rövanş", title: "Górnik Fenerbahçe maç analizi", text: "Rövanşın istatistiklerini ve kırılma anlarını aç." },
       { href: "./fenerbahce-gornik-zabrze-mac-analizi.html", kicker: "İlk maç", title: "Fenerbahçe Górnik maç analizi", text: "xG, şut, pas ve kritik anları aç." },
       { href: "./fenerbahce-avrupa-maclari.html", kicker: "Fikstür", title: "Fenerbahçe Avrupa maçları", text: "Avrupa yolculuğunu tek sayfada takip et." },
-      { href: "./bugunun-maclari.html", kicker: "Program", title: "Bugünün Maçları", text: "Günün maç programına geç." },
       { href: "./fenerbahce-oyuncu-radari.html", kicker: "Kadro", title: "Fenerbahçe Oyuncu Radarı", text: "Oyuncu form ve rol sinyallerini incele." }
     ]
   },
@@ -167,10 +167,10 @@ const pages = [
     lead: "2026-2027 Şampiyonlar Ligi elemeleri 7 Temmuz'da başladı ve play-off rövanşlarıyla 26 Ağustos'ta tamamlanacak. Temsilci maçlarını takvim ve analizle takip et.",
     facts: [
       { label: "Eleme başlangıcı", value: "7 Temmuz 2026", note: "Birinci eleme turu ilk maçları." },
-      { label: "İkinci tur", value: "21/22 ve 28/29 Temmuz", note: "Fenerbahçe bu aşamada yarışıyor." },
+      { label: "İkinci tur", value: "Tamamlandı", note: "Fenerbahçe, Górnik Zabrze'yi toplam 2-1 ile geçti." },
       { label: "Eleme bitişi", value: "26 Ağustos 2026", note: "Play-off rövanşlarının son günü." }
     ],
-    body: () => `${section("Fenerbahçe eşleşmesi", "Sarı-lacivertliler ilk maçta Górnik Zabrze'yi 1-0 mağlup etti; rövanş 29 Temmuz'da.", `<div class="trend-fixture-list"><article><div><span>21 Temmuz 2026 · Tamamlandı</span><h3>Fenerbahçe 1-0 Górnik Zabrze</h3><p>15 şut, 1,54 xG ve yüzde 79 topa sahip olma.</p></div><a class="detail-link" href="./fenerbahce-gornik-zabrze-mac-analizi.html">Analizi aç</a></article><article><div><span>29 Temmuz 2026 · Rövanş</span><h3>Górnik Zabrze - Fenerbahçe</h3><p>Fenerbahçe tek gollük avantajla rövanşa çıkacak.</p></div><a class="detail-link" href="./gornik-zabrze-fenerbahce-rovans-ne-zaman.html">Maç önünü aç</a></article></div>`, "Temsilci Radar")}${section("Eleme yolu", "İkinci turu geçen taraf üçüncü eleme turunda Sturm Graz - Hearts eşleşmesinin galibiyle karşılaşacak.", `<div class="trend-timeline compact"><article class="is-current"><span>2. tur</span><div><h3>Górnik Zabrze eşleşmesi</h3><p>21 ve 29 Temmuz.</p></div></article><article><span>3. tur</span><div><h3>Sturm Graz / Hearts</h3><p>Tur geçilirse sıradaki eşleşme.</p></div></article><article><span>Play-off</span><div><h3>Lig aşaması öncesi son tur</h3><p>İlk maçlar 18/19, rövanşlar 25/26 Ağustos.</p></div></article></div>`, "Turnuva yolu")}`,
+    body: () => `${section("Fenerbahçe eşleşmesi", "Sarı-lacivertliler ilk maçı 1-0 kazandı, rövanşta 1-1 berabere kalarak üçüncü eleme turuna yükseldi.", `<div class="trend-fixture-list"><article><div><span>21 Temmuz 2026 · Tamamlandı</span><h3>Fenerbahçe 1-0 Górnik Zabrze</h3><p>15 şut, 1,54 xG ve yüzde 79 topa sahip olma.</p></div><a class="detail-link" href="./fenerbahce-gornik-zabrze-mac-analizi.html">Analizi aç</a></article><article><div><span>29 Temmuz 2026 · Tamamlandı</span><h3>Górnik Zabrze 1-1 Fenerbahçe</h3><p>Talisca penaltıdan ağları buldu; toplam skor 2-1 ile tur Fenerbahçe'nin.</p></div><a class="detail-link" href="./gornik-zabrze-fenerbahce-mac-analizi.html">Analizi aç</a></article></div>`, "Temsilci Radar")}${section("Eleme yolu", "Fenerbahçe üçüncü eleme turunda Hearts'ı eleyen Sturm Graz ile karşılaşacak.", `<div class="trend-timeline compact"><article><span>2. tur</span><div><h3>Górnik Zabrze eşleşmesi</h3><p>Toplam skor 2-1 ile geçildi.</p></div></article><article class="is-current"><span>3. tur</span><div><h3>Sturm Graz eşleşmesi</h3><p>İlk maç 4/5 Ağustos haftası, rövanş 11 Ağustos.</p></div></article><article><span>Play-off</span><div><h3>Lig aşaması öncesi son tur</h3><p>İlk maçlar 18/19, rövanşlar 25/26 Ağustos.</p></div></article></div>`, "Turnuva yolu")}`,
     links: [
       { href: "./fenerbahce-avrupa-maclari.html", kicker: "Takım", title: "Fenerbahçe Avrupa maçları", text: "Fikstür, sonuç ve analiz bağlantıları." },
       { href: "./uefa-ulke-puani-siralamasi.html", kicker: "Katsayı", title: "UEFA ülke puanı", text: "Avrupa sonuçlarının ülke puanına etkisini öğren." },
@@ -184,11 +184,11 @@ const pages = [
     h1: "Fenerbahçe Avrupa Maçları",
     lead: "Fenerbahçe'nin 2026-2027 Avrupa yolculuğunu; fikstür, skor, tur durumu, maç analizi ve oyuncu radar bağlantılarıyla tek sayfada takip et.",
     facts: [
-      { label: "Organizasyon", value: "Şampiyonlar Ligi", note: "2026-2027 ikinci eleme turu." },
-      { label: "İlk maç", value: "1-0", note: "Górnik Zabrze karşısında Fenerbahçe galibiyeti." },
-      { label: "Sıradaki maç", value: "29 Temmuz", note: "Górnik Zabrze deplasmanındaki rövanş." }
+      { label: "Tur durumu", value: "3. eleme turu", note: "Górnik Zabrze eşleşmesi toplam 2-1 ile geçildi." },
+      { label: "Rövanş", value: "1-1", note: "Górnik Zabrze deplasmanında tur atlatan beraberlik." },
+      { label: "Sıradaki rakip", value: "Sturm Graz", note: "İlk maç 4/5 Ağustos haftası, rövanş 11 Ağustos." }
     ],
-    body: () => `${section("Avrupa fikstürü ve sonuçlar", "Tamamlanan maçlar doğrulanmış skorla, yaklaşan maçlar program durumuyla gösterilir.", `<div class="trend-fixture-list"><article><div><span>21 Temmuz · Şampiyonlar Ligi</span><h3>Fenerbahçe 1-0 Górnik Zabrze</h3><p>Durum: Tamamlandı · İlk maç</p></div><a class="detail-link" href="./fenerbahce-gornik-zabrze-mac-analizi.html">Tüm istatistikler</a></article><article><div><span>29 Temmuz · Şampiyonlar Ligi</span><h3>Górnik Zabrze - Fenerbahçe</h3><p>Durum: Planlandı · Rövanş</p></div><a class="detail-link" href="./gornik-zabrze-fenerbahce-rovans-ne-zaman.html">Rövanş rehberi</a></article></div>`, "Avrupa maç merkezi")}${section("Kadro etki vitrini", "Oyuncu etkisi yalnızca profil verisi bulunan ve güncel takımı doğrulanmış isimlerle bağlanır.", `<div class="trend-player-links"><a href="./oyuncular/kerem-akturkoglu.html"><span>Sol kanat</span><strong>Kerem Aktürkoğlu</strong><small>Profil ve form radarı</small></a><a href="./oyuncular/sebastian-szymanski.html"><span>10 numara</span><strong>Sebastian Szymanski</strong><small>Yaratıcılık ve pres radarı</small></a><a href="./fenerbahce-oyuncu-radari.html"><span>Tüm kadro</span><strong>Fenerbahçe Oyuncu Radarı</strong><small>Takım filtresini aç</small></a></div>`, "Oyuncu etkisi")}`,
+    body: () => `${section("Avrupa fikstürü ve sonuçlar", "Tamamlanan maçlar doğrulanmış skorla, yaklaşan maçlar program durumuyla gösterilir.", `<div class="trend-fixture-list"><article><div><span>21 Temmuz · Şampiyonlar Ligi</span><h3>Fenerbahçe 1-0 Górnik Zabrze</h3><p>Durum: Tamamlandı · İlk maç</p></div><a class="detail-link" href="./fenerbahce-gornik-zabrze-mac-analizi.html">Tüm istatistikler</a></article><article><div><span>29 Temmuz · Şampiyonlar Ligi</span><h3>Górnik Zabrze 1-1 Fenerbahçe</h3><p>Durum: Tamamlandı · Toplam skor 2-1, tur Fenerbahçe'nin</p></div><a class="detail-link" href="./gornik-zabrze-fenerbahce-mac-analizi.html">Tüm istatistikler</a></article><article><div><span>4/5 Ağustos haftası · Şampiyonlar Ligi</span><h3>Sturm Graz eşleşmesi</h3><p>Durum: Planlandı · 3. eleme turu, program doğrulanınca güncellenecek</p></div><a class="detail-link" href="./sampiyonlar-ligi-on-eleme-maclari.html">Tur takvimi</a></article></div>`, "Avrupa maç merkezi")}${section("Kadro etki vitrini", "Oyuncu etkisi yalnızca profil verisi bulunan ve güncel takımı doğrulanmış isimlerle bağlanır.", `<div class="trend-player-links"><a href="./oyuncular/kerem-akturkoglu.html"><span>Sol kanat</span><strong>Kerem Aktürkoğlu</strong><small>Profil ve form radarı</small></a><a href="./oyuncular/sebastian-szymanski.html"><span>10 numara</span><strong>Sebastian Szymanski</strong><small>Yaratıcılık ve pres radarı</small></a><a href="./fenerbahce-oyuncu-radari.html"><span>Tüm kadro</span><strong>Fenerbahçe Oyuncu Radarı</strong><small>Takım filtresini aç</small></a></div>`, "Oyuncu etkisi")}`,
     links: [
       { href: "./sampiyonlar-ligi-on-eleme-maclari.html", kicker: "Turnuva", title: "Şampiyonlar Ligi ön eleme", text: "Tur tarihlerini ve eleme yolunu gör." },
       { href: "./uefa-ulke-puani-siralamasi.html", kicker: "UEFA", title: "Ülke puanı sıralaması", text: "Temsilci sonuçlarının katsayı etkisini oku." },
@@ -279,7 +279,7 @@ function pageHtml(page) {
     ${siteHeader({ base: "./" })}
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><a href="./index.html">Trend Radar</a><span>/</span><span>${escapeHtml(page.h1)}</span></nav>
-      <section class="trend-hero"><div><span class="eyebrow">Gündem · Veri · Analiz</span><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.lead)}</p></div><aside><span>Son kontrol</span><strong>22 Temmuz 2026</strong><small>Doğrulanmayan alanlar kesin bilgi gibi sunulmaz.</small></aside></section>
+      <section class="trend-hero"><div><span class="eyebrow">Gündem · Veri · Analiz</span><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.lead)}</p></div><aside><span>Son kontrol</span><strong>30 Temmuz 2026</strong><small>Doğrulanmayan alanlar kesin bilgi gibi sunulmaz.</small></aside></section>
       ${factCards(page.facts)}
       ${page.body()}
       ${section("İlgili radar ekranları", "Bu konuyu takım, oyuncu, maç ve momentum verileriyle derinleştir.", linkGrid(page.links), "İç bağlantılar")}
@@ -314,6 +314,7 @@ pages.forEach(writePage);
 upsertSitemap([
   ...pages.map((page) => page.file),
   "fenerbahce-gornik-zabrze-mac-analizi.html",
+  "gornik-zabrze-fenerbahce-mac-analizi.html",
   "en-iyi-super-lig-oyunculari.html"
 ]);
 console.log(`Generated ${pages.length} football trend SEO pages`);

@@ -66,14 +66,16 @@ function testNotCrowded() {
 }
 
 function testFreshBadgeIsATimeClaim() {
-  // Taze içerik: rozet "Son Dakika".
-  const fresh = buildTickerFeed({ now: new Date("2026-07-26T20:00:00+03:00") });
+  // Taze içerik: rozet "Son Dakika". Çapa tarihi, kürasyonlu en yeni maçın
+  // (Górnik Zabrze - Fenerbahçe rövanşı, 29 Temmuz) hemen sonrasına bakar;
+  // veri ilerledikçe bu çapa da onunla birlikte ilerletilir.
+  const fresh = buildTickerFeed({ now: new Date("2026-07-30T02:00:00+03:00") });
   assert.equal(fresh.badge, "Son Dakika", "taze içerikte rozet Son Dakika olmalı");
   assert.equal(fresh.fresh, true);
 
   // Aynı veri, çok ileri bir tarihten bakıldığında artık taze değil:
   // rozet sessizce nötrleşmeli, "Son Dakika" iddiası sürdürülmemeli.
-  const later = new Date("2026-07-26T20:00:00+03:00");
+  const later = new Date("2026-07-30T02:00:00+03:00");
   later.setHours(later.getHours() + FRESH_WINDOW_HOURS + 6);
   const stale = buildTickerFeed({ now: later });
   assert.notEqual(stale.badge, "Son Dakika", "eski içerikte Son Dakika rozeti kalmamalı");
