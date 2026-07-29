@@ -367,6 +367,129 @@ function listHtml(relative) {
     .map((file) => path.join(dir, file));
 }
 
+
+/**
+ * BAŞLIK VE AÇIKLAMA BÜTÇESİ — TÜM YAYIMLANAN SAYFALAR.
+ *
+ * Denetimde 3404 sayfanın 1276'sında başlık 65 karakteri aşıyordu; arama
+ * sonucunda lig adı ve marka hiç görünmüyor, okuyucu yarım bir cümle
+ * okuyordu. Kural artık sayfa başına değil, SİTE genelinde geçerli.
+ */
+function testEveryPageFitsSeoBudget() {
+  const pages = collectAll();
+  assert.ok(pages.length >= 100, "ön koşul: sayfalar üretilmiş olmalı");
+
+  const longTitles = [];
+  const shortDescriptions = [];
+
+  for (const file of pages) {
+    const html = fs.readFileSync(file, "utf8");
+    if (/content="noindex/.test(html)) continue;
+    const name = path.relative(root, file);
+    const title = pick(html, /<title>([^<]*)<\/title>/);
+    const description = pick(html, /<meta name="description" content="([^"]*)"/);
+
+    if (title.length > TITLE_BUDGET) longTitles.push(`${name} (${title.length})`);
+    if (description && description.length < DESCRIPTION_MIN) {
+      shortDescriptions.push(`${name} (${description.length})`);
+    }
+  }
+
+  assert.equal(
+    longTitles.length, 0,
+    `başlık bütçesini aşan sayfa: ${longTitles.slice(0, 5).join(", ")}${longTitles.length > 5 ? ` … +${longTitles.length - 5}` : ""}`
+  );
+  assert.equal(
+    shortDescriptions.length, 0,
+    `açıklaması fazla kısa sayfa: ${shortDescriptions.slice(0, 5).join(", ")}${shortDescriptions.length > 5 ? ` … +${shortDescriptions.length - 5}` : ""}`
+  );
+}
+
+/**
+ * ÖKSÜZ SAYFA OLMAMALI.
+ *
+ * "En iyi defanslar" ve "Trendyol Süper Lig oyuncu radarı" hiçbir sayfadan
+ * bağlantı almıyordu; yalnızca site haritası üzerinden taranabiliyorlardı.
+ * Bir sayfa yayımlanacaksa siteden erişilebilir de olmalı.
+ */
+function testNoOrphanRootPages() {
+  const linked = new Set();
+  for (const file of collectAll()) {
+    const dir = path.dirname(file);
+    const html = fs.readFileSync(file, "utf8");
+    for (const [, href] of html.matchAll(/<a\b[^>]*href="([^"#?]+)(?:[#?][^"]*)?"/g)) {
+      if (/^(https?:|mailto:|tel:)/i.test(href) || !href) continue;
+      linked.add(path.relative(root, path.resolve(dir, href)));
+    }
+  }
+
+  const orphans = fs.readdirSync(root)
+    .filter((file) => file.endsWith(".html"))
+    .filter((file) => !EXEMPT.has(file) && file !== "index.html")
+    .filter((file) => !/content="noindex/.test(read(file)))
+    .filter((file) => !linked.has(file));
+
+  assert.equal(orphans.length, 0, `hiçbir sayfadan bağlantı almayan sayfa: ${orphans.join(", ")}`);
+}
+
+/**
+ * ANCHOR METNİ HEDEFİNİ SÖYLEMELİ.
+ *
+ * "Detay", "Tümü", "Tıkla" gibi metinler ne arama motoruna ne de ekran
+ * okuyucuya nereye gidildiğini anlatır. Bant bağlantısı tek başına 3402
+ * sayfada "Tümü" diyordu.
+ */
+const VAGUE_ANCHORS = new Set([
+  "detay", "detaylar", "tümü", "devamı", "buraya tıkla", "tıkla", "aç", "git", "daha fazla", "oku"
+]);
+
+function testAnchorsAreDescriptive() {
+  const offenders = [];
+  for (const file of collectAll().slice(0, 400)) {
+    const html = fs.readFileSync(file, "utf8");
+    const name = path.relative(root, file);
+    for (const [, inner] of html.matchAll(/<a\b[^>]*>([\s\S]*?)<\/a>/g)) {
+      const label = inner.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().toLocaleLowerCase("tr");
+      if (VAGUE_ANCHORS.has(label)) offenders.push(`${name}: "${label}"`);
+    }
+  }
+  assert.equal(
+    offenders.length, 0,
+    `belirsiz bağlantı metni: ${[...new Set(offenders)].slice(0, 5).join(", ")}`
+  );
+}
+
+/**
+ * "%0" BİR ÖLÇÜM İDDİASIDIR.
+ *
+ * Radar kartı hiç bileşen ölçemediğinde bile "Kapsam %0" yazıyordu; aynı
+ * kartın puan satırı ise dürüstçe "Veri bekleniyor" diyordu. Ölçüm yoksa
+ * hiçbir rakam basılmamalı.
+ */
+function testNoZeroMeasurementClaims() {
+  const offenders = [];
+  for (const file of collectAll()) {
+    const html = fs.readFileSync(file, "utf8");
+    const name = path.relative(root, file);
+    if (/Kapsam %0\b/.test(html)) offenders.push(`${name}: Kapsam %0`);
+    if (/Veri güveni %0\b/.test(html)) offenders.push(`${name}: Veri güveni %0`);
+  }
+  assert.equal(
+    offenders.length, 0,
+    `ölçüm yokken sıfır rakamı basan sayfa: ${offenders.slice(0, 5).join(", ")}`
+  );
+}
+
+function collectAll(dir = root, out = []) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name.startsWith(".") || entry.name === "node_modules" || entry.name === "public") continue;
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) collectAll(full, out);
+    else if (entry.name.endsWith(".html")) out.push(full);
+  }
+  return out;
+}
+
 testHomepageIdentity();
 testHomepageHeading();
 testHomepageStructuredData();
@@ -379,9 +502,14 @@ testSitemapIntegrity();
 testRobotsTxt();
 testMatchPagesCarryDynamicSeo();
 testMatchReportArticleNode();
+testEveryPageFitsSeoBudget();
+testNoOrphanRootPages();
+testAnchorsAreDescriptive();
+testNoZeroMeasurementClaims();
 
 console.log(
   "SEO surface tests passed (ana sayfa kimliği + H1 + yapılandırılmış veri, temel etiketler, " +
   "canonical doğruluğu, benzersizlik, arama niyeti sayfaları, iç bağlantı, site haritası bütünlüğü, " +
-  "robots, maç detay başlık bütçesi ve eksik-olay koruması)."
+  "robots, maç detay başlık bütçesi, site geneli başlık/açıklama bütçesi, öksüz sayfa yasağı, " +
+  "açıklayıcı bağlantı metni ve sıfır-ölçüm koruması)."
 );

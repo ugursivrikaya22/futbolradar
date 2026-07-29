@@ -364,7 +364,9 @@ function aiRatingSection(report) {
       <div><span>${escapeHtml(block.away.team)}</span><strong>${escapeHtml(block.away.score)}</strong></div>
     </div>
     <p>${escapeHtml(block.basis)}</p>
-    <div class="tag-row"><span class="tag soft">Veri güveni %${escapeHtml(block.confidence)}</span><span class="tag soft">100 üzerinden</span></div>
+    <div class="tag-row">${Number(block.confidence) > 0
+      ? `<span class="tag soft">Veri güveni %${escapeHtml(block.confidence)}</span>`
+      : '<span class="tag soft">Veri güveni bekleniyor</span>'}<span class="tag soft">100 üzerinden</span></div>
   </article>`;
 }
 

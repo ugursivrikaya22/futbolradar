@@ -6,6 +6,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { displayLeagueName } = require("../services/leagueIdentity.js");
+const { fitDescription, fitTitle } = require("../services/seoText.js");
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
@@ -238,8 +239,24 @@ function playerMiniCard(player) {
 
 function pageHtml(pair) {
   const { left, right, slug, reasons } = pair;
-  const title = `${left.name} vs ${right.name} | Oyuncu Karşılaştırması | FutbolRadar`;
-  const description = `${left.name} ve ${right.name} oyuncu karşılaştırması; AI rating, form, gol tehdidi, yaratıcılık, pres gücü, piyasa değeri ve transfer bilgileriyle FutbolRadar'da analiz edilir.`;
+  // 1254 karşılaştırma sayfasının başlığı sabit kalıptan üretiliyordu ve
+  // uzun adlarda 70 karakteri aşıp arama sonucunda kesiliyordu. Bütçe
+  // uygulanıyor: iki oyuncu adı her durumda korunur, ek bilgi sığdıkça eklenir.
+  const pairLabel = `${left.name} vs ${right.name}`;
+  const title = fitTitle([
+    `${pairLabel} | Oyuncu Karşılaştırması | FutbolRadar`,
+    `${pairLabel} | Oyuncu Karşılaştırması`,
+    `${pairLabel} | FutbolRadar`,
+    pairLabel
+  ]);
+  // Ayrıntı adayları uzundan kısaya: uzun oyuncu adlarında bile açıklama
+  // tek cümlelik künyeye düşmesin.
+  const description = fitDescription(`${left.name} ve ${right.name} oyuncu karşılaştırması.`, [
+    "AI rating, form, gol tehdidi, yaratıcılık, pres gücü, piyasa değeri ve transfer bilgileri yan yana.",
+    "AI rating, form, gol tehdidi, yaratıcılık, pres gücü ve piyasa değeri yan yana.",
+    "AI rating, form, gol tehdidi ve piyasa değeri yan yana.",
+    "AI rating, form ve piyasa değeri yan yana."
+  ]);
   const canonical = `${domain}/karsilastirma/${slug}.html`;
   const insights = comparisonInsight(left, right);
 

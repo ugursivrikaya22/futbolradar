@@ -86,7 +86,7 @@ const commonLinks = [
 const pages = [
   {
     file: "transfer-sezonu-ne-zaman-bitiyor.html",
-    title: "Transfer Sezonu Ne Zaman Bitiyor? 2026-2027 Tarihleri | FutbolRadar",
+    title: "Transfer Sezonu Ne Zaman Bitiyor? 2026-2027 | FutbolRadar",
     description: "2026-2027 yaz transfer dönemi ne zaman bitiyor? Trendyol Süper Lig yaz ve ara transfer tarihlerini, kalan süreyi ve transfer takibini inceleyin.",
     h1: "Transfer Sezonu Ne Zaman Bitiyor?",
     lead: "2026-2027 sezonunda Türkiye'deki yaz transfer ve tescil dönemi 4 Eylül 2026'da sona erecek. Tarihleri, takip akışını ve doğrulanmış hareketleri tek ekranda oku.",
@@ -105,7 +105,7 @@ const pages = [
   },
   {
     file: "super-lig-transferleri-2026-2027.html",
-    title: "2026-2027 Trendyol Süper Lig Transferleri: Gelenler ve Gidenler | FutbolRadar",
+    title: "2026-2027 Trendyol Süper Lig Transferleri | Gelenler ve Gidenler",
     description: "2026-2027 Trendyol Süper Lig transferlerini takım, oyuncu, bonservis, geliş ve ayrılık yönüyle FutbolRadar Transfer Radar ekranında inceleyin.",
     h1: "2026-2027 Trendyol Süper Lig Transferleri",
     lead: "Takım bazlı gelen ve giden oyuncuları; güncel takım, transfer tipi, açıklanan bedel ve oyuncu profili bağlantılarıyla takip et.",
@@ -143,7 +143,7 @@ const pages = [
   },
   {
     file: "uefa-ulke-puani-siralamasi.html",
-    title: "UEFA Ülke Puanı Sıralaması ve Türkiye'nin Puanı | FutbolRadar",
+    title: "UEFA Ülke Puanı Sıralaması | Türkiye'nin Puanı",
     description: "UEFA ülke puanı sıralaması nasıl hesaplanır? Türkiye'nin Avrupa maçlarından kazandığı puanların etkisini ve temsilci performansını inceleyin.",
     h1: "UEFA Ülke Puanı Sıralaması",
     lead: "Türkiye'nin Avrupa kupalarındaki konumu, temsilcilerin maç sonuçları ve sezon katsayılarının birleşimiyle değişir. FutbolRadar puanın arkasındaki maç etkisini açıklar.",
@@ -179,7 +179,7 @@ const pages = [
   },
   {
     file: "fenerbahce-avrupa-maclari.html",
-    title: "Fenerbahçe Avrupa Maçları 2026-2027: Fikstür ve Sonuçlar | FutbolRadar",
+    title: "Fenerbahçe Avrupa Maçları 2026-2027 | Fikstür | FutbolRadar",
     description: "Fenerbahçe Avrupa maçları, Şampiyonlar Ligi eleme fikstürü, sonuçlar, maç analizleri ve oyuncu performans bağlantıları FutbolRadar'da.",
     h1: "Fenerbahçe Avrupa Maçları",
     lead: "Fenerbahçe'nin 2026-2027 Avrupa yolculuğunu; fikstür, skor, tur durumu, maç analizi ve oyuncu radar bağlantılarıyla tek sayfada takip et.",
@@ -198,7 +198,7 @@ const pages = [
   },
   {
     file: "galatasaray-transfer-radar.html",
-    title: "Galatasaray Transfer Radar 2026-2027 | Gelenler ve Gidenler | FutbolRadar",
+    title: "Galatasaray Transferleri 2026-2027 | Gelenler ve Gidenler",
     description: "Galatasaray transfer radarında 2026-2027 gelen ve giden oyuncuları, kadro ihtiyaçlarını, piyasa bilgilerini ve oyuncu etkisini inceleyin.",
     h1: "Galatasaray Transfer Radar",
     lead: "Galatasaray'ın doğrulanmış transfer hareketlerini güncel takım, eski kulüp, transfer tipi ve kadro etkisi ayrımıyla oku.",
@@ -217,7 +217,7 @@ const pages = [
   },
   {
     file: "fenerbahce-transfer-radar.html",
-    title: "Fenerbahçe Transfer Radar 2026-2027 | Gelenler ve Gidenler | FutbolRadar",
+    title: "Fenerbahçe Transferleri 2026-2027 | Gelenler ve Gidenler",
     description: "Fenerbahçe transfer radarında 2026-2027 gelen ve giden oyuncuları, kadro ihtiyaçlarını, piyasa bilgilerini ve oyuncu etkisini inceleyin.",
     h1: "Fenerbahçe Transfer Radar",
     lead: "Fenerbahçe'nin doğrulanmış transfer hareketlerini; oyuncu rolü, açıklanan bedel, güncel takım ve Avrupa kadrosuna olası etkisiyle takip et.",

@@ -2298,7 +2298,9 @@
       chips +
       '<div class="fixture-card-foot fixture-card-foot-divider">' +
       fixtureSignalHtml(match) +
-      '<a class="fixture-card-link" href="' + escapeHtml(matchDetailHref(match)) + '">Detay</a>' +
+      '<a class="fixture-card-link" href="' + escapeHtml(matchDetailHref(match)) +
+      '" aria-label="' + escapeHtml(displayValue(match.homeTeam) + " - " + displayValue(match.awayTeam) + " maç analizi") +
+      '">Maç analizi</a>' +
       "</div>" +
       "</article>"
     );
@@ -2349,7 +2351,7 @@
       side(awayTeam, awayName) +
       "</div>" +
       '<div class="home-match-command-actions featured-match-actions">' +
-      '<a class="button primary" href="' + escapeHtml(matchDetailHref(match)) + '">Analizi İncele</a>' +
+      '<a class="button primary" href="' + escapeHtml(matchDetailHref(match)) + '">Maç analizini aç</a>' +
       '<a class="button secondary" href="./canli-skor.html">Canlı skor</a>' +
       "</div>" +
       "</div>"

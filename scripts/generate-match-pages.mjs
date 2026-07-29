@@ -22,6 +22,7 @@ const { publishableStatements, logExcludedStatements, statementsForMatch } =
   require("../services/matchStatementService.js");
 const { statementsSection, statementsSchema } = require("../services/matchStatementsView.js");
 const { displayLeagueName, SUPER_LIG_DISPLAY_NAME } = require("../services/leagueIdentity.js");
+const { fitDescription, fitTitle } = require("../services/seoText.js");
 
 /**
  * Fikstür kaydı ile oynanmış maç kaydı ayrı kimlikler taşıyor
@@ -126,18 +127,45 @@ function squadHtml(name) {
   return `<dl class="match-squad-metrics"><div><dt>Eksik oyuncu</dt><dd>${escapeHtml(absenceCount)}</dd></div><div><dt>Kadro kaybı</dt><dd>${impact == null ? "Veri yok" : escapeHtml(`${impact}/100`)}</dd></div><div><dt>Önemli eksik</dt><dd>${escapeHtml(row.keyAbsence || "Yok")}</dd></div></dl>`;
 }
 
+/**
+ * "%0 KAPSAM" BİR ÖLÇÜM İDDİASIDIR.
+ *
+ * Kart, hiç bileşen ölçülemediğinde bile "Sınırlı güven · Kapsam %0"
+ * yazıyordu. Okuyucu bunu "ölçtük, sıfır çıktı" diye okur; oysa doğrusu
+ * "bu eşleşme için henüz doğrulanmış kayıt yok". 306 maç sayfasının 96'sı
+ * bu durumdaydı ve puan alanı zaten dürüstçe "Veri bekleniyor" diyordu —
+ * yani aynı kartın iki satırı birbiriyle çelişiyordu.
+ *
+ * Ölçüm varsa oran yazılır, yoksa hiçbir rakam basılmaz.
+ */
+function coverageLine(radar) {
+  const coverage = Number(radar.coverage);
+  if (!Number.isFinite(coverage) || coverage <= 0) {
+    return '<b class="match-confidence-awaiting">Veri bekleniyor</b>';
+  }
+  return `<b>Kapsam %${escapeHtml(radar.coverage)}</b>`;
+}
+
 function radarCard(name, radar, team) {
-  const score = radar.score === null ? "Veri bekleniyor" : `${radar.score}/100`;
+  const measured = radar.score !== null;
+  const score = measured ? `${radar.score}/100` : "Veri bekleniyor";
   const positives = radar.positives.length ? radar.positives : ["Yeterli olumlu bileşen oluşmadı"];
   const negatives = radar.negatives.length ? radar.negatives : ["Belirgin olumsuz bileşen yok"];
-  return `<article class="match-radar-team-card">
-    <div class="match-radar-team-head"><span>${escapeHtml(name)}</span><strong>${escapeHtml(score)}</strong></div>
-    <div class="match-confidence"><span>${escapeHtml(confidenceLabel(radar.confidence))}</span><b>Kapsam %${escapeHtml(radar.coverage)}</b></div>
-    <div class="match-radar-bars">${radar.components.filter((item) => item.value !== null).map((item) => `<div><span>${escapeHtml(item.label)}</span><i style="--value:${escapeHtml(item.value)}%"><b></b></i><em>${escapeHtml(Math.round(item.value))}</em></div>`).join("") || '<p class="muted-copy">Puan için yeterli bileşen yok.</p>'}</div>
-    <details class="radar-explanation" data-radar-explanation>
+
+  // Ölçüm yoksa "Neden bu puan?" açılır bölümü de basılmıyor: ortada bir
+  // puan yokken gerekçe listelemek, olmayan bir hesabı açıklamak olurdu.
+  const explanation = measured
+    ? `<details class="radar-explanation" data-radar-explanation>
       <summary>Neden bu puan?</summary>
       <div class="radar-explanation-grid"><div><span>Güçlü etkenler</span><ul>${positives.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div><div><span>Dikkat noktaları</span><ul>${negatives.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div></div>
-    </details>
+    </details>`
+    : `<p class="muted-copy">${escapeHtml(`${name} için doğrulanmış form ve kadro kaydı oluştuğunda radar puanı burada hesaplanacak.`)}</p>`;
+
+  return `<article class="match-radar-team-card">
+    <div class="match-radar-team-head"><span>${escapeHtml(name)}</span><strong>${escapeHtml(score)}</strong></div>
+    <div class="match-confidence"><span>${escapeHtml(confidenceLabel(radar.confidence))}</span>${coverageLine(radar)}</div>
+    <div class="match-radar-bars">${radar.components.filter((item) => item.value !== null).map((item) => `<div><span>${escapeHtml(item.label)}</span><i style="--value:${escapeHtml(item.value)}%"><b></b></i><em>${escapeHtml(Math.round(item.value))}</em></div>`).join("") || '<p class="muted-copy">Puan için yeterli bileşen yok.</p>'}</div>
+    ${explanation}
   </article>`;
 }
 
@@ -172,9 +200,6 @@ function relatedComparison(match) {
  * izin vermiyor; bu durumda arama hacmi olan lig adı kalır, marka düşer.
  * Marka zaten alan adında ve arama sonucunda site adı olarak görünüyor.
  */
-const TITLE_BUDGET = 65;
-const DESCRIPTION_BUDGET = 158;
-
 function buildTitle(heading, match) {
   const round = String(match.roundLabel || "").trim();
   const league = displayLeagueName(match.league, SUPER_LIG_DISPLAY_NAME);
@@ -187,7 +212,7 @@ function buildTitle(heading, match) {
     heading
   ].filter(Boolean);
 
-  return candidates.find((candidate) => candidate.length <= TITLE_BUDGET) || heading;
+  return fitTitle([...candidates, heading]);
 }
 
 /**
@@ -197,12 +222,7 @@ function buildTitle(heading, match) {
  */
 function buildDescription(heading, match, dateLabel) {
   const lead = `${heading}: ${[match.roundLabel, dateLabel].filter(Boolean).join(", ")}.`;
-  const detail = " İki takımın form durumu, radar puanı, kadro eksikleri ve kilit oyuncuları.";
-  const full = `${lead}${detail}`;
-
-  if (full.length <= DESCRIPTION_BUDGET) return full;
-  if (lead.length <= DESCRIPTION_BUDGET) return lead;
-  return `${lead.slice(0, DESCRIPTION_BUDGET - 3).replace(/[\s,;:]+$/, "")}...`;
+  return fitDescription(lead, "İki takımın form durumu, radar puanı, kadro eksikleri ve kilit oyuncuları.");
 }
 
 /**

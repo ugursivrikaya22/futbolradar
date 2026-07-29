@@ -183,7 +183,7 @@ export function newsTicker(options = {}) {
             <div class="news-ticker-group" aria-hidden="true">${track}</div>
           </div>
         </div>
-        <a class="news-ticker-all" href="${base}haberler.html">Tümü</a>
+        <a class="news-ticker-all" href="${base}haberler.html">Tüm futbol haberleri</a>
       </div>
     </div>`;
 }

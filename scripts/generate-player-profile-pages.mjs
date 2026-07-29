@@ -6,6 +6,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { getPlayers } = require("../services/playerService.js");
+const { fitTitle } = require("../services/seoText.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
@@ -205,9 +206,20 @@ function pageHtml(player) {
     : "Kulüp bilgisi doğrulanmadı";
   const seoTeam = view.verified ? playerSeoTeamLabel(player) : "Oyuncu Profili";
   const age = player.computedAge || player.age || "Yaş yakında";
-  const title = view.verified
-    ? `${player.name} Oyuncu Profili | ${seoTeam} | FutbolRadar`
-    : `${player.name} Oyuncu Profili | FutbolRadar`;
+  // Uzun oyuncu ve kulüp adlarında başlık 72 karaktere çıkıp arama
+  // sonucunda kesiliyordu. Oyuncu adı ve "Oyuncu Profili" her durumda
+  // korunur; kulüp ve marka sığdıkça eklenir.
+  const title = fitTitle(view.verified
+    ? [
+      `${player.name} Oyuncu Profili | ${seoTeam} | FutbolRadar`,
+      `${player.name} Oyuncu Profili | ${seoTeam}`,
+      `${player.name} Oyuncu Profili | FutbolRadar`,
+      `${player.name} Oyuncu Profili`
+    ]
+    : [
+      `${player.name} Oyuncu Profili | FutbolRadar`,
+      `${player.name} Oyuncu Profili`
+    ]);
   const description = playerDescription(player, view);
   const lead = view.verified
     ? (playerNeedsTransferReview(player) ? description : player.summary || description)

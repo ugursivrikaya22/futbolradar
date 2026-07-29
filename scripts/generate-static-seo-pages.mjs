@@ -66,7 +66,7 @@ const seoPages = [
    */
   {
     file: "gunluk-mac-analizleri.html",
-    title: "Günlük Maç Analizleri | Bugünün Maçları ve Canlı Skor | FutbolRadar",
+    title: "Günlük Maç Analizleri | Bugünün Maçları | FutbolRadar",
     description: "Günlük maç analizleri; bugünün maçları, canlı skorlar, başlama saatleri ve her karşılaşmanın form odaklı radar okuması tek sayfada.",
     h1: "Günlük Maç Analizleri",
     lead: "Bugün oynanan ve oynanacak karşılaşmaları saat, durum, skor ve radar sinyaliyle birlikte oku.",
@@ -110,13 +110,35 @@ const seoPages = [
     lead: "Momentum skoru, son form ve takım dengesinden üretilen FutbolRadar sinyalidir.",
     cards: ["Momentum puanı", "Trend yönü", "Hücum ve savunma"]
   },
+  /**
+   * BOŞ VİTRİN GERÇEK VERİYE BAĞLANDI.
+   *
+   * Bu sayfa üç "özellik" kartı gösteriyordu — "AI tahmin", "Gol potansiyeli",
+   * "Sürpriz riski" — ve arkalarında HİÇBİR ölçüm yoktu. Ölçüm gibi görünen
+   * ama hiçbir şey ölçmeyen bir alan, sitenin tamamında uygulanan
+   * "doğrulanmamış iddia yayımlanmaz" kuralının en görünür ihlaliydi.
+   *
+   * Kartların yerine günün gerçek maç listesi geldi: aynı kompakt kart, aynı
+   * radar sinyali, aynı "veri bekleniyor" davranışı. Sayfa artık adının
+   * vaat ettiği şeyi gösteriyor.
+   *
+   * URL korundu: "bugünkü maç tahminleri" aranan bir ifade ve sayfanın
+   * mevcut bağlantıları kırılmamalı. Değişen, sayfanın ne İDDİA ettiği.
+   */
   {
     file: "bugunku-mac-tahminleri.html",
-    title: "Bugünkü Maç Tahminleri | Momentum ve AI Analiz | FutbolRadar",
-    description: "Bugünkü maç tahminleri sayfası; maçları AI tahmin, gol potansiyeli, risk ve momentum farkıyla analiz eder.",
+    title: "Bugünkü Maç Tahminleri | Form ve Radar Sinyali | FutbolRadar",
+    description: "Bugünkü maçlar; başlama saati, canlı durum, skor ve her karşılaşma için form odaklı radar sinyali. Sonuç vaadi değil, doğrulanmış veriden okuma.",
     h1: "Bugünkü Maç Tahminleri",
-    lead: "Maçları yalnızca skora göre değil; form, tempo, risk ve gol beklentisine göre değerlendir.",
-    cards: ["AI tahmin", "Gol potansiyeli", "Sürpriz riski"]
+    lead: "Günün karşılaşmalarını form, momentum ve gol eğilimi sinyalleriyle oku. Radar sinyali bir sonuç vaadi değil, eldeki doğrulanmış kaydın okunuşudur.",
+    slot: "prediction-matches",
+    slotTitle: "Bugünün maçları ve radar sinyalleri",
+    slotLead: "Canlı maçlar önce, ardından başlama saatine göre günün programı. Ölçü yoksa sinyal \"Veri yetersiz\" der; oran ya da yüzde iddiası üretilmez.",
+    related: [
+      ["./gunluk-mac-analizleri.html", "Günlük analiz", "Her maçın form odaklı okuması"],
+      ["./super-lig-form-durumu.html", "Takım formu", "18 takımın son maç serisi"],
+      ["./mac-merkezi.html", "Maç raporları", "Tamamlanan maçların veri analizi"]
+    ]
   },
   {
     file: "super-lig-oyuncu-radari.html",
@@ -241,7 +263,7 @@ const playerSeoPages = [
   {
     file: "yukselen-oyuncular.html",
     landing: "yukselen-oyuncular",
-    title: "Yukselen Oyuncular | Form Artisi ve Scouting Sinyali | FutbolRadar",
+    title: "Yükselen Oyuncular | Form Artışı ve Trend | FutbolRadar",
     description: "Yükselen oyuncular listesi; form değişimi, trend yönü, dakika artışı ve AI radar sinyalleriyle hazırlanır.",
     h1: "Yükselen Oyuncular",
     lead: "Formu yükselen oyuncuları trend, dakika, potansiyel ve radar metrikleriyle takip et.",
@@ -389,10 +411,15 @@ function landingExtraLinksHtml(page) {
     return "";
   }
 
+  // Bu blok aynı zamanda ÖKSÜZ SAYFALARI besliyor: "En iyi defanslar" ve
+  // "Trendyol Süper Lig oyuncu radarı" sayfaları hiçbir yerden bağlantı
+  // almıyordu ve yalnızca site haritası üzerinden taranabiliyorlardı.
   return `<section class="trend-link-grid" aria-label="Oyuncu karşılaştırma bağlantıları">
         <a href="./oyuncu-karsilastirmalari.html"><span>Karşılaştırma</span><strong>Oyuncu karşılaştırmaları</strong><p>Öne çıkan oyuncuları radar ve özellik farklarıyla yan yana incele.</p></a>
         <a href="./oyuncu-radari.html?filter=yukselen"><span>Form</span><strong>Yükselen oyuncular</strong><p>Form değişimi pozitif olan oyuncuları keşfet.</p></a>
         <a href="./genc-yetenekler.html"><span>Potansiyel</span><strong>Genç yetenekler</strong><p>Yaş, potansiyel ve piyasa değeri odağında filtrele.</p></a>
+        <a href="./super-lig-oyuncu-radari.html"><span>Lig radarı</span><strong>Trendyol Süper Lig oyuncu radarı</strong><p>Lig genelindeki oyuncuları rating, mevki ve form sinyaliyle tara.</p></a>
+        <a href="./en-iyi-defanslar.html"><span>Savunma</span><strong>En iyi defanslar</strong><p>Savunma etkisi, disiplin ve süreklilik sinyalleriyle stoper ve bekler.</p></a>
       </section>`;
 }
 

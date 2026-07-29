@@ -280,7 +280,7 @@ function staticFixtureCard(match, meta) {
   return `<article class="fixture-card${isLive ? " is-live" : ""}${isFinal ? " is-final" : ""}" data-card="fixture" data-match="${escapeHtml(match.id)}">
     <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(match.league)}${escapeHtml(displayLeagueName(match.league, "Maç programı"))}</span><span class="fixture-card-state ${stateClass}">${isLive ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(stateLabel)}</span></div>
     <div class="fixture-card-rows">${staticFixtureRow(match.homeTeam, homeScore, awayScore)}${staticFixtureRow(match.awayTeam, awayScore, homeScore)}</div>
-    <div class="fixture-card-foot fixture-card-foot-divider">${staticSignalHtml(match)}<a class="fixture-card-link" href="${escapeHtml(matchDetailLink(match))}">Detay</a></div>
+    <div class="fixture-card-foot fixture-card-foot-divider">${staticSignalHtml(match)}<a class="fixture-card-link" href="${escapeHtml(matchDetailLink(match))}" aria-label="${escapeHtml(`${match.homeTeam} - ${match.awayTeam} maç analizi`)}">Maç analizi</a></div>
   </article>`;
 }
 
@@ -344,7 +344,7 @@ function staticFeaturedFixture() {
         <div class="featured-fixture-score"><b>${escapeHtml(headline)}</b><span>${escapeHtml(stateLabel)}</span></div>
         ${side(featured.awayTeam)}
       </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Analizi İncele</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Canlı skorları aç</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
     </div>${quickStats}`;
 }
 
@@ -958,6 +958,12 @@ writePage("haberler.html", {
  */
 writePage("gunluk-mac-analizleri.html", {
   "daily-analysis-matches": matchProgramState("today")
+}, fixtureFreshness);
+
+// "Bugünkü maç tahminleri" sayfası boş vitrin kartları yerine günün gerçek
+// maç listesini gösteriyor; aynı kart, aynı radar sinyali, aynı boş durum.
+writePage("bugunku-mac-tahminleri.html", {
+  "prediction-matches": matchProgramState("today")
 }, fixtureFreshness);
 
 /**
