@@ -16281,3 +16281,183 @@ body,
 :root[data-theme="dark"] .section-updated.is-stale {
   color: #fbbf24;
 }
+
+/* ============================================================================
+   GÜNÜN RADAR MAÇI — kompakt kart
+
+   Eski kart (`match-intelligence-card`) skor alanı taşımıyordu: yalnızca takım
+   adları basılıyor, altına "veri bekleniyor" paragrafı ve her koşulda bir
+   "Derin Analiz" düğmesi konuyordu. Kart hem bozuk görünüyor hem de yer
+   kaplıyordu.
+
+   Yeni kart üç satır: lig+durum, takımlar+başlık, (varsa) sinyal+bağlantı.
+   Başlık her zaman dolu — canlı skor, biten skor ya da başlama saati.
+   ========================================================================== */
+.home-radar-matches .grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.radar-match-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(var(--border-rgb, 15, 23, 42), 0.1);
+  border-radius: var(--radius-md, 12px);
+  background: var(--surface, #fff);
+}
+
+.radar-match-card.is-live {
+  border-color: rgba(220, 38, 38, 0.28);
+}
+
+.radar-match-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.radar-match-league {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.radar-match-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.radar-match-state.is-live {
+  color: #dc2626;
+}
+
+.radar-match-state.is-final {
+  color: var(--muted);
+}
+
+.radar-match-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.radar-match-teams {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.radar-match-teams > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.radar-match-teams img,
+.radar-match-teams .team-logo,
+.radar-match-teams .fixture-row-fallback {
+  flex: none;
+  width: 16px;
+  height: 16px;
+}
+
+/* Kartın tek zorunlu değeri. Boş kalması mümkün değil: matchHeadline null
+   dönerse kart hiç çizilmiyor. */
+.radar-match-headline {
+  flex: none;
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+}
+
+.radar-match-headline.is-live {
+  color: #dc2626;
+}
+
+.radar-match-headline.is-time {
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+/* Alt şerit yalnızca içinde bir şey varsa çizilir. */
+.radar-match-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  padding-top: 7px;
+  border-top: 1px solid rgba(var(--border-rgb, 15, 23, 42), 0.08);
+}
+
+.radar-match-foot .fixture-signal {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.radar-match-link {
+  flex: none;
+  color: var(--green);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.radar-match-link:hover,
+.radar-match-link:focus-visible {
+  text-decoration: underline;
+}
+
+@media (max-width: 1180px) {
+  .home-radar-matches .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 960px) {
+  .home-radar-matches .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .home-radar-matches .grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .radar-match-card {
+    background: rgba(var(--surface-rgb), 0.6);
+  }
+}
+
+:root[data-theme="dark"] .radar-match-card {
+  background: rgba(var(--surface-rgb), 0.6);
+}

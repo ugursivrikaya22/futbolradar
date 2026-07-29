@@ -413,7 +413,11 @@ function testFallbackDoesNotRewriteWhileOutageContinues() {
  * transferden hangisinin daha çok aranacağı hesaba katılmıyordu.
  */
 function testBigClubsRankFirstWithinCategory() {
-  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(new Date());
+  // HERMETİK: değerlendirme anı sabit. Fikstür saatleri gerçek saate göre
+  // yorumlanırsa test gün içinde kendiliğinden bozulur — 18:00'i geçtikten
+  // sonra skorsuz maç görüntüleme kapısından geçemez ve ön koşul düşer.
+  const now = new Date("2026-07-29T12:00:00+03:00");
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(now);
   const feed = withTempData(
     (files) => {
       emptyAllSources(files);
@@ -426,7 +430,7 @@ function testBigClubsRankFirstWithinCategory() {
       ]), "utf8");
       if (fs.existsSync(STATE_FILE)) fs.unlinkSync(STATE_FILE);
     },
-    () => buildTickerFeed()
+    () => buildTickerFeed({ now })
   );
 
   const todayItems = feed.items.filter((item) => item.kind === "today");

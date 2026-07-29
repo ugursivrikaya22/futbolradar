@@ -384,12 +384,147 @@ function logHiddenMatches(scope, hidden) {
   }
 }
 
+/**
+ * KART BAŞLIĞI — "boş skor alanı yok" kuralı.
+ * ---------------------------------------------------------------------------
+ * Kapı bir maçın gösterilip gösterilmeyeceğini söylüyordu ama NE gösterileceğini
+ * söylemiyordu. Ana sayfadaki "Günün Radar Maçı" kartları bu yüzden yalnızca
+ * takım adlarını basıyordu: ne skor ne saat. Kart bozuk görünüyordu, çünkü bir
+ * maç kartının varlık sebebi olan sayı hiç yoktu.
+ *
+ * Bu iki soru aynı kararın iki yüzü ve bu yüzden aynı dosyada yaşıyorlar:
+ *
+ *   GÖSTERİLEBİLİR  <=>  BASILACAK BİR BAŞLIK VAR
+ *
+ * Sol taraf doğruyken sağ tarafın boş çıkması mümkün değil — kapı zaten
+ * skoru olmayan başlamış maçı ve saati okunmayan kaydı eliyor. Test bu
+ * eşdeğerliği doğruluyor; biri değişirse diğeri de değişmek zorunda.
+ */
+
+/** Başlık türleri. Kart hangisini bastığını bilmeli: renk ve etiket buna bağlı. */
+const HEADLINE_KIND = Object.freeze({
+  LIVE: "live",
+  FINAL: "final",
+  TIME: "time"
+});
+
+/**
+ * Görüntüleme sırası: canlı, sonra biten, sonra başlayacak.
+ *
+ * Okuyucu ana sayfaya "şu anda ne oluyor?" diye gelir. Şu an oynanan maç her
+ * zaman ilk sırada; biten maç sonucu merak edildiği için ikinci; başlayacak
+ * maç henüz bir şey söylemediği için üçüncü.
+ */
+const DISPLAY_RANK = Object.freeze({ live: 0, finished: 1, upcoming: 2 });
+
+/** Sıralanamayan kayıt en sona düşer — ama zaten kapıdan geçemez. */
+const HIDDEN_RANK = 99;
+
+/** Başlama saati, İstanbul saatiyle "19:00". */
+function kickoffTimeLabel(match) {
+  const kickoff = new Date((match && match.kickoff) || "");
+  if (Number.isNaN(kickoff.getTime())) return null;
+
+  return new Intl.DateTimeFormat("tr-TR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Europe/Istanbul"
+  }).format(kickoff);
+}
+
+/**
+ * Kartta basılacak tek zorunlu değer: canlı skor, biten skor ya da saat.
+ *
+ * @returns {{kind: string, text: string, label: string, phase: string}|null}
+ *   Maç gösterilemiyorsa null — o zaman kart hiç çizilmez.
+ */
+function matchHeadline(match, currentTime) {
+  const verdict = evaluateDisplayable(match, currentTime);
+  if (!verdict.displayable) return null;
+
+  // Skor varsa her zaman skor kazanır: durum etiketi geç gelmiş olsa bile
+  // (phase "unknown-status") okuyucunun aradığı sayı odur.
+  if (hasNumericScore(match)) {
+    const score = match.score || {};
+    const live = verdict.phase === "live";
+    return {
+      kind: live ? HEADLINE_KIND.LIVE : HEADLINE_KIND.FINAL,
+      text: `${score.home}-${score.away}`,
+      label: live ? "Canlı skor" : "Maç sonucu",
+      phase: verdict.phase
+    };
+  }
+
+  // Başlamamış maç: saat tek başına tam bilgidir.
+  const time = kickoffTimeLabel(match);
+  if (time) {
+    return { kind: HEADLINE_KIND.TIME, text: time, label: "Başlama saati", phase: verdict.phase };
+  }
+
+  // Buraya ulaşılmamalı: kapı okunamayan başlama saatini zaten eliyor.
+  // Yine de sessiz kalmıyoruz — boş bir başlık basmaktansa kartı düşürürüz.
+  return null;
+}
+
+/** Maçın görüntüleme sırası. Gösterilemeyen maç HIDDEN_RANK alır. */
+function displayRank(match, currentTime) {
+  const verdict = evaluateDisplayable(match, currentTime);
+  if (!verdict.displayable) return HIDDEN_RANK;
+  if (verdict.phase === "upcoming") return DISPLAY_RANK.upcoming;
+  if (verdict.phase === "live") return DISPLAY_RANK.live;
+  return DISPLAY_RANK.finished;
+}
+
+/**
+ * Gösterilebilir maçları istenen sırada döndürür ve gizlenenleri raporlar.
+ *
+ * Sıra: canlı (skorlu) → biten (skorlu) → başlayacak (saatli). Aynı evredeki
+ * maçlar arasında `priorityOf` belirler — verilmezse başlama saati.
+ *
+ * @returns {{matches: Array, hidden: Array}}
+ */
+function orderForDisplay(matches, options = {}) {
+  const currentTime = options.currentTime instanceof Date ? options.currentTime : new Date();
+  const priorityOf = typeof options.priorityOf === "function" ? options.priorityOf : null;
+  const { matches: visible, hidden } = filterDisplayable(matches, currentTime);
+
+  const ordered = visible
+    .map((match) => ({ match, rank: displayRank(match, currentTime) }))
+    .sort((left, right) => {
+      if (left.rank !== right.rank) return left.rank - right.rank;
+
+      if (priorityOf) {
+        const byPriority = priorityOf(right.match) - priorityOf(left.match);
+        if (byPriority !== 0) return byPriority;
+      }
+
+      const leftKickoff = Date.parse((left.match && left.match.kickoff) || "");
+      const rightKickoff = Date.parse((right.match && right.match.kickoff) || "");
+      if (Number.isNaN(leftKickoff) || Number.isNaN(rightKickoff)) return 0;
+
+      // Başlayacak maçlarda en yakın saat önce; oynanmışlarda en yeni önce.
+      return left.rank === DISPLAY_RANK.upcoming
+        ? leftKickoff - rightKickoff
+        : rightKickoff - leftKickoff;
+    })
+    .map((entry) => entry.match);
+
+  return { matches: ordered, hidden };
+}
+
 module.exports = {
   APPROVED_SOURCES,
+  DISPLAY_RANK,
+  HEADLINE_KIND,
+  HIDDEN_RANK,
+  displayRank,
   evaluateDisplayable,
   filterDisplayable,
   isDisplayableMatch,
+  kickoffTimeLabel,
   logHiddenMatches,
+  matchHeadline,
+  orderForDisplay,
   REQUIRED_FIELDS,
   IDENTITY_FIELDS,
   PUBLISH_STATE,

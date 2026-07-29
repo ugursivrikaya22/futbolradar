@@ -2408,6 +2408,22 @@
    *   orta   takımlar + skor (kartın en büyük ögesi)
    *   alt    radar sinyali + detay bağlantısı, tek satırda
    */
+  /**
+   * Kartın alt bağlantısı, GİTTİĞİ YERE göre adlandırılır.
+   *
+   * Etiket her kartta "Maç analizi" diyordu ama bağlantı çoğu maçta analiz
+   * sayfasına değil maç detayına gidiyordu. Yanlış etiketli bir düğme, ölü bir
+   * düğme kadar zarar verir: okuyucu tıklar, beklediğini bulamaz.
+   */
+  function fixtureCardLinkHtml(match) {
+    var analysisReady = Boolean(match && String(match.analysisPage || "").trim());
+    var label = analysisReady ? "Maç analizi" : "Maç detayı";
+
+    return '<a class="fixture-card-link" href="' + escapeHtml(matchDetailHref(match)) +
+      '" aria-label="' + escapeHtml(displayValue(match.homeTeam) + " - " + displayValue(match.awayTeam) + " " + label.toLocaleLowerCase("tr-TR")) +
+      '">' + label + "</a>";
+  }
+
   function renderFixtureCard(match) {
     var meta = fixtureStatusMeta(match);
     var chips = fixtureLiveChipsHtml(match);
@@ -2427,9 +2443,7 @@
       chips +
       '<div class="fixture-card-foot fixture-card-foot-divider">' +
       fixtureSignalHtml(match) +
-      '<a class="fixture-card-link" href="' + escapeHtml(matchDetailHref(match)) +
-      '" aria-label="' + escapeHtml(displayValue(match.homeTeam) + " - " + displayValue(match.awayTeam) + " maç analizi") +
-      '">Maç analizi</a>' +
+      fixtureCardLinkHtml(match) +
       "</div>" +
       "</article>"
     );
@@ -2639,7 +2653,9 @@
           "</div>"
         : "") +
       '<div class="tag-row">' + coverageStatusChipHtml(analysis) + "</div>" +
-      (analysis ? analysisDeepLinkHtml(match) : "");
+      // Kayıt VAR olması yetmez, ÖLÇÜLMÜŞ olması gerekir: kapsamı %40'ın
+      // altındaki bir kayıt sayfada zaten "veri yetersiz" diyor.
+      analysisDeepLinkHtml(match, analysis);
 
     // Ek rozetler kartın alt satırının ÜSTÜNE giriyor. Bağlantı noktası
     // `renderFixtureCard` gövdesindeki alt satırın açılış etiketi; kart
@@ -2878,6 +2894,135 @@
     return visible;
   }
 
+  // KART BAŞLIĞI — "boş skor alanı yok" kuralı.
+  // services/matchEligibility.js matchHeadline ile aynı: gösterilebilir her
+  // maçın basılacak bir değeri vardır — canlı skor, biten skor ya da saat.
+  // Kapı geçilip başlık boş çıkamaz; bu eşdeğerlik testle korunuyor.
+  var HEADLINE_KIND = { LIVE: "live", FINAL: "final", TIME: "time" };
+  var DISPLAY_RANK = { live: 0, finished: 1, upcoming: 2 };
+  var HIDDEN_RANK = 99;
+
+  function kickoffTimeLabel(match) {
+    var kickoff = new Date((match && match.kickoff) || "");
+    if (isNaN(kickoff.getTime())) return null;
+    try {
+      return new Intl.DateTimeFormat("tr-TR", {
+        hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul"
+      }).format(kickoff);
+    } catch (error) {
+      // Intl zaman dilimi desteklemiyorsa kaydın kendi saat alanına düşülür;
+      // uydurma saat basılmaz.
+      return (match && match.time) ? String(match.time) : null;
+    }
+  }
+
+  function matchHeadline(match, currentTime) {
+    var verdict = evaluateDisplayableMatch(match, currentTime);
+    if (!verdict.displayable) return null;
+
+    if (matchHasNumericScore(match)) {
+      var score = match.score || {};
+      var live = verdict.phase === "live";
+      return {
+        kind: live ? HEADLINE_KIND.LIVE : HEADLINE_KIND.FINAL,
+        text: score.home + "-" + score.away,
+        label: live ? "Canlı skor" : "Maç sonucu",
+        phase: verdict.phase
+      };
+    }
+
+    var time = kickoffTimeLabel(match);
+    if (time) {
+      return { kind: HEADLINE_KIND.TIME, text: time, label: "Başlama saati", phase: verdict.phase };
+    }
+    return null;
+  }
+
+  function matchDisplayRank(match, currentTime) {
+    var verdict = evaluateDisplayableMatch(match, currentTime);
+    if (!verdict.displayable) return HIDDEN_RANK;
+    if (verdict.phase === "upcoming") return DISPLAY_RANK.upcoming;
+    if (verdict.phase === "live") return DISPLAY_RANK.live;
+    return DISPLAY_RANK.finished;
+  }
+
+  // Sıra: canlı (skorlu) → biten (skorlu) → başlayacak (saatli). Aynı evrede
+  // ilgi puanı belirler, sonra saat.
+  function orderMatchesForDisplay(matches, scope, currentTime) {
+    var visible = filterDisplayableMatches(matches, scope);
+
+    return visible.map(function (match) {
+      return { match: match, rank: matchDisplayRank(match, currentTime) };
+    }).sort(function (left, right) {
+      if (left.rank !== right.rank) return left.rank - right.rank;
+
+      var byPriority = matchPriority(right.match).score - matchPriority(left.match).score;
+      if (byPriority !== 0) return byPriority;
+
+      var leftKickoff = Date.parse((left.match && left.match.kickoff) || "");
+      var rightKickoff = Date.parse((right.match && right.match.kickoff) || "");
+      if (isNaN(leftKickoff) || isNaN(rightKickoff)) return 0;
+
+      return left.rank === DISPLAY_RANK.upcoming
+        ? leftKickoff - rightKickoff
+        : rightKickoff - leftKickoff;
+    }).map(function (entry) { return entry.match; });
+  }
+
+  // DERİN ANALİZ HAZIR MI? (services/matchAnalysisAvailability.js ile aynı kural)
+  //
+  // Bir düğme bir sözdür; arkasında içerik yoksa basılmaz. Bar projenin kendi
+  // kapsam eşiği: services/analysisCoverageService.js LOW_COVERAGE_THRESHOLD.
+  var ANALYSIS_MIN_COVERAGE = 40;
+  var ANALYSIS_UNREADY_STATUS = ["pending", "unavailable", "failed", "queued", "draft"];
+
+  function evaluateAnalysisRecord(record) {
+    if (!record) return { ready: false, reason: "analiz kaydı yok" };
+
+    var status = String(record.analysisStatus || "").toLowerCase();
+    if (ANALYSIS_UNREADY_STATUS.indexOf(status) !== -1) {
+      return { ready: false, reason: 'analiz durumu "' + status + '"' };
+    }
+
+    var coverage = record.coverage && Number(record.coverage.overallCoverage);
+    if (!isFinite(coverage) || record.coverage == null) {
+      return { ready: false, reason: "kapsam ölçülmemiş" };
+    }
+    if (coverage < ANALYSIS_MIN_COVERAGE) {
+      return {
+        ready: false,
+        reason: "kapsam yetersiz: %" + Math.round(coverage) + " (en az %" + ANALYSIS_MIN_COVERAGE + ")"
+      };
+    }
+    return { ready: true, reason: "" };
+  }
+
+  function matchAnalysisTarget(match, analysis) {
+    var record = match || {};
+
+    if (String(record.analysisPage || "").trim()) {
+      return {
+        ready: true,
+        href: "./" + String(record.analysisPage).replace(/^\.\//, ""),
+        label: "Derin analiz",
+        reason: ""
+      };
+    }
+
+    var verdict = evaluateAnalysisRecord(analysis);
+    if (verdict.ready) {
+      var id = record.fixtureId || record.id || record.providerId || "";
+      return {
+        ready: true,
+        href: "./mac-detay.html?id=" + encodeURIComponent(id),
+        label: "Derin analiz",
+        reason: ""
+      };
+    }
+
+    return { ready: false, href: null, label: "", reason: verdict.reason };
+  }
+
   function renderTodayMatchesPreview(matches) {
     if (!Array.isArray(matches) || !matches.length) {
       return "";
@@ -2987,6 +3132,18 @@
       return "";
     }
 
+    // Öne çıkan kart bir analiz iddiasıdır. Kaydın var olması yetmez;
+    // ölçülmemiş bir kayıttan "Günün Radar Maçı" üretmek, boş bir analizi
+    // günün en iyisi diye sunmak olurdu.
+    var readiness = evaluateAnalysisRecord(entry.analysis);
+    if (!readiness.ready) {
+      if (window.console && console.warn) {
+        console.warn("[futbolradar:analysis-unready] scope=featured-analysis id=" +
+          ((entry.match && entry.match.id) || "?") + ' reason="' + readiness.reason + '"');
+      }
+      return "";
+    }
+
     var match = entry.match;
     var prediction = entry.analysis.prediction;
 
@@ -2996,7 +3153,7 @@
       '<span class="muted-copy">' + escapeHtml(subtitle) + "</span>" +
       '<div class="tag-row"><span class="tag soft">' + simpleBalanceLabel(prediction, match.homeTeam, match.awayTeam) + "</span>" +
       goalPotentialBadgeHtml(prediction && prediction.goalPotential) + "</div>" +
-      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Derin Analiz</a>' +
+      analysisDeepLinkHtml(match, entry.analysis) +
       "</article>";
   }
 
@@ -3111,55 +3268,77 @@
     });
   }
 
-  function todayRadarMatchCardHtml(match, analysesIndex) {
+  /**
+   * KOMPAKT RADAR MAÇ KARTI.
+   *
+   * Eski kart üç şeyi yanlış yapıyordu:
+   *   1. Skor alanı HİÇ YOKTU — yalnızca takım adları basılıyordu. Bir maç
+   *      kartının varlık sebebi olan sayı eksikti; kart bozuk görünüyordu.
+   *   2. Analiz olmasa bile "Derin Analiz" düğmesi basılıyordu. Kart bir satır
+   *      üstte "veri bekleniyor" derken hemen altında analiz sözü veriyordu.
+   *   3. Analiz yokken yerine bir paragraf konuyordu; bölüm gereksiz yer
+   *      kaplıyor, kartlar birbirinden uzaklaşıyordu.
+   *
+   * Yeni kart üç satır: lig+durum, takımlar+başlık, (varsa) sinyal+bağlantı.
+   * Başlık ASLA boş olamaz — matchHeadline null dönerse kart hiç çizilmez.
+   */
+  function todayRadarMatchCardHtml(match, analysesIndex, currentTime) {
+    var headline = matchHeadline(match, currentTime);
+    if (!headline) return "";
+
     var analysis = findAnalysisForMatch(analysesIndex, match);
-    var prediction = analysis && analysis.prediction;
-    var live = isLiveMatch(match);
-    var statusLabel = live ? (statusTr(match.status) + " · " + matchTimeLabel(match)) : matchTimeLabel(match) + " · " + statusTr(match.status);
+    var target = matchAnalysisTarget(match, analysis);
+    var meta = fixtureStatusMeta(match);
     var homeTeam = matchTeam(match, "home");
     var awayTeam = matchTeam(match, "away");
 
-    return '<article class="match-intelligence-card" data-card="today-radar-match" data-match="' + escapeHtml(match.id) + '">' +
-      '<div class="card-head"><span class="card-kicker">' + escapeHtml(leagueLabel(match.league)) + '</span><span>' +
-      (live ? '<i class="live-pulse" aria-hidden="true"></i> ' : "") + escapeHtml(statusLabel) + "</span></div>" +
-      '<h3 class="live-score-team-name-inline">' + teamLogoHtml(homeTeam) + escapeHtml(getTeamName(homeTeam)) + " - " + teamLogoHtml(awayTeam) + escapeHtml(getTeamName(awayTeam)) + "</h3>" +
-      (analysis
-        ? '<div class="tag-row"><span class="tag soft">' + simpleBalanceLabel(prediction, match.homeTeam, match.awayTeam) + "</span>" +
-          goalPotentialBadgeHtml(prediction && prediction.goalPotential) + "</div>"
-        : '<p class="muted-copy">Analiz için doğrulanmış veri bekleniyor.</p>') +
-      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Derin Analiz</a>' +
-      "</article>";
+    // Alt şerit yalnızca içinde bir şey varsa çizilir: boş bir kap da boşluktur.
+    var signal = fixtureSignalHtml(match);
+    var link = target.ready
+      ? '<a class="radar-match-link" href="' + escapeHtml(target.href) + '" aria-label="' +
+        escapeHtml(displayValue(match.homeTeam) + " - " + displayValue(match.awayTeam) + " " + target.label.toLocaleLowerCase("tr-TR")) +
+        '">' + escapeHtml(target.label) + "</a>"
+      : "";
+    var foot = (signal || link)
+      ? '<div class="radar-match-foot">' + signal + link + "</div>"
+      : "";
+
+    return (
+      '<article class="radar-match-card' + (meta.live ? " is-live" : "") + (meta.finished ? " is-final" : "") +
+      '" data-card="today-radar-match" data-match="' + escapeHtml(match.id) + '">' +
+      '<div class="radar-match-top">' +
+      '<span class="radar-match-league">' + escapeHtml(leagueLabel(match.league, "Maç programı")) + "</span>" +
+      '<span class="radar-match-state ' + meta.className + '">' +
+      (meta.live ? '<i class="live-pulse" aria-hidden="true"></i>' : "") + escapeHtml(meta.label) +
+      "</span></div>" +
+      '<div class="radar-match-body">' +
+      '<div class="radar-match-teams">' +
+      "<span>" + teamLogoHtml(homeTeam) + escapeHtml(getTeamName(homeTeam) || match.homeTeam) + "</span>" +
+      "<span>" + teamLogoHtml(awayTeam) + escapeHtml(getTeamName(awayTeam) || match.awayTeam) + "</span>" +
+      "</div>" +
+      '<b class="radar-match-headline is-' + escapeHtml(headline.kind) + '" title="' + escapeHtml(headline.label) + '">' +
+      escapeHtml(headline.text) + "</b>" +
+      "</div>" +
+      foot +
+      "</article>"
+    );
   }
 
-  function todayRadarMatchesHtml(matches, analysesIndex) {
+  function todayRadarMatchesHtml(matches, analysesIndex, currentTime) {
     var today = todayInIstanbul();
     var todaysMatches = (Array.isArray(matches) ? matches : []).filter(function (match) {
       return matchDateValue(match) === today;
     });
 
-    if (!todaysMatches.length) {
-      return "";
-    }
+    if (!todaysMatches.length) return "";
 
-    var sorted = todaysMatches.slice().sort(function (left, right) {
-      var leftAnalysis = findAnalysisForMatch(analysesIndex, left);
-      var rightAnalysis = findAnalysisForMatch(analysesIndex, right);
-      var leftScore = leftAnalysis ? (leftAnalysis.dataConfidence || 0) : -1;
-      var rightScore = rightAnalysis ? (rightAnalysis.dataConfidence || 0) : -1;
-      if (isLiveMatch(left) !== isLiveMatch(right)) {
-        return isLiveMatch(left) ? -1 : 1;
-      }
-      if (leftScore !== rightScore) {
-        return rightScore - leftScore;
-      }
-      return String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
-    }).slice(0, 6);
+    // Kapı önce, sıra sonra: canlı (skorlu) → biten (skorlu) → başlayacak.
+    // Skorsuz başlamış maç buraya hiç ulaşmaz ve gerekçesiyle günlüğe yazılır.
+    var ordered = orderMatchesForDisplay(todaysMatches, "home-today-radar", currentTime).slice(0, 6);
 
-    var cards = sorted.map(function (match) {
-      return todayRadarMatchCardHtml(match, analysesIndex);
+    return ordered.map(function (match) {
+      return todayRadarMatchCardHtml(match, analysesIndex, currentTime);
     }).join("");
-
-    return cards;
   }
 
   function initTodayRadarMatches() {
@@ -8678,8 +8857,11 @@
       "</div>";
   }
 
-  function analysisDeepLinkHtml(match) {
-    return '<a class="detail-link ghost" href="' + escapeHtml(matchDetailHref(match)) + '">Derin Analiz</a>';
+  function analysisDeepLinkHtml(match, analysis) {
+    var target = matchAnalysisTarget(match, analysis);
+    if (!target.ready) return "";
+    return '<a class="detail-link ghost" href="' + escapeHtml(target.href) + '">' +
+      escapeHtml(target.label) + "</a>";
   }
 
   function deepAnalysisListHtml(items) {

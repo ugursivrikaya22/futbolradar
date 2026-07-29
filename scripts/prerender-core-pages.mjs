@@ -57,6 +57,21 @@ function matchDetailLink(match) {
   return `./canli-skor.html#${match && match.id ? match.id : ""}`;
 }
 
+/**
+ * Kartın alt bağlantısı GİTTİĞİ YERE göre adlandırılır.
+ *
+ * Etiket her kartta "Maç analizi" diyordu; oysa raporu ve analiz sayfası
+ * olmayan maçlarda bağlantı canlı skor sayfasına gidiyordu. Yanlış etiketli
+ * bir düğme, ölü bir düğme kadar zarar verir — okuyucu tıklar, beklediğini
+ * bulamaz. Etiket bu yüzden hedeften türetiliyor, elle yazılmıyor.
+ */
+function matchDetailLinkLabel(match) {
+  const reportPath = matchReportPath(match);
+  if (reportPath && fs.existsSync(reportPath)) return "Maç raporu";
+  if (match && match.analysisPage) return "Maç analizi";
+  return "Canlı skor";
+}
+
 const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
 const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
 
@@ -315,7 +330,7 @@ function staticFixtureCard(match, meta) {
     <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(match.league)}${escapeHtml(displayLeagueName(match.league, "Maç programı"))}</span><span class="fixture-card-state ${stateClass}">${isLive ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(stateLabel)}</span></div>
     ${priorityReasonHtml(match)}
     <div class="fixture-card-rows">${staticFixtureRow(match.homeTeam, homeScore, awayScore)}${staticFixtureRow(match.awayTeam, awayScore, homeScore)}</div>
-    <div class="fixture-card-foot fixture-card-foot-divider">${staticSignalHtml(match)}<a class="fixture-card-link" href="${escapeHtml(matchDetailLink(match))}" aria-label="${escapeHtml(`${match.homeTeam} - ${match.awayTeam} maç analizi`)}">Maç analizi</a></div>
+    <div class="fixture-card-foot fixture-card-foot-divider">${staticSignalHtml(match)}<a class="fixture-card-link" href="${escapeHtml(matchDetailLink(match))}" aria-label="${escapeHtml(`${match.homeTeam} - ${match.awayTeam} ${matchDetailLinkLabel(match).toLocaleLowerCase("tr-TR")}`)}">${escapeHtml(matchDetailLinkLabel(match))}</a></div>
   </article>`;
 }
 
