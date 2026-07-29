@@ -32,6 +32,9 @@ const { filterDisplayable, logHiddenMatches } = require("../services/matchEligib
 const { rankMatches } = require("../services/matchPriorityService.js");
 const { publishableTransfers, logExcludedTransfers, sourceTypeLabel } = require("../services/transferService.js");
 const { publishableStatements, logExcludedStatements } = require("../services/matchStatementService.js");
+const { trustBadges, transferTrustLabels, statementTrustLabels } = require("../services/trustLabels.js");
+const { isStale, lastUpdatedNote, newestTimestamp, relativeAgeLabel } = require("../services/contentFreshness.js");
+const { rankAgenda } = require("../services/agendaService.js");
 
 /**
  * Maçın kalıcı sayfası. Var olmayan bir adrese bağlanmıyoruz: rapor
@@ -490,12 +493,39 @@ function bulletinEmptyCard(title, text) {
   </article>`;
 }
 
+/**
+ * Bölüm başlığındaki "son güncelleme" satırı.
+ *
+ * Bölüm, içindeki EN TAZE kayıt kadar günceldir. Kayıt yoksa satır hiç
+ * basılmaz — boş bir bölümün üstünde tarih göstermek, orada bir şey olduğunu
+ * ima eder.
+ */
+function sectionUpdatedNote(stamps, kind) {
+  const newest = newestTimestamp(stamps);
+  if (!newest) return "";
+
+  // Bölümün EN TAZE kaydı bile gündem penceresini aştıysa bunu söylemek
+  // gerekir. Aksi hâlde on gün önceki bir liste "bugünün gündemi" gibi
+  // okunur — veri doğru olduğu hâlde sayfa yanıltıcı olur.
+  const stale = isStale(newest, kind);
+  const note = stale ? `${lastUpdatedNote(newest)} · Yeni kayıt bekleniyor` : lastUpdatedNote(newest);
+
+  return `<p class="section-updated${stale ? " is-stale" : ""}" data-card="section-updated">${escapeHtml(note)}</p>`;
+}
+
 /** Bültenin transfer akışı: en yeni doğrulanmış hareketler. */
 function bulletinTransfers(limit) {
   const { transfers, excluded } = publishableTransfers();
   logExcludedTransfers("bulletin", excluded);
 
-  const selected = transfers.slice(0, limit || 5);
+  // GÜNDEM SIRASI: aynı bant içinde tazelik belirleyici. Bir hafta geçmiş
+  // transfer listede kalır ama daha yeni hareketlerin altına iner.
+  const ranked = rankAgenda(
+    transfers.map((transfer) => ({ type: "transfer", at: transfer.date, record: transfer })),
+    { now: new Date() }
+  ).map((entry) => entry.record);
+
+  const selected = ranked.slice(0, limit || 5);
   if (!selected.length) {
     return bulletinEmptyCard(
       "Doğrulanmış transfer bekleniyor",
@@ -503,26 +533,36 @@ function bulletinTransfers(limit) {
     );
   }
 
-  return selected.map((transfer) => {
-    const typeLabel = sourceTypeLabel(transfer.sourceType);
-    const badge = typeLabel
-      ? `<span class="source-badge is-${escapeHtml(String(transfer.sourceType).toLowerCase())}">${escapeHtml(typeLabel)}</span>`
-      : "";
-    return `<article class="bulletin-row" data-card="transfer-record">
-      <div class="bulletin-row-head"><span class="bulletin-row-date">${escapeHtml(formatFreshnessDate(transfer.date) || transfer.date)}</span>${badge}</div>
+  return sectionUpdatedNote(selected.map((transfer) => transfer.date), "transfer") +
+    selected.map((transfer) => `<article class="bulletin-row" data-card="transfer-record">
+      <div class="bulletin-row-head"><span class="bulletin-row-date">${escapeHtml(formatFreshnessDate(transfer.date) || transfer.date)}</span>${trustBadges(transferTrustLabels(transfer))}</div>
       <strong>${escapeHtml(transfer.playerName)}</strong>
       <p class="bulletin-row-route">${escapeHtml(transfer.fromTeam)} → ${escapeHtml(transfer.toTeam)} · ${escapeHtml(transfer.type)}</p>
+      <!-- Yaş, sıralamanın dayandığı alanla AYNI alandan okunur (transfer
+           tarihi). Doğrulama zamanından okunsaydı liste sırasıyla çelişirdi:
+           "7 gün önce" satırının üstünde "4 gün önce" satırı görünürdü. -->
+      <p class="bulletin-row-age">${escapeHtml(relativeAgeLabel(transfer.date))}</p>
       <a class="detail-link" href="${escapeHtml(transfer.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(transfer.sourceName)} kaynağını aç</a>
-    </article>`;
-  }).join("");
+    </article>`).join("");
 }
 
-/** Bültenin maç sonu açıklamaları akışı. */
+/**
+ * Bültenin maç sonu açıklamaları akışı.
+ *
+ * Her satır kimin, hangi kulüpten, hangi maçtan sonra konuştuğunu ve kaydın
+ * kaynağını taşır. Alıntı kısaltılmaz — kısaltılmış bir söz, söylenmemiş bir
+ * cümleye dönüşebilir.
+ */
 function bulletinStatements(limit) {
   const { statements, excluded } = publishableStatements();
   logExcludedStatements("bulletin", excluded);
 
-  const selected = statements.slice(0, limit || 5);
+  const ranked = rankAgenda(
+    statements.map((statement) => ({ type: "statement", at: statement.publishedAt, record: statement })),
+    { now: new Date() }
+  ).map((entry) => entry.record);
+
+  const selected = ranked.slice(0, limit || 5);
   if (!selected.length) {
     return bulletinEmptyCard(
       "Doğrulanmış açıklama bekleniyor",
@@ -530,12 +570,17 @@ function bulletinStatements(limit) {
     );
   }
 
-  return selected.map((statement) => `<article class="bulletin-row" data-card="match-statement">
-    <div class="bulletin-row-head"><span class="bulletin-row-date">${escapeHtml(formatFreshnessDate(statement.publishedAt) || "")}</span><span class="source-badge is-official">${escapeHtml(statement.roleLabel)}</span></div>
-    <strong>${escapeHtml(statement.speaker)}</strong>
-    <blockquote class="bulletin-row-quote"><p>${escapeHtml(statement.quote)}</p></blockquote>
-    <a class="detail-link" href="${escapeHtml(statement.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(statement.sourceName)} kaynağını aç</a>
-  </article>`).join("");
+  return sectionUpdatedNote(selected.map((statement) => statement.publishedAt), "statement") +
+    selected.map((statement) => {
+      const context = [statement.team, statement.matchLabel].filter(Boolean).join(" · ");
+      return `<article class="bulletin-row" data-card="match-statement">
+      <div class="bulletin-row-head"><span class="bulletin-row-date">${escapeHtml(formatFreshnessDate(statement.publishedAt) || "")}</span>${trustBadges(statementTrustLabels(statement))}</div>
+      <strong>${escapeHtml(statement.speaker)}</strong>
+      <p class="bulletin-row-route">${escapeHtml(statement.roleLabel)}${context ? ` · ${escapeHtml(context)}` : ""}</p>
+      <blockquote class="bulletin-row-quote"><p>${escapeHtml(statement.quote)}</p></blockquote>
+      <a class="detail-link" href="${escapeHtml(statement.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(statement.sourceName)} kaynağını aç</a>
+    </article>`;
+    }).join("");
 }
 
 function matchProgramState(variant) {
@@ -776,16 +821,32 @@ function fixtureRounds() {
  */
 const TRANSFER_RADAR_SINCE = "2026-07-01";
 
+/**
+ * Ana sayfadaki transfer şeridi.
+ *
+ * Kayıtlar HAM DOSYADAN DEĞİL, yayın kapısından geçer: transfer-radari.html
+ * ile ana sayfa aynı listeyi göstermeli, aksi hâlde kapının elediği bir kayıt
+ * ana sayfada durabilirdi. Sıra services/agendaService.js ile aynı; kart
+ * kaynağını ve ne zaman doğrulandığını taşır.
+ */
 function transferWatch() {
-  const selected = transfers
-    .filter((transfer) => String(transfer && transfer.date || "").slice(0, 10) >= TRANSFER_RADAR_SINCE)
-    .sort((left, right) => String(right.date || "").localeCompare(String(left.date || ""))).slice(0, 5);
+  const { transfers: publishable, excluded } = publishableTransfers();
+  logExcludedTransfers("home-transfer-watch", excluded);
+
+  const inWindow = publishable
+    .filter((transfer) => String(transfer && transfer.date || "").slice(0, 10) >= TRANSFER_RADAR_SINCE);
+
+  const selected = rankAgenda(
+    inWindow.map((transfer) => ({ type: "transfer", at: transfer.date, record: transfer })),
+    { now: new Date() }
+  ).map((entry) => entry.record).slice(0, 5);
+
   if (!selected.length) {
     return '<article class="data-empty"><strong>Kesinleşen transfer bulunamadı</strong><span>Yeni kulüp açıklamaları geldiğinde bu alan güncellenir.</span></article>';
   }
 
   const leader = selected[0];
-  return `<article class="home-transfer-feature" data-card="home-transfer-watch"><div class="home-transfer-player"><div><span>Son kesinleşen transfer</span><h3>${escapeHtml(leader.playerName)}</h3><p>${escapeHtml(leader.type || "Transfer")} · ${escapeHtml(leader.date)}</p></div></div><div class="home-transfer-route"><b>${escapeHtml(leader.fromTeam)}</b><em>→</em><b>${escapeHtml(leader.toTeam)}</b></div><div class="home-transfer-actions"><a class="detail-link" href="${escapeHtml(leader.sourceUrl)}" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./transfer-radari.html">Tüm transferler</a></div></article><aside class="home-transfer-side"><div class="home-transfer-list">${selected.slice(1).map((transfer) => `<a class="home-transfer-row" href="./transfer-radari.html?team=${encodeURIComponent(transfer.toTeam || "")}"><span>${escapeHtml(transfer.date)}</span><strong>${escapeHtml(transfer.playerName)}</strong><b>${escapeHtml(transfer.toTeam)}</b></a>`).join("")}</div></aside>`;
+  return `<article class="home-transfer-feature" data-card="home-transfer-watch"><div class="home-transfer-player"><div><span>Son kesinleşen transfer</span><h3>${escapeHtml(leader.playerName)}</h3><p>${escapeHtml(leader.type || "Transfer")} · ${escapeHtml(leader.date)}</p></div></div><div class="home-transfer-route"><b>${escapeHtml(leader.fromTeam)}</b><em>→</em><b>${escapeHtml(leader.toTeam)}</b></div>${trustBadges(transferTrustLabels(leader))}<p class="home-transfer-updated">${escapeHtml(lastUpdatedNote(leader.lastVerifiedAt || leader.date))}</p><div class="home-transfer-actions"><a class="detail-link" href="${escapeHtml(leader.sourceUrl)}" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./transfer-radari.html">Tüm transferler</a></div></article><aside class="home-transfer-side"><div class="home-transfer-list">${selected.slice(1).map((transfer) => `<a class="home-transfer-row" href="./transfer-radari.html?team=${encodeURIComponent(transfer.toTeam || "")}"><span>${escapeHtml(transfer.date)}</span><strong>${escapeHtml(transfer.playerName)}</strong><b>${escapeHtml(transfer.toTeam)}</b></a>`).join("")}</div></aside>`;
 }
 
 function replaceSlot(html, target, content) {

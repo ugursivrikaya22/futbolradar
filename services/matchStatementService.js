@@ -32,8 +32,26 @@ const path = require("node:path");
 /** Yalnızca bu durum yayımlanır. */
 const PUBLISHABLE_STATUS = "verified";
 
-/** Kaynağı ya da kimliği eksik söz yayımlanmaz. */
-const REQUIRED_FIELDS = ["matchId", "speaker", "role", "team", "quote", "publishedAt", "sourceName", "url"];
+/**
+ * Kaynağı ya da kimliği eksik söz yayımlanmaz.
+ *
+ * matchLabel ayrı bir alan: matchId bir anahtardır ("gs-fb-2026-08-16"),
+ * okuyucuya gösterilecek metin değil. Anahtarı biçimlendirip maç adı gibi
+ * sunmak, veriyi tahmin etmektir — takım adları anahtarda kısaltılmış
+ * olabilir ve yanlış okunur.
+ */
+const REQUIRED_FIELDS = ["matchId", "matchLabel", "speaker", "role", "team", "quote",
+  "publishedAt", "sourceName", "sourceType", "url"];
+
+/**
+ * Kaynak türü. Transferlerdeki söz dağarcığıyla aynı (services/trustLabels.js);
+ * "kim söyledi" sorusu her bölümde aynı sözcüklerle cevaplanmalı.
+ *
+ * "rumour" burada BİLEREK yok: doğrulanmamış bir söz alıntılanamaz. Bir
+ * transfer söylentisi "iddia" olarak anlatılabilir, ama birinin ağzına
+ * doğrulanmamış bir cümle koymak başka bir şeydir.
+ */
+const SOURCE_TYPES = Object.freeze(["official", "media"]);
 
 /** Tanınan roller. Bilinmeyen rol, etiketi uydurmak yerine reddedilir. */
 const ROLES = Object.freeze({
@@ -85,6 +103,10 @@ function evaluateStatement(statement) {
 
   if (!ROLES[String(statement.role).toLowerCase()]) {
     return { publishable: false, reason: `tanınmayan rol: ${statement.role}` };
+  }
+
+  if (!SOURCE_TYPES.includes(String(statement.sourceType).toLowerCase())) {
+    return { publishable: false, reason: `tanınmayan kaynak türü: ${statement.sourceType}` };
   }
 
   if (!isTraceableUrl(statement.url)) {
@@ -146,6 +168,7 @@ function publishableStatements(options = {}) {
     .map((statement) => ({
       id: String(statement.id || statementIdentity(statement)),
       matchId: String(statement.matchId).trim(),
+      matchLabel: String(statement.matchLabel).trim(),
       speaker: String(statement.speaker).trim(),
       role: String(statement.role).toLowerCase(),
       roleLabel: roleLabel(statement.role),
@@ -154,6 +177,7 @@ function publishableStatements(options = {}) {
       context: String(statement.context || "").trim(),
       publishedAt: statement.publishedAt,
       sourceName: String(statement.sourceName).trim(),
+      sourceType: String(statement.sourceType).toLowerCase(),
       url: statement.url
     }))
     .sort((left, right) => Date.parse(right.publishedAt) - Date.parse(left.publishedAt));
@@ -184,6 +208,7 @@ module.exports = {
   PUBLISHABLE_STATUS,
   REQUIRED_FIELDS,
   ROLES,
+  SOURCE_TYPES,
   evaluateStatement,
   logExcludedStatements,
   publishableStatements,

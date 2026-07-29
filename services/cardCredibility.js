@@ -99,13 +99,47 @@ function evaluatePlayerCard(player, options = {}) {
 }
 
 /**
- * Trend bölümü ek olarak GÜNCEL KULÜP şartı arar: ligde oynamayan bir
- * oyuncuyu "trend" diye göstermek, kartın en yanıltıcı hâli. Serbest
- * oyuncu ve yurt dışına giden oyuncular bu yüzden eleniyordu.
+ * TREND İDDİASININ DAYANDIĞI ÖLÇÜMLER.
+ *
+ * "Trend oyuncu" bir sıralama iddiasıdır: bu oyuncu şu an öne çıkıyor.
+ * İddianın dayanağı bir ölçümdür — derecelendirme, oynadığı dakika, gol
+ * katkısı ya da piyasa değeri. Yaş bunlardan biri değildir; yaş kimlik
+ * bilgisidir, hiçbir yükseliş iddiası taşımaz.
+ */
+const TREND_METRIC_FIELDS = ["overallRating", "aiRating", "rating", "formRating",
+  "minutesPlayed", "minutes", "appearances", "goals", "assists",
+  "marketValueEur", "marketValue"];
+
+/** Kartta GERÇEKTEN basılabilecek bir trend ölçümü var mı? */
+function hasPublishableTrendMetric(player) {
+  return TREND_METRIC_FIELDS.some((key) => {
+    const value = player && player[key];
+    if (value === null || value === undefined || String(value).trim() === "") return false;
+    return restrictedFieldIsPublishable(player, key);
+  });
+}
+
+/**
+ * Trend bölümü ek olarak GÜNCEL KULÜP ve GERÇEK ÖLÇÜM şartı arar.
+ *
+ * Kulüp şartı: ligde oynamayan bir oyuncuyu "trend" diye göstermek, kartın
+ * en yanıltıcı hâli. Serbest oyuncu ve yurt dışına giden oyuncular bu yüzden
+ * eleniyordu.
+ *
+ * Ölçüm şartı (2026-07 denetimi): kaynak kapısını geçen 502 kaydın HİÇBİRİNDE
+ * yayımlanabilir bir ölçüm yok — kadro senkronu derecelendirme, dakika ve
+ * istatistik göndermiyor. Kart yine de basılıyordu ve geriye tek bir alan
+ * kalıyordu: "Yaş 17". Ana sayfada üç altyapı kalecisi yaş etiketiyle
+ * "formda ve yükselişte" diye duruyordu. Kaydın kaynağının doğrulanmış
+ * olması, onu trend YAPMAZ; trend bir ölçümdür ve ölçüm yoksa kart çizilmez.
  */
 function evaluateTrendPlayerCard(player, options = {}) {
   const base = evaluatePlayerCard(player, options);
   const reasons = base.reasons.slice();
+
+  if (!hasPublishableTrendMetric(player)) {
+    reasons.push("yayımlanabilir trend ölçümü yok (yalnızca kimlik alanları var)");
+  }
 
   const team = String((player && (player.currentTeam || player.team)) || "").trim();
   const leagueTeams = Array.isArray(options.leagueTeams) ? options.leagueTeams : null;
@@ -325,6 +359,8 @@ module.exports = {
   restrictedFieldIsPublishable,
   ratingIsVerified,
   statsAreVerified,
+  hasPublishableTrendMetric,
+  TREND_METRIC_FIELDS,
   MAX_VERIFICATION_AGE_DAYS,
   hasRealProviderId,
   evaluatePlayerCard,

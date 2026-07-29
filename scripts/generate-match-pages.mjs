@@ -21,6 +21,7 @@ const {
 const { publishableStatements, logExcludedStatements, statementsForMatch } =
   require("../services/matchStatementService.js");
 const { statementsSection, statementsSchema } = require("../services/matchStatementsView.js");
+const { trustBadges, matchTrustLabels } = require("../services/trustLabels.js");
 const { displayLeagueName, SUPER_LIG_DISPLAY_NAME } = require("../services/leagueIdentity.js");
 const { fitDescription, fitTitle } = require("../services/seoText.js");
 
@@ -293,6 +294,12 @@ function pageHtml(match) {
   const title = buildTitle(heading, match);
   const description = buildDescription(heading, match, dateLabel);
 
+  // GÜVEN ETİKETİ: başlama saati geçmiş ama skoru ulaşmamış maç listelerden
+  // gizleniyor (services/matchEligibility.js), ama sayfası duruyor. Okuyucu
+  // buraya bir bağlantıdan gelebilir; boş bir skor alanı yerine nedenini
+  // okumalı.
+  const trustRow = trustBadges(matchTrustLabels(match));
+
   // Maç sonu açıklamaları: oynanmış maç kaydı varsa ona bağlanır, yoksa
   // bölüm "doğrulanmış açıklama bekleniyor" der. Bölüm hiç gizlenmez.
   const playedId = playedMatchIdFor(match);
@@ -353,7 +360,7 @@ function pageHtml(match) {
     ${siteHeader({ base: "../" })}
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../super-lig-mac-analizleri.html">Trendyol Süper Lig Maç Analizleri</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
-      <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(displayLeagueName(match.league))}</span><h1>${escapeHtml(heading)}</h1><p class="lead">${escapeHtml(radar.lead)}</p></div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>
+      <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(displayLeagueName(match.league))}</span><h1>${escapeHtml(heading)}</h1><p class="lead">${escapeHtml(radar.lead)}</p>${trustRow}</div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>
       <section class="match-freshness-strip" aria-label="Fikstür durumu"><div><span>Fikstür durumu</span><b>${escapeHtml(freshnessLabel(freshness))}</b></div><div><span>Son kontrol</span><b>${escapeHtml(formatFreshnessDate(freshness.verifiedAt || freshness.fetchedAt))}</b></div><div><span>Güven</span><b>${escapeHtml(confidenceLabel(freshness.confidence))}</b></div></section>
       <section class="match-radar-board" aria-label="Maç öncesi radar puanları">${radarCard(match.homeTeam, radar.home, homeTeam)}${radarCard(match.awayTeam, radar.away, awayTeam)}</section>
       <p class="match-radar-disclaimer">${escapeHtml(radar.disclaimer)}</p>

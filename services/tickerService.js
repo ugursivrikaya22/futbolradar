@@ -53,6 +53,7 @@ const {
 const { publishableStatements, logExcludedStatements } = require("./matchStatementService.js");
 const { isDisplayableMatch } = require("./matchEligibility.js");
 const { clubPopularity } = require("./matchPriorityService.js");
+const { freshnessWeight } = require("./contentFreshness.js");
 
 /** "Son Dakika" rozetinin geçerli sayıldığı pencere. */
 const FRESH_WINDOW_HOURS = 36;
@@ -291,7 +292,7 @@ function statementItems({ now }) {
     .map((statement) => ({
       kind: "statement",
       label: statement.role === "player" ? "Futbolcu" : "Maç Sonu",
-      weight: clubWeight(statement.team),
+      weight: clubWeight(statement.team) * freshnessWeight(statement.publishedAt, "statement", now),
       text: `${statement.speaker}: "${statement.quote}"`,
       href: statement.url,
       at: statement.publishedAt
@@ -317,7 +318,11 @@ function transferItems({ now }) {
     .map((item) => ({
       kind: "transfer",
       label: "Transfer",
-      weight: clubWeight(item.toTeam, item.fromTeam),
+      // TAZELİK AĞIRLIĞI: kayıt doğru olmaya devam eder ama gündem olmaktan
+      // çıkar. Üç haftalık bir transfer, penceresi (7 gün) iki kez aşıldığı
+      // için ağırlığının dörtte birine iner ve daha yeni kayıtların altına
+      // düşer. Silinmez — sadece bandın başını tutmaz.
+      weight: clubWeight(item.toTeam, item.fromTeam) * freshnessWeight(item.date, "transfer", now),
       // Yön açıkça yazılıyor: "kadrosunda" ifadesi gidenler için yanıltıcıydı.
       text: `${item.playerName}, ${item.toTeam} kadrosuna katıldı (${item.type})`,
       href: item.sourceUrl,
@@ -337,7 +342,7 @@ function newsItems({ now }) {
     .map((item) => ({
       kind: "news",
       label: item.category || "Gündem",
-      weight: clubWeight(item.team),
+      weight: clubWeight(item.team) * freshnessWeight(item.publishedAt, "news", now),
       text: item.title,
       href: item.url,
       at: item.publishedAt
@@ -350,13 +355,18 @@ function newsItems({ now }) {
  * `priority` sırayı, `minSlots` kategorinin garantili yerini, `maxItems`
  * üst sınırını belirler. minSlots toplamı MAX_ITEMS'i aşmamalı — aksi hâlde
  * son kategoriler garantisini alamaz (composeTickerFeed bunu doğrular).
+ *
+ * SIRA services/agendaService.js TIER sırasıyla aynı: önce maçlar (canlı,
+ * bugün, sonuç), sonra kesinleşmiş transferler, sonra maç sonu açıklamaları,
+ * en sonda editoryal gündem. Bant ile bülten farklı sıra kullansaydı okuyucu
+ * aynı günün gündemini iki farklı düzende okurdu.
  */
 const SOURCES = Object.freeze([
   { id: "live", priority: 0, minSlots: 2, maxItems: 4, load: liveItems },
   { id: "today", priority: 1, minSlots: 2, maxItems: 4, load: todayItems },
   { id: "result", priority: 2, minSlots: 1, maxItems: 3, load: resultItems },
-  { id: "statement", priority: 3, minSlots: 1, maxItems: 3, load: statementItems },
-  { id: "transfer", priority: 4, minSlots: 1, maxItems: 2, load: transferItems },
+  { id: "transfer", priority: 3, minSlots: 1, maxItems: 2, load: transferItems },
+  { id: "statement", priority: 4, minSlots: 1, maxItems: 3, load: statementItems },
   { id: "news", priority: 5, minSlots: 1, maxItems: 2, load: newsItems }
 ]);
 

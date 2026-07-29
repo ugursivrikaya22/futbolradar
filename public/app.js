@@ -572,6 +572,86 @@
     return '<div class="tag-row">' + (Array.isArray(tags) ? tags.map(tagHtml).join("") : "") + "</div>";
   }
 
+  // GÜVEN ETİKETLERİ (services/trustLabels.js ile aynı söz dağarcığı)
+  //
+  // Okuyucunun "buna güvenebilir miyim?" sorusu her bölümde aynı yerden ve
+  // aynı sözcüklerle cevaplanmalı. Etiket kayıttan TÜRETİLİR, elle yazılmaz.
+  var TRUST_LABELS = {
+    verified: { text: "Doğrulandı", tone: "verified", title: "Kaynağı ve doğrulama zamanı olan kayıt" },
+    official: { text: "Resmî açıklama", tone: "official", title: "Kulüp, federasyon veya konfederasyon açıklaması" },
+    media: { text: "Basın kaynağı", tone: "media", title: "Güvenilir basın kaydı" },
+    rumour: { text: "Söylenti", tone: "rumour", title: "Doğrulanmamış iddia — kesinleşmiş kayıt değildir" },
+    incomplete: { text: "Veri eksik", tone: "warn", title: "Bu kartın bazı alanları henüz doğrulanmadı" },
+    noScore: { text: "Skor yok", tone: "warn", title: "Karşılaşmanın doğrulanmış skoru henüz ulaşmadı" },
+    transferConfirmed: { text: "Transfer kesinleşti", tone: "verified", title: "Kulüp açıklaması veya güvenilir kayıtla kesinleşmiş transfer" },
+    live: { text: "Canlı", tone: "live", title: "Karşılaşma sürüyor" },
+    awaiting: { text: "Veri bekleniyor", tone: "warn", title: "Kayıt henüz ulaşmadı" }
+  };
+
+  function trustBadgeHtml(key) {
+    var label = TRUST_LABELS[key];
+    if (!label) return "";
+    return '<span class="trust-badge is-' + escapeHtml(label.tone) + '" data-trust="' + escapeHtml(key) +
+      '" title="' + escapeHtml(label.title) + '">' + escapeHtml(label.text) + "</span>";
+  }
+
+  function trustBadgesHtml(keys) {
+    var list = (Array.isArray(keys) ? keys : []).filter(function (key) {
+      return Object.prototype.hasOwnProperty.call(TRUST_LABELS, key);
+    });
+    if (!list.length) return "";
+    return '<span class="trust-badges">' + list.map(trustBadgeHtml).join("") + "</span>";
+  }
+
+  function transferTrustLabels(record) {
+    var item = record || {};
+    var labels = [];
+    if (String(item.status || "").toLowerCase() === "confirmed") labels.push("transferConfirmed");
+
+    var sourceType = String(item.sourceType || "").toLowerCase();
+    if (sourceType === "official") labels.push("official");
+    else if (sourceType === "media") labels.push("media");
+    else if (sourceType === "rumour" || sourceType === "rumor") labels.push("rumour");
+
+    if (!String(item.sourceUrl || "").trim() || !String(item.lastVerifiedAt || "").trim()) {
+      labels.push("incomplete");
+    }
+    return labels;
+  }
+
+  function matchTrustLabels(match, currentTime) {
+    var record = match || {};
+    var score = record.score || {};
+    var hasScore = score.home !== null && score.home !== undefined &&
+      score.away !== null && score.away !== undefined;
+    var kickoff = record.kickoff ? new Date(record.kickoff) : null;
+    var reference = currentTime ? new Date(currentTime).getTime() : Date.now();
+    var started = kickoff && !isNaN(kickoff.getTime()) ? kickoff.getTime() <= reference : false;
+
+    var labels = [];
+    if (String(record.status || "").toUpperCase() === "LIVE" && hasScore) labels.push("live");
+    if (started && !hasScore) labels.push("noScore");
+    return labels;
+  }
+
+  // İÇERİK TAZELİĞİ (services/contentFreshness.js ile aynı ifadeler)
+  function relativeAgeLabel(value, currentTime) {
+    var stamp = Date.parse(value || "");
+    if (isNaN(stamp)) return "Tarih bekleniyor";
+
+    var age = ((currentTime ? new Date(currentTime).getTime() : Date.now()) - stamp) / 3600000;
+    if (age < 0) return "Bugün";
+    if (age < 1) return "Az önce";
+    if (age < 24) return Math.floor(age) + " saat önce";
+
+    var days = Math.floor(age / 24);
+    if (days === 1) return "Dün";
+    if (days < 30) return days + " gün önce";
+
+    var months = Math.floor(days / 30);
+    return months === 1 ? "1 ay önce" : months + " ay önce";
+  }
+
   // GÖRÜNÜR KART GÜVENİLİRLİĞİ (services/cardCredibility.js ile aynı kural)
   //
   // Denetim: 110 oyuncu kaydının hiçbiri barı geçmiyor — 102'sinde sağlayıcı
@@ -596,6 +676,54 @@
 
     var ratingStatus = String(player.ratingStatus || "").toLowerCase();
     if (ratingStatus === "stale") return false;
+
+    return true;
+  }
+
+  // TREND KARTI EK ÖLÇÜM ŞARTI (services/cardCredibility.js ile aynı kural)
+  //
+  // "Trend oyuncu" bir sıralama iddiasıdır. Kaynak kapısını geçen kayıtların
+  // hiçbirinde derecelendirme, dakika ya da istatistik yok — kadro senkronu
+  // bunları göndermiyor. Ölçüm olmadan basılan kartta geriye tek alan
+  // kalıyordu: "Yaş 17". Ölçüm yoksa oyuncu trend değildir, kart çizilmez.
+  var TREND_METRIC_FIELDS = ["overallRating", "aiRating", "rating", "formRating",
+    "minutesPlayed", "minutes", "appearances", "goals", "assists",
+    "marketValueEur", "marketValue"];
+  var TREND_RATING_FIELDS = { overallRating: 1, aiRating: 1, rating: 1, formRating: 1 };
+  var TREND_COUNTING_FIELDS = { minutesPlayed: 1, minutes: 1, appearances: 1, goals: 1, assists: 1 };
+
+  function playerStatsAreVerified(player) {
+    if (!player) return false;
+    if (player.statsVerifiedAt || player.statsSource || player.statsFetchedAt) return true;
+    return Number(player.appearances) > 0 || Number(player.minutesPlayed) > 0 || Number(player.minutes) > 0;
+  }
+
+  function hasPublishableTrendMetric(player) {
+    var ratingVerified = /^(verified|current)$/.test(String(player && player.ratingStatus || "").toLowerCase());
+    var statsVerified = playerStatsAreVerified(player);
+
+    for (var index = 0; index < TREND_METRIC_FIELDS.length; index += 1) {
+      var key = TREND_METRIC_FIELDS[index];
+      var value = player ? player[key] : null;
+      if (value === null || value === undefined || String(value).trim() === "") continue;
+      if (TREND_RATING_FIELDS[key]) {
+        if (ratingVerified) return true;
+      } else if (TREND_COUNTING_FIELDS[key]) {
+        if (statsVerified) return true;
+      } else if (statsVerified) {
+        return true; // piyasa değeri
+      }
+    }
+    return false;
+  }
+
+  function isTrendPlayerCard(player) {
+    if (!isPublishablePlayerCard(player)) return false;
+    if (!hasPublishableTrendMetric(player)) return false;
+
+    var team = String(player && (player.currentTeam || player.team) || "").trim();
+    if (!team) return false;
+    if (/serbest|free agent|kulüpsüz/i.test(team)) return false;
 
     return true;
   }
@@ -5445,34 +5573,15 @@
       compactMetricHtml("Sezon", record.season || "Yakında") +
       '</div>' +
       (record.note ? '<p class="transfer-note">' + escapeHtml(record.note) + '</p>' : "") +
-      '<p class="transfer-verification">Son kontrol: ' + escapeHtml(formatProfileDate(record.lastVerifiedAt || record.date) || "Yakında") + '</p>' +
-      '<div class="player-status-row"><span class="status-badge ' + (normalizeSearchText(record.status) === "confirmed" ? "verified" : "pending") + '">' + escapeHtml(transferRecordStatusLabel(record.status)) + '</span>' + transferSourceBadgeHtml(record) + '</div>' +
+      '<p class="transfer-verification">Son kontrol: ' + escapeHtml(formatProfileDate(record.lastVerifiedAt || record.date) || "Yakında") +
+      ' · ' + escapeHtml(relativeAgeLabel(record.lastVerifiedAt || record.date)) + '</p>' +
+      // Güven etiketleri tek söz dağarcığından geliyor: durum ve kaynak türü
+      // ayrı ayrı okunabilsin diye iki ayrı rozet, ama aynı biçimde.
+      '<div class="player-status-row">' + trustBadgesHtml(transferTrustLabels(record)) +
+      (record.sourceName ? '<span class="source-note">' + escapeHtml(record.sourceName) + '</span>' : "") + '</div>' +
       '<div class="player-actions">' + sourceAction + '<a class="detail-link ghost" href="' + escapeHtml(siteHref("takimlar.html?team=" + encodeURIComponent(record.toTeam || ""))) + '">Takımı incele</a></div>' +
       '</article>'
     );
-  }
-
-  /**
-   * KAYNAK TÜRÜ ROZETİ.
-   *
-   * "Kaynak var" demek yetmiyordu: kulübün kendi duyurusu ile bir gazetenin
-   * aktarımı kartta aynı görünüyordu. Etiketler services/transferService.js
-   * SOURCE_TYPES ile AYNI; scripts/test-transfer-pipeline.mjs iki tarafı
-   * karşılaştırır. "rumour" hiçbir zaman yayımlanan listeye ulaşmaz ama
-   * etiketi burada tanımlı: ulaşırsa etiketsiz görünmesin.
-   */
-  var TRANSFER_SOURCE_TYPES = {
-    official: "Resmî açıklama",
-    media: "Basın kaynağı",
-    rumour: "Söylenti"
-  };
-
-  function transferSourceBadgeHtml(record) {
-    var key = String((record && record.sourceType) || "").toLowerCase();
-    var label = TRANSFER_SOURCE_TYPES[key];
-    if (!label) return "";
-    return '<span class="source-badge is-' + escapeHtml(key) + '">' + escapeHtml(label) +
-      (record.sourceName ? ' · ' + escapeHtml(record.sourceName) : "") + '</span>';
   }
 
   function renderHomeTransferFeed(records) {
@@ -9524,7 +9633,16 @@
       document.querySelector('[data-api-target="player-radar"]'),
       "players",
       function (players) {
-        return players.slice(0, 3).map(renderPlayerHomeCard).join("");
+        // Ön render trend kapısını uyguluyor; istemci de uygulamalı. Aksi
+        // hâlde JS yüklendiği anda ölçümsüz kartlar geri gelirdi.
+        var trending = (players || []).filter(isTrendPlayerCard);
+        var hidden = (players || []).length - trending.length;
+        if (hidden > 0 && window.console && console.warn) {
+          console.warn("[futbolradar:card-hidden] " + hidden +
+            " oyuncu trend bölümünde gizlendi (gerçek ölçüm yok).");
+        }
+        // Boş dizi "" döndürür; renderInto o zaman statik boş durumu korur.
+        return trending.slice(0, 3).map(renderPlayerHomeCard).join("");
       },
       "Oyuncu radari yüklenemedi"
     );

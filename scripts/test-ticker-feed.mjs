@@ -237,36 +237,42 @@ function testStatementsEnterOnlyWhenVerified() {
           {
             id: "dogrulanmis",
             matchId: "test-maci",
+            matchLabel: "Ev Takımı - Deplasman",
             speaker: "Teknik Direktör",
             role: "coach",
             team: "Ev Takımı",
             quote: "Oyuncularımın mücadelesinden memnunum.",
             publishedAt: "2026-08-10T23:40:00+03:00",
             sourceName: "Kulüp",
+            sourceType: "official",
             url: "https://ornek-kulup.org.tr/haber/1",
             status: "verified"
           },
           {
             id: "taslak",
             matchId: "test-maci",
+            matchLabel: "Ev Takımı - Deplasman",
             speaker: "Futbolcu",
             role: "player",
             team: "Ev Takımı",
             quote: "Bu söz henüz doğrulanmadı.",
             publishedAt: "2026-08-10T23:45:00+03:00",
             sourceName: "Kaynak",
+            sourceType: "media",
             url: "https://ornek-kulup.org.tr/haber/2",
             status: "draft"
           },
           {
             id: "kaynaksiz",
             matchId: "test-maci",
+            matchLabel: "Ev Takımı - Deplasman",
             speaker: "Teknik Direktör",
             role: "coach",
             team: "Deplasman",
             quote: "Kaynağı olmayan söz yayımlanmamalı.",
             publishedAt: "2026-08-10T23:50:00+03:00",
             sourceName: "Kaynak",
+            sourceType: "official",
             url: "",
             status: "verified"
           }

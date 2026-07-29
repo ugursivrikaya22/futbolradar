@@ -15,6 +15,9 @@
  *      zaten matchStatementService'de veriliyor, burada yalnızca gösteriliyor.
  */
 
+const { trustBadges, statementTrustLabels } = require("./trustLabels.js");
+const { relativeAgeLabel } = require("./contentFreshness.js");
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -43,15 +46,26 @@ function statementCard(statement) {
     ? `<span class="match-statement-context">${escapeHtml(statement.context)}</span>`
     : "";
 
+  // Hangi maçtan sonra söylendiği kartta yazar: bülten ve bant kartı maç
+  // sayfasının dışında da gösteriyor, orada bağlam kaybolurdu.
+  const match = statement.matchLabel
+    ? `<span class="match-statement-match">${escapeHtml(statement.matchLabel)}</span>`
+    : "";
+  const age = statement.publishedAt
+    ? `<span class="match-statement-age">${escapeHtml(relativeAgeLabel(statement.publishedAt))}</span>`
+    : "";
+
   return `<article class="card match-statement" data-card="match-statement" data-role="${escapeHtml(statement.role)}">
     <div class="match-statement-head">
       <span class="match-statement-role">${escapeHtml(statement.roleLabel)}</span>
       <strong class="match-statement-speaker">${escapeHtml(statement.speaker)}</strong>
       <span class="match-statement-team">${escapeHtml(statement.team)}</span>
+      ${trustBadges(statementTrustLabels(statement))}
     </div>
+    ${match}
     <blockquote class="match-statement-quote"><p>${escapeHtml(statement.quote)}</p></blockquote>
     <div class="match-statement-foot">
-      ${context}${time}
+      ${context}${time}${age}
       <a class="detail-link" href="${escapeHtml(statement.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(statement.sourceName)} kaynağını aç</a>
     </div>
   </article>`;

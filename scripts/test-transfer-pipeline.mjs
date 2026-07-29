@@ -322,15 +322,32 @@ function testVerificationTimestampIsMandatory() {
   }
 }
 
-/** Kaynak türü etiketi istemci ve servis arasında ayrışmamalı. */
+/**
+ * Kaynak türü etiketi ÜÇ yerde de aynı sözcükleri kullanmalı: transfer
+ * servisi, güven etiketleri ve istemci. Aynı şeyi iki farklı sözcükle
+ * söylemek, okuyucuya iki farklı şey olduğunu düşündürür.
+ */
 function testClientMirrorsSourceTypes() {
   const appJs = fs.readFileSync(path.join(process.cwd(), "app.js"), "utf8");
-  const block = appJs.match(/var TRANSFER_SOURCE_TYPES = \{([\s\S]*?)\};/);
-  assert.ok(block, "app.js içinde kaynak türü etiketleri bulunamadı");
+  const trust = require("../services/trustLabels.js");
 
+  for (const [key, text] of Object.entries(service.SOURCE_TYPES)) {
+    assert.ok(trust.TRUST_LABELS[key], `güven etiketleri "${key}" kaynak türünü tanımalı`);
+    assert.equal(
+      trust.TRUST_LABELS[key].text, text,
+      `"${key}" kaynak türü transfer servisi ile güven etiketlerinde ayrışmış`
+    );
+  }
+
+  // İstemci söz dağarcığı da aynı olmalı.
+  const block = appJs.match(/var TRUST_LABELS = \{([\s\S]*?)\n  \};/);
+  assert.ok(block, "app.js içinde güven etiketleri bulunamadı");
   const client = {};
-  for (const [, key, value] of block[1].matchAll(/(\w+):\s*"([^"]+)"/g)) client[key] = value;
-  assert.deepEqual(client, { ...service.SOURCE_TYPES }, "app.js ve servis kaynak türü etiketleri ayrışmış");
+  for (const [, key, text] of block[1].matchAll(/(\w+):\s*\{[^}]*?text:\s*"([^"]+)"/g)) client[key] = text;
+
+  for (const [key, label] of Object.entries(trust.TRUST_LABELS)) {
+    assert.equal(client[key], label.text, `app.js "${key}" güven etiketi servisten ayrışmış`);
+  }
 }
 
 const tests = [

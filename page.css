@@ -16143,3 +16143,141 @@ body,
     gap: 10px;
   }
 }
+
+/* ============================================================================
+   GÜVEN ETİKETLERİ (services/trustLabels.js)
+
+   Okuyucunun "buna güvenebilir miyim?" sorusu her bölümde aynı biçimde
+   cevaplanır. Renk tonu iddianın gücünü söyler: yeşil doğrulanmış, camgöbeği
+   aktarılmış, kehribar eksik, kırmızı canlı. Etiketler küçük ve sessiz —
+   kartın kendisinin önüne geçmemeli.
+   ========================================================================== */
+.trust-badges {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.trust-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: var(--radius-pill);
+  padding: 2px 9px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  line-height: 1.6;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.trust-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+/* Doğrulanmış: kaynağı ve doğrulama zamanı olan kayıt. */
+.trust-badge.is-verified {
+  background: rgba(11, 143, 90, 0.09);
+  border-color: rgba(11, 143, 90, 0.22);
+  color: var(--green);
+}
+
+/* Resmî: tarafın kendi kanalı — en güçlü doğrulama. */
+.trust-badge.is-official {
+  background: rgba(11, 143, 90, 0.09);
+  border-color: rgba(11, 143, 90, 0.22);
+  color: var(--green);
+}
+
+/* Basın: olayı aktarıyor, tarafı değil. */
+.trust-badge.is-media {
+  background: rgba(13, 148, 136, 0.085);
+  border-color: rgba(13, 148, 136, 0.2);
+  color: var(--cyan);
+}
+
+/* Söylenti: kesinleşmiş kayıt gibi görünmemeli, bu yüzden sessiz. */
+.trust-badge.is-rumour {
+  background: rgba(var(--surface-rgb), 0.1);
+  border-color: rgba(var(--border-rgb, 15, 23, 42), 0.16);
+  color: var(--muted);
+}
+
+/* Eksik veri / skor yok: uyarı, hata değil. Okuyucu neyin eksik olduğunu
+   bilmeli ama kart kırmızıya boyanmamalı. */
+.trust-badge.is-warn {
+  background: rgba(217, 119, 6, 0.1);
+  border-color: rgba(217, 119, 6, 0.24);
+  color: #b45309;
+}
+
+.trust-badge.is-live {
+  background: rgba(220, 38, 38, 0.1);
+  border-color: rgba(220, 38, 38, 0.24);
+  color: #dc2626;
+}
+
+/* Bölümün ne zaman güncellendiği. Kayıt yoksa hiç basılmaz. */
+.section-updated {
+  grid-column: 1 / -1;
+  margin: 0 0 2px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.bulletin-row-age,
+.match-statement-age {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.match-statement-match {
+  display: block;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+.source-note {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .trust-badge.is-warn {
+    color: #fbbf24;
+  }
+}
+
+:root[data-theme="dark"] .trust-badge.is-warn {
+  color: #fbbf24;
+}
+
+.home-transfer-updated {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+/* Bölümün en taze kaydı bile gündem penceresini aştıysa: uyarı, hata değil. */
+.section-updated.is-stale {
+  color: #b45309;
+  font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .section-updated.is-stale {
+    color: #fbbf24;
+  }
+}
+
+:root[data-theme="dark"] .section-updated.is-stale {
+  color: #fbbf24;
+}

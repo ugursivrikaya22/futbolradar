@@ -28,6 +28,7 @@ const { statementsSection, statementsSchema } = require("../services/matchStatem
 const VALID = Object.freeze({
   id: "ornek-1",
   matchId: "ev-deplasman-2026-08-10",
+  matchLabel: "Ev Takımı - Deplasman Takımı",
   speaker: "Teknik Direktör",
   role: "coach",
   team: "Ev Takımı",
@@ -35,6 +36,7 @@ const VALID = Object.freeze({
   context: "Maç sonu basın toplantısı",
   publishedAt: "2026-08-10T23:40:00+03:00",
   sourceName: "Kulüp",
+  sourceType: "official",
   url: "https://ornek-kulup.org.tr/haber/1",
   status: "verified"
 });
@@ -52,6 +54,12 @@ function testPublishRule() {
     [{ ...VALID, quote: "" }, "sözü yok"],
     [{ ...VALID, speaker: "" }, "konuşanı yok"],
     [{ ...VALID, matchId: "" }, "maçı yok"],
+    // Okunabilir maç adı olmadan kart "hangi maçtan sonra?" sorusunu
+    // cevaplayamaz; anahtarı biçimlendirip maç adı gibi sunmak tahmindir.
+    [{ ...VALID, matchLabel: "" }, "okunabilir maç adı yok"],
+    [{ ...VALID, sourceType: "" }, "kaynak türü yok"],
+    [{ ...VALID, sourceType: "rumour" }, "söylenti alıntılanamaz"],
+    [{ ...VALID, sourceType: "blog" }, "tanınmayan kaynak türü"],
     [{ ...VALID, role: "muhabir" }, "tanınmayan rol"],
     [{ ...VALID, publishedAt: "geçersiz" }, "tarihi okunamıyor"],
     [null, "kayıt yok"]

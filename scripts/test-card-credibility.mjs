@@ -37,7 +37,10 @@ const verified = {
   sourceUrl: "https://media.api-sports.io/football/players/276.png",
   lastVerifiedAt: "2026-07-20T12:00:00+03:00",
   dataStatus: "verified",
-  ratingStatus: "current"
+  ratingStatus: "current",
+  // Trend iddiası bir ÖLÇÜME dayanır; bakımı yapılan bir derecelendirme onu
+  // taşıyabilir. Bu alan olmadan kayıt trend bölümüne giremez (bkz. 8. madde).
+  overallRating: 78
 };
 
 function testVerifiedPlayerRemains() {
@@ -121,6 +124,75 @@ function testPlayerOutsideLeagueExcludedFromTrend() {
   );
 }
 
+/**
+ * TREND KARTI GERÇEK ÖLÇÜM İSTER.
+ *
+ * Denetim (2026-07): kaynak kapısını geçen 502 kaydın hiçbirinde
+ * yayımlanabilir ölçüm yok. Kart yine de basılıyor ve geriye tek alan
+ * kalıyordu: "Yaş 17". Ana sayfada üç altyapı kalecisi "formda ve
+ * yükselişte" başlığı altında duruyordu. Kaynağın doğrulanmış olması bir
+ * oyuncuyu trend YAPMAZ.
+ */
+function testTrendRequiresRealMetric() {
+  const leagueTeams = fixtureTeamNames();
+
+  // Ölçümü olmayan doğrulanmış kayıt: kaynak kapısını geçer, trend kapısını geçmez.
+  const identityOnly = { ...verified };
+  delete identityOnly.overallRating;
+  assert.equal(credibility.evaluatePlayerCard(identityOnly, { now }).publishable, true,
+    "kaynak kapısı ölçümle ilgilenmez");
+
+  const verdict = credibility.evaluateTrendPlayerCard(identityOnly, { now, leagueTeams });
+  assert.equal(verdict.publishable, false, "ölçümsüz kayıt trend bölümüne girmemeli");
+  assert.ok(verdict.reasons.some((reason) => /ölçüm/i.test(reason)), `gerekçe ölçümü söylemeli: ${verdict.reasons.join("; ")}`);
+
+  // Yaş bir trend ölçümü DEĞİL: kimlik bilgisidir, yükseliş iddiası taşımaz.
+  assert.equal(
+    credibility.hasPublishableTrendMetric({ ...identityOnly, computedAge: 17, age: 17 }),
+    false, "yaş trend ölçümü sayılmamalı"
+  );
+
+  // Bakımı yapılmayan derecelendirme de ölçüm sayılmaz: değer normalizePlayer
+  // varsayılanından gelmiş olabilir.
+  for (const status of ["estimated", "pending", "stale", ""]) {
+    assert.equal(
+      credibility.hasPublishableTrendMetric({ ...verified, ratingStatus: status }),
+      false, `ratingStatus "${status}" ile derecelendirme yayımlanamaz`
+    );
+  }
+
+  // Gerçekten oynanmış dakika ölçümdür — derecelendirme olmasa bile yeter.
+  const played = { ...identityOnly, appearances: 12, minutesPlayed: 940 };
+  assert.equal(credibility.hasPublishableTrendMetric(played), true, "oynanmış dakika ölçümdür");
+  assert.equal(
+    credibility.evaluateTrendPlayerCard(played, { now, leagueTeams }).publishable,
+    true, "ölçümü olan ligdeki oyuncu trendde kalmalı"
+  );
+
+  // Tamamı sıfır olan satır ölçüm değildir: "hiç ölçülmedi" ile ayırt edilemez.
+  assert.equal(
+    credibility.hasPublishableTrendMetric({ ...identityOnly, appearances: 0, minutesPlayed: 0, goals: 0 }),
+    false, "sıfır dolu satır ölçüm sayılmamalı"
+  );
+}
+
+/** Yayımlanan sayfada yalnızca yaş taşıyan oyuncu kartı olmamalı. */
+function testHomepageCarriesNoIdentityOnlyPlayerCard() {
+  for (const file of ["index.html", "oyuncu-radari.html"]) {
+    const url = new URL(`../${file}`, import.meta.url);
+    if (!fs.existsSync(url)) continue;
+    const html = fs.readFileSync(url, "utf8");
+
+    for (const card of html.match(/<article[^>]*data-card="player"[\s\S]*?<\/article>/g) || []) {
+      const metrics = [...card.matchAll(/<span>([^<]+)\s*<b>/g)].map((entry) => entry[1].trim());
+      assert.ok(
+        metrics.some((label) => !/^Yaş$/i.test(label)),
+        `${file}: yalnızca yaş taşıyan oyuncu kartı basılmış (${metrics.join(", ") || "hiç ölçüm yok"})`
+      );
+    }
+  }
+}
+
 function testSourceMetadataIsCarried() {
   const meta = credibility.sourceMetadata(verified);
   for (const key of ["source_name", "source_url", "last_verified_at", "provider_id", "data_confidence"]) {
@@ -190,6 +262,41 @@ function testClientMirrorsServiceExactly() {
       `${player.name}: istemci ve servis aynı kararı vermeli`
     );
   }
+
+  // Trend ölçüm şartı da iki tarafta yaşamalı: ön render ölçümsüz kartı
+  // elerken istemci onu geri basarsa düzeltme JS yüklenince bozulur.
+  assert.ok(/function hasPublishableTrendMetric\(/.test(app), "app.js trend ölçüm kapısını tanımlamalı");
+  assert.ok(/function isTrendPlayerCard\(/.test(app), "app.js trend kartı süzgecini tanımlamalı");
+  assert.ok(
+    /data-api-target="player-radar"[\s\S]{0,400}filter\(isTrendPlayerCard\)/.test(app),
+    "ana sayfa oyuncu radarı trend süzgecinden geçmeli"
+  );
+
+  const metricStart = app.indexOf("function hasPublishableTrendMetric");
+  const metricBody = app.slice(metricStart, app.indexOf("function isTrendPlayerCard"));
+  const clientMetric = new Function(
+    "TREND_METRIC_FIELDS", "TREND_RATING_FIELDS", "TREND_COUNTING_FIELDS", "playerStatsAreVerified",
+    `return ${metricBody.slice(0, metricBody.lastIndexOf("}") + 1)}`
+  )(
+    credibility.TREND_METRIC_FIELDS,
+    { overallRating: 1, aiRating: 1, rating: 1, formRating: 1 },
+    { minutesPlayed: 1, minutes: 1, appearances: 1, goals: 1, assists: 1 },
+    credibility.statsAreVerified
+  );
+
+  const cases = [
+    verified,
+    { ...verified, ratingStatus: "estimated" },
+    { ...verified, overallRating: null, appearances: 9, minutesPlayed: 700 },
+    { ...verified, overallRating: null, appearances: 0, minutesPlayed: 0 }
+  ];
+  for (const player of cases.concat(players.slice(0, 60))) {
+    assert.equal(
+      clientMetric(player),
+      credibility.hasPublishableTrendMetric(player),
+      `${player.name}: istemci ve servis ölçüm kararında ayrışmamalı`
+    );
+  }
 }
 
 function testAuditCountsAreHonest() {
@@ -213,6 +320,8 @@ const tests = [
   testStalePlayerRemoved,
   testUnsourcedPlayerHidden,
   testPlayerOutsideLeagueExcludedFromTrend,
+  testTrendRequiresRealMetric,
+  testHomepageCarriesNoIdentityOnlyPlayerCard,
   testSourceMetadataIsCarried,
   testHomepageRendersNoMisleadingCards,
   testClientMirrorsServiceExactly,
