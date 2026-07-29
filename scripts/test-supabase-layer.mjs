@@ -376,6 +376,43 @@ function testRadarRowKeepsCoverageContract() {
   assert.equal(row.coverage, 0);
 }
 
+/**
+ * SORGU BÜTÇESİ YAZILI DEĞİL, UYGULANMIŞ OLMALI.
+ *
+ * PROBE_TIMEOUT_MS uzun süre yalnızca tanımlıydı ve bir yorumla GARANTİ diye
+ * anlatılıyordu; hiçbir yerde kullanılmıyordu. Kodun uygulamadığı bir sınırı
+ * anlatan yorum, olmayan bir korumayı varmış gibi gösterir. Bu test iki şeyi
+ * birden korur: bütçe gerçekten yarışa giriyor mu ve sabit gerçekten
+ * uygulamada okunuyor mu.
+ */
+async function testProbeBudgetIsEnforced() {
+  assert.equal(typeof PROBE_TIMEOUT_MS, "number");
+  assert.ok(PROBE_TIMEOUT_MS > 0, "bütçe pozitif bir süre olmalı");
+
+  // Zamanında biten söz kendi değerini döndürür.
+  assert.equal(await withBudget(Promise.resolve("bitti"), 1000, "bütçe"), "bitti");
+
+  // Bitmeyen söz bütçeye takılır ve yedek değer döner — beklemeye devam etmez.
+  const never = new Promise(() => {});
+  const started = Date.now();
+  assert.equal(await withBudget(never, 20, "bütçe doldu"), "bütçe doldu");
+  assert.ok(Date.now() - started < 1000, "bütçe dolduğunda beklenmemeli");
+
+  // Sabit gerçekten uygulamada okunuyor mu? Tanım ve dışa aktarım dışında en
+  // az bir kullanım olmalı; yoksa "uygulanıyor" iddiası yine boşa düşer.
+  const source = fs.readFileSync(path.join(root, "services/supabase/health.js"), "utf8");
+  const uses = source.split("PROBE_TIMEOUT_MS").length - 1;
+  assert.ok(uses >= 3, `PROBE_TIMEOUT_MS uygulamada kullanılmalı (bulunan: ${uses} geçiş)`);
+
+  // Sağlık ucu da dış bir sınır koymalı: rapor üretmesi gereken uç, raporsuz
+  // düşen bir isteğe dönüşmemeli.
+  const route = fs.readFileSync(path.join(root, "api/[...route].js"), "utf8");
+  assert.ok(
+    /withTimeout\(\s*\n?\s*supabaseHealth\(/.test(route),
+    "handleSupabaseHealth withTimeout ile sarılmalı"
+  );
+}
+
 /** Beklenen tablo listesi göçlerle aynı olmalı. */
 function testExpectedTablesMatchMigrations() {
   const { sql } = migrationSql();
@@ -442,6 +479,7 @@ const tests = [
   testStuckMatchViewExists,
   testRowMappersRespectConstraints,
   testRadarRowKeepsCoverageContract,
+  testProbeBudgetIsEnforced,
   testExpectedTablesMatchMigrations
 ];
 

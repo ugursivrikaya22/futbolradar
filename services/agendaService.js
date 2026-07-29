@@ -12,10 +12,11 @@
  *   1. Büyük dörtlünün maçları (Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor)
  *   2. Türk kulüplerinin Avrupa maçları
  *   3. Trendyol Süper Lig maçları
- *   4. Kesinleşmiş transferler
- *   5. Maç sonu açıklamaları
- *   6. Tamamlanan maç raporları
- *   7. Düşük ilgili hazırlık maçları
+ *   4. Türkiye Kupası ve TFF 1. Lig maçları
+ *   5. Kesinleşmiş transferler
+ *   6. Maç sonu açıklamaları
+ *   7. Tamamlanan maç raporları
+ *   8. Düşük ilgili hazırlık maçları
  *
  * TÜR SINIRI AŞILMAZ. Tazelik ve öncelik yalnızca tür İÇİNDE sıralar; bir
  * transfer ne kadar taze olursa olsun bir Galatasaray maçının üstüne çıkmaz.
@@ -32,9 +33,10 @@ const { freshnessWeight } = require("./contentFreshness.js");
  * hiçbir kayıt kendi bandının dışına taşamaz.
  */
 const TIER = Object.freeze({
-  bigFourMatch: 700,
-  turkishInEurope: 600,
-  superLigMatch: 500,
+  bigFourMatch: 800,
+  turkishInEurope: 700,
+  superLigMatch: 600,
+  turkishOtherMatch: 500,
   confirmedTransfer: 400,
   statement: 300,
   matchReport: 200,
@@ -99,7 +101,15 @@ function matchTier(match, options = {}) {
   const friendly = /hazırlık|hazirlik|friendly/i.test(String(league));
   if (friendly || !TURKISH_LEAGUE_HINT.test(String(league))) return "friendly";
 
-  return "superLigMatch";
+  // Türk ligi ipucu taşıyor ama Süper Lig DEĞİL: geriye TFF 1. Lig ve
+  // Türkiye Kupası kalıyor (TURKISH_LEAGUE_HINT'in kapsadığı diğer iki ad).
+  //
+  // Bu dalın kendi bandı var. Eskiden buradan "superLigMatch" dönüyordu ve
+  // gündemde bir 1. Lig ya da kupa maçının gerekçesine "Trendyol Süper Lig"
+  // yazılıyordu — okuyucuya YANLIŞ BİR TURNUVA İDDİASI. Ligin adı bu depoda
+  // tek bir şeyi anlatır; başka bir turnuvanın maçına o adı basmak, adı
+  // korumanın tam tersidir.
+  return "turkishOtherMatch";
 }
 
 /**
@@ -161,6 +171,7 @@ const TIER_REASONS = Object.freeze({
   bigFourMatch: "Büyük dörtlü maçı",
   turkishInEurope: "Türk takımı Avrupa'da",
   superLigMatch: "Trendyol Süper Lig",
+  turkishOtherMatch: "Türkiye Kupası ve TFF 1. Lig",
   confirmedTransfer: "Kesinleşmiş transfer",
   statement: "Maç sonu açıklaması",
   matchReport: "Maç raporu",

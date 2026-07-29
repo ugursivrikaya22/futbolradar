@@ -35,7 +35,7 @@ const match = (home, away, league, extra = {}) => ({
 
 /** Bant sırası istenen sırayla aynı. */
 function testTierOrderMatchesTheBrief() {
-  const order = ["bigFourMatch", "turkishInEurope", "superLigMatch",
+  const order = ["bigFourMatch", "turkishInEurope", "superLigMatch", "turkishOtherMatch",
     "confirmedTransfer", "statement", "matchReport", "friendly"];
 
   for (let index = 1; index < order.length; index += 1) {
@@ -61,6 +61,27 @@ function testMatchTiers() {
   );
   assert.equal(matchTier(match("Göztepe", "Kasımpaşa", "Trendyol Süper Lig").match), "superLigMatch");
   assert.equal(matchTier(match("Rudeš", "Slaven Belupo", "Hazırlık maçı").match), "friendly");
+
+  // TFF 1. Lig ve Türkiye Kupası KENDİ BANDINDA. Eskiden ikisi de
+  // "superLigMatch" dönüyordu ve gündemde gerekçeleri "Trendyol Süper Lig"
+  // basılıyordu — başka bir turnuvanın maçına o adı yazmak, yanlış bir
+  // turnuva iddiasıdır.
+  for (const league of ["TFF 1. Lig", "1. Lig", "Türkiye Kupası", "Turkiye Kupasi"]) {
+    assert.equal(
+      matchTier(match("Bodrumspor", "Erzurumspor FK", league).match),
+      "turkishOtherMatch",
+      `"${league}" Süper Lig bandına düşmemeli`
+    );
+  }
+  assert.notEqual(
+    TIER_REASONS.turkishOtherMatch,
+    TIER_REASONS.superLigMatch,
+    "1. Lig ve kupa maçının gerekçesi Süper Lig gerekçesiyle aynı olamaz"
+  );
+  assert.ok(
+    !TIER_REASONS.turkishOtherMatch.includes("Süper Lig"),
+    "bu bandın gerekçesi Süper Lig adını taşıyamaz"
+  );
 
   for (const club of ["Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor"]) {
     assert.ok(isBigFour(club), `${club} büyük dörtlüde olmalı`);

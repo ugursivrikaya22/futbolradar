@@ -187,18 +187,46 @@ function buildComparison(homeTeam, awayTeam, homeContext, awayContext) {
   };
 }
 
+/**
+ * Bir bileşenin üstünlüğü. Ölçülmemiş taraf varsa null — "üstünlük yok"
+ * değil, "ölçüm yok" demektir ve çağıran bileşeni listeden düşürür.
+ *
+ * Sayı olmayan her değer (null, undefined, NaN) aynı kapıya çıkar: eksik
+ * ölçüm. Yalnızca `=== null` bakmak yetmiyordu — tanımsız bir alan çıkarma
+ * işleminde NaN üretiyor, NaN her karşılaştırmayı false yapıyor ve fonksiyon
+ * sessizce "away" döndürüyordu. Yani ölçülmemiş bir alan, deplasmanın
+ * üstünlüğü gibi görünüyordu.
+ */
 function advantageFor(homeValue, awayValue, threshold) {
-  if (homeValue === null || awayValue === null) return null;
+  if (!Number.isFinite(homeValue) || !Number.isFinite(awayValue)) return null;
   const delta = homeValue - awayValue;
   if (Math.abs(delta) < (threshold ?? 4)) return "balanced";
   return delta > 0 ? "home" : "away";
+}
+
+/**
+ * Deplasmanın hücum-savunma karşılığı, EV SAHİBİNİN BAKIŞIYLA.
+ *
+ * Deplasmanın hücumu ne kadar iyiyse ev sahibinin o alandaki üstünlüğü o
+ * kadar azdır; bu yüzden değer 100'den çıkarılıyor.
+ *
+ * ÖLÇÜLMEMİŞSE null YAYILIR. Burada eskiden `?? 50` vardı: ölçülmemiş bir
+ * deplasman hücumu "ortalama" sayılıyor, bileşen listeden düşmüyor ve
+ * ölçülmemiş veriden "üstünlük" üretiliyordu — ev sahibinin 80'i, uydurulmuş
+ * bir 50 ile karşılaştırılıp "ev sahibi önde" diye basılıyordu. Uydurma sayı
+ * yazmıyoruz: ölçüm yoksa bileşen gerçekten düşer ve okuyucu o alanda bir
+ * iddia görmez.
+ */
+function awayAttackEdge(comparison) {
+  const value = comparison.awayAttackVsHomeDefense;
+  return value === null || value === undefined ? null : 100 - value;
 }
 
 function generateMatchupAdvantages(comparison) {
   if (!comparison) return [];
 
   const entries = [
-    { key: "attack", home: comparison.homeAttackVsAwayDefense, away: 100 - (comparison.awayAttackVsHomeDefense ?? 50), label: "Hücum-savunma dengesi" },
+    { key: "attack", home: comparison.homeAttackVsAwayDefense, away: awayAttackEdge(comparison), label: "Hücum-savunma dengesi" },
     { key: "midfield", home: comparison.midfield.home, away: comparison.midfield.away, label: "Orta saha" },
     { key: "wideAreas", home: comparison.wideAreas.home, away: comparison.wideAreas.away, label: "Kanat alanları" },
     { key: "goalkeepers", home: comparison.goalkeepers.home, away: comparison.goalkeepers.away, label: "Kaleciler" },

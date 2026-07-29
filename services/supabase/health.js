@@ -49,12 +49,22 @@ function nowIso() {
   return new Date().toISOString();
 }
 
-/** Verilen sürede bitmezse `fallback` ile dönen yarış. Söz iptal edilmez. */
+/**
+ * Verilen sürede bitmezse `fallback` ile dönen yarış.
+ *
+ * Söz İPTAL EDİLMEZ — JavaScript'te bir sözü iptal etmenin yolu yok; yarışı
+ * kaybeden istek arka planda sürer ve sonucu yok sayılır. Önemli olan
+ * ÇAĞIRANIN beklememesi.
+ *
+ * Zamanlayıcı `unref` EDİLMEZ: unref'lenmiş bir zamanlayıcı olay döngüsünü
+ * ayakta tutmaz, dolayısıyla başka iş kalmadığında hiç ateşlenmez ve bütçe
+ * sessizce çalışmaz olurdu — yani tam olarak düzeltmeye çalıştığımız hata.
+ * Yarış bittiği anda `finally` zamanlayıcıyı zaten temizliyor.
+ */
 function withBudget(promise, budgetMs, fallback) {
   let timer = null;
   const budget = new Promise((resolve) => {
     timer = setTimeout(() => resolve(fallback), Math.max(0, budgetMs));
-    if (timer && typeof timer.unref === "function") timer.unref();
   });
   return Promise.race([promise, budget]).finally(() => clearTimeout(timer));
 }
