@@ -44,4 +44,12 @@ for (const file of [
 ]) {
   fs.copyFileSync(path.join(root, "data", file), path.join(publicDir, "data", file));
 }
+// Derin analiz sisteminin veri dosyaları: canlı anlık görüntüler ilk canlı
+// senkronda, yayın günlüğü ilk rapor üretiminde oluşur — o yüzden koşullu.
+for (const file of ["live-snapshots.json", "report-publish-log.json"]) {
+  const source = path.join(root, "data", file);
+  if (fs.existsSync(source)) {
+    fs.copyFileSync(source, path.join(publicDir, "data", file));
+  }
+}
 console.log("Synced public assets");

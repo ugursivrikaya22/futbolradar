@@ -47,6 +47,11 @@ on:
     # Script kendi penceresine baktığı için çoğu koşuda hiçbir şey yapmaz.
     - cron: "*/5 * * * *"
   workflow_dispatch: {}
+  # Korumalı manuel yeniden koşu: api/post-match-rerun ucu (CRON_SECRET ile
+  # kimlik doğrulanmış) bu olayı tetikler; iş akışının kendisi değişmez —
+  # aynı günlük zincir, aynı kapılar, aynı commit yolu çalışır.
+  repository_dispatch:
+    types: [post-match-rerun]
 
 permissions:
   contents: write
@@ -74,6 +79,16 @@ jobs:
       # eski takvim dosyası olduğu gibi kalır.
       - name: Sync fixture calendar (Süper Lig takımlarının maç takvimi)
         run: node scripts/sync-fixture-calendar.mjs --apply
+
+      # 96 SAATLİK KAYAN PENCERE KAPANIŞI. Takvimde tamamlanmış görünen ama
+      # kürasyonda karşılığı olmayan maçları asgari sağlayıcı kaydı olarak
+      # matches.json'a terfi ettirir; rapor sayfaları sonraki üretim adımında
+      # kapsam kapısından geçerek doğru seviyede (çoğunlukla "Skor Özeti",
+      # dizine kapalı) oluşur. Idempotent: ikinci koşu hiçbir şey eklemez.
+      # Sağlayıcıya istek ATMAZ — kota koruması gereği keşif, zaten senkron
+      # edilmiş takvim dosyasından yapılır.
+      - name: Post-match finalization (rolling 96h window)
+        run: node scripts/post-match-backfill.mjs --apply
 
       # Kadro senkronu API-Football anahtarına ihtiyaç duyar. Anahtar Vercel'de
       # tanımlı ama GitHub Actions ayrı bir ortamdır: secret buraya

@@ -23,9 +23,11 @@ const apiFootballProvider = require("../services/providers/apiFootballProvider.j
 
 const { selectSyncTargets, mergeProviderDetail } = require("../services/matchResultSyncService.js");
 const { API_FOOTBALL, providerIdFor } = require("../services/providerIdentityService.js");
+const { recordSnapshot } = require("../services/liveSnapshotService.js");
 
 const MATCHES_PATH = path.join(root, "data", "matches.json");
 const PUBLIC_MATCHES_PATH = path.join(root, "public", "data", "matches.json");
+const SNAPSHOTS_PATH = path.join(root, "data", "live-snapshots.json");
 const MAX_TARGETS_PER_RUN = 12;
 
 function parseArgs(argv) {
@@ -72,7 +74,15 @@ async function main() {
 
   const timestamp = new Date(now).toISOString();
   let updated = 0;
+  let snapshotsRecorded = 0;
   const nextMatches = [...matches];
+
+  // Ölçülmüş momentumun kaynağı: oynanan maçın kümülatif istatistiklerinden
+  // beş dakikalık kova başına bir anlık görüntü. Depo yalnızca eklemelidir;
+  // servis aynı kovaya ikinci yazımı kendisi reddeder (idempotent döngü).
+  const snapshotStore = fs.existsSync(SNAPSHOTS_PATH)
+    ? JSON.parse(fs.readFileSync(SNAPSHOTS_PATH, "utf8"))
+    : {};
 
   for (const entry of actionable) {
     const { match, reason } = entry;
@@ -89,6 +99,15 @@ async function main() {
       continue;
     }
 
+    // Maç hâlâ oynanıyorsa (LIVE/HALFTIME) ölçüm anı kaydedilir. Bitmiş maç
+    // için görüntü alınmaz: kümülatif son değerler momentumu temsil etmez.
+    if (["LIVE", "HALFTIME"].includes(String(detail.status || "").toUpperCase())) {
+      if (recordSnapshot(snapshotStore, match, detail, timestamp)) {
+        snapshotsRecorded += 1;
+        console.log(`  ~ ${match.id}: canlı anlık görüntü kaydedildi (dk ${detail.minute})`);
+      }
+    }
+
     const merged = mergeProviderDetail(match, detail, timestamp);
     if (!merged) {
       console.log(`  = ${match.id}: eklenecek yeni veri yok`);
@@ -101,21 +120,30 @@ async function main() {
     console.log(`  + ${match.id} (${reason}) -> ${merged.changes.join(", ")}`);
   }
 
-  if (!updated) {
+  if (!updated && !snapshotsRecorded) {
     console.log("Uygulanacak değişiklik yok.");
     return;
   }
 
   if (!args.apply) {
-    console.log(`\n${updated} maç güncellenecek. Yazmak için --apply ile çalıştır.`);
+    console.log(`\n${updated} maç güncellenecek, ${snapshotsRecorded} anlık görüntü yazılacak. Yazmak için --apply ile çalıştır.`);
     return;
   }
 
-  atomicWrite(MATCHES_PATH, nextMatches);
-  if (fs.existsSync(path.dirname(PUBLIC_MATCHES_PATH))) {
-    atomicWrite(PUBLIC_MATCHES_PATH, nextMatches);
+  // Anlık görüntüler kürasyonlu kayıttan bağımsız yazılır: canlı bir maçta
+  // henüz birleştirilecek kürasyon farkı olmasa da ölçüm kaybedilmemeli.
+  if (snapshotsRecorded) {
+    atomicWrite(SNAPSHOTS_PATH, snapshotStore);
+    console.log(`${snapshotsRecorded} canlı anlık görüntü data/live-snapshots.json dosyasına yazıldı.`);
   }
-  console.log(`\n${updated} maç güncellendi ve data/matches.json yazıldı.`);
+
+  if (updated) {
+    atomicWrite(MATCHES_PATH, nextMatches);
+    if (fs.existsSync(path.dirname(PUBLIC_MATCHES_PATH))) {
+      atomicWrite(PUBLIC_MATCHES_PATH, nextMatches);
+    }
+    console.log(`\n${updated} maç güncellendi ve data/matches.json yazıldı.`);
+  }
 }
 
 main().catch((error) => {

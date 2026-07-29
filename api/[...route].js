@@ -248,6 +248,64 @@ async function handleMatchAnalysis(req, res, query) {
   });
 }
 
+/**
+ * KORUMALI MANUEL YENİDEN KOŞU — maç sonu 96 saatlik kapsayıcı için.
+ *
+ * Statik sitenin derlemesi GitHub Actions'ta yaşar; bu uç nokta o zinciri
+ * `repository_dispatch (post-match-rerun)` olayıyla tetikler. İki ayrı sır
+ * gerekir ve ikisi de YOKSA uç nokta dürüstçe 503 döner — sahte başarı yok:
+ *
+ *   - CRON_SECRET: çağıranın yetkisi (Authorization: Bearer ... ya da
+ *     ?secret=). Vercel cron kancalarıyla aynı kalıp.
+ *   - GITHUB_DISPATCH_TOKEN + GITHUB_REPOSITORY: tetikleme kanalı. Token
+ *     yalnızca repo dispatch yetkisi taşımalı; yanıta asla yazılmaz.
+ *
+ * GET/HEAD dışına zaten kapalıyız (rejectUnsupportedMethod) — Vercel cron
+ * da GET kullanır. Yanıt önbelleğe alınmaz.
+ */
+async function handlePostMatchRerun(req, res, query) {
+  const configured = String(process.env.CRON_SECRET || "").trim();
+  if (!configured) {
+    return sendError(res, 503, "Yeniden koşu ucu yapılandırılmadı (CRON_SECRET tanımsız).", "RERUN_NOT_CONFIGURED");
+  }
+  const header = String(req.headers.authorization || "");
+  const provided = header.startsWith("Bearer ") ? header.slice(7).trim() : String(query.secret || "").trim();
+  if (!provided || provided !== configured) {
+    return sendError(res, 401, "Yetkisiz: geçerli CRON_SECRET gerekli.", "RERUN_UNAUTHORIZED");
+  }
+
+  const token = String(process.env.GITHUB_DISPATCH_TOKEN || "").trim();
+  const repository = String(process.env.GITHUB_REPOSITORY || "").trim();
+  if (!token || !repository) {
+    return sendError(res, 503, "Tetikleme kanalı yapılandırılmadı (GITHUB_DISPATCH_TOKEN / GITHUB_REPOSITORY).", "RERUN_CHANNEL_MISSING");
+  }
+
+  try {
+    const response = await withTimeout(fetch(`https://api.github.com/repos/${repository}/dispatches`, {
+      method: "POST",
+      headers: {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${token}`,
+        "User-Agent": "futbolradar-post-match-rerun"
+      },
+      body: JSON.stringify({ event_type: "post-match-rerun" })
+    }), DEFAULT_TIMEOUT_MS);
+
+    if (response.status !== 204) {
+      return sendError(res, 502, `GitHub dispatch beklenmeyen durum döndü: ${response.status}.`, "RERUN_DISPATCH_FAILED");
+    }
+  } catch (error) {
+    return sendError(res, 502, "GitHub dispatch çağrısı tamamlanamadı.", "RERUN_DISPATCH_FAILED");
+  }
+
+  return sendJson(res, 202, {
+    ok: true,
+    source: "FutbolRadar API",
+    message: "Maç sonu kapsayıcı zinciri tetiklendi (repository_dispatch: post-match-rerun).",
+    triggeredAt: new Date().toISOString()
+  });
+}
+
 module.exports = async function handler(req, res) {
   if (rejectUnsupportedMethod(req, res)) {
     return;
@@ -258,6 +316,12 @@ module.exports = async function handler(req, res) {
   if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
+
+  if (route === "post-match-rerun") {
+    // Tetikleyici yanıtı hiçbir CDN katmanında önbelleğe alınmamalı.
+    setCachePolicy(res, "health");
+    return handlePostMatchRerun(req, res, query);
+  }
 
   if (route === "player-detail") {
     return handlePlayerDetail(req, res, query);
