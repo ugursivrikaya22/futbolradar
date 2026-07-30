@@ -345,11 +345,57 @@ function resolveProviderVenue(existingVenue, providerVenue) {
   return providerVenue || null;
 }
 
+/**
+ * ARŞİV TABAN KATMANI.
+ *
+ * data/fixture-calendar.json her senkronda BAŞTAN yazılıyor ve yalnızca
+ * 3 gün geçmiş tutuyor: dört gün önce oynanmış ve başka hiçbir yerde kaydı
+ * olmayan bir maç, bir sonraki koşuda siteden tamamen siliniyordu. Arşiv o
+ * maçları kalıcı tutuyor ve havuzun tabanına giriyor; üstüne önce elle
+ * doğrulanmış kayıtlar, sonra takvimin canlı durumu biniyor.
+ *
+ * ÇALIŞMA ZAMANINDA ARŞİV OLMAYABİLİR. Vercel sunucusuz derlemesine yalnızca
+ * `require` edilen dosyalar kopyalanır; arşiv gün dosyaları diskten okunuyor.
+ * Bu bilinçli: kalıcılığın önemli olduğu yer DERLEME ZAMANI (sayfalar orada
+ * üretiliyor) ve orada disk her zaman var. Çalışma zamanında uç noktalar
+ * bugünün ve canlı maçların peşinde; onlar zaten takvim penceresinde.
+ * Arşiv okunamazsa havuz bugünkü davranışına döner, sessizce yanlış veri
+ * üretmez.
+ *
+ * `preMatchAnalysis` havuza taşınmaz: hacimli bir blob ve maç kartlarının
+ * ihtiyacı yok. Arşiv dosyasında korunuyor, analiz katmanı oradan okur.
+ */
+function archivedPoolMatches() {
+  try {
+    // Döngüsel bağımlılığı önlemek için tembel yükleme: arşiv servisi de
+    // durum ve takvim servislerini okuyor.
+    const archive = require("../matchArchiveService.js");
+    return archive.archivedMatches().map((match) => {
+      const { preMatchAnalysis, ...rest } = match;
+      return rest;
+    });
+  } catch (error) {
+    console.warn(`[futbolradar:archive-unavailable] reason="${error.message}"`);
+    return [];
+  }
+}
+
 function curatedMatches() {
   const merged = new Map();
 
+  for (const archived of archivedPoolMatches()) {
+    merged.set(matchIdentity(archived), archived);
+  }
+
   for (const match of matches) {
-    merged.set(matchIdentity(match), match);
+    const key = matchIdentity(match);
+    const archived = merged.get(key);
+    // Elle doğrulanmış kayıt arşivdekinin üstüne biner ama arşivin taşıdığı
+    // ilk-görülme damgası korunur: kaydın ne zamandır bilindiği bilgisi
+    // yeniden üretilemez.
+    merged.set(key, archived
+      ? { ...match, firstSeenAt: archived.firstSeenAt || match.firstSeenAt, lifecycle: archived.lifecycle }
+      : match);
   }
 
   for (const calendarMatch of fixtureCalendarMatches()) {

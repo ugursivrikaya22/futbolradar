@@ -522,6 +522,77 @@
     }, true);
   }
 
+  /**
+   * MAÇ ARŞİVİ SÜZGEÇLERİ.
+   *
+   * İLERİCİ GELİŞTİRME: sayfa süzgeçsiz de tam çalışıyor — bütün maçlar
+   * sunucuda çizilmiş hâlde geliyor ve aylar `<details>` ile katlanıyor.
+   * Bu kod yalnızca gizleme/gösterme yapıyor; hiçbir kayıt istemcide
+   * üretilmiyor, dolayısıyla JavaScript kapalıyken de arşiv eksiksiz.
+   *
+   * Süzgeç arşivi YENİDEN ÇİZMİYOR: sunucunun yazdığı doğru içeriği
+   * istemcide yeniden üretmek, ikisinin ayrışacağı ilk yer olurdu.
+   */
+  function initMatchArchiveFilters() {
+    var form = document.getElementById("archive-filters");
+    var list = document.getElementById("archive-list");
+    if (!form || !list) return;
+
+    var statusLine = document.getElementById("archive-filter-status");
+    var rows = Array.prototype.slice.call(list.querySelectorAll('[data-card="archive-match"]'));
+    if (!rows.length) return;
+
+    function folded(value) {
+      return String(value || "").toLocaleLowerCase("tr").replace(/i̇/g, "i");
+    }
+
+    function apply() {
+      var team = folded(form.elements.team ? form.elements.team.value : "");
+      var competition = form.elements.competition ? form.elements.competition.value : "";
+      var season = form.elements.season ? form.elements.season.value : "";
+      var status = form.elements.status ? form.elements.status.value : "";
+      var date = form.elements.date ? form.elements.date.value : "";
+      var visible = 0;
+
+      rows.forEach(function (row) {
+        var matches = true;
+        if (team && folded(row.getAttribute("data-team")).indexOf(team) === -1) matches = false;
+        if (competition && row.getAttribute("data-competition") !== competition) matches = false;
+        if (season && row.getAttribute("data-season") !== season) matches = false;
+        if (status && row.getAttribute("data-status") !== status) matches = false;
+        if (date && row.getAttribute("data-date") !== date) matches = false;
+        row.hidden = !matches;
+        if (matches) visible += 1;
+      });
+
+      // Tamamı gizlenen gün ve ay başlıkları da kalkmalı; aksi hâlde boş
+      // başlıklar "burada maç var" izlenimi verirdi.
+      Array.prototype.forEach.call(list.querySelectorAll(".archive-day"), function (day) {
+        day.hidden = !day.querySelector('[data-card="archive-match"]:not([hidden])');
+      });
+      Array.prototype.forEach.call(list.querySelectorAll(".archive-month"), function (month) {
+        var any = month.querySelector('[data-card="archive-match"]:not([hidden])');
+        month.hidden = !any;
+        // Süzgeç açıkken eşleşen ayı kapalı bırakmak, sonucu saklamak olurdu.
+        if (any && (team || competition || season || status || date)) month.open = true;
+      });
+
+      if (statusLine) {
+        var filtering = Boolean(team || competition || season || status || date);
+        statusLine.hidden = !filtering;
+        statusLine.textContent = filtering
+          ? (visible ? visible + " maç listeleniyor." : "Bu süzgeçlere uyan maç yok.")
+          : "";
+      }
+    }
+
+    form.addEventListener("input", apply);
+    form.addEventListener("change", apply);
+    form.addEventListener("reset", function () {
+      window.setTimeout(apply, 0);
+    });
+  }
+
   function renderInto(target, dataName, renderer, emptyTitle) {
     if (!target) {
       return;
@@ -10066,6 +10137,7 @@
 
   function bootstrap() {
     initThemeToggle();
+    initMatchArchiveFilters();
     initDataLayer();
   }
 

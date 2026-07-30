@@ -263,6 +263,15 @@ jobs:
       - name: Plan post-match retries
         run: node scripts/plan-post-match-retries.mjs --apply
 
+      # ARŞİVLEME SENKRONDAN HEMEN SONRA.
+      #
+      # data/fixture-calendar.json her koşuda baştan yazılıyor ve yalnızca üç
+      # gün geçmiş tutuyor. Arşiv adımı o dosyadan düşmek üzere olan maçları
+      # kalıcı depoya alır. Senkrondan SONRA, sayfa üretiminden ÖNCE koşması
+      # şart: havuz arşivi okuyor, sayfalar havuzu.
+      - name: Archive every seen match
+        run: node scripts/archive-matches.mjs --apply
+
       - name: Regenerate match reports
         run: node scripts/generate-post-match-pages.mjs
 

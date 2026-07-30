@@ -26,6 +26,9 @@ export const NAV_SECONDARY = [
   { href: "istatistik-merkezi.html", label: "İstatistik Merkezi" },
   { href: "transfer-radari.html", label: "Transfer Radarı" },
   { href: "momentum.html", label: "Momentum" },
+  // Arşiv ikincil menüde: günlük kullanım bugünün maçları üzerinden akıyor,
+  // arşiv ise arandığında bulunması gereken kalıcı bir kayıt.
+  { href: "mac-arsivi.html", label: "Maç Arşivi" },
   { href: "gol-kralligi.html", label: "Gol Krallığı" },
   { href: "haberler.html", label: "Haberler" }
 ];
