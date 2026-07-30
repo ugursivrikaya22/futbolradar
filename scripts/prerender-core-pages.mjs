@@ -23,6 +23,7 @@ const { calculateMatchRadar, normalizeText } = require("../services/matchRadarSe
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
 const { getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigFixtureService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
+const { logFeaturedSelection, selectFeaturedMatch } = require("../services/featuredMatchSelector.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
 
@@ -261,10 +262,18 @@ function staticFixtureCard(match, meta) {
   </article>`;
 }
 
-/** Hero'daki büyük öne çıkan maç panosunun statik karşılığı. */
+/**
+ * Hero'daki büyük öne çıkan maç panosunun statik karşılığı.
+ *
+ * Seçim kuralı istemciyle (app.js: selectFeaturedMatchEntry) aynı serviste
+ * tanımlıdır: bugün ya da canlı bir Türk takımı maçı varsa kart mutlaka o
+ * maçı gösterir. Statik yedek bu kuralı uygulamazsa, JS çalışana kadar
+ * ekranda Türk takımı maçı yerine rastgele bir hazırlık maçı kalıyordu.
+ */
 function staticFeaturedFixture() {
   const today = istanbulToday();
-  const list = curatedMatches()
+  const all = curatedMatches();
+  const list = all
     .filter((match) => String(match.kickoff || "").slice(0, 10) >= today)
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)));
 
@@ -272,7 +281,9 @@ function staticFeaturedFixture() {
   const todayList = list.filter((match) => String(match.kickoff || "").slice(0, 10) === today);
   const finishedCount = todayList.filter((match) => String(match.status || "").toUpperCase() === "FINISHED").length;
   const upcomingCount = todayList.length - finishedCount - liveCount;
-  const featured = todayList[0] || list[0] || null;
+  const selection = selectFeaturedMatch(all, { today });
+  logFeaturedSelection("prerender-index", selection);
+  const featured = selection.match;
 
   // "Analizi hazır" istemcide de aynı kuralla sayılır (app.js:
   // matchHasReadyAnalysis): maçın yayımlanabilir bir okuması var mı? Statik
@@ -314,7 +325,7 @@ function staticFeaturedFixture() {
         <strong>${escapeHtml(name)}</strong>
       </div>`;
 
-  return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}">
+  return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}" data-featured-reason="${escapeHtml(selection.reason)}" data-featured-turkish="${selection.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(selection.reasonLabel)}">
       <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMarkHtml(featured.league)}${escapeHtml(featured.league || "Maç programı")}</span><span>${escapeHtml(`${dateLabel} · ${featured.venue || "Saha bilgisi bekleniyor"}`)}</span></div>
       <div class="featured-fixture-board">
         ${side(featured.homeTeam)}

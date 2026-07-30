@@ -2195,8 +2195,319 @@
     );
   }
 
+  // featured-match-selection:start
+  // Bu blok scripts/test-featured-turkish-match.mjs tarafından ayıklanıp
+  // services/featuredMatchSelector.js ile aynı girdilerde çalıştırılır; iki
+  // taraf aynı maçı seçmezse test kırılır. İşaret yorumlarını silme.
+  /**
+   * TÜRK TAKIMI KAPSAMI — services/turkishTeams.js ile aynı liste.
+   *
+   * Ana sayfanın en büyük kartı bugün ya da canlı bir Türk takımı maçı
+   * varsa mutlaka onu göstermek zorunda. İstemcinin fikstür dosyasını
+   * beklemeden karar verebilmesi için liste burada da duruyor;
+   * scripts/test-featured-turkish-match.mjs iki listenin ayrışmadığını
+   * doğrular, yani Süper Lig'e yeni takım geldiğinde test kırılır.
+   *
+   * DİKKAT: Ad benzerliğine güvenilmez. Fikstür takviminde Finlandiya'dan
+   * "Inter Turku" var; "turk" arayan bir kısayol onu Türk maçı sayardı.
+   */
+  var TURKISH_TEAM_NAMES = [
+    "Alanyaspor", "Amed", "Amed Sportif Faaliyetler", "Başakşehir", "Beşiktaş",
+    "Çaykur Rizespor", "Çorum FK", "Erzurumspor FK", "Eyüpspor", "Fenerbahçe",
+    "Galatasaray", "Gaziantep FK", "Gençlerbirliği", "Gençlerbirliği S.K.",
+    "Göztepe", "Kasımpaşa", "Kocaelispor", "Konyaspor", "Rizespor",
+    "Samsunspor", "Trabzonspor",
+    "Türkiye", "Ümraniyespor", "Adana Demirspor", "Antalyaspor", "Sivasspor",
+    "Kayserispor", "Hatayspor", "Fatih Karagümrük", "Karagümrük",
+    "İstanbulspor", "Pendikspor", "Bodrum FK", "Sakaryaspor", "Boluspor",
+    "Manisa FK", "MKE Ankaragücü", "Ankaragücü", "Keçiörengücü",
+    "Şanlıurfaspor", "Bandırmaspor", "Altay", "Giresunspor", "Denizlispor",
+    "Esenler Erokspor", "Iğdır FK", "Serik Belediyespor", "Vanspor FK",
+    "Tuzlaspor", "Altınordu", "Menemen FK", "Sarıyer", "Adanaspor",
+    "Bucaspor 1928", "Yeni Malatyaspor", "Kırklarelispor", "Somaspor",
+    "Balıkesirspor"
+  ];
+
+  var NON_TURKISH_LOOKALIKES = [
+    "inter turku", "fc inter turku", "turku palloseura", "tps turku",
+    "sporting", "sporting cp", "sporting lisbon", "sporting braga",
+    "sporting gijon", "sport recife", "sport boys", "sportist", "sportul"
+  ];
+
+  var TURKISH_LEAGUE_HINTS = [
+    "super lig", "trendyol super lig", "turkiye kupasi", "ziraat turkiye kupasi",
+    "1. lig", "trendyol 1. lig"
+  ];
+
+  var TURKISH_COUNTRY_VALUES = ["turkiye", "turkey", "turkiye cumhuriyeti", "tur"];
+
+  var turkishTeamKeyCache = null;
+
+  function turkishKey(value) {
+    return normalizeSearchText(value).replace(/\s+/g, " ").trim();
+  }
+
+  function turkishTeamKeys() {
+    if (!turkishTeamKeyCache) {
+      turkishTeamKeyCache = Object.create(null);
+      TURKISH_TEAM_NAMES.forEach(function (name) {
+        var normalized = turkishKey(name);
+        if (normalized) {
+          turkishTeamKeyCache[normalized] = true;
+        }
+      });
+    }
+
+    return turkishTeamKeyCache;
+  }
+
+  /**
+   * Dar "-spor" kuralı: sözcük "spor" ile BİTİYORSA (Konyaspor, Rizespor)
+   * takım Türk sayılır. "Sporting" gibi adlar kapsam dışıdır, çünkü kural
+   * sözcüğün sonuna bakar.
+   */
+  function hasTurkishClubSuffix(normalized) {
+    return normalized.split(/[^a-z0-9]+/).some(function (word) {
+      return word.length > 5 && word.slice(-4) === "spor";
+    });
+  }
+
+  function isTurkishTeamName(name) {
+    var normalized = turkishKey(name);
+
+    if (!normalized || NON_TURKISH_LOOKALIKES.indexOf(normalized) !== -1) {
+      return false;
+    }
+
+    if (turkishTeamKeys()[normalized]) {
+      return true;
+    }
+
+    return hasTurkishClubSuffix(normalized);
+  }
+
+  function isTurkishLeagueName(league) {
+    var normalized = turkishKey(league);
+    return Boolean(normalized) && TURKISH_LEAGUE_HINTS.some(function (hint) {
+      return normalized.indexOf(hint) !== -1;
+    });
+  }
+
+  /** Maçta Türk takımı var mı? Ad, ülke alanı ve lig birlikte bakılır. */
+  function isTurkishMatch(match) {
+    if (!match) {
+      return false;
+    }
+
+    if (isTurkishTeamName(match.homeTeam) || isTurkishTeamName(match.awayTeam)) {
+      return true;
+    }
+
+    var countries = [
+      match.homeTeamCountry,
+      match.awayTeamCountry,
+      match.country,
+      match.home && match.home.country,
+      match.away && match.away.country
+    ];
+
+    var hasTurkishCountry = countries.some(function (value) {
+      return TURKISH_COUNTRY_VALUES.indexOf(turkishKey(value)) !== -1;
+    });
+
+    return hasTurkishCountry || isTurkishLeagueName(match.league || match.competition);
+  }
+
+  function turkishSideOf(match) {
+    if (!match) {
+      return "";
+    }
+
+    var sides = [match.homeTeam, match.awayTeam].filter(isTurkishTeamName);
+
+    if (sides.length) {
+      return sides.join(" & ");
+    }
+
+    return isTurkishMatch(match) ? String(match.league || match.competition || "") : "";
+  }
+
+  /**
+   * HERO KARTI SEÇİMİ — kural services/featuredMatchSelector.js ile aynı.
+   *
+   * Havuz: bugünün maçları + (tarihi ne olursa olsun) canlı maçlar. Önce
+   * yalnızca Türk takımı olan maçlar denenir; kural mutlak olduğu için
+   * kürasyonlu liste, sağlayıcı takvimi veya statik yedek bunu ezemez.
+   *
+   * Bant sırası: live → in-progress → upcoming → played.
+   * "in-progress" bandı sağlayıcı gecikmesini karşılar: 19:08'de 18:30
+   * maçı hâlâ "SCHEDULED" görünebiliyor ve yalnızca duruma bakan bir
+   * sıralama o maçı hero'dan düşürüyordu. Bant skor veya dakika UYDURMAZ,
+   * yalnızca kart sırasını belirler.
+   */
+  var FEATURED_FINISHED_STATUSES = ["FINISHED", "FT", "AET", "PEN", "AWARDED", "WO"];
+  var FEATURED_IN_PROGRESS_WINDOW_MS = 150 * 60 * 1000;
+  var FEATURED_BAND_ORDER = ["live", "in-progress", "upcoming", "played"];
+  var FEATURED_REASON_LABELS = {
+    "turkish-live": "Canlı Türk takımı maçı",
+    "turkish-in-progress": "Oynanmakta olan Türk takımı maçı",
+    "turkish-upcoming": "Bugünün en yakın Türk takımı maçı",
+    "turkish-played": "Bugün oynanan son Türk takımı maçı",
+    live: "Canlı maç (bugün Türk takımı maçı yok)",
+    "in-progress": "Oynanmakta olan maç (bugün Türk takımı maçı yok)",
+    upcoming: "Bugünün en yakın maçı (Türk takımı maçı yok)",
+    played: "Bugün oynanan son maç (Türk takımı maçı yok)",
+    "next-fixture": "Bugün maç yok; takvimdeki sıradaki karşılaşma",
+    empty: "Gösterilecek doğrulanmış maç yok"
+  };
+
+  function isFinishedMatch(match) {
+    var status = String((match && (match.status || match.providerStatus)) || "").toUpperCase();
+    return FEATURED_FINISHED_STATUSES.indexOf(status) !== -1;
+  }
+
+  function featuredKickoffTime(match) {
+    var raw = String((match && (match.kickoff || match.date || match.utcDate)) || "");
+
+    if (!raw) {
+      return { value: Infinity, hasTime: false };
+    }
+
+    var hasTime = raw.indexOf("T") !== -1 || raw.indexOf(":") !== -1;
+    var parsed = Date.parse(hasTime ? raw : raw.slice(0, 10) + "T00:00:00+03:00");
+
+    return { value: Number.isNaN(parsed) ? Infinity : parsed, hasTime: hasTime };
+  }
+
+  function featuredBandOf(match, nowMs) {
+    if (isLiveMatch(match)) {
+      return "live";
+    }
+
+    if (isFinishedMatch(match)) {
+      return "played";
+    }
+
+    var kickoff = featuredKickoffTime(match);
+
+    // Saati açıklanmamış maç "şu anda oynanıyor" sayılamaz.
+    if (!isFinite(kickoff.value) || !kickoff.hasTime || kickoff.value > nowMs) {
+      return "upcoming";
+    }
+
+    return nowMs - kickoff.value <= FEATURED_IN_PROGRESS_WINDOW_MS ? "in-progress" : "played";
+  }
+
+  function compareFeaturedWithinBand(band, left, right) {
+    var leftValue = featuredKickoffTime(left).value;
+    var rightValue = featuredKickoffTime(right).value;
+
+    if (leftValue !== rightValue) {
+      return band === "played" ? rightValue - leftValue : leftValue - rightValue;
+    }
+
+    return String((left && left.id) || "").localeCompare(String((right && right.id) || ""));
+  }
+
+  function pickFeaturedFromPool(pool, nowMs) {
+    for (var index = 0; index < FEATURED_BAND_ORDER.length; index += 1) {
+      var band = FEATURED_BAND_ORDER[index];
+      var inBand = pool.filter(function (match) {
+        return featuredBandOf(match, nowMs) === band;
+      });
+
+      if (inBand.length) {
+        var sorted = inBand.slice().sort(function (left, right) {
+          return compareFeaturedWithinBand(band, left, right);
+        });
+        return { match: sorted[0], band: band };
+      }
+    }
+
+    return null;
+  }
+
+  function describeFeaturedSelection(match, reason, band, candidateCount, turkishCandidateCount) {
+    return {
+      match: match || null,
+      reason: reason,
+      reasonLabel: FEATURED_REASON_LABELS[reason] || reason,
+      band: band,
+      turkish: Boolean(match) && isTurkishMatch(match),
+      turkishTeam: match ? turkishSideOf(match) : "",
+      candidateCount: candidateCount,
+      turkishCandidateCount: turkishCandidateCount
+    };
+  }
+
+  function selectFeaturedMatchEntry(matches, options) {
+    var settings = options || {};
+    var now = settings.now instanceof Date ? settings.now : new Date();
+    var nowMs = now.getTime();
+    var today = settings.today || todayInIstanbul();
+    var list = (Array.isArray(matches) ? matches : []).filter(Boolean);
+
+    // Gece yarısını aşan bir maç TSİ'de "dün" görünse de canlıysa havuzdadır.
+    var pool = list.filter(function (match) {
+      return matchDateValue(match) === today || isLiveMatch(match);
+    });
+    var turkishPool = pool.filter(isTurkishMatch);
+
+    var turkishPick = pickFeaturedFromPool(turkishPool, nowMs);
+
+    if (turkishPick) {
+      return describeFeaturedSelection(
+        turkishPick.match, "turkish-" + turkishPick.band, turkishPick.band, pool.length, turkishPool.length
+      );
+    }
+
+    var generalPick = pickFeaturedFromPool(pool, nowMs);
+
+    if (generalPick) {
+      return describeFeaturedSelection(generalPick.match, generalPick.band, generalPick.band, pool.length, 0);
+    }
+
+    // Bugün maç yoksa hero boş kalmasın: takvimdeki sıradaki karşılaşma.
+    var upcoming = list.filter(function (match) {
+      return matchDateValue(match) > today;
+    }).sort(function (left, right) {
+      return featuredKickoffTime(left).value - featuredKickoffTime(right).value;
+    });
+    var next = upcoming.filter(isTurkishMatch)[0] || upcoming[0] || null;
+
+    if (next) {
+      return describeFeaturedSelection(next, "next-fixture", "upcoming", pool.length, 0);
+    }
+
+    return describeFeaturedSelection(null, "empty", "", pool.length, 0);
+  }
+
+  // Kart beklenmedik bir maç gösterdiğinde tek bakılacak yer bu satır.
+  // Aynı seçim iki kez üst üste çizildiğinde günlük tekrarlanmaz.
+  var lastFeaturedLogLine = "";
+
+  function logFeaturedSelection(scope, selection) {
+    var match = selection && selection.match;
+    var line = "[futbolradar:featured-match] scope=" + scope +
+      " reason=" + ((selection && selection.reason) || "empty") +
+      " id=" + ((match && match.id) || "-") +
+      ' match="' + (match ? (match.homeTeam || "?") + " - " + (match.awayTeam || "?") : "-") + '"' +
+      " turkish=" + Boolean(selection && selection.turkish) +
+      ' turkishTeam="' + ((selection && selection.turkishTeam) || "-") + '"' +
+      " candidates=" + ((selection && selection.candidateCount) || 0) +
+      " turkishCandidates=" + ((selection && selection.turkishCandidateCount) || 0);
+
+    if (line === lastFeaturedLogLine || !window.console || !console.info) {
+      return;
+    }
+
+    lastFeaturedLogLine = line;
+    console.info(line);
+  }
+  // featured-match-selection:end
+
   /** Hero'daki büyük "günün maçı" panosu. */
-  function renderFeaturedFixture(match) {
+  function renderFeaturedFixture(match, selection) {
     if (!match) {
       return "";
     }
@@ -2227,8 +2538,18 @@
       );
     }
 
+    // Seçim sebebi işaretlemede de duruyor: konsol günlüğüne erişemeyen bir
+    // oturumda bile kartın neden bu maçı gösterdiği okunabilir. Görünür bir
+    // ipucu (title) bilerek yok — kartın tamamını kaplayan bir balon
+    // okumayı bozardı.
+    var reasonAttrs = selection
+      ? ' data-featured-reason="' + escapeHtml(selection.reason) + '"' +
+        ' data-featured-turkish="' + (selection.turkish ? "true" : "false") + '"' +
+        ' data-featured-reason-label="' + escapeHtml(selection.reasonLabel) + '"'
+      : "";
+
     return (
-      '<div class="featured-fixture' + (meta.live ? " is-live" : "") + '">' +
+      '<div class="featured-fixture' + (meta.live ? " is-live" : "") + '"' + reasonAttrs + ">" +
       '<div class="featured-fixture-head">' +
       '<span class="featured-fixture-league">' + leagueMarkHtml(match.league) + escapeHtml(displayValue(match.league)) + "</span>" +
       "<span>" + escapeHtml(match.venue || formatMatchDate(todayInIstanbul())) + "</span>" +
@@ -2318,14 +2639,15 @@
     var upcomingCount = list.filter(function (match) {
       return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(String(match.status || match.providerStatus || "").toUpperCase());
     }).length;
-    var ordered = list.sort(function (left, right) {
-      var leftRank = isLiveMatch(left) ? 0 : (String(left.status || "").toUpperCase() === "FINISHED" ? 2 : 1);
-      var rightRank = isLiveMatch(right) ? 0 : (String(right.status || "").toUpperCase() === "FINISHED" ? 2 : 1);
-      return leftRank - rightRank || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
-    });
-    // Öne çıkan maç: önce canlı olan, yoksa sıradaki, o da yoksa günün son
-    // tamamlanan karşılaşması. Hero'da tek maç büyük gösterilir.
-    var featured = ordered[0] || null;
+    // Öne çıkan maç: bugün ya da canlı bir Türk takımı maçı varsa MUTLAKA o.
+    // Türk takımı maçı yoksa aynı bant sırası tüm maçlara uygulanır.
+    // Kural tek yerde (selectFeaturedMatchEntry) tanımlı; ilk çizim, analiz
+    // dizini geldikten sonraki yeniden çizim ve canlı yoklama aynı sonucu
+    // verir, yani sonraki bir render bu kartı ezemez.
+    var selection = selectFeaturedMatchEntry(list);
+    var featured = selection.match;
+
+    logFeaturedSelection("home-hero", selection);
 
     // Analizi hazır: maçın kendi kaydından üretilebilen bir okuma var mı?
     // Sayaç canlı yoklamada yeniden hesaplanır, çünkü bir maç başladığında
@@ -2353,7 +2675,7 @@
       );
     }
 
-    return renderFeaturedFixture(featured) + quickStats;
+    return renderFeaturedFixture(featured, selection) + quickStats;
   }
 
   function renderMatchesByLeague(matches, renderer) {
