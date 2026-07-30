@@ -12379,6 +12379,128 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   color: var(--live);
 }
 
+/* --- Hero karuseli ----------------------------------------------------------
+   Kart tasarımı değişmedi: her slayt aynı `.featured-fixture` panosunu taşır.
+   Karusel yalnızca bir kap, gezinme ve "aktif slayt" durumu ekler. Slaytlar
+   üst üste bindirilmez, aktif olmayan slayt `hidden` ile listeden düşer;
+   böylece kabın yüksekliği her zaman görünen kartın yüksekliğidir ve düzen
+   kart değişince zıplamaz. */
+.featured-carousel {
+  display: grid;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.featured-carousel-viewport {
+  min-width: 0;
+}
+
+.featured-carousel-slide[hidden] {
+  display: none;
+}
+
+.featured-carousel-slide.is-active {
+  animation: featured-slide-in 320ms ease-out both;
+}
+
+@keyframes featured-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.featured-carousel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-3);
+}
+
+.featured-carousel-arrow {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  padding: 0;
+  background: rgba(var(--surface-rgb), 0.081);
+  color: var(--text-soft);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.featured-carousel-arrow:hover,
+.featured-carousel-arrow:focus-visible {
+  border-color: var(--accent);
+  background: rgba(var(--surface-rgb), 0.16);
+  color: var(--text);
+}
+
+.featured-carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Nokta görsel olarak küçük ama dokunma hedefi 24 pikselden küçük olmamalı;
+   bu yüzden düğme şeffaf bir dolguyla büyütülüp içindeki span boyanıyor. */
+.featured-carousel-dot {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
+/* Pasif nokta rengi `--text-soft` üzerinden kurulur: yüzey rengiyle
+   (`--surface-rgb`) kurulduğunda açık temada beyaz üstüne beyaz düşüyor ve
+   yalnızca aktif nokta görünüyordu. `--text-soft` iki temada da zemine
+   karşıt olduğu için nokta her koşulda okunur. */
+.featured-carousel-dot span {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-soft);
+  opacity: 0.32;
+  transition: background 160ms ease, opacity 160ms ease, transform 160ms ease;
+}
+
+.featured-carousel-dot:hover span,
+.featured-carousel-dot:focus-visible span {
+  opacity: 0.7;
+}
+
+.featured-carousel-dot.is-active span {
+  background: var(--accent);
+  opacity: 1;
+  transform: scale(1.35);
+}
+
+/* Hareket azaltma tercihi: otomatik dönüş JS tarafında zaten kapanıyor,
+   geçiş animasyonu da burada kapatılır. */
+@media (prefers-reduced-motion: reduce) {
+  .featured-carousel-slide.is-active {
+    animation: none;
+  }
+
+  .featured-carousel-dot span {
+    transition: none;
+  }
+}
+
 /* Hero altındaki hızlı istatistik kartları. */
 .quick-stats {
   display: grid;

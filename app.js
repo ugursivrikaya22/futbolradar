@@ -354,9 +354,23 @@
 
     target.innerHTML = html;
     target.dataset.state = "ready";
+    // innerHTML düğümleri değiştirdiği için karusel her çizimde yeniden
+    // bağlanmalı; aksi halde canlı yoklamadan sonra kart dönmeyi bırakır.
+    initFeaturedCarousel(target);
     // site.js yatay şerit düğmelerini yeniden bağlayabilsin diye haber ver:
     // içerik istemci tarafında değiştiğinde kaydırma sınırları da değişir.
     document.dispatchEvent(new CustomEvent("futbolradar:rendered", { detail: { target: target } }));
+  }
+
+  /** Statik yedeğe dönüş: işaretleme geri gelince karusel de yeniden bağlanır. */
+  function setFallbackContent(target, html) {
+    if (!target) {
+      return;
+    }
+
+    target.innerHTML = html;
+    target.dataset.state = "fallback";
+    initFeaturedCarousel(target);
   }
 
   function setEmpty(target, title, text) {
@@ -534,8 +548,7 @@
         var html = renderer(data);
         if (!html) {
           if (staticFallback) {
-            target.innerHTML = staticFallback;
-            target.dataset.state = "fallback";
+            setFallbackContent(target, staticFallback);
             return;
           }
           setEmpty(target, emptyTitle || "Veri bulunamadi", "Bu bölüm icin gösterilecek kayit yok.");
@@ -545,8 +558,7 @@
       })
       .catch(function () {
         if (staticFallback) {
-          target.innerHTML = staticFallback;
-          target.dataset.state = "fallback";
+          setFallbackContent(target, staticFallback);
           return;
         }
         setEmpty(target, emptyTitle || "Veri yüklenemedi", "Bu bölüm geçici olarak kullanılamıyor. Sayfanın diğer alanlarını incelemeye devam edebilirsin.");
@@ -2333,11 +2345,87 @@
   }
 
   /**
-   * HERO KARTI SEÇİMİ — kural services/featuredMatchSelector.js ile aynı.
+   * BÜYÜK KULÜP LİSTESİ — services/majorClubs.js ile aynı kapsam.
    *
-   * Havuz: bugünün maçları + (tarihi ne olursa olsun) canlı maçlar. Önce
-   * yalnızca Türk takımı olan maçlar denenir; kural mutlak olduğu için
-   * kürasyonlu liste, sağlayıcı takvimi veya statik yedek bunu ezemez.
+   * Canlı Türk takımı maçı yokken karusel sırası büyük kulüplerin canlı
+   * maçlarına geçer. Eşleşme TAM ad üzerinden yapılır: "Inter" parçası
+   * aransaydı Finlandiya'dan "Inter Turku" büyük kulüp sayılırdı.
+   */
+  var MAJOR_CLUB_NAMES = [
+    "Real Madrid", "Real Madrid CF", "FC Barcelona", "Barcelona",
+    "Atlético Madrid", "Atletico Madrid", "Atlético de Madrid", "Club Atlético de Madrid",
+    "Bayern München", "Bayern Munich", "FC Bayern München", "FC Bayern Munich", "Bayern Munchen",
+    "Borussia Dortmund", "BV Borussia 09 Dortmund", "Dortmund",
+    "Bayer Leverkusen", "Bayer 04 Leverkusen", "RB Leipzig", "RasenBallsport Leipzig",
+    "Manchester City", "Man City", "Manchester City FC",
+    "Manchester United", "Man United", "Man Utd", "Manchester United FC",
+    "Liverpool", "Liverpool FC", "Arsenal", "Arsenal FC", "Chelsea", "Chelsea FC",
+    "Tottenham Hotspur", "Tottenham", "Spurs", "Newcastle United", "Newcastle", "Aston Villa",
+    "Juventus", "Juventus FC",
+    "Inter", "Internazionale", "FC Internazionale", "Inter Milan", "Internazionale Milano",
+    "AC Milan", "Milan", "Associazione Calcio Milan",
+    "Napoli", "SSC Napoli", "AS Roma", "Roma", "Lazio", "SS Lazio", "Atalanta", "Atalanta BC",
+    "Paris Saint-Germain", "PSG", "Paris Saint Germain", "Paris SG",
+    "Olympique Marseille", "Marseille", "Olympique de Marseille",
+    "Olympique Lyonnais", "Lyon", "Olympique Lyon", "AS Monaco", "Monaco",
+    "Benfica", "SL Benfica", "FC Porto", "Porto",
+    "Sporting CP", "Sporting Lisbon", "Sporting Clube de Portugal",
+    "Ajax", "AFC Ajax", "PSV Eindhoven", "PSV", "Feyenoord", "Feyenoord Rotterdam",
+    "Celtic", "Celtic FC", "Rangers", "Rangers FC",
+    "Olympiacos", "Olympiakos", "Olympiacos Piraeus", "Shakhtar Donetsk", "Shakhtar",
+    "Red Bull Salzburg", "RB Salzburg", "FC Salzburg", "Club Brugge", "Club Bruges",
+    "Sevilla", "Sevilla FC", "Real Sociedad", "Villarreal", "Villarreal CF",
+    "Athletic Club", "Athletic Bilbao", "Valencia", "Valencia CF", "Real Betis", "Betis",
+    "Flamengo", "CR Flamengo", "Palmeiras", "SE Palmeiras",
+    "River Plate", "CA River Plate", "Boca Juniors", "CA Boca Juniors",
+    "Al-Hilal", "Al Hilal", "Al-Nassr", "Al Nassr", "Inter Miami", "Inter Miami CF"
+  ];
+
+  var majorClubKeyCache = null;
+
+  function majorClubKeys() {
+    if (!majorClubKeyCache) {
+      majorClubKeyCache = Object.create(null);
+      MAJOR_CLUB_NAMES.forEach(function (name) {
+        var normalized = turkishKey(name);
+        if (normalized) {
+          majorClubKeyCache[normalized] = true;
+        }
+      });
+    }
+
+    return majorClubKeyCache;
+  }
+
+  function isMajorClubName(name) {
+    var normalized = turkishKey(name);
+    return Boolean(normalized) && Boolean(majorClubKeys()[normalized]);
+  }
+
+  function isMajorClubMatch(match) {
+    return Boolean(match) && (isMajorClubName(match.homeTeam) || isMajorClubName(match.awayTeam));
+  }
+
+  function majorClubSideOf(match) {
+    if (!match) {
+      return "";
+    }
+
+    return [match.homeTeam, match.awayTeam].filter(isMajorClubName).join(" & ");
+  }
+
+  /**
+   * HERO KARUSELİ — sıra kuralı services/featuredMatchSelector.js ile aynı.
+   *
+   * Havuz: bugünün maçları + (tarihi ne olursa olsun) canlı maçlar.
+   * Kademe sırası:
+   *   0 canlı Türk maçı → 1 bugünün diğer Türk maçları →
+   *   2 büyük kulüplerin canlı maçı → 3 diğer canlı maçlar →
+   *   4 bugünün kalan maçları
+   *
+   * Kademe 1 kademe 2'nin önünde: bugün bir Türk takımı oynuyorsa ilk kart
+   * o maçtır, yabancı bir maç canlı olsa bile. Karusel hepsini gösteriyor;
+   * değişen yalnızca hangisinin ilk açıldığı.
    *
    * Bant sırası: live → in-progress → upcoming → played.
    * "in-progress" bandı sağlayıcı gecikmesini karşılar: 19:08'de 18:30
@@ -2348,15 +2436,18 @@
   var FEATURED_FINISHED_STATUSES = ["FINISHED", "FT", "AET", "PEN", "AWARDED", "WO"];
   var FEATURED_IN_PROGRESS_WINDOW_MS = 150 * 60 * 1000;
   var FEATURED_BAND_ORDER = ["live", "in-progress", "upcoming", "played"];
+  var FEATURED_MAX_SLIDES = 6;
+  var FEATURED_ROTATION_MS = 10000;
   var FEATURED_REASON_LABELS = {
     "turkish-live": "Canlı Türk takımı maçı",
     "turkish-in-progress": "Oynanmakta olan Türk takımı maçı",
     "turkish-upcoming": "Bugünün en yakın Türk takımı maçı",
     "turkish-played": "Bugün oynanan son Türk takımı maçı",
-    live: "Canlı maç (bugün Türk takımı maçı yok)",
-    "in-progress": "Oynanmakta olan maç (bugün Türk takımı maçı yok)",
-    upcoming: "Bugünün en yakın maçı (Türk takımı maçı yok)",
-    played: "Bugün oynanan son maç (Türk takımı maçı yok)",
+    "major-live": "Büyük kulübün canlı maçı",
+    live: "Canlı maç",
+    "in-progress": "Oynanmakta olan maç",
+    upcoming: "Bugünün başlayacak maçı",
+    played: "Bugün oynanan maç",
     "next-fixture": "Bugün maç yok; takvimdeki sıradaki karşılaşma",
     empty: "Gösterilecek doğrulanmış maç yok"
   };
@@ -2409,93 +2500,142 @@
     return String((left && left.id) || "").localeCompare(String((right && right.id) || ""));
   }
 
-  function pickFeaturedFromPool(pool, nowMs) {
-    for (var index = 0; index < FEATURED_BAND_ORDER.length; index += 1) {
-      var band = FEATURED_BAND_ORDER[index];
-      var inBand = pool.filter(function (match) {
-        return featuredBandOf(match, nowMs) === band;
-      });
+  function featuredTierOf(match, nowMs) {
+    var band = featuredBandOf(match, nowMs);
 
-      if (inBand.length) {
-        var sorted = inBand.slice().sort(function (left, right) {
-          return compareFeaturedWithinBand(band, left, right);
-        });
-        return { match: sorted[0], band: band };
-      }
+    if (isTurkishMatch(match)) {
+      return band === "live" ? 0 : 1;
     }
 
-    return null;
+    if (band === "live") {
+      return isMajorClubMatch(match) ? 2 : 3;
+    }
+
+    return 4;
   }
 
-  function describeFeaturedSelection(match, reason, band, candidateCount, turkishCandidateCount) {
+  function featuredReasonFor(match, nowMs) {
+    var band = featuredBandOf(match, nowMs);
+
+    if (isTurkishMatch(match)) {
+      return "turkish-" + band;
+    }
+
+    if (band === "live" && isMajorClubMatch(match)) {
+      return "major-live";
+    }
+
+    return band;
+  }
+
+  function describeFeaturedSelection(match, reason, band, tier, candidateCount, turkishCandidateCount) {
     return {
       match: match || null,
       reason: reason,
       reasonLabel: FEATURED_REASON_LABELS[reason] || reason,
       band: band,
+      tier: tier,
       turkish: Boolean(match) && isTurkishMatch(match),
       turkishTeam: match ? turkishSideOf(match) : "",
+      major: Boolean(match) && isMajorClubMatch(match),
+      majorClub: match ? majorClubSideOf(match) : "",
       candidateCount: candidateCount,
       turkishCandidateCount: turkishCandidateCount
     };
   }
 
-  function selectFeaturedMatchEntry(matches, options) {
+  /** Karuselde dönecek maçlar, gösterim sırasıyla. */
+  function selectFeaturedMatchEntries(matches, options) {
     var settings = options || {};
     var now = settings.now instanceof Date ? settings.now : new Date();
     var nowMs = now.getTime();
     var today = settings.today || todayInIstanbul();
+    var limit = settings.limit > 0 ? settings.limit : FEATURED_MAX_SLIDES;
     var list = (Array.isArray(matches) ? matches : []).filter(Boolean);
 
     // Gece yarısını aşan bir maç TSİ'de "dün" görünse de canlıysa havuzdadır.
     var pool = list.filter(function (match) {
       return matchDateValue(match) === today || isLiveMatch(match);
     });
-    var turkishPool = pool.filter(isTurkishMatch);
+    var turkishCount = pool.filter(isTurkishMatch).length;
 
-    var turkishPick = pickFeaturedFromPool(turkishPool, nowMs);
+    var ordered = pool.slice().sort(function (left, right) {
+      var tierGap = featuredTierOf(left, nowMs) - featuredTierOf(right, nowMs);
+      if (tierGap !== 0) {
+        return tierGap;
+      }
 
-    if (turkishPick) {
-      return describeFeaturedSelection(
-        turkishPick.match, "turkish-" + turkishPick.band, turkishPick.band, pool.length, turkishPool.length
-      );
+      var leftBand = featuredBandOf(left, nowMs);
+      var bandGap = FEATURED_BAND_ORDER.indexOf(leftBand) -
+        FEATURED_BAND_ORDER.indexOf(featuredBandOf(right, nowMs));
+      if (bandGap !== 0) {
+        return bandGap;
+      }
+
+      return compareFeaturedWithinBand(leftBand, left, right);
+    });
+
+    if (ordered.length) {
+      return ordered.slice(0, limit).map(function (match) {
+        return describeFeaturedSelection(
+          match,
+          featuredReasonFor(match, nowMs),
+          featuredBandOf(match, nowMs),
+          featuredTierOf(match, nowMs),
+          pool.length,
+          turkishCount
+        );
+      });
     }
 
-    var generalPick = pickFeaturedFromPool(pool, nowMs);
-
-    if (generalPick) {
-      return describeFeaturedSelection(generalPick.match, generalPick.band, generalPick.band, pool.length, 0);
-    }
-
-    // Bugün maç yoksa hero boş kalmasın: takvimdeki sıradaki karşılaşma.
+    // Bugün maç yoksa karusel boş kalmasın: takvimdeki sıradaki karşılaşmalar.
     var upcoming = list.filter(function (match) {
       return matchDateValue(match) > today;
     }).sort(function (left, right) {
-      return featuredKickoffTime(left).value - featuredKickoffTime(right).value;
+      var turkishGap = Number(isTurkishMatch(right)) - Number(isTurkishMatch(left));
+      return turkishGap || featuredKickoffTime(left).value - featuredKickoffTime(right).value;
     });
-    var next = upcoming.filter(isTurkishMatch)[0] || upcoming[0] || null;
 
-    if (next) {
-      return describeFeaturedSelection(next, "next-fixture", "upcoming", pool.length, 0);
-    }
-
-    return describeFeaturedSelection(null, "empty", "", pool.length, 0);
+    return upcoming.slice(0, limit).map(function (match) {
+      return describeFeaturedSelection(
+        match, "next-fixture", "upcoming", featuredTierOf(match, nowMs), pool.length, turkishCount
+      );
+    });
   }
 
-  // Kart beklenmedik bir maç gösterdiğinde tek bakılacak yer bu satır.
-  // Aynı seçim iki kez üst üste çizildiğinde günlük tekrarlanmaz.
+  /** Karuselin ilk (en büyük) kartı. */
+  function selectFeaturedMatchEntry(matches, options) {
+    var ordered = selectFeaturedMatchEntries(matches, options);
+
+    if (ordered.length) {
+      return ordered[0];
+    }
+
+    return describeFeaturedSelection(null, "empty", "", null, 0, 0);
+  }
+
+  // Karusel beklenmedik bir sıra gösterdiğinde tek bakılacak yer bu satırlar.
+  // Aynı sıra iki kez üst üste çizildiğinde günlük tekrarlanmaz.
   var lastFeaturedLogLine = "";
 
-  function logFeaturedSelection(scope, selection) {
+  function formatFeaturedSelectionLog(scope, selection, slot) {
     var match = selection && selection.match;
-    var line = "[futbolradar:featured-match] scope=" + scope +
+
+    return "[futbolradar:featured-match] scope=" + scope +
+      " slot=" + (slot > 0 ? slot : 1) +
       " reason=" + ((selection && selection.reason) || "empty") +
       " id=" + ((match && match.id) || "-") +
       ' match="' + (match ? (match.homeTeam || "?") + " - " + (match.awayTeam || "?") : "-") + '"' +
       " turkish=" + Boolean(selection && selection.turkish) +
       ' turkishTeam="' + ((selection && selection.turkishTeam) || "-") + '"' +
+      " major=" + Boolean(selection && selection.major) +
+      ' majorClub="' + ((selection && selection.majorClub) || "-") + '"' +
       " candidates=" + ((selection && selection.candidateCount) || 0) +
       " turkishCandidates=" + ((selection && selection.turkishCandidateCount) || 0);
+  }
+
+  function logFeaturedSelection(scope, selection, slot) {
+    var line = formatFeaturedSelectionLog(scope, selection, slot);
 
     if (line === lastFeaturedLogLine || !window.console || !console.info) {
       return;
@@ -2504,6 +2644,33 @@
     lastFeaturedLogLine = line;
     console.info(line);
   }
+
+  /** Karuselin tamamını sırayla günlüğe yazar. */
+  function logFeaturedRotation(scope, selections) {
+    var list = Array.isArray(selections) ? selections : [];
+
+    if (!list.length) {
+      logFeaturedSelection(scope, null, 1);
+      return;
+    }
+
+    // Tekrar süzgeci tek satırlık; sıra bütünüyle değişmediyse sessiz kal.
+    var signature = list.map(function (selection) {
+      return (selection.match && selection.match.id) + ":" + selection.reason;
+    }).join("|");
+
+    if (signature === lastFeaturedRotationSignature) {
+      return;
+    }
+
+    lastFeaturedRotationSignature = signature;
+    list.forEach(function (selection, index) {
+      lastFeaturedLogLine = "";
+      logFeaturedSelection(scope, selection, index + 1);
+    });
+  }
+
+  var lastFeaturedRotationSignature = "";
   // featured-match-selection:end
 
   /** Hero'daki büyük "günün maçı" panosu. */
@@ -2566,6 +2733,220 @@
       "</div>" +
       "</div>"
     );
+  }
+
+  /**
+   * HERO KARUSELİ — işaretleme.
+   *
+   * Kart tasarımı değişmedi: her slayt aynı `.featured-fixture` panosunu
+   * taşır. Karusel yalnızca bir kap, basit bir gezinme (ok + nokta) ve
+   * "aktif slayt" durumu ekler. JS çalışmazsa ilk slayt görünür kalır ve
+   * sayfa eskisi gibi tek kart gösterir; gezinme düğmeleri o durumda
+   * işlevsizdir ama düzeni bozmaz.
+   */
+  function renderFeaturedCarousel(selections, activeIndex) {
+    var list = Array.isArray(selections) ? selections.filter(function (entry) {
+      return entry && entry.match;
+    }) : [];
+
+    if (!list.length) {
+      return "";
+    }
+
+    var active = activeIndex > 0 && activeIndex < list.length ? activeIndex : 0;
+
+    var slides = list.map(function (selection, index) {
+      var isActive = index === active;
+      return '<div class="featured-carousel-slide' + (isActive ? " is-active" : "") + '"' +
+        ' data-featured-slide="' + index + '"' +
+        ' data-featured-match="' + escapeHtml(String(selection.match.id || "")) + '"' +
+        ' role="group" aria-roledescription="slayt"' +
+        ' aria-label="' + (index + 1) + " / " + list.length + '"' +
+        (isActive ? "" : " hidden") + ">" +
+        renderFeaturedFixture(selection.match, selection) +
+        "</div>";
+    }).join("");
+
+    // Tek maç varsa dönecek bir şey yok; gezinme çizilmez.
+    var nav = list.length < 2 ? "" : (
+      '<div class="featured-carousel-nav">' +
+      '<button type="button" class="featured-carousel-arrow" data-featured-prev aria-label="Önceki maç">' +
+      '<span aria-hidden="true">‹</span></button>' +
+      '<div class="featured-carousel-dots" role="tablist" aria-label="Öne çıkan maçlar">' +
+      list.map(function (selection, index) {
+        var label = (selection.match.homeTeam || "?") + " - " + (selection.match.awayTeam || "?");
+        return '<button type="button" class="featured-carousel-dot' + (index === active ? " is-active" : "") + '"' +
+          ' data-featured-go="' + index + '" role="tab"' +
+          ' aria-selected="' + (index === active ? "true" : "false") + '"' +
+          ' aria-label="' + escapeHtml(label) + '"><span aria-hidden="true"></span></button>';
+      }).join("") +
+      "</div>" +
+      '<button type="button" class="featured-carousel-arrow" data-featured-next aria-label="Sonraki maç">' +
+      '<span aria-hidden="true">›</span></button>' +
+      "</div>"
+    );
+
+    return '<div class="featured-carousel" data-featured-carousel' +
+      ' data-featured-interval="' + FEATURED_ROTATION_MS + '"' +
+      ' data-featured-count="' + list.length + '"' +
+      ' aria-roledescription="karusel" aria-label="Öne çıkan maçlar">' +
+      '<div class="featured-carousel-viewport">' + slides + "</div>" +
+      nav +
+      "</div>";
+  }
+
+  // Görünen slaytın maç kimliği. Canlı yoklama kartı yeniden çizdiğinde
+  // okuyucunun baktığı maç kaybolmasın diye modül düzeyinde saklanır.
+  var featuredCarouselActiveId = "";
+  var featuredCarouselTicker = null;
+  var featuredCarouselControl = null;
+
+  function prefersReducedMotion() {
+    return Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+
+  /**
+   * Dönüş zamanlayıcısı BİR kez kurulur ve yeniden çizimlerde sıfırlanmaz.
+   *
+   * Canlı yoklama kartı 20 saniyede bir yeniden çiziyor. Zamanlayıcı her
+   * çizimde yeniden kurulsaydı 10 saniyelik sayaç sürekli başa döner ve
+   * kart 10 yerine ancak 20 saniyede bir değişirdi. Zamanlayıcı o yüzden
+   * işaretlemeden bağımsız; her turda o anki karusel kapsayıcısını arar.
+   */
+  function startFeaturedCarouselTicker(interval) {
+    if (featuredCarouselTicker) {
+      return;
+    }
+
+    featuredCarouselTicker = setInterval(function () {
+      var control = featuredCarouselControl;
+
+      // Kapsayıcı DOM'dan düştüyse (bölüm boş duruma geçmiş olabilir)
+      // kopuk düğümlerle uğraşma.
+      if (!control || !control.root.isConnected) {
+        return;
+      }
+
+      if (control.paused() || isDocumentHidden()) {
+        return;
+      }
+
+      control.step(1);
+    }, interval);
+  }
+
+  /**
+   * Karusel davranışı: 10 saniyede bir sonraki kart, oklar ve noktalarla
+   * elle gezinme. Kart tasarımına dokunmaz — yalnızca hangi slaytın görünür
+   * olduğunu yönetir.
+   *
+   * Otomatik dönüş şu durumlarda durur: fare kartın üzerinde, klavye odağı
+   * kartın içinde, sekme arka planda, ya da kullanıcı hareket azaltma
+   * tercihi bildirmiş. Elle gezinme her durumda çalışır.
+   */
+  function initFeaturedCarousel(scope) {
+    var root = (scope || document).querySelector("[data-featured-carousel]");
+
+    // Karusel bu kapsamda yoksa dokunma. setContent sayfadaki HER bölüm için
+    // çağrılıyor; buradaki koşulsuz bir müdahale, ana sayfadaki başka bir
+    // bölüm çizildiğinde hero'nun dönüşünü durduruyordu.
+    if (!root || root.dataset.featuredBound === "true") {
+      return;
+    }
+
+    var slides = Array.prototype.slice.call(root.querySelectorAll("[data-featured-slide]"));
+
+    if (!slides.length) {
+      return;
+    }
+
+    var dots = Array.prototype.slice.call(root.querySelectorAll("[data-featured-go]"));
+    var interval = Number(root.dataset.featuredInterval) > 0
+      ? Number(root.dataset.featuredInterval)
+      : FEATURED_ROTATION_MS;
+    var index = Math.max(0, slides.findIndex(function (slide) {
+      return slide.classList.contains("is-active");
+    }));
+    var paused = false;
+
+    function show(next) {
+      index = (next + slides.length) % slides.length;
+
+      slides.forEach(function (slide, position) {
+        var active = position === index;
+        slide.classList.toggle("is-active", active);
+        slide.hidden = !active;
+      });
+
+      dots.forEach(function (dot, position) {
+        var active = position === index;
+        dot.classList.toggle("is-active", active);
+        dot.setAttribute("aria-selected", active ? "true" : "false");
+      });
+
+      featuredCarouselActiveId = slides[index].dataset.featuredMatch || "";
+    }
+
+    function step(delta) {
+      show(index + delta);
+    }
+
+    root.dataset.featuredBound = "true";
+    show(index);
+
+    if (slides.length < 2) {
+      return;
+    }
+
+    root.addEventListener("click", function (event) {
+      var origin = event.target;
+      var target = origin && origin.closest
+        ? origin.closest("[data-featured-go], [data-featured-prev], [data-featured-next]")
+        : null;
+      if (!target) {
+        return;
+      }
+
+      event.preventDefault();
+
+      if (target.hasAttribute("data-featured-prev")) {
+        step(-1);
+      } else if (target.hasAttribute("data-featured-next")) {
+        step(1);
+      } else {
+        show(Number(target.dataset.featuredGo) || 0);
+      }
+    });
+
+    root.addEventListener("keydown", function (event) {
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        step(-1);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        step(1);
+      }
+    });
+
+    // Okuma sırasında kart altından kaymasın.
+    ["mouseenter", "focusin"].forEach(function (name) {
+      root.addEventListener(name, function () { paused = true; });
+    });
+    ["mouseleave", "focusout"].forEach(function (name) {
+      root.addEventListener(name, function () { paused = false; });
+    });
+
+    featuredCarouselControl = {
+      root: root,
+      step: step,
+      paused: function () { return paused; }
+    };
+
+    if (prefersReducedMotion()) {
+      return;
+    }
+
+    startFeaturedCarouselTicker(interval);
   }
 
   /** Ana sayfadaki "trend takımlar" şeridi (momentuma göre sıralı). */
@@ -2639,15 +3020,27 @@
     var upcomingCount = list.filter(function (match) {
       return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(String(match.status || match.providerStatus || "").toUpperCase());
     }).length;
-    // Öne çıkan maç: bugün ya da canlı bir Türk takımı maçı varsa MUTLAKA o.
-    // Türk takımı maçı yoksa aynı bant sırası tüm maçlara uygulanır.
-    // Kural tek yerde (selectFeaturedMatchEntry) tanımlı; ilk çizim, analiz
-    // dizini geldikten sonraki yeniden çizim ve canlı yoklama aynı sonucu
-    // verir, yani sonraki bir render bu kartı ezemez.
-    var selection = selectFeaturedMatchEntry(list);
-    var featured = selection.match;
+    // Karusel sırası: canlı Türk maçı ilk karta sabit, sonra bugünün diğer
+    // Türk maçları, sonra büyük kulüplerin canlı maçları, sonra kalanlar.
+    // Kural tek yerde (selectFeaturedMatchEntries) tanımlı; ilk çizim,
+    // analiz dizini geldikten sonraki yeniden çizim ve canlı yoklama aynı
+    // sıralamayı verir, yani sonraki bir render bu sırayı ezemez.
+    var selections = selectFeaturedMatchEntries(list);
+    var featured = selections.length ? selections[0].match : null;
 
-    logFeaturedSelection("home-hero", selection);
+    logFeaturedRotation("home-hero", selections);
+
+    // Canlı yoklama kartı 20 saniyede bir yeniden çiziyor. Aktif slaytı
+    // maç kimliğinden geri buluyoruz; aksi halde karusel her yoklamada
+    // başa sarar ve okuyucu baktığı maçı kaybederdi.
+    var activeIndex = 0;
+    if (featuredCarouselActiveId) {
+      selections.forEach(function (selection, index) {
+        if (String(selection.match.id || "") === featuredCarouselActiveId) {
+          activeIndex = index;
+        }
+      });
+    }
 
     // Analizi hazır: maçın kendi kaydından üretilebilen bir okuma var mı?
     // Sayaç canlı yoklamada yeniden hesaplanır, çünkü bir maç başladığında
@@ -2675,7 +3068,7 @@
       );
     }
 
-    return renderFeaturedFixture(featured, selection) + quickStats;
+    return renderFeaturedCarousel(selections, activeIndex) + quickStats;
   }
 
   function renderMatchesByLeague(matches, renderer) {
@@ -9422,6 +9815,9 @@
   }
 
   function initDataLayer() {
+    // Ön render edilmiş karusel veri gelmeden de dönmeye başlasın; ilk
+    // istek yavaşsa kart donmuş görünmemeli.
+    initFeaturedCarousel(document);
     initHomeSearch();
     initPlayerSharing();
     initAnalytics();

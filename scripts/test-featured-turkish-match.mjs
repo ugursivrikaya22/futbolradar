@@ -14,10 +14,15 @@ const {
   turkishTeamNames
 } = require("../services/turkishTeams.js");
 const {
+  MAX_FEATURED_SLIDES,
+  ROTATION_INTERVAL_MS,
   bandOf,
   formatFeaturedSelectionLog,
-  selectFeaturedMatch
+  selectFeaturedMatch,
+  selectFeaturedMatches,
+  tierOf
 } = require("../services/featuredMatchSelector.js");
+const { isMajorClubName, majorClubNames } = require("../services/majorClubs.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 
 // --- Türk takımı tespiti ---
@@ -170,12 +175,95 @@ const nothing = selectFeaturedMatch([], { now, today });
 assert.equal(nothing.match, null, "Maç yoksa seçim boş dönmeli");
 assert.equal(nothing.reason, "empty", "Boş seçimin sebebi empty olmalı");
 
+// --- Büyük kulüp tespiti ---
+for (const name of ["Real Madrid", "Bayern München", "Bayern Munich", "Manchester City",
+  "Paris Saint-Germain", "PSG", "Inter", "AC Milan", "Liverpool", "Ajax"]) {
+  assert.equal(isMajorClubName(name), true, `${name} büyük kulüp sayılmalı`);
+}
+
+// Tam ad eşleşmesi: "Inter" büyük kulüp ama "Inter Turku" değil.
+assert.equal(isMajorClubName("Inter Turku"), false, "Inter Turku büyük kulüp sayılmamalı");
+assert.equal(isMajorClubName("Osijek"), false, "Osijek büyük kulüp sayılmamalı");
+assert.equal(isMajorClubName("Rennes"), false, "Rennes bu listede yok");
+assert.equal(isMajorClubName(""), false, "Boş ad büyük kulüp sayılmamalı");
+
+// --- KARUSEL SIRASI ---
+const realMadridLive = { id: "real-madrid-osijek", kickoff: "2026-07-30T19:00:00+03:00", homeTeam: "Real Madrid", awayTeam: "Osijek", league: "Hazırlık Maçı", status: "LIVE" };
+const bayernLive = { id: "bayern-aek", kickoff: "2026-07-30T19:30:00+03:00", homeTeam: "Bayern München", awayTeam: "AEK Athens", league: "Hazırlık Maçı", status: "LIVE" };
+
+// Canlı Türk maçı ilk karta sabitlenir; kalanlar arkasından sıralanır.
+const rotation = selectFeaturedMatches(
+  [foreignFriendly, realMadridLive, besiktas, { ...trabzonspor, status: "LIVE" }, foreignLive],
+  { now, today }
+);
+assert.equal(rotation[0].match.id, "trabzonspor-al-sadd", "Canlı Türk maçı ilk kart olmalı");
+assert.equal(rotation[0].reason, "turkish-live", "İlk kartın sebebi turkish-live olmalı");
+assert.equal(rotation[1].match.id, "fc-midtjylland-besiktas", "Bugünün diğer Türk maçı ikinci sırada");
+assert.equal(rotation[2].match.id, "real-madrid-osijek", "Büyük kulübün canlı maçı Türk maçlarından sonra");
+assert.equal(rotation[2].reason, "major-live", "Büyük kulüp maçının sebebi major-live olmalı");
+assert.equal(rotation[2].major, true, "Büyük kulüp işareti taşımalı");
+assert.equal(rotation[3].match.id, "rennes-venezia", "Diğer canlı maç büyük kulüpten sonra");
+assert.equal(rotation[4].match.id, "aek-osijek", "Canlı olmayan yabancı maç en sonda");
+assert.equal(rotation.length, 5, "Havuzdaki her maç karusele girmeli");
+
+// Türk maçı yokken sıra büyük kulüplerin canlı maçlarına geçer.
+const majorFirst = selectFeaturedMatches([foreignFriendly, foreignLive, bayernLive, realMadridLive], { now, today });
+assert.equal(majorFirst[0].match.id, "real-madrid-osijek", "Büyük kulübün canlı maçı ilk kart olmalı");
+assert.equal(majorFirst[1].match.id, "bayern-aek", "İkinci büyük kulüp maçı hemen arkasında");
+assert.equal(majorFirst[2].match.id, "rennes-venezia", "Diğer canlı maç büyük kulüplerden sonra");
+assert.equal(majorFirst[0].reason, "major-live", "Sebep major-live olmalı");
+
+// Bugün Türk maçı varsa, yabancı bir maç canlı olsa bile ilk kart Türk maçıdır.
+const turkishBeatsMajor = selectFeaturedMatches([realMadridLive, trabzonspor], { now, today });
+assert.equal(turkishBeatsMajor[0].match.id, "trabzonspor-al-sadd", "Bugünün Türk maçı büyük kulübün canlı maçını geçer");
+assert.equal(turkishBeatsMajor[1].match.id, "real-madrid-osijek", "Büyük kulüp maçı karuselde ikinci kart");
+
+assert.equal(tierOf({ ...trabzonspor, status: "LIVE" }, noon), 0, "Canlı Türk maçı kademe 0");
+assert.equal(tierOf(trabzonspor, noon), 1, "Bugünün Türk maçı kademe 1");
+assert.equal(tierOf(realMadridLive, noon), 2, "Büyük kulübün canlı maçı kademe 2");
+assert.equal(tierOf(foreignLive, noon), 3, "Diğer canlı maç kademe 3");
+assert.equal(tierOf(foreignFriendly, noon), 4, "Canlı olmayan yabancı maç kademe 4");
+
+// Karusel sınırı: havuz büyüse de kart sayısı sabit tavanda kalır.
+const crowd = Array.from({ length: 12 }, (unused, index) => ({
+  id: `crowd-${index}`,
+  kickoff: `2026-07-30T2${index % 2}:00:00+03:00`,
+  homeTeam: "AEK Athens",
+  awayTeam: "Osijek",
+  league: "Hazırlık Maçı",
+  status: "SCHEDULED"
+}));
+assert.equal(
+  selectFeaturedMatches(crowd, { now, today }).length,
+  MAX_FEATURED_SLIDES,
+  `Karusel en fazla ${MAX_FEATURED_SLIDES} kart göstermeli`
+);
+assert.equal(
+  selectFeaturedMatches(crowd, { now, today, limit: 2 }).length,
+  2,
+  "limit seçeneği kart sayısını daraltmalı"
+);
+assert.equal(ROTATION_INTERVAL_MS, 10000, "Kart değişim aralığı 10 saniye olmalı");
+
+// selectFeaturedMatch karuselin ilk kartını verir.
+assert.equal(
+  selectFeaturedMatch([foreignFriendly, realMadridLive, trabzonspor], { now, today }).match.id,
+  selectFeaturedMatches([foreignFriendly, realMadridLive, trabzonspor], { now, today })[0].match.id,
+  "Tekil seçim karuselin ilk kartıyla aynı olmalı"
+);
+
 // --- Günlük satırı ---
-const logLine = formatFeaturedSelectionLog("test", staleStatuses);
+const logLine = formatFeaturedSelectionLog("test", staleStatuses, 1);
 assert.match(logLine, /^\[futbolradar:featured-match\]/, "Günlük ortak önekle başlamalı");
+assert.match(logLine, /slot=1/, "Günlükte kaçıncı kart olduğu yazmalı");
 assert.match(logLine, /reason=turkish-in-progress/, "Günlükte seçim sebebi yazmalı");
 assert.match(logLine, /turkish=true/, "Günlükte Türk maçı bilgisi yazmalı");
 assert.match(logLine, /id=trabzonspor-al-sadd/, "Günlükte seçilen maç id'si yazmalı");
+assert.match(
+  formatFeaturedSelectionLog("test", majorFirst[0], 1),
+  /major=true majorClub="Real Madrid"/,
+  "Büyük kulüp seçimi günlükte işaretlenmeli"
+);
 
 // --- Gerçek veri üzerinde değişmez kural ---
 // Tarih ilerledikçe veri değişir; sabit bir maç yerine kuralın kendisi
@@ -258,7 +346,15 @@ const clientModule = new Function(`
     }).format(new Date());
   }
   ${blockMatch[1]}
-  return { selectFeaturedMatchEntry: selectFeaturedMatchEntry, isTurkishMatch: isTurkishMatch };
+  return {
+    selectFeaturedMatchEntry: selectFeaturedMatchEntry,
+    selectFeaturedMatchEntries: selectFeaturedMatchEntries,
+    isTurkishMatch: isTurkishMatch,
+    isMajorClubName: isMajorClubName,
+    MAJOR_CLUB_NAMES: MAJOR_CLUB_NAMES,
+    FEATURED_ROTATION_MS: FEATURED_ROTATION_MS,
+    FEATURED_MAX_SLIDES: FEATURED_MAX_SLIDES
+  };
 `)();
 
 const parityCases = [
@@ -267,12 +363,15 @@ const parityCases = [
   { label: "canlı Türk maçı", list: [trabzonspor, { ...besiktas, status: "LIVE" }, foreignLive], now, today },
   { label: "maç öncesi", list: [foreignFriendly, besiktas, basaksehir, trabzonspor], now: new Date(Date.parse("2026-07-30T12:00:00+03:00")), today },
   { label: "Türk maçı yok", list: [foreignFriendly, foreignLive], now, today },
+  { label: "büyük kulüp sırası", list: [foreignFriendly, foreignLive, bayernLive, realMadridLive], now, today },
+  { label: "tam karusel", list: [foreignFriendly, realMadridLive, besiktas, { ...trabzonspor, status: "LIVE" }, foreignLive], now, today },
   { label: "gerçek kürasyonlu liste", list: live, now: new Date(), today: realToday }
 ];
 
 for (const testCase of parityCases) {
-  const fromService = selectFeaturedMatch(testCase.list, { now: testCase.now, today: testCase.today });
-  const fromClient = clientModule.selectFeaturedMatchEntry(testCase.list, { now: testCase.now, today: testCase.today });
+  const options = { now: testCase.now, today: testCase.today };
+  const fromService = selectFeaturedMatch(testCase.list, options);
+  const fromClient = clientModule.selectFeaturedMatchEntry(testCase.list, options);
 
   assert.equal(
     (fromClient.match && fromClient.match.id) || null,
@@ -281,7 +380,45 @@ for (const testCase of parityCases) {
   );
   assert.equal(fromClient.reason, fromService.reason, `Seçim sebebi de aynı olmalı (${testCase.label})`);
   assert.equal(fromClient.turkish, fromService.turkish, `Türk maçı işareti aynı olmalı (${testCase.label})`);
+  assert.equal(fromClient.major, fromService.major, `Büyük kulüp işareti aynı olmalı (${testCase.label})`);
+
+  // Yalnızca ilk kart değil, karuselin TAMAMI aynı sırada olmalı: statik
+  // yedek Node'da, canlı sayfa tarayıcıda üretiliyor. Sıralar ayrışırsa JS
+  // yüklendiğinde kartlar yerinden oynar.
+  const serviceOrder = selectFeaturedMatches(testCase.list, options);
+  const clientOrder = clientModule.selectFeaturedMatchEntries(testCase.list, options);
+
+  assert.deepEqual(
+    clientOrder.map((entry) => `${entry.match.id}:${entry.reason}`),
+    serviceOrder.map((entry) => `${entry.match.id}:${entry.reason}`),
+    `İstemci ve servis karusel sırası aynı olmalı (${testCase.label})`
+  );
 }
+
+assert.equal(clientModule.FEATURED_ROTATION_MS, ROTATION_INTERVAL_MS, "Dönüş aralığı iki tarafta aynı olmalı");
+assert.equal(clientModule.FEATURED_MAX_SLIDES, MAX_FEATURED_SLIDES, "Kart tavanı iki tarafta aynı olmalı");
+
+// Büyük kulüp listesi de ayrışmamalı.
+const clientMajorKeys = new Set(clientModule.MAJOR_CLUB_NAMES.map((name) => String(name)
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .replace(/ı/g, "i")
+  .trim()
+  .toLowerCase()
+  .replace(/\s+/g, " ")));
+const missingMajor = majorClubNames()
+  .map((name) => String(name).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ı/g, "i").trim().toLowerCase().replace(/\s+/g, " "))
+  .filter((name) => !clientMajorKeys.has(name));
+assert.deepEqual(
+  missingMajor,
+  [],
+  `app.js MAJOR_CLUB_NAMES listesi eksik: ${missingMajor.join(", ")} — services/majorClubs.js ile eşitlenmeli`
+);
+
+for (const name of ["Real Madrid", "Bayern München", "PSG", "Inter"]) {
+  assert.equal(clientModule.isMajorClubName(name), true, `İstemci ${name} kulübünü büyük saymalı`);
+}
+assert.equal(clientModule.isMajorClubName("Inter Turku"), false, "İstemci Inter Turku'yu büyük kulüp saymamalı");
 
 for (const name of ["Trabzonspor", "Başakşehir", "Çaykur Rizespor", "İstanbulspor", "Nazillispor"]) {
   assert.equal(

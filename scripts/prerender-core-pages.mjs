@@ -23,7 +23,11 @@ const { calculateMatchRadar, normalizeText } = require("../services/matchRadarSe
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
 const { getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigFixtureService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
-const { logFeaturedSelection, selectFeaturedMatch } = require("../services/featuredMatchSelector.js");
+const {
+  ROTATION_INTERVAL_MS,
+  logFeaturedRotation,
+  selectFeaturedMatches
+} = require("../services/featuredMatchSelector.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
 
@@ -263,12 +267,17 @@ function staticFixtureCard(match, meta) {
 }
 
 /**
- * Hero'daki büyük öne çıkan maç panosunun statik karşılığı.
+ * Hero karuselinin statik karşılığı.
  *
- * Seçim kuralı istemciyle (app.js: selectFeaturedMatchEntry) aynı serviste
- * tanımlıdır: bugün ya da canlı bir Türk takımı maçı varsa kart mutlaka o
- * maçı gösterir. Statik yedek bu kuralı uygulamazsa, JS çalışana kadar
- * ekranda Türk takımı maçı yerine rastgele bir hazırlık maçı kalıyordu.
+ * Sıra kuralı istemciyle (app.js: selectFeaturedMatchEntries) aynı serviste
+ * tanımlıdır: canlı Türk takımı maçı ilk karta sabit, sonra bugünün diğer
+ * Türk maçları, sonra büyük kulüplerin canlı maçları. Statik yedek bu
+ * kuralı uygulamazsa, JS çalışana kadar ekranda Türk takımı maçı yerine
+ * rastgele bir hazırlık maçı kalıyordu.
+ *
+ * İşaretleme istemcideki `renderFeaturedCarousel` ile bilerek özdeştir:
+ * JS yüklendiğinde kart yerinden oynamasın, aynı slayt aynı yerde kalsın.
+ * JS hiç çalışmazsa ilk slayt görünür kalır ve sayfa tek kart gösterir.
  */
 function staticFeaturedFixture() {
   const today = istanbulToday();
@@ -281,9 +290,10 @@ function staticFeaturedFixture() {
   const todayList = list.filter((match) => String(match.kickoff || "").slice(0, 10) === today);
   const finishedCount = todayList.filter((match) => String(match.status || "").toUpperCase() === "FINISHED").length;
   const upcomingCount = todayList.length - finishedCount - liveCount;
-  const selection = selectFeaturedMatch(all, { today });
-  logFeaturedSelection("prerender-index", selection);
-  const featured = selection.match;
+  const selections = selectFeaturedMatches(all, { today });
+  logFeaturedRotation("prerender-index", selections);
+  const selection = selections[0] || null;
+  const featured = selection && selection.match;
 
   // "Analizi hazır" istemcide de aynı kuralla sayılır (app.js:
   // matchHasReadyAnalysis): maçın yayımlanabilir bir okuması var mı? Statik
@@ -312,27 +322,44 @@ function staticFeaturedFixture() {
     </div>${quickStats}`;
   }
 
-  const status = String(featured.status || "SCHEDULED").toUpperCase();
-  const hasScore = featured.score && featured.score.home !== null && featured.score.home !== undefined
-    && featured.score.away !== null && featured.score.away !== undefined;
-  const headline = hasScore ? `${featured.score.home} - ${featured.score.away}` : (featured.time || "—");
-  // Skor/saat büyük alanda zaten yazıyor; rozet onu tekrar etmesin.
-  const stateLabel = status === "FINISHED" ? "Maç sonucu" : status === "LIVE" ? "Canlı" : "Başlama saati";
-  const dateLabel = String(featured.kickoff || "").slice(0, 10) === today ? "Bugün" : longDateLabel(featured.kickoff);
-
   const side = (name) => `<div class="featured-fixture-team">
         <span class="fixture-row-fallback" aria-hidden="true">${escapeHtml(fixtureTeamInitials(name))}</span>
         <strong>${escapeHtml(name)}</strong>
       </div>`;
 
-  return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}" data-featured-reason="${escapeHtml(selection.reason)}" data-featured-turkish="${selection.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(selection.reasonLabel)}">
-      <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMarkHtml(featured.league)}${escapeHtml(featured.league || "Maç programı")}</span><span>${escapeHtml(`${dateLabel} · ${featured.venue || "Saha bilgisi bekleniyor"}`)}</span></div>
+  const card = (entry) => {
+    const match = entry.match;
+    const status = String(match.status || "SCHEDULED").toUpperCase();
+    const hasScore = match.score && match.score.home !== null && match.score.home !== undefined
+      && match.score.away !== null && match.score.away !== undefined;
+    const headline = hasScore ? `${match.score.home} - ${match.score.away}` : (match.time || "—");
+    // Skor/saat büyük alanda zaten yazıyor; rozet onu tekrar etmesin.
+    const stateLabel = status === "FINISHED" ? "Maç sonucu" : status === "LIVE" ? "Canlı" : "Başlama saati";
+    const dateLabel = String(match.kickoff || "").slice(0, 10) === today ? "Bugün" : longDateLabel(match.kickoff);
+
+    return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}" data-featured-reason="${escapeHtml(entry.reason)}" data-featured-turkish="${entry.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(entry.reasonLabel)}">
+      <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMarkHtml(match.league)}${escapeHtml(match.league || "Maç programı")}</span><span>${escapeHtml(`${dateLabel} · ${match.venue || "Saha bilgisi bekleniyor"}`)}</span></div>
       <div class="featured-fixture-board">
-        ${side(featured.homeTeam)}
+        ${side(match.homeTeam)}
         <div class="featured-fixture-score"><b>${escapeHtml(headline)}</b><span>${escapeHtml(stateLabel)}</span></div>
-        ${side(featured.awayTeam)}
+        ${side(match.awayTeam)}
       </div>
       <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Analizi İncele</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
+    </div>`;
+  };
+
+  const slides = selections.map((entry, index) => `<div class="featured-carousel-slide${index === 0 ? " is-active" : ""}" data-featured-slide="${index}" data-featured-match="${escapeHtml(String(entry.match.id || ""))}" role="group" aria-roledescription="slayt" aria-label="${index + 1} / ${selections.length}"${index === 0 ? "" : " hidden"}>${card(entry)}</div>`).join("");
+
+  // Tek maç varsa dönecek bir şey yok; gezinme çizilmez.
+  const nav = selections.length < 2 ? "" : `<div class="featured-carousel-nav">
+      <button type="button" class="featured-carousel-arrow" data-featured-prev aria-label="Önceki maç"><span aria-hidden="true">‹</span></button>
+      <div class="featured-carousel-dots" role="tablist" aria-label="Öne çıkan maçlar">${selections.map((entry, index) => `<button type="button" class="featured-carousel-dot${index === 0 ? " is-active" : ""}" data-featured-go="${index}" role="tab" aria-selected="${index === 0 ? "true" : "false"}" aria-label="${escapeHtml(`${entry.match.homeTeam || "?"} - ${entry.match.awayTeam || "?"}`)}"><span aria-hidden="true"></span></button>`).join("")}</div>
+      <button type="button" class="featured-carousel-arrow" data-featured-next aria-label="Sonraki maç"><span aria-hidden="true">›</span></button>
+    </div>`;
+
+  return `<div class="featured-carousel" data-featured-carousel data-featured-interval="${ROTATION_INTERVAL_MS}" data-featured-count="${selections.length}" aria-roledescription="karusel" aria-label="Öne çıkan maçlar">
+      <div class="featured-carousel-viewport">${slides}</div>
+      ${nav}
     </div>${quickStats}`;
 }
 
