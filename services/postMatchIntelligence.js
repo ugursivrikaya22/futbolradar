@@ -22,6 +22,7 @@
  */
 
 const { normalizeText } = require("./matchRadarService");
+const { isAnalyzableMatch } = require("./matchStatus");
 
 /** Güven düzeyi: kaç girdinin gerçekten ölçülmüş olduğuna bağlı. */
 function confidenceFor(available, required) {
@@ -521,7 +522,8 @@ function matchConclusion(sections, match) {
  * @returns {{sections: Array, omitted: string[], coverage: number}}
  */
 function buildPostMatchIntelligence(match) {
-  if (!match || String(match.status || "").toUpperCase() !== "FINISHED") {
+  // FT/AET/PEN dahil (bkz. services/matchStatus.js).
+  if (!isAnalyzableMatch(match)) {
     return { sections: [], omitted: [], coverage: 0 };
   }
 

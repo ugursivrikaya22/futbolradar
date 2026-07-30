@@ -7,12 +7,17 @@
  */
 
 const { API_FOOTBALL, providerIdFor } = require("./providerIdentityService");
+const { isFinishedMatch } = require("./matchStatus");
 
 /** Maçın bitmiş sayılması için ilk vuruştan sonra beklenen süre (dk). */
 const FULL_TIME_MINUTES = 135;
 
+// Tamamlanma tespiti services/matchStatus.js'de tek yerde: sağlayıcı
+// bitmiş maçı "FT", uzatmalıyı "AET", penaltılıyı "PEN" olarak veriyor ve
+// yalnızca "FINISHED" arayan eski kontrol bu maçların sonucunu hiç
+// çekmiyordu.
 function isFinished(match) {
-  return String((match && match.status) || "").toUpperCase() === "FINISHED";
+  return isFinishedMatch(match);
 }
 
 function isScoreValue(value) {
@@ -85,8 +90,11 @@ function mergeProviderDetail(match, detail, timestamp) {
     changes.push(`${detail.lineups.length} kadro`);
   }
 
-  if (!isFinished(match) && String(detail.status || "").toUpperCase() === "FINISHED") {
+  if (!isFinished(match) && isFinishedMatch(detail)) {
+    // Kürasyonlu kayıt tek bir kanonik değer taşır; sağlayıcının FT/AET/PEN
+    // ayrımı `providerStatus` alanında korunur, uydurulmaz.
     next.status = "FINISHED";
+    next.providerStatus = detail.status || detail.providerStatus || next.providerStatus;
     changes.push("durum: FINISHED");
   }
 

@@ -37,7 +37,8 @@
     analyses: { api: "analyses", fallback: "analyses", reportSource: true },
     news: { fallback: "news", reportSource: false },
     superLigFixtures: { api: "super-lig-fixtures", fallback: "super-lig-fixtures", reportSource: false },
-    matchAnalyses: { fallback: "match-analyses", reportSource: false }
+    matchAnalyses: { fallback: "match-analyses", reportSource: false },
+    postMatchReports: { fallback: "post-match-reports", reportSource: false }
   };
 
   function escapeHtml(value) {
@@ -420,8 +421,15 @@
     if (name === "matchDetail" && Array.isArray(data)) {
       var detailParams = new URLSearchParams(window.location.search);
       var requestedId = detailParams.get("fixtureId") || detailParams.get("id") || "";
+      // Kimliklerin HEPSİ denenir. Eskiden `fixtureId || providerId || id`
+      // zinciriyle yalnızca ilk dolu alan karşılaştırılıyordu: sağlayıcı
+      // kimliği olan bir maç ("blx8udp...") kendi kürasyonlu id'siyle
+      // açıldığında eşleşmiyor ve API erişilemediğinde maç detay sayfası
+      // boş kalıyordu.
       return data.filter(function (match) {
-        return String(match.fixtureId || match.providerId || match.id || "") === requestedId;
+        return [match.fixtureId, match.providerId, match.id].some(function (value) {
+          return value && String(value) === requestedId;
+        });
       }).slice(0, 1);
     }
 
@@ -4869,6 +4877,137 @@
     );
   }
 
+  /**
+   * MAÇ SONRASI ANALİZLER — istemci sunumu.
+   *
+   * Kaynak `data/post-match-reports.json`: analiz build sırasında BİR KEZ
+   * üretilip saklanıyor (services/postMatchReportStore.js). İstemci burada
+   * hiçbir şey hesaplamıyor, yalnızca saklanmış kaydı basıyor — böylece maç
+   * detay sayfası, analiz sayfası ve ana sayfa aynı analizi gösteriyor.
+   *
+   * Sağlayıcının vermediği alan için PROVIDER_MISSING_LABEL yazılıyor;
+   * boş bırakılmıyor, sıfır ya da örnek değerle doldurulmuyor.
+   */
+  var PROVIDER_MISSING_LABEL = "Veri sağlayıcı tarafından sunulmadı";
+
+  function postMatchRecords(payload) {
+    if (Array.isArray(payload)) {
+      return payload;
+    }
+
+    return payload && Array.isArray(payload.records) ? payload.records : [];
+  }
+
+  /** Sunum sırası: bitmiş Türk takımı maçları önce, sonra en yeni maç. */
+  function orderPostMatchRecords(records) {
+    return postMatchRecords(records).slice().sort(function (left, right) {
+      var turkishGap = Number(Boolean(right.turkish)) - Number(Boolean(left.turkish));
+      if (turkishGap !== 0) {
+        return turkishGap;
+      }
+      return String(right.kickoff || "").localeCompare(String(left.kickoff || ""));
+    });
+  }
+
+  function postMatchScoreLine(record) {
+    if (!record.score || typeof record.score.home !== "number" || typeof record.score.away !== "number") {
+      return (record.homeTeam || "?") + " - " + (record.awayTeam || "?");
+    }
+    return (record.homeTeam || "?") + " " + record.score.home + "-" + record.score.away + " " + (record.awayTeam || "?");
+  }
+
+  function postMatchMissingHtml(record) {
+    var missing = Array.isArray(record.missingInputs) ? record.missingInputs : [];
+
+    if (!missing.length) {
+      return "";
+    }
+
+    return '<p class="post-match-missing"><strong>' + escapeHtml(PROVIDER_MISSING_LABEL) + "</strong> " +
+      escapeHtml(missing.map(function (item) { return item.label; }).join(", ")) + "</p>";
+  }
+
+  /** Kırılma anları + maç sonu bölümü; ikisi de yalnızca ölçülmüşse basılır. */
+  function postMatchMomentsHtml(record) {
+    var digest = record.digest || {};
+    var blocks = "";
+    var turning = digest.turningPoints || {};
+
+    if (turning.status === "ready" && (turning.moments || []).length) {
+      blocks += '<div class="post-match-moments"><span class="post-match-label">Kırılma anları</span><ul>' +
+        turning.moments.map(function (moment) {
+          return "<li" + (moment.pivotal ? ' class="is-pivotal"' : "") + "><b>" + escapeHtml(moment.minute) + "</b> " +
+            escapeHtml([moment.team, moment.type].filter(Boolean).join(" · ")) +
+            (moment.detail ? "<span>" + escapeHtml(moment.detail) + "</span>" : "") + "</li>";
+        }).join("") +
+        "</ul></div>";
+    }
+
+    var late = digest.lateGame;
+    if (late && late.status === "ready" && late.verdict) {
+      blocks += '<div class="post-match-late"><span class="post-match-label">Maç sonu (' +
+        escapeHtml(String(late.from || 75)) + "'+)</span><p>" + escapeHtml(late.verdict) + "</p></div>";
+    }
+
+    return blocks;
+  }
+
+  function postMatchPlayersHtml(record) {
+    var players = ((record.digest || {}).keyPlayers || {}).players || [];
+
+    if (!players.length) {
+      return "";
+    }
+
+    return '<div class="post-match-players"><span class="post-match-label">Öne çıkan oyuncular</span><ul>' +
+      players.map(function (player) {
+        return "<li><b>" + escapeHtml(player.name || "") + "</b>" +
+          (player.team ? "<span>" + escapeHtml(player.team) + "</span>" : "") +
+          (player.contribution ? "<span>" + escapeHtml(player.contribution) + "</span>" : "") +
+          "</li>";
+      }).join("") +
+      "</ul></div>";
+  }
+
+  function renderPostMatchCard(record, options) {
+    var settings = options || {};
+    var digest = record.digest || {};
+    var meta = [record.league, formatProfileDate(record.date)].filter(Boolean).join(" · ");
+    var finish = digest.finish;
+    var finishNote = finish && finish.type && finish.type !== "regular" ? finish.label : "";
+
+    return '<article class="post-match-card' + (record.turkish ? " is-turkish" : "") + '"' +
+      ' data-card="post-match" data-match="' + escapeHtml(record.matchId || "") + '">' +
+      '<div class="post-match-head">' +
+      '<span class="post-match-meta">' + escapeHtml(meta) + "</span>" +
+      (finishNote ? '<span class="post-match-finish">' + escapeHtml(finishNote) + "</span>" : "") +
+      "</div>" +
+      '<strong class="post-match-score">' + escapeHtml(postMatchScoreLine(record)) + "</strong>" +
+      (digest.headline ? "<h3>" + escapeHtml(digest.headline) + "</h3>" : "") +
+      (settings.detailed && digest.paragraph ? "<p>" + escapeHtml(digest.paragraph) + "</p>" : "") +
+      (settings.detailed ? postMatchMomentsHtml(record) + postMatchPlayersHtml(record) : "") +
+      postMatchMissingHtml(record) +
+      '<div class="post-match-footer">' +
+      '<span class="post-match-coverage">Veri kapsamı %' + escapeHtml(String(record.coverage || 0)) + "</span>" +
+      (record.publishState === "page"
+        ? '<a class="detail-link" href="' + escapeHtml(record.reportUrl || "#") + '">Tam raporu aç</a>'
+        : '<span class="post-match-note">Ölçülmüş veri gelince tam rapor açılacak</span>') +
+      "</div>" +
+      "</article>";
+  }
+
+  function renderPostMatchAnalyses(payload) {
+    var records = orderPostMatchRecords(payload);
+
+    if (!records.length) {
+      return "";
+    }
+
+    return records.map(function (record) {
+      return renderPostMatchCard(record, { detailed: true });
+    }).join("");
+  }
+
   function renderNewsCard(item) {
     var sourceUrl = safeImageUrl(item && item.url);
     var published = formatProfileDate(item && item.publishedAt) || "Tarih açıklanmadı";
@@ -8705,6 +8844,38 @@
     );
   }
 
+  // Maç detay sayfasında gösterilecek saklanmış rapor. initMatchDetail
+  // tarafından doldurulur; hesaplama istemcide tekrarlanmaz.
+  var latestPostMatchIndex = Object.create(null);
+
+  function postMatchRecordFor(match) {
+    if (!match) {
+      return null;
+    }
+
+    return latestPostMatchIndex[String(match.id || "")] || null;
+  }
+
+  /**
+   * Maç detayındaki maç sonrası analiz bölümü. Yalnızca tamamlanmış maçta
+   * ve yalnızca saklanmış kayıt varsa basılır; kayıt yoksa bölüm hiç
+   * açılmaz — boş bir "analiz" başlığı ölçüm yapılmış izlenimi verir.
+   */
+  function mdPostMatchHtml(detail) {
+    var record = postMatchRecordFor(detail);
+
+    if (!record) {
+      return "";
+    }
+
+    return mdSection(
+      "post-match",
+      "Maç sonrası analiz",
+      record.seo && record.seo.description ? record.seo.description : "Tamamlanan maçın ölçülmüş veriden üretilmiş okuması",
+      renderPostMatchCard(record, { detailed: true })
+    );
+  }
+
   function renderMatchDetail(detail) {
     if (!detail) {
       return "";
@@ -8721,6 +8892,7 @@
       mdLineupsHtml(detail) +
       mdStatisticsHtml(detail) +
       mdAnalysisHtml(detail) +
+      mdPostMatchHtml(detail) +
       mdPlayersHtml(detail) +
       // Mevcut radar işlevleri korunur: momentum/form anlık görüntüsü, sinyal
       // kartları, takım radar bağlantıları ve aksiyon paneli. Radar bölümü
@@ -8744,7 +8916,17 @@
 
     var staticFallback = target.dataset.staticFallback === "true" ? target.innerHTML : "";
     target.dataset.state = "loading";
-    loadData("matchDetail").then(function (data) {
+    // Saklanmış maç sonrası raporlar detayla BİRLİKTE yükleniyor: sonradan
+    // gelseydi bölüm ilk boyamadan sonra belirir ve sayfa zıplardı. Depo
+    // okunamazsa detay yine de çizilir, yalnızca bölüm açılmaz.
+    Promise.all([
+      loadData("matchDetail"),
+      loadData("postMatchReports").catch(function () { return null; })
+    ]).then(function (results) {
+      var data = results[0];
+      postMatchRecords(results[1]).forEach(function (record) {
+        latestPostMatchIndex[String(record.matchId || "")] = record;
+      });
       var detail = Array.isArray(data) ? data[0] : data;
       if (!detail) {
         if (staticFallback) {
@@ -9981,6 +10163,16 @@
       },
       "Analiz verisi yüklenemedi"
     );
+
+    // Maç sonrası analizler: build sırasında bir kez üretilip saklanan
+    // kayıtlar. Analiz sayfası tam okumayı, ana sayfa kısa vitrini basar.
+    renderInto(
+      document.querySelector('[data-api-target="post-match-analyses"]'),
+      "postMatchReports",
+      renderPostMatchAnalyses,
+      "Maç sonrası analizler yüklenemedi"
+    );
+
 
     renderInto(
       document.querySelector('[data-api-target="news-preview"]'),

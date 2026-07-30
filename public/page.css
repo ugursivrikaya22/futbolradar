@@ -12501,6 +12501,158 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   }
 }
 
+/* --- Maç sonrası analiz kartları ---------------------------------------------
+   Analiz sayfası ve maç detay sayfası aynı kartı kullanır; kaynak build
+   sırasında bir kez üretilen data/post-match-reports.json. */
+.post-match-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--sp-4);
+}
+
+.post-match-card {
+  display: grid;
+  align-content: start;
+  gap: var(--sp-3);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  padding: clamp(14px, 2vw, 20px);
+  background: var(--grad-surface);
+  box-shadow: var(--shadow-md, var(--shadow-lg));
+  min-width: 0;
+}
+
+/* Türk takımı maçı: sıralamada önde geldiği gibi görsel olarak da işaretli. */
+.post-match-card.is-turkish {
+  border-left: 3px solid var(--accent);
+}
+
+.post-match-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.post-match-meta {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.post-match-finish {
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  background: rgba(200, 30, 45, 0.096);
+  color: var(--live);
+  font-size: var(--fs-xs);
+  font-weight: 750;
+}
+
+.post-match-score {
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.post-match-card h3 {
+  margin: 0;
+  font-size: var(--fs-md);
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.post-match-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+}
+
+.post-match-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.post-match-moments ul,
+.post-match-players ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.post-match-moments li,
+.post-match-players li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+}
+
+.post-match-moments li b,
+.post-match-players li b {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.post-match-moments li span,
+.post-match-players li span {
+  color: var(--text-soft);
+}
+
+.post-match-moments li.is-pivotal b {
+  color: var(--accent);
+}
+
+.post-match-late p {
+  margin: 0;
+}
+
+/* Sağlayıcının vermediği alanlar. Bilinçli olarak görünür: eksik veri
+   gizlenirse okuyucu ölçüm yapılmış sanır. */
+.post-match-missing {
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: rgba(var(--surface-rgb), 0.081);
+  color: var(--text-soft);
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+}
+
+.post-match-missing strong {
+  display: block;
+  color: var(--text);
+}
+
+.post-match-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--glass-border);
+}
+
+.post-match-coverage,
+.post-match-note {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
 /* Hero altındaki hızlı istatistik kartları. */
 .quick-stats {
   display: grid;

@@ -10,6 +10,8 @@
  * yüzden build çıktısı tekrarlanabilir ve diff'ler gürültüsüzdür.
  */
 
+const { finishLabel, finishType, isAnalyzableMatch } = require("./matchStatus");
+
 const VOICELESS = new Set(["f", "s", "t", "k", "ç", "ş", "h", "p"]);
 const BACK_VOWELS = new Set(["a", "ı", "o", "u"]);
 const VOWELS = "aeıioöuüAEIİOÖUÜ";
@@ -701,6 +703,123 @@ function buildTurningPoints(match) {
   };
 }
 
+// ── 5b. Son bölüm ve bitiş şekli ────────────────────────────────────────────
+
+/** Son bölüm sınırı. 75. dakika ve sonrası "maç sonu" sayılır. */
+const LATE_GAME_FROM = 75;
+
+/**
+ * Sıralanabilir dakika: "90+3" → 93. `minuteOf` uzatma bilgisini metin
+ * olarak koruduğu için (okuyucu "90+3" görmeli) karşılaştırma ayrı yapılır.
+ */
+function numericMinute(event) {
+  const raw = String((event && event.time) || "").match(/(\d+)(?:\s*\+\s*(\d+))?/);
+  if (!raw) return null;
+  return Number(raw[1]) + (raw[2] ? Number(raw[2]) : 0);
+}
+
+/**
+ * MAÇ SONU DEĞİŞİMİ — 75. dakika ve sonrası.
+ *
+ * Yalnızca gerçek olay akışından üretilir. Olay yoksa bölüm "unavailable"
+ * döner ve sunum katmanı sağlayıcının bu veriyi vermediğini yazar; boş bir
+ * "son bölümde bir şey olmadı" cümlesi kurulmaz — olay akışı olmayan bir
+ * maçta o cümle ölçüme değil bilgisizliğe dayanır.
+ *
+ * Olay akışı VAR ama son bölümde olay YOKSA bu ölçülmüş bir bulgudur ve
+ * öyle yazılır: maçın son çeyreği olaysız geçmiştir.
+ */
+function buildLateGame(match) {
+  const events = (match.events || []).filter((event) => event && numericMinute(event) !== null);
+
+  if (!events.length) {
+    return {
+      status: "unavailable",
+      from: LATE_GAME_FROM,
+      reason: `${match.homeTeam} - ${match.awayTeam} maçının dakikalı olay akışı sağlayıcı tarafından sunulmadı.`
+    };
+  }
+
+  const late = events.filter((event) => numericMinute(event) >= LATE_GAME_FROM);
+
+  if (!late.length) {
+    return {
+      status: "ready",
+      from: LATE_GAME_FROM,
+      moments: [],
+      goals: { home: 0, away: 0 },
+      verdict: `Maçın son ${90 - LATE_GAME_FROM} dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.`
+    };
+  }
+
+  const lateGoals = late.filter((event) => isType(event, "gol") && !isType(event, "iptal"));
+  const homeLateGoals = lateGoals.filter((event) => normalizeText(eventTeamName(event)) === normalizeText(match.homeTeam)).length;
+  const awayLateGoals = lateGoals.length - homeLateGoals;
+
+  const moments = late
+    .sort((left, right) => numericMinute(left) - numericMinute(right))
+    .map((event) => ({
+      minute: `${minuteOf(event)}'`,
+      team: eventTeamName(event),
+      type: event.type || "Olay",
+      detail: event.detail || "",
+      decisive: isType(event, "gol", "kırmızı", "penaltı")
+    }));
+
+  const parts = [];
+  if (lateGoals.length) {
+    const scorers = lateGoals.map((event) => playerFromDetail(event.detail)).filter(Boolean);
+    parts.push(`Son bölümde ${lateGoals.length} gol kaydedildi`);
+    if (scorers.length) parts.push(`(${[...new Set(scorers)].join(", ")})`);
+  }
+
+  const lateReds = late.filter((event) => isType(event, "kırmızı")).length;
+  if (lateReds) parts.push(`${lateReds} kırmızı kart bu bölümde görüldü`);
+
+  // Skor farkı son bölümdeki gollerle kapanıyor mu? Yalnızca skor da,
+  // goller de ölçülmüşse yazılır.
+  const result = outcome(match);
+  if (result && !result.draw && lateGoals.length && result.margin <= lateGoals.length) {
+    parts.push(`sonucu belirleyen fark bu bölümde oluştu`);
+  }
+
+  if (!parts.length) {
+    parts.push(`Son bölümde ${late.length} olay kaydedildi, gol yok`);
+  }
+
+  return {
+    status: "ready",
+    from: LATE_GAME_FROM,
+    moments,
+    goals: { home: homeLateGoals, away: awayLateGoals },
+    verdict: `${parts.join(", ")}.`
+  };
+}
+
+/**
+ * BİTİŞ ŞEKLİ — normal süre / uzatma / penaltılar.
+ *
+ * Durum kodundan okunur (FT/AET/PEN), uydurulmaz. Uzatmaya giden bir maçta
+ * "normal sürede bitti" yazmak, sağlayıcının verdiği bilgiyi silmek olurdu.
+ */
+function buildFinish(match) {
+  const type = finishType(match);
+  const label = finishLabel(match);
+  const extraTimeEvents = (match.events || []).filter((event) => {
+    const minute = numericMinute(event);
+    return minute !== null && minute > 90;
+  });
+
+  return {
+    status: "ready",
+    type,
+    label,
+    wentToExtraTime: type !== "regular",
+    decidedOnPenalties: type === "penalties",
+    extraTimeEventCount: extraTimeEvents.length
+  };
+}
+
 // ── 6. AI puanlaması ────────────────────────────────────────────────────────
 /**
  * Takım performans puanı yalnızca ölçülmüş istatistiklerden hesaplanır.
@@ -870,7 +989,9 @@ function buildSeo(match, summary) {
 
 /** Tüm bölümleri tek raporda toplar. */
 function buildMatchReport(match, context) {
-  if (!match || String(match.status || "").toUpperCase() !== "FINISHED") {
+  // FT/AET/PEN dahil tüm tamamlanmış maçlar rapor üretir; hükmen sonuçlar
+  // (oynanmamış maç) üretmez.
+  if (!isAnalyzableMatch(match)) {
     return null;
   }
 
@@ -884,12 +1005,17 @@ function buildMatchReport(match, context) {
     statistics: buildStatisticsAnalysis(match, seed),
     tactical: buildTacticalRead(match),
     turningPoints: buildTurningPoints(match),
+    lateGame: buildLateGame(match),
+    finish: buildFinish(match),
     aiRating: buildAiRating(match),
     nextMatch: buildNextMatchOutlook(match, context)
   };
 
-  const readyCount = Object.values(sections).filter((section) => section.status === "ready").length;
-  const coverage = Math.round((readyCount / Object.keys(sections).length) * 100);
+  // `finish` durum kodundan okunuyor ve her zaman "ready"; kapsama oranına
+  // katılsa ölçülmüş veri yokken bile oranı yukarı çekerdi.
+  const measured = Object.entries(sections).filter(([key]) => key !== "finish");
+  const readyCount = measured.filter(([, section]) => section.status === "ready").length;
+  const coverage = Math.round((readyCount / measured.length) * 100);
 
   return {
     matchId: match.id,
@@ -902,6 +1028,9 @@ function buildMatchReport(match, context) {
 }
 
 module.exports = {
+  LATE_GAME_FROM,
+  buildFinish,
+  buildLateGame,
   buildMatchReport,
   buildSummary,
   buildStandoutPlayers,

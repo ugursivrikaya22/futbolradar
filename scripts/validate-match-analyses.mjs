@@ -5,6 +5,7 @@ import { createRequire } from "node:module";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { normalizeText } = require("../services/matchRadarService.js");
+const { isFinishedMatch } = require("../services/matchStatus.js");
 
 const VERCEL_HOBBY_FUNCTION_LIMIT = 12;
 const SUSPICIOUS_KEYS = ["xg", "xa", "odds", "bettingodds", "marketodds", "bahisorani"];
@@ -293,7 +294,7 @@ function checkMatchDeepAnalysis(match) {
 }
 
 function checkFinishedMatchHasFinalScore(match) {
-  if (String(match.status || "").toUpperCase() !== "FINISHED") return;
+  if (!isFinishedMatch(match)) return;
   expect(
     match.score && typeof match.score.home === "number" && typeof match.score.away === "number",
     `${match.id}: status is FINISHED but score.home/score.away are not both numbers`
