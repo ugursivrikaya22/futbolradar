@@ -147,11 +147,7 @@
       "module": "services/matchEligibility.js",
       "entry": "evaluateDisplayable",
       "thresholds": [
-        { "name": "FINISHED_STATUSES", "value": ["FINISHED", "FT", "AET", "PEN"] },
-        {
-          "name": "LIVE_STATUSES",
-          "value": ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"]
-        }
+        { "name": "STALE_STATUS_HOURS", "value": 3.5, "unit": "saat" }
       ],
       "vocabulary": [],
       "test": "scripts/test-match-display.mjs",
@@ -737,7 +733,6 @@
       "module": "services/matchContextService.js",
       "entry": "computeRecentForm",
       "thresholds": [
-        { "name": "FINISHED_STATUSES", "value": ["FINISHED", "FT", "AET", "PEN"] },
         { "name": "RECENT_FORM_LIMIT", "value": 5, "unit": "maç" }
       ],
       "vocabulary": [],
@@ -1092,6 +1087,120 @@
         "scripts/plan-post-match-retries.mjs",
         ".github/workflows/match-analysis.yml"
       ]
+    },
+    {
+      "id": "match.status.single-vocabulary",
+      "domain": "match-visibility",
+      "title": "Maç durumu tek sözlükten okunur",
+      "statement": "Ham durum etiketi (FT, HT, PST, ABD, WO…) yalnızca normalizeMatchStatus üzerinden kanonik bir değere çevrilir: SCHEDULED, LIVE, HALFTIME, FINISHED, POSTPONED, CANCELLED, ABANDONED, AWARDED ya da UNKNOWN. Tanınmayan etiket SCHEDULED'e DÜŞMEZ, UNKNOWN olur. Sınıflandırma isFinishedStatus / isInPlayStatus / isNotPlayedStatus ile sorulur; hiçbir modül kendi etiket listesini tutmaz.",
+      "rationale": "Aynı soru dört ayrı dosyada dört ayrı sözlükle cevaplanıyordu ve sözlükler çelişiyordu: fikstür servisinde HALFTIME, PAUSED ve ABANDONED hiç tanınmadığı için devre arasındaki maç listede \"Planlandı\", tatil edilen maç ise oynanmayı bekliyormuş gibi görünüyordu. \"Planlandı\" bir iddiadır (\"bu maç oynanmadı\"); okunamayan bir etiketi ona çevirmek, bitmiş maçı günlerce planlanmış göstermenin yoluydu.",
+      "module": "services/matchStatus.js",
+      "entry": "normalizeMatchStatus",
+      "thresholds": [
+        { "name": "IN_PLAY", "value": ["LIVE", "HALFTIME"] },
+        { "name": "NOT_PLAYED", "value": ["POSTPONED", "CANCELLED", "ABANDONED", "AWARDED"] }
+      ],
+      "vocabulary": [
+        "Planlandı",
+        "Canlı",
+        "Devre arası",
+        "Bitti",
+        "Ertelendi",
+        "İptal edildi",
+        "Tatil edildi",
+        "Hükmen sonuçlandı",
+        "Durum bekleniyor"
+      ],
+      "test": "scripts/test-post-match-completion.mjs",
+      "surfaces": [
+        "services/matchEligibility.js",
+        "services/matchReportStages.js",
+        "services/matchContextService.js",
+        "services/superLigFixtureService.js",
+        "services/providers/apiFootballProvider.js",
+        "scripts/prerender-core-pages.mjs",
+        "app.js",
+        "public/app.js"
+      ]
+    },
+    {
+      "id": "report.coverage.level",
+      "domain": "report-core",
+      "title": "Kapsam seviyesi ham veriden ölçülür",
+      "statement": "Her tamamlanmış maç üç kapsam seviyesinden birini alır. FULL: istatistik dökümü en az FULL_STAT_ROWS satır VE kadro VE en az MIN_TIMED_EVENTS dakikalı olay VE en az bir oyuncu değişikliği. STANDARD: en az STANDARD_STAT_ROWS istatistik satırı VE en az MIN_TIMED_EVENTS dakikalı olay. LIMITED: geri kalan — doğrulanmış skor, gol kronolojisi ve varsa kart/değişiklik bilgisi. Seviye rapordan değil, HAM VERİDEN ölçülür.",
+      "rationale": "\"Eksik rapor\" ile \"eksik veri\" tek bir yüzde içinde eriyordu. İstatistiği hiç gelmemiş bir hazırlık maçında istatistik bölümünün olmaması kusur değil, o maçın gerçeğidir; aynı bölümün istatistiği gelmiş bir maçta eksik olması ise gerçek bir kusurdur. Ölçüm raporun kendi bölüm durumlarına bakarak yapılamaz, çünkü bir bölüm hem veri yokluğundan hem de bir hatadan boş kalmış olabilir.",
+      "module": "services/matchDataCoverage.js",
+      "entry": "coverageLevel",
+      "thresholds": [
+        { "name": "FULL_STAT_ROWS", "value": 10, "unit": "istatistik satırı" },
+        { "name": "STANDARD_STAT_ROWS", "value": 1, "unit": "istatistik satırı" },
+        { "name": "MIN_TIMED_EVENTS", "value": 2, "unit": "dakikalı olay" }
+      ],
+      "vocabulary": ["Tam veri", "Standart veri", "Sınırlı veri"],
+      "test": "scripts/test-post-match-completion.mjs",
+      "surfaces": [
+        "services/postMatchCompletion.js",
+        "scripts/generate-post-match-pages.mjs",
+        "scripts/backfill-post-match-analyses.mjs"
+      ]
+    },
+    {
+      "id": "report.completion.status",
+      "domain": "report-stages",
+      "title": "Sınırlı veriyle tamamlanan analiz eksik sayılmaz",
+      "statement": "Tamamlanma durumu dörttür. complete: kapsam FULL ve verisi olan her bölüm yazıldı. limited_complete: kapsam STANDARD ya da LIMITED ama verisi olan her bölüm yazıldı. incomplete: VERİSİ OLAN bir bölüm yazılmamış. invalid: doğrulama bir çelişki buldu. Bölüm \"yazıldı\" sayılmanın ölçüsü status !== \"unavailable\"; \"partial\" bir kusur değil, elindeki veriyle söylenebileni söylemiş bölümdür. signals ve nextMatch hiçbir zaman eksiklik saydırmaz.",
+      "rationale": "Boru hattının aşaması (\"zenginleştirme sürüyor mu?\") ile işin bitip bitmediği (\"yazılabilecek her şey yazıldı mı?\") ayrı sorulardır. Hazırlık maçının istatistiği hiç gelmeyecek: aşaması sonsuza dek \"kısmi\" kalır ama analizi TAMAMLANMIŞTIR. İki soruyu tek etikete sıkıştırmak, bitmiş işi yarım gösteriyor ve okuyucuya beklemesi gereken bir şey olduğunu ima ediyordu.",
+      "module": "services/postMatchCompletion.js",
+      "entry": "evaluateCompletion",
+      "thresholds": [],
+      "vocabulary": [
+        "Analiz tamamlandı",
+        "Sınırlı veriyle tamamlandı",
+        "Analiz tamamlanmadı",
+        "Analiz doğrulamayı geçemedi"
+      ],
+      "test": "scripts/test-post-match-completion.mjs",
+      "surfaces": [
+        "services/matchReportService.js",
+        "scripts/generate-post-match-pages.mjs",
+        "scripts/backfill-post-match-analyses.mjs",
+        "scripts/prerender-core-pages.mjs"
+      ]
+    },
+    {
+      "id": "report.completion.validation",
+      "domain": "report-stages",
+      "title": "Çelişkili analiz yayımlanmaz",
+      "statement": "validateAnalysis kaydı kendi içinde denetler: kimlik eşleşmesi, yer tutucu izi, aynı takımın iki tarafta olması, turnuva ve tarih, oynanmakta olan ya da sahada tamamlanmamış maça analiz yazılması, negatif ya da eksik skor, MAX_EVENT_MINUTE'ü aşan dakika, yinelenen olay, skoru aşan gol sayısı, devre skoru tutarsızlığı, oyuncunun yanlış takıma yazılması ve momentum okumasının ilk golü başka takıma yazması. Bir sorun bulunursa durum invalid olur ve sayfa üretilmez.",
+      "rationale": "Çelişkili bir analizi yayımlamak hiç yayımlamamaktan kötüdür: okuyucu yanlış bilgiyi doğru sanır. Denetimlerin çoğu ön koşuluna bağlıdır — gol/devre tutarlılığı yalnızca olay akışı TAMSA çalışır, çünkü eksik bir akışta \"goller devre skoruyla uyuşmuyor\" demek eksikliği çelişki gibi gösterir ve dürüst bir kaydı geçersiz yapardı.",
+      "module": "services/postMatchCompletion.js",
+      "entry": "validateAnalysis",
+      "thresholds": [
+        { "name": "MAX_EVENT_MINUTE", "value": 130, "unit": "dakika" },
+        { "name": "FIRST_HALF_END", "value": 45, "unit": "dakika" }
+      ],
+      "vocabulary": [],
+      "test": "scripts/test-post-match-completion.mjs",
+      "surfaces": [
+        "scripts/generate-post-match-pages.mjs",
+        "scripts/backfill-post-match-analyses.mjs"
+      ]
+    },
+    {
+      "id": "report.stage.full-requires-statistics",
+      "domain": "report-stages",
+      "title": "İstatistiği olmayan rapor \"tam analiz\" diyemez",
+      "statement": "Rapor FULL aşamasına geçmek için genişletilmiş bölümlerin FULL_COVERAGE_RATIO oranını geçmenin YANINDA FULL_REQUIRED_SECTIONS içindeki her bölümü de hazır göstermek zorundadır; bugün bu liste yalnızca istatistik bölümünü içerir.",
+      "rationale": "Oran tek başına yetmiyordu. Olay akışından üretilen dört bölüm (öne çıkan oyuncular, momentum, kırılma anları, sonraki maç) %50 barını geçirebiliyor ve istatistiği HİÇ OLMAYAN bir maç \"Tam analiz hazır · Skor, istatistik, oyuncu ve taktik okuması tamamlandı\" cümlesini alıyordu; cümlede sayılan dört şeyden biri hiç ölçülmemişti.",
+      "module": "services/matchReportStages.js",
+      "entry": "evaluateReportStage",
+      "thresholds": [
+        { "name": "FULL_REQUIRED_SECTIONS", "value": ["statistics"] },
+        { "name": "FULL_COVERAGE_RATIO", "value": 0.5 }
+      ],
+      "vocabulary": [],
+      "test": "scripts/test-post-match-completion.mjs",
+      "surfaces": ["scripts/generate-post-match-pages.mjs"]
     }
   ]
 }

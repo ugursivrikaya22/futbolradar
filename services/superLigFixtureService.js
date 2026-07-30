@@ -14,7 +14,7 @@
  * @property {string} awayTeam
  * @property {string|null} kickoff        ISO 8601 in Europe/Istanbul, or null when TFF hasn't assigned a time yet
  * @property {string|null} dateLabel      Human-readable fallback when no ISO kickoff exists yet
- * @property {"SCHEDULED"|"LIVE"|"POSTPONED"|"FINISHED"|"CANCELLED"} status
+ * @property {string} status             services/matchStatus.js MATCH_STATUS değerlerinden biri
  * @property {{home: number|null, away: number|null}|null} score
  * @property {string} fixtureStatus       "confirmed-pairing" | "pending-verification" | ...
  * @property {string|null} venue          Home team's stadium, only when independently verified
@@ -27,6 +27,11 @@
  * @property {FixtureMatch[]} matches
  * @property {boolean} hasConfirmedDates   True once every match in the week carries a real ISO kickoff
  */
+
+const {
+  MATCH_STATUS,
+  normalizeMatchStatus: normalizeStatusLabel
+} = require("./matchStatus.js");
 
 const TIMEZONE = "Europe/Istanbul";
 
@@ -97,33 +102,26 @@ function numberOrNull(value) {
   return value === null || value === undefined || value === "" || Number.isNaN(Number(value)) ? null : Number(value);
 }
 
-const STATUS_ALIASES = {
-  SCHEDULED: "SCHEDULED",
-  NS: "SCHEDULED",
-  TIMED: "SCHEDULED",
-  LIVE: "LIVE",
-  IN_PLAY: "LIVE",
-  "1H": "LIVE",
-  "2H": "LIVE",
-  HT: "LIVE",
-  ET: "LIVE",
-  FINISHED: "FINISHED",
-  FT: "FINISHED",
-  AET: "FINISHED",
-  PEN: "FINISHED",
-  POSTPONED: "POSTPONED",
-  PST: "POSTPONED",
-  CANCELLED: "CANCELLED",
-  CANC: "CANCELLED"
-};
-
 /**
+ * Fikstür satırının durumu.
+ *
+ * Sınıflandırma services/matchStatus.js'te; burada yalnızca fikstür
+ * dosyasına özgü tek varsayılan yaşıyor: BOŞ etiket "planlandı" demektir.
+ * Bu, tahmin değil dosya sözleşmesi — data/super-lig-fixtures.json ilan
+ * edilmiş ama henüz oynanmamış eşleşmelerin listesidir ve bir kaydın durum
+ * alanı boşsa o kayıt oynanmayı bekliyordur.
+ *
+ * Ama TANINMAYAN etiket artık "planlandı"ya düşmüyor: eskiden "HALFTIME",
+ * "PAUSED", "ABANDONED" gibi etiketler bu tabloda hiç yoktu ve devre
+ * arasındaki maç fikstürde "Planlandı" yazıyordu.
+ *
  * @param {string|undefined} rawStatus
- * @returns {"SCHEDULED"|"LIVE"|"POSTPONED"|"FINISHED"|"CANCELLED"}
+ * @returns {string} services/matchStatus.js MATCH_STATUS değerlerinden biri
  */
 function normalizeMatchStatus(rawStatus) {
-  const key = String(rawStatus || "SCHEDULED").toUpperCase();
-  return STATUS_ALIASES[key] || "SCHEDULED";
+  const raw = rawStatus === null || rawStatus === undefined ? "" : String(rawStatus).trim();
+  if (!raw) return MATCH_STATUS.SCHEDULED;
+  return normalizeStatusLabel(raw);
 }
 
 /**

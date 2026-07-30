@@ -266,6 +266,24 @@ jobs:
       - name: Regenerate match reports
         run: node scripts/generate-post-match-pages.mjs
 
+      # BİTMİŞ HER MAÇIN ANALİZİ TAMAM MI?
+      #
+      # Yeni biten bir maç bu adımda otomatik olarak "analiz edilmiş" duruma
+      # geçer: defter (data/post-match-completion.json) her bitmiş maçın
+      # tamamlanma durumunu ve kapsam seviyesini kaydeder.
+      #
+      # ADIM BİR KAPIDIR ve bilerek öyle. Bir maçın analizi doğrulamayı
+      # geçemiyorsa (gol sayısı skoru aşıyor, oyuncu yanlış takıma yazılmış,
+      # olay maç bitiminden sonra) betik sıfırdan farklı kodla çıkar ve commit
+      # adımına hiç gelinmez. Bedeli açık: tek bozuk sağlayıcı kaydı o koşudaki
+      # diğer güncellemeleri de bekletir. Alternatifi — çelişkiyi görüp yine de
+      # yayımlamak — okuyucuya yanlış bilgiyi doğru diye sunmaktı.
+      #
+      # Sağlayıcıya GİTMEZ: depodaki doğrulanmış veriden çalışır, kota
+      # harcamaz.
+      - name: Verify post-match analysis completion
+        run: node scripts/backfill-post-match-analyses.mjs --apply
+
       - name: Validate match analyses
         run: node scripts/validate-match-analyses.mjs
 

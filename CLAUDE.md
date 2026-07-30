@@ -49,6 +49,7 @@ değildir.
 | `npm run qa` | Yayımlanmış çıktının denetimi: JSON geçerliliği, JS sözdizimi, SEO/iç bağlantı sağlığı, `public/` aynası, sızmış anahtar, erişilebilirlik, API sözleşmesi | `build` sonrası |
 | `npm run typecheck` | `tsc --noEmit` — yalnızca `lib/` ve `components/` | `lib/` altına dokunduğunda |
 | `npm run retry:plan` | Rapor yeniden deneme kuyruğunu yazdırır (`--apply` deftere yazar, `--json` makine okunur) | Maç sonrası boru hattını incelerken |
+| `npm run backfill:analyses` | Bitmiş her maçın analiz tamamlanma durumunu ölçer (`--apply` deftere yazar, `--json` makine okunur) | Maç sonu analizine dokunduğunda |
 | `npm run validate:transfers` | `data/transfers.json` alan denetimi | Transfer eklerken |
 | `npm run preview` | Yerel statik sunucu | Görsel doğrulama |
 
@@ -304,7 +305,8 @@ elenir. Kontrol: `node scripts/test-ticker-feed.mjs`. Sözleşmenin uzun anlatı
 | --- | --- | --- |
 | `index.html`, `bugunun-maclari.html`, `canli-skor.html`, `gunun-radar-bulteni.html`, `mac-merkezi.html` ve diğer çekirdek sayfalar | `scripts/prerender-core-pages.mjs` | `matchEligibility`, `matchPriorityService`, `matchSignalService`, `agendaService`, `trustLabels`, `contentFreshness`, `leagueIdentity` |
 | `mac/*.html` (fikstür maç sayfaları) | `scripts/generate-match-pages.mjs` | `superLigFixtureService`, `superLigTeams`, `matchContextService`, `matchupService` |
-| `mac-raporu/*.html` (maç sonu raporları) | `scripts/generate-post-match-pages.mjs` | `matchReportStages`, `matchReportService`, `postMatchEnrichmentService`, `matchStatementService` |
+| `mac-raporu/*.html` (maç sonu raporları) | `scripts/generate-post-match-pages.mjs` | `matchStatus`, `matchDataCoverage`, `postMatchCompletion`, `matchReportStages`, `matchReportService`, `postMatchEnrichmentService`, `matchStatementService` |
+| Ana sayfadaki "Maç Analizleri" bölümü | `scripts/prerender-core-pages.mjs` | `matchAnalysisCardView` (+ `postMatchCompletion`) |
 | `oyuncular/*.html` (oyuncu profilleri) | `scripts/generate-player-profile-pages.mjs` | `playerService`, `cardCredibility`, `playerPhotoService`, `playerCanonicalService` |
 | `karsilastirma/*.html` (oyuncu karşılaştırmaları) | `scripts/generate-player-comparison-pages.mjs` | `playerService`, `ratingService` |
 | SEO açılış sayfaları (`transfer-radari.html`, `en-iyi-forvetler.html`, …) | `scripts/generate-static-seo-pages.mjs`, `scripts/generate-trend-seo-pages.mjs` | `transferService`, `playerService`, `seoText` |
@@ -333,6 +335,7 @@ blokta sayı yerine gerekçe gösterir.
 | `rules/README.md` | Kayıt defteri sözleşmesi ve yeni kural eklemek |
 | `templates/README.md` | Metin şablonları ve ayna eşliği |
 | `docs/match-center-v1.md` | Maç merkezi yüzeyi |
+| `docs/post-match-analysis.md` | Maç sonu analizi: kapsam seviyesi, tamamlanma durumu, doğrulama, geri doldurma |
 | `docs/post-match-enrichment.md` | Maç sonu zenginleştirme boru hattı |
 | `docs/news-ticker.md` | Haber bandı ve açıklama sözleşmesi |
 | `docs/player-data.md` | Oyuncu verisi ve kart güvenilirliği |

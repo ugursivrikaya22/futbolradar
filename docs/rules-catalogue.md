@@ -30,16 +30,16 @@ kuralın NEDEN var olduğunu, yani hangi somut hatayı önlediğini söyler.
 
 | Alan | Başlık | Kural | Testli | Ne sorar |
 | --- | --- | --- | --- | --- |
-| `match-visibility` | Maç görünürlüğü, sıralama ve sinyal | 41 | 32/41 | Bir karşılaşmanın yayımlanıp yayımlanmayacağına, listede nerede duracağına ve kartında hangi Türkçe sinyalin basılacağına karar veren kurallar. |
-| `report-core` | Maç raporu üretim koşulu | 2 | 2/2 | Bir maç için rapor sayfası açılmasının ön koşullarını belirleyen kurallar: neyin bilinmesi, neyin beklenmesi gerekir. |
-| `report-stages` | Rapor aşamaları | 3 | 3/3 | Üretilmiş bir raporun hangi aşamada olduğunu ve okuyucuya hangi cümleyle anlatılacağını belirleyen kurallar. |
+| `match-visibility` | Maç görünürlüğü, sıralama ve sinyal | 42 | 33/42 | Bir karşılaşmanın yayımlanıp yayımlanmayacağına, listede nerede duracağına ve kartında hangi Türkçe sinyalin basılacağına karar veren kurallar. |
+| `report-core` | Maç raporu üretim koşulu | 3 | 3/3 | Bir maç için rapor sayfası açılmasının ön koşullarını belirleyen kurallar: neyin bilinmesi, neyin beklenmesi gerekir. |
+| `report-stages` | Rapor aşamaları | 6 | 6/6 | Üretilmiş bir raporun hangi aşamada olduğunu ve okuyucuya hangi cümleyle anlatılacağını belirleyen kurallar. |
 | `retry-schedule` | Yeniden deneme takvimi | 3 | 3/3 | Eksik veri için sağlayıcıya ne zaman, kaç kez ve hangi öncelikle geri dönüleceğini belirleyen kurallar. |
 
 ---
 
 ## Maç görünürlüğü, sıralama ve sinyal
 
-Alan kimliği: `match-visibility` · 41 kural
+Alan kimliği: `match-visibility` · 42 kural
 
 Bir karşılaşmanın yayımlanıp yayımlanmayacağına, listede nerede duracağına ve
 kartında hangi Türkçe sinyalin basılacağına karar veren kurallar.
@@ -54,7 +54,7 @@ kartında hangi Türkçe sinyalin basılacağına karar veren kurallar.
 | `match.publish.stale-status` | `STALE_STATUS_HOURS` | Saati 3.5 saat geçmiş "başlayacak" kaydı sonuç bekliyor sayılır | `STALE_STATUS_HOURS` = 3.5 saat | `scripts/test-api-resilience.mjs` |
 | `match.publish.friendly-verification` | `isFriendlyOrLowerTier` | Hazırlık maçının ayrıntısı doğrulanana kadar bekliyor işaretlenir | — | `scripts/test-api-resilience.mjs` |
 | `match.publish.exclusion-logging` | `logDataGaps` | Elenen ve eksik verili her maç iç günlüğe yazılır | — | — |
-| `match.display.gate` | `evaluateDisplayable` | Başlamış ama skoru olmayan maç listede gizlenir | `FINISHED_STATUSES` = FINISHED, FT, AET, PEN · `LIVE_STATUSES` = LIVE, IN_PLAY, PAUSED, HALFTIME, 1H, HT, 2H, ET, BT, P | `scripts/test-match-display.mjs` |
+| `match.display.gate` | `evaluateDisplayable` | Başlamış ama skoru olmayan maç listede gizlenir | `STALE_STATUS_HOURS` = 3.5 saat | `scripts/test-match-display.mjs` |
 | `match.display.hidden-logging` | `logHiddenMatches` | Gizlenen maç gerekçesi ve evresiyle günlüğe yazılır | — | `scripts/test-match-display.mjs` |
 | `match.card.headline` | `matchHeadline` | Kartta basılacak başlık yoksa kart hiç çizilmez | `HEADLINE_KIND` = { LIVE: "live", FINAL: "final", TIME: "time" } | `scripts/test-match-card-integrity.mjs` |
 | `match.display.order` | `orderForDisplay` | Görüntüleme sırası: canlı → biten → başlayacak | `DISPLAY_RANK` = { live: 0, finished: 1, upcoming: 2 } · `HIDDEN_RANK` = 99 | `scripts/test-match-card-integrity.mjs` |
@@ -272,7 +272,7 @@ kartında hangi Türkçe sinyalin basılacağına karar veren kurallar.
 
 | Kural | Giriş | Ne yapar | Eşikler | Test |
 | --- | --- | --- | --- | --- |
-| `match.context.no-future-leak` | `computeRecentForm` | Maç öncesi bağlama yalnızca o maçtan ÖNCE bitmiş maçlar girer | `FINISHED_STATUSES` = FINISHED, FT, AET, PEN · `RECENT_FORM_LIMIT` = 5 maç | — |
+| `match.context.no-future-leak` | `computeRecentForm` | Maç öncesi bağlama yalnızca o maçtan ÖNCE bitmiş maçlar girer | `RECENT_FORM_LIMIT` = 5 maç | — |
 | `match.context.form-weight` | `computeRecentForm` | Hazırlık maçı forma tam ağırlıkla girmez | `RECENCY_WEIGHTS` = 1, 0.92, 0.84, 0.76, 0.68 · `FORM_WEIGHT_BY_COMPETITION_TYPE` = { league: 1, europe: 0.85, cup: 0.85, friendly: 0.6 } | — |
 | `match.context.data-status` | `buildMatchContext` | Bağlamın veri durumu ve uyarıları örnek büyüklüğünden çıkar | `dataStatus (form)` = results.length >= 3 → sufficient, aksi hâlde limited; boşsa insufficient · `dataStatus (takım)` = confidence >= 60 → sufficient, >= 25 → limited, aksi hâlde insufficient · `RECENT_FORM_LIMIT` = 5 maç | — |
 | `match.context.schedule-load` | `computeScheduleLoad` | Fikstür yükü 14 günlük pencereden okunur | `SCHEDULE_LOAD_WINDOW_DAYS` = 14 gün · `high eşiği` = 5 maç · `medium eşiği` = 3 maç | — |
@@ -324,11 +324,26 @@ kartında hangi Türkçe sinyalin basılacağına karar veren kurallar.
   yokken bile bir "karşılaştırma" yayımlanırdı. Bileşenlerin havuz dışında
   bırakılması, güvenin gerçekten ölçülen alanları temsil etmesini sağlıyor.
 
+### `services/matchStatus.js`
+
+| Kural | Giriş | Ne yapar | Eşikler | Test |
+| --- | --- | --- | --- | --- |
+| `match.status.single-vocabulary` | `normalizeMatchStatus` | Maç durumu tek sözlükten okunur | `IN_PLAY` = LIVE, HALFTIME · `NOT_PLAYED` = POSTPONED, CANCELLED, ABANDONED, AWARDED | `scripts/test-post-match-completion.mjs` |
+
+**Neden var:**
+
+- **`match.status.single-vocabulary`** — Aynı soru dört ayrı dosyada dört ayrı sözlükle cevaplanıyordu ve sözlükler
+  çelişiyordu: fikstür servisinde HALFTIME, PAUSED ve ABANDONED hiç
+  tanınmadığı için devre arasındaki maç listede "Planlandı", tatil edilen maç
+  ise oynanmayı bekliyormuş gibi görünüyordu. "Planlandı" bir iddiadır ("bu
+  maç oynanmadı"); okunamayan bir etiketi ona çevirmek, bitmiş maçı günlerce
+  planlanmış göstermenin yoluydu.
+
 ---
 
 ## Maç raporu üretim koşulu
 
-Alan kimliği: `report-core` · 2 kural
+Alan kimliği: `report-core` · 3 kural
 
 Bir maç için rapor sayfası açılmasının ön koşullarını belirleyen kurallar:
 neyin bilinmesi, neyin beklenmesi gerekir.
@@ -353,11 +368,26 @@ neyin bilinmesi, neyin beklenmesi gerekir.
   dakikada yanlış bir belgeye dönüşür. Bu yüzden etiket tek başına değil,
   zamanla birlikte okunuyor.
 
+### `services/matchDataCoverage.js`
+
+| Kural | Giriş | Ne yapar | Eşikler | Test |
+| --- | --- | --- | --- | --- |
+| `report.coverage.level` | `coverageLevel` | Kapsam seviyesi ham veriden ölçülür | `FULL_STAT_ROWS` = 10 istatistik satırı · `STANDARD_STAT_ROWS` = 1 istatistik satırı · `MIN_TIMED_EVENTS` = 2 dakikalı olay | `scripts/test-post-match-completion.mjs` |
+
+**Neden var:**
+
+- **`report.coverage.level`** — "Eksik rapor" ile "eksik veri" tek bir yüzde içinde eriyordu. İstatistiği
+  hiç gelmemiş bir hazırlık maçında istatistik bölümünün olmaması kusur değil,
+  o maçın gerçeğidir; aynı bölümün istatistiği gelmiş bir maçta eksik olması
+  ise gerçek bir kusurdur. Ölçüm raporun kendi bölüm durumlarına bakarak
+  yapılamaz, çünkü bir bölüm hem veri yokluğundan hem de bir hatadan boş
+  kalmış olabilir.
+
 ---
 
 ## Rapor aşamaları
 
-Alan kimliği: `report-stages` · 3 kural
+Alan kimliği: `report-stages` · 6 kural
 
 Üretilmiş bir raporun hangi aşamada olduğunu ve okuyucuya hangi cümleyle
 anlatılacağını belirleyen kurallar.
@@ -369,6 +399,7 @@ anlatılacağını belirleyen kurallar.
 | `report.stage.status-sentence` | `evaluateReportStage` | Rapor durumu yüzde değil cümledir ve pencere kapandığında kesinleşir | `QUICK_WINDOW_MINUTES` = 60 dakika · `FULL_WINDOW_HOURS` = 6 saat · `FULL_COVERAGE_RATIO` = 0.5 oran | `scripts/test-report-pipeline.mjs` |
 | `report.stage.core-vs-extended-coverage` | `stageCoverage` | Kapsam çekirdek ve genişletilmiş olarak ayrı sayılır | `CORE_SECTIONS.length` = 1 bölüm · `EXTENDED_SECTIONS.length` = 8 bölüm | `scripts/test-report-pipeline.mjs` |
 | `report.status.no-invented-label` | `statusByKey` | Tanınmayan durum anahtarı için etiket uydurulmaz | — | `scripts/test-report-pipeline.mjs` |
+| `report.stage.full-requires-statistics` | `evaluateReportStage` | İstatistiği olmayan rapor "tam analiz" diyemez | `FULL_REQUIRED_SECTIONS` = statistics · `FULL_COVERAGE_RATIO` = 0.5 | `scripts/test-post-match-completion.mjs` |
 
 **Neden var:**
 
@@ -385,6 +416,31 @@ anlatılacağını belirleyen kurallar.
 - **`report.status.no-invented-label`** — Durum anahtarından etiket üretilir, bilinmeyen anahtar uydurulmaz.
   Depolanmış eski ya da bozuk bir durum anahtarının sayfada anlamlı bir
   cümleye dönüşmesi, ölçülmemiş bir iddiayı yayımlamak olurdu.
+- **`report.stage.full-requires-statistics`** — Oran tek başına yetmiyordu. Olay akışından üretilen dört bölüm (öne çıkan
+  oyuncular, momentum, kırılma anları, sonraki maç) %50 barını geçirebiliyor
+  ve istatistiği HİÇ OLMAYAN bir maç "Tam analiz hazır · Skor, istatistik,
+  oyuncu ve taktik okuması tamamlandı" cümlesini alıyordu; cümlede sayılan
+  dört şeyden biri hiç ölçülmemişti.
+
+### `services/postMatchCompletion.js`
+
+| Kural | Giriş | Ne yapar | Eşikler | Test |
+| --- | --- | --- | --- | --- |
+| `report.completion.status` | `evaluateCompletion` | Sınırlı veriyle tamamlanan analiz eksik sayılmaz | — | `scripts/test-post-match-completion.mjs` |
+| `report.completion.validation` | `validateAnalysis` | Çelişkili analiz yayımlanmaz | `MAX_EVENT_MINUTE` = 130 dakika · `FIRST_HALF_END` = 45 dakika | `scripts/test-post-match-completion.mjs` |
+
+**Neden var:**
+
+- **`report.completion.status`** — Boru hattının aşaması ("zenginleştirme sürüyor mu?") ile işin bitip
+  bitmediği ("yazılabilecek her şey yazıldı mı?") ayrı sorulardır. Hazırlık
+  maçının istatistiği hiç gelmeyecek: aşaması sonsuza dek "kısmi" kalır ama
+  analizi TAMAMLANMIŞTIR. İki soruyu tek etikete sıkıştırmak, bitmiş işi yarım
+  gösteriyor ve okuyucuya beklemesi gereken bir şey olduğunu ima ediyordu.
+- **`report.completion.validation`** — Çelişkili bir analizi yayımlamak hiç yayımlamamaktan kötüdür: okuyucu yanlış
+  bilgiyi doğru sanır. Denetimlerin çoğu ön koşuluna bağlıdır — gol/devre
+  tutarlılığı yalnızca olay akışı TAMSA çalışır, çünkü eksik bir akışta
+  "goller devre skoruyla uyuşmuyor" demek eksikliği çelişki gibi gösterir ve
+  dürüst bir kaydı geçersiz yapardı.
 
 ---
 

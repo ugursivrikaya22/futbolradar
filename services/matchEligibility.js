@@ -63,8 +63,12 @@ const AWAITING_LABEL = "Veri bekleniyor";
  */
 const STALE_STATUS_HOURS = 3.5;
 
-const FINISHED_STATUSES = new Set(["FINISHED", "FT", "AET", "PEN"]);
-const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"]);
+/**
+ * Durum etiketlerinin sözlüğü services/matchStatus.js'te; burada kendi
+ * kümesini tutmak, aynı soruya sitenin dört ayrı yerinde dört ayrı cevap
+ * veren tabloların ilk halkasıydı.
+ */
+const { isFinishedStatus, isInPlayStatus } = require("./matchStatus.js");
 
 /**
  * Hazırlık ve alt seviye karşılaşmalar. Bu maçlar için sağlayıcının ham
@@ -83,11 +87,11 @@ function isFriendlyOrLowerTier(match) {
 }
 
 function isFinished(match) {
-  return FINISHED_STATUSES.has(String(match.status || "").toUpperCase());
+  return isFinishedStatus(match.status);
 }
 
 function isLive(match) {
-  return LIVE_STATUSES.has(String(match.status || "").toUpperCase());
+  return isInPlayStatus(match.status);
 }
 
 function hasNumericScore(match) {

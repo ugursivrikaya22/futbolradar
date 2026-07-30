@@ -14,6 +14,7 @@ const { competitions, matchesCompetition } = require("../competitionCatalog");
 // ile resolver arasında döngü yaratırdı.
 const { readCachedLeague } = require("../leagueCache");
 const { canonicalizeStatistics } = require("../matchStatisticsSchema");
+const { normalizeMatchStatus } = require("../matchStatus");
 const { createHash } = require("node:crypto");
 
 const source = "FutbolRadar API-Football Live API";
@@ -412,23 +413,16 @@ function stampProviderData(records, resource, staleAfterMs) {
   }));
 }
 
+/**
+ * API-Football kisaltmasini kanonik duruma cevirir.
+ *
+ * Sozluk services/matchStatus.js'te. Buradaki kopya "PST" (ertelendi),
+ * "ABD" (tatil) ve "AWD" (hukmen) kisaltmalarini taniyamiyor, hepsini
+ * "SCHEDULED" yapiyordu: ertelenen mac takvimde oynanacakmis gibi duruyordu.
+ * Devre arasi hala ayri bir durum (HALFTIME) ve in-play sayilir.
+ */
 function normalizeStatus(status) {
-  const short = status && status.short;
-  // Devre arasi ayri bir durum: arayuz "Devre arasi" diyebilmeli. LIVE'a
-  // ezilirse skor tablosunda oynanmayan bir maca dakika bekleniyormus gibi
-  // gorunuyordu. Devre arasi hala "in-play" sayilir (live: true).
-  if (short === "HT" || short === "BT") {
-    return "HALFTIME";
-  }
-  if (["1H", "2H", "ET", "P", "LIVE"].includes(short)) {
-    return "LIVE";
-  }
-
-  if (["FT", "AET", "PEN"].includes(short)) {
-    return "FINISHED";
-  }
-
-  return "SCHEDULED";
+  return normalizeMatchStatus(status && status.short);
 }
 
 function roundNumber(league) {

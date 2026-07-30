@@ -1,6 +1,8 @@
 const { classifyFixtureCompetition } = require("./competitionCatalog");
+// Durum sözlüğü services/matchStatus.js'te. Buradaki kopya, aynı dört
+// etiketin depoda tuttuğu dördüncü listeydi.
+const { isFinishedStatus } = require("./matchStatus");
 
-const FINISHED_STATUSES = new Set(["FINISHED", "FT", "AET", "PEN"]);
 const RECENT_FORM_LIMIT = 5;
 const SCHEDULE_LOAD_WINDOW_DAYS = 14;
 const RECENCY_WEIGHTS = [1, 0.92, 0.84, 0.76, 0.68];
@@ -65,7 +67,7 @@ function eligiblePriorMatches(team, fixtureKickoff, matches) {
   }
 
   return (Array.isArray(matches) ? matches : [])
-    .filter((match) => FINISHED_STATUSES.has(String(match.status || "").toUpperCase()))
+    .filter((match) => isFinishedStatus(match.status))
     .map((match) => ({ match, side: matchSide(match, key), kickoffTime: matchKickoffTime(match) }))
     .filter((entry) => entry.side && entry.kickoffTime && entry.kickoffTime.getTime() < fixtureTime.getTime())
     .sort((left, right) => right.kickoffTime.getTime() - left.kickoffTime.getTime());

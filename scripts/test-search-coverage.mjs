@@ -159,7 +159,9 @@ function testRequiredTeamsAreSearchable() {
 
 function testResultTypesStaySeparated() {
   const index = readIndex();
-  const badges = { team: "TKM", player: "OYN", page: "SYF" };
+  // Maç analizleri de aranabilir: okuyucu "Fenerbahçe Görnik" aradığında o
+  // karşılaşmanın yayımlanmış analiz sayfasına ulaşmalı.
+  const badges = { team: "TKM", player: "OYN", page: "SYF", analysis: "ANL" };
 
   for (const entry of index) {
     assert.ok(badges[entry.type], `bilinmeyen sonuç tipi: ${entry.type}`);
@@ -173,6 +175,7 @@ function testResultTypesStaySeparated() {
   assert.ok(index.some((entry) => entry.type === "team"), "takım sonucu yok");
   assert.ok(index.some((entry) => entry.type === "player"), "oyuncu sonucu yok");
   assert.ok(index.some((entry) => entry.type === "page"), "sayfa sonucu yok");
+  assert.ok(index.some((entry) => entry.type === "analysis"), "maç analizi sonucu yok");
 }
 
 /** Katlama kuralları site.js ile aynı kalmalı — kopya sessizce kaymamalı. */

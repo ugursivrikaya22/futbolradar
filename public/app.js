@@ -4816,15 +4816,6 @@
     );
   }
 
-  function renderAnalysisHome(analysis) {
-    return (
-      '<article class="article-card" data-card="analysis" id="' + escapeHtml(analysis.id) + '-preview">' +
-      "<div><h3>" + escapeHtml(analysis.title) + "</h3><p>" + escapeHtml(analysis.summary) + "</p></div>" +
-      '<a href="' + escapeHtml(safeSiteUrl(analysis.url, "./analizler.html")) + '">Analizi aç</a>' +
-      "</article>"
-    );
-  }
-
   function renderAnalysisPage(analysis) {
     return (
       '<article class="card" id="' + escapeHtml(analysis.id) + '" data-card="analysis">' +
@@ -9945,14 +9936,19 @@
       "Momentum sinyalleri yüklenemedi"
     );
 
-    renderInto(
-      document.querySelector('[data-api-target="analysis-preview"]'),
-      "analyses",
-      function (analyses) {
-        return analyses.map(renderAnalysisHome).join("");
-      },
-      "Analizler yüklenemedi"
-    );
+    /**
+     * "MAÇ ANALİZLERİ" BÖLÜMÜ İSTEMCİDE YENİDEN ÇİZİLMEZ.
+     *
+     * Burası eskiden data/analyses.json içindeki açıklayıcı yazıları basıyor
+     * ve ön render edilmiş içeriği eziyordu. Bölüm artık tamamlanmış maçların
+     * gerçek analizlerini listeliyor (scripts/prerender-core-pages.mjs +
+     * services/matchAnalysisCardView.js); o kartlar derleme anında yazılıyor
+     * ve her biri yayımlanmış bir sayfaya bağlanıyor.
+     *
+     * İstemcinin araya girmesi, doğru içeriği yanlışıyla değiştirmekten başka
+     * bir işe yaramazdı: bu kartların dayandığı tamamlanma durumu derleme
+     * zamanı ölçümüdür, canlı bir uç noktası yoktur.
+     */
 
     renderInto(
       document.querySelector('[data-api-target="analysis-page"]'),

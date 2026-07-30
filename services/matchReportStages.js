@@ -76,6 +76,22 @@ const FULL_TIME_AFTER_KICKOFF_MINUTES = 115;
 const FULL_COVERAGE_RATIO = 0.5;
 
 /**
+ * TAM ANALİZİN VAZGEÇİLMEZ BÖLÜMÜ.
+ *
+ * Oran tek başına yetmiyordu. Konyaspor - Hull City raporu genişletilmiş
+ * bölümlerin 4'ünü (öne çıkan oyuncular, momentum, kırılma anları, sonraki
+ * maç) olay akışından üretiyor ve %50 barını geçiyordu — ama o maçın
+ * İSTATİSTİĞİ HİÇ YOKTU. Rapor "Tam analiz hazır · Skor, istatistik, oyuncu
+ * ve taktik okuması tamamlandı" diyordu; cümlede sayılan dört şeyden biri
+ * hiç ölçülmemişti.
+ *
+ * "Tam analiz" bir derinlik iddiasıdır ve o derinliğin taşıyıcısı
+ * istatistik dökümüdür. Olay akışından üretilen bölümler değerlidir ama
+ * onlarla kurulan rapor "hızlı rapor"dur, "tam analiz" değil.
+ */
+const FULL_REQUIRED_SECTIONS = Object.freeze(["statistics"]);
+
+/**
  * DURUM CÜMLELERİ templates/report-status.json'da yaşıyor.
  *
  * Metin ile kararı ayırmanın nedeni tek: bu beş cümle okuyucunun gördüğü
@@ -107,14 +123,18 @@ function hasReportableCore(match) {
     && isNumber(Number(score.away)) && score.away !== null && score.away !== "";
 }
 
-/** Bitmiş sayılan durum etiketleri. */
-const FINISHED_LABELS = new Set(["FINISHED", "FT", "AET", "PEN"]);
-
-/** Oynanmakta olan maç: skoru VAR ama FİNAL DEĞİL. */
-const IN_PLAY_LABELS = new Set(["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"]);
-
-/** Oynanmamış ya da yarıda kalmış maç: rapor konusu değil. */
-const ABANDONED_LABELS = new Set(["POSTPONED", "CANCELLED", "CANCELED", "ABANDONED", "SUSPENDED", "AWARDED", "WO"]);
+/**
+ * Durum sınıflandırması services/matchStatus.js'te. Bu dosya vaktiyle kendi
+ * etiket kümelerini tutuyordu ve o kümeler fikstür servisininkiyle
+ * çelişiyordu: burada "oynanıyor" sayılan "PAUSED", orada tanınmadığı için
+ * "planlandı"ya düşüyordu. Aynı soruya iki cevap veren iki tablo, er ya da
+ * geç birbirinden ayrışır.
+ */
+const {
+  isFinishedStatus,
+  isInPlayStatus,
+  isNotPlayedStatus
+} = require("./matchStatus.js");
 
 /** Maçın bitiş anı. Kayıtta yoksa başlama saatinden türetilir. */
 function fullTimeAt(match) {
@@ -152,10 +172,10 @@ function minutesSinceFullTime(match, now) {
 function isReportableFinal(match, now) {
   if (!hasReportableCore(match)) return false;
 
-  const status = String((match && match.status) || "").toUpperCase();
-  if (FINISHED_LABELS.has(status)) return true;
-  if (IN_PLAY_LABELS.has(status)) return false;
-  if (ABANDONED_LABELS.has(status)) return false;
+  const status = (match && match.status) || "";
+  if (isFinishedStatus(status)) return true;
+  if (isInPlayStatus(status)) return false;
+  if (isNotPlayedStatus(status)) return false;
 
   // Etiket bilinmiyor: skor var ve bitiş anı geçmişse bu bir final skordur.
   const age = minutesSinceFullTime(match, now);
@@ -212,7 +232,8 @@ function evaluateReportStage(params = {}) {
     return { status: REPORT_STATUS.unavailable, stage: null, coverage, ageMinutes };
   }
 
-  if (coverage.extended.ratio >= FULL_COVERAGE_RATIO) {
+  const fullRequirementsMet = FULL_REQUIRED_SECTIONS.every((key) => sectionIsReady(sections && sections[key]));
+  if (coverage.extended.ratio >= FULL_COVERAGE_RATIO && fullRequirementsMet) {
     return { status: REPORT_STATUS.fullReady, stage: STAGE.FULL, coverage, ageMinutes };
   }
 
@@ -245,6 +266,7 @@ module.exports = {
   FULL_COVERAGE_RATIO,
   FULL_TIME_AFTER_KICKOFF_MINUTES,
   FULL_WINDOW_HOURS,
+  FULL_REQUIRED_SECTIONS,
   QUICK_WINDOW_MINUTES,
   REPORT_STATUS,
   STAGE,

@@ -9,7 +9,6 @@ const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-f
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const momentum = JSON.parse(fs.readFileSync(path.join(root, "data", "momentum.json"), "utf8"));
 const signals = JSON.parse(fs.readFileSync(path.join(root, "data", "signals.json"), "utf8"));
-const analyses = JSON.parse(fs.readFileSync(path.join(root, "data", "analyses.json"), "utf8"));
 const news = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
 const freshnessData = JSON.parse(fs.readFileSync(path.join(root, "data", "freshness.json"), "utf8"));
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
@@ -23,6 +22,10 @@ const { getPlayers, formatMarketValueEur } = require("../services/playerService.
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
 const { getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigFixtureService.js");
+const { statusLabel: matchStatusLabel, statusSlug: matchStatusSlug } = require("../services/matchStatus.js");
+const { buildMatchReport } = require("../services/matchReportService.js");
+const { isReportableFinal } = require("../services/matchReportStages.js");
+const { analysisCards: analysisCardGrid } = require("../services/matchAnalysisCardView.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
@@ -72,8 +75,9 @@ function matchDetailLinkLabel(match) {
   return "Canlı skor";
 }
 
-const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
-const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
+// Durum etiketi ve slug'ı services/matchStatus.js'ten geliyor. Buradaki iki
+// tablo yalnızca beş durum tanıyordu; devre arası ya da tatil edilen bir maç
+// listede "Planlandı" yazıyordu çünkü eşleşmeyen anahtar varsayılana düşüyordu.
 
 function fixtureTeamInitials(name) {
   const clean = String(name || "").trim();
@@ -846,8 +850,36 @@ function playerSignals(pool) {
   return cards.map(([label, player, field]) => `<article class="card player-signal-card"><span class="card-kicker">${escapeHtml(label)}</span><h3>${escapeHtml(player.name)}</h3><strong>${escapeHtml(player[field] || "-" )}</strong><p>${escapeHtml(player.currentTeam || player.team)} · ${escapeHtml(player.position)}</p><a href="./oyuncular/${escapeHtml(player.id)}.html">Profili aç</a></article>`).join("");
 }
 
-function analysisCards() {
-  return analyses.map((analysis) => `<article class="article-card" data-card="analysis" id="${escapeHtml(analysis.id)}-preview"><div><h3>${escapeHtml(analysis.title)}</h3><p>${escapeHtml(analysis.summary)}</p></div><a href="${escapeHtml(analysis.url)}">Analizi aç</a></article>`).join("");
+/**
+ * ANA SAYFADAKİ "MAÇ ANALİZLERİ" KARTI.
+ *
+ * Bu yuva (`analysis-preview`) yıllardır ÜRETİLİYOR ama index.html'de
+ * yerleştirileceği bir yer olmadığı için her derlemede sessizce çöpe
+ * gidiyordu: replaceSlot hedefi bulamayınca HTML'i değiştirmeden dönüyor.
+ * Yani site, hiç kimsenin görmediği bir bölümü her seferinde yeniden
+ * üretiyordu.
+ *
+ * İçerik de değişti. Yuva `data/analyses.json` içindeki beş açıklayıcı
+ * yazıyı ("form durumu nasıl okunur?") basıyordu; başlığı "Maç
+ * Analizleri" olan bir bölümde bunlar maç analizi değil, yöntem anlatımıdır.
+ * Artık gerçek maçların yayımlanmış analizleri listeleniyor — kart basıldıysa
+ * arkasında o maçın sayfası vardır.
+ */
+function matchAnalysisEntries() {
+  const now = new Date();
+  // Havuz curatedMatches(): scripts/generate-post-match-pages.mjs de aynı
+  // kaynağı okuyor. İki yüzeyin farklı havuzdan beslenmesi, ana sayfada
+  // görünen bir analizin Maç Merkezi'nde görünmemesi demek olurdu.
+  const pool = curatedMatches();
+  return pool
+    .filter((match) => isReportableFinal(match, now))
+    .sort((left, right) => String(right.kickoff || "").localeCompare(String(left.kickoff || "")))
+    .map((match) => ({ match, report: buildMatchReport(match, { fixtures: pool, now }) }))
+    .filter((entry) => entry.report);
+}
+
+function analysisCards(limit) {
+  return analysisCardGrid(matchAnalysisEntries(), { limit, scope: "ana-sayfa-analizler" });
 }
 
 function newsCards(limit) {
@@ -856,14 +888,14 @@ function newsCards(limit) {
 
 function fixtureMatchRowHtml(match, round) {
   const status = normalizeMatchStatus(match.status);
-  const statusSlug = FIXTURE_STATUS_SLUG[status] || "scheduled";
+  const statusSlug = matchStatusSlug(status);
   const timeLabel = match.dateLabel || round.dateRange || "Tarih ve saat bekleniyor";
   const scoreOrVs = status === "FINISHED" && match.score
     ? `<strong>${escapeHtml(displayScore(match.score))}</strong>`
     : `<span class="vs-pill">VS</span>`;
 
   return `<a class="fixture-match-row" data-card="fixture-match" data-status="${statusSlug}" href="./mac/${escapeHtml(matchSlug({ ...match, round: round.round }))}.html">` +
-    `<div class="fixture-match-time"><span class="fixture-time">${escapeHtml(timeLabel)}</span><span class="fixture-status-badge" data-status="${statusSlug}">${escapeHtml(FIXTURE_STATUS_TR[status] || "Planlandı")}</span></div>` +
+    `<div class="fixture-match-time"><span class="fixture-time">${escapeHtml(timeLabel)}</span><span class="fixture-status-badge" data-status="${statusSlug}">${escapeHtml(matchStatusLabel(status))}</span></div>` +
     `<div class="fixture-match-team fixture-match-team-home">${fixtureTeamLogoHtml(match.homeTeam)}<span>${escapeHtml(match.homeTeam)}</span></div>` +
     `<div class="fixture-match-score">${scoreOrVs}</div>` +
     `<div class="fixture-match-team fixture-match-team-away">${fixtureTeamLogoHtml(match.awayTeam)}<span>${escapeHtml(match.awayTeam)}</span></div>` +
@@ -1152,7 +1184,7 @@ writePage("index.html", {
   "player-radar": trendPlayerSlot(3),
   "player-signals": playerSignalsSlot(),
   "news-preview": newsCards(3),
-  "analysis-preview": analysisCards()
+  "analysis-preview": analysisCards(6)
 }, fixtureFreshness, {
   markers: {
     "home-schema": `    <script type="application/ld+json">${homeSchemaJson()}</script>`

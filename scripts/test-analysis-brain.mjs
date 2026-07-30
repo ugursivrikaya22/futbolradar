@@ -281,8 +281,15 @@ function testEveryDeclaredTestExists() {
 const THRESHOLD_PROBES = [
   { rule: "match.publish.stale-status", name: "STALE_STATUS_HOURS", export: "STALE_STATUS_HOURS" },
   { rule: "match.publish.approved-source", name: "APPROVED_SOURCES", export: "APPROVED_SOURCES" },
-  { rule: "match.display.gate", name: "FINISHED_STATUSES", constant: "FINISHED_STATUSES" },
-  { rule: "match.display.gate", name: "LIVE_STATUSES", constant: "LIVE_STATUSES" },
+  { rule: "match.display.gate", name: "STALE_STATUS_HOURS", export: "STALE_STATUS_HOURS" },
+  // Durum sözlüğü artık tek yerde (services/matchStatus.js); görüntüleme
+  // kapısı kendi etiket listesini tutmuyor, sınıflandırmayı oradan soruyor.
+  { rule: "match.status.single-vocabulary", name: "IN_PLAY", export: "IN_PLAY" },
+  { rule: "match.status.single-vocabulary", name: "NOT_PLAYED", export: "NOT_PLAYED" },
+  { rule: "report.coverage.level", name: "FULL_STAT_ROWS", export: "FULL_STAT_ROWS" },
+  { rule: "report.coverage.level", name: "MIN_TIMED_EVENTS", export: "MIN_TIMED_EVENTS" },
+  { rule: "report.completion.validation", name: "MAX_EVENT_MINUTE", export: "MAX_EVENT_MINUTE" },
+  { rule: "report.stage.full-requires-statistics", name: "FULL_REQUIRED_SECTIONS", export: "FULL_REQUIRED_SECTIONS" },
   { rule: "match.priority.high-interest-label", name: "HIGH_INTEREST_THRESHOLD", export: "HIGH_INTEREST_THRESHOLD" },
   { rule: "match.priority.score", name: "ELITE_CLUB_POPULARITY", export: "ELITE_CLUB_POPULARITY" },
   { rule: "match.priority.score", name: "GIANT_COMPETITION_WEIGHT", export: "GIANT_COMPETITION_WEIGHT" },
@@ -333,7 +340,12 @@ function comparable(value) {
  */
 function readSourceConstant(modulePath, name) {
   const source = read(modulePath);
-  const match = source.match(new RegExp(`const ${name} = (new Set\\((\\[[\\s\\S]*?\\])\\)|\\[[\\s\\S]*?\\]|[-\\d.]+);`));
+  // `Object.freeze([...])` sarmalayıcısı da tanınır: dondurulmuş bir dizi
+  // hâlâ bir dizidir ve defter onu okuyabilmeli. Sarmalayıcıyı tanımamak,
+  // sabiti dondurmayı "defterden kaçırmanın" yolu hâline getirirdi.
+  const match = source.match(new RegExp(
+    `const ${name} = (?:Object\\.freeze\\()?(new Set\\((\\[[\\s\\S]*?\\])\\)|\\[[\\s\\S]*?\\]|[-\\d.]+)`
+  ));
   assert.ok(match, `${modulePath}: "${name}" sabitinin tanımı okunamadı`);
   const literal = match[2] || match[1];
   return JSON.parse(literal.replace(/'/g, '"').replace(/,(\s*])/g, "$1"));

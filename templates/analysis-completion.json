@@ -1,0 +1,53 @@
+{
+  "$comment": "services/postMatchCompletion.js metinleri. Hangi maçın hangi durumu aldığı (kural) serviste kalır; burada yalnızca okuyucunun gördüğü cümle yaşar. 'key', 'tone' ve 'slug' değerleri sözleşmedir: CSS sınıflarına, data- niteliklerine ve API yanıtlarına gider.",
+  "coverageLevels": {
+    "full": {
+      "key": "full",
+      "slug": "full",
+      "text": "Tam veri",
+      "detail": "Olay akışı, kadrolar, istatistik dökümü ve oyuncu değişiklikleri doğrulandı."
+    },
+    "standard": {
+      "key": "standard",
+      "slug": "standard",
+      "text": "Standart veri",
+      "detail": "Olay akışı ve istatistik dökümü doğrulandı; kadro ya da değişiklik verisi eksik."
+    },
+    "limited": {
+      "key": "limited",
+      "slug": "limited",
+      "text": "Sınırlı veri",
+      "detail": "Kesin skor ve doğrulanmış olaylar var; istatistik dökümü bu karşılaşma için gelmedi."
+    }
+  },
+  "completion": {
+    "complete": {
+      "key": "complete",
+      "slug": "complete",
+      "tone": "ok",
+      "text": "Analiz tamamlandı",
+      "detail": "Doğrulanmış verinin desteklediği tüm bölümler yazıldı."
+    },
+    "limitedComplete": {
+      "key": "limited_complete",
+      "slug": "limited-complete",
+      "tone": "ok",
+      "text": "Sınırlı veriyle tamamlandı",
+      "detail": "Bu karşılaşma için elde olan doğrulanmış verinin tamamı işlendi; eksik bölüm veri olmadığı için yazılmadı."
+    },
+    "incomplete": {
+      "key": "incomplete",
+      "slug": "incomplete",
+      "tone": "progress",
+      "text": "Analiz tamamlanmadı",
+      "detail": "Verisi bulunan bir bölüm henüz yazılmadı; işlem sürüyor."
+    },
+    "invalid": {
+      "key": "invalid",
+      "slug": "invalid",
+      "tone": "warn",
+      "text": "Analiz doğrulamayı geçemedi",
+      "detail": "Kayıtta çelişki bulundu; analiz yayımlanmaz."
+    }
+  }
+}

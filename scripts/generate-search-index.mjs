@@ -19,6 +19,10 @@ const require = createRequire(import.meta.url);
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { mergeSuperLigTeams } = require("../services/superLigTeams.js");
 const { displayLeagueName } = require("../services/leagueIdentity.js");
+const { buildMatchReport } = require("../services/matchReportService.js");
+const { isReportableFinal } = require("../services/matchReportStages.js");
+const { isPublishableCompletion } = require("../services/postMatchCompletion.js");
+const { curatedMatches } = require("../services/providers/mockProvider.js");
 
 function readJson(file) {
   try {
@@ -130,6 +134,34 @@ for (const player of asArray(readJson("players.json"), "players")) {
     href,
     title: player.name,
     subtitle: [club, position].filter(Boolean).join(" · ") || "Oyuncu profili"
+  });
+}
+
+/**
+ * MAÇ ANALİZLERİ ARANABİLİR OLMALI.
+ *
+ * Dizin bugüne kadar sayfa, takım ve oyuncu taşıyordu; tamamlanmış maçların
+ * analizleri hiç girmiyordu. Okuyucu "Fenerbahçe Görnik" ya da "Konyaspor
+ * Hull City" aradığında sonuç alamıyor, oysa o maçın yayımlanmış bir analiz
+ * sayfası vardı.
+ *
+ * Yalnızca YAYIMLANABİLİR tamamlanma durumundaki analizler girer: `push`
+ * zaten dosyanın varlığını denetliyor, bu da kırık öneri üretilmemesinin
+ * ikinci güvencesi.
+ */
+const analysisPool = curatedMatches();
+const analysisNow = new Date();
+for (const match of analysisPool.filter((row) => isReportableFinal(row, analysisNow))) {
+  const report = buildMatchReport(match, { fixtures: analysisPool, now: analysisNow });
+  if (!report || !isPublishableCompletion(report.completion.status)) continue;
+
+  const score = match.score || {};
+  push({
+    type: "analysis",
+    badge: "ANL",
+    href: report.seo.path,
+    title: `${match.homeTeam} ${score.home}-${score.away} ${match.awayTeam}`,
+    subtitle: `${displayLeagueName(match.league, "Maç analizi")} · maç analizi`
   });
 }
 

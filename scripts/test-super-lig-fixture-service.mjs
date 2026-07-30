@@ -46,8 +46,14 @@ const sampleFixtures = {
 assert.equal(normalizeMatchStatus("FT"), "FINISHED", "FT ham durumu FINISHED'e eşlenmeli");
 assert.equal(normalizeMatchStatus("NS"), "SCHEDULED", "NS ham durumu SCHEDULED'e eşlenmeli");
 assert.equal(normalizeMatchStatus("PST"), "POSTPONED", "PST ham durumu POSTPONED'e eşlenmeli");
-assert.equal(normalizeMatchStatus(undefined), "SCHEDULED", "Durum yoksa varsayılan SCHEDULED olmalı");
-assert.equal(normalizeMatchStatus("garbage-value"), "SCHEDULED", "Tanınmayan durum uydurulmadan SCHEDULED'e düşmeli");
+assert.equal(normalizeMatchStatus(undefined), "SCHEDULED", "Durum alanı boşsa fikstür dosyasının sözleşmesi gereği SCHEDULED olmalı");
+assert.equal(normalizeMatchStatus("HT"), "HALFTIME", "Devre arası ayrı bir durum: 'Planlandı'ya düşerse oynanan maç oynanmamış görünür");
+assert.equal(normalizeMatchStatus("ABD"), "ABANDONED", "Tatil edilen maç planlanmış gibi gösterilmemeli");
+// Tanınmayan etiket SCHEDULED'e DÜŞMEZ. "Planlandı" bir iddiadır ("bu maç
+// oynanmadı"); "durum bekleniyor" ise bir itiraftır ("etiketi okuyamadık").
+// Sağlayıcı yeni bir kısaltma göndermeye başladığında ilkini seçmek, bitmiş
+// bir maçı günlerce "Planlandı" göstermenin tam olarak yoluydu.
+assert.equal(normalizeMatchStatus("garbage-value"), "UNKNOWN", "Tanınmayan etiket uydurulmuş bir duruma değil UNKNOWN'a düşmeli");
 
 // --- getFixtureWeeks ---
 const weeks = getFixtureWeeks(sampleFixtures);

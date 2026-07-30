@@ -12,6 +12,18 @@
 
 const { displayLeagueName } = require("./leagueIdentity.js");
 const { evaluateReportStage, hasReportableCore, isReportableFinal } = require("./matchReportStages.js");
+// Olay ayrıştırması services/matchEvents.js'te: aynı ham metni rapor, kapsam
+// ölçümü ve tamamlanma denetimi okuyor; üç kopya bir gün ayrışırdı.
+const {
+  eventMinute,
+  eventTeamName,
+  goalEvents,
+  isType,
+  minuteOf,
+  normalizeText,
+  playerFromDetail
+} = require("./matchEvents.js");
+const { evaluateCompletion } = require("./postMatchCompletion.js");
 
 const VOICELESS = new Set(["f", "s", "t", "k", "ç", "ş", "h", "p"]);
 const BACK_VOWELS = new Set(["a", "ı", "o", "u"]);
@@ -70,15 +82,6 @@ function locative(name) {
   }
   const hard = VOICELESS.has(lastLetter(name));
   return `${name}'${hard ? "t" : "d"}${back ? "a" : "e"}`;
-}
-
-function normalizeText(value) {
-  return String(value || "")
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/ı/g, "i")
-    .trim()
-    .toLowerCase();
 }
 
 /** "2026-07-27" -> "27 Temmuz 2026". Geçersiz girdide ham değeri döndürür. */
@@ -140,53 +143,6 @@ function statPair(match, type) {
   const home = statValue(match, type, "home");
   const away = statValue(match, type, "away");
   return home === null && away === null ? null : { home, away };
-}
-
-// Uzatma dakikasi korunur: "45+4'" bilgisi "45"e indirgenirse ilk yarinin
-// uzatmasinda atilan gol, normal oyun icinde atilmis gibi okunur.
-function minuteOf(event) {
-  const raw = String((event && event.time) || "").match(/(\d+)(?:\s*\+\s*(\d+))?/);
-  if (!raw) return null;
-  return raw[2] ? `${raw[1]}+${raw[2]}` : Number(raw[1]);
-}
-
-function eventTeamName(event) {
-  if (!event || !event.team) return "";
-  return typeof event.team === "string" ? event.team : event.team.name || "";
-}
-
-function isType(event, ...needles) {
-  const type = normalizeText(event && event.type);
-  return needles.some((needle) => type.includes(normalizeText(needle)));
-}
-
-function goalEvents(match) {
-  return (match.events || []).filter((event) => isType(event, "gol") && !isType(event, "iptal"));
-}
-
-/**
- * Olay metninden oyuncu adını çıkarır: "Anderson Talisca serbest vuruştan...".
- * Ada eklenmiş Türkçe hâl eki ("Kökçü'nün") kırpılır; ad içinde geçen
- * kesme işareti ("N'Golo") korunur — ayrım, kesmeden sonraki harfin küçük
- * olup olmadığına bakılarak yapılır.
- */
-function stripTurkishSuffix(token) {
-  return token.replace(/['’](?=\p{Ll})\p{Ll}+$/u, "");
-}
-
-function playerFromDetail(detail) {
-  const text = String(detail || "").trim();
-  if (!text) return null;
-  const match = text.match(/^([\p{Lu}][\p{L}'’.-]*(?:\s+[\p{Lu}][\p{L}'’.-]*){0,3})/u);
-  if (!match) return null;
-  const name = match[1]
-    .trim()
-    .replace(/[.,;:]$/, "")
-    .split(/\s+/)
-    .map(stripTurkishSuffix)
-    .join(" ")
-    .trim();
-  return name.split(/\s+/).length >= 2 ? name : null;
 }
 
 function outcome(match) {
@@ -363,15 +319,6 @@ function buildStandoutPlayers(match) {
 }
 
 // ── 3. İstatistik analizi ───────────────────────────────────────────────────
-/** Olay dakikasını sayıya çevirir: "37'", "90+2'" -> 37, 92. */
-function eventMinute(event) {
-  const raw = String((event && event.time) || "").replace(/['’\s]/g, "");
-  if (!raw) return null;
-  const parts = raw.split("+").map((part) => Number(part));
-  if (!parts.length || !Number.isFinite(parts[0])) return null;
-  return parts.reduce((total, part) => total + (Number.isFinite(part) ? part : 0), 0);
-}
-
 /**
  * MAÇ MOMENTUMU — olay akışından türetilir, uydurulmaz.
  *
@@ -576,19 +523,44 @@ function buildStatisticsAnalysis(match, seed) {
     }
   }
 
+  const highlights = stats
+    .filter((row) => isNumber(Number(row.home)) && isNumber(Number(row.away)))
+    .slice(0, 12)
+    .map((row) => ({
+      type: row.type,
+      home: row.decimals ? tr(row.home, row.decimals) : row.home,
+      away: row.decimals ? tr(row.away, row.decimals) : row.away,
+      unit: row.unit || ""
+    }));
+
+  /**
+   * DÖKÜM GELDİ AMA OKUNACAK BİR ŞEY ÇIKMADI.
+   *
+   * Bölüm "istatistik var mı?" sorusuna bakıp "ready" diyordu. Yalnızca
+   * "Sarı kart 0-0" ve "Kırmızı kart 0-1" satırları gelen bir maçta bu,
+   * altında tek bir okuma bulunmayan bir bölümün üstüne "Sayısal tablo maçın
+   * hangi bölümlerinde üstünlük kurulduğunu gösteriyor" cümlesini basıyordu:
+   * maça özgü görünen, aslında her maça yazılabilecek genel bir cümle.
+   *
+   * Satırlar gerçek ve doğrulanmış — gösterilir. Ama onlardan çıkarım
+   * yapıldığı iddiası düşer ve bölüm "kısmi" olur.
+   */
+  if (!readings.length) {
+    return {
+      status: "partial",
+      readings,
+      conversion,
+      highlights,
+      lead: "Bu karşılaşma için sağlayıcıdan yalnızca sınırlı bir istatistik dökümü geldi; " +
+        "aşağıdaki satırlar doğrulanmış ölçümlerin tamamı."
+    };
+  }
+
   return {
     status: "ready",
     readings,
     conversion,
-    highlights: stats
-      .filter((row) => isNumber(Number(row.home)) && isNumber(Number(row.away)))
-      .slice(0, 12)
-      .map((row) => ({
-        type: row.type,
-        home: row.decimals ? tr(row.home, row.decimals) : row.home,
-        away: row.decimals ? tr(row.away, row.decimals) : row.away,
-        unit: row.unit || ""
-      })),
+    highlights,
     lead: variant(seed, [
       "Sayısal tablo maçın hangi bölümlerinde üstünlük kurulduğunu gösteriyor.",
       "Rakamlar, skorun oyunun akışını ne kadar yansıttığını ortaya koyuyor."
@@ -765,15 +737,36 @@ function buildAiRating(match) {
     return Math.round(weighted / total);
   }
 
+  // Kaç ayrı metrik hesaba girdi -> güven göstergesi
+  const available = ["Topla oynama", "Toplam şut", "İsabetli şut", "Gol beklentisi (xG)", "Pas isabeti"]
+    .filter((type) => statPair(match, type)).length;
+
+  /**
+   * SKORDAN PUAN ÜRETİLMEZ.
+   *
+   * `sideScore` skor farkını da bir bileşen olarak alıyor. Hiçbir performans
+   * metriği ölçülmemişse geriye YALNIZCA skor farkı kalıyordu ve fonksiyon
+   * yine de bir sayı döndürüyordu: 1-0 biten, istatistiği hiç gelmemiş bir
+   * maçta "performans puanı 68" gibi bir değer. O sayı bir ölçüm değil,
+   * skorun kılık değiştirmiş hâli — üstelik "(0/5 metrik mevcut)" notuyla
+   * kendi boşluğunu itiraf ederek basılıyordu.
+   *
+   * Puan bir ölçüm iddiasıdır; ölçüm yoksa puan da yoktur.
+   */
+  if (!available) {
+    return {
+      status: "unavailable",
+      reason: `${match.homeTeam} - ${match.awayTeam} maçında performans puanı hesaplanacak ölçüm yok; ` +
+        "skor tek başına performans puanı üretmez."
+    };
+  }
+
   const homeScore = sideScore("home", "away");
   const awayScore = sideScore("away", "home");
   if (homeScore === null || awayScore === null) {
     return { status: "unavailable", reason: "Puan için yeterli ölçülmüş istatistik yok." };
   }
 
-  // Kaç ayrı metrik hesaba girdi -> güven göstergesi
-  const available = ["Topla oynama", "Toplam şut", "İsabetli şut", "Gol beklentisi (xG)", "Pas isabeti"]
-    .filter((type) => statPair(match, type)).length;
   const confidence = Math.round((available / 5) * 100);
 
   return {
@@ -934,7 +927,23 @@ function buildMatchReport(match, context) {
   // hazır / tam analiz hazırlanıyor / kısmi rapor / veri yok.
   const stage = evaluateReportStage({ sections, match, now: reportNow });
 
+  /**
+   * TAMAMLANMA DURUMU aşamadan AYRI bir sorudur ve burada bir kez hesaplanır.
+   *
+   * Aşama boru hattını anlatır ("zenginleştirme sürüyor mu?"); tamamlanma ise
+   * işin bitip bitmediğini ("bu maç için yazılabilecek her şey yazıldı mı?").
+   * Hazırlık maçının istatistiği hiç gelmeyecek: aşaması sonsuza dek "kısmi"
+   * kalır ama analizi TAMAMLANMIŞTIR. İki soruyu tek etikete sıkıştırmak,
+   * bitmiş işi yarım gösteriyordu.
+   *
+   * Hesap burada yapılıyor ki sayfa, ana sayfa kartı, API ve geri doldurma
+   * betiği aynı cevabı görsün — her biri kendi hesabını yapsaydı dördü bir
+   * gün ayrışırdı.
+   */
+  const completion = evaluateCompletion({ match, report: { matchId: match.id, sections } });
+
   return {
+    completion,
     matchId: match.id,
     generatedAt: (context && context.generatedAt) || null,
     seo: buildSeo(match, summary),

@@ -15,9 +15,9 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const domain = "https://www.futbolradar.com";
 
-const matches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
 const { buildMatchReport } = require("../services/matchReportService.js");
 const { isReportableFinal, REPORT_STATUS } = require("../services/matchReportStages.js");
+const { COMPLETION } = require("../services/postMatchCompletion.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 const { buildPostMatchIntelligence } = require("../services/postMatchIntelligence.js");
@@ -26,6 +26,7 @@ const { publishableStatements, logExcludedStatements, statementsForMatch } =
   require("../services/matchStatementService.js");
 const { statementsSection, statementsSchema } = require("../services/matchStatementsView.js");
 const { displayLeagueName } = require("../services/leagueIdentity.js");
+const { analysisCards: analysisCardGrid } = require("../services/matchAnalysisCardView.js");
 
 /**
  * Maç sonu açıklamaları tek seferde okunur; her rapor kendi payını alır.
@@ -57,6 +58,18 @@ function readEnrichmentStore() {
 
 const enrichmentStore = readEnrichmentStore();
 
+/**
+ * HAVUZ: curatedMatches() — data/matches.json İLE fikstür takvimi BİRLİKTE.
+ *
+ * Bu betik eskiden yalnızca data/matches.json'ı okuyordu; ana sayfa ise
+ * curatedMatches() havuzunu. İki havuz aynı değil: takvimden gelen ve kesin
+ * skoru doğrulanmış maçlar (Trabzonspor - Eintracht Frankfurt, Galatasaray -
+ * Venezia) yalnızca ikinci havuzda vardı. Sonuç, sitenin en kötü hâliydi —
+ * ana sayfa o maçların analizine BAĞLANTI VERİYOR ama sayfa hiç
+ * üretilmediği için bağlantı 404'e gidiyordu.
+ *
+ * Havuz tek: bir maç bir yüzeyde görünüyorsa analizi de üretilmiş olmalı.
+ */
 const fixturePool = curatedMatches();
 
 /**
@@ -69,7 +82,7 @@ const fixturePool = curatedMatches();
  *
  * Ölçüt artık veriye bakıyor: SKOR VE TAKIMLAR BİLİNİYORSA rapor üretilir.
  */
-const finished = matches
+const finished = fixturePool
   .filter((match) => isReportableFinal(match, new Date()))
   .sort((left, right) => String(right.kickoff || "").localeCompare(String(left.kickoff || "")));
 
@@ -428,6 +441,25 @@ function kpiSection(match) {
     .join("")}</section>`;
 }
 
+/**
+ * ROZET: ANALİZ TAMAM MI, ELDEKİ VERİ NE KADAR?
+ *
+ * Eskiden burada "Kısmi rapor · veri tamamlanmadı" ve "Veri kapsamı %44"
+ * yazıyordu. İkisi de aynı yanlışı yapıyordu: hazırlık maçının istatistiği
+ * hiç gelmeyecekken okuyucuya beklemesi gereken bir şey olduğunu söylüyor,
+ * tamamlanmış bir işi yarım gösteriyordu.
+ *
+ * Yerine iki ayrı ve dürüst bilgi geliyor: analizin TAMAMLANIP tamamlanmadığı
+ * ve o analizin hangi VERİ SEVİYESİNDE yazıldığı. Yüzde, ayrıntı olarak
+ * başlık niteliğinde kalıyor — silinmiyor, manşetten iniyor.
+ */
+function completionBadge(report) {
+  const { completion } = report;
+  const level = completion.levelLabel;
+  return `<span class="analysis-completion is-${escapeHtml(completion.label.tone)}" title="${escapeHtml(completion.label.detail)}">${escapeHtml(completion.label.text)}</span>` +
+    `<span class="analysis-coverage is-${escapeHtml(level.slug)}" title="${escapeHtml(level.detail)} Ölçülen bölüm oranı %${escapeHtml(report.coverage)}.">${escapeHtml(level.text)}</span>`;
+}
+
 function pageHtml(report, match) {
   const { seo } = report;
   const url = `${domain}/${seo.path}`;
@@ -536,7 +568,7 @@ function pageHtml(report, match) {
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="${depth}index.html">Ana Sayfa</a><span>/</span><a href="${depth}mac-merkezi.html">Maç Merkezi</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
       <section class="post-match-hero">
-        <div class="post-match-heading"><span class="eyebrow">${escapeHtml(displayLeagueName(match.league))}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""}</span><h1>${escapeHtml(match.homeTeam)} ${escapeHtml(score.home ?? "")}-${escapeHtml(score.away ?? "")} ${escapeHtml(match.awayTeam)} Maç Raporu</h1><p>${escapeHtml(lead)}</p><div class="post-match-meta"><span>${escapeHtml(formatDate(match.kickoff))}</span>${match.venue && match.venue !== "Açıklanmadı" ? `<span>${escapeHtml(match.venue)}</span>` : ""}${match.referee ? `<span>Hakem: ${escapeHtml(match.referee)}</span>` : ""}<span class="report-status is-${escapeHtml(report.statusTone)}" title="${escapeHtml(report.statusDetail)}">${escapeHtml(report.statusLabel)}</span><span>Veri kapsamı %${escapeHtml(report.coverage)}</span></div></div>
+        <div class="post-match-heading"><span class="eyebrow">${escapeHtml(displayLeagueName(match.league))}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""}</span><h1>${escapeHtml(match.homeTeam)} ${escapeHtml(score.home ?? "")}-${escapeHtml(score.away ?? "")} ${escapeHtml(match.awayTeam)} Maç Raporu</h1><p>${escapeHtml(lead)}</p><div class="post-match-meta"><span>${escapeHtml(formatDate(match.kickoff))}</span>${match.venue && match.venue !== "Açıklanmadı" ? `<span>${escapeHtml(match.venue)}</span>` : ""}${match.referee ? `<span>Hakem: ${escapeHtml(match.referee)}</span>` : ""}${completionBadge(report)}</div></div>
         <div class="post-match-scoreboard" aria-label="Maç sonucu">
           <div><span class="team-monogram">${escapeHtml(monogram(match.homeTeam))}</span><strong>${escapeHtml(match.homeTeam)}</strong></div>
           <div class="post-match-score"><span>Maç sonucu</span><b>${escapeHtml(score.home ?? "-")}<i>-</i>${escapeHtml(score.away ?? "-")}</b>${Number.isFinite(Number(score.halftimeHome)) ? `<small>İlk yarı ${escapeHtml(score.halftimeHome)}-${escapeHtml(score.halftimeAway)}</small>` : ""}</div>
@@ -633,47 +665,6 @@ function replaceOrInsert(file, startMarker, endMarker, content, beforeNeedle) {
   fs.writeFileSync(path.join(root, "public", file), html, "utf8");
 }
 
-/**
- * Ana sayfa: SON maç raporları listesi.
- *
- * Önceki hâl yalnızca en son raporu gösteriyordu; okuyucu "geçen hafta ne
- * oynandı" sorusunun cevabını ana sayfada göremiyor, her rapora ancak Maç
- * Merkezi üzerinden ulaşabiliyordu.
- *
- * Her kartta kapsama oranı yazıyor: raporun ne kadarının ölçülmüş veriden
- * geldiği okuyucudan gizlenmiyor. Kapsaması düşük bir rapor da yayımlanır —
- * ama düşük olduğu söylenerek.
- */
-function recentReportsBlock(entries) {
-  const recent = entries.slice(0, 4);
-  if (!recent.length) return "";
-
-  const cards = recent.map(({ report, match }) => {
-    const summary = report.sections.summary;
-    const line = summary.status === "ready"
-      ? summary.headline
-      : `${match.homeTeam} - ${match.awayTeam}`;
-    // "1/3 ölçüm hazır" okuyucuya hiçbir şey söylemiyordu: hangi ölçüm, neden
-    // eksik, gelecek mi? Yerine raporun DURUMU yazılıyor — bir cümle, bir
-    // kesir değil (services/matchReportStages.js).
-    return `<a class="home-report-card" href="./${escapeHtml(report.seo.path)}">
-      <span class="home-report-meta">${escapeHtml(displayLeagueName(match.league))} · ${escapeHtml(formatDate(match.kickoff))}</span>
-      <strong class="home-report-score">${escapeHtml(`${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`)}</strong>
-      <p class="home-report-line">${escapeHtml(line)}</p>
-      <span class="report-status is-${escapeHtml(report.statusTone)}" title="${escapeHtml(report.statusDetail)}">${escapeHtml(report.statusLabel)}</span>
-    </a>`;
-  }).join("");
-
-  return `<section class="container section home-recent-reports" aria-labelledby="home-recent-reports-title">
-    <div class="section-head"><div class="section-title">
-      <span class="section-kicker">Maç sonrası analizler</span>
-      <h2 id="home-recent-reports-title">Son tamamlanan maçların raporları</h2>
-      <p>Momentum, takım sinyalleri ve istatistik okumasıyla; yalnızca ölçülmüş veriden.</p>
-    </div><a class="section-link" href="./mac-merkezi.html">Tüm raporlar</a></div>
-    <div class="home-report-grid">${cards}</div>
-  </section>`;
-}
-
 function addInternalLinks(report, match) {
   const summary = report.sections.summary;
   const score = `${match.score.home}-${match.score.away}`;
@@ -697,21 +688,13 @@ function addInternalLinks(report, match) {
  * sağlar; aksi halde yalnızca sitemap üzerinden erişilebilir kalırlardı.
  */
 function addReportIndex(entries) {
-  const cards = entries.map(({ report, match }) => {
-    const score = `${match.score.home}-${match.score.away}`;
-    const summary = report.sections.summary;
-    const line = summary.status === "ready" ? summary.headline : `${match.homeTeam} - ${match.awayTeam}`;
-    return `<a class="match-report-card" href="./${escapeHtml(report.seo.path)}">
-      <span>${escapeHtml(displayLeagueName(match.league))} · ${escapeHtml(formatDate(match.kickoff))}</span>
-      <strong>${escapeHtml(match.homeTeam)} ${escapeHtml(score)} ${escapeHtml(match.awayTeam)}</strong>
-      <p>${escapeHtml(line)}</p>
-      <em class="report-status is-${escapeHtml(report.statusTone)}" title="${escapeHtml(report.statusDetail)}">${escapeHtml(report.statusLabel)}</em>
-    </a>`;
-  }).join("");
+  // Kartlar ana sayfayla AYNI şablondan (services/matchAnalysisCardView.js):
+  // iki dizinin farklı görünmesi, aynı maçın iki farklı özetini okumak demek.
+  const cards = analysisCardGrid(entries, { scope: "mac-merkezi-dizin" });
 
   const block = `<section class="section match-report-index" aria-labelledby="match-report-index-title">
-          <div class="section-head"><div class="section-title"><span class="section-kicker">Maç raporları</span><h2 id="match-report-index-title">Tamamlanan maçların otomatik raporları</h2><p>Her rapor; özet, öne çıkan oyuncular, istatistik analizi, taktik değerlendirme, kırılma anları, performans puanı ve sonraki maç öngörüsü içerir.</p></div></div>
-          <div class="match-report-grid">${cards}</div>
+          <div class="section-head"><div class="section-title"><span class="section-kicker">Maç analizleri</span><h2 id="match-report-index-title">Tamamlanan maçların otomatik analizleri</h2><p>Her analiz; özet, öne çıkan oyuncular, istatistik okuması, taktik değerlendirme, kırılma anları, performans puanı ve sonraki maç bilgisi içerir.</p></div></div>
+          <div class="analysis-card-grid">${cards}</div>
         </section>`;
 
   replaceOrInsert(
@@ -746,9 +729,29 @@ const seenTitles = new Map();
 const seenDescriptions = new Map();
 const seenPaths = new Map();
 
+const rejected = [];
+
 for (const match of finished) {
   const report = buildMatchReport(match, { fixtures: fixturePool });
   if (!report) continue;
+
+  /**
+   * ÇELİŞKİLİ ANALİZ YAYIMLANMAZ.
+   *
+   * Doğrulama bir tutarsızlık bulduysa (gol sayısı skoru aşıyor, oyuncu
+   * yanlış takıma yazılmış, olay maç bitiminden sonra…) sayfa hiç
+   * üretilmez. Yanlış bilgi taşıyan bir sayfa, olmayan sayfadan kötüdür:
+   * okuyucu onu doğru sanır ve sitenin geri kalanına da güvenir.
+   *
+   * Eleme sessiz değil: her gerekçe günlüğe yazılır ve koşu özetinde sayılır.
+   */
+  if (report.completion.status === COMPLETION.INVALID) {
+    rejected.push({ match, problems: report.completion.problems });
+    for (const problem of report.completion.problems) {
+      console.warn(`[futbolradar:analysis-invalid] id=${match.id} code=${problem.code} reason="${problem.message}"`);
+    }
+    continue;
+  }
 
   const { title, description, path: relative } = report.seo;
   for (const [label, value, store] of [
@@ -773,16 +776,16 @@ for (const match of finished) {
 
 if (generated.length) {
   addInternalLinks(generated[0].report, generated[0].match);
-  // Ana sayfadaki tek "son rapor" vitrinini, son raporların listesiyle
-  // değiştirir. Vitrin bloğunun kendisi addInternalLinks içinde duruyor;
-  // bu blok onun altına, ayrı bir işaretleyici arasına yazılıyor.
-  replaceOrInsert(
-    "index.html",
-    "<!-- post-match-recent:start -->",
-    "<!-- post-match-recent:end -->",
-    recentReportsBlock(generated),
-    '<section class="container section section-player-radar"'
-  );
+  /**
+   * ANA SAYFADAKİ ANALİZ LİSTESİ ARTIK BU BETİĞİN İŞİ DEĞİL.
+   *
+   * Buradan "Son tamamlanan maçların raporları" diye ikinci bir bölüm
+   * basılıyordu; ana sayfada aynı maçları listeleyen iki bölüm oluyordu ve
+   * ikisi farklı şablon kullandığı için rozetleri de farklıydı. Liste tek
+   * yere taşındı: scripts/prerender-core-pages.mjs içindeki "Maç Analizleri"
+   * bölümü, kartları services/matchAnalysisCardView.js ile basıyor —
+   * Maç Merkezi dizini de aynı şablonu kullanıyor.
+   */
   addReportIndex(generated);
   upsertSitemap(generated.map((entry) => entry.report.seo.path));
 }
@@ -797,4 +800,12 @@ const breakdown = Object.values(REPORT_STATUS)
   .filter((status) => byStatus.get(status.key))
   .map((status) => `${status.key} ${byStatus.get(status.key)}`)
   .join(", ");
+const byCompletion = new Map();
+for (const entry of generated) {
+  const key = entry.report.completion.status;
+  byCompletion.set(key, (byCompletion.get(key) || 0) + 1);
+}
+const completionBreakdown = [...byCompletion.entries()].map(([key, count]) => `${key} ${count}`).join(", ");
+
 console.log(`Generated ${generated.length} match report page(s)${breakdown ? ` — ${breakdown}` : ""}`);
+console.log(`  tamamlanma: ${completionBreakdown || "kayıt yok"}${rejected.length ? ` — doğrulamayı geçemeyen ${rejected.length}` : ""}`);

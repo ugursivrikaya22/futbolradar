@@ -1,0 +1,14 @@
+{
+  "$comment": "services/matchStatus.js STATUS_LABELS metinleri. Hangi ham etiketin hangi duruma düştüğü (kural) serviste kalır; burada yalnızca okuyucunun gördüğü cümle ve CSS'e giden slug yaşar. Anahtar adları ve 'slug' değerleri sözleşmedir — CSS sınıflarına ve data-status niteliklerine gider.",
+  "statuses": {
+    "SCHEDULED": { "text": "Planlandı", "slug": "scheduled" },
+    "LIVE": { "text": "Canlı", "slug": "live" },
+    "HALFTIME": { "text": "Devre arası", "slug": "halftime" },
+    "FINISHED": { "text": "Bitti", "slug": "finished" },
+    "POSTPONED": { "text": "Ertelendi", "slug": "postponed" },
+    "CANCELLED": { "text": "İptal edildi", "slug": "cancelled" },
+    "ABANDONED": { "text": "Tatil edildi", "slug": "abandoned" },
+    "AWARDED": { "text": "Hükmen sonuçlandı", "slug": "awarded" },
+    "UNKNOWN": { "text": "Durum bekleniyor", "slug": "unknown" }
+  }
+}
