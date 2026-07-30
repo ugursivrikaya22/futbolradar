@@ -15,6 +15,8 @@ const { competitions, matchesCompetition } = require("../competitionCatalog");
 const { readCachedLeague } = require("../leagueCache");
 const { canonicalizeStatistics } = require("../matchStatisticsSchema");
 const { normalizeMatchStatus } = require("../matchStatus");
+// Takvim günü hesabı tek yerde: services/matchCalendar.js
+const { todayInIstanbul } = require("../matchCalendar");
 const { createHash } = require("node:crypto");
 
 const source = "FutbolRadar API-Football Live API";
@@ -357,15 +359,6 @@ function resolveLeague(value) {
 function resolveSeason(value, dateHint) {
   const config = getConfig();
   return value || config.season || seasonForDate(dateHint);
-}
-
-function todayInIstanbul() {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Istanbul",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).format(new Date());
 }
 
 function responseItems(payload) {

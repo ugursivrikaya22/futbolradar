@@ -32,6 +32,7 @@ const {
   MATCH_STATUS,
   normalizeMatchStatus: normalizeStatusLabel
 } = require("./matchStatus.js");
+const { todayInIstanbul } = require("./matchCalendar.js");
 
 const TIMEZONE = "Europe/Istanbul";
 
@@ -202,13 +203,20 @@ function parseDateRange(label) {
  * @param {string} timeZone
  * @returns {string} YYYY-MM-DD
  */
+/**
+ * Takvim günü hesabı services/matchCalendar.js'te; bu imza dışa aktarıldığı
+ * ve çağıranları olduğu için korunuyor.
+ */
 function todayInTimeZone(timeZone) {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: timeZone || TIMEZONE,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).format(new Date());
+  if (timeZone && timeZone !== TIMEZONE) {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).format(new Date());
+  }
+  return todayInIstanbul();
 }
 
 /**

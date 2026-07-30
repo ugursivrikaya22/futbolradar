@@ -14,6 +14,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { siteHeader, siteFooter, newsTicker } from "./lib/layout.mjs";
 import { buildTickerFeed } from "./lib/tickerFeed.mjs";
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const { todayInIstanbul } = require("../services/matchCalendar.js");
 
 const root = process.cwd();
 
@@ -41,9 +44,9 @@ function asArray(payload, ...keys) {
   return [];
 }
 
-function istanbulToday() {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(new Date());
-}
+// Takvim günü hesabı services/matchCalendar.js'te; buradaki kısaltılmış kopya
+// diğerlerinden farklı bir imzayla yazılmıştı ve ayrışmaya en açık olanıydı.
+const istanbulToday = todayInIstanbul;
 
 /**
  * Banttaki içerik: önce günün tamamlanan/canlı maç sonuçları (en taze bilgi),

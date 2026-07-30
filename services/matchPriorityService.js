@@ -27,6 +27,8 @@
  */
 
 const { normalizeText } = require("./matchRadarService");
+const { dateOnly } = require("./matchCalendar.js");
+const { isFinishedStatus } = require("./matchStatus.js");
 const { isSuperLigName } = require("./leagueIdentity");
 
 /**
@@ -146,7 +148,6 @@ const DEFAULT_COMPETITION_WEIGHT = 30;
 const EUROPEAN_COMPETITION = /sampiyonlar-ligi|champions league|şampiyonlar ligi|avrupa-ligi|europa league|avrupa ligi|konferans|conference league|uefa/i;
 
 const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"]);
-const FINISHED_STATUSES = new Set(["FINISHED", "FT", "AET", "PEN"]);
 
 /** Bileşen katkıları. Tek yerde durur ki ağırlık dengesi okunabilsin. */
 const WEIGHTS = Object.freeze({
@@ -199,11 +200,13 @@ function isLive(match) {
 }
 
 function isFinished(match) {
-  return FINISHED_STATUSES.has(String(match.status || "").toUpperCase());
+  // Durum sözlüğü services/matchStatus.js'te; buradaki küme yedinci kopyaydı.
+  return isFinishedStatus(match.status);
 }
 
 function istanbulDay(date) {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(date);
+  // Gün hesabı services/matchCalendar.js'te.
+  return dateOnly(date instanceof Date ? date.toISOString() : date);
 }
 
 /**

@@ -6,6 +6,7 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
+const { todayInIstanbul } = require("../services/matchCalendar.js");
 const { buildMatchContext } = require("../services/matchContextService.js");
 const {
   generateProbableLineupForFixture,
@@ -80,15 +81,6 @@ function parseArgs(argv) {
   if (!args.apply && !args.dryRun) args.dryRun = true;
   if (!args.date && !args.days && !args.fixtureId && !args.upcoming) args.date = "today";
   return args;
-}
-
-function todayInIstanbul() {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Istanbul",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).format(new Date());
 }
 
 function dateOnly(isoValue) {

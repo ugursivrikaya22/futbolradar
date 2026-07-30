@@ -7,6 +7,7 @@ const {
   withTimeout
 } = require("../../api/_utils");
 const { competitions, findCompetition, matchesCompetition } = require("../competitionCatalog");
+const { TIMEZONE: CALENDAR_TIMEZONE, todayInIstanbul } = require("../matchCalendar");
 
 const source = "FutbolRadar Football-Data Live API";
 
@@ -85,13 +86,24 @@ function notImplemented(resource) {
   );
 }
 
+/**
+ * Takvim günü hesabı services/matchCalendar.js'te. Bu imza korunuyor çünkü
+ * dışa aktarılıyor ve çağıranları var; gövdesi artık tek yetkili hesabı
+ * çağırıyor. Aynı sorunun altı ayrı cevabı vardı ve altısının aynı kalacağının
+ * garantisi yoktu.
+ */
 function todayInTimeZone(timeZone) {
-  return new Intl.DateTimeFormat("en-CA", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit"
-  }).format(new Date());
+  if (timeZone && timeZone !== CALENDAR_TIMEZONE) {
+    // Depoda tek saat dilimi var; başka bir dilim istenirse sessizce
+    // İstanbul'a düşmek yanlış tarih üretirdi.
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).format(new Date());
+  }
+  return todayInIstanbul();
 }
 
 function toDateOnly(value) {

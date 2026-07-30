@@ -25,6 +25,7 @@
  */
 
 const { canonicalizeStatistics, toNumber } = require("./matchStatisticsSchema");
+const { dateOnly } = require("./matchCalendar.js");
 const { normalizeText } = require("./matchRadarService");
 
 const PROVIDER_NAME = "API-Football";
@@ -114,13 +115,9 @@ function curatedScore(match) {
  * karşılaştırmak, saat dilimi farkını "farklı maç" gibi okurdu.
  */
 function istanbulDayKey(value) {
-  const raw = String(value || "").trim();
-  if (!raw) return null;
-  // Saatsiz tarih zaten gün anahtarıdır; Date'e sokup UTC'ye kaydırmıyoruz.
-  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
-  const parsed = new Date(raw);
-  if (Number.isNaN(parsed.getTime())) return null;
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(parsed);
+  // Gün anahtarı services/matchCalendar.js'te tek yerde hesaplanıyor; saatsiz
+  // tarihin Date'e sokulup UTC'ye kaydırılmaması kuralı da orada yaşıyor.
+  return dateOnly(value) || null;
 }
 
 /**

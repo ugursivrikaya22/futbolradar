@@ -42,6 +42,7 @@
  */
 
 const fs = require("node:fs");
+const { dateOnly } = require("./matchCalendar.js");
 const path = require("node:path");
 
 const {
@@ -104,7 +105,8 @@ function hoursSince(value, now) {
 
 /** Bandın günü Türkiye saatiyle başlar; sunucunun saat dilimi belirleyici değil. */
 function istanbulDay(date) {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(date);
+  // Gün hesabı services/matchCalendar.js'te.
+  return dateOnly(date instanceof Date ? date.toISOString() : date);
 }
 
 const LIVE_STATUSES = ["LIVE", "IN_PLAY", "1H", "2H", "HT", "HALFTIME", "ET", "P", "BT"];
