@@ -17,6 +17,10 @@ const {
   withTimeout
 } = require("./_utils");
 
+// Maç analizi uç noktasının kabul ettiği yol adları. Tekil biçim canonical,
+// çoğul biçim geriye dönük takma addır.
+const MATCH_ANALYSIS_ROUTES = new Set(["match-analysis", "match-analyses"]);
+
 async function getPlayerData(query) {
   const provider = getProvider("players");
   const localData = await mockProvider.getPlayers(query);
@@ -181,9 +185,6 @@ async function handleSuperLigFixtures(req, res, query) {
 }
 
 function matchAnalysisResponse(res, statusCode, payload) {
-
- function analysisPriority
-   async function handleMatchAnalyses
   return sendJson(res, statusCode, payload);
 }
 
@@ -257,8 +258,10 @@ module.exports = async function handler(req, res) {
   }
 
   const route = routeName(req);
- const analysisRoutes = ["match-analysis", "analyses", "match-analyses"];
-  setCachePolicy(res, analysisRoutes["match-analysis"]:players);
+  // "match-analyses" (çoğul) aynı uç noktanın takma adıdır; tekil biçimle
+  // aynı önbellek politikasını kullanır.
+  const isAnalysisRoute = MATCH_ANALYSIS_ROUTES.has(route);
+  setCachePolicy(res, isAnalysisRoute ? "match-analysis" : "players");
   if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
@@ -274,8 +277,8 @@ module.exports = async function handler(req, res) {
   if (route === "player-rankings") {
     return handlePlayerRankings(req, res, query);
   }
-route === 'analyses' || route === 'match-analyses
-  if (route === "match-analysis") {
+
+  if (isAnalysisRoute) {
     return handleMatchAnalysis(req, res, query);
   }
 

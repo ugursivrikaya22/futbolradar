@@ -15,7 +15,6 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const domain = "https://www.futbolradar.com";
 
-const matches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
 const { buildMatchReport } = require("../services/matchReportService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
@@ -46,8 +45,14 @@ function readEnrichmentStore() {
 const enrichmentStore = readEnrichmentStore();
 
 const fixturePool = curatedMatches();
-const finished = matches
-  .filter((match) => String(match.status || "").toUpperCase() === "FINISHED")
+// Kaynak `curatedMatches()`: elle doğrulanmış kayıtlar ile sağlayıcı takvimi
+// burada birleşiyor. Eskiden yalnızca data/matches.json okunuyordu ve skoru
+// sağlayıcıdan gelen tamamlanmış maçlar (ör. Trabzonspor - Eintracht
+// Frankfurt) hiç rapor almıyordu; ana sayfada "maç oynandı ama analiz yok"
+// boşluğu buradan doğuyordu. Verisi ince olan maçın raporu da yayımlanır,
+// eksik bölümleri "veri bekleniyor" diye işaretlenir.
+const finished = fixturePool
+  .filter((match) => ["FINISHED", "FT", "AET", "PEN"].includes(String(match.status || "").toUpperCase()))
   .sort((left, right) => String(right.kickoff || "").localeCompare(String(left.kickoff || "")));
 
 function escapeHtml(value) {
@@ -583,47 +588,6 @@ function replaceOrInsert(file, startMarker, endMarker, content, beforeNeedle) {
   fs.writeFileSync(path.join(root, "public", file), html, "utf8");
 }
 
-/**
- * Ana sayfa: SON maç raporları listesi.
- *
- * Önceki hâl yalnızca en son raporu gösteriyordu; okuyucu "geçen hafta ne
- * oynandı" sorusunun cevabını ana sayfada göremiyor, her rapora ancak Maç
- * Merkezi üzerinden ulaşabiliyordu.
- *
- * Her kartta kapsama oranı yazıyor: raporun ne kadarının ölçülmüş veriden
- * geldiği okuyucudan gizlenmiyor. Kapsaması düşük bir rapor da yayımlanır —
- * ama düşük olduğu söylenerek.
- */
-function recentReportsBlock(entries) {
-  const recent = entries.slice(0, 4);
-  if (!recent.length) return "";
-
-  const cards = recent.map(({ report, match }) => {
-    const summary = report.sections.summary;
-    const line = summary.status === "ready"
-      ? summary.headline
-      : `${match.homeTeam} - ${match.awayTeam}`;
-    const measured = ["momentum", "signals", "statistics"]
-      .filter((key) => report.sections[key] && report.sections[key].status === "ready").length;
-
-    return `<a class="home-report-card" href="./${escapeHtml(report.seo.path)}">
-      <span class="home-report-meta">${escapeHtml(match.league)} · ${escapeHtml(formatDate(match.kickoff))}</span>
-      <strong class="home-report-score">${escapeHtml(`${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`)}</strong>
-      <p class="home-report-line">${escapeHtml(line)}</p>
-      <span class="home-report-coverage">${escapeHtml(`Veri kapsamı %${report.coverage}`)}${measured ? escapeHtml(` · ${measured}/3 ölçüm hazır`) : ""}</span>
-    </a>`;
-  }).join("");
-
-  return `<section class="container section home-recent-reports" aria-labelledby="home-recent-reports-title">
-    <div class="section-head"><div class="section-title">
-      <span class="section-kicker">Maç sonrası analizler</span>
-      <h2 id="home-recent-reports-title">Son tamamlanan maçların raporları</h2>
-      <p>Momentum, takım sinyalleri ve istatistik okumasıyla; yalnızca ölçülmüş veriden.</p>
-    </div><a class="section-link" href="./mac-merkezi.html">Tüm raporlar</a></div>
-    <div class="home-report-grid">${cards}</div>
-  </section>`;
-}
-
 function addInternalLinks(report, match) {
   const summary = report.sections.summary;
   const score = `${match.score.home}-${match.score.away}`;
@@ -723,16 +687,10 @@ for (const match of finished) {
 
 if (generated.length) {
   addInternalLinks(generated[0].report, generated[0].match);
-  // Ana sayfadaki tek "son rapor" vitrinini, son raporların listesiyle
-  // değiştirir. Vitrin bloğunun kendisi addInternalLinks içinde duruyor;
-  // bu blok onun altına, ayrı bir işaretleyici arasına yazılıyor.
-  replaceOrInsert(
-    "index.html",
-    "<!-- post-match-recent:start -->",
-    "<!-- post-match-recent:end -->",
-    recentReportsBlock(generated),
-    '<section class="container section section-player-radar"'
-  );
+  // Ana sayfadaki "Maç sonrası analizler" bloğunu artık
+  // scripts/generate-post-match-analyses.mjs yazıyor: kartların içeriği
+  // (özet, kırılma anı, performans notu, kapsam, güven) analiz kartı
+  // verisinden geliyor ve tek işaretleyicinin tek sahibi olmalı.
   addReportIndex(generated);
   upsertSitemap(generated.map((entry) => entry.report.seo.path));
 }

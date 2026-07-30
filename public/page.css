@@ -15495,3 +15495,422 @@ body,
   font-weight: 700;
   color: var(--text-soft);
 }
+
+/* ---------------------------------------------------------------------------
+   MAÇ SONRASI ANALİZ KARTLARI (ana sayfa)
+   Kart beş alanı da taşır: özet, kırılma anı, takım performansı, veri kapsamı
+   ve güven seviyesi. Verisi ince olan maç gizlenmez; `data-status` değeri
+   "insufficient" olduğunda kart soluk bir çerçeveyle ve "Veri yetersiz"
+   etiketiyle yayımlanır — okuyucu maçın oynandığını ve analizin neden kısa
+   kaldığını birlikte görür.
+--------------------------------------------------------------------------- */
+.post-match-analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-3, 0.9rem);
+}
+
+.post-match-analysis-card {
+  display: grid;
+  gap: 0.55rem;
+  align-content: start;
+  min-width: 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.post-match-analysis-card[data-status="insufficient"] {
+  border-style: dashed;
+  background: var(--surface-sunken, var(--surface));
+}
+
+.pma-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.pma-league {
+  min-width: 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.pma-status {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.14rem 0.5rem;
+  color: var(--text-soft);
+  font-size: 0.68rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.pma-status[data-status="complete"] { border-color: var(--green); color: var(--green); }
+.pma-status[data-status="insufficient"] { color: var(--muted); }
+
+/* Skor satırı: takım | skor | takım. Dar ekranda da yatay kalır; takım adı
+   kırpılır, skor asla alt satıra düşmez. */
+.pma-score {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pma-result {
+  flex: 0 0 auto;
+  font-size: 1.15rem;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.pma-score .pma-team:last-child { text-align: right; }
+
+.pma-summary {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.pma-block {
+  display: grid;
+  gap: 0.2rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.5rem;
+  min-width: 0;
+}
+
+.pma-block-title {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pma-block p {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+/* Eksik veri sessizce boş bırakılmaz, gerekçesiyle yazılır. */
+.pma-missing {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.pma-notes {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pma-notes li {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.pma-note-team {
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.pma-rating {
+  color: var(--green);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.pma-note-text {
+  font-size: 0.79rem;
+  line-height: 1.4;
+}
+
+/* Her notun dayanağı yazılı: belgelenmemiş bir sayı, uydurma bir sayıdan
+   ayırt edilemez. */
+.pma-note-basis {
+  color: var(--muted);
+  font-size: 0.67rem;
+  font-style: normal;
+}
+
+.pma-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.pma-confidence[data-level="high"] { color: var(--green); font-weight: 750; }
+.pma-confidence[data-level="insufficient"] { font-style: italic; }
+
+.pma-link {
+  justify-self: start;
+  color: var(--green);
+  font-size: 0.76rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.pma-link:hover,
+.pma-link:focus-visible { text-decoration: underline; }
+
+@media (max-width: 520px) {
+  .post-match-analysis-grid { grid-template-columns: 1fr; }
+  .post-match-analysis-card { padding: 0.85rem 0.9rem; }
+}
+
+/* ---------------------------------------------------------------------------
+   TAKIM ADI YATAY KALIR — dikey harf yığılmasına karşı tek kural bloğu
+   ("team-name-guard")
+
+   HATA: Kahraman panosundaki `.hero > *` kuralı mobilde
+   `overflow-wrap: anywhere` veriyordu ve bu özellik MİRAS ALINIYOR. Kural
+   kahramanın içindeki maç panosuna kadar iniyor, dar ekranda üç sütunlu skor
+   tablosunun takım sütunu bir sözcükten dar kalınca uzun adlar HER HARFTEN
+   bölünüyordu: "Ü / m / r / a / n / i / y / e / s / p / o / r" — yani dikey
+   yazı. Aynı risk `overflow-wrap: anywhere` yazan canlı skor ve ana sayfa
+   skor satırlarında da vardı.
+
+   KURAL: takım adı taşıyan her öğe
+     - sözcük içinden bölünmez (`word-break: normal`, `overflow-wrap: normal`),
+       böylece miras alınan `anywhere` burada durur;
+     - yatay yazım kipine sabitlenir (`writing-mode`/`text-orientation`), bir
+       yerde dikey kip tanımlansa bile etkisiz kalır;
+     - sığmazsa ya tek satırda üç noktayla kırpılır ya da EN FAZLA iki satıra
+       düzgünce sarılır — asla harf harf yığılmaz;
+     - `min-width: 0` ile esnek/ızgara kabında küçülebilir, böylece kart
+       genişlemez ve mobilde yatay kaydırma doğmaz.
+--------------------------------------------------------------------------- */
+.fixture-row-name,
+.featured-fixture-team strong,
+.trend-card-head strong,
+.trend-card-head span,
+.live-score-team-name,
+.home-score-teams strong,
+.pma-team,
+.pma-note-team,
+.team-card h3,
+.match-radar-team-card strong,
+[data-team-name] {
+  min-width: 0;
+  max-width: 100%;
+  /* Miras alınan `overflow-wrap: anywhere` burada kesilir. */
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  /* Dikey yazım kipi hiçbir koşulda takım adına uygulanmaz. */
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+}
+
+/* Tek satır + üç nokta: liste satırları ve şerit kartları. Bu yüzeylerde satır
+   yüksekliği sabit olmalı, iki satır ızgarayı kaydırır. */
+.fixture-row-name,
+.trend-card-head strong,
+.trend-card-head span,
+.pma-note-team {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* En fazla iki satır: adın tamamının okunmasının değerli olduğu büyük
+   yüzeyler (kahraman panosu, canlı skor kartı). Üçüncü satır yerine üç nokta
+   gelir; sözcük içi bölünme yine kapalı. */
+.featured-fixture-team strong,
+.live-score-team-name,
+.home-score-teams strong,
+.pma-team,
+.team-card h3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+/* Kabın küçülebilmesi şart: `min-width: auto` (ızgara/esnek varsayılanı)
+   takım adını kırpmak yerine sütunu genişletir ve kart taşar. */
+.fixture-row,
+.featured-fixture-team,
+.featured-fixture-board,
+.trend-card-head,
+.pma-score,
+.live-score-team-name-inline {
+  min-width: 0;
+}
+
+.featured-fixture-team {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.featured-fixture-team strong {
+  max-width: 100%;
+  text-align: center;
+}
+
+/* Çok dar ekranlarda skor tablosu yine yatay: takım | skor | takım. Adlar
+   kısalır, satır düzeni bozulmaz. */
+@media (max-width: 400px) {
+  .featured-fixture-board {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  /* Orta sütun (skor + durum rozeti) sabit 108 pikselden geniş kalınca takım
+     sütunlarına 64 piksel kalıyor ve "Trabzonspor" kırpılıyordu. Rozet dar
+     ekranda iki satıra sarılır; kazanılan yer takım adlarına gider. */
+  .featured-fixture-score {
+    min-width: 0;
+  }
+
+  .featured-fixture-score span {
+    white-space: normal;
+    padding: 2px 6px;
+    font-size: 0.6rem;
+    line-height: 1.15;
+    text-align: center;
+  }
+
+  .featured-fixture-team strong {
+    font-size: 0.82rem;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .fixture-row {
+    grid-template-columns: 22px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+}
+
+/* En dar cihazlar (320 piksel): en uzun yaygın kulüp adı ("Trabzonspor")
+   kırpılmadan sığsın diye bir kademe daha küçültülür. Kırpmak yerine
+   küçültmek tercih ediliyor; ad hâlâ tek satırda ve yatay. */
+@media (max-width: 340px) {
+  .featured-fixture-team strong {
+    font-size: 0.74rem;
+  }
+
+  .featured-fixture-team img,
+  .featured-fixture-team .team-logo-fallback,
+  .featured-fixture-team .fixture-row-fallback {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+/* Kahramandaki maç panosu `.hero > *` mirasının dışında tutulur: tanıtım
+   metninin agresif sarma kuralı pano tipografisini yönetmemeli. Pano kendi
+   kurallarını (yukarıdaki takım adı güvencesi) uygular. */
+.hero-featured,
+.hero-featured .featured-fixture,
+.hero-featured .quick-stats {
+  overflow-wrap: normal;
+}
+
+.hero-featured .quick-stat span,
+.hero-featured .quick-stat b {
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+   CANLI VERİ DURUM ŞERİDİ
+   Canlı akışın çalışıp çalışmadığı ekrandan okunabilmeli: son veri saati,
+   yanıtlayan sağlayıcı ve durum. "Canlı 0" rakamı tek başına, sağlayıcının
+   hiç yanıt vermediği durumdan ayırt edilemiyordu.
+--------------------------------------------------------------------------- */
+.live-status-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.6rem;
+  margin-bottom: 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  background: var(--surface-sunken, var(--surface));
+  font-size: 0.72rem;
+}
+
+.live-status-dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.live-status-text {
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.live-status-meta {
+  min-width: 0;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: normal;
+}
+
+/* Canlı: yeşil nokta, nabız. */
+.live-status-strip[data-state="live"] { border-color: var(--live, #c81e2d); }
+.live-status-strip[data-state="live"] .live-status-dot {
+  background: var(--live, #c81e2d);
+  animation: live-status-pulse 1.6s ease-in-out infinite;
+}
+.live-status-strip[data-state="live"] .live-status-text { color: var(--live, #c81e2d); }
+
+/* Canlı maç yok: sakin ve net, hata değil. */
+.live-status-strip[data-state="idle"] .live-status-dot { background: var(--green); }
+
+/* Eski veri / hata: durum gizlenmez, kullanıcı neye baktığını bilir. */
+.live-status-strip[data-state="stale"],
+.live-status-strip[data-state="error"] {
+  border-style: dashed;
+}
+.live-status-strip[data-state="stale"] .live-status-dot,
+.live-status-strip[data-state="error"] .live-status-dot { background: #c9821a; }
+.live-status-strip[data-state="error"] .live-status-text { color: #c9821a; }
+
+@keyframes live-status-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.8); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-status-strip[data-state="live"] .live-status-dot { animation: none; }
+}
+
+@media (max-width: 420px) {
+  .live-status-strip {
+    border-radius: 12px;
+    padding: 0.45rem 0.7rem;
+  }
+}

@@ -25,6 +25,25 @@ const { getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigF
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
+const { selectHeroMatch } = require("../services/editorialPriority.js");
+
+/**
+ * Yayımlanmış maç sonrası analiz kartları. Dosya
+ * `scripts/generate-post-match-analyses.mjs` tarafından yazılıyor ve derleme
+ * sırasında bu scriptten ÖNCE çalışıyor; yine de yokluğu hata değil, sadece
+ * "henüz analiz yayımlanmadı" demek.
+ */
+function publishedPostMatchAnalyses() {
+  const file = path.join(root, "data", "post-match-analyses.json");
+  if (!fs.existsSync(file)) return [];
+  try {
+    const parsed = JSON.parse(fs.readFileSync(file, "utf8"));
+    return Array.isArray(parsed) ? parsed : (parsed.analyses || []);
+  } catch (error) {
+    console.warn(`[prerender] post-match-analyses.json okunamadı: ${error.message}`);
+    return [];
+  }
+}
 
 const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
 const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
@@ -272,24 +291,51 @@ function staticFeaturedFixture() {
   const todayList = list.filter((match) => String(match.kickoff || "").slice(0, 10) === today);
   const finishedCount = todayList.filter((match) => String(match.status || "").toUpperCase() === "FINISHED").length;
   const upcomingCount = todayList.length - finishedCount - liveCount;
-  const featured = todayList[0] || list[0] || null;
+  // Kahraman maçı editoryal önceliğe göre seçilir (Türk takımı > canlı >
+  // küresel dev > saat), sağlayıcı sırasına göre DEĞİL. İstemci tarafı da
+  // aynı kuralı uyguluyor (app.js: sortByEditorialPriority); ikisi ayrışırsa
+  // sayfa ilk boyamada bir maçı, yoklamadan sonra başkasını gösterirdi.
+  const featured = selectHeroMatch(todayList) || selectHeroMatch(list) || null;
 
-  // "Analizi hazır" istemcide de aynı kuralla sayılır (app.js:
-  // matchHasReadyAnalysis): maçın yayımlanabilir bir okuması var mı? Statik
-  // karşılığın eksik kalması, sayfa JS çalışmadan açıldığında sayacın hiç
-  // görünmemesine ve ilk boyamada düzenin kaymasına yol açıyordu.
-  const analysisReadyCount = todayList.filter((match) => Boolean(
-    match.summary ||
-    (match.analysis && (match.analysis.headline || match.analysis.lead)) ||
-    (match.events || []).length ||
-    (match.statistics || []).length
-  )).length;
+  // "Analizi hazır" istemcideki `renderFeaturedMatch` ile AYNI kuralı
+  // uygular: bugünün analizi hazır maçları + yayımlanmış maç sonrası
+  // analizler. Statik karşılık geride kalırsa sayfa JS çalışmadan açıldığında
+  // sayaç 0 görünüyor ve okuyucu bunu "sitede analiz yok" diye okuyor.
+  const identity = (match) => [
+    normalizeText(match.homeTeam),
+    normalizeText(match.awayTeam)
+  ].sort().concat(String(match.kickoff || "").slice(0, 10)).join("|");
 
-  const quickStats = `<div class="quick-stats" aria-label="Bugünün maç özeti">
+  const readyIds = new Set();
+  for (const match of todayList) {
+    const hasReading = Boolean(
+      match.summary ||
+      (match.analysis && (match.analysis.headline || match.analysis.lead)) ||
+      (match.events || []).length ||
+      (match.statistics || []).length
+    );
+    if (hasReading) readyIds.add(identity(match));
+  }
+  for (const card of publishedPostMatchAnalyses()) {
+    readyIds.add(identity(card));
+  }
+  const analysisReadyCount = readyIds.size;
+
+  // Canlı durum şeridinin statik karşılığı. JS henüz çalışmadığı için durum
+  // "pending": şeridin kendisi ilk boyamada da yerinde durur, yoklama
+  // başlayınca gerçek saat ve sağlayıcı adıyla dolar. (İkizi app.js ->
+  // `liveStatusStripHtml`.)
+  const liveStatusStrip = `<div data-live-status-slot><div class="live-status-strip" data-live-status data-state="pending" role="status" aria-live="polite">` +
+    `<span class="live-status-dot" aria-hidden="true"></span>` +
+    `<span class="live-status-text">Canlı veri kontrol ediliyor…</span>` +
+    `<span class="live-status-meta">Henüz veri alınmadı</span>` +
+    `</div></div>`;
+
+  const quickStats = `${liveStatusStrip}<div class="quick-stats" aria-label="Bugünün maç özeti ve yayımlanan analizler">
       <a class="quick-stat${liveCount ? " is-live" : ""}" href="./canli-skor.html"><span>Canlı</span><b class="live-number">${liveCount}</b></a>
       <a class="quick-stat" href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>${Math.max(upcomingCount, 0)}</b></a>
       <a class="quick-stat" href="./bugunun-maclari.html?status=finished"><span>Biten</span><b>${finishedCount}</b></a>
-      <a class="quick-stat${analysisReadyCount ? " is-ready" : ""}" href="./mac-merkezi.html"><span>Analizi hazır</span><b>${analysisReadyCount}</b></a>
+      <a class="quick-stat${analysisReadyCount ? " is-ready" : ""}" href="./mac-merkezi.html" title="Yayımlanmış maç analizi sayısı"><span>Analizi hazır</span><b>${analysisReadyCount}</b></a>
       <a class="quick-stat" href="./bugunun-maclari.html"><span>Toplam</span><b>${todayList.length}</b></a>
     </div>`;
 
