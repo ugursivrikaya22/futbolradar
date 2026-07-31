@@ -3083,11 +3083,21 @@
   }
 
   /**
-   * Bir maçın yayımlanabilir analizi var mı? İki kaynak sayılır: önceden
-   * üretilmiş maç analizi kaydı ve maçın kendi doğrulanmış verisinden
-   * türetilebilen okuma (olay akışı, istatistik veya editoryal analiz).
-   * Hiçbiri yoksa maç "analizi hazır" sayılmaz — boş bir sayfa hazır analiz
-   * gibi sayılmamalıdır.
+   * Bir maçın yayımlanabilir analizi var mı?
+   *
+   * SAYAÇ BİR SÖZ VERİR: "Analizi hazır: 5" yazısına tıklayan okuyucu beş
+   * OKUNACAK analiz bekler. Sayaç bu yüzden yalnızca GERÇEKTEN AÇILABİLİR
+   * bir okuma varken artar.
+   *
+   * Eski kural gevşekti: maçta olay akışı ya da istatistik BULUNMASI yeterli
+   * sayılıyordu. Ham olay listesi analiz değildir — o kural, henüz raporu
+   * üretilmemiş maçları da sayıp sayacı şişiriyor ve tıklayan okuyucuya
+   * vaat edilenden azını gösteriyordu.
+   *
+   * Artık üç kaynak sayılır ve üçü de yayımlanmış bir metne karşılık gelir:
+   *   1. Üretilmiş maç analizi kaydı (maç öncesi/sonrası analiz deposu),
+   *   2. Yayımlanmış maç sonu raporu (data/post-match-reports.json),
+   *   3. Maçın kendi editoryal okuması (analysis.headline/lead ya da summary).
    */
   function matchHasReadyAnalysis(match) {
     if (!match) {
@@ -3099,16 +3109,36 @@
       return true;
     }
 
+    if (matchHasPublishedReport(match)) {
+      return true;
+    }
+
     if (match.analysis && typeof match.analysis === "object" &&
       (match.analysis.headline || match.analysis.lead || match.analysis.summary)) {
       return true;
     }
 
-    if (match.summary) {
-      return true;
+    return Boolean(match.summary);
+  }
+
+  /** Maç sonu raporu deposunda bu maç için yayımlanmış bir kayıt var mı? */
+  function matchHasPublishedReport(match) {
+    if (!Array.isArray(latestPostMatchReports) || !latestPostMatchReports.length) {
+      return false;
     }
 
-    return (match.events || []).length > 0 || (match.statistics || []).length > 0;
+    var id = String((match && match.id) || "");
+    if (!id) return false;
+
+    for (var index = 0; index < latestPostMatchReports.length; index += 1) {
+      var record = latestPostMatchReports[index];
+      if (record && String(record.matchId || "") === id) {
+        // "failed" bir kayıt yayımlanmış sayılmaz: sayfası boş kalır.
+        return record.analysisStatus !== "failed";
+      }
+    }
+
+    return false;
   }
 
   // daily-headlines:start
@@ -10557,9 +10587,18 @@
             return loadData("matches");
           })
           .then(function (matches) {
-            var html = renderDailyHeadlinesSection(Array.isArray(matches) ? matches : []);
+            var list = Array.isArray(matches) ? matches : [];
+            var html = renderDailyHeadlinesSection(list);
             applyEmptyHide(headlinesTarget, Boolean(html));
             if (html) setContent(headlinesTarget, html);
+
+            // "Analizi hazır" sayacı rapor deposuna bakıyor; depo yeni geldi,
+            // sayaç yeniden çizilmeli. Çizilmezse sayaç deposuz hesaplanmış
+            // (düşük) değerinde donar.
+            var quickStatsTarget = document.querySelector('[data-api-target="featured-match"]');
+            if (quickStatsTarget) {
+              setContent(quickStatsTarget, renderFeaturedMatch(list));
+            }
           })
           .catch(function () {
             // Başlık üretilemediyse statik yedek yerinde kalır; bölüm

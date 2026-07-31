@@ -39,6 +39,11 @@ const {
   logDuplicateTransfers,
   involvesSuperLigTeam
 } = require("../../services/transferService.js");
+const {
+  MAX_CURATED_ITEMS,
+  logRejected,
+  normalizeTickerItems
+} = require("../../services/newsTicker.js");
 
 const root = process.cwd();
 
@@ -66,6 +71,13 @@ const TRANSFER_MAX_AGE_HOURS = 24 * 21;
  */
 const MAX_MATCH_ITEMS = 4;
 const MIN_TRANSFER_SLOTS = 2;
+
+/**
+ * Küratörlü gündeme (iddia, resmî açıklama, sakatlık, teknik direktör sözü)
+ * ayrılan en az yer. Maç sonuçları altı slotu da doldurabildiği için,
+ * ayrılmadığında bu kategori hiç görünmüyordu.
+ */
+const MIN_CURATED_SLOTS = 2;
 
 /** Bant en fazla bu kadar öğe taşır; şerit kalabalıklaşmamalı. */
 const MAX_ITEMS = 6;
@@ -186,6 +198,27 @@ function newsItems(now) {
     }));
 }
 
+/**
+ * KÜRATÖRLÜ GÜNDEM — transfer iddiaları, resmî açıklamalar, maç sonu
+ * tepkileri, teknik direktör sözleri, kadro ve sakatlık haberleri.
+ *
+ * Diğer üç kaynak türetilmiş veriden beslenir; bu kaynak elle girilir. O
+ * yüzden kural katmanı ayrı bir serviste (services/newsTicker.js) ve
+ * DOĞRULAMA ZORUNLU: güveni belirtilmemiş, kaynağı gösterilmemiş ya da
+ * rozetiyle çelişen bir öğe banda hiç girmez.
+ */
+function curatedItems(now) {
+  const payload = readJson("news-ticker.json", { items: [] });
+  const { items, rejected } = normalizeTickerItems(payload, { now, limit: MAX_CURATED_ITEMS });
+
+  logRejected("ticker", rejected);
+
+  // Öncelik 1.5: resmî açıklama ve iddialar maç sonuçlarının hemen ardında,
+  // editoryal haberlerin önünde. Kesinleşmemiş öğeler kendi rozetlerini
+  // taşıdıkları için öne çıkmaları yanıltıcı olmuyor.
+  return items.map((item) => ({ ...item, priority: 1.5 + item.priority / 100 }));
+}
+
 function dedupe(items) {
   const seen = new Set();
   const unique = [];
@@ -232,21 +265,32 @@ export function buildTickerFeed(options = {}) {
 
   const matches = dedupe(matchItems(now)).sort(byRecency);
   const transfers = dedupe(transferItems(now)).sort(byRecency);
+  const curated = dedupe(curatedItems(now)).sort(byRecency);
   const news = dedupe(newsItems(now)).sort(byRecency);
 
   // Kategori kotası: maç sonuçları bandı tek başına doldurmasın, doğrulanmış
-  // transferlere yer kalsın. Kota dolmazsa boş slot israf edilmez, kalan
-  // yerler önceliğe göre doldurulur.
+  // transferlere ve küratörlü gündeme yer kalsın. Kota dolmazsa boş slot
+  // israf edilmez, kalan yerler önceliğe göre doldurulur.
+  //
+  // Küratörlü gündeme yer AYRILMASI şart: altı maç sonucu varken transfer
+  // iddiaları ve resmî açıklamalar hiç görünmüyordu — transferler için
+  // zaten yaşanmış ve çözülmüş olan sorunun aynısı.
   const reservedForTransfers = Math.min(transfers.length, MIN_TRANSFER_SLOTS);
-  const matchQuota = Math.min(matches.length, MAX_MATCH_ITEMS, MAX_ITEMS - reservedForTransfers);
+  const reservedForCurated = Math.min(curated.length, MIN_CURATED_SLOTS);
+  const matchQuota = Math.min(
+    matches.length,
+    MAX_MATCH_ITEMS,
+    MAX_ITEMS - reservedForTransfers - reservedForCurated
+  );
 
   const picked = [
-    ...matches.slice(0, matchQuota),
+    ...matches.slice(0, Math.max(matchQuota, 0)),
+    ...curated.slice(0, reservedForCurated),
     ...transfers.slice(0, reservedForTransfers)
   ];
 
-  // Kalan yerleri önceliğe göre doldur (kalan maçlar, transferler, haberler).
-  const rest = dedupe([...matches, ...transfers, ...news])
+  // Kalan yerleri önceliğe göre doldur.
+  const rest = dedupe([...matches, ...curated, ...transfers, ...news])
     .filter((item) => !picked.includes(item))
     .sort((left, right) => {
       if (left.priority !== right.priority) return left.priority - right.priority;

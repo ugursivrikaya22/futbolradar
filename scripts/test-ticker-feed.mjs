@@ -20,7 +20,11 @@ const root = process.cwd();
 const STATE_FILE = path.join(root, "data", "ticker-state.json");
 
 function withTempData(mutate, run) {
-  const files = ["matches.json", "transfers.json", "news.json"];
+  // Bant DÖRT kaynaktan besleniyor. Küratörlü dosya (news-ticker.json)
+  // listeye alınmazsa "tüm kaynaklar boş" senaryosu gerçekten boş olmuyor:
+  // küratörlü öğeler bandı doldurmaya devam ediyor ve yedek yoluna hiç
+  // girilmiyor. Kaynak eklendiğinde bu liste de büyümeli.
+  const files = ["matches.json", "transfers.json", "news.json", "news-ticker.json"];
   const backups = new Map();
 
   for (const file of files) {

@@ -25,6 +25,98 @@ const { isAnalyzableMatch } = require("../services/matchStatus.js");
 const { PROVIDER_MISSING_LABEL, orderForDisplay } = require("../services/postMatchReportStore.js");
 const { isTurkishMatch } = require("../services/turkishTeams.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
+const { buildCoreReport } = require("../services/postMatchCoreReport.js");
+
+/** Teknik direktör alıntıları: küratörlü, kaynaklı, uydurulmayan. */
+const managerQuoteStore = (() => {
+  const file = path.join(root, "data", "manager-quotes.json");
+  if (!fs.existsSync(file)) return { quotes: [] };
+  try {
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch (error) {
+    console.warn(`[post-match] manager-quotes.json okunamadı: ${error.message}`);
+    return { quotes: [] };
+  }
+})();
+
+/**
+ * BEŞ BÖLÜMLÜK OMURGA.
+ *
+ * Raporun on beş bölümü doğru ama okuyucu için düz bir döküm. Omurga beş
+ * soruya indirger ve her bölümün NE SORDUĞUNU da yazar.
+ *
+ * Boş bölüm gizlenmez, "Veri yok" yazıp GEREKÇESİNİ söyler. Sağlayıcının
+ * vermediği bir istatistiği tahmin etmek ya da teknik direktörün ağzına
+ * cümle koymak, boş bırakmaktan çok daha kötü olurdu.
+ */
+function coreReportSection(report, match) {
+  const core = buildCoreReport(report, { quoteStore: managerQuoteStore });
+
+  const renderBody = (section) => {
+    if (section.key === "manager-comment") {
+      // ALINTI OLDUĞU GİBİ BASILIR. Kısaltmak anlamı değiştirebilir ve
+      // kısaltılmış alıntı hâlâ tırnak içinde görünür.
+      return section.quotes.map((quote) => `<figure class="core-quote">
+          <blockquote>${escapeHtml(quote.quote)}</blockquote>
+          <figcaption>${escapeHtml(`${quote.speaker} · ${quote.team}`)} — <a href="${escapeHtml(quote.source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(quote.source.name)}</a></figcaption>
+        </figure>`).join("");
+    }
+
+    const body = section.body || {};
+    const parts = [];
+
+    if (body.paragraph) parts.push(`<p>${escapeHtml(body.paragraph)}</p>`);
+    if (body.lead) parts.push(`<p>${escapeHtml(body.lead)}</p>`);
+
+    // HER BÖLÜMÜN KENDİ ŞEKLİ VAR. Tek bir "text || note || label" tahmini
+    // dolu bölümleri boş sanıp "Veri yok" bastırıyordu — ölçülmüş veri
+    // varken. Eşleme gerçek kayıt şekillerinden yazıldı:
+    //   moments    → {minute, team, type, detail}
+    //   readings   → düz metin
+    //   highlights → {type, home, away, unit}
+    //   players    → {name, team, contribution, impact}
+    //   notes      → düz metin
+    const lines = [
+      ...(body.moments || []).map((entry) => entry && [entry.minute, entry.team, entry.detail]
+        .filter(Boolean).join(" · ")),
+      ...(body.readings || []).map((entry) => (typeof entry === "string" ? entry : "")),
+      ...(body.highlights || []).map((entry) => {
+        if (!entry || !entry.type) return "";
+        const unit = entry.unit || "";
+        return `${entry.type}: ${entry.home}${unit} - ${entry.away}${unit}`;
+      }),
+      ...(body.notes || []).map((entry) => (typeof entry === "string" ? entry : "")),
+      ...(body.players || []).map((entry) => entry && entry.name
+        ? [entry.name, entry.team, entry.contribution].filter(Boolean).join(" · ")
+        : "")
+    ].filter((line) => typeof line === "string" && line.trim());
+
+    if (lines.length) {
+      parts.push(`<ul class="core-list">${lines.slice(0, 5).map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>`);
+    }
+
+    // Buraya düşmek bir ÇELİŞKİDİR: bölüm "ready" ama gösterilecek satır
+    // çıkmadı. Sessizce "Veri yok" basmak yerine gerekçe de yazılıyor ki
+    // eşleme hatası fark edilsin.
+    return parts.join("") ||
+      `<p class="core-empty"><b>${escapeHtml(section.noDataLabel)}</b> Bölüm verisi okunamadı (${escapeHtml(section.sourceKey || section.key)}).</p>`;
+  };
+
+  const blocks = core.sections.map((section) => `<article class="core-section${section.status === "ready" ? "" : " is-empty"}" data-core-section="${escapeHtml(section.key)}">
+      <header class="core-section-head">
+        <h3>${escapeHtml(section.title)}</h3>
+        <span class="core-section-question">${escapeHtml(section.question)}</span>
+      </header>
+      ${section.status === "ready"
+    ? renderBody(section)
+    : `<p class="core-empty"><b>${escapeHtml(section.noDataLabel)}</b> ${escapeHtml(section.reason)}</p>`}
+    </article>`).join("");
+
+  return `<section class="post-match-section post-match-core" aria-labelledby="rapor-omurga">
+      <div class="section-head"><div class="section-title"><span class="section-kicker">Maç sonu raporu</span><h2 id="rapor-omurga">${escapeHtml(`${match.homeTeam} - ${match.awayTeam}`)} beş soruda</h2><p>${escapeHtml(`${core.readyCount}/${core.total} bölüm doğrulanmış veriyle dolu. Eksik bölümler gerekçesiyle birlikte gösteriliyor; tahmin üretilmiyor.`)}</p></div></div>
+      <div class="core-grid">${blocks}</div>
+    </section>`;
+}
 
 /**
  * Sağlayıcı zenginleştirme deposu — SALT OKUNUR.
@@ -535,6 +627,7 @@ function pageHtml(report, match) {
       </section>
 
       ${kpiSection(match)}
+      ${coreReportSection(report, match)}
       ${shareHtml}
 
       <section class="post-match-section" aria-labelledby="rapor-ozet">
