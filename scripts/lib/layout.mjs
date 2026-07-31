@@ -27,7 +27,10 @@ export const NAV_SECONDARY = [
   { href: "transfer-radari.html", label: "Transfer Radarı" },
   { href: "momentum.html", label: "Momentum" },
   { href: "gol-kralligi.html", label: "Gol Krallığı" },
-  { href: "haberler.html", label: "Haberler" }
+  { href: "haberler.html", label: "Haberler" },
+  // Köşe yazıları HABERİN YANINDA ama ayrı bir bağlantı: menüde de yorum ile
+  // haber aynı şey gibi görünmemeli.
+  { href: "kose-yazilari.html", label: "Radar Yorumu" }
 ];
 
 const FOOTER_LEGAL = [

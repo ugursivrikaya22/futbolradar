@@ -12251,6 +12251,162 @@ body .container {
 }
 
 /* ----------------------------------------------------------------------------
+   RADAR YORUMU — KÖŞE YAZILARI
+   Görsel dil bilerek haber kartlarından FARKLI: yorum ile haber karışmasın.
+   Ayrımı taşıyan işaret "Yorum" rozeti; renk ve kenarlık onu destekler.
+   -------------------------------------------------------------------------- */
+.column-grid {
+  display: grid;
+  gap: var(--sp-3);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+}
+
+.column-card {
+  display: grid;
+  gap: var(--sp-2);
+  align-content: start;
+  padding: clamp(16px, 2vw, 22px);
+  border: 1px solid var(--glass-border);
+  /* Sol kenardaki kalın çizgi yorum bölümünün imzası. */
+  border-left: 3px solid var(--cyan);
+  border-radius: var(--radius-lg);
+  background: var(--glass);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.column-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+/* "Yorum" rozeti: okuyucunun bunun kanaat olduğunu anladığı yer. */
+.column-badge {
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  background: rgba(6, 132, 163, 0.12);
+  border: 1px solid rgba(6, 132, 163, 0.32);
+  color: var(--cyan);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.column-category {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.column-card h3 {
+  font-size: var(--fs-md);
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.column-card p {
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+.column-card-meta,
+.column-article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: center;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.column-author {
+  color: var(--text-soft);
+  font-weight: 800;
+}
+
+.column-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.column-tag {
+  border-radius: 6px;
+  padding: 2px 8px;
+  background: rgba(11, 143, 90, 0.066);
+  color: var(--green);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.column-empty {
+  padding: clamp(18px, 2.4vw, 26px);
+  border: 1px dashed var(--glass-border);
+  border-radius: var(--radius-lg);
+  color: var(--text-soft);
+}
+
+.column-empty h3 {
+  margin-bottom: 6px;
+  font-size: var(--fs-md);
+  font-weight: 800;
+  color: var(--text);
+}
+
+/* Yazı sayfası. Okunabilirlik için ölçü sınırlı. */
+.column-article {
+  max-width: 72ch;
+  margin: 0 auto;
+  display: grid;
+  gap: var(--sp-4);
+  padding: clamp(20px, 3vw, 34px) 0;
+}
+
+.column-article-head {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.column-article-head h1 {
+  font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* Künye: yorumun haberden ayrıldığını SÖYLEYEN cümle. Göz ardı edilmesin
+   diye gövdeden görsel olarak ayrılıyor. */
+.column-disclaimer {
+  padding: var(--sp-3);
+  border-left: 3px solid var(--cyan);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  background: rgba(6, 132, 163, 0.06);
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+.column-body {
+  display: grid;
+  gap: var(--sp-3);
+}
+
+.column-body p {
+  color: var(--text);
+  font-size: var(--fs-md);
+  line-height: 1.7;
+}
+
+.column-back {
+  padding-bottom: var(--sp-5);
+}
+
+/* ----------------------------------------------------------------------------
    MAÇ SONU RAPORU — BEŞ BÖLÜMLÜK OMURGA
    Mobilde tek sütun, geniş ekranda iki. `auto-fit` + `minmax` kullanılıyor ki
    ara genişliklerde de kırılmasın; sabit sütun sayısı 360-420px arasında
