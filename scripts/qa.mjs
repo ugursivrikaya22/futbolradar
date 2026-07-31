@@ -946,6 +946,93 @@ async function checkMatchAnalysisApi() {
 }
 
 /**
+ * SAĞLAYICI SIR ADLARI TEK STANDARTTA KALSIN.
+ *
+ * SORUN. Kod beş ayrı yazım varyantını kabul ediyor
+ * (`APIFOOTBALL_API_KEY`, `API_FOOTBALL_API_KEY`, `APIFOOTBALL_KEY`,
+ * `API_SPORTS_API_KEY`, `APISPORTS_API_KEY`). Bu esneklik YANLIŞ ADLA
+ * TANIMLANMIŞ bir anahtarın sağlayıcıyı sessizce devre dışı bırakmasını
+ * önlemek için var — ama iş akışlarına sızarsa tersine döner: hangi
+ * GitHub secret'ının gerçekten okunduğu belirsizleşir, eski bir secret
+ * silinemez hâle gelir ve iki farklı ad dolduğunda hangisinin kazandığı
+ * kimsenin bilmediği bir sıraya kalır.
+ *
+ * KURAL. Kabul edilen adlar KODDA kalır (geriye dönük uyumluluk), ama
+ * TANIMLANDIĞI her yerde — iş akışları, `.env.example`, belgeler —
+ * yalnızca kanonik ad kullanılır. Bu kontrol kuralı zorunlu kılar.
+ */
+function checkProviderSecretNaming() {
+  const utils = require("../api/_utils.js");
+  const providerMode = require("../services/providerMode.js");
+
+  // İki modül aynı listeyi ayrı ayrı tanımlıyor. Ayrışmaları, bir katmanın
+  // gördüğü anahtarı diğerinin görmemesi demek: API canlı, betikler
+  // "anahtar yok" derdi.
+  expect(
+    JSON.stringify(utils.APIFOOTBALL_API_KEY_ENV_NAMES) === JSON.stringify(providerMode.API_KEY_ENV_NAMES),
+    "provider secrets: api/_utils.js ve services/providerMode.js anahtar ad listeleri ayrışmış"
+  );
+  expect(
+    providerMode.PRIMARY_API_KEY_ENV === "APIFOOTBALL_API_KEY",
+    `provider secrets: kanonik ad APIFOOTBALL_API_KEY olmalı (şu an ${providerMode.PRIMARY_API_KEY_ENV})`
+  );
+
+  // İş akışlarında yalnızca bu adlar geçebilir.
+  const canonical = new Set([
+    "APIFOOTBALL_API_KEY",
+    "APIFOOTBALL_API_BASE_URL",
+    "APIFOOTBALL_LEAGUE_ID",
+    "APIFOOTBALL_SEASON",
+    "APIFOOTBALL_COUNTRY"
+  ]);
+  const aliases = new Set([
+    ...utils.APIFOOTBALL_API_KEY_ENV_NAMES,
+    ...utils.APIFOOTBALL_LEAGUE_ID_ENV_NAMES,
+    ...utils.APIFOOTBALL_BASE_URL_ENV_NAMES,
+    ...utils.APIFOOTBALL_SEASON_ENV_NAMES,
+    ...utils.APIFOOTBALL_COUNTRY_ENV_NAMES
+  ].filter((name) => !canonical.has(name)));
+
+  const workflowDir = path.join(root, ".github", "workflows");
+  if (!fs.existsSync(workflowDir)) return;
+
+  const workflows = fs.readdirSync(workflowDir).filter((name) => /\.ya?ml$/.test(name));
+  expect(workflows.length > 0, "provider secrets: .github/workflows altında iş akışı yok");
+
+  for (const name of workflows) {
+    const rel = `.github/workflows/${name}`;
+    const lines = fs.readFileSync(path.join(workflowDir, name), "utf8").split("\n");
+
+    lines.forEach((line, index) => {
+      const at = `${rel}:${index + 1}`;
+      // Yorum satırları anlatım içindir; eski adlardan söz edebilirler.
+      if (/^\s*#/.test(line)) return;
+
+      for (const secret of line.matchAll(/secrets\.([A-Z0-9_]+)/g)) {
+        expect(
+          !aliases.has(secret[1]),
+          `provider secrets: ${at} eski ad kullanıyor (secrets.${secret[1]}); kanonik ada geçin`
+        );
+      }
+
+      // `NAME: ${{ secrets.OTHER }}` — çapraz bağlama. Adların eşleşmesi,
+      // "hangi secret hangi değişkene gidiyor" sorusunu okumadan yanıtlar.
+      const mapping = line.match(/^\s*([A-Z0-9_]+):\s*\$\{\{\s*secrets\.([A-Z0-9_]+)\s*\}\}\s*$/);
+      if (mapping && (canonical.has(mapping[1]) || aliases.has(mapping[1]))) {
+        expect(
+          mapping[1] === mapping[2],
+          `provider secrets: ${at} çapraz bağlama (${mapping[1]} ← secrets.${mapping[2]})`
+        );
+        expect(
+          canonical.has(mapping[1]),
+          `provider secrets: ${at} eski değişken adı (${mapping[1]}); kanonik ada geçin`
+        );
+      }
+    });
+  }
+}
+
+/**
  * JSON SÖZDİZİMİ KAPISI.
  *
  * Bozuk bir veri dosyası bugüne kadar ancak CI'da, dosyayı hiç anmayan bir
@@ -989,6 +1076,7 @@ function checkDataJsonSyntax() {
 }
 
 checkDataJsonSyntax();
+checkProviderSecretNaming();
 checkVercelFunctionLimit();
 checkPublicMirrors();
 checkAnalyticsTag();

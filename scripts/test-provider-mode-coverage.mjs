@@ -245,11 +245,28 @@ if (fs.existsSync(analysesPath)) {
     return finishedIds.has(key) && ["scheduled", "live", "halftime"].includes(status);
   });
 
-  assert.deepEqual(
-    stale.map((entry) => entry.fixtureId || entry.slug),
-    [],
-    "Tamamlanmış maç için maç öncesi kayıt kalmamalı — scripts/prune-stale-match-analyses.mjs çalıştırın"
-  );
+  // BAYAT KAYIT SESSİZ KALMAZ, AMA OTOMATİK SİLİNMEZ.
+  //
+  // Bu test eskiden bayat kaydın YOKLUĞUNU şart koşuyordu; o kural, üretilmiş
+  // gerçek bir maç öncesi analizin CI tarafından kimse bakmadan silinmesi
+  // anlamına geliyordu. Artık dosyanın GEÇERLİ olması şart, bayat kayıt ise
+  // görünür biçimde raporlanıyor — silme kararı insana ait.
+  if (stale.length) {
+    console.warn(
+      `[test] ${stale.length} bayat maç öncesi kayıt var (maç tamamlandı, kayıt hâlâ maç öncesi): ` +
+      `${stale.map((entry) => entry.fixtureId || entry.slug).join(", ")}. ` +
+      "Silmek için: node scripts/prune-stale-match-analyses.mjs --apply"
+    );
+  }
+
+  // Asıl değişmez: her kayıt kimliklenebilir olmalı. Kimliksiz kayıt hiçbir
+  // yüzeye bağlanamaz ve sessizce ölü veri olur.
+  for (const entry of analyses) {
+    assert.ok(
+      entry.fixtureId || entry.slug,
+      "match-analyses kaydı fixtureId ya da slug taşımalı"
+    );
+  }
 }
 
 // ── 12b. İstek bütçesi: günlük kotayı koruma ────────────────────────────────

@@ -201,8 +201,13 @@ jobs:
 
       # Oynanmış maçların maç ÖNCESİ analiz kayıtları bayattır: "Analizi
       # hazır" sayacını şişirir ve maç sonrası analizle çelişir.
-      - name: Prune stale pre-match analyses
-        run: node scripts/prune-stale-match-analyses.mjs --apply
+      #
+      # SİLMİYOR, YALNIZCA BİLDİRİYOR. Otomatik silme, üretilmiş gerçek
+      # analiz kaydını kimse bakmadan yok eder. Hangi kaydın neden bayat
+      # sayıldığı günlüğe düşer; silme kararı insana bırakılır
+      # (`--apply` ile elle çalıştırılır).
+      - name: Report stale pre-match analyses (read-only)
+        run: node scripts/prune-stale-match-analyses.mjs
 
       - name: Backfill missing post-match analyses
         run: node scripts/backfill-post-match-analyses.mjs --apply --limit=40
