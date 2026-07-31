@@ -181,14 +181,24 @@ for (const [match, expected] of tierCases) {
 }
 
 // Verisi tamamlanmış maç bir daha SORULMAZ: kota koruması.
+// "Tam veri" artık oyuncu istatistiğini de kapsıyor: uç nokta bağlandıktan
+// sonra sağlayıcı bu alanı da veriyor ve eksikse maç arşive düşmemeli.
 const complete = {
   kickoff: new Date(NOW - 90 * 60000).toISOString(),
   status: "FT",
   score: { home: 1, away: 0 },
   events: [{ time: "10'", type: "Gol" }],
   statistics: [{ type: "Topla oynama", home: 50, away: 50 }],
-  lineups: [{ team: "A" }, { team: "B" }]
+  lineups: [{ team: "A" }, { team: "B" }],
+  players: [{ name: "A B", team: "A", minutes: 90 }]
 };
+
+// Oyuncu istatistiği eksikse maç hâlâ tamamlanmayı bekler.
+assert.equal(
+  hasCompleteMatchData({ ...complete, players: [] }),
+  false,
+  "Oyuncu istatistiği eksikse veri tam sayılmamalı"
+);
 assert.equal(refreshTier(complete, { nowMs: NOW }), "archived", "Verisi tam maç arşive düşmeli");
 assert.equal(shouldRefresh(complete, { nowMs: NOW }).refresh, false, "Arşiv maçı istek harcamamalı");
 assert.equal(hasCompleteMatchData(complete), true, "Veri tamlığı doğru okunmalı");
@@ -212,7 +222,7 @@ assert.equal(plan.due.length, 3, "Limit uygulanmalı");
 assert.ok(plan.deferred.length > 0, "Sınırın dışındakiler ertelenmeli, kaybolmamalı");
 assert.equal(plan.due[0].tier, "live", "Canlı maç sıranın başında olmalı");
 
-assert.equal(dataCompleteness({ score: { home: 1, away: 0 } }), 0.25, "Yalnızca skor → %25 tamlık");
+assert.equal(dataCompleteness({ score: { home: 1, away: 0 } }), 0.2, "Yalnızca skor → beş alanın biri");
 assert.equal(dataCompleteness(complete), 1, "Tüm alanlar → %100 tamlık");
 
 // ── 8. Sağlayıcı birleştirme: durum ilerlemesi ──────────────────────────────
@@ -354,11 +364,23 @@ assert.equal(freshnessOf(new Date(NOW - 5 * 60000).toISOString(), NOW).state, "f
 assert.equal(freshnessOf(new Date(NOW - 30 * 60000).toISOString(), NOW).state, "lagging", "30 dakika gecikmiş");
 assert.equal(freshnessOf(new Date(NOW - 5 * 3600000).toISOString(), NOW).state, "stale", "5 saat bayat");
 
-// Teşhis gizli bilgi sızdırmamalı.
-const diagnosticsText = JSON.stringify(diagnostics);
-for (const secret of ["API_KEY", "apiKey", "x-apisports-key", "Bearer "]) {
-  assert.ok(!diagnosticsText.includes(secret), `Teşhis çıktısı '${secret}' içermemeli`);
+// Teşhis gizli bilgi sızdırmamalı. Değişkenin ADI bilinçli olarak
+// raporlanıyor (kurulum için gerekli); sızmaması gereken şey DEĞERİdir.
+const secretValue = "sIzMaMaLi0123456789abcdef01234567";
+const leakCheck = buildPipelineDiagnostics({
+  matches: [liveMatch],
+  reports: [],
+  nowMs: NOW,
+  env: { APIFOOTBALL_API_KEY: secretValue }
+});
+const leakText = JSON.stringify(leakCheck);
+
+assert.ok(!leakText.includes(secretValue), "Anahtar DEĞERİ teşhise sızmamalı");
+for (const secret of ["x-apisports-key", "Bearer ", "Authorization"]) {
+  assert.ok(!leakText.includes(secret), `Teşhis çıktısı '${secret}' içermemeli`);
 }
+// Değişken adı ise görünmeli: kurulum eksikse nereye bakılacağı yazmalı.
+assert.equal(leakCheck.provider.requiredEnvName, "APIFOOTBALL_API_KEY", "Gereken değişken adı raporlanmalı");
 
 // ── 15. Gerçek veri değişmezleri ────────────────────────────────────────────
 const pool = curatedMatches();

@@ -65,7 +65,9 @@ const JUST_FINISHED_MS = 30 * 60 * 1000;
 const SETTLING_WINDOW_MS = 24 * 60 * 60 * 1000;
 
 /** Analiz için beklenen sağlayıcı alanları. */
-const EXPECTED_FIELDS = ["events", "statistics", "lineups"];
+// Oyuncu istatistiği artık çekilebiliyor (apiFootballProvider.getMatchDetail
+// onu bitmiş maçlarda istiyor), bu yüzden "tam veri" tanımına dahil.
+const EXPECTED_FIELDS = ["events", "statistics", "lineups", "players"];
 
 function countOf(match, field) {
   const value = match && match[field];

@@ -397,6 +397,27 @@ function postMatchDateLabel(value) {
   return new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "long", year: "numeric", timeZone: "Europe/Istanbul" }).format(parsed);
 }
 
+const COVERAGE_LABELS = {
+  full: "Tam analiz",
+  partial: "Kısmi analiz",
+  "events-only": "Sadece olaylar",
+  "awaiting-provider": "Sağlayıcı verisi bekleniyor",
+  "api-key-missing": "API anahtarı eksik"
+};
+
+function postMatchCoverageLabel(record) {
+  if (record && record.coverageLabel) return record.coverageLabel;
+  return COVERAGE_LABELS[record && record.coverageGrade] || "Analiz durumu bilinmiyor";
+}
+
+function postMatchSourceLabel(record) {
+  const sources = (record && record.dataSources) || {};
+  const names = [...new Set(Object.values(sources)
+    .filter((entry) => entry && entry.present && entry.source)
+    .map((entry) => entry.source))];
+  return names.length ? `Kaynak: ${names.join(", ")}` : "Kaynak doğrulanmadı";
+}
+
 const POST_MATCH_STATUS_LABELS = {
   waiting_for_final_data: "Analiz hazırlanıyor",
   ready_for_analysis: "Analiz sırada",
@@ -445,17 +466,20 @@ function postMatchCard(record) {
       `<li><b>${escapeHtml(player.name || "")}</b>${player.team ? `<span>${escapeHtml(player.team)}</span>` : ""}${player.contribution ? `<span>${escapeHtml(player.contribution)}</span>` : ""}</li>`).join("")}</ul></div>`
     : "";
 
-  const missingHtml = missing.length
-    ? `<p class="post-match-missing"><strong>${escapeHtml(record.providerMissingLabel || "Veri sağlayıcı tarafından sunulmadı")}</strong> ${escapeHtml(missing.map((item) => item.label).join(", "))}</p>`
-    : "";
+  // Anahtar yoksa eksiklik sağlayıcının değil, kurulumun.
+  const missingHtml = record.apiKeyPresent === false
+    ? `<p class="post-match-missing is-key-missing"><strong>API anahtarı eksik</strong> ${escapeHtml("Sağlayıcıya istek gönderilemiyor; gösterilen veri depoda saklanan son kayıttır ve taze değildir.")}</p>`
+    : (missing.length
+      ? `<p class="post-match-missing"><strong>${escapeHtml(record.providerMissingLabel || "Veri sağlayıcı tarafından sunulmadı")}</strong> ${escapeHtml(missing.map((item) => item.label).join(", "))}</p>`
+      : "");
 
   return `<article class="post-match-card${record.turkish ? " is-turkish" : ""}" data-card="post-match" data-match="${escapeHtml(record.matchId || "")}">` +
-    `<div class="post-match-head"><span class="post-match-meta">${escapeHtml(meta)}</span>${finishNote ? `<span class="post-match-finish">${escapeHtml(finishNote)}</span>` : ""}<span class="post-match-status is-${escapeHtml(String(record.analysisStatus || "unknown"))}">${escapeHtml(postMatchStatusLabel(record))}</span></div>` +
+    `<div class="post-match-head"><span class="post-match-meta">${escapeHtml(meta)}</span>${finishNote ? `<span class="post-match-finish">${escapeHtml(finishNote)}</span>` : ""}<span class="post-match-status is-${escapeHtml(String(record.coverageGrade || "unknown"))}" title="${escapeHtml(String(record.coverageNote || ""))}">${escapeHtml(postMatchCoverageLabel(record))}</span></div>` +
     `<strong class="post-match-score">${escapeHtml(postMatchScoreLine(record))}</strong>` +
     (digest.headline ? `<h3>${escapeHtml(digest.headline)}</h3>` : "") +
     (digest.paragraph ? `<p>${escapeHtml(digest.paragraph)}</p>` : "") +
     momentsHtml + lateHtml + playersHtml + missingHtml +
-    `<div class="post-match-footer"><span class="post-match-coverage">${escapeHtml(postMatchStatusLabel(record))} · Veri kapsamı %${escapeHtml(String(record.coverage || 0))}${record.analysisUpdatedAt ? ` · ${escapeHtml(postMatchUpdatedLabel(record.analysisUpdatedAt))}` : ""}</span>` +
+    `<div class="post-match-footer"><span class="post-match-coverage">Veri kapsamı %${escapeHtml(String(record.coveragePercent || 0))} · ${escapeHtml(postMatchSourceLabel(record))}${record.analysisUpdatedAt ? ` · ${escapeHtml(postMatchUpdatedLabel(record.analysisUpdatedAt))}` : ""}</span>` +
     (record.publishState === "page"
       ? `<a class="detail-link" href="${escapeHtml(record.reportUrl || "#")}">Tam raporu aç</a>`
       : `<span class="post-match-note">Analiz hazırlanıyor</span>`) +

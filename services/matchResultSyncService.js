@@ -166,6 +166,12 @@ function mergeProviderDetail(match, detail, timestamp) {
     next.lineups = detail.lineups;
     changes.push(`${detail.lineups.length} kadro`);
   }
+  // Oyuncu istatistiği: sağlayıcı uç noktası vardı ama detay çağrısı onu
+  // hiç istemiyordu; `players` her maçta boş kalıyordu.
+  if (isEmptyList(match.players) && !isEmptyList(detail.players)) {
+    next.players = detail.players;
+    changes.push(`${detail.players.length} oyuncu istatistiği`);
+  }
 
   if (!isFinished(match) && isFinishedMatch(detail)) {
     // Kürasyonlu kayıt tek bir kanonik değer taşır; sağlayıcının FT/AET/PEN

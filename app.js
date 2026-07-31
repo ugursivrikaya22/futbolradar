@@ -5008,8 +5008,30 @@
     return (record.homeTeam || "?") + " " + record.score.home + "-" + record.score.away + " " + (record.awayTeam || "?");
   }
 
+  /** Hangi kaynak hangi alanı sağladı? Kayıttaki `dataSources` özetlenir. */
+  function postMatchSourceLabel(record) {
+    var sources = (record && record.dataSources) || {};
+    var names = {};
+
+    Object.keys(sources).forEach(function (field) {
+      var entry = sources[field];
+      if (entry && entry.present && entry.source) names[entry.source] = true;
+    });
+
+    var list = Object.keys(names);
+    return list.length ? "Kaynak: " + list.join(", ") : "Kaynak doğrulanmadı";
+  }
+
   function postMatchMissingHtml(record) {
     var missing = Array.isArray(record.missingInputs) ? record.missingInputs : [];
+
+    // Ortamda anahtar yoksa eksiklik sağlayıcının değil, kurulumun.
+    // İkisini aynı cümleye indirmek yanlış yere bakılmasına yol açar.
+    if (record && record.apiKeyPresent === false) {
+      return '<p class="post-match-missing is-key-missing"><strong>API anahtarı eksik</strong> ' +
+        escapeHtml("Sağlayıcıya istek gönderilemiyor; gösterilen veri depoda saklanan son kayıttır ve taze değildir.") +
+        "</p>";
+    }
 
     if (!missing.length) {
       return "";
@@ -5061,8 +5083,17 @@
       "</ul></div>";
   }
 
-  // Analiz durumu okuyucuya olduğu gibi yazılır: kısmi bir analiz "tam"
-  // gibi sunulmaz, veri bekleyen bir maç boş bir kartla geçiştirilmez.
+  // KAPSAM ROZETİ — okuyucuya ne verdiğimizi olduğu gibi söyler.
+  // Düşük kapsamlı bir analiz "tam" gibi sunulmaz; sağlayıcının veri
+  // vermediği durum ile ortamda anahtar olmadığı durum ayrı yazılır.
+  var COVERAGE_LABELS = {
+    full: "Tam analiz",
+    partial: "Kısmi analiz",
+    "events-only": "Sadece olaylar",
+    "awaiting-provider": "Sağlayıcı verisi bekleniyor",
+    "api-key-missing": "API anahtarı eksik"
+  };
+
   var POST_MATCH_STATUS_LABELS = {
     waiting_for_final_data: "Analiz hazırlanıyor",
     ready_for_analysis: "Analiz sırada",
@@ -5075,6 +5106,21 @@
 
   function postMatchStatusLabel(record) {
     return POST_MATCH_STATUS_LABELS[record && record.analysisStatus] || "Analiz durumu bilinmiyor";
+  }
+
+  /** Rozet metni. Kayıtta hazır etiket varsa o kullanılır. */
+  function postMatchCoverageLabel(record) {
+    if (record && record.coverageLabel) return record.coverageLabel;
+    return COVERAGE_LABELS[record && record.coverageGrade] || postMatchStatusLabel(record);
+  }
+
+  function postMatchCoverageGrade(record) {
+    return String((record && record.coverageGrade) || "unknown");
+  }
+
+  /** Veri kapsam yüzdesi — rapor bölüm kapsamı değil, SAĞLAYICI verisi. */
+  function postMatchCoveragePercent(record) {
+    return Number.isFinite(record && record.coveragePercent) ? record.coveragePercent : 0;
   }
 
   function renderPostMatchCard(record, options) {
@@ -5092,8 +5138,9 @@
       '<div class="post-match-head">' +
       '<span class="post-match-meta">' + escapeHtml(meta) + "</span>" +
       (finishNote ? '<span class="post-match-finish">' + escapeHtml(finishNote) + "</span>" : "") +
-      '<span class="post-match-status is-' + escapeHtml(String(record.analysisStatus || "unknown")) + '">' +
-      escapeHtml(postMatchStatusLabel(record)) + "</span>" +
+      '<span class="post-match-status is-' + escapeHtml(postMatchCoverageGrade(record)) + '"' +
+      ' title="' + escapeHtml(String((record && record.coverageNote) || "")) + '">' +
+      escapeHtml(postMatchCoverageLabel(record)) + "</span>" +
       "</div>" +
       '<strong class="post-match-score">' + escapeHtml(postMatchScoreLine(record)) + "</strong>" +
       (digest.headline ? "<h3>" + escapeHtml(digest.headline) + "</h3>" : "") +
@@ -5101,8 +5148,8 @@
       (settings.detailed ? postMatchMomentsHtml(record) + postMatchPlayersHtml(record) : "") +
       postMatchMissingHtml(record) +
       '<div class="post-match-footer">' +
-      '<span class="post-match-coverage">' + escapeHtml(postMatchStatusLabel(record)) +
-      " · Veri kapsamı %" + escapeHtml(String(record.coverage || 0)) +
+      '<span class="post-match-coverage">Veri kapsamı %' + escapeHtml(String(postMatchCoveragePercent(record))) +
+      " · " + escapeHtml(postMatchSourceLabel(record)) +
       (updated ? " · " + escapeHtml(updated) : "") + "</span>" +
       (record.publishState === "page"
         ? '<a class="detail-link" href="' + escapeHtml(record.reportUrl || "#") + '">Tam raporu aç</a>'

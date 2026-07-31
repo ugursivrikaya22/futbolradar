@@ -59,6 +59,10 @@ jobs:
   update-match-analyses:
     if: github.event.schedule != '*/5 * * * *'
     runs-on: ubuntu-latest
+    # Anahtar iş düzeyinde: `secrets` bağlamı adım `if`inde okunamaz, `env`
+    # okunabilir. Tanımsız secret boş dizeye açılır.
+    env:
+      APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -188,6 +192,18 @@ jobs:
       # verisi eksik olan maçlar. Öncelik sırası son 4 gün → Türk kulüpleri
       # → Süper Lig → Avrupa kupaları → arşiv. Tekrar çalıştırılabilir:
       # zaten tam olan analiz yeniden üretilmez.
+      # Biten maçların eksik dökümünü sağlayıcıdan tamamlar (oyuncu ve takım
+      # istatistikleri, kadrolar, değişiklikler). Anahtar yoksa adım hiç
+      # koşmaz — sessizce no-op etmek yerine atlandığı görünür.
+      - name: Refetch finished matches from provider
+        if: env.APIFOOTBALL_API_KEY != ''
+        run: node scripts/refetch-finished-matches.mjs --apply --limit=25 --days=4
+
+      # Oynanmış maçların maç ÖNCESİ analiz kayıtları bayattır: "Analizi
+      # hazır" sayacını şişirir ve maç sonrası analizle çelişir.
+      - name: Prune stale pre-match analyses
+        run: node scripts/prune-stale-match-analyses.mjs --apply
+
       - name: Backfill missing post-match analyses
         run: node scripts/backfill-post-match-analyses.mjs --apply --limit=40
 

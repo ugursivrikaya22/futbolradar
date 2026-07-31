@@ -716,8 +716,14 @@ function eventsInHalf(match, half) {
   return (match.events || []).filter((event) => halfOf(event) === half);
 }
 
+/**
+ * API-Football değişiklik olaylarını `type: "subst"` ile gönderiyor.
+ * Yalnızca Türkçe karşılıkları arayan eski kontrol bu olayları hiç
+ * görmüyordu ve teknik karar bölümü sağlayıcı veri verse bile boş
+ * kalıyordu.
+ */
 function isSubstitution(event) {
-  return isType(event, "oyuncu değişikliği", "değişiklik", "substitution", "oyuncu degisikligi");
+  return isType(event, "subst", "oyuncu değişikliği", "değişiklik", "substitution", "oyuncu degisikligi");
 }
 
 function halftimeScore(match) {

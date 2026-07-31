@@ -930,6 +930,73 @@ function normalizeFixtureEvents(items) {
   });
 }
 
+/**
+ * Oyuncu istatistiklerini düzleştirir.
+ *
+ * YALNIZCA sağlayıcının ölçtüğü alanlar taşınır. `rating` API-Football'ın
+ * kendi ölçümüdür ve öyle etiketlenir — FutbolRadar bir derece UYDURMAZ,
+ * yalnızca sağlayıcının verdiğini kaynağıyla birlikte aktarır. Sağlayıcı
+ * bir alanı vermediyse alan hiç yazılmaz; sıfır ya da tahmin konmaz.
+ */
+function normalizeFixturePlayers(items) {
+  const rows = [];
+
+  for (const entry of Array.isArray(items) ? items : []) {
+    const team = teamName(entry && entry.team);
+
+    for (const record of (entry && Array.isArray(entry.players) ? entry.players : [])) {
+      const player = record && record.player;
+      const stats = (record && Array.isArray(record.statistics) ? record.statistics[0] : null) || {};
+      const games = stats.games || {};
+
+      const row = {
+        name: (player && player.name) || "",
+        team,
+        providerPlayerId: player && player.id ? String(player.id) : null,
+        source: "api-football"
+      };
+
+      // Number(null) === 0 olduğu için ham Number.isFinite yetmez: sağlayıcının
+      // "ölçmedim" dediği alan (null) sıfır olarak yazılır ve UYDURMA veri
+      // olurdu. Boş değer alanı hiç oluşturmaz.
+      const measured = (value) => {
+        if (value === null || value === undefined || value === "") return null;
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : null;
+      };
+      const assign = (key, value) => {
+        const parsed = measured(value);
+        if (parsed !== null) row[key] = parsed;
+      };
+
+      assign("minutes", games.minutes);
+      if (games.position) row.position = games.position;
+      // Derece SAĞLAYICININ ölçümüdür ve kaynağıyla birlikte taşınır;
+      // FutbolRadar oyuncu derecesi üretmez.
+      const rating = measured(games.rating);
+      if (rating !== null) {
+        row.providerRating = rating;
+        row.ratingSource = "api-football";
+      }
+      assign("goals", stats.goals && stats.goals.total);
+      assign("assists", stats.goals && stats.goals.assists);
+      assign("saves", stats.goals && stats.goals.saves);
+      assign("shots", stats.shots && stats.shots.total);
+      assign("shotsOnTarget", stats.shots && stats.shots.on);
+      assign("passes", stats.passes && stats.passes.total);
+      assign("passAccuracy", stats.passes && stats.passes.accuracy);
+      assign("tackles", stats.tackles && stats.tackles.total);
+      assign("duelsWon", stats.duels && stats.duels.won);
+      assign("yellowCards", stats.cards && stats.cards.yellow);
+      assign("redCards", stats.cards && stats.cards.red);
+
+      if (row.name) rows.push(row);
+    }
+  }
+
+  return rows;
+}
+
 function normalizeFixtureStatistics(items, match) {
   const teams = Array.isArray(items) ? items : [];
   const home = teams.find((item) => normalizeText(teamName(item.team)) === normalizeText(match.homeTeam)) || teams[0];
@@ -1104,15 +1171,26 @@ async function getMatchDetail(query) {
     throw new ProviderError("PROVIDER_NOT_FOUND", "Mac detayi provider tarafinda bulunamadi.");
   }
 
-  const [rawLineups, rawEvents, rawStatistics, predictions] = await Promise.all([
+  // Oyuncu istatistiği BİTMİŞ maçlarda çekilir. Uç nokta zaten vardı ama
+  // buradan hiç çağrılmıyordu: `players` alanı bu yüzden her maçta boştu ve
+  // "öne çıkan oyuncular" yalnızca gol/kart olaylarından türetilebiliyordu.
+  // Devam eden maçta istenmez — sağlayıcı maç bitmeden kısmi/oynak veri
+  // döndürüyor ve her yoklamada bir istek harcanırdı.
+  const finished = ["FT", "AET", "PEN", "FINISHED"].includes(
+    String((match.providerStatus || match.status || "")).toUpperCase()
+  );
+
+  const [rawLineups, rawEvents, rawStatistics, predictions, rawPlayers] = await Promise.all([
     getLineups({ fixtureId }).catch(() => []),
     getFixtureEvents({ fixtureId }).catch(() => []),
     getFixtureStatistics({ fixtureId }).catch(() => []),
-    getPredictions({ fixtureId }).catch(() => [])
+    getPredictions({ fixtureId }).catch(() => []),
+    finished ? getFixturePlayers({ fixtureId }).catch(() => []) : Promise.resolve([])
   ]);
   const lineups = normalizeFixtureLineups(rawLineups);
   const events = normalizeFixtureEvents(rawEvents);
   const statistics = normalizeFixtureStatistics(rawStatistics, match);
+  const players = normalizeFixturePlayers(rawPlayers);
   const analysis = buildLiveMatchAnalysis(match, statistics, events);
 
   return {
@@ -1121,9 +1199,11 @@ async function getMatchDetail(query) {
     lineups,
     events,
     statistics,
+    players,
     prediction: predictions[0] || null,
     analysis,
     source: "api-football",
+    providerUpdatedAt: new Date().toISOString(),
     fetchedAt: new Date().toISOString(),
     staleAfter: new Date(Date.now() + 2 * 60 * 1000).toISOString()
   };
@@ -1300,6 +1380,7 @@ module.exports = {
   getFixtureEvents,
   getFixtureStatistics,
   getFixturePlayers,
+  normalizeFixturePlayers,
   getFixturesByDate,
   getPredictions,
   getMatchDetail,

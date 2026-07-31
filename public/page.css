@@ -9363,11 +9363,16 @@ h1 {
   font-weight: 750;
 }
 
+.post-match-status.is-full,
 .post-match-status.is-completed {
   background: rgba(22, 138, 90, 0.12);
   color: var(--accent);
 }
 
+/* Kısmi ve yalnızca-olay kapsamları uyarı tonunda: yüksek kapsam gibi
+   görünmemeleri bilinçli. */
+.post-match-status.is-partial,
+.post-match-status.is-events-only,
 .post-match-status.is-partial_data,
 .post-match-status.is-waiting_for_final_data,
 .post-match-status.is-retry_scheduled {
@@ -9375,12 +9380,25 @@ h1 {
   color: #8a5a00;
 }
 
+.post-match-status.is-awaiting-provider {
+  background: rgba(var(--surface-rgb), 0.14);
+  color: var(--muted);
+}
+
+/* Anahtar eksikliği bir veri sorunu değil, kurulum sorunu — ayrı renk. */
+.post-match-status.is-api-key-missing,
 .post-match-status.is-failed {
   background: rgba(200, 30, 45, 0.096);
   color: var(--live);
 }
 
+.post-match-missing.is-key-missing {
+  background: rgba(200, 30, 45, 0.07);
+}
+
 @media (prefers-color-scheme: dark) {
+  .post-match-status.is-partial,
+  .post-match-status.is-events-only,
   .post-match-status.is-partial_data,
   .post-match-status.is-waiting_for_final_data,
   .post-match-status.is-retry_scheduled {

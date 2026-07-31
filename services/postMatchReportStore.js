@@ -44,6 +44,8 @@ const {
   matchState
 } = require("./matchStatus");
 const { dataCompleteness, hasCompleteMatchData } = require("./refreshPolicy");
+const { GRADES, buildCoverage } = require("./analysisCoverage");
+const { resolveProviderMode } = require("./providerMode");
 const { isTurkishMatch, turkishSideOf } = require("./turkishTeams");
 
 /**
@@ -51,7 +53,7 @@ const { isTurkishMatch, turkishSideOf } = require("./turkishTeams");
  * yapıldığında ARTIRILMALI; yoksa parmak izi eşleşmeye devam eder ve eski
  * raporlar yeniden üretilmez.
  */
-const MODEL_VERSION = "futbolradar-post-match-v3";
+const MODEL_VERSION = "futbolradar-post-match-v4";
 
 /**
  * ANALİZ YAŞAM DÖNGÜSÜ.
@@ -315,6 +317,11 @@ function buildReportRecord(match, context) {
   const generatedAt = settings.generatedAt || null;
   const previous = settings.previous || null;
   const analysisStatus = analysisStatusFor(match, report, availability);
+  // Anahtar durumu çağrı bağlamından gelir; gelmezse ortamdan okunur.
+  const apiKeyPresent = settings.apiKeyPresent !== undefined
+    ? settings.apiKeyPresent
+    : resolveProviderMode().apiKeyPresent;
+  const coverage = buildCoverage(match, { apiKeyPresent, provider: match.liveStateSource || null });
   const kickoffRaw = match.kickoff || match.date || null;
 
   return {
@@ -349,6 +356,17 @@ function buildReportRecord(match, context) {
     winner: winnerOf(match),
     turkish: isTurkishMatch(match),
     turkishTeam: turkishSideOf(match),
+
+    // ── Kapsam ve kaynak ────────────────────────────────────────────────
+    // Rozet ("Tam analiz" / "Kısmi analiz" / "Sadece olaylar" /
+    // "Sağlayıcı verisi bekleniyor" / "API anahtarı eksik") ve hangi alanı
+    // hangi kaynağın sağladığı. Düşük kapsam süslenmez.
+    coverageGrade: coverage.grade,
+    coverageLabel: coverage.label,
+    coverageNote: coverage.note,
+    coveragePercent: coverage.percent,
+    dataSources: coverage.sources,
+    apiKeyPresent: coverage.apiKeyPresent,
 
     // ── Veri tazeliği ───────────────────────────────────────────────────
     availability: availability.counts,
@@ -445,6 +463,11 @@ function syncPostMatchReports(options) {
 
   const previousById = new Map(previous.map((record) => [record.matchId, record]));
   const analyzable = matches.filter(isAnalyzableMatch);
+  // Anahtar durumu koşu başına BİR kez çözülür: aynı koşuda bazı kayıtların
+  // "anahtar var", bazılarının "yok" demesi tutarsız olurdu.
+  const apiKeyPresent = settings.apiKeyPresent !== undefined
+    ? settings.apiKeyPresent
+    : resolveProviderMode().apiKeyPresent;
 
   const records = [];
   const stats = {
@@ -465,7 +488,9 @@ function syncPostMatchReports(options) {
     // ya da yeniden denenmeyi bekleyen kayıt, girdisi değişmese de tekrar
     // denenir — aksi hâlde geçici bir hata kalıcı olurdu.
     const stale = existing && (existing.analysisStatus === ANALYSIS_STATUSES.FAILED ||
-      isRetryDue(existing, Date.parse(generatedAt)));
+      isRetryDue(existing, Date.parse(generatedAt)) ||
+      // Anahtar geldi/gitti: rozet değişmeli, kayıt yeniden üretilmeli.
+      (existing.apiKeyPresent !== undefined && existing.apiKeyPresent !== apiKeyPresent));
 
     if (existing && !stale && existing.fingerprint === fingerprint && existing.modelVersion === MODEL_VERSION) {
       records.push(existing);
@@ -478,7 +503,7 @@ function syncPostMatchReports(options) {
     // yazılır, deneme hakkı varsa yeniden denenmek üzere işaretlenir.
     let record = null;
     try {
-      record = buildReportRecord(match, { ...context, generatedAt, previous: existing });
+      record = buildReportRecord(match, { ...context, generatedAt, previous: existing, apiKeyPresent });
     } catch (error) {
       const failure = markAnalysisFailure(match, error, { previous: existing, generatedAt });
       records.push(failure);
@@ -518,6 +543,7 @@ function orderForDisplay(records) {
 
 module.exports = {
   ANALYSIS_STATUSES,
+  GRADES,
   MAX_ANALYSIS_ATTEMPTS,
   MODEL_VERSION,
   PROVIDER_MISSING_LABEL,

@@ -15,13 +15,16 @@
  * Hepsi burada, saf fonksiyonlarda hesaplanıyor: uç nokta yalnızca çağırıyor,
  * böylece aynı özet komut satırından da alınabiliyor ve test edilebiliyor.
  *
- * GİZLİ BİLGİ SIZDIRMAZ. Bu modül ortam değişkeni okumaz; yalnızca maç ve
- * analiz verisi üzerinden sayım yapar.
+ * GİZLİ BİLGİ SIZDIRMAZ. Ortam değişkenlerinin yalnızca VARLIĞI okunur
+ * (services/providerMode.js); hiçbir değer okunmaz, günlüğe yazılmaz ya da
+ * yanıta konmaz. Geri kalan her sayım maç ve analiz verisinden gelir.
  */
 
 const { isAnalyzableStatus, isLiveStatus, isUnplayedStatus, liveVerdict, matchState } = require("./matchStatus");
 const { dataCompleteness, refreshTier } = require("./refreshPolicy");
 const { ANALYSIS_STATUSES } = require("./postMatchReportStore");
+const { resolveProviderMode } = require("./providerMode");
+const { GRADES } = require("./analysisCoverage");
 
 function istanbulToday(nowMs) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -119,10 +122,34 @@ function buildPipelineDiagnostics(input) {
     ? Math.round((completenessValues.reduce((sum, value) => sum + value, 0) / completenessValues.length) * 100) / 100
     : null;
 
+  const mode = resolveProviderMode(settings.env);
+  const coverageCounts = reports.reduce((acc, record) => {
+    const grade = record.coverageGrade || "unknown";
+    acc[grade] = (acc[grade] || 0) + 1;
+    return acc;
+  }, {});
+
   return {
     generatedAt: new Date(nowMs).toISOString(),
     timezone: "Europe/Istanbul",
     today,
+    // Anahtar yoksa bu AÇIKÇA söylenir: "hat çalışıyor ama sağlayıcı veri
+    // vermiyor" ile "anahtar yok, hiç istek gitmiyor" farklı sorunlardır.
+    provider: {
+      mode: mode.mode,
+      apiKeyPresent: mode.apiKeyPresent,
+      requiredEnvName: mode.primaryEnvName,
+      configuredEnvNames: mode.presentEnvNames,
+      warning: mode.warning
+    },
+    coverage: {
+      byGrade: coverageCounts,
+      full: coverageCounts[GRADES.FULL] || 0,
+      partial: coverageCounts[GRADES.PARTIAL] || 0,
+      eventsOnly: coverageCounts[GRADES.EVENTS_ONLY] || 0,
+      awaitingProvider: coverageCounts[GRADES.AWAITING] || 0,
+      apiKeyMissing: coverageCounts[GRADES.KEY_MISSING] || 0
+    },
     matches: {
       total: matches.length,
       today: todaysMatches.length,
@@ -156,6 +183,9 @@ function buildPipelineDiagnostics(input) {
     },
     freshness: {
       ...freshnessOf(lastSync, nowMs),
+      // Anahtar yokken saklanan zaman damgası TAZELİK olarak sunulamaz.
+      trustworthy: mode.dataFreshnessTrustworthy,
+      state: mode.dataFreshnessTrustworthy ? freshnessOf(lastSync, nowMs).state : "stored-only",
       providerUpdatedAt: newestTimestamp(matches, "providerUpdatedAt"),
       averageDataCompleteness: averageCompleteness
     }

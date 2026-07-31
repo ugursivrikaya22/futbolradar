@@ -795,9 +795,38 @@ async function checkApi() {
       expect(typeof diagnostics.baseUrlEnvCount === "number", "health: missing base URL env count");
       expect(typeof diagnostics.competitionEnvCount === "number", "health: missing competition env count");
       expect(Array.isArray(diagnostics.liveProviderResources), "health: missing live provider resources");
-      expect(!JSON.stringify(diagnostics).includes("X-Auth-Token"), "health: should not expose auth header markers");
-      expect(!JSON.stringify(diagnostics).includes("FOOTBALL_API_KEY"), "health: should not expose API key env names");
-      expect(!JSON.stringify(diagnostics).includes("apiKey"), "health: should not expose API key field names");
+      // SIZINTI KONTROLÜ — korunması gereken şey anahtarın DEĞERİdir.
+      //
+      // Bu iki kontrol eskiden değişken ADINI ("...FOOTBALL_API_KEY") ve
+      // "apiKey" alan adını da yasaklıyordu. Değişken adı gizli bilgi değil:
+      // .env.example, docs/api-football-setup.md ve iş akışı dosyalarında
+      // zaten açıkça yazıyor. Adı gizlemek, kurulumu eksik bir dağıtımda
+      // "nereye bakmalıyım" sorusunu cevapsız bırakıyordu; teşhis ucunun
+      // varlık sebebi tam olarak bu soruyu yanıtlamak.
+      //
+      // Kontrol artık DEĞER biçimine bakıyor: API-Sports anahtarı 32
+      // karakterlik onaltılık bir dizedir ve yanıtta böyle bir dize
+      // görünmemelidir.
+      const diagnosticsText = JSON.stringify(diagnostics);
+      expect(!diagnosticsText.includes("X-Auth-Token"), "health: should not expose auth header markers");
+      expect(!diagnosticsText.includes("x-apisports-key"), "health: should not expose provider auth header");
+      expect(!/[0-9a-f]{32}/i.test(diagnosticsText), "health: should not expose credential-shaped values");
+      expect(!/"(apiKey|credential|token|secret)"\s*:\s*"[^"]+"/i.test(diagnosticsText),
+        "health: should not expose credential values");
+
+      // Kurulum eksikse hangi değişkenin tanımlanacağı AÇIKÇA yazmalı.
+      const pipeline = diagnostics.pipeline || {};
+      expect(Boolean(pipeline.provider), "health: missing pipeline provider section");
+      expect(pipeline.provider.requiredEnvName === "APIFOOTBALL_API_KEY",
+        "health: pipeline must name the required env var");
+      expect(typeof pipeline.provider.apiKeyPresent === "boolean",
+        "health: pipeline must report api key presence");
+      // Anahtar yokken saklanan veri "taze" diye raporlanmamalı.
+      if (pipeline.provider.apiKeyPresent === false) {
+        expect(pipeline.freshness.trustworthy === false,
+          "health: stored-only data must not be reported as trustworthy");
+        expect(Boolean(pipeline.provider.warning), "health: missing stored-only warning");
+      }
     }
   }
 
