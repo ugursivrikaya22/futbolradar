@@ -1230,25 +1230,64 @@ function buildNextMatchOutlook(match, context) {
 }
 
 // ── SEO ─────────────────────────────────────────────────────────────────────
+/**
+ * BAŞLIK VE AÇIKLAMA — ne olduğunu söyleyen, ne vaat ettiğini de söyleyen.
+ *
+ * ESKİ BAŞLIK her maç için aynı kalıptaydı:
+ *
+ *     "Çaykur Rizespor 1-2 Hull City Maç Raporu ve İstatistikleri | FutbolRadar"
+ *
+ * Skor dışında hiçbir ayırt edici bilgi yok: turnuva yok, tarih yok, maçın
+ * neyle ilgili olduğuna dair bir işaret yok. Arama sonucunda yan yana duran
+ * iki FutbolRadar bağlantısı birbirinden ayırt edilemiyor ve tıklamayı
+ * yalnızca takım adları taşıyor.
+ *
+ * YENİ BAŞLIK turnuvayı da taşır. Uzunluk sınırı (120) yüzünden turnuva
+ * ancak sığdığında eklenir — kırpılmış bir başlık, eksik bir başlıktan kötü.
+ *
+ * AÇIKLAMA da kalıp bir virgül listesiydi. Artık maçın KENDİ cümlesiyle
+ * başlıyor: `summary.paragraph` gerçek olay ve istatistikten üretilmiş
+ * metindir. Kalıp liste yalnızca o cümle yokken devreye girer.
+ *
+ * UYDURMA YOK: buraya giren her parça kayıttan gelir. Skor yoksa skor
+ * yazılmaz, turnuva yoksa turnuva yazılmaz, özet yoksa özet cümlesi olmaz.
+ */
 function buildSeo(match, summary) {
   const score = scoreLine(match) || "";
   const competition = match.league || "Futbol";
-  const title = `${match.homeTeam} ${score} ${match.awayTeam} Maç Raporu ve İstatistikleri | FutbolRadar`;
+  const strip = score ? `${match.homeTeam} ${score} ${match.awayTeam}` : `${match.homeTeam} - ${match.awayTeam}`;
 
-  const parts = [];
-  if (summary.status === "ready") {
-    parts.push(`${match.homeTeam} ${score} ${match.awayTeam} maç raporu`);
+  // Turnuva adı ancak sınıra sığıyorsa eklenir.
+  const brand = " | FutbolRadar";
+  const base = `${strip} maç raporu`;
+  const withCompetition = match.league ? `${base}: ${match.league} istatistikleri` : `${base} ve istatistikleri`;
+  const title = `${withCompetition}${brand}`.length <= 120
+    ? `${withCompetition}${brand}`
+    : `${base}${brand}`;
+
+  let description = "";
+
+  // 1. Maçın kendi cümlesi. En bilgilendirici seçenek bu.
+  if (summary.status === "ready" && String(summary.paragraph || "").trim()) {
+    const sentence = String(summary.paragraph).trim();
+    const firstStop = sentence.match(/^[\s\S]*?[.!?](?=\s|$)/);
+    description = String(firstStop ? firstStop[0] : sentence).trim();
+  }
+
+  // 2. Cümle yoksa (ya da çok kısaysa) doğrulanabilir ayrıntılarla kurulur.
+  if (description.length < 60) {
+    const parts = [`${strip} maç raporu`];
+
     const goals = goalEvents(match)
       .map((event) => playerFromDetail(event.detail))
       .filter(Boolean);
     if (goals.length) parts.push(`goller: ${[...new Set(goals)].join(", ")}`);
     if ((match.statistics || []).length) parts.push("xG, şut ve pas istatistikleri");
     parts.push("kırılma anları ve sonraki maç");
-  } else {
-    parts.push(`${match.homeTeam} - ${match.awayTeam} maç raporu ve doğrulanmış maç verileri`);
+
+    description = `${parts.join(", ")}.`;
   }
 
-  let description = `${parts.join(", ")}.`;
   if (description.length > 158) description = `${description.slice(0, 155).replace(/[\s,;:]+$/, "")}...`;
 
   const dateStamp = String(match.kickoff || match.date || "").slice(0, 10);

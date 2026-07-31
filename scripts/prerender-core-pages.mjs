@@ -29,6 +29,9 @@ const {
   selectFeaturedMatches
 } = require("../services/featuredMatchSelector.js");
 const { orderForDisplay } = require("../services/postMatchReportStore.js");
+const { renderQuickStats } = require("../services/homeQuickStats.js");
+const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
+const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
 
@@ -307,13 +310,15 @@ function staticFeaturedFixture() {
     (match.statistics || []).length
   )).length;
 
-  const quickStats = `<div class="quick-stats" aria-label="Bugünün maç özeti">
-      <a class="quick-stat${liveCount ? " is-live" : ""}" href="./canli-skor.html"><span>Canlı</span><b class="live-number">${liveCount}</b></a>
-      <a class="quick-stat" href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>${Math.max(upcomingCount, 0)}</b></a>
-      <a class="quick-stat" href="./bugunun-maclari.html?status=finished"><span>Biten</span><b>${finishedCount}</b></a>
-      <a class="quick-stat${analysisReadyCount ? " is-ready" : ""}" href="./mac-merkezi.html"><span>Analizi hazır</span><b>${analysisReadyCount}</b></a>
-      <a class="quick-stat" href="./bugunun-maclari.html"><span>Toplam</span><b>${todayList.length}</b></a>
-    </div>`;
+  // Sıfır olan sayaç çizilmez (services/homeQuickStats.js). "Analizi hazır 0"
+  // gibi bir satır, sayfanın vaadinin yokluğunu rakamla ilan ediyordu.
+  const quickStats = renderQuickStats({
+    live: liveCount,
+    upcoming: Math.max(upcomingCount, 0),
+    finished: finishedCount,
+    analysisReady: analysisReadyCount,
+    total: todayList.length
+  }, escapeHtml);
 
   if (!featured) {
     return `<div class="featured-fixture">
@@ -362,6 +367,37 @@ function staticFeaturedFixture() {
       <div class="featured-carousel-viewport">${slides}</div>
       ${nav}
     </div>${quickStats}`;
+}
+
+/**
+ * GÜNÜN ÜÇ BAŞLIĞI — statik karşılık.
+ *
+ * Kural servistedir (services/dailyHeadlines.js) ve istemci aynı servisin
+ * kopyasını kullanır, yani JS yüklendiğinde başlıklar yerinden oynamaz.
+ *
+ * Aday yoksa BOŞ DİZE döner. Boş dize slot'a yazıldığında bölüm görünür
+ * ama içi boş kalırdı; bunu önlemek için `index.html`deki bölüm
+ * `data-empty-hide` taşıyor ve istemci boş bölümü gizliyor. Statik tarafta
+ * ise bölümün kendisi `hidden` başlar ve yalnızca başlık varken açılır.
+ */
+function dailyHeadlineCards() {
+  const today = istanbulToday();
+  const headlines = buildDailyHeadlines(curatedMatches(), {
+    today,
+    reports: postMatchStore()
+  });
+
+  if (!headlines.length) return "";
+
+  return headlines.map((headline, index) => `<a class="daily-headline${headline.state === "live" ? " is-live" : ""}" href="${escapeHtml(headline.href)}" data-headline-rank="${index + 1}" data-headline-match="${escapeHtml(headline.matchId)}" data-headline-state="${escapeHtml(headline.state)}">
+      <span class="daily-headline-index" aria-hidden="true">${index + 1}</span>
+      <span class="daily-headline-body">
+        <span class="daily-headline-kicker">${escapeHtml(headline.kicker)}</span>
+        <strong class="daily-headline-title">${escapeHtml(headline.title)}</strong>
+        ${headline.subtitle ? `<span class="daily-headline-score">${escapeHtml(headline.subtitle)}</span>` : ""}
+        <span class="daily-headline-hook">${escapeHtml(headline.hook)}</span>
+      </span>
+    </a>`).join("");
 }
 
 /**
@@ -830,6 +866,36 @@ function updateRobotsDirective(html, file) {
   );
 }
 
+/**
+ * BOŞ BÖLÜM GİZLENİR.
+ *
+ * `data-empty-hide` taşıyan bir bölüm, içindeki slot boşsa `hidden` kalır;
+ * doluysa açılır. "Bugün öne çıkan üç başlık" başlığını yazıp altını boş
+ * bırakmak, bölümü hiç göstermemekten kötü: okuyucu sitenin bir şeyi
+ * beceremediğini görür.
+ *
+ * İstemci aynı kuralı `applyEmptyHide` ile uygular, yani JS yüklendiğinde
+ * bölüm yerinden oynamaz.
+ */
+function applyEmptyHide(html, target, content) {
+  const hasContent = String(content || "").trim() !== "";
+  // Bölüm etiketi: `data-api-target="<target>"` içeren en yakın
+  // `data-empty-hide` bölümü. İşaretleme sabit olduğu için doğrudan
+  // bölümün açılış etiketi aranıyor.
+  const expression = new RegExp(`(<section\\b[^>]*\\bdata-api-section="${target}"[^>]*>)`);
+  const match = html.match(expression);
+  if (!match) return html;
+
+  const openTag = match[1];
+  if (!openTag.includes("data-empty-hide")) return html;
+
+  const next = hasContent
+    ? openTag.replace(/\s+hidden(?=[\s>])/, "")
+    : (/\s+hidden(?=[\s>])/.test(openTag) ? openTag : openTag.replace(/>$/, " hidden>"));
+
+  return html.replace(openTag, next);
+}
+
 function writePage(file, slots, freshness) {
   const sourcePath = path.join(root, file);
   if (!fs.existsSync(sourcePath)) {
@@ -839,6 +905,7 @@ function writePage(file, slots, freshness) {
   let html = fs.readFileSync(sourcePath, "utf8");
   Object.entries(slots).forEach(([target, content]) => {
     html = replaceSlot(html, target, content);
+    html = applyEmptyHide(html, target, content);
   });
   html = updateMetaLabels(html, freshness);
   html = updateRobotsDirective(html, file);
@@ -853,6 +920,7 @@ const topPlayers = players.slice().sort((left, right) => Number(right.overallRat
 
 writePage("index.html", {
   "featured-match": staticFeaturedFixture(),
+  "daily-headlines": dailyHeadlineCards(),
   "home-trend-teams": trendTeamCards(),
   "home-transfer-watch": transferWatch(),
   "today-matches": matchProgramState("today"),
