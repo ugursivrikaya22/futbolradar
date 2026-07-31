@@ -1000,6 +1000,69 @@ function checkEmptyHideSections() {
 }
 
 /**
+ * İŞ AKIŞI YAML'I AYRIŞABİLİR KALSIN.
+ *
+ * GERÇEK OLAY. Bir commit adımı tek satıra yazıldı:
+ *
+ *     run: node scripts/ci-commit-push.mjs "ci(matches): automate ..."
+ *
+ * Değerin içindeki `": "` (iki nokta + boşluk) YAML'da eşleme başlatır, yani
+ * tırnaksız bir skalerde YASAKTIR. Dosya ayrıştırılamaz hâle geldi ve GitHub
+ * iş akışını TÜMÜYLE yok saydı: zamanlanmış koşular durdu, `workflow_dispatch`
+ * kayboldu, elle tetikleme "bu iş akışında workflow_dispatch yok" diye 422
+ * döndürdü. Hiçbir adım kırmızıya dönmedi çünkü hiçbir adım çalışmadı —
+ * en sinsi arıza türü.
+ *
+ * NEDEN TAM YAML AYRIŞTIRICISI DEĞİL. Bu depo bilerek sıfır bağımlılıklı ve
+ * CI hiç `npm install` çalıştırmıyor; yalnızca bu kontrol için bir kütüphane
+ * eklemek, korumaya çalıştığı şeyden pahalı olurdu. Bunun yerine iş akışlarını
+ * bozan DAR sınıf hedefleniyor: tırnaksız/bloksuz bir değerin içinde `": "`.
+ *
+ * `https://...` gibi adresler yanlış yakalanmaz: aranan şey iki noktadan
+ * SONRA BOŞLUK gelmesi, ki YAML'ın eşleme göstergesi tam olarak budur.
+ */
+function checkWorkflowYaml() {
+  const workflowDir = path.join(root, ".github", "workflows");
+  if (!fs.existsSync(workflowDir)) return;
+
+  // Değer tırnaklı, blok skaler ya da akış koleksiyonuysa `": "` güvenlidir.
+  const SAFE_START = /^[|>'"[{&*]/;
+
+  for (const name of fs.readdirSync(workflowDir).filter((file) => /\.ya?ml$/.test(file))) {
+    const rel = `.github/workflows/${name}`;
+    const raw = fs.readFileSync(path.join(workflowDir, name), "utf8");
+
+    expect(!raw.includes("\t"), `${rel}: YAML sekme karakteri içeremez`);
+
+    raw.split("\n").forEach((line, index) => {
+      if (/^\s*#/.test(line) || !line.trim()) return;
+
+      // `anahtar: değer` (liste öğesi olabilir). Değer boşsa blok başlıyordur.
+      const match = line.match(/^\s*(?:-\s+)?[A-Za-z_][\w.-]*:\s+(\S.*)$/);
+      if (!match) return;
+
+      const value = match[1].trim();
+      if (SAFE_START.test(value)) return;
+
+      expect(
+        !value.includes(": "),
+        `${rel}:${index + 1}: tırnaksız değerde "': '" var — YAML ayrıştırılamaz. ` +
+        `Blok skaler (\`run: |\`) kullanın. Satır: ${line.trim().slice(0, 80)}`
+      );
+    });
+  }
+
+  // Elle tetikleme kaybolduğunda hiçbir şey kırmızıya dönmez; ayrıca sınanır.
+  const main = path.join(workflowDir, "match-analysis.yml");
+  if (fs.existsSync(main)) {
+    expect(
+      /^\s*workflow_dispatch:/m.test(fs.readFileSync(main, "utf8")),
+      "match-analysis.yml: workflow_dispatch tetikleyicisi kaybolmuş"
+    );
+  }
+}
+
+/**
  * SAĞLAYICI SIR ADLARI TEK STANDARTTA KALSIN.
  *
  * SORUN. Kod beş ayrı yazım varyantını kabul ediyor
@@ -1131,6 +1194,7 @@ function checkDataJsonSyntax() {
 
 checkDataJsonSyntax();
 checkProviderSecretNaming();
+checkWorkflowYaml();
 checkEmptyHideSections();
 checkVercelFunctionLimit();
 checkPublicMirrors();

@@ -229,8 +229,13 @@ jobs:
       # dönüyordu. Betik reddi yeniden deniyor, commit'i son hâlin üzerine
       # taşıyor; gerçek bir çakışmada ise birleştirme uydurmak yerine bu
       # koşunun çıktısını erteliyor. Gerekçenin tamamı betiğin başında.
+      # Blok skaler (`|`) ZORUNLU: commit mesajı ": " içeriyor ve YAML'da
+      # tırnaksız bir skalerin içindeki iki nokta+boşluk eşleme başlatır.
+      # Tek satır olarak yazıldığında dosya ayrıştırılamıyor ve GitHub iş
+      # akışını tümüyle yok sayıyor — `workflow_dispatch` bile kaybolur.
       - name: Commit changes if any
-        run: node scripts/ci-commit-push.mjs "ci(matches): automate fixture and match analysis updates"
+        run: |
+          node scripts/ci-commit-push.mjs "ci(matches): automate fixture and match analysis updates"
 
   live-refresh:
     if: github.event.schedule == '*/5 * * * *'
@@ -301,5 +306,7 @@ jobs:
       # Yarışın ASIL VURDUĞU YER burası: bu iş beş dakikada bir koşuyor, yani
       # `main`'e düşen bir merge'in checkout ile push arasına girme olasılığı
       # en yüksek olan iş bu. Run 121 tam olarak böyle düştü.
+      # Blok skaler (`|`) zorunlu; gerekçe günlük işin commit adımında.
       - name: Commit changes if any
-        run: node scripts/ci-commit-push.mjs "ci(matches): refresh live results and match reports"
+        run: |
+          node scripts/ci-commit-push.mjs "ci(matches): refresh live results and match reports"
