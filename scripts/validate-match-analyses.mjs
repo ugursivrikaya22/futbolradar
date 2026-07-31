@@ -6,6 +6,7 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { normalizeText } = require("../services/matchRadarService.js");
 const { isFinishedMatch } = require("../services/matchStatus.js");
+import { readJsonFile } from "./lib/readJsonFile.mjs";
 
 const VERCEL_HOBBY_FUNCTION_LIMIT = 12;
 const SUSPICIOUS_KEYS = ["xg", "xa", "odds", "bettingodds", "marketodds", "bahisorani"];
@@ -18,9 +19,13 @@ function expect(condition, message) {
   if (!condition) failures.push(message);
 }
 
+/**
+ * Ortak okuyucuya devredilir: bozuk JSON'da DOSYA ADI ve bozuk bölgenin
+ * bağlamı basılır. Aynı iş akışındaki "Refresh official lineups" adımı bu
+ * yüzden dosyayı anmayan bir yığın iziyle çökmüştü.
+ */
 function readJson(filePath, fallback) {
-  if (!fs.existsSync(filePath)) return fallback;
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  return readJsonFile(filePath, fallback);
 }
 
 const analyses = readJson(path.join(root, "data", "match-analyses.json"), []);

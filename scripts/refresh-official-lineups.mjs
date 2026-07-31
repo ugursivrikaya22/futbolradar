@@ -13,6 +13,7 @@ const {
   computeLineupRefreshTargets
 } = require("../services/officialLineupService.js");
 const { applyOfficialLineupToCoverage } = require("../services/analysisCoverageService.js");
+import { readJsonFile } from "./lib/readJsonFile.mjs";
 
 const ANALYSES_PATH = path.join(root, "data", "match-analyses.json");
 const MAX_TARGETS_PER_RUN = 20;
@@ -26,9 +27,14 @@ function parseArgs(argv) {
   return args;
 }
 
+/**
+ * Ortak okuyucuya devredilir: ayrıştırma hatasında DOSYA ADI ve bozuk
+ * bölgenin bağlamı basılır. Eskiden yalnızca "Expected ',' or '}' after
+ * property value in JSON at position 9" görünüyordu ve hangi dosyanın
+ * bozuk olduğunu anlamak için betiği açıp yolu elle bulmak gerekiyordu.
+ */
 function readJson(filePath, fallback) {
-  if (!fs.existsSync(filePath)) return fallback;
-  return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  return readJsonFile(filePath, fallback);
 }
 
 function atomicWrite(filePath, data) {

@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { readJsonFile } from "./lib/readJsonFile.mjs";
 import { pathToFileURL } from "node:url";
 import { createRequire } from "node:module";
 
@@ -906,7 +907,9 @@ async function checkApi() {
 }
 
 async function checkMatchAnalysisApi() {
-  const analyses = JSON.parse(fs.readFileSync(path.join(root, "data", "match-analyses.json"), "utf8"));
+  // Dosya adını söyleyen okuyucu: ham JSON.parse hatası hangi dosyanın
+  // bozuk olduğunu anmıyordu.
+  const analyses = readJsonFile(path.join(root, "data", "match-analyses.json"), []);
   const missingQuery = await callEndpoint("match-analysis", "/api/match-analysis");
   expect(missingQuery.payload.ok === false, "match-analysis: missing query should return ok:false");
   expect(missingQuery.payload.error?.code === "MATCH_ANALYSIS_QUERY_REQUIRED", "match-analysis: missing query error code mismatch");
@@ -942,6 +945,50 @@ async function checkMatchAnalysisApi() {
   }
 }
 
+/**
+ * JSON SÖZDİZİMİ KAPISI.
+ *
+ * Bozuk bir veri dosyası bugüne kadar ancak CI'da, dosyayı hiç anmayan bir
+ * yığın iziyle ortaya çıkıyordu: `data/match-analyses.json` yarım kalmış
+ * bir düzenlemeyle bozuldu ve "Refresh official lineups" adımı
+ * "Expected ',' or '}' after property value in JSON at position 9" diyerek
+ * çöktü. Hangi dosya olduğu mesajda yoktu.
+ *
+ * QA artık her veri dosyasını ayrıştırıyor. Bozuk dosya burada, ADIYLA
+ * yakalanıyor — CI'ya ulaşmadan.
+ */
+function checkDataJsonSyntax() {
+  const roots = [path.join(root, "data"), path.join(root, "public", "data")];
+  let checked = 0;
+
+  for (const dir of roots) {
+    if (!fs.existsSync(dir)) continue;
+
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (!entry.isFile() || !entry.name.endsWith(".json")) continue;
+
+      const filePath = path.join(dir, entry.name);
+      checked += 1;
+
+      try {
+        JSON.parse(fs.readFileSync(filePath, "utf8"));
+      } catch (error) {
+        // HEMEN DUR. Bozuk veriyle sonraki kontroller anlamsız ve aşağıdaki
+        // ham JSON.parse çağrıları zaten çökerek asıl hatayı gizliyor.
+        console.error(
+          `\nQA DURDU — bozuk JSON: ${path.relative(root, filePath)}\n` +
+          `  Ayrıştırıcı: ${error.message}\n` +
+          `  Geçerli sürüme dönmek için: git checkout HEAD -- ${path.relative(root, filePath)}\n`
+        );
+        process.exit(1);
+      }
+    }
+  }
+
+  expect(checked > 0, "veri dizininde JSON dosyası bulunamadı");
+}
+
+checkDataJsonSyntax();
 checkVercelFunctionLimit();
 checkPublicMirrors();
 checkAnalyticsTag();
