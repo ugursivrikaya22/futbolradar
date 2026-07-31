@@ -59,6 +59,10 @@ jobs:
   update-match-analyses:
     if: github.event.schedule != '*/5 * * * *'
     runs-on: ubuntu-latest
+    # Anahtar iş düzeyinde: `secrets` bağlamı adım `if`inde okunamaz, `env`
+    # okunabilir. Tanımsız secret boş dizeye açılır.
+    env:
+      APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -184,6 +188,30 @@ jobs:
           APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
         run: npm run enrich:post-match
 
+      # Geriye dönük tamamlama: canlı döngünün kaçırdığı ya da o sırada
+      # verisi eksik olan maçlar. Öncelik sırası son 4 gün → Türk kulüpleri
+      # → Süper Lig → Avrupa kupaları → arşiv. Tekrar çalıştırılabilir:
+      # zaten tam olan analiz yeniden üretilmez.
+      # Biten maçların eksik dökümünü sağlayıcıdan tamamlar (oyuncu ve takım
+      # istatistikleri, kadrolar, değişiklikler). Anahtar yoksa adım hiç
+      # koşmaz — sessizce no-op etmek yerine atlandığı görünür.
+      - name: Refetch finished matches from provider
+        if: env.APIFOOTBALL_API_KEY != ''
+        run: node scripts/refetch-finished-matches.mjs --apply --limit=25 --days=4
+
+      # Oynanmış maçların maç ÖNCESİ analiz kayıtları bayattır: "Analizi
+      # hazır" sayacını şişirir ve maç sonrası analizle çelişir.
+      #
+      # SİLMİYOR, YALNIZCA BİLDİRİYOR. Otomatik silme, üretilmiş gerçek
+      # analiz kaydını kimse bakmadan yok eder. Hangi kaydın neden bayat
+      # sayıldığı günlüğe düşer; silme kararı insana bırakılır
+      # (`--apply` ile elle çalıştırılır).
+      - name: Report stale pre-match analyses (read-only)
+        run: node scripts/prune-stale-match-analyses.mjs
+
+      - name: Backfill missing post-match analyses
+        run: node scripts/backfill-post-match-analyses.mjs --apply --limit=40
+
       - name: Validate match analyses
         run: node scripts/validate-match-analyses.mjs
 
@@ -254,6 +282,12 @@ jobs:
       - name: Sync finished match results
         if: env.APIFOOTBALL_API_KEY != ''
         run: node scripts/sync-match-results.mjs --apply
+
+      # Analiz deposu rapor sayfalarından ÖNCE üretilir: sayfalar depoyu
+      # okuyor. Parmak izi sayesinde girdisi değişmemiş maç yeniden
+      # üretilmez, bu yüzden beş dakikalık döngüde koşması ucuz.
+      - name: Regenerate post-match analysis store
+        run: node scripts/generate-post-match-reports.mjs --apply
 
       - name: Regenerate match reports
         run: node scripts/generate-post-match-pages.mjs

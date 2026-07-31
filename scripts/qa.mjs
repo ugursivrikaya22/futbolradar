@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { readJsonFile } from "./lib/readJsonFile.mjs";
 import { pathToFileURL } from "node:url";
 import { createRequire } from "node:module";
 
@@ -795,9 +796,38 @@ async function checkApi() {
       expect(typeof diagnostics.baseUrlEnvCount === "number", "health: missing base URL env count");
       expect(typeof diagnostics.competitionEnvCount === "number", "health: missing competition env count");
       expect(Array.isArray(diagnostics.liveProviderResources), "health: missing live provider resources");
-      expect(!JSON.stringify(diagnostics).includes("X-Auth-Token"), "health: should not expose auth header markers");
-      expect(!JSON.stringify(diagnostics).includes("FOOTBALL_API_KEY"), "health: should not expose API key env names");
-      expect(!JSON.stringify(diagnostics).includes("apiKey"), "health: should not expose API key field names");
+      // SIZINTI KONTROLÜ — korunması gereken şey anahtarın DEĞERİdir.
+      //
+      // Bu iki kontrol eskiden değişken ADINI ("...FOOTBALL_API_KEY") ve
+      // "apiKey" alan adını da yasaklıyordu. Değişken adı gizli bilgi değil:
+      // .env.example, docs/api-football-setup.md ve iş akışı dosyalarında
+      // zaten açıkça yazıyor. Adı gizlemek, kurulumu eksik bir dağıtımda
+      // "nereye bakmalıyım" sorusunu cevapsız bırakıyordu; teşhis ucunun
+      // varlık sebebi tam olarak bu soruyu yanıtlamak.
+      //
+      // Kontrol artık DEĞER biçimine bakıyor: API-Sports anahtarı 32
+      // karakterlik onaltılık bir dizedir ve yanıtta böyle bir dize
+      // görünmemelidir.
+      const diagnosticsText = JSON.stringify(diagnostics);
+      expect(!diagnosticsText.includes("X-Auth-Token"), "health: should not expose auth header markers");
+      expect(!diagnosticsText.includes("x-apisports-key"), "health: should not expose provider auth header");
+      expect(!/[0-9a-f]{32}/i.test(diagnosticsText), "health: should not expose credential-shaped values");
+      expect(!/"(apiKey|credential|token|secret)"\s*:\s*"[^"]+"/i.test(diagnosticsText),
+        "health: should not expose credential values");
+
+      // Kurulum eksikse hangi değişkenin tanımlanacağı AÇIKÇA yazmalı.
+      const pipeline = diagnostics.pipeline || {};
+      expect(Boolean(pipeline.provider), "health: missing pipeline provider section");
+      expect(pipeline.provider.requiredEnvName === "APIFOOTBALL_API_KEY",
+        "health: pipeline must name the required env var");
+      expect(typeof pipeline.provider.apiKeyPresent === "boolean",
+        "health: pipeline must report api key presence");
+      // Anahtar yokken saklanan veri "taze" diye raporlanmamalı.
+      if (pipeline.provider.apiKeyPresent === false) {
+        expect(pipeline.freshness.trustworthy === false,
+          "health: stored-only data must not be reported as trustworthy");
+        expect(Boolean(pipeline.provider.warning), "health: missing stored-only warning");
+      }
     }
   }
 
@@ -877,7 +907,9 @@ async function checkApi() {
 }
 
 async function checkMatchAnalysisApi() {
-  const analyses = JSON.parse(fs.readFileSync(path.join(root, "data", "match-analyses.json"), "utf8"));
+  // Dosya adını söyleyen okuyucu: ham JSON.parse hatası hangi dosyanın
+  // bozuk olduğunu anmıyordu.
+  const analyses = readJsonFile(path.join(root, "data", "match-analyses.json"), []);
   const missingQuery = await callEndpoint("match-analysis", "/api/match-analysis");
   expect(missingQuery.payload.ok === false, "match-analysis: missing query should return ok:false");
   expect(missingQuery.payload.error?.code === "MATCH_ANALYSIS_QUERY_REQUIRED", "match-analysis: missing query error code mismatch");
@@ -913,6 +945,138 @@ async function checkMatchAnalysisApi() {
   }
 }
 
+/**
+ * SAĞLAYICI SIR ADLARI TEK STANDARTTA KALSIN.
+ *
+ * SORUN. Kod beş ayrı yazım varyantını kabul ediyor
+ * (`APIFOOTBALL_API_KEY`, `API_FOOTBALL_API_KEY`, `APIFOOTBALL_KEY`,
+ * `API_SPORTS_API_KEY`, `APISPORTS_API_KEY`). Bu esneklik YANLIŞ ADLA
+ * TANIMLANMIŞ bir anahtarın sağlayıcıyı sessizce devre dışı bırakmasını
+ * önlemek için var — ama iş akışlarına sızarsa tersine döner: hangi
+ * GitHub secret'ının gerçekten okunduğu belirsizleşir, eski bir secret
+ * silinemez hâle gelir ve iki farklı ad dolduğunda hangisinin kazandığı
+ * kimsenin bilmediği bir sıraya kalır.
+ *
+ * KURAL. Kabul edilen adlar KODDA kalır (geriye dönük uyumluluk), ama
+ * TANIMLANDIĞI her yerde — iş akışları, `.env.example`, belgeler —
+ * yalnızca kanonik ad kullanılır. Bu kontrol kuralı zorunlu kılar.
+ */
+function checkProviderSecretNaming() {
+  const utils = require("../api/_utils.js");
+  const providerMode = require("../services/providerMode.js");
+
+  // İki modül aynı listeyi ayrı ayrı tanımlıyor. Ayrışmaları, bir katmanın
+  // gördüğü anahtarı diğerinin görmemesi demek: API canlı, betikler
+  // "anahtar yok" derdi.
+  expect(
+    JSON.stringify(utils.APIFOOTBALL_API_KEY_ENV_NAMES) === JSON.stringify(providerMode.API_KEY_ENV_NAMES),
+    "provider secrets: api/_utils.js ve services/providerMode.js anahtar ad listeleri ayrışmış"
+  );
+  expect(
+    providerMode.PRIMARY_API_KEY_ENV === "APIFOOTBALL_API_KEY",
+    `provider secrets: kanonik ad APIFOOTBALL_API_KEY olmalı (şu an ${providerMode.PRIMARY_API_KEY_ENV})`
+  );
+
+  // İş akışlarında yalnızca bu adlar geçebilir.
+  const canonical = new Set([
+    "APIFOOTBALL_API_KEY",
+    "APIFOOTBALL_API_BASE_URL",
+    "APIFOOTBALL_LEAGUE_ID",
+    "APIFOOTBALL_SEASON",
+    "APIFOOTBALL_COUNTRY"
+  ]);
+  const aliases = new Set([
+    ...utils.APIFOOTBALL_API_KEY_ENV_NAMES,
+    ...utils.APIFOOTBALL_LEAGUE_ID_ENV_NAMES,
+    ...utils.APIFOOTBALL_BASE_URL_ENV_NAMES,
+    ...utils.APIFOOTBALL_SEASON_ENV_NAMES,
+    ...utils.APIFOOTBALL_COUNTRY_ENV_NAMES
+  ].filter((name) => !canonical.has(name)));
+
+  const workflowDir = path.join(root, ".github", "workflows");
+  if (!fs.existsSync(workflowDir)) return;
+
+  const workflows = fs.readdirSync(workflowDir).filter((name) => /\.ya?ml$/.test(name));
+  expect(workflows.length > 0, "provider secrets: .github/workflows altında iş akışı yok");
+
+  for (const name of workflows) {
+    const rel = `.github/workflows/${name}`;
+    const lines = fs.readFileSync(path.join(workflowDir, name), "utf8").split("\n");
+
+    lines.forEach((line, index) => {
+      const at = `${rel}:${index + 1}`;
+      // Yorum satırları anlatım içindir; eski adlardan söz edebilirler.
+      if (/^\s*#/.test(line)) return;
+
+      for (const secret of line.matchAll(/secrets\.([A-Z0-9_]+)/g)) {
+        expect(
+          !aliases.has(secret[1]),
+          `provider secrets: ${at} eski ad kullanıyor (secrets.${secret[1]}); kanonik ada geçin`
+        );
+      }
+
+      // `NAME: ${{ secrets.OTHER }}` — çapraz bağlama. Adların eşleşmesi,
+      // "hangi secret hangi değişkene gidiyor" sorusunu okumadan yanıtlar.
+      const mapping = line.match(/^\s*([A-Z0-9_]+):\s*\$\{\{\s*secrets\.([A-Z0-9_]+)\s*\}\}\s*$/);
+      if (mapping && (canonical.has(mapping[1]) || aliases.has(mapping[1]))) {
+        expect(
+          mapping[1] === mapping[2],
+          `provider secrets: ${at} çapraz bağlama (${mapping[1]} ← secrets.${mapping[2]})`
+        );
+        expect(
+          canonical.has(mapping[1]),
+          `provider secrets: ${at} eski değişken adı (${mapping[1]}); kanonik ada geçin`
+        );
+      }
+    });
+  }
+}
+
+/**
+ * JSON SÖZDİZİMİ KAPISI.
+ *
+ * Bozuk bir veri dosyası bugüne kadar ancak CI'da, dosyayı hiç anmayan bir
+ * yığın iziyle ortaya çıkıyordu: `data/match-analyses.json` yarım kalmış
+ * bir düzenlemeyle bozuldu ve "Refresh official lineups" adımı
+ * "Expected ',' or '}' after property value in JSON at position 9" diyerek
+ * çöktü. Hangi dosya olduğu mesajda yoktu.
+ *
+ * QA artık her veri dosyasını ayrıştırıyor. Bozuk dosya burada, ADIYLA
+ * yakalanıyor — CI'ya ulaşmadan.
+ */
+function checkDataJsonSyntax() {
+  const roots = [path.join(root, "data"), path.join(root, "public", "data")];
+  let checked = 0;
+
+  for (const dir of roots) {
+    if (!fs.existsSync(dir)) continue;
+
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (!entry.isFile() || !entry.name.endsWith(".json")) continue;
+
+      const filePath = path.join(dir, entry.name);
+      checked += 1;
+
+      try {
+        JSON.parse(fs.readFileSync(filePath, "utf8"));
+      } catch (error) {
+        // HEMEN DUR. Bozuk veriyle sonraki kontroller anlamsız ve aşağıdaki
+        // ham JSON.parse çağrıları zaten çökerek asıl hatayı gizliyor.
+        console.error(
+          `\nQA DURDU — bozuk JSON: ${path.relative(root, filePath)}\n` +
+          `  Ayrıştırıcı: ${error.message}\n` +
+          `  Geçerli sürüme dönmek için: git checkout HEAD -- ${path.relative(root, filePath)}\n`
+        );
+        process.exit(1);
+      }
+    }
+  }
+
+  expect(checked > 0, "veri dizininde JSON dosyası bulunamadı");
+}
+
+checkDataJsonSyntax();
+checkProviderSecretNaming();
 checkVercelFunctionLimit();
 checkPublicMirrors();
 checkAnalyticsTag();

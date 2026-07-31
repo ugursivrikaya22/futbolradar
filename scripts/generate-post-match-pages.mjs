@@ -21,6 +21,9 @@ const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 const { buildPostMatchIntelligence } = require("../services/postMatchIntelligence.js");
 const { enrichmentSection } = require("../services/postMatchEnrichmentView.js");
+const { isAnalyzableMatch } = require("../services/matchStatus.js");
+const { PROVIDER_MISSING_LABEL, orderForDisplay } = require("../services/postMatchReportStore.js");
+const { isTurkishMatch } = require("../services/turkishTeams.js");
 
 /**
  * Sağlayıcı zenginleştirme deposu — SALT OKUNUR.
@@ -46,9 +49,31 @@ function readEnrichmentStore() {
 const enrichmentStore = readEnrichmentStore();
 
 const fixturePool = curatedMatches();
-const finished = matches
-  .filter((match) => String(match.status || "").toUpperCase() === "FINISHED")
+
+/**
+ * Rapor havuzu kürasyonlu kayıtlar ile sağlayıcı takviminin BİRLEŞİMİ.
+ *
+ * Eskiden yalnızca `data/matches.json` okunuyordu; yalnızca sağlayıcı
+ * takviminde bulunan bitmiş maçlar (bugün Trabzonspor, Galatasaray ve
+ * Çaykur Rizespor'un üç maçı) hiç rapor almıyordu. Tespit de artık
+ * services/matchStatus.js üzerinden: FT/AET/PEN de bitmiş sayılır.
+ */
+const finished = fixturePool
+  .filter(isAnalyzableMatch)
   .sort((left, right) => String(right.kickoff || "").localeCompare(String(left.kickoff || "")));
+
+/** Depodaki analiz kaydı: sayfa, üretilmiş kaydın eksik veri listesini kullanır. */
+const reportStore = (() => {
+  const storePath = path.join(root, "data", "post-match-reports.json");
+  if (!fs.existsSync(storePath)) return new Map();
+  try {
+    const parsed = JSON.parse(fs.readFileSync(storePath, "utf8"));
+    return new Map((parsed.records || []).map((record) => [record.matchId, record]));
+  } catch (error) {
+    console.warn(`[post-match] post-match-reports.json okunamadı: ${error.message}`);
+    return new Map();
+  }
+})();
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -82,7 +107,9 @@ function metricValue(value, metric) {
 }
 
 function noteCard(text) {
-  return `<article class="card data-empty" data-card="empty-state"><strong>Veri bekleniyor</strong><span>${escapeHtml(text)}</span></article>`;
+  // Maç bitti: eksik alan artık "beklenen" değil, sağlayıcının vermediği
+  // veridir. İki durumu aynı cümleye indirmek okuyucuyu yanıltır.
+  return `<article class="card data-empty" data-card="empty-state"><strong>${escapeHtml(PROVIDER_MISSING_LABEL)}</strong><span>${escapeHtml(text)}</span></article>`;
 }
 
 function statsHtml(match) {
@@ -595,22 +622,35 @@ function replaceOrInsert(file, startMarker, endMarker, content, beforeNeedle) {
  * ama düşük olduğu söylenerek.
  */
 function recentReportsBlock(entries) {
-  const recent = entries.slice(0, 4);
+  // ANA SAYFA SIRASI: bitmiş TÜRK takımı maçları önce, sonra en yeni maç.
+  // Sıralama services/postMatchReportStore.js'de tanımlı; analiz sayfası da
+  // aynı işlevi kullanıyor, iki yüzey aynı sırayı gösteriyor.
+  const ordered = orderForDisplay(entries.map((entry) => ({
+    ...entry,
+    turkish: isTurkishMatch(entry.match),
+    kickoff: entry.match.kickoff || entry.match.date || ""
+  })));
+  const recent = ordered.slice(0, 4);
   if (!recent.length) return "";
 
-  const cards = recent.map(({ report, match }) => {
+  const cards = recent.map(({ report, match, turkish }) => {
     const summary = report.sections.summary;
     const line = summary.status === "ready"
       ? summary.headline
       : `${match.homeTeam} - ${match.awayTeam}`;
     const measured = ["momentum", "signals", "statistics"]
       .filter((key) => report.sections[key] && report.sections[key].status === "ready").length;
+    // Skor uydurulmaz: sağlayıcı vermediyse takım adları yazılır.
+    const hasScore = match.score && typeof match.score.home === "number" && typeof match.score.away === "number";
+    const scoreLine = hasScore
+      ? `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`
+      : `${match.homeTeam} - ${match.awayTeam}`;
 
-    return `<a class="home-report-card" href="./${escapeHtml(report.seo.path)}">
+    return `<a class="home-report-card${turkish ? " is-turkish" : ""}" href="./${escapeHtml(report.seo.path)}">
       <span class="home-report-meta">${escapeHtml(match.league)} · ${escapeHtml(formatDate(match.kickoff))}</span>
-      <strong class="home-report-score">${escapeHtml(`${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`)}</strong>
+      <strong class="home-report-score">${escapeHtml(scoreLine)}</strong>
       <p class="home-report-line">${escapeHtml(line)}</p>
-      <span class="home-report-coverage">${escapeHtml(`Veri kapsamı %${report.coverage}`)}${measured ? escapeHtml(` · ${measured}/3 ölçüm hazır`) : ""}</span>
+      <span class="home-report-coverage">${escapeHtml(`Veri kapsamı %${report.coverage}`)}${measured ? escapeHtml(` · ${measured}/3 ölçüm hazır`) : ""}${hasScore ? "" : escapeHtml(` · ${PROVIDER_MISSING_LABEL}`)}</span>
     </a>`;
   }).join("");
 
@@ -699,6 +739,16 @@ const seenPaths = new Map();
 for (const match of finished) {
   const report = buildMatchReport(match, { fixtures: fixturePool });
   if (!report) continue;
+
+  // Ölçülmüş tek bir bölümü olmayan maç için bağımsız sayfa basılmaz:
+  // tamamen "veri sunulmadı" yazan bir URL ne okuyucuya ne aramaya değer
+  // verir. Analiz yine de depoda durur ve maç detay ile analiz
+  // sayfalarında eksik veri açıkça yazılarak gösterilir.
+  const stored = reportStore.get(match.id);
+  if (stored && stored.publishState === "store-only") {
+    console.log(`[post-match] sayfa atlandı (ölçülmüş bölüm yok): ${match.id}`);
+    continue;
+  }
 
   const { title, description, path: relative } = report.seo;
   for (const [label, value, store] of [

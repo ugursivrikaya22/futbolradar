@@ -12,6 +12,32 @@ const {
 const { LIVE_PROVIDER_RESOURCES, hasLiveProviderConfig, getProvider, getProviderChain, apiFootballProvider } = require("../services/providers");
 const { getConfig } = require("../services/providers/footballProvider");
 const { readCachedLeague } = require("../services/leagueCache");
+const { buildPipelineDiagnostics } = require("../services/pipelineDiagnostics");
+const { curatedMatches } = require("../services/providers/mockProvider");
+
+/**
+ * Maç hattının durumu: son senkron, bugünün maçları, canlı sayısı, analiz
+ * bekleyen tamamlanmış maçlar, tamamlanan/kısmi/başarısız analizler ve veri
+ * tazeliği. Sağlayıcı yapılandırması tek başına "hat çalışıyor mu"
+ * sorusunu yanıtlamıyordu.
+ */
+function readReportStore() {
+  try {
+    const store = require("../data/post-match-reports.json");
+    return Array.isArray(store.records) ? store.records : [];
+  } catch (error) {
+    // Depo henüz üretilmemiş olabilir; bu bir hata değil.
+    return [];
+  }
+}
+
+function pipelineSection() {
+  try {
+    return buildPipelineDiagnostics({ matches: curatedMatches(), reports: readReportStore() });
+  } catch (error) {
+    return { error: "pipeline-diagnostics-unavailable", message: String(error.message || error).slice(0, 200) };
+  }
+}
 
 function presentEnvNames(names) {
   return names.filter((name) => String(process.env[name] || "").trim() !== "");
@@ -121,6 +147,7 @@ module.exports = async function handler(req, res) {
   const query = getQuery(req);
   const config = getConfig();
   const diagnostics = buildDiagnostics(config);
+  diagnostics.pipeline = pipelineSection();
 
   // `?probe=api-football` kimliği gerçek istekle sınar. Biçim kontrolü
   // "anahtar geçerli mi" sorusunu cevaplamıyor: doğru biçimde ama süresi

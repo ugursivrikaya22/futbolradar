@@ -181,9 +181,6 @@ async function handleSuperLigFixtures(req, res, query) {
 }
 
 function matchAnalysisResponse(res, statusCode, payload) {
-
- function analysisPriority
-   async function handleMatchAnalyses
   return sendJson(res, statusCode, payload);
 }
 
@@ -257,8 +254,7 @@ module.exports = async function handler(req, res) {
   }
 
   const route = routeName(req);
- const analysisRoutes = ["match-analysis", "analyses", "match-analyses"];
-  setCachePolicy(res, analysisRoutes["match-analysis"]:players);
+  setCachePolicy(res, route === "match-analysis" ? "match-analysis" : "players");
   if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
@@ -274,7 +270,7 @@ module.exports = async function handler(req, res) {
   if (route === "player-rankings") {
     return handlePlayerRankings(req, res, query);
   }
-route === 'analyses' || route === 'match-analyses
+
   if (route === "match-analysis") {
     return handleMatchAnalysis(req, res, query);
   }

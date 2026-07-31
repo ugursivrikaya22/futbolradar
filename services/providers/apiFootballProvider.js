@@ -10,6 +10,8 @@ const {
   withTimeout
 } = require("../../api/_utils");
 const { competitions, matchesCompetition } = require("../competitionCatalog");
+const { canonicalStatus } = require("../matchStatus");
+const { fetchWithCache } = require("../providerCache");
 // Bağımlılığı olmayan bir okuyucu; leagueResolver'ı require etmek sağlayıcı
 // ile resolver arasında döngü yaratırdı.
 const { readCachedLeague } = require("../leagueCache");
@@ -225,7 +227,90 @@ function classifyPayloadError(errors) {
   };
 }
 
+/**
+ * Uç nokta → önbellek kaynağı eşlemesi.
+ *
+ * BİTMİŞ bir maçın dökümü DEĞİŞMEZ: olaylar, kadrolar, istatistikler ve
+ * oyuncu istatistikleri son düdükten sonra sabittir. Bu yüzden fikstür
+ * detay uç noktaları uzun TTL alır; aynı maç aynı koşuda ya da art arda
+ * koşularda ikinci kez sorulmaz.
+ */
+const CACHE_RESOURCE_BY_PATH = Object.freeze({
+  "/fixtures/lineups": "match-detail",
+  "/fixtures/events": "match-detail",
+  "/fixtures/statistics": "match-detail",
+  "/fixtures/players": "match-detail",
+  "/predictions": "match-detail",
+  "/fixtures": "matches",
+  "/standings": "standings",
+  "/players": "players",
+  "/teams": "teams"
+});
+
+/**
+ * Önbellek kaynağını YOL VE PARAMETREden birlikte seçer.
+ *
+ * Canlı skor yoklaması da "/fixtures" yoluna gidiyor (`?live=all`). Yalnızca
+ * yola bakan bir eşleme, canlı sorguya günlük listenin 60 saniyelik TTL'ini
+ * verirdi ve skorlar bir dakikaya kadar bayat kalırdı. Canlı sorgu kendi
+ * kısa TTL'ini (matches-live, 15 sn) alır.
+ */
+function cacheResourceFor(path, params) {
+  if (path === "/fixtures" && params && params.live) {
+    return "matches-live";
+  }
+
+  return CACHE_RESOURCE_BY_PATH[path];
+}
+
+/** Koşu boyunca gerçekten ağa çıkan istek sayısı (önbellek isabetleri hariç). */
+const requestCounter = { total: 0, byPath: Object.create(null), cacheHits: 0 };
+
+function countRequest(path) {
+  requestCounter.total += 1;
+  requestCounter.byPath[path] = (requestCounter.byPath[path] || 0) + 1;
+}
+
+function providerRequestStats() {
+  return {
+    total: requestCounter.total,
+    byPath: { ...requestCounter.byPath },
+    cacheHits: requestCounter.cacheHits
+  };
+}
+
+function resetProviderRequestStats() {
+  requestCounter.total = 0;
+  requestCounter.cacheHits = 0;
+  requestCounter.byPath = Object.create(null);
+}
+
+/**
+ * Önbellekli sağlayıcı çağrısı.
+ *
+ * services/providerCache.js yazılmıştı ama HİÇBİR ÇAĞRI YERİ ONU
+ * KULLANMIYORDU — ölü koddu. TTL, tek uçuş (aynı anahtar için eşzamanlı N
+ * istek tek çağrıya iner) ve hatada bayat servis bu yüzden hiç devreye
+ * girmiyordu; her çağrı doğrudan ağa çıkıyor ve kotayı harcıyordu.
+ */
 async function providerFetch(path, params) {
+  const resource = cacheResourceFor(path, params);
+
+  if (!resource) {
+    return providerFetchUncached(path, params);
+  }
+
+  const result = await fetchWithCache(resource, { path, ...params }, () => providerFetchUncached(path, params));
+
+  if (result.cache === "hit" || result.cache === "coalesced") {
+    requestCounter.cacheHits += 1;
+  }
+
+  return result.data;
+}
+
+async function providerFetchUncached(path, params) {
+  countRequest(path);
   const config = assertConfig();
   const candidates = apiKeyCandidates();
   // Doğrulanmış anahtar varsa yalnızca onu kullan; yoksa adayları sırayla
@@ -412,23 +497,22 @@ function stampProviderData(records, resource, staleAfterMs) {
   }));
 }
 
+/**
+ * Saglayici kisa kodunu kanonik duruma cevirir.
+ *
+ * Eskiden tanimli olmayan HER kod "SCHEDULED" donuyordu: PST (ertelendi),
+ * CANC (iptal), ABD (tatil), SUSP/INT (ara verildi), AWD/WO (hukmen) ve
+ * TBD hepsi "programlandi" goruluyordu. Baslama saati gectigi icin arayuz
+ * bunlari oynanmakta olan mac bandina aliyordu - OYNANMAYAN BIR MAC CANLI
+ * GIBI GORUNUYORDU. Sozluk artik services/matchStatus.js'de tek yerde.
+ */
 function normalizeStatus(status) {
   const short = status && status.short;
-  // Devre arasi ayri bir durum: arayuz "Devre arasi" diyebilmeli. LIVE'a
-  // ezilirse skor tablosunda oynanmayan bir maca dakika bekleniyormus gibi
-  // gorunuyordu. Devre arasi hala "in-play" sayilir (live: true).
-  if (short === "HT" || short === "BT") {
-    return "HALFTIME";
-  }
-  if (["1H", "2H", "ET", "P", "LIVE"].includes(short)) {
-    return "LIVE";
-  }
+  const state = canonicalStatus(short);
 
-  if (["FT", "AET", "PEN"].includes(short)) {
-    return "FINISHED";
-  }
-
-  return "SCHEDULED";
+  // Bilinmeyen kod uydurulmaz: "SCHEDULED" demek yerine kaydin durumu
+  // bilinmiyor olarak tasinir ve arayuz bunu yazar.
+  return state;
 }
 
 function roundNumber(league) {
@@ -930,6 +1014,73 @@ function normalizeFixtureEvents(items) {
   });
 }
 
+/**
+ * Oyuncu istatistiklerini düzleştirir.
+ *
+ * YALNIZCA sağlayıcının ölçtüğü alanlar taşınır. `rating` API-Football'ın
+ * kendi ölçümüdür ve öyle etiketlenir — FutbolRadar bir derece UYDURMAZ,
+ * yalnızca sağlayıcının verdiğini kaynağıyla birlikte aktarır. Sağlayıcı
+ * bir alanı vermediyse alan hiç yazılmaz; sıfır ya da tahmin konmaz.
+ */
+function normalizeFixturePlayers(items) {
+  const rows = [];
+
+  for (const entry of Array.isArray(items) ? items : []) {
+    const team = teamName(entry && entry.team);
+
+    for (const record of (entry && Array.isArray(entry.players) ? entry.players : [])) {
+      const player = record && record.player;
+      const stats = (record && Array.isArray(record.statistics) ? record.statistics[0] : null) || {};
+      const games = stats.games || {};
+
+      const row = {
+        name: (player && player.name) || "",
+        team,
+        providerPlayerId: player && player.id ? String(player.id) : null,
+        source: "api-football"
+      };
+
+      // Number(null) === 0 olduğu için ham Number.isFinite yetmez: sağlayıcının
+      // "ölçmedim" dediği alan (null) sıfır olarak yazılır ve UYDURMA veri
+      // olurdu. Boş değer alanı hiç oluşturmaz.
+      const measured = (value) => {
+        if (value === null || value === undefined || value === "") return null;
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : null;
+      };
+      const assign = (key, value) => {
+        const parsed = measured(value);
+        if (parsed !== null) row[key] = parsed;
+      };
+
+      assign("minutes", games.minutes);
+      if (games.position) row.position = games.position;
+      // Derece SAĞLAYICININ ölçümüdür ve kaynağıyla birlikte taşınır;
+      // FutbolRadar oyuncu derecesi üretmez.
+      const rating = measured(games.rating);
+      if (rating !== null) {
+        row.providerRating = rating;
+        row.ratingSource = "api-football";
+      }
+      assign("goals", stats.goals && stats.goals.total);
+      assign("assists", stats.goals && stats.goals.assists);
+      assign("saves", stats.goals && stats.goals.saves);
+      assign("shots", stats.shots && stats.shots.total);
+      assign("shotsOnTarget", stats.shots && stats.shots.on);
+      assign("passes", stats.passes && stats.passes.total);
+      assign("passAccuracy", stats.passes && stats.passes.accuracy);
+      assign("tackles", stats.tackles && stats.tackles.total);
+      assign("duelsWon", stats.duels && stats.duels.won);
+      assign("yellowCards", stats.cards && stats.cards.yellow);
+      assign("redCards", stats.cards && stats.cards.red);
+
+      if (row.name) rows.push(row);
+    }
+  }
+
+  return rows;
+}
+
 function normalizeFixtureStatistics(items, match) {
   const teams = Array.isArray(items) ? items : [];
   const home = teams.find((item) => normalizeText(teamName(item.team)) === normalizeText(match.homeTeam)) || teams[0];
@@ -1104,15 +1255,26 @@ async function getMatchDetail(query) {
     throw new ProviderError("PROVIDER_NOT_FOUND", "Mac detayi provider tarafinda bulunamadi.");
   }
 
-  const [rawLineups, rawEvents, rawStatistics, predictions] = await Promise.all([
+  // Oyuncu istatistiği BİTMİŞ maçlarda çekilir. Uç nokta zaten vardı ama
+  // buradan hiç çağrılmıyordu: `players` alanı bu yüzden her maçta boştu ve
+  // "öne çıkan oyuncular" yalnızca gol/kart olaylarından türetilebiliyordu.
+  // Devam eden maçta istenmez — sağlayıcı maç bitmeden kısmi/oynak veri
+  // döndürüyor ve her yoklamada bir istek harcanırdı.
+  const finished = ["FT", "AET", "PEN", "FINISHED"].includes(
+    String((match.providerStatus || match.status || "")).toUpperCase()
+  );
+
+  const [rawLineups, rawEvents, rawStatistics, predictions, rawPlayers] = await Promise.all([
     getLineups({ fixtureId }).catch(() => []),
     getFixtureEvents({ fixtureId }).catch(() => []),
     getFixtureStatistics({ fixtureId }).catch(() => []),
-    getPredictions({ fixtureId }).catch(() => [])
+    getPredictions({ fixtureId }).catch(() => []),
+    finished ? getFixturePlayers({ fixtureId }).catch(() => []) : Promise.resolve([])
   ]);
   const lineups = normalizeFixtureLineups(rawLineups);
   const events = normalizeFixtureEvents(rawEvents);
   const statistics = normalizeFixtureStatistics(rawStatistics, match);
+  const players = normalizeFixturePlayers(rawPlayers);
   const analysis = buildLiveMatchAnalysis(match, statistics, events);
 
   return {
@@ -1121,9 +1283,11 @@ async function getMatchDetail(query) {
     lineups,
     events,
     statistics,
+    players,
     prediction: predictions[0] || null,
     analysis,
     source: "api-football",
+    providerUpdatedAt: new Date().toISOString(),
     fetchedAt: new Date().toISOString(),
     staleAfter: new Date(Date.now() + 2 * 60 * 1000).toISOString()
   };
@@ -1300,6 +1464,9 @@ module.exports = {
   getFixtureEvents,
   getFixtureStatistics,
   getFixturePlayers,
+  normalizeFixturePlayers,
+  providerRequestStats,
+  resetProviderRequestStats,
   getFixturesByDate,
   getPredictions,
   getMatchDetail,

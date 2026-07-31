@@ -23,6 +23,12 @@ const { calculateMatchRadar, normalizeText } = require("../services/matchRadarSe
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
 const { getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigFixtureService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
+const {
+  ROTATION_INTERVAL_MS,
+  logFeaturedRotation,
+  selectFeaturedMatches
+} = require("../services/featuredMatchSelector.js");
+const { orderForDisplay } = require("../services/postMatchReportStore.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
 
@@ -261,10 +267,23 @@ function staticFixtureCard(match, meta) {
   </article>`;
 }
 
-/** Hero'daki büyük öne çıkan maç panosunun statik karşılığı. */
+/**
+ * Hero karuselinin statik karşılığı.
+ *
+ * Sıra kuralı istemciyle (app.js: selectFeaturedMatchEntries) aynı serviste
+ * tanımlıdır: canlı Türk takımı maçı ilk karta sabit, sonra bugünün diğer
+ * Türk maçları, sonra büyük kulüplerin canlı maçları. Statik yedek bu
+ * kuralı uygulamazsa, JS çalışana kadar ekranda Türk takımı maçı yerine
+ * rastgele bir hazırlık maçı kalıyordu.
+ *
+ * İşaretleme istemcideki `renderFeaturedCarousel` ile bilerek özdeştir:
+ * JS yüklendiğinde kart yerinden oynamasın, aynı slayt aynı yerde kalsın.
+ * JS hiç çalışmazsa ilk slayt görünür kalır ve sayfa tek kart gösterir.
+ */
 function staticFeaturedFixture() {
   const today = istanbulToday();
-  const list = curatedMatches()
+  const all = curatedMatches();
+  const list = all
     .filter((match) => String(match.kickoff || "").slice(0, 10) >= today)
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)));
 
@@ -272,7 +291,10 @@ function staticFeaturedFixture() {
   const todayList = list.filter((match) => String(match.kickoff || "").slice(0, 10) === today);
   const finishedCount = todayList.filter((match) => String(match.status || "").toUpperCase() === "FINISHED").length;
   const upcomingCount = todayList.length - finishedCount - liveCount;
-  const featured = todayList[0] || list[0] || null;
+  const selections = selectFeaturedMatches(all, { today });
+  logFeaturedRotation("prerender-index", selections);
+  const selection = selections[0] || null;
+  const featured = selection && selection.match;
 
   // "Analizi hazır" istemcide de aynı kuralla sayılır (app.js:
   // matchHasReadyAnalysis): maçın yayımlanabilir bir okuması var mı? Statik
@@ -301,28 +323,179 @@ function staticFeaturedFixture() {
     </div>${quickStats}`;
   }
 
-  const status = String(featured.status || "SCHEDULED").toUpperCase();
-  const hasScore = featured.score && featured.score.home !== null && featured.score.home !== undefined
-    && featured.score.away !== null && featured.score.away !== undefined;
-  const headline = hasScore ? `${featured.score.home} - ${featured.score.away}` : (featured.time || "—");
-  // Skor/saat büyük alanda zaten yazıyor; rozet onu tekrar etmesin.
-  const stateLabel = status === "FINISHED" ? "Maç sonucu" : status === "LIVE" ? "Canlı" : "Başlama saati";
-  const dateLabel = String(featured.kickoff || "").slice(0, 10) === today ? "Bugün" : longDateLabel(featured.kickoff);
-
   const side = (name) => `<div class="featured-fixture-team">
         <span class="fixture-row-fallback" aria-hidden="true">${escapeHtml(fixtureTeamInitials(name))}</span>
         <strong>${escapeHtml(name)}</strong>
       </div>`;
 
-  return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}">
-      <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMarkHtml(featured.league)}${escapeHtml(featured.league || "Maç programı")}</span><span>${escapeHtml(`${dateLabel} · ${featured.venue || "Saha bilgisi bekleniyor"}`)}</span></div>
+  const card = (entry) => {
+    const match = entry.match;
+    const status = String(match.status || "SCHEDULED").toUpperCase();
+    const hasScore = match.score && match.score.home !== null && match.score.home !== undefined
+      && match.score.away !== null && match.score.away !== undefined;
+    const headline = hasScore ? `${match.score.home} - ${match.score.away}` : (match.time || "—");
+    // Skor/saat büyük alanda zaten yazıyor; rozet onu tekrar etmesin.
+    const stateLabel = status === "FINISHED" ? "Maç sonucu" : status === "LIVE" ? "Canlı" : "Başlama saati";
+    const dateLabel = String(match.kickoff || "").slice(0, 10) === today ? "Bugün" : longDateLabel(match.kickoff);
+
+    return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}" data-featured-reason="${escapeHtml(entry.reason)}" data-featured-turkish="${entry.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(entry.reasonLabel)}">
+      <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMarkHtml(match.league)}${escapeHtml(match.league || "Maç programı")}</span><span>${escapeHtml(`${dateLabel} · ${match.venue || "Saha bilgisi bekleniyor"}`)}</span></div>
       <div class="featured-fixture-board">
-        ${side(featured.homeTeam)}
+        ${side(match.homeTeam)}
         <div class="featured-fixture-score"><b>${escapeHtml(headline)}</b><span>${escapeHtml(stateLabel)}</span></div>
-        ${side(featured.awayTeam)}
+        ${side(match.awayTeam)}
       </div>
       <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Analizi İncele</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
+    </div>`;
+  };
+
+  const slides = selections.map((entry, index) => `<div class="featured-carousel-slide${index === 0 ? " is-active" : ""}" data-featured-slide="${index}" data-featured-match="${escapeHtml(String(entry.match.id || ""))}" role="group" aria-roledescription="slayt" aria-label="${index + 1} / ${selections.length}"${index === 0 ? "" : " hidden"}>${card(entry)}</div>`).join("");
+
+  // Tek maç varsa dönecek bir şey yok; gezinme çizilmez.
+  const nav = selections.length < 2 ? "" : `<div class="featured-carousel-nav">
+      <button type="button" class="featured-carousel-arrow" data-featured-prev aria-label="Önceki maç"><span aria-hidden="true">‹</span></button>
+      <div class="featured-carousel-dots" role="tablist" aria-label="Öne çıkan maçlar">${selections.map((entry, index) => `<button type="button" class="featured-carousel-dot${index === 0 ? " is-active" : ""}" data-featured-go="${index}" role="tab" aria-selected="${index === 0 ? "true" : "false"}" aria-label="${escapeHtml(`${entry.match.homeTeam || "?"} - ${entry.match.awayTeam || "?"}`)}"><span aria-hidden="true"></span></button>`).join("")}</div>
+      <button type="button" class="featured-carousel-arrow" data-featured-next aria-label="Sonraki maç"><span aria-hidden="true">›</span></button>
+    </div>`;
+
+  return `<div class="featured-carousel" data-featured-carousel data-featured-interval="${ROTATION_INTERVAL_MS}" data-featured-count="${selections.length}" aria-roledescription="karusel" aria-label="Öne çıkan maçlar">
+      <div class="featured-carousel-viewport">${slides}</div>
+      ${nav}
     </div>${quickStats}`;
+}
+
+/**
+ * MAÇ SONRASI ANALİZ KARTLARI — statik karşılık.
+ *
+ * İşaretleme istemcideki `renderPostMatchCard` ile bilerek özdeş: JS
+ * yüklendiğinde kartlar yerinden oynamasın. Kaynak build sırasında bir kez
+ * üretilen `data/post-match-reports.json`; burada hiçbir analiz yeniden
+ * hesaplanmaz, yalnızca saklanmış kayıt basılır.
+ */
+function postMatchStore() {
+  const storePath = path.join(root, "data", "post-match-reports.json");
+  if (!fs.existsSync(storePath)) return [];
+  try {
+    const parsed = JSON.parse(fs.readFileSync(storePath, "utf8"));
+    return Array.isArray(parsed.records) ? parsed.records : [];
+  } catch (error) {
+    console.warn(`[prerender] post-match-reports.json okunamadı: ${error.message}`);
+    return [];
+  }
+}
+
+function postMatchScoreLine(record) {
+  if (!record.score || typeof record.score.home !== "number" || typeof record.score.away !== "number") {
+    return `${record.homeTeam || "?"} - ${record.awayTeam || "?"}`;
+  }
+  return `${record.homeTeam || "?"} ${record.score.home}-${record.score.away} ${record.awayTeam || "?"}`;
+}
+
+function postMatchDateLabel(value) {
+  const parsed = new Date(`${String(value || "").slice(0, 10)}T00:00:00Z`);
+  if (!value || Number.isNaN(parsed.getTime())) return "";
+  return new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "long", year: "numeric", timeZone: "Europe/Istanbul" }).format(parsed);
+}
+
+const COVERAGE_LABELS = {
+  full: "Tam analiz",
+  partial: "Kısmi analiz",
+  "events-only": "Sadece olaylar",
+  "awaiting-provider": "Sağlayıcı verisi bekleniyor",
+  "api-key-missing": "API anahtarı eksik"
+};
+
+function postMatchCoverageLabel(record) {
+  if (record && record.coverageLabel) return record.coverageLabel;
+  return COVERAGE_LABELS[record && record.coverageGrade] || "Analiz durumu bilinmiyor";
+}
+
+function postMatchSourceLabel(record) {
+  const sources = (record && record.dataSources) || {};
+  const names = [...new Set(Object.values(sources)
+    .filter((entry) => entry && entry.present && entry.source)
+    .map((entry) => entry.source))];
+  return names.length ? `Kaynak: ${names.join(", ")}` : "Kaynak doğrulanmadı";
+}
+
+const POST_MATCH_STATUS_LABELS = {
+  waiting_for_final_data: "Analiz hazırlanıyor",
+  ready_for_analysis: "Analiz sırada",
+  generating: "Analiz üretiliyor",
+  completed: "Analiz tamamlandı",
+  partial_data: "Kısmi veri",
+  failed: "Analiz üretilemedi",
+  retry_scheduled: "Yeniden denenecek"
+};
+
+function postMatchStatusLabel(record) {
+  return POST_MATCH_STATUS_LABELS[record && record.analysisStatus] || "Analiz durumu bilinmiyor";
+}
+
+function postMatchUpdatedLabel(value) {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return `Güncelleme: ${new Intl.DateTimeFormat("tr-TR", {
+    day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
+    timeZone: "Europe/Istanbul"
+  }).format(parsed)} TSİ`;
+}
+
+function postMatchCard(record) {
+  const digest = record.digest || {};
+  const meta = [record.league, postMatchDateLabel(record.date)].filter(Boolean).join(" · ");
+  const finish = digest.finish;
+  const finishNote = finish && finish.type && finish.type !== "regular" ? finish.label : "";
+  const turning = digest.turningPoints || {};
+  const late = digest.lateGame;
+  const players = (digest.keyPlayers || {}).players || [];
+  const missing = Array.isArray(record.missingInputs) ? record.missingInputs : [];
+
+  const momentsHtml = turning.status === "ready" && (turning.moments || []).length
+    ? `<div class="post-match-moments"><span class="post-match-label">Kırılma anları</span><ul>${turning.moments.map((moment) =>
+      `<li${moment.pivotal ? ' class="is-pivotal"' : ""}><b>${escapeHtml(moment.minute)}</b> ${escapeHtml([moment.team, moment.type].filter(Boolean).join(" · "))}${moment.detail ? `<span>${escapeHtml(moment.detail)}</span>` : ""}</li>`).join("")}</ul></div>`
+    : "";
+
+  const lateHtml = late && late.status === "ready" && late.verdict
+    ? `<div class="post-match-late"><span class="post-match-label">Maç sonu (${escapeHtml(String(late.from || 75))}'+)</span><p>${escapeHtml(late.verdict)}</p></div>`
+    : "";
+
+  const playersHtml = players.length
+    ? `<div class="post-match-players"><span class="post-match-label">Öne çıkan oyuncular</span><ul>${players.map((player) =>
+      `<li><b>${escapeHtml(player.name || "")}</b>${player.team ? `<span>${escapeHtml(player.team)}</span>` : ""}${player.contribution ? `<span>${escapeHtml(player.contribution)}</span>` : ""}</li>`).join("")}</ul></div>`
+    : "";
+
+  // Anahtar yoksa eksiklik sağlayıcının değil, kurulumun.
+  const missingHtml = record.apiKeyPresent === false
+    ? `<p class="post-match-missing is-key-missing"><strong>API anahtarı eksik</strong> ${escapeHtml("Sağlayıcıya istek gönderilemiyor; gösterilen veri depoda saklanan son kayıttır ve taze değildir.")}</p>`
+    : (missing.length
+      ? `<p class="post-match-missing"><strong>${escapeHtml(record.providerMissingLabel || "Veri sağlayıcı tarafından sunulmadı")}</strong> ${escapeHtml(missing.map((item) => item.label).join(", "))}</p>`
+      : "");
+
+  return `<article class="post-match-card${record.turkish ? " is-turkish" : ""}" data-card="post-match" data-match="${escapeHtml(record.matchId || "")}">` +
+    `<div class="post-match-head"><span class="post-match-meta">${escapeHtml(meta)}</span>${finishNote ? `<span class="post-match-finish">${escapeHtml(finishNote)}</span>` : ""}<span class="post-match-status is-${escapeHtml(String(record.coverageGrade || "unknown"))}" title="${escapeHtml(String(record.coverageNote || ""))}">${escapeHtml(postMatchCoverageLabel(record))}</span></div>` +
+    `<strong class="post-match-score">${escapeHtml(postMatchScoreLine(record))}</strong>` +
+    (digest.headline ? `<h3>${escapeHtml(digest.headline)}</h3>` : "") +
+    (digest.paragraph ? `<p>${escapeHtml(digest.paragraph)}</p>` : "") +
+    momentsHtml + lateHtml + playersHtml + missingHtml +
+    `<div class="post-match-footer"><span class="post-match-coverage">Veri kapsamı %${escapeHtml(String(record.coveragePercent || 0))} · ${escapeHtml(postMatchSourceLabel(record))}${record.analysisUpdatedAt ? ` · ${escapeHtml(postMatchUpdatedLabel(record.analysisUpdatedAt))}` : ""}</span>` +
+    (record.publishState === "page"
+      ? `<a class="detail-link" href="${escapeHtml(record.reportUrl || "#")}">Tam raporu aç</a>`
+      : `<span class="post-match-note">Analiz hazırlanıyor</span>`) +
+    "</div></article>";
+}
+
+/** Sunum sırası: bitmiş Türk takımı maçları önce, sonra en yeni. */
+function postMatchAnalysisCards(limit) {
+  const ordered = orderForDisplay(postMatchStore());
+  const records = limit ? ordered.slice(0, limit) : ordered;
+
+  if (!records.length) {
+    return `<article class="card data-empty" data-card="empty-state"><strong>Tamamlanan maç analizi yok</strong><span>Bir maç bittiğinde ölçülmüş veriden üretilen analizi burada listelenecek.</span></article>`;
+  }
+
+  return records.map(postMatchCard).join("");
 }
 
 function matchProgramState(variant) {
@@ -690,6 +863,10 @@ writePage("index.html", {
   "player-signals": playerSignalsSlot(),
   "news-preview": newsCards(3),
   "analysis-preview": analysisCards()
+}, fixtureFreshness);
+
+writePage("analizler.html", {
+  "post-match-analyses": postMatchAnalysisCards()
 }, fixtureFreshness);
 
 writePage("haberler.html", {

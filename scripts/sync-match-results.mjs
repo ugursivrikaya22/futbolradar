@@ -59,6 +59,13 @@ async function main() {
   const actionable = targets.filter((entry) => !entry.skipped).slice(0, MAX_TARGETS_PER_RUN);
 
   console.log(`Aday maç: ${targets.length} (sorgulanabilir ${actionable.length}, providerId eksik ${withoutId.length})`);
+  // Kademe dağılımı: hangi maçların neden sorulduğu tek bakışta görünür.
+  if (targets.tierCounts) {
+    console.log(`  kademe dağılımı: ${JSON.stringify(targets.tierCounts)}${targets.deferred ? ` · ${targets.deferred} maç kota sınırı nedeniyle ertelendi` : ""}`);
+  }
+  // Aynı fikstürün ikinci kaydı sessizce yok sayılmaz.
+  (targets.duplicates || []).forEach((entry) =>
+    console.log(`  ~ yinelenen fikstür elendi: ${entry.dropped} (korunan: ${entry.kept})`));
   withoutId.forEach((entry) => console.log(`  - atlandı: ${entry.match.id} (${entry.skipped}; ${entry.reason})`));
 
   if (!apiFootballProvider.hasConfig()) {
@@ -72,6 +79,7 @@ async function main() {
 
   const timestamp = new Date(now).toISOString();
   let updated = 0;
+  let touched = 0;
   const nextMatches = [...matches];
 
   for (const entry of actionable) {
@@ -97,17 +105,26 @@ async function main() {
 
     const index = nextMatches.findIndex((row) => row.id === match.id);
     nextMatches[index] = merged.record;
+
+    if (merged.touchedOnly) {
+      // Yeni veri gelmedi ama senkron başarılı: zaman damgası yazılır ki
+      // tazeleme politikası aynı maçı bir sonraki koşuda tekrar sormasın.
+      touched += 1;
+      console.log(`  = ${match.id} (${reason}): yeni veri yok, senkron zamanı güncellendi`);
+      continue;
+    }
+
     updated += 1;
     console.log(`  + ${match.id} (${reason}) -> ${merged.changes.join(", ")}`);
   }
 
-  if (!updated) {
+  if (!updated && !touched) {
     console.log("Uygulanacak değişiklik yok.");
     return;
   }
 
   if (!args.apply) {
-    console.log(`\n${updated} maç güncellenecek. Yazmak için --apply ile çalıştır.`);
+    console.log(`\n${updated} maç güncellenecek (${touched} kayıt yalnızca senkron zamanı). Yazmak için --apply ile çalıştır.`);
     return;
   }
 
@@ -115,7 +132,7 @@ async function main() {
   if (fs.existsSync(path.dirname(PUBLIC_MATCHES_PATH))) {
     atomicWrite(PUBLIC_MATCHES_PATH, nextMatches);
   }
-  console.log(`\n${updated} maç güncellendi ve data/matches.json yazıldı.`);
+  console.log(`\n${updated} maç güncellendi, ${touched} kaydın senkron zamanı tazelendi; data/matches.json yazıldı.`);
 }
 
 main().catch((error) => {
