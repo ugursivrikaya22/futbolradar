@@ -24,6 +24,7 @@ const { enrichmentSection } = require("../services/postMatchEnrichmentView.js");
 const { isAnalyzableMatch } = require("../services/matchStatus.js");
 const { PROVIDER_MISSING_LABEL, orderForDisplay } = require("../services/postMatchReportStore.js");
 const { isTurkishMatch } = require("../services/turkishTeams.js");
+const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
 
 /**
  * Sağlayıcı zenginleştirme deposu — SALT OKUNUR.
@@ -444,6 +445,16 @@ function pageHtml(report, match) {
   const enrichmentHtml = enrichmentSection(enrichmentStore[match.id] || null);
   const enrichmentBlock = enrichmentHtml ? `\n\n      ${enrichmentHtml}` : "";
 
+  // PAYLAŞIM METNİ. Yalnızca doğrulanmış alanlardan kurulur
+  // (services/shareText.js): skor kayıtta varsa yazılır, analiz başlığı
+  // üretilmişse eklenir, ikisi de yoksa cümle eşleşmeyle yetinir. Metin
+  // kurulamıyorsa blok hiç basılmaz.
+  const shareHtml = renderShareBlock(
+    buildMatchShareText(match, { path: seo.path, origin: domain }),
+    escapeHtml,
+    { heading: "Bu raporu paylaş" }
+  );
+
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -524,6 +535,7 @@ function pageHtml(report, match) {
       </section>
 
       ${kpiSection(match)}
+      ${shareHtml}
 
       <section class="post-match-section" aria-labelledby="rapor-ozet">
         <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-ozet">Maç özeti</h2><p>Sonuç, goller ve karşılaşmanın künyesi.</p></div></div>

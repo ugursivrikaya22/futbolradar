@@ -108,7 +108,12 @@ const appFeatureMarkers = [
   "player-signal-actions",
   "initHomeSearch",
   "data-home-search",
-  "initStatisticsHub"
+  "initStatisticsHub",
+  "buildDailyHeadlines",
+  "renderDailyHeadlines",
+  "visibleQuickStats",
+  "applyEmptyHide",
+  "initShareBlocks"
 ];
 const cssFeatureMarkers = [
   "scouting-summary-grid",
@@ -152,6 +157,13 @@ const cssFeatureMarkers = [
   "traffic-player-card",
   "traffic-mini-link",
   "traffic-fixture-note",
+  "hero-value-prop",
+  "daily-headlines",
+  "daily-headline-kicker",
+  "daily-headline-hook",
+  "share-block",
+  "share-targets",
+  "share-copy",
   "home-search-section",
   "home-search-card",
   "home-search-results",
@@ -946,6 +958,48 @@ async function checkMatchAnalysisApi() {
 }
 
 /**
+ * BOŞ BÖLÜM GİZLİ KALIR.
+ *
+ * `data-empty-hide` taşıyan bir bölüm, sözleşmesi gereği içeriği boşken
+ * `hidden` olmalı. Bu, "zayıfsa gizle" kuralının HTML'e düşen hâli:
+ * "Bugün öne çıkan üç başlık" başlığını yazıp altını boş bırakmak, bölümü
+ * hiç göstermemekten kötüdür — okuyucu sitenin bir şeyi beceremediğini görür.
+ *
+ * Kural üç yerde uygulanıyor (ön derleme `applyEmptyHide`, istemci
+ * `applyEmptyHide`, elle yazılmış işaretleme). Bu kapı üçünün de sonucunu
+ * aynı yerde sınar: dosyada ne varsa o doğru olmalı.
+ */
+function checkEmptyHideSections() {
+  const pages = walk(root, (full) => full.endsWith(".html") && !full.includes(`${path.sep}public${path.sep}`));
+
+  for (const file of pages) {
+    const html = fs.readFileSync(file, "utf8");
+    if (!html.includes("data-empty-hide")) continue;
+
+    const rel = path.relative(root, file);
+    const expression = /<section\b[^>]*\bdata-empty-hide\b[^>]*>([\s\S]*?)<\/section>/g;
+    let match;
+
+    while ((match = expression.exec(html)) !== null) {
+      const openTag = match[0].slice(0, match[0].indexOf(">") + 1);
+      const isHidden = /\shidden(?=[\s>])/.test(openTag);
+
+      // İçerik: prerender işaretleri arasında kalan kısım. İşaret yoksa
+      // bölümün hedef kabındaki her şey sayılır.
+      const slot = match[1].match(/<!-- prerender:[a-z-]+:start -->([\s\S]*?)<!-- prerender:[a-z-]+:end -->/);
+      if (!slot) continue;
+
+      const hasContent = slot[1].trim() !== "";
+
+      expect(
+        hasContent !== isHidden,
+        `${rel}: data-empty-hide bölümü ${hasContent ? "dolu ama gizli" : "boş ama görünür"}`
+      );
+    }
+  }
+}
+
+/**
  * SAĞLAYICI SIR ADLARI TEK STANDARTTA KALSIN.
  *
  * SORUN. Kod beş ayrı yazım varyantını kabul ediyor
@@ -1077,6 +1131,7 @@ function checkDataJsonSyntax() {
 
 checkDataJsonSyntax();
 checkProviderSecretNaming();
+checkEmptyHideSections();
 checkVercelFunctionLimit();
 checkPublicMirrors();
 checkAnalyticsTag();

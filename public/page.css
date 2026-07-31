@@ -12335,10 +12335,185 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   line-height: 1.05;
 }
 
+/* Değer önermesi: başlıktan hemen sonra gelen tek cümle. Gövde metninden
+   ayrılsın diye daha büyük ve tam kontrastta; başlıkla yarışmasın diye
+   ondan belirgin biçimde küçük. */
+.hero-value-prop {
+  max-width: 42ch;
+  margin-top: var(--sp-3);
+  color: var(--text);
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
 .hero-copy {
   max-width: 46ch;
   color: var(--text-soft);
   font-size: var(--fs-md);
+}
+
+/* ----------------------------------------------------------------------------
+   GÜNÜN ÜÇ BAŞLIĞI
+   Sıralı, tıklanabilir üç satır. Numara sırayı görünür kılar: bunlar eşit
+   ağırlıkta kartlar değil, önem sırasına dizilmiş başlıklardır.
+   -------------------------------------------------------------------------- */
+.daily-headlines {
+  display: grid;
+  gap: var(--sp-3);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.daily-headline {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--sp-3);
+  align-items: start;
+  padding: clamp(14px, 1.8vw, 18px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: var(--glass);
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.daily-headline:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-strong);
+}
+
+.daily-headline-index {
+  font-size: var(--fs-lg);
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.daily-headline.is-live .daily-headline-index {
+  color: var(--live);
+}
+
+.daily-headline-body {
+  display: grid;
+  gap: 6px;
+}
+
+.daily-headline-kicker {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.daily-headline.is-live .daily-headline-kicker {
+  color: var(--live);
+}
+
+.daily-headline-title {
+  font-size: var(--fs-md);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.daily-headline-score {
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Kanca: tıklama sebebi. Uzun analiz cümleleri satırı şişirmesin diye
+   üç satırda kesiliyor. */
+.daily-headline-hook {
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ----------------------------------------------------------------------------
+   PAYLAŞIM BLOĞU
+   Metin ekranda göründüğü gibi kopyalanır; kutuda gösterilmeyen bir cümle
+   panoya yazılmaz.
+   -------------------------------------------------------------------------- */
+.share-block {
+  display: grid;
+  gap: var(--sp-2);
+  margin-top: var(--sp-4);
+  padding: clamp(14px, 1.8vw, 18px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: var(--glass);
+}
+
+.share-block-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.share-block-title {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.share-block-text {
+  color: var(--text);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+.share-copy {
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm, 10px);
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.share-copy:hover {
+  border-color: var(--line-strong);
+}
+
+.share-copy[data-copied="true"] {
+  color: var(--live);
+  border-color: var(--live);
+}
+
+.share-targets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.share-target {
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm, 10px);
+  padding: 6px 12px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  transition: border-color var(--dur) var(--ease);
+}
+
+.share-target:hover {
+  border-color: var(--line-strong);
 }
 
 /* Öne çıkan maç paneli: büyük skor/saat, takım logoları, hızlı istatistikler. */

@@ -3111,6 +3111,290 @@
     return (match.events || []).length > 0 || (match.statistics || []).length > 0;
   }
 
+  // daily-headlines:start
+  // Bu blok scripts/test-home-signals.mjs tarafından ayıklanıp
+  // services/dailyHeadlines.js ve services/homeQuickStats.js ile aynı
+  // girdilerde çalıştırılır; iki taraf ayrışırsa test kırılır. İşaret
+  // yorumlarını silme.
+  var DAILY_HEADLINE_LIMIT = 3;
+  var DAILY_HEADLINE_RANKS = {
+    LIVE_TURKISH: 0, LIVE_OTHER: 1,
+    FINISHED_TURKISH: 2, FINISHED_OTHER: 3,
+    UPCOMING_TURKISH: 4, UPCOMING_OTHER: 5
+  };
+
+  /**
+   * SAYAÇ ŞERİDİ — sıfır olan sayaç çizilmez.
+   *
+   * Kural services/homeQuickStats.js ile aynı. "Analizi hazır 0", sayfanın
+   * asıl vaadinin yokluğunu rakamla ilan ediyordu; sıfır bir bilgi değil,
+   * bir boşluktur.
+   */
+  var QUICK_STAT_DEFS = [
+    { key: "live", label: "Canlı", href: "./canli-skor.html", modifier: "is-live", valueClass: "live-number" },
+    { key: "upcoming", label: "Başlayacak", href: "./bugunun-maclari.html?status=upcoming", modifier: "", valueClass: "" },
+    { key: "finished", label: "Biten", href: "./bugunun-maclari.html?status=finished", modifier: "", valueClass: "" },
+    { key: "analysisReady", label: "Analizi hazır", href: "./mac-merkezi.html", modifier: "is-ready", valueClass: "" },
+    { key: "total", label: "Toplam", href: "./bugunun-maclari.html", modifier: "", valueClass: "" }
+  ];
+
+  function visibleQuickStats(counts) {
+    return QUICK_STAT_DEFS.map(function (def) {
+      var raw = Number(counts && counts[def.key]);
+      var value = isFinite(raw) && raw > 0 ? Math.floor(raw) : 0;
+      return {
+        key: def.key, label: def.label, href: def.href,
+        modifier: def.modifier, valueClass: def.valueClass, value: value
+      };
+    }).filter(function (stat) { return stat.value > 0; });
+  }
+
+  function headlineText(value) {
+    return String(value === null || value === undefined ? "" : value).trim();
+  }
+
+  function headlineFirstSentence(value, limit) {
+    var cap = limit || 160;
+    var raw = headlineText(value);
+    if (!raw) return "";
+    var match = raw.match(/^[\s\S]*?[.!?](?=\s|$)/);
+    var sentence = headlineText(match ? match[0] : raw);
+    if (sentence.length <= cap) return sentence;
+    return sentence.slice(0, cap - 1).replace(/\s+$/, "") + "…";
+  }
+
+  function headlineScoreOf(match) {
+    var score = match && match.score;
+    if (!score || typeof score !== "object") return null;
+    var home = Number(score.home);
+    var away = Number(score.away);
+    if (!isFinite(home) || !isFinite(away)) return null;
+    return { home: home, away: away };
+  }
+
+  function headlineReportFor(match, reports) {
+    if (!Array.isArray(reports) || !match) return null;
+    var id = headlineText(match.id);
+    if (!id) return null;
+    for (var index = 0; index < reports.length; index += 1) {
+      if (headlineText(reports[index] && reports[index].matchId) === id) return reports[index];
+    }
+    return null;
+  }
+
+  function headlineHrefFor(match, reports) {
+    var report = headlineReportFor(match, reports);
+    var reportPath = report && (headlineText(report.reportUrl) || headlineText(report.seo && report.seo.path));
+    if (reportPath) return "./" + reportPath.replace(/^\.?\//, "");
+    var page = headlineText(match && match.analysisPage);
+    if (page) return "./" + page.replace(/^\.?\//, "");
+    if (isLiveMatch(match)) return "./canli-skor.html";
+    return "./bugunun-maclari.html";
+  }
+
+  function headlinePairLabel(match) {
+    var home = headlineText(match && match.homeTeam);
+    var away = headlineText(match && match.awayTeam);
+    if (!home || !away) return "";
+    return home + " – " + away;
+  }
+
+  function liveHeadlineOf(match, reports) {
+    var score = headlineScoreOf(match);
+    var pair = headlinePairLabel(match);
+    if (!pair) return null;
+
+    var title = score
+      ? headlineText(match.homeTeam) + " " + score.home + "-" + score.away + " " + headlineText(match.awayTeam)
+      : pair;
+
+    var halftime = "";
+    if (match.score && isFinite(Number(match.score.halftimeHome)) && isFinite(Number(match.score.halftimeAway))) {
+      halftime = "İlk yarı " + Number(match.score.halftimeHome) + "-" + Number(match.score.halftimeAway) + ".";
+    }
+    var venue = headlineText(match.venue);
+    var league = headlineText(match.league);
+    var place = league && venue ? league + " · " + venue : (league || venue);
+
+    var hook = headlineFirstSentence(match.summary) || halftime || place;
+    if (!hook) return null;
+
+    return {
+      key: "live:" + headlineText(match.id),
+      rank: isTurkishMatch(match) ? DAILY_HEADLINE_RANKS.LIVE_TURKISH : DAILY_HEADLINE_RANKS.LIVE_OTHER,
+      kicker: "Canlı", state: "live", title: title, subtitle: "", hook: hook,
+      href: headlineHrefFor(match, reports), matchId: headlineText(match.id)
+    };
+  }
+
+  function finishedHeadlineOf(match, reports) {
+    var score = headlineScoreOf(match);
+    var pair = headlinePairLabel(match);
+    if (!pair) return null;
+
+    var analysis = (match && match.analysis) || {};
+    var scoreLine = score
+      ? headlineText(match.homeTeam) + " " + score.home + "-" + score.away + " " + headlineText(match.awayTeam)
+      : pair;
+    var analysisHeadline = headlineText(analysis.headline);
+    var report = headlineReportFor(match, reports);
+    var keyPoint = Array.isArray(analysis.keyPoints) ? headlineText(analysis.keyPoints[0]) : "";
+
+    var hook = headlineFirstSentence(keyPoint)
+      || headlineFirstSentence(analysis.lead)
+      || headlineFirstSentence(match.summary)
+      || headlineFirstSentence(report && report.digest);
+    if (!hook) return null;
+
+    return {
+      key: "finished:" + headlineText(match.id),
+      rank: isTurkishMatch(match) ? DAILY_HEADLINE_RANKS.FINISHED_TURKISH : DAILY_HEADLINE_RANKS.FINISHED_OTHER,
+      kicker: analysisHeadline ? "Maç sonu analizi" : "Maç sonucu",
+      state: "finished",
+      title: analysisHeadline || scoreLine,
+      subtitle: analysisHeadline && score ? scoreLine : "",
+      hook: hook,
+      href: headlineHrefFor(match, reports), matchId: headlineText(match.id)
+    };
+  }
+
+  function upcomingHeadlineOf(match, reports) {
+    var pair = headlinePairLabel(match);
+    if (!pair) return null;
+
+    var time = headlineText(match.time);
+    var venue = headlineText(match.venue);
+    var stage = headlineText(match.stage);
+    var league = headlineText(match.league);
+
+    var parts = [];
+    if (time) parts.push(time + " TSİ");
+    if (stage) parts.push(stage);
+    else if (league) parts.push(league);
+    if (venue) parts.push(venue);
+
+    var hook = parts.join(" · ");
+    if (!hook) return null;
+
+    return {
+      key: "upcoming:" + headlineText(match.id),
+      rank: isTurkishMatch(match) ? DAILY_HEADLINE_RANKS.UPCOMING_TURKISH : DAILY_HEADLINE_RANKS.UPCOMING_OTHER,
+      kicker: "Bugün", state: "upcoming", title: pair, subtitle: "", hook: hook,
+      href: headlineHrefFor(match, reports), matchId: headlineText(match.id)
+    };
+  }
+
+  function headlineIsOnDay(match, day) {
+    if (!day) return true;
+    var kickoff = headlineText(match && (match.kickoff || match.date));
+    return kickoff.slice(0, 10) === day;
+  }
+
+  /**
+   * GÜNÜN ÜÇ BAŞLIĞI — kural services/dailyHeadlines.js ile aynı.
+   *
+   * Kancası olmayan aday DÜŞER: "analiz yakında" gibi içi boş bir satır
+   * üretmek yerine başlık hiç çizilmez. Aday yoksa bölüm gizlenir.
+   */
+  function buildDailyHeadlines(matches, options) {
+    var settings = options || {};
+    var list = Array.isArray(matches) ? matches : [];
+    var reports = Array.isArray(settings.reports) ? settings.reports : [];
+    var day = headlineText(settings.today);
+    var limit = isFinite(settings.limit) ? Math.max(0, settings.limit) : DAILY_HEADLINE_LIMIT;
+    var candidates = [];
+
+    list.forEach(function (match) {
+      if (!match || typeof match !== "object") return;
+
+      if (isLiveMatch(match)) {
+        var live = liveHeadlineOf(match, reports);
+        if (live) candidates.push(live);
+        return;
+      }
+
+      if (isFinishedMatch(match)) {
+        if (!headlineIsOnDay(match, day)) return;
+        var finished = finishedHeadlineOf(match, reports);
+        if (finished) candidates.push(finished);
+        return;
+      }
+
+      if (!headlineIsOnDay(match, day)) return;
+      var upcoming = upcomingHeadlineOf(match, reports);
+      if (upcoming) candidates.push(upcoming);
+    });
+
+    candidates.sort(function (left, right) { return left.rank - right.rank; });
+
+    var seen = {};
+    var unique = [];
+    candidates.forEach(function (headline) {
+      var id = headline.matchId || headline.key;
+      if (seen[id]) return;
+      seen[id] = true;
+      unique.push(headline);
+    });
+
+    return unique.slice(0, limit);
+  }
+  // daily-headlines:end
+
+  function renderQuickStats(counts) {
+    var stats = visibleQuickStats(counts);
+    if (!stats.length) return "";
+
+    return '<div class="quick-stats" aria-label="Bugünün maç özeti">' +
+      stats.map(function (stat) {
+        return '<a class="quick-stat' + (stat.modifier ? " " + stat.modifier : "") + '" href="' + stat.href + '">' +
+          "<span>" + escapeHtml(stat.label) + "</span>" +
+          "<b" + (stat.valueClass ? ' class="' + stat.valueClass + '"' : "") + ">" + stat.value + "</b></a>";
+      }).join("") +
+      "</div>";
+  }
+
+  function renderDailyHeadlines(headlines) {
+    if (!Array.isArray(headlines) || !headlines.length) return "";
+
+    return headlines.map(function (headline, index) {
+      return '<a class="daily-headline' + (headline.state === "live" ? " is-live" : "") + '" href="' +
+        escapeHtml(headline.href) + '" data-headline-rank="' + (index + 1) + '" data-headline-match="' +
+        escapeHtml(headline.matchId) + '" data-headline-state="' + escapeHtml(headline.state) + '">' +
+        '<span class="daily-headline-index" aria-hidden="true">' + (index + 1) + "</span>" +
+        '<span class="daily-headline-body">' +
+        '<span class="daily-headline-kicker">' + escapeHtml(headline.kicker) + "</span>" +
+        '<strong class="daily-headline-title">' + escapeHtml(headline.title) + "</strong>" +
+        (headline.subtitle ? '<span class="daily-headline-score">' + escapeHtml(headline.subtitle) + "</span>" : "") +
+        '<span class="daily-headline-hook">' + escapeHtml(headline.hook) + "</span>" +
+        "</span></a>";
+    }).join("");
+  }
+
+  /**
+   * Günün başlıkları bölümü. Aday yoksa BOŞ DİZE döner ve bölüm gizlenir
+   * (`data-empty-hide`). "Bugün öne çıkan üç başlık" yazıp altını boş
+   * bırakmak, bölümü hiç göstermemekten kötüdür.
+   */
+  function renderDailyHeadlinesSection(matches) {
+    return renderDailyHeadlines(buildDailyHeadlines(matches, {
+      today: todayInIstanbul(),
+      reports: latestPostMatchReports
+    }));
+  }
+
+  /**
+   * Boş bölümü gizle, dolu bölümü göster.
+   *
+   * Bölüm `data-empty-hide` taşıyorsa görünürlüğü içeriğine bağlıdır.
+   * Taşımıyorsa hiçbir şey yapılmaz — mevcut bölümlerin davranışı değişmesin.
+   */
+  function applyEmptyHide(target, hasContent) {
+    if (!target) return;
+    var section = target.closest ? target.closest("[data-empty-hide]") : null;
+    if (!section) return;
+    section.hidden = !hasContent;
+  }
+
   function renderFeaturedMatch(matches) {
     var list = Array.isArray(matches) ? matches.slice() : [];
     var liveCount = list.filter(isLiveMatch).length;
@@ -3147,14 +3431,14 @@
     // veya bittiğinde analiz durumu da değişir.
     var analysisReadyCount = list.filter(matchHasReadyAnalysis).length;
 
-    var quickStats =
-      '<div class="quick-stats" aria-label="Bugünün maç özeti">' +
-      '<a class="quick-stat' + (liveCount ? " is-live" : "") + '" href="./canli-skor.html"><span>Canlı</span><b class="live-number">' + liveCount + "</b></a>" +
-      '<a class="quick-stat" href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>' + upcomingCount + "</b></a>" +
-      '<a class="quick-stat" href="./bugunun-maclari.html?status=finished"><span>Biten</span><b>' + finishedCount + "</b></a>" +
-      '<a class="quick-stat' + (analysisReadyCount ? " is-ready" : "") + '" href="./mac-merkezi.html"><span>Analizi hazır</span><b>' + analysisReadyCount + "</b></a>" +
-      '<a class="quick-stat" href="./bugunun-maclari.html"><span>Toplam</span><b>' + list.length + "</b></a>" +
-      "</div>";
+    // Sıfır olan sayaç çizilmez; hepsi sıfırsa şerit hiç basılmaz.
+    var quickStats = renderQuickStats({
+      live: liveCount,
+      upcoming: upcomingCount,
+      finished: finishedCount,
+      analysisReady: analysisReadyCount,
+      total: list.length
+    });
 
     if (!featured) {
       return (
@@ -3640,6 +3924,7 @@
   // dondurulmamalı, skor ve analiz durumu değiştikçe güncellenmelidir.
   var MATCH_SECTION_BINDINGS = [
     { selector: "featured-match", renderer: renderFeaturedMatch },
+    { selector: "daily-headlines", renderer: renderDailyHeadlinesSection },
     { selector: "today-matches", renderer: renderTodayMatchesPreview },
     { selector: "matches-page", renderer: renderMatchesPageSection },
     { selector: "live-score", renderer: renderLiveScoreSection },
@@ -3654,6 +3939,12 @@
   // initMatchCenterIntelligence tarafından doldurulur; yoklama sırasında
   // analiz listesini yeniden çekmemek için son bilinen dizin saklanır.
   var latestAnalysesIndex = buildAnalysesIndex([]);
+
+  // Günün başlıkları, biten maçın KALICI rapor sayfasına bağlanabilmek için
+  // rapor deposunu okur. Depo gelmeden de başlık üretilir; yalnızca bağlantı
+  // maç listesi sayfasına düşer. Boş dizi güvenli varsayılan: bağlantı
+  // uydurulmaz.
+  var latestPostMatchReports = [];
 
   // Canlı yoklama API-Football'ın gerçek zamanlı uç noktasını kullanır
   // (/api/matches?live=all). Bu uç nokta YALNIZCA oynanmakta olan maçları
@@ -3718,7 +4009,14 @@
       activeBindings.forEach(function (binding) {
         var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
         var html = binding.renderer(matches);
-        if (target && html) {
+        if (!target) return;
+
+        // `data-empty-hide` taşıyan bölüm içeriğiyle birlikte görünür ya da
+        // gizlenir: canlı maç bittiğinde başlık kalmayabilir ve o zaman
+        // bölüm başlığıyla birlikte kapanmalı.
+        applyEmptyHide(target, Boolean(html));
+
+        if (html) {
           setContent(target, html);
         }
       });
@@ -6522,6 +6820,57 @@
         target.innerHTML = staticFallback;
         target.dataset.state = "fallback";
       });
+  }
+
+  /**
+   * PAYLAŞIM BLOĞU — kopyalanan metin ekrandakiyle birebir aynı.
+   *
+   * Kopyalanacak dize `data-share-text` içinde durur ve sunucu tarafında
+   * services/shareText.js ile üretilir. İstemci burada metin KURMUYOR:
+   * kurulsaydı, sayfada görünen cümleyle panoya giden cümle ayrışabilirdi
+   * ve paylaşılan metin geri alınamaz.
+   */
+  function initShareBlocks() {
+    document.addEventListener("click", function (event) {
+      var button = event.target.closest("[data-share-copy]");
+      if (!button) return;
+
+      var block = button.closest("[data-share-block]");
+      var text = block ? block.getAttribute("data-share-text") : "";
+      if (!text) return;
+
+      function confirmCopy() {
+        var previous = button.textContent;
+        button.textContent = "Kopyalandı";
+        button.setAttribute("data-copied", "true");
+        window.setTimeout(function () {
+          button.textContent = previous;
+          button.removeAttribute("data-copied");
+        }, 1600);
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(confirmCopy).catch(function () {});
+        return;
+      }
+
+      // Pano API'si yoksa (eski tarayıcı, güvensiz bağlam) metin seçilir;
+      // kullanıcı kendisi kopyalayabilir. Sessizce hiçbir şey yapmamak,
+      // düğmenin bozuk görünmesi demek olurdu.
+      var field = document.createElement("textarea");
+      field.value = text;
+      field.setAttribute("readonly", "readonly");
+      field.style.position = "fixed";
+      field.style.opacity = "0";
+      document.body.appendChild(field);
+      field.select();
+      try {
+        if (document.execCommand("copy")) confirmCopy();
+      } catch (error) {
+        // Kopyalanamadı; metin zaten ekranda görünüyor.
+      }
+      document.body.removeChild(field);
+    });
   }
 
   function initPlayerSharing() {
@@ -10164,6 +10513,7 @@
     initFeaturedCarousel(document);
     initHomeSearch();
     initPlayerSharing();
+    initShareBlocks();
     initAnalytics();
     initCompetitionFilters();
     initMatchExplorer();
@@ -10189,6 +10539,33 @@
         renderFeaturedMatch,
         "Radar maçı yüklenemedi"
       );
+
+      // GÜNÜN ÜÇ BAŞLIĞI. Rapor deposu başlıklardan ÖNCE beklenir: kalıcı
+      // rapor sayfası varken maç listesine bağlanmak, okuyucuyu tıkladığı
+      // analizden uzağa götürürdü. Depo alınamazsa başlıklar yine çizilir,
+      // yalnızca bağlantı listeye düşer.
+      var headlinesTarget = document.querySelector('[data-api-target="daily-headlines"]');
+      if (headlinesTarget) {
+        loadData("postMatchReports")
+          .then(function (records) {
+            latestPostMatchReports = Array.isArray(records) ? records : [];
+          })
+          .catch(function () {
+            latestPostMatchReports = [];
+          })
+          .then(function () {
+            return loadData("matches");
+          })
+          .then(function (matches) {
+            var html = renderDailyHeadlinesSection(Array.isArray(matches) ? matches : []);
+            applyEmptyHide(headlinesTarget, Boolean(html));
+            if (html) setContent(headlinesTarget, html);
+          })
+          .catch(function () {
+            // Başlık üretilemediyse statik yedek yerinde kalır; bölüm
+            // `hidden` başladığı için boş bir başlık şeridi görünmez.
+          });
+      }
 
       renderInto(
         document.querySelector('[data-api-target="today-matches"]'),
