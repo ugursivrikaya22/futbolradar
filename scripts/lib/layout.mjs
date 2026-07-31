@@ -143,7 +143,26 @@ export function newsTicker(options = {}) {
     const external = /^https?:/i.test(href);
     const rel = external ? ' target="_blank" rel="noopener noreferrer"' : "";
     const label = item.label ? `<span class="news-ticker-tag">${escapeHtml(item.label)}</span>` : "";
-    return `<a class="news-ticker-item" href="${escapeHtml(href)}"${rel}>${label}<span>${escapeHtml(item.text)}</span></a>`;
+
+    // GÜVEN ROZETİNİ ŞABLON ÇİZER, EDİTÖR DEĞİL.
+    //
+    // Rozet `confidence` alanından üretiliyor; metne elle yazılmıyor. Bu
+    // bilinçli: editörün rozeti "unutması" mümkün olmamalı. Kesinleşmemiş
+    // bir iddia, çekincesi olmadan banda giremez.
+    //
+    // `confirmed` öğelerde rozet yok — gösterilecek bir çekince olmadığı
+    // için. Rozetin varlığı bu yüzden anlamlı bir sinyal.
+    const confidence = item.confidenceBadge
+      ? `<span class="news-ticker-confidence is-${escapeHtml(item.confidence || "rumour")}">${escapeHtml(item.confidenceBadge)}</span>`
+      : "";
+
+    // Ekran okuyucu için kaynak ve çekince metne katılıyor; görsel rozet
+    // tek başına erişilebilir bir işaret değil.
+    const aria = item.confidenceBadge
+      ? ` aria-label="${escapeHtml(`${item.confidenceBadge}: ${item.text}${item.sourceName ? ` — kaynak: ${item.sourceName}` : ""}`)}"`
+      : "";
+
+    return `<a class="news-ticker-item" href="${escapeHtml(href)}"${rel}${aria}>${label}${confidence}<span>${escapeHtml(item.text)}</span></a>`;
   };
 
   const track = items.map(renderItem).join('<span class="news-ticker-sep" aria-hidden="true"></span>');

@@ -12250,6 +12250,39 @@ body .container {
   font-weight: 750;
 }
 
+/* GÜVEN ROZETİ — kesinleşmemiş bilgiye görsel çekince.
+   Kategori etiketinden (yeşil, nötr) belirgin biçimde ayrışmalı ki okuyucu
+   iki rozeti karıştırmasın: biri konuyu, diğeri güvenilirliği söylüyor. */
+.news-ticker-confidence {
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* Söylenti: en güçlü çekince. Kırmızıya yakın uyarı tonu. */
+.news-ticker-confidence.is-rumour {
+  border: 1px solid rgba(200, 30, 45, 0.34);
+  background: rgba(200, 30, 45, 0.09);
+  color: var(--live);
+}
+
+/* Basında yer aldı: doğrulanmamış ama kaynaklı. Daha yumuşak, amber. */
+.news-ticker-confidence.is-reported {
+  border: 1px solid rgba(176, 116, 12, 0.34);
+  background: rgba(176, 116, 12, 0.1);
+  color: #8a5c06;
+}
+
+@media (prefers-color-scheme: dark) {
+  .news-ticker-confidence.is-reported { color: #e0a83a; }
+}
+
+:root[data-theme="dark"] .news-ticker-confidence.is-reported { color: #e0a83a; }
+:root[data-theme="light"] .news-ticker-confidence.is-reported { color: #8a5c06; }
+
 .news-ticker-sep {
   width: 4px;
   height: 4px;
