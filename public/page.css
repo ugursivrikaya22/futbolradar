@@ -12250,6 +12250,109 @@ body .container {
   font-weight: 750;
 }
 
+/* ----------------------------------------------------------------------------
+   MAÇ SONU RAPORU — BEŞ BÖLÜMLÜK OMURGA
+   Mobilde tek sütun, geniş ekranda iki. `auto-fit` + `minmax` kullanılıyor ki
+   ara genişliklerde de kırılmasın; sabit sütun sayısı 360-420px arasında
+   taşmaya yol açıyordu.
+   -------------------------------------------------------------------------- */
+.core-grid {
+  display: grid;
+  gap: var(--sp-3);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+}
+
+.core-section {
+  display: grid;
+  gap: var(--sp-2);
+  align-content: start;
+  padding: clamp(14px, 2vw, 20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: var(--glass);
+  /* Uzun takım/oyuncu adları dar ekranda kutudan taşmasın. */
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Boş bölüm gizlenmiyor ama öne de çıkmıyor: dürüst, sessiz. */
+.core-section.is-empty {
+  background: transparent;
+  border-style: dashed;
+}
+
+.core-section-head {
+  display: grid;
+  gap: 2px;
+}
+
+.core-section-head h3 {
+  font-size: var(--fs-md);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.core-section-question {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.core-section p {
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+}
+
+.core-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 1.1em;
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+.core-list li {
+  list-style: disc;
+}
+
+.core-empty {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.core-empty b {
+  color: var(--text-soft);
+  font-weight: 800;
+}
+
+/* Alıntı: metin olduğu gibi, kaynağı görünür. */
+.core-quote {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.core-quote blockquote {
+  margin: 0;
+  padding-left: var(--sp-3);
+  border-left: 3px solid var(--green);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  font-style: italic;
+}
+
+.core-quote figcaption {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
 /* GÜVEN ROZETİ — kesinleşmemiş bilgiye görsel çekince.
    Kategori etiketinden (yeşil, nötr) belirgin biçimde ayrışmalı ki okuyucu
    iki rozeti karıştırmasın: biri konuyu, diğeri güvenilirliği söylüyor. */

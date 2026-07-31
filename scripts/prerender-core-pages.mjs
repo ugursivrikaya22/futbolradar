@@ -299,15 +299,24 @@ function staticFeaturedFixture() {
   const selection = selections[0] || null;
   const featured = selection && selection.match;
 
-  // "Analizi hazır" istemcide de aynı kuralla sayılır (app.js:
-  // matchHasReadyAnalysis): maçın yayımlanabilir bir okuması var mı? Statik
-  // karşılığın eksik kalması, sayfa JS çalışmadan açıldığında sayacın hiç
-  // görünmemesine ve ilk boyamada düzenin kaymasına yol açıyordu.
+  // "Analizi hazır" istemcide de AYNI kuralla sayılır (app.js:
+  // matchHasReadyAnalysis). Kural gevşekti: olay akışı ya da istatistik
+  // bulunması yeterli sayılıyordu ve ham olay listesi analiz değil. Sayaç
+  // böylece raporu üretilmemiş maçları da sayıp tıklayan okuyucuya vaat
+  // edilenden azını gösteriyordu.
+  //
+  // Artık yalnızca AÇILABİLİR bir okuma sayılıyor: yayımlanmış maç sonu
+  // raporu ya da maçın kendi editoryal okuması.
+  const publishedReportIds = new Set(
+    postMatchStore()
+      .filter((record) => record && record.analysisStatus !== "failed")
+      .map((record) => String(record.matchId || ""))
+  );
+
   const analysisReadyCount = todayList.filter((match) => Boolean(
     match.summary ||
     (match.analysis && (match.analysis.headline || match.analysis.lead)) ||
-    (match.events || []).length ||
-    (match.statistics || []).length
+    publishedReportIds.has(String(match.id || ""))
   )).length;
 
   // Sıfır olan sayaç çizilmez (services/homeQuickStats.js). "Analizi hazır 0"
