@@ -11,6 +11,7 @@ const {
 } = require("../../api/_utils");
 const { competitions, matchesCompetition } = require("../competitionCatalog");
 const { canonicalStatus } = require("../matchStatus");
+const { fetchWithCache } = require("../providerCache");
 // Bağımlılığı olmayan bir okuyucu; leagueResolver'ı require etmek sağlayıcı
 // ile resolver arasında döngü yaratırdı.
 const { readCachedLeague } = require("../leagueCache");
@@ -226,7 +227,90 @@ function classifyPayloadError(errors) {
   };
 }
 
+/**
+ * Uç nokta → önbellek kaynağı eşlemesi.
+ *
+ * BİTMİŞ bir maçın dökümü DEĞİŞMEZ: olaylar, kadrolar, istatistikler ve
+ * oyuncu istatistikleri son düdükten sonra sabittir. Bu yüzden fikstür
+ * detay uç noktaları uzun TTL alır; aynı maç aynı koşuda ya da art arda
+ * koşularda ikinci kez sorulmaz.
+ */
+const CACHE_RESOURCE_BY_PATH = Object.freeze({
+  "/fixtures/lineups": "match-detail",
+  "/fixtures/events": "match-detail",
+  "/fixtures/statistics": "match-detail",
+  "/fixtures/players": "match-detail",
+  "/predictions": "match-detail",
+  "/fixtures": "matches",
+  "/standings": "standings",
+  "/players": "players",
+  "/teams": "teams"
+});
+
+/**
+ * Önbellek kaynağını YOL VE PARAMETREden birlikte seçer.
+ *
+ * Canlı skor yoklaması da "/fixtures" yoluna gidiyor (`?live=all`). Yalnızca
+ * yola bakan bir eşleme, canlı sorguya günlük listenin 60 saniyelik TTL'ini
+ * verirdi ve skorlar bir dakikaya kadar bayat kalırdı. Canlı sorgu kendi
+ * kısa TTL'ini (matches-live, 15 sn) alır.
+ */
+function cacheResourceFor(path, params) {
+  if (path === "/fixtures" && params && params.live) {
+    return "matches-live";
+  }
+
+  return CACHE_RESOURCE_BY_PATH[path];
+}
+
+/** Koşu boyunca gerçekten ağa çıkan istek sayısı (önbellek isabetleri hariç). */
+const requestCounter = { total: 0, byPath: Object.create(null), cacheHits: 0 };
+
+function countRequest(path) {
+  requestCounter.total += 1;
+  requestCounter.byPath[path] = (requestCounter.byPath[path] || 0) + 1;
+}
+
+function providerRequestStats() {
+  return {
+    total: requestCounter.total,
+    byPath: { ...requestCounter.byPath },
+    cacheHits: requestCounter.cacheHits
+  };
+}
+
+function resetProviderRequestStats() {
+  requestCounter.total = 0;
+  requestCounter.cacheHits = 0;
+  requestCounter.byPath = Object.create(null);
+}
+
+/**
+ * Önbellekli sağlayıcı çağrısı.
+ *
+ * services/providerCache.js yazılmıştı ama HİÇBİR ÇAĞRI YERİ ONU
+ * KULLANMIYORDU — ölü koddu. TTL, tek uçuş (aynı anahtar için eşzamanlı N
+ * istek tek çağrıya iner) ve hatada bayat servis bu yüzden hiç devreye
+ * girmiyordu; her çağrı doğrudan ağa çıkıyor ve kotayı harcıyordu.
+ */
 async function providerFetch(path, params) {
+  const resource = cacheResourceFor(path, params);
+
+  if (!resource) {
+    return providerFetchUncached(path, params);
+  }
+
+  const result = await fetchWithCache(resource, { path, ...params }, () => providerFetchUncached(path, params));
+
+  if (result.cache === "hit" || result.cache === "coalesced") {
+    requestCounter.cacheHits += 1;
+  }
+
+  return result.data;
+}
+
+async function providerFetchUncached(path, params) {
+  countRequest(path);
   const config = assertConfig();
   const candidates = apiKeyCandidates();
   // Doğrulanmış anahtar varsa yalnızca onu kullan; yoksa adayları sırayla
@@ -1381,6 +1465,8 @@ module.exports = {
   getFixtureStatistics,
   getFixturePlayers,
   normalizeFixturePlayers,
+  providerRequestStats,
+  resetProviderRequestStats,
   getFixturesByDate,
   getPredictions,
   getMatchDetail,

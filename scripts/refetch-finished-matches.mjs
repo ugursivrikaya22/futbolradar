@@ -35,19 +35,36 @@ const { isAnalyzableStatus } = require("../services/matchStatus.js");
 const { hasCompleteMatchData } = require("../services/refreshPolicy.js");
 const { buildCoverage, GRADE_LABELS } = require("../services/analysisCoverage.js");
 const { logProviderMode, PRIMARY_API_KEY_ENV } = require("../services/providerMode.js");
+const {
+  REQUESTS_PER_FINISHED_MATCH,
+  SAFE_RUN_LIMIT,
+  createRequestBudget
+} = require("../services/requestBudget.js");
 
 const MATCHES_PATH = path.join(root, "data", "matches.json");
 const PUBLIC_MATCHES_PATH = path.join(root, "public", "data", "matches.json");
 
 function parseArgs(argv) {
-  const args = { apply: false, limit: 15, force: false, days: null };
+  const args = { apply: false, limit: 15, force: false, days: null, budget: SAFE_RUN_LIMIT };
   for (const raw of argv) {
     if (raw === "--apply") args.apply = true;
     else if (raw === "--force") args.force = true;
     else if (raw.startsWith("--limit=")) args.limit = Math.max(1, Number(raw.slice(8)) || 15);
     else if (raw.startsWith("--days=")) args.days = Math.max(1, Number(raw.slice(7)) || null);
+    else if (raw.startsWith("--budget=")) args.budget = Math.max(1, Number(raw.slice(9)) || SAFE_RUN_LIMIT);
   }
   return args;
+}
+
+/**
+ * Bu maçın oyuncu istatistiği ZATEN var mı?
+ *
+ * Varsa yeniden sorulmaz: aynı maç için tekrar tekrar istek harcamak,
+ * kotayı bitiren ve hiçbir şey kazandırmayan davranıştır. `--force` bu
+ * kontrolü bilerek atlar.
+ */
+function hasStoredPlayerData(match) {
+  return Array.isArray(match && match.players) && match.players.length > 0;
 }
 
 function atomicWrite(filePath, data) {
@@ -73,9 +90,23 @@ const withinWindow = args.days
 // Dökümü zaten tam olan maç yeniden sorulmaz — kota koruması.
 const candidates = withinWindow.filter((match) => args.force || !hasCompleteMatchData(match));
 
+// Oyuncu verisi zaten duran maçlar ayrıca raporlanır: aday listesinde
+// görünüyorlarsa eksik olan başka bir alandır.
+const alreadyHavePlayers = candidates.filter(hasStoredPlayerData);
+
+const budget = createRequestBudget({ limit: args.budget, perUnit: REQUESTS_PER_FINISHED_MATCH });
+
 // Kapsam raporu anahtar OLMADAN da üretilir: hangi maçta neyin eksik olduğu
 // görünür kalmalı.
 console.log(`[refetch] ${finished.length} tamamlanmış maç · ${candidates.length} eksik dökümlü aday`);
+console.log(
+  `[refetch] istek bütçesi: en fazla ${budget.ceiling} istek ` +
+  `(maç başına ${budget.perUnit}; ${budget.reserve} istek canlı skor için ayrıldı) ` +
+  `→ bu koşuda en fazla ${Math.floor(budget.ceiling / budget.perUnit)} maç`
+);
+if (alreadyHavePlayers.length) {
+  console.log(`[refetch] ${alreadyHavePlayers.length} adayın oyuncu istatistiği zaten var; eksik olan başka alan.`);
+}
 
 const before = candidates.map((match) => ({
   id: match.id,
@@ -111,7 +142,21 @@ let requests = 0;
 
 for (const match of candidates) {
   if (requests >= args.limit) {
-    results.push({ id: match.id, outcome: "deferred", reason: `kota sınırı (--limit=${args.limit})` });
+    results.push({ id: match.id, outcome: "deferred", reason: `parti sınırı (--limit=${args.limit})` });
+    continue;
+  }
+
+  // BÜTÇE KAPISI: bir maçı yarım işlemek hem kotayı harcar hem eksik veri
+  // bırakır, o yüzden maç başına düşen istek kadar yer yoksa hiç başlanmaz.
+  if (!budget.canAfford(1)) {
+    budget.exhausted();
+    results.push({ id: match.id, outcome: "deferred", reason: budget.stopReason || "istek bütçesi doldu" });
+    continue;
+  }
+
+  // Oyuncu verisi zaten duran ve --force verilmemiş maç yeniden sorulmaz.
+  if (!args.force && hasStoredPlayerData(match) && hasCompleteMatchData(match)) {
+    results.push({ id: match.id, outcome: "skipped", reason: "oyuncu verisi ve döküm zaten tam" });
     continue;
   }
 
@@ -124,6 +169,7 @@ for (const match of candidates) {
   }
 
   requests += 1;
+  budget.spend(budget.perUnit, "fixture-detail");
   let detail = null;
 
   try {
@@ -164,7 +210,16 @@ const tally = results.reduce((acc, row) => {
   return acc;
 }, {});
 
-console.log(`[refetch] ${requests} istek gönderildi · sonuç: ${JSON.stringify(tally)}`);
+// GERÇEK ağ isteği sayısı sağlayıcı katmanından okunur: önbellek isabetleri
+// kotadan düşmez, bu yüzden tahmini bütçe ile gerçekleşen ayrı raporlanır.
+const actual = apiFootballProvider.providerRequestStats();
+console.log(
+  `[refetch] ${requests} maç işlendi · ` +
+  `gerçek ağ isteği: ${actual.total} (önbellek isabeti: ${actual.cacheHits}) · ` +
+  `bütçe: ${budget.spent}/${budget.ceiling}` +
+  (budget.stopReason ? ` · DURDU: ${budget.stopReason}` : "")
+);
+console.log(`[refetch] sonuç: ${JSON.stringify(tally)}`);
 for (const row of results) {
   console.log(
     `[refetch]   ${row.outcome.padEnd(10)} ${row.id}` +

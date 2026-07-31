@@ -5,6 +5,7 @@ const require = createRequire(import.meta.url);
 const utils = require("../api/_utils");
 const footballData = require("../services/providers/footballProvider");
 const apiFootball = require("../services/providers/apiFootballProvider");
+const { clearProviderCache } = require("../services/providerCache");
 const providers = require("../services/providers");
 const competitionCatalog = require("../services/competitionCatalog");
 const playersHandler = require("../api/players");
@@ -460,7 +461,14 @@ async function testApiKeyCandidateRecovery() {
     assert.equal(matches.length, 1);
     assert.equal(usedKeys[0], goodKey, "gecerli bicimli anahtar once denenmeli");
 
-    // Çalışan anahtar hatırlanmalı: ikinci istek tek çağrıyla dönmeli.
+    // ÖNBELLEK: aynı sorgu TTL içinde ağa HİÇ çıkmamalı — kota koruması.
+    usedKeys.length = 0;
+    await apiFootball.getMatches({ date: "2026-07-25" });
+    assert.deepEqual(usedKeys, [], "aynı sorgu TTL içinde önbellekten dönmeli, kota harcamamalı");
+
+    // Çalışan anahtar hatırlanmalı: önbellek temizlendikten sonra ikinci
+    // istek TEK çağrıyla dönmeli (bozuk anahtar yeniden denenmemeli).
+    clearProviderCache();
     usedKeys.length = 0;
     await apiFootball.getMatches({ date: "2026-07-25" });
     assert.deepEqual(usedKeys, [goodKey], "dogrulanan anahtar surec icinde hatirlanmali");

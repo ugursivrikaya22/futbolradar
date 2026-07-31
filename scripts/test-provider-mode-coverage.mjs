@@ -33,6 +33,8 @@ const { buildReportRecord, syncPostMatchReports } = require("../services/postMat
 const { buildPipelineDiagnostics } = require("../services/pipelineDiagnostics.js");
 const { normalizeFixturePlayers } = require("../services/providers/apiFootballProvider.js");
 const { buildCoachingDecisions } = require("../services/matchReportService.js");
+const { createRequestBudget } = require("../services/requestBudget.js");
+const { providerRequestStats } = require("../services/providers/apiFootballProvider.js");
 const { isAnalyzableStatus } = require("../services/matchStatus.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 
@@ -249,6 +251,62 @@ if (fs.existsSync(analysesPath)) {
     "Tamamlanmış maç için maç öncesi kayıt kalmamalı — scripts/prune-stale-match-analyses.mjs çalıştırın"
   );
 }
+
+// ── 12b. İstek bütçesi: günlük kotayı koruma ────────────────────────────────
+const budget = createRequestBudget({});
+assert.equal(budget.quota, 100, "Ücretsiz paket kotası 100 istek");
+assert.equal(budget.perUnit, 5, "Bitmiş maç başına 5 uç nokta (players dahil)");
+assert.ok(budget.ceiling < budget.quota, "Tavan kotanın tamamı olmamalı — canlı skora pay ayrılmalı");
+assert.equal(budget.ceiling, budget.limit - 0 <= budget.quota - budget.reserve ? budget.limit : budget.quota - budget.reserve,
+  "Tavan, koşu sınırı ile (kota - rezerv) değerinin küçüğü olmalı");
+
+// Maç başına düşen istek kadar yer yoksa maça HİÇ başlanmaz: yarım işlenmiş
+// bir maç hem kotayı harcar hem eksik veri bırakır.
+const tight = createRequestBudget({ limit: 12, reserve: 0, quota: 100, perUnit: 5 });
+assert.equal(tight.canAfford(1), true, "12 istekle ilk maç işlenebilir");
+tight.spend(5, "fixture-detail");
+assert.equal(tight.canAfford(1), true, "5 harcandıktan sonra ikinci maç sığar");
+tight.spend(5, "fixture-detail");
+assert.equal(tight.canAfford(1), false, "10/12 harcandıktan sonra üçüncü maç SIĞMAZ");
+assert.equal(tight.exhausted(), false, "2 istek kaldı; bütçe henüz bitmedi");
+assert.equal(tight.remaining, 2, "Kalan istek doğru sayılmalı");
+
+const spent = createRequestBudget({ limit: 10, reserve: 0, quota: 100, perUnit: 5 });
+spent.spend(10, "fixture-detail");
+assert.equal(spent.exhausted(), true, "Tavana ulaşınca bütçe biter");
+assert.match(spent.stopReason, /güvenli eşiğe ulaşıldı/, "Durma sebebi yazılmalı");
+assert.equal(spent.remaining, 0, "Kalan sıfır olmalı");
+
+const summary = createRequestBudget({ limit: 20, reserve: 5, quota: 100 });
+summary.spend(3, "fixture-detail");
+summary.spend(2, "fixtures");
+assert.deepEqual(summary.summary().byEndpoint, { "fixture-detail": 3, fixtures: 2 }, "Uç nokta dağılımı tutulmalı");
+assert.equal(summary.summary().spent, 5, "Toplam harcama doğru");
+
+// Rezerv, tavanı kotadan aşağı çeker.
+const reserved = createRequestBudget({ limit: 100, reserve: 25, quota: 100 });
+assert.equal(reserved.ceiling, 75, "Rezerv tavandan düşülmeli");
+
+// ── 12c. /fixtures/players önbelleği diğer uç noktalarla tutarlı ────────────
+// providerCache yazılmıştı ama HİÇBİR çağrı yeri kullanmıyordu; her istek
+// doğrudan ağa çıkıyor ve kotayı harcıyordu.
+const providerSource = fs.readFileSync(path.join(root, "services", "providers", "apiFootballProvider.js"), "utf8");
+assert.match(providerSource, /require\("\.\.\/providerCache"\)/, "Sağlayıcı önbelleği içe aktarmalı");
+assert.match(providerSource, /fetchWithCache\(/, "providerFetch önbellekten geçmeli");
+
+for (const endpoint of ["/fixtures/lineups", "/fixtures/events", "/fixtures/statistics", "/fixtures/players"]) {
+  assert.ok(
+    providerSource.includes(`"${endpoint}": "match-detail"`),
+    `${endpoint} önbellek kaynağı diğer fikstür uç noktalarıyla aynı olmalı`
+  );
+}
+
+assert.equal(typeof providerRequestStats, "function", "Gerçek istek sayacı dışa açılmalı");
+const stats = providerRequestStats();
+assert.equal(typeof stats.total, "number", "İstek sayısı raporlanmalı");
+assert.equal(typeof stats.cacheHits, "number", "Önbellek isabeti raporlanmalı");
+// Anahtar olmadığı için bu koşuda hiç ağ isteği yapılmamış olmalı.
+assert.equal(stats.total, 0, "Anahtarsız koşuda sağlayıcıya istek gitmemeli");
 
 // ── 13. Gerçek depo: kapsam alanları eksiksiz ───────────────────────────────
 const storePath = path.join(root, "data", "post-match-reports.json");
