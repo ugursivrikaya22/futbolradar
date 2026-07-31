@@ -1,31 +1,75 @@
 {
   "source": "futbolradar-post-match-reports",
-  "modelVersion": "futbolradar-post-match-v1",
-  "updatedAt": "2026-07-30T17:15:06.355Z",
+  "modelVersion": "futbolradar-post-match-v3",
+  "updatedAt": "2026-07-31T07:53:49.856Z",
   "matchCount": 12,
   "records": [
     {
       "matchId": "caykur-rizespor-hull-city-2026-07-28",
+      "fixtureId": "2537256",
+      "provider": "api-football",
       "slug": "caykur-rizespor-hull-city-2026-07-28",
       "kickoff": "2026-07-28T19:00:00+03:00",
+      "kickoffUtc": "2026-07-28T16:00:00.000Z",
+      "kickoffLocal": "2026-07-28T19:00",
       "date": "2026-07-28",
-      "league": "Hazırlık Maçı",
-      "competitionType": null,
-      "homeTeam": "Çaykur Rizespor",
-      "awayTeam": "Hull City",
-      "score": {
-        "home": 1,
-        "away": 2
-      },
       "status": "FINISHED",
       "providerStatus": "FINISHED",
       "finishType": "regular",
       "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Çaykur Rizespor",
+      "awayTeam": "Hull City",
+      "venue": "Çaykur Didi Stadyumu",
+      "score": {
+        "home": 1,
+        "away": 2
+      },
+      "finalScore": "1-2",
+      "winner": "Hull City",
       "turkish": true,
       "turkishTeam": "Çaykur Rizespor",
-      "modelVersion": "futbolradar-post-match-v1",
-      "fingerprint": "80084ca37091bea4",
-      "generatedAt": "2026-07-30T17:15:06.297Z",
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.25,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v3",
+      "modelVersion": "futbolradar-post-match-v3",
+      "analysisSourceHash": "45cb3a718d6160cf",
+      "fingerprint": "45cb3a718d6160cf",
+      "analysisGeneratedAt": "2026-07-31T07:50:31.018Z",
+      "analysisUpdatedAt": "2026-07-31T07:53:49.856Z",
+      "generatedAt": "2026-07-31T07:53:49.856Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
       "seo": {
         "title": "Çaykur Rizespor 1-2 Hull City Maç Raporu ve İstatistikleri | FutbolRadar",
         "description": "Çaykur Rizespor 1-2 Hull City maç raporu, kırılma anları ve sonraki maç.",
@@ -69,6 +113,32 @@
           "status": "unavailable",
           "notes": []
         },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Hull City, Çaykur Rizespor'u 1-2 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Hull City sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
         "aiRating": null,
         "analysis": [],
         "analysisOmitted": [
@@ -87,12 +157,53 @@
           "en-zayif-performans"
         ]
       },
+      "readySections": [
+        "summary",
+        "finalAssessment",
+        "nextMatch"
+      ],
+      "coverage": 21,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "galatasaray-venezia-2026-07-27",
+      "fixtureId": "2521654",
+      "provider": "api-football",
+      "slug": "galatasaray-venezia-2026-07-27",
+      "kickoff": "2026-07-27T21:00:00+03:00",
+      "kickoffUtc": "2026-07-27T18:00:00.000Z",
+      "kickoffLocal": "2026-07-27T21:00",
+      "date": "2026-07-27",
+      "status": "FINISHED",
+      "providerStatus": "FINISHED",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Galatasaray",
+      "awayTeam": "Venezia",
+      "venue": "Rams Park",
+      "score": {
+        "home": 0,
+        "away": 3
+      },
+      "finalScore": "0-3",
+      "winner": "Venezia",
+      "turkish": true,
+      "turkishTeam": "Galatasaray",
       "availability": {
         "events": 0,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
+      "dataCompleteness": 0.25,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "events",
@@ -112,37 +223,16 @@
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "readySections": [
-        "summary",
-        "nextMatch"
-      ],
-      "coverage": 20,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
-      "publishState": "page"
-    },
-    {
-      "matchId": "galatasaray-venezia-2026-07-27",
-      "slug": "galatasaray-venezia-2026-07-27",
-      "kickoff": "2026-07-27T21:00:00+03:00",
-      "date": "2026-07-27",
-      "league": "Hazırlık Maçı",
-      "competitionType": null,
-      "homeTeam": "Galatasaray",
-      "awayTeam": "Venezia",
-      "score": {
-        "home": 0,
-        "away": 3
-      },
-      "status": "FINISHED",
-      "providerStatus": "FINISHED",
-      "finishType": "regular",
-      "finishLabel": "Normal sürede tamamlandı",
-      "turkish": true,
-      "turkishTeam": "Galatasaray",
-      "modelVersion": "futbolradar-post-match-v1",
-      "fingerprint": "91f4f6a8cf1f19bd",
-      "generatedAt": "2026-07-30T17:15:06.297Z",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v3",
+      "modelVersion": "futbolradar-post-match-v3",
+      "analysisSourceHash": "6ea435a9496a105b",
+      "fingerprint": "6ea435a9496a105b",
+      "analysisGeneratedAt": "2026-07-31T07:50:31.018Z",
+      "analysisUpdatedAt": "2026-07-31T07:53:49.856Z",
+      "generatedAt": "2026-07-31T07:53:49.856Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
       "seo": {
         "title": "Galatasaray 0-3 Venezia Maç Raporu ve İstatistikleri | FutbolRadar",
         "description": "Galatasaray 0-3 Venezia maç raporu, kırılma anları ve sonraki maç.",
@@ -186,6 +276,32 @@
           "status": "unavailable",
           "notes": []
         },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Venezia, Galatasaray'ı 0-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Venezia sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
         "aiRating": null,
         "analysis": [],
         "analysisOmitted": [
@@ -204,12 +320,52 @@
           "en-zayif-performans"
         ]
       },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "trabzonspor-eintracht-frankfurt-2026-07-26",
+      "fixtureId": "2549217",
+      "provider": "api-football",
+      "slug": "trabzonspor-eintracht-frankfurt-2026-07-26",
+      "kickoff": "2026-07-26T16:30:00+03:00",
+      "kickoffUtc": "2026-07-26T13:30:00.000Z",
+      "kickoffLocal": "2026-07-26T16:30",
+      "date": "2026-07-26",
+      "status": "FINISHED",
+      "providerStatus": "FINISHED",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Trabzonspor",
+      "awayTeam": "Eintracht Frankfurt",
+      "venue": "Papara Park",
+      "score": {
+        "home": 0,
+        "away": 3
+      },
+      "finalScore": "0-3",
+      "winner": "Eintracht Frankfurt",
+      "turkish": true,
+      "turkishTeam": "Trabzonspor",
       "availability": {
         "events": 0,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
+      "dataCompleteness": 0.25,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "events",
@@ -229,36 +385,16 @@
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "readySections": [
-        "summary"
-      ],
-      "coverage": 10,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
-      "publishState": "page"
-    },
-    {
-      "matchId": "trabzonspor-eintracht-frankfurt-2026-07-26",
-      "slug": "trabzonspor-eintracht-frankfurt-2026-07-26",
-      "kickoff": "2026-07-26T16:30:00+03:00",
-      "date": "2026-07-26",
-      "league": "Hazırlık Maçı",
-      "competitionType": null,
-      "homeTeam": "Trabzonspor",
-      "awayTeam": "Eintracht Frankfurt",
-      "score": {
-        "home": 0,
-        "away": 3
-      },
-      "status": "FINISHED",
-      "providerStatus": "FINISHED",
-      "finishType": "regular",
-      "finishLabel": "Normal sürede tamamlandı",
-      "turkish": true,
-      "turkishTeam": "Trabzonspor",
-      "modelVersion": "futbolradar-post-match-v1",
-      "fingerprint": "4bba15d10489f8bf",
-      "generatedAt": "2026-07-30T17:15:06.297Z",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v3",
+      "modelVersion": "futbolradar-post-match-v3",
+      "analysisSourceHash": "5d4e6ffa281da471",
+      "fingerprint": "5d4e6ffa281da471",
+      "analysisGeneratedAt": "2026-07-31T07:50:31.018Z",
+      "analysisUpdatedAt": "2026-07-31T07:53:49.856Z",
+      "generatedAt": "2026-07-31T07:53:49.856Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
       "seo": {
         "title": "Trabzonspor 0-3 Eintracht Frankfurt Maç Raporu ve İstatistikleri | FutbolRadar",
         "description": "Trabzonspor 0-3 Eintracht Frankfurt maç raporu, kırılma anları ve sonraki maç.",
@@ -302,6 +438,32 @@
           "status": "unavailable",
           "notes": []
         },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Eintracht Frankfurt, Trabzonspor'u 0-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Eintracht Frankfurt sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
         "aiRating": null,
         "analysis": [],
         "analysisOmitted": [
@@ -320,24 +482,56 @@
           "en-zayif-performans"
         ]
       },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "goztepe-rudes-2026-07-26",
+      "fixtureId": "1598546",
+      "provider": "api-football",
+      "slug": "goztepe-rudes-2026-07-26",
+      "kickoff": "2026-07-26T15:00:00+03:00",
+      "kickoffUtc": "2026-07-26T12:00:00.000Z",
+      "kickoffLocal": "2026-07-26T15:00",
+      "date": "2026-07-26",
+      "status": "FINISHED",
+      "providerStatus": "FINISHED",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Göztepe",
+      "awayTeam": "Rudeš",
+      "venue": "Açıklanmadı",
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "finalScore": "1-1",
+      "winner": "draw",
+      "turkish": true,
+      "turkishTeam": "Göztepe",
       "availability": {
-        "events": 0,
+        "events": 2,
         "statistics": 0,
-        "lineups": 0,
+        "lineups": 1,
         "players": 0
       },
+      "dataCompleteness": 0.75,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": "2026-07-29T11:32:26.662Z",
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
         },
         {
           "field": "players",
@@ -345,36 +539,16 @@
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "readySections": [
-        "summary"
-      ],
-      "coverage": 10,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
-      "publishState": "page"
-    },
-    {
-      "matchId": "goztepe-rudes-2026-07-26",
-      "slug": "goztepe-rudes-2026-07-26",
-      "kickoff": "2026-07-26T15:00:00+03:00",
-      "date": "2026-07-26",
-      "league": "Hazırlık Maçı",
-      "competitionType": null,
-      "homeTeam": "Göztepe",
-      "awayTeam": "Rudeš",
-      "score": {
-        "home": 1,
-        "away": 1
-      },
-      "status": "FINISHED",
-      "providerStatus": "FINISHED",
-      "finishType": "regular",
-      "finishLabel": "Normal sürede tamamlandı",
-      "turkish": true,
-      "turkishTeam": "Göztepe",
-      "modelVersion": "futbolradar-post-match-v1",
-      "fingerprint": "c660daf78285508d",
-      "generatedAt": "2026-07-30T17:15:06.297Z",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v3",
+      "modelVersion": "futbolradar-post-match-v3",
+      "analysisSourceHash": "aeeeed7f1d648bd1",
+      "fingerprint": "aeeeed7f1d648bd1",
+      "analysisGeneratedAt": "2026-07-31T07:50:31.018Z",
+      "analysisUpdatedAt": "2026-07-31T07:53:49.856Z",
+      "generatedAt": "2026-07-31T07:53:49.856Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
       "seo": {
         "title": "Göztepe 1-1 Rudeš Maç Raporu ve İstatistikleri | FutbolRadar",
         "description": "Göztepe 1-1 Rudeš maç raporu, goller: Ege Yıldırım, kırılma anları ve sonraki maç.",
@@ -443,6 +617,39 @@
           "status": "unavailable",
           "notes": []
         },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "Devre arasına Göztepe 1-1 Rudeš skoruyla gidildi.",
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "21' Göztepe — Ege Yıldırım: Ege Yıldırım skoru açtı.",
+            "34' Rudeš: Rudeš beraberliği sağladı; golü kaydeden oyuncunun adı açıklanmadı."
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarıda skor değişmedi; sonucu belirleyen goller ilk yarıda gelmişti."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 1-1 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
         "aiRating": null,
         "analysis": [
           {
@@ -470,16 +677,66 @@
           "en-zayif-performans"
         ]
       },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 10,
+      "publishState": "page"
+    },
+    {
+      "matchId": "osijek-caykur-rizespor-2026-07-25",
+      "fixtureId": null,
+      "provider": "curated",
+      "slug": "osijek-caykur-rizespor-2026-07-25",
+      "kickoff": "2026-07-25T19:00:00+03:00",
+      "kickoffUtc": "2026-07-25T16:00:00.000Z",
+      "kickoffLocal": "2026-07-25T19:00",
+      "date": "2026-07-25",
+      "status": "FINISHED",
+      "providerStatus": "FINISHED",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Osijek",
+      "awayTeam": "Çaykur Rizespor",
+      "venue": "Açıklanmadı",
+      "score": {
+        "home": 1,
+        "away": 3
+      },
+      "finalScore": "1-3",
+      "winner": "Çaykur Rizespor",
+      "turkish": true,
+      "turkishTeam": "Çaykur Rizespor",
       "availability": {
-        "events": 2,
+        "events": 3,
         "statistics": 0,
-        "lineups": 1,
+        "lineups": 0,
         "players": 0
       },
+      "dataCompleteness": 0.5,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
         },
         {
           "field": "players",
@@ -487,40 +744,16 @@
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "readySections": [
-        "summary",
-        "standoutPlayers",
-        "momentum",
-        "turningPoints",
-        "lateGame"
-      ],
-      "coverage": 50,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 10,
-      "publishState": "page"
-    },
-    {
-      "matchId": "osijek-caykur-rizespor-2026-07-25",
-      "slug": "osijek-caykur-rizespor-2026-07-25",
-      "kickoff": "2026-07-25T19:00:00+03:00",
-      "date": "2026-07-25",
-      "league": "Hazırlık Maçı",
-      "competitionType": null,
-      "homeTeam": "Osijek",
-      "awayTeam": "Çaykur Rizespor",
-      "score": {
-        "home": 1,
-        "away": 3
-      },
-      "status": "FINISHED",
-      "providerStatus": "FINISHED",
-      "finishType": "regular",
-      "finishLabel": "Normal sürede tamamlandı",
-      "turkish": true,
-      "turkishTeam": "Çaykur Rizespor",
-      "modelVersion": "futbolradar-post-match-v1",
-      "fingerprint": "824dba5cd946e717",
-      "generatedAt": "2026-07-30T17:15:06.297Z",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v3",
+      "modelVersion": "futbolradar-post-match-v3",
+      "analysisSourceHash": "86ec9affd9c3c151",
+      "fingerprint": "86ec9affd9c3c151",
+      "analysisGeneratedAt": "2026-07-31T07:50:31.018Z",
+      "analysisUpdatedAt": "2026-07-31T07:53:49.856Z",
+      "generatedAt": "2026-07-31T07:53:49.856Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
       "seo": {
         "title": "Osijek 1-3 Çaykur Rizespor Maç Raporu ve İstatistikleri | FutbolRadar",
         "description": "Osijek 1-3 Çaykur Rizespor maç raporu, goller: Dal Varešanović, Qazim Laçi, Mustafa Coşkun Tosun, kırılma anları ve sonraki maç.",
@@ -608,6 +841,39 @@
           "status": "unavailable",
           "notes": []
         },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "45+4' Çaykur Rizespor — Dal Varešanović: Dal Varešanović ilk yarının uzatmasında skoru buldu."
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "47' Çaykur Rizespor — Qazim Laçi: Qazim Laçi ikinci yarının hemen başında farkı artırdı.",
+            "61' Çaykur Rizespor — Mustafa Coşkun Tosun: Mustafa Coşkun Tosun skoru 3'e taşıdı."
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Çaykur Rizespor, Osijek'i 1-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Çaykur Rizespor sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
         "aiRating": null,
         "analysis": [
           {
@@ -635,20 +901,62 @@
           "en-zayif-performans"
         ]
       },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 10,
+      "publishState": "page"
+    },
+    {
+      "matchId": "konyaspor-hull-city-2026-07-25",
+      "fixtureId": null,
+      "provider": "api-football",
+      "slug": "konyaspor-hull-city-2026-07-25",
+      "kickoff": "2026-07-25T18:30:00+03:00",
+      "kickoffUtc": "2026-07-25T15:30:00.000Z",
+      "kickoffLocal": "2026-07-25T18:30",
+      "date": "2026-07-25",
+      "status": "FINISHED",
+      "providerStatus": "FINISHED",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Konyaspor",
+      "awayTeam": "Hull City",
+      "venue": "Športni park Aluminij",
+      "score": {
+        "home": 0,
+        "away": 3
+      },
+      "finalScore": "0-3",
+      "winner": "Hull City",
+      "turkish": true,
+      "turkishTeam": "Konyaspor",
       "availability": {
         "events": 3,
         "statistics": 0,
-        "lineups": 0,
+        "lineups": 1,
         "players": 0
       },
+      "dataCompleteness": 0.75,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
         },
         {
           "field": "players",
@@ -656,40 +964,16 @@
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "readySections": [
-        "summary",
-        "standoutPlayers",
-        "momentum",
-        "turningPoints",
-        "lateGame"
-      ],
-      "coverage": 50,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 10,
-      "publishState": "page"
-    },
-    {
-      "matchId": "konyaspor-hull-city-2026-07-25",
-      "slug": "konyaspor-hull-city-2026-07-25",
-      "kickoff": "2026-07-25T18:30:00+03:00",
-      "date": "2026-07-25",
-      "league": "Hazırlık Maçı",
-      "competitionType": null,
-      "homeTeam": "Konyaspor",
-      "awayTeam": "Hull City",
-      "score": {
-        "home": 0,
-        "away": 3
-      },
-      "status": "FINISHED",
-      "providerStatus": "FINISHED",
-      "finishType": "regular",
-      "finishLabel": "Normal sürede tamamlandı",
-      "turkish": true,
-      "turkishTeam": "Konyaspor",
-      "modelVersion": "futbolradar-post-match-v1",
-      "fingerprint": "e452df38dc1d0b03",
-      "generatedAt": "2026-07-30T17:15:06.297Z",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v3",
+      "modelVersion": "futbolradar-post-match-v3",
+      "analysisSourceHash": "ceb9f9f4f6d5f21f",
+      "fingerprint": "ceb9f9f4f6d5f21f",
+      "analysisGeneratedAt": "2026-07-31T07:50:31.018Z",
+      "analysisUpdatedAt": "2026-07-31T07:53:49.856Z",
+      "generatedAt": "2026-07-31T07:53:49.856Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
       "seo": {
         "title": "Konyaspor 0-3 Hull City Maç Raporu ve İstatistikleri | FutbolRadar",
         "description": "Konyaspor 0-3 Hull City maç raporu, goller: Enis Destan, Abu Kamara, kırılma anları ve sonraki maç.",
@@ -773,6 +1057,41 @@
             "Maç boyunca 1 oyuncu değişikliği yapıldı."
           ]
         },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "Devre arasına Konyaspor 0-1 Hull City skoruyla gidildi.",
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "28' Hull City — Enis Destan: Enis Destan skoru açtı."
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarının skoru 0-2 oldu.",
+            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "52' Hull City: Konyaspor kendi kalesine attı; skor 2-0 oldu.",
+            "72' Hull City — Abu Kamara: Abu Kamara farkı üçe çıkardı."
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Hull City, Konyaspor'u 0-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Hull City sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
         "aiRating": null,
         "analysis": [
           {
@@ -800,12 +1119,59 @@
           "en-zayif-performans"
         ]
       },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment",
+        "nextMatch"
+      ],
+      "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 10,
+      "publishState": "page"
+    },
+    {
+      "matchId": "samsunspor-raal-la-louviere-2026-07-25",
+      "fixtureId": null,
+      "provider": "api-football",
+      "slug": "samsunspor-raal-la-louviere-2026-07-25",
+      "kickoff": "2026-07-25T15:00:00+03:00",
+      "kickoffUtc": "2026-07-25T12:00:00.000Z",
+      "kickoffLocal": "2026-07-25T15:00",
+      "date": "2026-07-25",
+      "status": "FINISHED",
+      "providerStatus": "FINISHED",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Samsunspor",
+      "awayTeam": "RAAL La Louvière",
+      "venue": "Sportpark Juliana",
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "finalScore": "0-0",
+      "winner": "draw",
+      "turkish": true,
+      "turkishTeam": "Samsunspor",
       "availability": {
-        "events": 3,
+        "events": 1,
         "statistics": 0,
-        "lineups": 1,
+        "lineups": 2,
         "players": 0
       },
+      "dataCompleteness": 0.75,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": "2026-07-26T23:22:23.566Z",
       "missingInputs": [
         {
           "field": "statistics",
@@ -817,41 +1183,16 @@
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "readySections": [
-        "summary",
-        "standoutPlayers",
-        "momentum",
-        "turningPoints",
-        "lateGame",
-        "nextMatch"
-      ],
-      "coverage": 60,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 10,
-      "publishState": "page"
-    },
-    {
-      "matchId": "samsunspor-raal-la-louviere-2026-07-25",
-      "slug": "samsunspor-raal-la-louviere-2026-07-25",
-      "kickoff": "2026-07-25T15:00:00+03:00",
-      "date": "2026-07-25",
-      "league": "Hazırlık Maçı",
-      "competitionType": null,
-      "homeTeam": "Samsunspor",
-      "awayTeam": "RAAL La Louvière",
-      "score": {
-        "home": 0,
-        "away": 0
-      },
-      "status": "FINISHED",
-      "providerStatus": "FINISHED",
-      "finishType": "regular",
-      "finishLabel": "Normal sürede tamamlandı",
-      "turkish": true,
-      "turkishTeam": "Samsunspor",
-      "modelVersion": "futbolradar-post-match-v1",
-      "fingerprint": "fb2f43dbcb4112c6",
-      "generatedAt": "2026-07-30T17:15:06.297Z",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v3",
+      "modelVersion": "futbolradar-post-match-v3",
+      "analysisSourceHash": "2bee0b3a767d16c0",
+      "fingerprint": "2bee0b3a767d16c0",
+      "analysisGeneratedAt": "2026-07-31T07:50:31.018Z",
+      "analysisUpdatedAt": "2026-07-31T07:53:49.856Z",
+      "generatedAt": "2026-07-31T07:53:49.856Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
       "seo": {
         "title": "Samsunspor 0-0 RAAL La Louvière Maç Raporu ve İstatistikleri | FutbolRadar",
         "description": "Samsunspor 0-0 RAAL La Louvière maç raporu, kırılma anları ve sonraki maç.",
@@ -914,6 +1255,38 @@
           "status": "unavailable",
           "notes": []
         },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "Devre arasına Samsunspor 0-0 RAAL La Louvière skoruyla gidildi."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarıda skor değişmedi; sonucu belirleyen goller ilk yarıda gelmişti.",
+            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "Kayda geçen diğer pozisyonlar: 75' RAAL La Louvière direk."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 0-0 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "0-0 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
         "aiRating": null,
         "analysis": [],
         "analysisOmitted": [
@@ -932,12 +1305,56 @@
           "en-zayif-performans"
         ]
       },
+      "readySections": [
+        "summary",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 43,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "galatasaray-monza-2026-07-24",
+      "fixtureId": null,
+      "provider": "api-football",
+      "slug": "galatasaray-ac-monza-2026-07-24",
+      "kickoff": "2026-07-24T21:00:00+03:00",
+      "kickoffUtc": "2026-07-24T18:00:00.000Z",
+      "kickoffLocal": "2026-07-24T21:00",
+      "date": "2026-07-24",
+      "status": "FINISHED",
+      "providerStatus": "FINISHED",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Galatasaray",
+      "awayTeam": "AC Monza",
+      "venue": "Raiffeisen Arena",
+      "score": {
+        "home": 0,
+        "away": 2
+      },
+      "finalScore": "0-2",
+      "winner": "AC Monza",
+      "turkish": true,
+      "turkishTeam": "Galatasaray",
       "availability": {
-        "events": 1,
+        "events": 2,
         "statistics": 0,
         "lineups": 2,
         "players": 0
       },
+      "dataCompleteness": 0.75,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": "2026-07-29T11:32:26.662Z",
       "missingInputs": [
         {
           "field": "statistics",
@@ -949,38 +1366,16 @@
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "readySections": [
-        "summary",
-        "turningPoints",
-        "lateGame"
-      ],
-      "coverage": 30,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
-      "publishState": "page"
-    },
-    {
-      "matchId": "galatasaray-monza-2026-07-24",
-      "slug": "galatasaray-ac-monza-2026-07-24",
-      "kickoff": "2026-07-24T21:00:00+03:00",
-      "date": "2026-07-24",
-      "league": "Hazırlık Maçı",
-      "competitionType": null,
-      "homeTeam": "Galatasaray",
-      "awayTeam": "AC Monza",
-      "score": {
-        "home": 0,
-        "away": 2
-      },
-      "status": "FINISHED",
-      "providerStatus": "FINISHED",
-      "finishType": "regular",
-      "finishLabel": "Normal sürede tamamlandı",
-      "turkish": true,
-      "turkishTeam": "Galatasaray",
-      "modelVersion": "futbolradar-post-match-v1",
-      "fingerprint": "f7ab609cc5f81b32",
-      "generatedAt": "2026-07-30T17:15:06.297Z",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v3",
+      "modelVersion": "futbolradar-post-match-v3",
+      "analysisSourceHash": "6587739761d5be30",
+      "fingerprint": "6587739761d5be30",
+      "analysisGeneratedAt": "2026-07-31T07:50:31.018Z",
+      "analysisUpdatedAt": "2026-07-31T07:53:49.856Z",
+      "generatedAt": "2026-07-31T07:53:49.856Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
       "seo": {
         "title": "Galatasaray 0-2 AC Monza Maç Raporu ve İstatistikleri | FutbolRadar",
         "description": "Galatasaray 0-2 AC Monza maç raporu, goller: Andrea Carboni, Patrick Cutrone, kırılma anları ve sonraki maç.",
@@ -1055,6 +1450,40 @@
           "status": "unavailable",
           "notes": []
         },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "Devre arasına Galatasaray 0-1 AC Monza skoruyla gidildi.",
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "23' AC Monza — Andrea Carboni: Andrea Carboni'nin golüyle Monza 1-0 öne geçti."
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarının skoru 0-1 oldu.",
+            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "49' AC Monza — Patrick Cutrone: Patrick Cutrone'nin golüyle Monza 2-0'a çıktı."
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "AC Monza, Galatasaray'ı 0-2 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "AC Monza sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
         "aiRating": null,
         "analysis": [
           {
@@ -1082,57 +1511,75 @@
           "en-zayif-performans"
         ]
       },
-      "availability": {
-        "events": 2,
-        "statistics": 0,
-        "lineups": 2,
-        "players": 0
-      },
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
-      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "readySections": [
         "summary",
         "standoutPlayers",
         "momentum",
+        "firstHalf",
+        "secondHalf",
         "turningPoints",
-        "lateGame"
+        "lateGame",
+        "finalAssessment"
       ],
-      "coverage": 50,
+      "coverage": 57,
       "dataStatus": "partial",
       "intelligenceCoverage": 10,
       "publishState": "page"
     },
     {
       "matchId": "besiktas-midtjylland-2026-07-23",
+      "fixtureId": null,
+      "provider": "api-football",
       "slug": "besiktas-fc-midtjylland-2026-07-23",
       "kickoff": "2026-07-23T21:00:00+03:00",
+      "kickoffUtc": "2026-07-23T18:00:00.000Z",
+      "kickoffLocal": "2026-07-23T21:00",
       "date": "2026-07-23",
-      "league": "UEFA Avrupa Ligi",
-      "competitionType": null,
-      "homeTeam": "Beşiktaş",
-      "awayTeam": "FC Midtjylland",
-      "score": {
-        "home": 1,
-        "away": 0
-      },
       "status": "FINISHED",
       "providerStatus": "FINISHED",
       "finishType": "regular",
       "finishLabel": "Normal sürede tamamlandı",
+      "league": "UEFA Avrupa Ligi",
+      "competition": "UEFA Avrupa Ligi",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Beşiktaş",
+      "awayTeam": "FC Midtjylland",
+      "venue": "Tüpraş Stadyumu",
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "finalScore": "1-0",
+      "winner": "Beşiktaş",
       "turkish": true,
       "turkishTeam": "Beşiktaş",
-      "modelVersion": "futbolradar-post-match-v1",
-      "fingerprint": "ad6c6cb871065dde",
-      "generatedAt": "2026-07-30T17:15:06.297Z",
+      "availability": {
+        "events": 2,
+        "statistics": 2,
+        "lineups": 2,
+        "players": 0
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": "2026-07-26T23:22:23.566Z",
+      "missingInputs": [
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v3",
+      "modelVersion": "futbolradar-post-match-v3",
+      "analysisSourceHash": "a4917916001e544f",
+      "fingerprint": "a4917916001e544f",
+      "analysisGeneratedAt": "2026-07-31T07:50:31.018Z",
+      "analysisUpdatedAt": "2026-07-31T07:53:49.856Z",
+      "generatedAt": "2026-07-31T07:53:49.856Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
       "seo": {
         "title": "Beşiktaş 1-0 FC Midtjylland Maç Raporu ve İstatistikleri | FutbolRadar",
         "description": "Beşiktaş 1-0 FC Midtjylland maç raporu, goller: Orkun Kökçü, xG, şut ve pas istatistikleri, kırılma anları ve sonraki maç.",
@@ -1210,6 +1657,53 @@
             "FC Midtjylland sahaya 4-3-3 dizilişiyle çıktı."
           ]
         },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "Devre arasına Beşiktaş 1-0 FC Midtjylland skoruyla gidildi.",
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "26' Beşiktaş — Orkun Kökçü: Orkun Kökçü'nün golüyle Beşiktaş 1-0 öne geçti.",
+            "15' FC Midtjylland kırmızı kart — Friday Etim, Tiago Djalo'ya yaptığı sert faul nedeniyle doğrudan kırmızı kart gördü."
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarıda skor değişmedi; sonucu belirleyen goller ilk yarıda gelmişti."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Beşiktaş maça 4-1-4-1 dizilişiyle başladı.",
+            "FC Midtjylland maça 4-3-3 dizilişiyle başladı."
+          ],
+          "formations": [
+            {
+              "team": "Beşiktaş",
+              "formation": "4-1-4-1"
+            },
+            {
+              "team": "FC Midtjylland",
+              "formation": "4-3-3"
+            }
+          ],
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Beşiktaş, FC Midtjylland'ı 1-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Kırmızı kart maçın seyrini etkiledi (15' FC Midtjylland)."
+          ],
+          "closing": "Beşiktaş sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
         "aiRating": {
           "home": {
             "team": "Beşiktaş",
@@ -1247,12 +1741,62 @@
           "en-zayif-performans"
         ]
       },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating",
+        "nextMatch"
+      ],
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 10,
+      "publishState": "page"
+    },
+    {
+      "matchId": "fenerbahce-gornik-zabrze-2026-07-21",
+      "fixtureId": "blx8udpkfd48ndx9a93jskg0k",
+      "provider": "api-football",
+      "slug": "fenerbahce-gornik-zabrze-mac-analizi",
+      "kickoff": "2026-07-21T21:00:00+03:00",
+      "kickoffUtc": "2026-07-21T18:00:00.000Z",
+      "kickoffLocal": "2026-07-21T21:00",
+      "date": "2026-07-21",
+      "status": "FINISHED",
+      "providerStatus": "FINISHED",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "UEFA Şampiyonlar Ligi",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Fenerbahçe",
+      "awayTeam": "Górnik Zabrze",
+      "venue": "Chobani Stadyumu",
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "finalScore": "1-0",
+      "winner": "Fenerbahçe",
+      "turkish": true,
+      "turkishTeam": "Fenerbahçe",
       "availability": {
-        "events": 2,
-        "statistics": 2,
+        "events": 7,
+        "statistics": 26,
         "lineups": 2,
         "players": 0
       },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "players",
@@ -1260,43 +1804,16 @@
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "readySections": [
-        "summary",
-        "standoutPlayers",
-        "momentum",
-        "statistics",
-        "turningPoints",
-        "lateGame",
-        "aiRating",
-        "nextMatch"
-      ],
-      "coverage": 80,
-      "dataStatus": "complete",
-      "intelligenceCoverage": 10,
-      "publishState": "page"
-    },
-    {
-      "matchId": "fenerbahce-gornik-zabrze-2026-07-21",
-      "slug": "fenerbahce-gornik-zabrze-mac-analizi",
-      "kickoff": "2026-07-21T21:00:00+03:00",
-      "date": "2026-07-21",
-      "league": "UEFA Şampiyonlar Ligi",
-      "competitionType": null,
-      "homeTeam": "Fenerbahçe",
-      "awayTeam": "Górnik Zabrze",
-      "score": {
-        "home": 1,
-        "away": 0
-      },
-      "status": "FINISHED",
-      "providerStatus": "FINISHED",
-      "finishType": "regular",
-      "finishLabel": "Normal sürede tamamlandı",
-      "turkish": true,
-      "turkishTeam": "Fenerbahçe",
-      "modelVersion": "futbolradar-post-match-v1",
-      "fingerprint": "184b5258ce0489cb",
-      "generatedAt": "2026-07-30T17:15:06.297Z",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v3",
+      "modelVersion": "futbolradar-post-match-v3",
+      "analysisSourceHash": "cdf36f47a9092674",
+      "fingerprint": "cdf36f47a9092674",
+      "analysisGeneratedAt": "2026-07-31T07:50:31.018Z",
+      "analysisUpdatedAt": "2026-07-31T07:53:49.856Z",
+      "generatedAt": "2026-07-31T07:53:49.856Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
       "seo": {
         "title": "Fenerbahçe 1-0 Górnik Zabrze Maç Raporu ve İstatistikleri | FutbolRadar",
         "description": "Fenerbahçe 1-0 Górnik Zabrze maç raporu, goller: Anderson Talisca, xG, şut ve pas istatistikleri, kırılma anları ve sonraki maç.",
@@ -1419,6 +1936,58 @@
             "Rakip ceza sahasında topla buluşmada Fenerbahçe önde (28-10); hücum yükü bu tarafta toplandı.",
             "Fenerbahçe 25 orta denedi; kanat merkezli bir kırma tercihi öne çıktı."
           ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "Devre arasına Fenerbahçe 1-0 Górnik Zabrze skoruyla gidildi.",
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "37' Fenerbahçe — Anderson Talisca: Anderson Talisca serbest vuruştan skoru 1-0 yaptı."
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarıda skor değişmedi; sonucu belirleyen goller ilk yarıda gelmişti.",
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
+            "Kayda geçen diğer pozisyonlar: 54' Fenerbahçe kurtarış, 56' Fenerbahçe direk, 57' Fenerbahçe kurtarış, 63' Fenerbahçe direk, 86' Fenerbahçe şut."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Fenerbahçe maça 4-1-4-1 dizilişiyle başladı.",
+            "Górnik Zabrze maça 4-3-3 dizilişiyle başladı."
+          ],
+          "formations": [
+            {
+              "team": "Fenerbahçe",
+              "formation": "4-1-4-1"
+            },
+            {
+              "team": "Górnik Zabrze",
+              "formation": "4-3-3"
+            }
+          ],
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Fenerbahçe, Górnik Zabrze'yi 1-0 yendi.",
+            "İsabetli şutta da öndeydi (6-1); sonuç üretilen pozisyonla uyumlu."
+          ],
+          "strengths": [
+            "Fenerbahçe topa daha çok sahip oldu (%79).",
+            "Fenerbahçe daha çok şut denedi (15-2)."
+          ],
+          "improvements": [
+            "Fenerbahçe şut isabetinde geride kaldı (%40); bitiricilik geliştirilmesi gereken alan."
+          ],
+          "closing": "Fenerbahçe sahadan 1 farkla ayrıldı.",
+          "basis": "statistics+events"
         },
         "aiRating": {
           "home": {
@@ -1544,19 +2113,6 @@
           "en-zayif-performans"
         ]
       },
-      "availability": {
-        "events": 7,
-        "statistics": 26,
-        "lineups": 2,
-        "players": 0
-      },
-      "missingInputs": [
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
-      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "readySections": [
         "summary",
         "standoutPlayers",
@@ -1564,8 +2120,12 @@
         "signals",
         "statistics",
         "tactical",
+        "firstHalf",
+        "secondHalf",
         "turningPoints",
         "lateGame",
+        "coaching",
+        "finalAssessment",
         "aiRating",
         "nextMatch"
       ],
@@ -1576,26 +2136,62 @@
     },
     {
       "matchId": "umraniyespor-galatasaray-2026-07-17",
+      "fixtureId": null,
+      "provider": "api-football",
       "slug": "umraniyespor-galatasaray-2026-07-17",
       "kickoff": "2026-07-17",
+      "kickoffUtc": "2026-07-17T00:00:00.000Z",
+      "kickoffLocal": "2026-07-17T03:00",
       "date": "2026-07-17",
-      "league": "Hazırlık Maçı",
-      "competitionType": null,
-      "homeTeam": "Ümraniyespor",
-      "awayTeam": "Galatasaray",
-      "score": {
-        "home": 1,
-        "away": 5
-      },
       "status": "FINISHED",
       "providerStatus": "FINISHED",
       "finishType": "regular",
       "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Ümraniyespor",
+      "awayTeam": "Galatasaray",
+      "venue": "Ümraniye Şehir Stadyumu",
+      "score": {
+        "home": 1,
+        "away": 5
+      },
+      "finalScore": "1-5",
+      "winner": "Galatasaray",
       "turkish": true,
       "turkishTeam": "Ümraniyespor & Galatasaray",
-      "modelVersion": "futbolradar-post-match-v1",
-      "fingerprint": "1e392d0d9d54ab2b",
-      "generatedAt": "2026-07-30T17:15:06.297Z",
+      "availability": {
+        "events": 5,
+        "statistics": 0,
+        "lineups": 1,
+        "players": 0
+      },
+      "dataCompleteness": 0.75,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v3",
+      "modelVersion": "futbolradar-post-match-v3",
+      "analysisSourceHash": "f2619e1dc2c2f46a",
+      "fingerprint": "f2619e1dc2c2f46a",
+      "analysisGeneratedAt": "2026-07-31T07:50:31.018Z",
+      "analysisUpdatedAt": "2026-07-31T07:53:49.856Z",
+      "generatedAt": "2026-07-31T07:53:49.856Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
       "seo": {
         "title": "Ümraniyespor 1-5 Galatasaray Maç Raporu ve İstatistikleri | FutbolRadar",
         "description": "Ümraniyespor 1-5 Galatasaray maç raporu, goller: Ada Yüzgeç, Kazımcan Karataş, Can Armando Güner, Berat Luş, Arda Tagay, kırılma anları ve sonraki maç.",
@@ -1705,6 +2301,42 @@
             "Maç boyunca 1 oyuncu değişikliği yapıldı."
           ]
         },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "Devre arasına Ümraniyespor 0-2 Galatasaray skoruyla gidildi.",
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "35' Galatasaray — Ada Yüzgeç: Ada Yüzgeç",
+            "42' Galatasaray — Kazımcan Karataş: Kazımcan Karataş"
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarının skoru 1-3 oldu.",
+            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "60' Galatasaray — Can Armando Güner: Can Armando Güner",
+            "62' Galatasaray — Berat Luş: Berat Luş"
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Galatasaray, Ümraniyespor'u 1-5 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Galatasaray sahadan 4 farkla ayrıldı.",
+          "basis": "events-only"
+        },
         "aiRating": null,
         "analysis": [
           {
@@ -1732,12 +2364,58 @@
           "en-zayif-performans"
         ]
       },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 10,
+      "publishState": "page"
+    },
+    {
+      "matchId": "besiktas-spartak-trnava-2026-07-14",
+      "fixtureId": null,
+      "provider": "api-football",
+      "slug": "besiktas-spartak-trnava-2026-07-14",
+      "kickoff": "2026-07-14",
+      "kickoffUtc": "2026-07-14T00:00:00.000Z",
+      "kickoffLocal": "2026-07-14T03:00",
+      "date": "2026-07-14",
+      "status": "FINISHED",
+      "providerStatus": "FINISHED",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Beşiktaş",
+      "awayTeam": "Spartak Trnava",
+      "venue": "Stadion Antona Malatinskeho",
+      "score": {
+        "home": 2,
+        "away": 3
+      },
+      "finalScore": "2-3",
+      "winner": "Spartak Trnava",
+      "turkish": true,
+      "turkishTeam": "Beşiktaş",
       "availability": {
-        "events": 5,
+        "events": 2,
         "statistics": 0,
         "lineups": 1,
         "players": 0
       },
+      "dataCompleteness": 0.75,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "statistics",
@@ -1749,40 +2427,16 @@
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "readySections": [
-        "summary",
-        "standoutPlayers",
-        "momentum",
-        "turningPoints",
-        "lateGame"
-      ],
-      "coverage": 50,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 10,
-      "publishState": "page"
-    },
-    {
-      "matchId": "besiktas-spartak-trnava-2026-07-14",
-      "slug": "besiktas-spartak-trnava-2026-07-14",
-      "kickoff": "2026-07-14",
-      "date": "2026-07-14",
-      "league": "Hazırlık Maçı",
-      "competitionType": null,
-      "homeTeam": "Beşiktaş",
-      "awayTeam": "Spartak Trnava",
-      "score": {
-        "home": 2,
-        "away": 3
-      },
-      "status": "FINISHED",
-      "providerStatus": "FINISHED",
-      "finishType": "regular",
-      "finishLabel": "Normal sürede tamamlandı",
-      "turkish": true,
-      "turkishTeam": "Beşiktaş",
-      "modelVersion": "futbolradar-post-match-v1",
-      "fingerprint": "5876bf8b96456ca0",
-      "generatedAt": "2026-07-30T17:15:06.297Z",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v3",
+      "modelVersion": "futbolradar-post-match-v3",
+      "analysisSourceHash": "ed15ef0975025b43",
+      "fingerprint": "ed15ef0975025b43",
+      "analysisGeneratedAt": "2026-07-31T07:50:31.018Z",
+      "analysisUpdatedAt": "2026-07-31T07:53:49.856Z",
+      "generatedAt": "2026-07-31T07:53:49.856Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
       "seo": {
         "title": "Beşiktaş 2-3 Spartak Trnava Maç Raporu ve İstatistikleri | FutbolRadar",
         "description": "Beşiktaş 2-3 Spartak Trnava maç raporu, goller: İlhan Fakılı, Tiago Djalo, kırılma anları ve sonraki maç.",
@@ -1854,6 +2508,36 @@
           "status": "unavailable",
           "notes": []
         },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "Devre arasına Beşiktaş 1-3 Spartak Trnava skoruyla gidildi."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarının skoru 1-0 oldu."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Spartak Trnava, Beşiktaş'ı 2-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Spartak Trnava sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
         "aiRating": null,
         "analysis": [
           {
@@ -1881,30 +2565,16 @@
           "en-zayif-performans"
         ]
       },
-      "availability": {
-        "events": 2,
-        "statistics": 0,
-        "lineups": 1,
-        "players": 0
-      },
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
-      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "readySections": [
         "summary",
         "standoutPlayers",
-        "turningPoints"
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "finalAssessment"
       ],
-      "coverage": 30,
-      "dataStatus": "minimal",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 10,
       "publishState": "page"
     }

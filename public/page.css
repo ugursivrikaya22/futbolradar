@@ -9352,6 +9352,42 @@ h1 {
   color: white;
 }
 
+/* Analiz durumu rozeti. Kısmi bir analiz "tam" gibi sunulmaz; okuyucu
+   neye baktığını kartın üstünde görür. */
+.post-match-status {
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  background: rgba(var(--surface-rgb), 0.081);
+  color: var(--text-soft);
+  font-size: var(--fs-xs);
+  font-weight: 750;
+}
+
+.post-match-status.is-completed {
+  background: rgba(22, 138, 90, 0.12);
+  color: var(--accent);
+}
+
+.post-match-status.is-partial_data,
+.post-match-status.is-waiting_for_final_data,
+.post-match-status.is-retry_scheduled {
+  background: rgba(200, 140, 30, 0.14);
+  color: #8a5a00;
+}
+
+.post-match-status.is-failed {
+  background: rgba(200, 30, 45, 0.096);
+  color: var(--live);
+}
+
+@media (prefers-color-scheme: dark) {
+  .post-match-status.is-partial_data,
+  .post-match-status.is-waiting_for_final_data,
+  .post-match-status.is-retry_scheduled {
+    color: #f0c274;
+  }
+}
+
 .post-match-score {
   display: grid;
   justify-items: center;

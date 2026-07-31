@@ -35,7 +35,15 @@ const crypto = require("node:crypto");
 
 const { buildMatchReport } = require("./matchReportService");
 const { buildPostMatchIntelligence } = require("./postMatchIntelligence");
-const { PROVIDER_MISSING_LABEL, finishLabel, finishType, isAnalyzableMatch } = require("./matchStatus");
+const {
+  PROVIDER_MISSING_LABEL,
+  finishLabel,
+  finishType,
+  isAnalyzableMatch,
+  isAwardedStatus,
+  matchState
+} = require("./matchStatus");
+const { dataCompleteness, hasCompleteMatchData } = require("./refreshPolicy");
 const { isTurkishMatch, turkishSideOf } = require("./turkishTeams");
 
 /**
@@ -43,7 +51,39 @@ const { isTurkishMatch, turkishSideOf } = require("./turkishTeams");
  * yapıldığında ARTIRILMALI; yoksa parmak izi eşleşmeye devam eder ve eski
  * raporlar yeniden üretilmez.
  */
-const MODEL_VERSION = "futbolradar-post-match-v1";
+const MODEL_VERSION = "futbolradar-post-match-v3";
+
+/**
+ * ANALİZ YAŞAM DÖNGÜSÜ.
+ *
+ * Bir maçın analizi tek adımda "var/yok" değildir: sağlayıcı veriyi son
+ * düdükten dakikalar sonra yayımlıyor, üretim başarısız olabiliyor ve
+ * başarısız bir üretim maçı kalıcı olarak dışarıda bırakmamalı.
+ *
+ *   waiting_for_final_data — maç bitti, sağlayıcı verisi henüz yetersiz.
+ *   ready_for_analysis     — yeterli doğrulanmış veri var, üretim sırada.
+ *   generating             — üretim sürüyor (koşu içi geçici durum).
+ *   completed              — analiz üretildi ve veri tam sayılıyor.
+ *   partial_data           — analiz üretildi ama sağlayıcı bazı alanları
+ *                            hiç vermedi; arayüz bunu açıkça işaretler.
+ *   failed                 — üretim hata verdi, deneme hakkı kalmadı.
+ *   retry_scheduled        — üretim hata verdi, yeniden denenecek.
+ */
+const ANALYSIS_STATUSES = Object.freeze({
+  WAITING: "waiting_for_final_data",
+  READY: "ready_for_analysis",
+  GENERATING: "generating",
+  COMPLETED: "completed",
+  PARTIAL: "partial_data",
+  FAILED: "failed",
+  RETRY: "retry_scheduled"
+});
+
+/** Bir maç için en fazla kaç kez üretim denenir. */
+const MAX_ANALYSIS_ATTEMPTS = 3;
+
+/** Başarısız denemeden sonra beklenecek süre (üstel geri çekilme tabanı). */
+const RETRY_BACKOFF_MS = 10 * 60 * 1000;
 
 /** Sağlayıcıdan beklenen ve tek tek izlenen veri alanları. */
 const TRACKED_INPUTS = [
@@ -143,6 +183,30 @@ function digestOf(report, intelligence) {
       status: tactical.status || "unavailable",
       notes: trimMoments(tactical.notes, 6)
     },
+    firstHalf: sections.firstHalf
+      ? { status: sections.firstHalf.status, notes: trimMoments(sections.firstHalf.notes, 6), goals: sections.firstHalf.goals || 0 }
+      : null,
+    secondHalf: sections.secondHalf
+      ? { status: sections.secondHalf.status, notes: trimMoments(sections.secondHalf.notes, 6), goals: sections.secondHalf.goals || 0 }
+      : null,
+    coaching: sections.coaching
+      ? {
+        status: sections.coaching.status,
+        notes: trimMoments(sections.coaching.notes, 6),
+        formations: sections.coaching.formations || [],
+        interpretation: sections.coaching.interpretation || null
+      }
+      : null,
+    finalAssessment: sections.finalAssessment && sections.finalAssessment.status !== "unavailable"
+      ? {
+        status: sections.finalAssessment.status,
+        verdict: trimMoments(sections.finalAssessment.verdict, 3),
+        strengths: trimMoments(sections.finalAssessment.strengths, 3),
+        improvements: trimMoments(sections.finalAssessment.improvements, 3),
+        closing: sections.finalAssessment.closing || null,
+        basis: sections.finalAssessment.basis || null
+      }
+      : null,
     aiRating: sections.aiRating && sections.aiRating.status === "ready"
       ? { home: sections.aiRating.home, away: sections.aiRating.away, confidence: sections.aiRating.confidence }
       : null,
@@ -166,8 +230,72 @@ function readySectionIds(report) {
 }
 
 /**
+ * Europe/Istanbul yerel zaman gösterimi.
+ *
+ * Sunucunun yerel saat dilimine GÜVENİLMEZ: CI ubuntu-latest üzerinde UTC,
+ * Vercel fonksiyonu UTC, geliştirici makinesi başka bir dilim olabilir.
+ * Zaman damgaları UTC saklanır, okuyucuya TSİ gösterilir ve dönüşüm her
+ * zaman açıkça `timeZone: "Europe/Istanbul"` ile yapılır.
+ */
+function istanbulLocal(value) {
+  if (!value) return null;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+
+  const parts = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Europe/Istanbul",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", hour12: false
+  }).formatToParts(parsed).reduce((acc, part) => {
+    acc[part.type] = part.value;
+    return acc;
+  }, {});
+
+  return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
+}
+
+function utcIso(value) {
+  if (!value) return null;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
+/** Kazanan takım — yalnızca doğrulanmış skordan. Uydurulmaz. */
+function winnerOf(match) {
+  const score = match && match.score;
+  if (!score || typeof score.home !== "number" || typeof score.away !== "number") return null;
+  if (score.home > score.away) return match.homeTeam || null;
+  if (score.away > score.home) return match.awayTeam || null;
+  return "draw";
+}
+
+/**
+ * Analiz durumu — üretim sonucundan türetilir.
+ *
+ * Hükmen sonuçlar (AWD/WO) kaçınılmaz olarak `partial_data`: maç sahada
+ * oynanmadığı için olay ve istatistik yoktur ve olmayacaktır.
+ */
+function analysisStatusFor(match, report, availability) {
+  if (isAwardedStatus(match)) {
+    return ANALYSIS_STATUSES.PARTIAL;
+  }
+
+  const ready = readySectionIds(report);
+
+  if (!ready.length) {
+    // Hiçbir bölüm ölçülmüş veriye dayanmıyor: sağlayıcı henüz veri
+    // vermemiş olabilir. Bu maç analiz kuyruğunda kalır.
+    return ANALYSIS_STATUSES.WAITING;
+  }
+
+  return hasCompleteMatchData(match) && !availability.missing.length
+    ? ANALYSIS_STATUSES.COMPLETED
+    : ANALYSIS_STATUSES.PARTIAL;
+}
+
+/**
  * Tek maç için depo kaydı üretir. `null` döner: maç analiz edilebilir
- * değilse (bitmemiş ya da hükmen).
+ * değilse (bitmemiş ya da oynanmayacak).
  */
 function buildReportRecord(match, context) {
   if (!isAnalyzableMatch(match)) {
@@ -184,44 +312,120 @@ function buildReportRecord(match, context) {
   const intelligence = buildPostMatchIntelligence(match);
   const availability = inputAvailability(match);
   const ready = readySectionIds(report);
+  const generatedAt = settings.generatedAt || null;
+  const previous = settings.previous || null;
+  const analysisStatus = analysisStatusFor(match, report, availability);
+  const kickoffRaw = match.kickoff || match.date || null;
 
   return {
+    // ── Kimlik ──────────────────────────────────────────────────────────
     matchId: match.id,
+    // Sağlayıcı fikstür kimliği YETKİLİ tekil anahtardır; aynı karşılaşma
+    // iki kaynaktan farklı yerel id ile gelebiliyor.
+    fixtureId: (match.providerIds && match.providerIds["api-football"]) || match.providerId || match.fixtureId || null,
+    provider: match.liveStateSource || (match.providerIds ? "api-football" : "curated"),
     slug: report.seo.path.replace(/^mac-raporu\//, "").replace(/\.html$/, ""),
-    kickoff: match.kickoff || match.date || null,
-    date: String(match.kickoff || match.date || "").slice(0, 10),
-    league: match.league || null,
-    competitionType: match.competitionType || null,
-    homeTeam: match.homeTeam || null,
-    awayTeam: match.awayTeam || null,
-    score: availability.hasScore ? { home: match.score.home, away: match.score.away } : null,
-    status: "FINISHED",
+
+    // ── Zaman: UTC saklanır, TSİ gösterilir ─────────────────────────────
+    kickoff: kickoffRaw,
+    kickoffUtc: utcIso(kickoffRaw),
+    kickoffLocal: istanbulLocal(kickoffRaw),
+    date: String(kickoffRaw || "").slice(0, 10),
+
+    // ── Maç ─────────────────────────────────────────────────────────────
+    status: matchState(match),
     providerStatus: match.providerStatus || match.status || null,
     finishType: finishType(match),
     finishLabel: finishLabel(match),
+    league: match.league || null,
+    competition: report.seo.competition || match.league || null,
+    competitionType: match.competitionType || null,
+    season: match.season || null,
+    homeTeam: match.homeTeam || null,
+    awayTeam: match.awayTeam || null,
+    venue: match.venue || null,
+    score: availability.hasScore ? { home: match.score.home, away: match.score.away } : null,
+    finalScore: availability.hasScore ? `${match.score.home}-${match.score.away}` : null,
+    winner: winnerOf(match),
     turkish: isTurkishMatch(match),
     turkishTeam: turkishSideOf(match),
+
+    // ── Veri tazeliği ───────────────────────────────────────────────────
+    availability: availability.counts,
+    dataCompleteness: dataCompleteness(match),
+    providerUpdatedAt: match.providerUpdatedAt || null,
+    lastSuccessfulSyncAt: match.lastSuccessfulSyncAt || match.providerSyncedAt || null,
+    missingInputs: availability.missing,
+    providerMissingLabel: PROVIDER_MISSING_LABEL,
+
+    // ── Analiz yaşam döngüsü ────────────────────────────────────────────
+    analysisStatus,
+    analysisVersion: MODEL_VERSION,
     modelVersion: MODEL_VERSION,
+    analysisSourceHash: analysisFingerprint(match),
     fingerprint: analysisFingerprint(match),
-    generatedAt: settings.generatedAt || null,
+    analysisGeneratedAt: (previous && previous.analysisGeneratedAt) || generatedAt,
+    analysisUpdatedAt: generatedAt,
+    generatedAt,
+    analysisError: null,
+    analysisAttempts: previous ? Number(previous.analysisAttempts || 0) : 0,
+
+    // ── İçerik ──────────────────────────────────────────────────────────
     seo: report.seo,
     reportUrl: `./${report.seo.path}`,
     digest: digestOf(report, intelligence),
-    availability: availability.counts,
-    // Sağlayıcının hiç vermediği alanlar. Arayüz bunları
-    // PROVIDER_MISSING_LABEL ile gösterir; boş bırakmaz.
-    missingInputs: availability.missing,
-    providerMissingLabel: PROVIDER_MISSING_LABEL,
     readySections: ready,
     coverage: report.coverage,
     dataStatus: report.dataStatus,
     intelligenceCoverage: intelligence.coverage,
+
     // Bağımsız bir rapor SAYFASI yalnızca ölçülmüş en az bir bölüm varsa
     // basılır. Tamamen boş bir sayfa okuyucuya da arama motoruna da değer
     // vermez; analiz yine de depoda durur ve maç detay/analiz sayfalarında
     // eksik veri açıkça yazılarak gösterilir.
     publishState: ready.length ? "page" : "store-only"
   };
+}
+
+/**
+ * Başarısız üretimi kaydeder. Maç KALICI olarak dışarıda bırakılmaz:
+ * deneme hakkı varsa `retry_scheduled`, bittiyse `failed` olur ve iki
+ * durumda da sebep kayıtta kalır.
+ */
+function markAnalysisFailure(match, error, context) {
+  const settings = context || {};
+  const attempts = Number((settings.previous && settings.previous.analysisAttempts) || 0) + 1;
+  const canRetry = attempts < MAX_ANALYSIS_ATTEMPTS;
+  const generatedAt = settings.generatedAt || new Date().toISOString();
+
+  return {
+    ...(settings.previous || {}),
+    matchId: match.id,
+    homeTeam: match.homeTeam || null,
+    awayTeam: match.awayTeam || null,
+    kickoff: match.kickoff || match.date || null,
+    date: String(match.kickoff || match.date || "").slice(0, 10),
+    turkish: isTurkishMatch(match),
+    analysisStatus: canRetry ? ANALYSIS_STATUSES.RETRY : ANALYSIS_STATUSES.FAILED,
+    analysisAttempts: attempts,
+    analysisError: String((error && error.message) || error || "bilinmeyen hata").slice(0, 300),
+    analysisUpdatedAt: generatedAt,
+    // Üstel geri çekilme: arka arkaya aynı hatayı almak kotayı ve günlüğü
+    // boşa harcar.
+    retryAfter: canRetry
+      ? new Date(Date.parse(generatedAt) + RETRY_BACKOFF_MS * (2 ** (attempts - 1))).toISOString()
+      : null,
+    analysisVersion: MODEL_VERSION,
+    publishState: "store-only"
+  };
+}
+
+/** Bu kayıt şimdi yeniden denenmeli mi? */
+function isRetryDue(record, nowMs) {
+  if (!record || record.analysisStatus !== ANALYSIS_STATUSES.RETRY) return false;
+  if (!record.retryAfter) return true;
+  const due = Date.parse(record.retryAfter);
+  return Number.isNaN(due) || due <= (Number.isFinite(nowMs) ? nowMs : Date.now());
 }
 
 /**
@@ -243,19 +447,45 @@ function syncPostMatchReports(options) {
   const analyzable = matches.filter(isAnalyzableMatch);
 
   const records = [];
-  const stats = { total: analyzable.length, created: 0, reused: 0, regenerated: 0, failed: 0 };
+  const stats = {
+    total: analyzable.length,
+    created: 0,
+    reused: 0,
+    regenerated: 0,
+    failed: 0,
+    byStatus: {},
+    errors: []
+  };
 
   for (const match of analyzable) {
     const fingerprint = analysisFingerprint(match);
     const existing = previousById.get(match.id);
 
-    if (existing && existing.fingerprint === fingerprint && existing.modelVersion === MODEL_VERSION) {
+    // Parmak izi aynı VE önceki koşu başarılıysa kayıt korunur. Başarısız
+    // ya da yeniden denenmeyi bekleyen kayıt, girdisi değişmese de tekrar
+    // denenir — aksi hâlde geçici bir hata kalıcı olurdu.
+    const stale = existing && (existing.analysisStatus === ANALYSIS_STATUSES.FAILED ||
+      isRetryDue(existing, Date.parse(generatedAt)));
+
+    if (existing && !stale && existing.fingerprint === fingerprint && existing.modelVersion === MODEL_VERSION) {
       records.push(existing);
       stats.reused += 1;
+      stats.byStatus[existing.analysisStatus] = (stats.byStatus[existing.analysisStatus] || 0) + 1;
       continue;
     }
 
-    const record = buildReportRecord(match, { ...context, generatedAt });
+    // Üretim hatası maçı KALICI olarak dışarıda bırakmaz: hata kayda
+    // yazılır, deneme hakkı varsa yeniden denenmek üzere işaretlenir.
+    let record = null;
+    try {
+      record = buildReportRecord(match, { ...context, generatedAt, previous: existing });
+    } catch (error) {
+      const failure = markAnalysisFailure(match, error, { previous: existing, generatedAt });
+      records.push(failure);
+      stats.failed += 1;
+      stats.errors.push({ matchId: match.id, error: failure.analysisError, status: failure.analysisStatus });
+      continue;
+    }
 
     if (!record) {
       stats.failed += 1;
@@ -263,6 +493,7 @@ function syncPostMatchReports(options) {
     }
 
     records.push(record);
+    stats.byStatus[record.analysisStatus] = (stats.byStatus[record.analysisStatus] || 0) + 1;
     if (existing) stats.regenerated += 1;
     else stats.created += 1;
   }
@@ -286,14 +517,22 @@ function orderForDisplay(records) {
 }
 
 module.exports = {
+  ANALYSIS_STATUSES,
+  MAX_ANALYSIS_ATTEMPTS,
   MODEL_VERSION,
   PROVIDER_MISSING_LABEL,
+  RETRY_BACKOFF_MS,
   TRACKED_INPUTS,
   analysisFingerprint,
+  analysisStatusFor,
   buildReportRecord,
   digestOf,
   inputAvailability,
+  isRetryDue,
+  istanbulLocal,
+  markAnalysisFailure,
   orderForDisplay,
   readySectionIds,
-  syncPostMatchReports
+  syncPostMatchReports,
+  winnerOf
 };

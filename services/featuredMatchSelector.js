@@ -33,6 +33,7 @@
 
 const { isTurkishMatch, turkishSideOf } = require("./turkishTeams");
 const { isMajorClubMatch, majorClubSideOf } = require("./majorClubs");
+const { isAwardedStatus, isUnplayedStatus } = require("./matchStatus");
 
 const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"]);
 const FINISHED_STATUSES = new Set(["FINISHED", "FT", "AET", "PEN", "AWARDED", "WO"]);
@@ -123,8 +124,15 @@ function bandOf(match, nowMs) {
     return "live";
   }
 
-  if (isFinishedMatch(match)) {
+  if (isFinishedMatch(match) || isAwardedStatus(match)) {
     return "played";
+  }
+
+  // Ertelenen/iptal/tatil edilen maç oynanmadı: başlama saati geçtiği için
+  // "oynanıyor" bandına düşmemeli. Bu maçlar hero havuzundan tamamen
+  // çıkarılır (poolOf), bant yalnızca güvenlik ağı.
+  if (isUnplayedStatus(match)) {
+    return "unplayed";
   }
 
   const kickoff = kickoffTime(match);
@@ -211,7 +219,11 @@ function selectFeaturedMatches(matches, options) {
 
   // Havuz: bugünün maçları + tarihi ne olursa olsun canlı maçlar. Gece
   // yarısını aşan bir maç TSİ'de "dün" görünse de canlıysa hero'ya girer.
-  const pool = list.filter((match) => matchDateValue(match) === today || isLiveMatch(match));
+  // Oynanmayan maçlar (ertelendi/iptal/tatil) hero'ya hiç girmez: kartın
+  // işi "şu anda ne var" göstermek, oynanmayacak bir eşleşme değil.
+  const pool = list
+    .filter((match) => matchDateValue(match) === today || isLiveMatch(match))
+    .filter((match) => !isUnplayedStatus(match));
   const turkishCount = pool.filter(isTurkishMatch).length;
 
   const ordered = pool.slice().sort((left, right) => {

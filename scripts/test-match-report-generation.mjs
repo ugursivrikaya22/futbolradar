@@ -187,11 +187,23 @@ function testSyncNeverOverwritesCuratedData() {
     source: "api-football"
   };
 
-  assert.equal(
-    mergeProviderDetail(curated, providerDetail, "2026-07-25T12:00:00Z"),
-    null,
-    "kürasyonlu kayıt tamamen doluyken sağlayıcı hiçbir alanı değiştirmemeli"
-  );
+  // Kürasyonlu kayıt tam: sağlayıcı hiçbir DOĞRULANMIŞ alanı değiştiremez.
+  // Yalnızca senkron zaman damgası yazılır (`touchedOnly`) — bu, tazeleme
+  // politikasının aynı maçı bir sonraki koşuda tekrar sormamasını sağlar ve
+  // içeriğe dokunmaz.
+  const merged = mergeProviderDetail(curated, providerDetail, "2026-07-25T12:00:00Z");
+  assert.ok(merged && merged.touchedOnly, "değişiklik yoksa yalnızca senkron zamanı işaretlenmeli");
+  assert.deepEqual(merged.changes, [], "içerik değişikliği raporlanmamalı");
+
+  for (const field of ["score", "statistics", "events", "lineups", "status"]) {
+    assert.deepEqual(
+      merged.record[field],
+      curated[field],
+      `kürasyonlu kayıt tamamen doluyken sağlayıcı ${field} alanını değiştirmemeli`
+    );
+  }
+
+  assert.equal(merged.record.lastSuccessfulSyncAt, "2026-07-25T12:00:00Z", "senkron zamanı yazılmalı");
 }
 
 function testSyncFillsGapsAndAdvancesStatus() {
@@ -231,8 +243,31 @@ function testSyncTargetSelection() {
     { id: "id-yok", status: "FINISHED", kickoff: "2026-07-24T21:00:00+03:00", statistics: [], events: [] }
   ];
   const selected = selectSyncTargets(rows, now);
-  assert.deepEqual(selected.map((entry) => entry.match.id).sort(), ["bitti-eksik", "id-yok", "sonuc-bekleyen"]);
+  const selectedIds = selected.map((entry) => entry.match.id).sort();
+
+  // Seçim artık services/refreshPolicy.js kademelerine dayanıyor. Eski
+  // kural yaklaşan maçları HİÇ tazelemiyordu; yeni kural onları da düşük
+  // sıklıkla yokluyor, bu yüzden aday listesi bilerek daha geniş.
+  for (const id of ["bitti-eksik", "id-yok", "sonuc-bekleyen"]) {
+    assert.ok(selectedIds.includes(id), `${id} senkron adayı olmalı`);
+  }
+
+  // Kimliksiz kayıt sessizce sorulmaz: ada göre tahmin yanlış maçın
+  // verisini yazma riski taşır.
   assert.equal(selected.find((entry) => entry.match.id === "id-yok").skipped, "API-Football fixture id yok");
+
+  // Kademeler doğru atanmalı: biten ama eksik maç "settling", saati geçmiş
+  // ama sonucu gelmemiş maç "scheduled-near", uzaktaki maç "scheduled-far".
+  const tierOf = (id) => (selected.find((entry) => entry.match.id === id) || {}).tier;
+  assert.equal(tierOf("bitti-eksik"), "settling", "biten ama eksik maç settling kademesinde");
+  assert.equal(tierOf("sonuc-bekleyen"), "scheduled-near", "sonucu bekleyen maç sık yoklanmalı");
+  assert.equal(tierOf("gelecek"), "scheduled-far", "uzaktaki maç seyrek yoklanmalı");
+
+  // Adsız kayıtlar birbirine karışmamalı: dejenere bir tekilleştirme
+  // anahtarı aynı günün tüm kayıtlarını tek maça indiriyordu.
+  assert.equal(selected.length + (selected.duplicates || []).length >= rows.length - 1, true,
+    "aynı günün farklı kayıtları yanlışlıkla birleştirilmemeli");
+  assert.deepEqual(selected.duplicates, [], "farklı maçlar yinelenen sayılmamalı");
 }
 
 testTurkishSuffixes();

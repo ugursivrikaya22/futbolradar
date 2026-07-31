@@ -10,6 +10,7 @@ const {
   withTimeout
 } = require("../../api/_utils");
 const { competitions, matchesCompetition } = require("../competitionCatalog");
+const { canonicalStatus } = require("../matchStatus");
 // Bağımlılığı olmayan bir okuyucu; leagueResolver'ı require etmek sağlayıcı
 // ile resolver arasında döngü yaratırdı.
 const { readCachedLeague } = require("../leagueCache");
@@ -412,23 +413,22 @@ function stampProviderData(records, resource, staleAfterMs) {
   }));
 }
 
+/**
+ * Saglayici kisa kodunu kanonik duruma cevirir.
+ *
+ * Eskiden tanimli olmayan HER kod "SCHEDULED" donuyordu: PST (ertelendi),
+ * CANC (iptal), ABD (tatil), SUSP/INT (ara verildi), AWD/WO (hukmen) ve
+ * TBD hepsi "programlandi" goruluyordu. Baslama saati gectigi icin arayuz
+ * bunlari oynanmakta olan mac bandina aliyordu - OYNANMAYAN BIR MAC CANLI
+ * GIBI GORUNUYORDU. Sozluk artik services/matchStatus.js'de tek yerde.
+ */
 function normalizeStatus(status) {
   const short = status && status.short;
-  // Devre arasi ayri bir durum: arayuz "Devre arasi" diyebilmeli. LIVE'a
-  // ezilirse skor tablosunda oynanmayan bir maca dakika bekleniyormus gibi
-  // gorunuyordu. Devre arasi hala "in-play" sayilir (live: true).
-  if (short === "HT" || short === "BT") {
-    return "HALFTIME";
-  }
-  if (["1H", "2H", "ET", "P", "LIVE"].includes(short)) {
-    return "LIVE";
-  }
+  const state = canonicalStatus(short);
 
-  if (["FT", "AET", "PEN"].includes(short)) {
-    return "FINISHED";
-  }
-
-  return "SCHEDULED";
+  // Bilinmeyen kod uydurulmaz: "SCHEDULED" demek yerine kaydin durumu
+  // bilinmiyor olarak tasinir ve arayuz bunu yazar.
+  return state;
 }
 
 function roundNumber(league) {

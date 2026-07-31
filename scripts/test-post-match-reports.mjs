@@ -47,10 +47,14 @@ for (const status of ["SCHEDULED", "NS", "LIVE", "1H", "HT", "POSTPONED", "CANCE
 // FT/AET/PEN ayrımı providerStatus'ta durur.
 assert.equal(isFinishedMatch({ status: "SCHEDULED", providerStatus: "AET" }), true, "providerStatus da okunmalı");
 
-// Hükmen sonuç tamamlanmıştır ama analiz edilmez: oynanmadığı için olayı yok.
-assert.equal(isFinishedMatch({ status: "AWARDED" }), false, "AWARDED bitmiş maç listesinde değil");
+// Hükmen sonuçlar (AWD/WO) sahada oynanmadı — `isFinishedMatch` false —
+// ama analiz hattına GİRERLER: sonuç kesinleşmiştir ve okuyucunun bunu
+// görmesi gerekir. Olay/istatistik olmadığı için analiz kaçınılmaz olarak
+// "partial_data" olur; uydurulmaz.
+assert.equal(isFinishedMatch({ status: "AWARDED" }), false, "Hükmen sonuç sahada oynanmış sayılmaz");
 assert.equal(isAwardedMatch({ status: "WO" }), true, "WO hükmen sonuçtur");
-assert.equal(isAnalyzableMatch({ status: "WO" }), false, "Hükmen sonuç analiz edilmemeli");
+assert.equal(isAnalyzableMatch({ status: "WO" }), true, "Hükmen sonuç analiz hattına girmeli");
+assert.equal(finishType({ status: "WO" }), "awarded", "Bitiş şekli hükmen olmalı");
 
 assert.equal(finishType({ status: "FT" }), "regular", "FT normal süre");
 assert.equal(finishType({ status: "AET" }), "extra-time", "AET uzatma");

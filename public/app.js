@@ -1721,16 +1721,40 @@
 
   function statusTr(status) {
     var normalized = String(status || "").toUpperCase();
+    // Sağlayıcının kısa kodları da karşılanır: eskiden "PST" ya da "SUSP"
+    // gelen bir maçta ham kod ekrana basılıyordu.
     var labels = {
       SCHEDULED: "Planlandı",
+      NS: "Planlandı",
+      TBD: "Saat açıklanmadı",
       LIVE: "Canlı",
       IN_PLAY: "Canlı",
+      "1H": "İlk yarı",
+      "2H": "İkinci yarı",
+      ET: "Uzatma",
+      P: "Penaltılar",
       PAUSED: "Devre arası",
       HALFTIME: "Devre arası",
       HT: "Devre arası",
+      BT: "Uzatma arası",
+      SUSP: "Maça ara verildi",
+      SUSPENDED: "Maça ara verildi",
+      INT: "Maça ara verildi",
+      INTERRUPTED: "Maça ara verildi",
       FINISHED: "Bitti",
+      FT: "Bitti",
+      AET: "Uzatmada bitti",
+      PEN: "Penaltılarla bitti",
+      AWD: "Hükmen",
+      AWARDED: "Hükmen",
+      WO: "Hükmen",
       POSTPONED: "Ertelendi",
-      CANCELLED: "İptal"
+      PST: "Ertelendi",
+      CANCELLED: "İptal",
+      CANC: "İptal",
+      ABD: "Tatil edildi",
+      ABANDONED: "Tatil edildi",
+      UNKNOWN: "Durum doğrulanmadı"
     };
     return labels[normalized] || displayValue(status);
   }
@@ -1982,18 +2006,70 @@
     return Math.round((earned / (form.length * 3)) * 100);
   }
 
+  var UNVERIFIED_LIVE_LABEL = "Canlı veri doğrulanamadı";
+  // Başlama saati geçmiş bir maçın doğrulanmış sinyal olmadan "oynanıyor"
+  // sayılabileceği en uzun süre (uzatma ve devre araları dahil).
+  var LIVE_GRACE_MS = 150 * 60 * 1000;
+
+  /**
+   * BAYAT CANLI KORUMASI — kural services/matchStatus.js ile aynı.
+   *
+   * Başlama saati geçmiş ama sağlayıcıdan canlı sinyali gelmeyen maç canlı
+   * GÖSTERİLMEZ. Eskiden bu maç yalnızca başlama saatini yazıyordu ve
+   * okuyucu maçın henüz başlamadığını sanıyordu; şimdi durumun
+   * doğrulanamadığı açıkça yazılıyor. Skor ya da dakika uydurulmaz.
+   */
+  function matchLiveVerdict(match, nowMs) {
+    var now = Number.isFinite(nowMs) ? nowMs : Date.now();
+    var kickoff = featuredKickoffTime(match).value;
+
+    if (isFinishedMatch(match) || isUnplayedMatch(match)) {
+      return { live: false, unverified: false };
+    }
+
+    if (isLiveMatch(match)) {
+      // Canlı işaretli ama uzun süredir güncellenmemiş: maç muhtemelen
+      // bitmiş ve sonucu gelmemiştir.
+      if (isFinite(kickoff) && now - kickoff > LIVE_GRACE_MS) {
+        return { live: false, unverified: true, stale: true };
+      }
+      return { live: true, unverified: false };
+    }
+
+    if (!isFinite(kickoff) || kickoff > now) {
+      return { live: false, unverified: false };
+    }
+
+    return { live: false, unverified: true, stale: false };
+  }
+
   function fixtureStatusMeta(match) {
     var status = String(match.status || match.providerStatus || "").toUpperCase();
-    var live = isLiveMatch(match);
+    var verdict = matchLiveVerdict(match);
     var finished = ["FINISHED", "FT", "AET", "PEN"].includes(status);
 
-    if (live) {
+    if (verdict.live) {
       var minute = liveMinuteLabel(match);
       return { className: "is-live", label: minute ? minute : statusTr(status), live: true, finished: false };
     }
 
     if (finished) {
       return { className: "is-final", label: "MS", live: false, finished: true };
+    }
+
+    // Oynanmayacak maç: durumu yazılır, saati değil.
+    if (isUnplayedMatch(match)) {
+      return { className: "is-unplayed", label: statusTr(status), live: false, finished: false, unplayed: true };
+    }
+
+    if (verdict.unverified) {
+      return {
+        className: "is-unverified",
+        label: UNVERIFIED_LIVE_LABEL,
+        live: false,
+        finished: false,
+        unverified: true
+      };
     }
 
     return { className: "", label: matchTimeLabel(match) || statusTr(status), live: false, finished: false };
@@ -2441,6 +2517,16 @@
    * sıralama o maçı hero'dan düşürüyordu. Bant skor veya dakika UYDURMAZ,
    * yalnızca kart sırasını belirler.
    */
+  // Sağlayıcının oynanmayacak maç kodları. Ertelenen ya da iptal edilen bir
+  // maç "başlayacak" değildir; başlama saati geçtiği için canlı da sayılmaz.
+  // Seçim bloğunun içinde: hero sırası bu kurala doğrudan bağlı.
+  var UNPLAYED_STATUSES = ["PST", "POSTPONED", "CANC", "CANCELLED", "ABD", "ABANDONED"];
+
+  function isUnplayedMatch(match) {
+    var status = String((match && (match.status || match.providerStatus)) || "").toUpperCase();
+    return UNPLAYED_STATUSES.indexOf(status) !== -1;
+  }
+
   var FEATURED_FINISHED_STATUSES = ["FINISHED", "FT", "AET", "PEN", "AWARDED", "WO"];
   var FEATURED_IN_PROGRESS_WINDOW_MS = 150 * 60 * 1000;
   var FEATURED_BAND_ORDER = ["live", "in-progress", "upcoming", "played"];
@@ -2485,6 +2571,12 @@
 
     if (isFinishedMatch(match)) {
       return "played";
+    }
+
+    // Ertelenen/iptal/tatil edilen maç oynanmadı; başlama saati geçtiği
+    // için "oynanıyor" bandına düşmemeli.
+    if (isUnplayedMatch(match)) {
+      return "unplayed";
     }
 
     var kickoff = featuredKickoffTime(match);
@@ -2563,7 +2655,7 @@
 
     // Gece yarısını aşan bir maç TSİ'de "dün" görünse de canlıysa havuzdadır.
     var pool = list.filter(function (match) {
-      return matchDateValue(match) === today || isLiveMatch(match);
+      return (matchDateValue(match) === today || isLiveMatch(match)) && !isUnplayedMatch(match);
     });
     var turkishCount = pool.filter(isTurkishMatch).length;
 
@@ -4969,9 +5061,28 @@
       "</ul></div>";
   }
 
+  // Analiz durumu okuyucuya olduğu gibi yazılır: kısmi bir analiz "tam"
+  // gibi sunulmaz, veri bekleyen bir maç boş bir kartla geçiştirilmez.
+  var POST_MATCH_STATUS_LABELS = {
+    waiting_for_final_data: "Analiz hazırlanıyor",
+    ready_for_analysis: "Analiz sırada",
+    generating: "Analiz üretiliyor",
+    completed: "Analiz tamamlandı",
+    partial_data: "Kısmi veri",
+    failed: "Analiz üretilemedi",
+    retry_scheduled: "Yeniden denenecek"
+  };
+
+  function postMatchStatusLabel(record) {
+    return POST_MATCH_STATUS_LABELS[record && record.analysisStatus] || "Analiz durumu bilinmiyor";
+  }
+
   function renderPostMatchCard(record, options) {
     var settings = options || {};
     var digest = record.digest || {};
+    var updated = record.analysisUpdatedAt
+      ? "Güncelleme: " + (formatUpdatedAt(record.analysisUpdatedAt) || "")
+      : "";
     var meta = [record.league, formatProfileDate(record.date)].filter(Boolean).join(" · ");
     var finish = digest.finish;
     var finishNote = finish && finish.type && finish.type !== "regular" ? finish.label : "";
@@ -4981,6 +5092,8 @@
       '<div class="post-match-head">' +
       '<span class="post-match-meta">' + escapeHtml(meta) + "</span>" +
       (finishNote ? '<span class="post-match-finish">' + escapeHtml(finishNote) + "</span>" : "") +
+      '<span class="post-match-status is-' + escapeHtml(String(record.analysisStatus || "unknown")) + '">' +
+      escapeHtml(postMatchStatusLabel(record)) + "</span>" +
       "</div>" +
       '<strong class="post-match-score">' + escapeHtml(postMatchScoreLine(record)) + "</strong>" +
       (digest.headline ? "<h3>" + escapeHtml(digest.headline) + "</h3>" : "") +
@@ -4988,10 +5101,12 @@
       (settings.detailed ? postMatchMomentsHtml(record) + postMatchPlayersHtml(record) : "") +
       postMatchMissingHtml(record) +
       '<div class="post-match-footer">' +
-      '<span class="post-match-coverage">Veri kapsamı %' + escapeHtml(String(record.coverage || 0)) + "</span>" +
+      '<span class="post-match-coverage">' + escapeHtml(postMatchStatusLabel(record)) +
+      " · Veri kapsamı %" + escapeHtml(String(record.coverage || 0)) +
+      (updated ? " · " + escapeHtml(updated) : "") + "</span>" +
       (record.publishState === "page"
         ? '<a class="detail-link" href="' + escapeHtml(record.reportUrl || "#") + '">Tam raporu aç</a>'
-        : '<span class="post-match-note">Ölçülmüş veri gelince tam rapor açılacak</span>') +
+        : '<span class="post-match-note">Analiz hazırlanıyor</span>') +
       "</div>" +
       "</article>";
   }

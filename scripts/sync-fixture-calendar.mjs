@@ -25,6 +25,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const { findCompetition, normalizeKey } = require("../services/competitionCatalog.js");
+const { canonicalStatus } = require("../services/matchStatus.js");
 
 const root = process.cwd();
 const OUTPUT_PATH = path.join(root, "data", "fixture-calendar.json");
@@ -128,37 +129,28 @@ function toIstanbulIso(timestamp) {
   return { iso: `${date}T${time}:00+03:00`, date, time };
 }
 
-const STATUS_MAP = new Map([
-  ["NS", "SCHEDULED"],
-  ["TBD", "SCHEDULED"],
-  ["1H", "LIVE"],
-  ["2H", "LIVE"],
-  ["HT", "LIVE"],
-  ["ET", "LIVE"],
-  ["BT", "LIVE"],
-  ["P", "LIVE"],
-  ["LIVE", "LIVE"],
-  ["FT", "FINISHED"],
-  ["AET", "FINISHED"],
-  ["PEN", "FINISHED"],
-  ["MATCH FINISHED", "FINISHED"],
-  ["PST", "POSTPONED"],
-  ["CANC", "CANCELLED"],
-  ["ABD", "CANCELLED"]
-]);
-
+/**
+ * Durum sözlüğü services/matchStatus.js'de tek yerde. Burada eskiden SUSP,
+ * INT, AWD ve WO tanımlı değildi ve bilinmeyen kod skor varsa "FINISHED",
+ * yoksa "SCHEDULED" sayılıyordu — askıya alınan bir maç "programlandı"
+ * görünüyordu.
+ */
 function normalizeStatus(event) {
-  const raw = String(event.strStatus || "").trim().toUpperCase();
-  if (STATUS_MAP.has(raw)) {
-    return STATUS_MAP.get(raw);
+  const state = canonicalStatus(event.strStatus);
+
+  if (state !== "UNKNOWN") {
+    return state;
   }
 
   if (String(event.strPostponed || "").toLowerCase() === "yes") {
     return "POSTPONED";
   }
 
+  // Durum kodu tanınmıyor. Skor varsa maç oynanmıştır; yoksa DURUM
+  // UYDURULMAZ — "SCHEDULED" demek, ertelenmiş bir maçı başlayacak gibi
+  // göstermek olurdu.
   const hasScore = event.intHomeScore !== null && event.intHomeScore !== undefined && event.intHomeScore !== "";
-  return hasScore ? "FINISHED" : "SCHEDULED";
+  return hasScore ? "FINISHED" : "UNKNOWN";
 }
 
 function scoreValue(value) {

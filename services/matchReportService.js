@@ -703,6 +703,270 @@ function buildTurningPoints(match) {
   };
 }
 
+// ── 5a. Devre analizleri, teknik kararlar ve nihai değerlendirme ────────────
+
+/** Olayın hangi devreye ait olduğu. 45+2 birinci, 46 ikinci devre. */
+function halfOf(event) {
+  const raw = String((event && event.time) || "").match(/(\d+)(?:\s*\+\s*(\d+))?/);
+  if (!raw) return null;
+  return Number(raw[1]) <= 45 ? 1 : 2;
+}
+
+function eventsInHalf(match, half) {
+  return (match.events || []).filter((event) => halfOf(event) === half);
+}
+
+function isSubstitution(event) {
+  return isType(event, "oyuncu değişikliği", "değişiklik", "substitution", "oyuncu degisikligi");
+}
+
+function halftimeScore(match) {
+  const score = match.score || {};
+  return isNumber(score.halftimeHome) && isNumber(score.halftimeAway)
+    ? { home: score.halftimeHome, away: score.halftimeAway }
+    : null;
+}
+
+/**
+ * Olay yoğunluğundan tempo okuması. Bu TÜRETİLMİŞ bir ölçü ve öyle
+ * yazılıyor: "kayıtlı olay sayısı" diyor, "maç hızlıydı" demiyor.
+ */
+function rhythmNote(count, half) {
+  const label = half === 1 ? "İlk yarı" : "İkinci yarı";
+  if (count >= 6) return `${label} kayıtlı olay bakımından yoğun geçti (${count} olay).`;
+  if (count >= 3) return `${label} dengeli bir olay akışı üretti (${count} olay).`;
+  if (count > 0) return `${label} az sayıda kayıtlı olay üretti (${count} olay).`;
+  return null;
+}
+
+/**
+ * DEVRE ANALİZİ — yalnızca o devrenin doğrulanmış olaylarından ve devre
+ * arası skorundan.
+ *
+ * Olay akışı yoksa ve devre arası skoru da yoksa bölüm ÜRETİLMEZ. İkisinden
+ * biri varsa üretilir ve neyin ölçüldüğü açıkça yazılır — "ilk yarı dengeli
+ * geçti" gibi hiçbir veriye dayanmayan cümle kurulmaz.
+ */
+function buildHalfAnalysis(match, half) {
+  const events = eventsInHalf(match, half);
+  const halftime = halftimeScore(match);
+  const full = match.score || {};
+  const label = half === 1 ? "İlk yarı" : "İkinci yarı";
+
+  if (!events.length && !halftime) {
+    return {
+      status: "unavailable",
+      half,
+      reason: `${label} için dakikalı olay akışı ve devre arası skoru sağlayıcı tarafından sunulmadı.`
+    };
+  }
+
+  const notes = [];
+  const goals = events.filter((event) => isType(event, "gol") && !isType(event, "iptal"));
+  const cards = events.filter((event) => isType(event, "kart"));
+  const subs = events.filter(isSubstitution);
+
+  // Devre skoru: ilk yarı doğrudan, ikinci yarı toplam eksi ilk yarı.
+  if (half === 1 && halftime) {
+    notes.push(`Devre arasına ${match.homeTeam} ${halftime.home}-${halftime.away} ${match.awayTeam} skoruyla gidildi.`);
+  } else if (half === 2 && halftime && isNumber(full.home) && isNumber(full.away)) {
+    const secondHalf = { home: full.home - halftime.home, away: full.away - halftime.away };
+    notes.push(secondHalf.home + secondHalf.away === 0
+      ? "İkinci yarıda skor değişmedi; sonucu belirleyen goller ilk yarıda gelmişti."
+      : `İkinci yarının skoru ${secondHalf.home}-${secondHalf.away} oldu.`);
+  }
+
+  const rhythm = rhythmNote(events.length, half);
+  if (rhythm) notes.push(rhythm);
+
+  for (const goal of goals) {
+    const scorer = playerFromDetail(goal.detail);
+    notes.push(`${minuteOf(goal)}' ${eventTeamName(goal)}${scorer ? ` — ${scorer}` : ""}: ${goal.detail || "gol"}`);
+  }
+
+  for (const card of cards) {
+    notes.push(`${minuteOf(card)}' ${eventTeamName(card)} ${String(card.type).toLocaleLowerCase("tr-TR")}${card.detail ? ` — ${card.detail}` : ""}`);
+  }
+
+  // Kaçan pozisyon ve kurtarışlar, gol olmadan da devrenin yönünü gösterir.
+  const chances = events.filter((event) => isType(event, "direk", "kurtarış", "kaçan", "şut"));
+  if (chances.length) {
+    notes.push(`Kayda geçen diğer pozisyonlar: ${chances.map((event) =>
+      `${minuteOf(event)}' ${eventTeamName(event)} ${String(event.type).toLocaleLowerCase("tr-TR")}`).join(", ")}.`);
+  }
+
+  if (subs.length) {
+    notes.push(`${label} içinde ${subs.length} oyuncu değişikliği kaydedildi.`);
+  }
+
+  return {
+    status: notes.length ? "ready" : "partial",
+    half,
+    eventCount: events.length,
+    goals: goals.length,
+    // Eldeki kanıt sınırlıysa okuyucu bunu bilmeli.
+    evidence: events.length ? "events" : "halftime-score",
+    notes
+  };
+}
+
+/**
+ * TEKNİK KARARLAR — oyuncu değişiklikleri ve dizilişler.
+ *
+ * Sağlayıcı değişiklik olayı vermiyorsa bölüm üretilmez. Bir teknik
+ * direktörün "hamlesi" hakkında, hamlenin ne olduğunu bilmeden cümle
+ * kurmak uydurmadır.
+ */
+function buildCoachingDecisions(match) {
+  const subs = (match.events || []).filter(isSubstitution);
+  const formations = (match.lineups || [])
+    .map((lineup) => ({
+      team: lineup.team || lineup.teamName || "",
+      formation: lineup.formation || null
+    }))
+    .filter((entry) => entry.formation);
+
+  if (!subs.length && !formations.length) {
+    return {
+      status: "unavailable",
+      reason: "Oyuncu değişikliği akışı ve diziliş bilgisi sağlayıcı tarafından sunulmadı."
+    };
+  }
+
+  const notes = [];
+
+  for (const entry of formations) {
+    notes.push(`${entry.team} maça ${entry.formation} dizilişiyle başladı.`);
+  }
+
+  // Değişiklik sonrası ne olduğu YALNIZCA aynı takımın sonraki olaylarından
+  // okunur; "hamle tuttu" yorumu kanıta bağlanır.
+  const ordered = subs.slice().sort((left, right) => (numericMinute(left) || 0) - (numericMinute(right) || 0));
+
+  for (const sub of ordered) {
+    const minute = numericMinute(sub);
+    const team = eventTeamName(sub);
+    const after = (match.events || []).filter((event) =>
+      numericMinute(event) !== null && numericMinute(event) > minute &&
+      normalizeText(eventTeamName(event)) === normalizeText(team) &&
+      isType(event, "gol", "direk", "şut", "kurtarış"));
+
+    notes.push(`${minuteOf(sub)}' ${team} değişikliği${sub.detail ? ` (${sub.detail})` : ""}.` +
+      (after.length
+        ? ` Değişiklikten sonra ${team} adına ${after.length} pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.`
+        : " Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."));
+  }
+
+  return {
+    status: "ready",
+    substitutionCount: subs.length,
+    formations,
+    notes,
+    // Yorum ile ölçüm ayrımı okuyucuya açıkça bildirilir.
+    interpretation: subs.length
+      ? "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+      : "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+  };
+}
+
+/**
+ * NİHAİ DEĞERLENDİRME — sonucu neyin belirlediği.
+ *
+ * Her cümle ya skora, ya olaya ya da ölçülmüş bir istatistiğe bağlanır.
+ * Hiçbiri yoksa bölüm üretilmez.
+ */
+function buildFinalAssessment(match) {
+  const result = outcome(match);
+  const score = scoreLine(match);
+
+  if (!result || !score) {
+    return { status: "unavailable", reason: "Maç sonucu doğrulanmadığı için değerlendirme üretilmedi." };
+  }
+
+  const shots = statPair(match, "Toplam şut");
+  const onTarget = statPair(match, "İsabetli şut");
+  const possession = statPair(match, "Topla oynama");
+  const xg = statPair(match, "Gol beklentisi (xG)");
+  const goals = goalEvents(match);
+
+  const verdict = [];
+  const strengths = [];
+  const improvements = [];
+
+  if (result.draw) {
+    verdict.push(`Maç ${score} berabere bitti.`);
+  } else {
+    verdict.push(`${result.winner}, ${accusative(result.loser)} ${score} yendi.`);
+  }
+
+  // Kazananın üstünlüğü hangi ölçüde göründü?
+  if (onTarget && result.winner) {
+    const winnerIsHome = normalizeText(result.winner) === normalizeText(match.homeTeam);
+    const winnerOn = winnerIsHome ? onTarget.home : onTarget.away;
+    const loserOn = winnerIsHome ? onTarget.away : onTarget.home;
+    if (isNumber(winnerOn) && isNumber(loserOn)) {
+      verdict.push(winnerOn > loserOn
+        ? `İsabetli şutta da öndeydi (${winnerOn}-${loserOn}); sonuç üretilen pozisyonla uyumlu.`
+        : `İsabetli şutta geride kalmasına rağmen kazandı (${winnerOn}-${loserOn}); eldeki veri sonucun verimlilikle geldiğini gösteriyor.`);
+    }
+  }
+
+  if (xg && isNumber(xg.home) && isNumber(xg.away) && isNumber(match.score.home) && isNumber(match.score.away)) {
+    const homeDiff = match.score.home - xg.home;
+    const awayDiff = match.score.away - xg.away;
+    const overachiever = homeDiff > awayDiff ? match.homeTeam : match.awayTeam;
+    const diff = Math.max(homeDiff, awayDiff);
+    if (Math.abs(diff) >= 0.5) {
+      verdict.push(`${overachiever}, gol beklentisinin ${tr(Math.abs(diff), 2)} üzerinde skor üretti.`);
+    }
+  }
+
+  if (possession && isNumber(possession.home) && isNumber(possession.away)) {
+    const dominant = possession.home > possession.away ? match.homeTeam : match.awayTeam;
+    const share = Math.max(possession.home, possession.away);
+    strengths.push(`${dominant} topa daha çok sahip oldu (%${tr(share, 0)}).`);
+  }
+
+  if (shots && isNumber(shots.home) && isNumber(shots.away)) {
+    const moreShots = shots.home > shots.away ? match.homeTeam : match.awayTeam;
+    strengths.push(`${moreShots} daha çok şut denedi (${shots.home}-${shots.away}).`);
+  }
+
+  if (onTarget && shots && isNumber(onTarget.home) && isNumber(shots.home) && shots.home > 0 &&
+    isNumber(onTarget.away) && isNumber(shots.away) && shots.away > 0) {
+    const homeAccuracy = (onTarget.home / shots.home) * 100;
+    const awayAccuracy = (onTarget.away / shots.away) * 100;
+    const weaker = homeAccuracy < awayAccuracy ? match.homeTeam : match.awayTeam;
+    improvements.push(`${weaker} şut isabetinde geride kaldı (%${tr(Math.min(homeAccuracy, awayAccuracy), 0)}); bitiricilik geliştirilmesi gereken alan.`);
+  }
+
+  if (result.loser && goals.length) {
+    const conceded = goals.filter((event) => normalizeText(eventTeamName(event)) !== normalizeText(result.loser));
+    const lateConceded = conceded.filter((event) => (numericMinute(event) || 0) >= LATE_GAME_FROM);
+    if (lateConceded.length) {
+      improvements.push(`${result.loser} son bölümde ${lateConceded.length} gol yedi; maç sonu konsantrasyonu öne çıkan sorun.`);
+    }
+  }
+
+  const reds = (match.events || []).filter((event) => isType(event, "kırmızı"));
+  if (reds.length) {
+    improvements.push(`Kırmızı kart maçın seyrini etkiledi (${reds.map((event) => `${minuteOf(event)}' ${eventTeamName(event)}`).join(", ")}).`);
+  }
+
+  return {
+    status: verdict.length ? "ready" : "partial",
+    verdict,
+    strengths,
+    improvements,
+    // Ölçülmüş istatistik yoksa değerlendirme yalnızca skora ve olaylara
+    // dayanır; okuyucu bunu bilmeli.
+    basis: shots || possession || onTarget ? "statistics+events" : "events-only",
+    closing: result.draw
+      ? `${score} beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.`
+      : `${result.winner} sahadan ${result.margin} farkla ayrıldı.`
+  };
+}
+
 // ── 5b. Son bölüm ve bitiş şekli ────────────────────────────────────────────
 
 /** Son bölüm sınırı. 75. dakika ve sonrası "maç sonu" sayılır. */
@@ -1004,9 +1268,13 @@ function buildMatchReport(match, context) {
     signals: buildSignals(match),
     statistics: buildStatisticsAnalysis(match, seed),
     tactical: buildTacticalRead(match),
+    firstHalf: buildHalfAnalysis(match, 1),
+    secondHalf: buildHalfAnalysis(match, 2),
     turningPoints: buildTurningPoints(match),
     lateGame: buildLateGame(match),
     finish: buildFinish(match),
+    coaching: buildCoachingDecisions(match),
+    finalAssessment: buildFinalAssessment(match),
     aiRating: buildAiRating(match),
     nextMatch: buildNextMatchOutlook(match, context)
   };
@@ -1029,7 +1297,10 @@ function buildMatchReport(match, context) {
 
 module.exports = {
   LATE_GAME_FROM,
+  buildCoachingDecisions,
+  buildFinalAssessment,
   buildFinish,
+  buildHalfAnalysis,
   buildLateGame,
   buildMatchReport,
   buildSummary,

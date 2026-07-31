@@ -397,6 +397,30 @@ function postMatchDateLabel(value) {
   return new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "long", year: "numeric", timeZone: "Europe/Istanbul" }).format(parsed);
 }
 
+const POST_MATCH_STATUS_LABELS = {
+  waiting_for_final_data: "Analiz hazırlanıyor",
+  ready_for_analysis: "Analiz sırada",
+  generating: "Analiz üretiliyor",
+  completed: "Analiz tamamlandı",
+  partial_data: "Kısmi veri",
+  failed: "Analiz üretilemedi",
+  retry_scheduled: "Yeniden denenecek"
+};
+
+function postMatchStatusLabel(record) {
+  return POST_MATCH_STATUS_LABELS[record && record.analysisStatus] || "Analiz durumu bilinmiyor";
+}
+
+function postMatchUpdatedLabel(value) {
+  if (!value) return "";
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return `Güncelleme: ${new Intl.DateTimeFormat("tr-TR", {
+    day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
+    timeZone: "Europe/Istanbul"
+  }).format(parsed)} TSİ`;
+}
+
 function postMatchCard(record) {
   const digest = record.digest || {};
   const meta = [record.league, postMatchDateLabel(record.date)].filter(Boolean).join(" · ");
@@ -426,15 +450,15 @@ function postMatchCard(record) {
     : "";
 
   return `<article class="post-match-card${record.turkish ? " is-turkish" : ""}" data-card="post-match" data-match="${escapeHtml(record.matchId || "")}">` +
-    `<div class="post-match-head"><span class="post-match-meta">${escapeHtml(meta)}</span>${finishNote ? `<span class="post-match-finish">${escapeHtml(finishNote)}</span>` : ""}</div>` +
+    `<div class="post-match-head"><span class="post-match-meta">${escapeHtml(meta)}</span>${finishNote ? `<span class="post-match-finish">${escapeHtml(finishNote)}</span>` : ""}<span class="post-match-status is-${escapeHtml(String(record.analysisStatus || "unknown"))}">${escapeHtml(postMatchStatusLabel(record))}</span></div>` +
     `<strong class="post-match-score">${escapeHtml(postMatchScoreLine(record))}</strong>` +
     (digest.headline ? `<h3>${escapeHtml(digest.headline)}</h3>` : "") +
     (digest.paragraph ? `<p>${escapeHtml(digest.paragraph)}</p>` : "") +
     momentsHtml + lateHtml + playersHtml + missingHtml +
-    `<div class="post-match-footer"><span class="post-match-coverage">Veri kapsamı %${escapeHtml(String(record.coverage || 0))}</span>` +
+    `<div class="post-match-footer"><span class="post-match-coverage">${escapeHtml(postMatchStatusLabel(record))} · Veri kapsamı %${escapeHtml(String(record.coverage || 0))}${record.analysisUpdatedAt ? ` · ${escapeHtml(postMatchUpdatedLabel(record.analysisUpdatedAt))}` : ""}</span>` +
     (record.publishState === "page"
       ? `<a class="detail-link" href="${escapeHtml(record.reportUrl || "#")}">Tam raporu aç</a>`
-      : `<span class="post-match-note">Ölçülmüş veri gelince tam rapor açılacak</span>`) +
+      : `<span class="post-match-note">Analiz hazırlanıyor</span>`) +
     "</div></article>";
 }
 
