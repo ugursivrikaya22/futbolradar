@@ -10,6 +10,8 @@ const {
   computeLineupRefreshTargets
 } = require("../services/officialLineupService.js");
 
+const { APIFOOTBALL_API_KEY_ENV_NAMES } = require("../api/_utils.js");
+
 let failures = 0;
 function expect(condition, message) {
   if (!condition) {
@@ -18,11 +20,64 @@ function expect(condition, message) {
   }
 }
 
+/**
+ * ANAHTARSIZ ORTAMI TESTİN KENDİSİ KURAR.
+ *
+ * Bu test eskiden "ortamda anahtar yok" varsayıyordu. Varsayım yerelde
+ * doğruydu, CI'da DEĞİLDİ: GitHub Actions'ta APIFOOTBALL_API_KEY tanımlı,
+ * dolayısıyla `hasConfig()` true dönüyor, "sağlayıcı yapılandırılmamış"
+ * dalına hiç girilmiyor ve tek satırlık bir iddia bütün koşuyu düşürüyordu.
+ *
+ * Daha kötüsü: o dalda durmadığı için çağrı sağlayıcıya GERÇEKTEN gidiyordu
+ * — üstelik "fixture-1" gibi var olmayan bir kimlikle. Yani her CI koşusu
+ * boşa bir kota isteği harcıyordu.
+ *
+ * Artık ortam testin kontrolünde: anahtar adları geçici olarak boşaltılıyor,
+ * iddia sınanıyor, sonra hepsi eski değerine dönüyor. Sonuç anahtarın varlığından
+ * bağımsız — yerelde ve CI'da aynı.
+ */
+async function withoutProviderKey(run) {
+  const saved = new Map();
+  for (const name of APIFOOTBALL_API_KEY_ENV_NAMES) {
+    saved.set(name, process.env[name]);
+    delete process.env[name];
+  }
+
+  try {
+    return await run();
+  } finally {
+    for (const [name, value] of saved) {
+      if (value === undefined) delete process.env[name];
+      else process.env[name] = value;
+    }
+  }
+}
+
 async function main() {
   // --- no provider config -> unavailable, never fabricated ---
   {
-    const result = await fetchOfficialLineup("fixture-1");
+    const result = await withoutProviderKey(() => fetchOfficialLineup("fixture-1"));
     expect(result.status === "unavailable" && result.reason === "no-provider-config", "fetchOfficialLineup must report unavailable when no provider is configured");
+  }
+
+  // --- provider configured but no fixture id -> short-circuit, NO network ---
+  //
+  // Kimliksiz çağrı sağlayıcıya gitmemeli. Gitseydi her koşu var olmayan bir
+  // fikstür için kota harcardı; yukarıdaki hata tam olarak buydu.
+  {
+    const previous = process.env.APIFOOTBALL_API_KEY;
+    process.env.APIFOOTBALL_API_KEY = "0123456789abcdef0123456789abcdef";
+
+    try {
+      const result = await fetchOfficialLineup("");
+      expect(
+        result.status === "unavailable" && result.reason === "no-fixture-id",
+        "fetchOfficialLineup must short-circuit on a missing fixture id instead of calling the provider"
+      );
+    } finally {
+      if (previous === undefined) delete process.env.APIFOOTBALL_API_KEY;
+      else process.env.APIFOOTBALL_API_KEY = previous;
+    }
   }
 
   // --- normalize: no data yet -> pending, both sides empty ---
