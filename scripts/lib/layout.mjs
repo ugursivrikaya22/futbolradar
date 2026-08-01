@@ -170,11 +170,13 @@ export function newsTicker(options = {}) {
 
   const track = items.map(renderItem).join('<span class="news-ticker-sep" aria-hidden="true"></span>');
 
+  const duration = Math.max(36, items.length * 10);
+
   return `<div class="news-ticker" data-shared-layout="ticker" aria-label="Son dakika futbol gündemi">
       <div class="container-wide news-ticker-inner">
         <span class="news-ticker-badge${badge === "Son Dakika" ? " is-live" : ""}">${badge === "Son Dakika" ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(badge)}</span>
         <div class="news-ticker-viewport">
-          <div class="news-ticker-track">
+          <div class="news-ticker-track" style="--ticker-duration:${duration}s">
             <div class="news-ticker-group">${track}</div>
             <div class="news-ticker-group" aria-hidden="true">${track}</div>
           </div>

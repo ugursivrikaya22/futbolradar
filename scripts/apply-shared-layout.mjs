@@ -16,10 +16,37 @@ import { siteHeader, siteFooter, newsTicker } from "./lib/layout.mjs";
 import { buildTickerFeed } from "./lib/tickerFeed.mjs";
 
 const root = process.cwd();
+const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
 
 const HEADER_RE = /<header\b[^>]*class="[^"]*\btopbar\b[^"]*"[^>]*>[\s\S]*?<\/header>/i;
 const FOOTER_RE = /<footer\b[^>]*class="[^"]*\bfooter\b[^"]*"[^>]*>[\s\S]*?<\/footer>/i;
 const TICKER_RE = /[\t ]*<!-- shared-layout:ticker:start -->[\s\S]*?<!-- shared-layout:ticker:end -->\n?/g;
+
+function readGeneratedFile(file) {
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    try {
+      return fs.readFileSync(file, "utf8");
+    } catch (error) {
+      const retryable = ["UNKNOWN", "EBUSY", "EPERM"].includes(error && error.code);
+      if (!retryable || attempt === 11) throw error;
+      Atomics.wait(retryBuffer, 0, 0, 75 * (attempt + 1));
+    }
+  }
+  return "";
+}
+
+function writeGeneratedFile(file, contents) {
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    try {
+      fs.writeFileSync(file, contents, "utf8");
+      return;
+    } catch (error) {
+      const retryable = ["UNKNOWN", "EBUSY", "EPERM"].includes(error && error.code);
+      if (!retryable || attempt === 11) throw error;
+      Atomics.wait(retryBuffer, 0, 0, 75 * (attempt + 1));
+    }
+  }
+}
 
 function readJson(file) {
   try {
@@ -106,7 +133,7 @@ let updated = 0;
 let skipped = 0;
 
 for (const file of files) {
-  const original = fs.readFileSync(file, "utf8");
+  const original = readGeneratedFile(file);
 
   if (!HEADER_RE.test(original) && !FOOTER_RE.test(original)) {
     skipped += 1;
@@ -124,7 +151,7 @@ for (const file of files) {
   next = next.replace(FOOTER_RE, () => siteFooter({ base }));
 
   if (next !== original) {
-    fs.writeFileSync(file, next, "utf8");
+    writeGeneratedFile(file, next);
     updated += 1;
   }
 }

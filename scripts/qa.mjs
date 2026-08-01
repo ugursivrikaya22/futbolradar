@@ -11,7 +11,7 @@ const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json
 const newsData = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
 const playerProfilePages = players.map((player) => `oyuncular/${player.id}.html`);
 const newsArticlePages = (Array.isArray(newsData) ? newsData : newsData.items || newsData.news || [])
-  .filter((article) => article && article.slug && Array.isArray(article.body))
+  .filter((article) => article && String(article.status || "").toLowerCase() === "verified" && article.slug && Array.isArray(article.body))
   .map((article) => `haber/${article.slug}.html`);
 const comparisonPagesDir = path.join(root, "karsilastirma");
 const playerComparisonPages = fs.existsSync(comparisonPagesDir)

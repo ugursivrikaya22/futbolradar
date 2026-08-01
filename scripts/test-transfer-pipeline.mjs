@@ -225,7 +225,11 @@ async function testTickerCarriesAConfirmedTransfer() {
   assert.ok(transferItems.length, "bantta en az bir doğrulanmış transfer olmalı");
 
   for (const item of transferItems) {
-    assert.ok(/^https?:\/\//.test(item.href), "transfer öğesi izlenebilir kaynağa bağlanmalı");
+    assert.match(
+      item.href,
+      /^super-lig-transferleri-2026-2027\.html#transfer-/,
+      "transfer öğesi site içindeki ayrıntılı kayda bağlanmalı"
+    );
     assert.ok(item.at, "transfer öğesinin tarihi olmalı");
   }
 }

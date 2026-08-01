@@ -9,7 +9,10 @@ const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), 
 const momentum = JSON.parse(fs.readFileSync(path.join(root, "data", "momentum.json"), "utf8"));
 const signals = JSON.parse(fs.readFileSync(path.join(root, "data", "signals.json"), "utf8"));
 const analyses = JSON.parse(fs.readFileSync(path.join(root, "data", "analyses.json"), "utf8"));
-const news = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
+const newsPayload = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
+const news = (Array.isArray(newsPayload) ? newsPayload : newsPayload.items || newsPayload.news || [])
+  .filter((article) => article && String(article.status || "").toLowerCase() === "verified")
+  .sort((left, right) => String(right.publishedAt || "").localeCompare(String(left.publishedAt || "")));
 const freshnessData = JSON.parse(fs.readFileSync(path.join(root, "data", "freshness.json"), "utf8"));
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
@@ -431,7 +434,7 @@ function postMatchStore() {
 
 function postMatchScoreLine(record) {
   if (!record.score || typeof record.score.home !== "number" || typeof record.score.away !== "number") {
-    return `${record.homeTeam || "?"} - ${record.awayTeam || "?"}`;
+    return "";
   }
   return `${record.homeTeam || "?"} ${record.score.home}-${record.score.away} ${record.awayTeam || "?"}`;
 }
@@ -496,6 +499,7 @@ function postMatchCard(record) {
   const late = digest.lateGame;
   const players = (digest.keyPlayers || {}).players || [];
   const missing = Array.isArray(record.missingInputs) ? record.missingInputs : [];
+  const scoreLine = postMatchScoreLine(record);
 
   const momentsHtml = turning.status === "ready" && (turning.moments || []).length
     ? `<div class="post-match-moments"><span class="post-match-label">Kırılma anları</span><ul>${turning.moments.map((moment) =>
@@ -520,7 +524,7 @@ function postMatchCard(record) {
 
   return `<article class="post-match-card${record.turkish ? " is-turkish" : ""}" data-card="post-match" data-match="${escapeHtml(record.matchId || "")}">` +
     `<div class="post-match-head"><span class="post-match-meta">${escapeHtml(meta)}</span>${finishNote ? `<span class="post-match-finish">${escapeHtml(finishNote)}</span>` : ""}<span class="post-match-status is-${escapeHtml(String(record.coverageGrade || "unknown"))}" title="${escapeHtml(String(record.coverageNote || ""))}">${escapeHtml(postMatchCoverageLabel(record))}</span></div>` +
-    `<strong class="post-match-score">${escapeHtml(postMatchScoreLine(record))}</strong>` +
+    (scoreLine ? `<strong class="post-match-score">${escapeHtml(scoreLine)}</strong>` : "") +
     (digest.headline ? `<h3>${escapeHtml(digest.headline)}</h3>` : "") +
     (digest.paragraph ? `<p>${escapeHtml(digest.paragraph)}</p>` : "") +
     momentsHtml + lateHtml + playersHtml + missingHtml +

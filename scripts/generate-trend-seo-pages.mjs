@@ -48,12 +48,12 @@ function transferCards(records) {
 
   return records.map((transfer) => {
     const directionTeam = transfer.toTeam === "Serbest oyuncu" ? transfer.fromTeam : transfer.toTeam;
-    return `<article class="trend-transfer-card" data-card="transfer-record" data-team="${escapeHtml(slugify(directionTeam))}">
+    return `<article class="trend-transfer-card" id="transfer-${escapeHtml(slugify(transfer.playerName))}" data-card="transfer-record" data-team="${escapeHtml(slugify(directionTeam))}">
       <div class="trend-transfer-head"><span class="tag green">${escapeHtml(transfer.status === "confirmed" ? "Doğrulandı" : "Takipte")}</span><time datetime="${escapeHtml(transfer.date)}">${escapeHtml(formatDate(transfer.date))}</time></div>
       <div><span class="card-kicker">${escapeHtml(transfer.position || "Oyuncu")}</span><h3>${escapeHtml(transfer.playerName)}</h3></div>
       <div class="trend-transfer-route"><span>${escapeHtml(transfer.fromTeam)}</span><b aria-label="takım değişikliği">→</b><span>${escapeHtml(transfer.toTeam)}</span></div>
       <dl class="trend-mini-stats"><div><dt>Transfer tipi</dt><dd>${escapeHtml(transfer.type || "Açıklanmadı")}</dd></div><div><dt>Bedel</dt><dd>${escapeHtml(transfer.fee || "Açıklanmadı")}</dd></div></dl>
-      <div class="trend-card-actions">${playerLink(transfer)}<a class="detail-link ghost" href="./transfer-radari.html">Transfer Radar</a></div>
+      <div class="trend-card-actions">${playerLink(transfer)}<a class="detail-link ghost" href="./transfer-radari.html">Transfer Radar</a>${transfer.sourceUrl ? `<a class="detail-link ghost" href="${escapeHtml(transfer.sourceUrl)}" target="_blank" rel="noopener noreferrer">Kaynak</a>` : ""}</div>
     </article>`;
   }).join("");
 }

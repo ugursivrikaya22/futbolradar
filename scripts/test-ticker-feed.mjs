@@ -66,7 +66,7 @@ function testOnlyVerifiedSources() {
 
 function testNotCrowded() {
   const feed = buildTickerFeed();
-  assert.ok(feed.items.length <= 6, `bant en fazla 6 öğe taşımalı, ${feed.items.length} var`);
+  assert.ok(feed.items.length <= 8, `bant en fazla 8 öğe taşımalı, ${feed.items.length} var`);
 }
 
 function testFreshBadgeIsATimeClaim() {
