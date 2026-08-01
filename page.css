@@ -343,11 +343,24 @@ h1 {
   outline: 0;
 }
 
+/* SATIR SIĞMADIĞINDA SARSIN.
+   Bu şerit iki bloktan oluşuyor: tarih gezinmesi (~513px) ve durum
+   süzgeçleri (~300px). 16px boşlukla toplam ~829px; sarma kuralı olmadığı
+   için 721-880px arasında ikinci blok kapsayıcıyı aşıyor ve SAYFA yatay
+   kayıyordu (760px'te 98px, 820px'te 52px). 720px altında `flex-direction:
+   column` devreye girdiği, 900px üstünde de ikisi yan yana sığdığı için
+   sorun tam da bu aradaki tablet genişliklerinde görünüyordu.
+
+   Çözüm sarmak: sığdığı sürece tek satır, sığmadığında süzgeçler alt satıra
+   iner. Sabit bir kırılma noktası eklemek yerine sarma tercih edildi —
+   içerik uzadığında (yeni bir süzgeç, uzun bir tarih) kural kendiliğinden
+   doğru kalır. */
 .match-explorer,
 .live-context-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 16px;
   margin: 0 0 16px;
   border: 1px solid rgba(11, 143, 90, 0.067);
@@ -897,9 +910,14 @@ h1 {
   white-space: nowrap;
 }
 
+/* Bu başlık dört parçadan oluşuyor: [logo][ev sahibi] [logo][deplasman].
+   Sarma kuralı yokken 320px'te ikinci takım adı kartın sağ kenarından taşıp
+   kesiliyordu ("Samsunspo…") ve ilk ad "Westerlo -" biçiminde ortasından
+   kırılıyordu. Sarınca her takım kendi satırına iner; ad da kesilmez. */
 .live-score-team-name-inline {
   display: inline-flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   min-width: 0;
 }
@@ -6851,8 +6869,15 @@ h1 {
         background: linear-gradient(135deg, var(--green), var(--cyan));
       }
 
+      /* Örtük tek sütun `auto` boyutlanıyordu: başlığın min-content genişliği
+         (319px) sütunu şişirip kartın 280px'lik içerik kutusunu taşırıyordu.
+         Kartın kendisi kırpılmadığı için içerik sağdan sessizce kesiliyordu
+         (1024px'te ~30px, 320px'te ~23px). `minmax(0, 1fr)` sütunun küçülmesine
+         izin verir; çocuklardaki `min-width: 0` da onların min-content
+         eşiğinin altına inebilmesini sağlar. */
       .transfer-radar-card {
         display: grid;
+        grid-template-columns: minmax(0, 1fr);
         gap: 13px;
         min-width: 0;
         border: 1px solid rgba(13, 148, 136, 0.08);
@@ -6864,10 +6889,17 @@ h1 {
         box-shadow: var(--shadow);
       }
 
+      .transfer-radar-card > * {
+        min-width: 0;
+      }
+
+      /* Başlık iki bloktan oluşuyor ve `strong` nowrap; dar sütunda yan yana
+         sığmadığında sarmalı, yoksa kartı taşırır. */
       .transfer-radar-card header {
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
+        flex-wrap: wrap;
         gap: 12px;
       }
 
@@ -11751,7 +11783,7 @@ p,
 .players-grid,
 .news-grid,
 .league-match-grid {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: var(--sp-4);
 }
 
@@ -12696,7 +12728,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 .daily-headlines {
   display: grid;
   gap: var(--sp-3);
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
 }
 
 .daily-headline {
@@ -13069,7 +13101,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
    sırasında bir kez üretilen data/post-match-reports.json. */
 .post-match-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
   gap: var(--sp-4);
 }
 
@@ -14185,7 +14217,7 @@ table {
    metin ağırlıklı ve 228px'te satır sonu bozuluyor. */
 .players-grid,
 .news-grid {
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
 }
 
 .matches-grid,
@@ -14626,7 +14658,7 @@ table {
 /* --- kadrolar --- */
 .md-lineup-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: var(--sp-4);
 }
 
@@ -14783,7 +14815,7 @@ table {
 
 .md-stat-groups {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: var(--sp-5);
 }
 
@@ -14833,7 +14865,7 @@ table {
 /* --- AI analiz --- */
 .md-ai-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   gap: var(--sp-4);
 }
 
@@ -15280,7 +15312,7 @@ section[data-api-target="team-detail"] {
 /* --- kart ızgarası --- */
 .td-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: var(--sp-4);
   align-items: start;
 }
@@ -15523,7 +15555,7 @@ section[data-api-target="team-detail"] {
 /* --- maçlar --- */
 .td-fixture-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: var(--sp-2);
 }
 
@@ -16271,7 +16303,7 @@ body,
 --------------------------------------------------------------------------- */
 .pmi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: 1rem;
 }
 
