@@ -72,6 +72,19 @@ for (const page of EXTRA_PAGES) {
   push({ type: "page", badge: "SYF", href: page.href, title: page.title, subtitle: page.subtitle });
 }
 
+for (const article of asArray(readJson("news.json"), "news", "items")) {
+  if (!article || !article.slug || !article.title || !Array.isArray(article.body)) {
+    continue;
+  }
+  push({
+    type: "news",
+    badge: "HBR",
+    href: `haber/${article.slug}.html`,
+    title: article.title,
+    subtitle: article.spot || article.summary || "FutbolRadar haberi"
+  });
+}
+
 // Takım kapsamı elle tutulan listeyle sınırlı kalmaz: TFF fikstüründe adı
 // geçen her takım bu sezon ligdedir ve aranabilir olmalıdır. Daha önce dizin
 // yalnızca teams.json'daki beş takımı içerdiği için "Göztepe" ve "Konyaspor"

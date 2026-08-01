@@ -8,7 +8,11 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { validatePlayerData } = require("../services/playerService.js");
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+const newsData = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
 const playerProfilePages = players.map((player) => `oyuncular/${player.id}.html`);
+const newsArticlePages = (Array.isArray(newsData) ? newsData : newsData.items || newsData.news || [])
+  .filter((article) => article && article.slug && Array.isArray(article.body))
+  .map((article) => `haber/${article.slug}.html`);
 const comparisonPagesDir = path.join(root, "karsilastirma");
 const playerComparisonPages = fs.existsSync(comparisonPagesDir)
   ? fs.readdirSync(comparisonPagesDir).filter((file) => file.endsWith(".html")).sort().map((file) => `karsilastirma/${file}`)
@@ -82,6 +86,7 @@ const pages = [
   "canli-skor.html",
   "bugunun-maclari.html",
   "haberler.html",
+  ...newsArticlePages,
   "momentum.html",
   "analizler.html"
 ];

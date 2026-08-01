@@ -157,10 +157,10 @@ function item(overrides = {}) {
   assert.equal(future.items.length, 0, "gelecek tarihli öğe bandın 'şu an' iddiasını bozar");
 }
 
-// ── 8. Beş kategori de destekleniyor ───────────────────────────────────────
+// ── 8. Kategoriler destekleniyor ───────────────────────────────────────────
 {
-  const expected = ["official", "post-match", "squad-update", "manager-quote", "transfer-rumour"];
-  assert.deepEqual(Object.keys(CATEGORIES).sort(), expected.slice().sort(), "beş kategori tanımlı olmalı");
+  const expected = ["official", "post-match", "squad-update", "manager-quote", "club-agenda", "transfer-rumour"];
+  assert.deepEqual(Object.keys(CATEGORIES).sort(), expected.slice().sort(), "beklenen kategoriler tanımlı olmalı");
   for (const key of expected) {
     assert.ok(CATEGORIES[key].label, `${key}: ekran etiketi olmalı`);
     assert.ok(Number.isFinite(CATEGORIES[key].maxAgeHours), `${key}: raf ömrü tanımlı olmalı`);

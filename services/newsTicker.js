@@ -53,7 +53,8 @@ const CATEGORIES = Object.freeze({
   "post-match": { label: "Maç sonu", rumourOnly: false, priority: 1, maxAgeHours: 24 * 4 },
   "squad-update": { label: "Kadro & sakatlık", rumourOnly: false, priority: 2, maxAgeHours: 24 * 10 },
   "manager-quote": { label: "Teknik direktör", rumourOnly: false, priority: 3, maxAgeHours: 24 * 7 },
-  "transfer-rumour": { label: "Transfer iddiası", rumourOnly: true, priority: 4, maxAgeHours: 24 * 7 }
+  "club-agenda": { label: "Kulüp gündemi", rumourOnly: false, priority: 4, maxAgeHours: 24 * 4 },
+  "transfer-rumour": { label: "Transfer iddiası", rumourOnly: true, priority: 5, maxAgeHours: 24 * 7 }
 });
 
 /**

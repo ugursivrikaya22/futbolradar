@@ -187,6 +187,7 @@ function newsItems(now) {
       item &&
       item.title &&
       String(item.status || "").toLowerCase() === "verified" &&
+      item.includeInTicker !== false &&
       item.url)
     .filter((item) => hoursSince(item.publishedAt, now) <= MAX_AGE_HOURS)
     .map((item) => ({

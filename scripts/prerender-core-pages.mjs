@@ -740,8 +740,28 @@ function analysisCards() {
   return analyses.map((analysis) => `<article class="article-card" data-card="analysis" id="${escapeHtml(analysis.id)}-preview"><div><h3>${escapeHtml(analysis.title)}</h3><p>${escapeHtml(analysis.summary)}</p></div><a href="${escapeHtml(analysis.url)}">Analizi aç</a></article>`).join("");
 }
 
+function newsCardHref(item) {
+  const url = String(item && item.url || "").trim();
+  const ownPrefix = "https://www.futbolradar.com/";
+  if (url.startsWith(ownPrefix)) {
+    return `./${url.slice(ownPrefix.length)}`;
+  }
+  return url;
+}
+
+function newsCardAction(item) {
+  const href = newsCardHref(item);
+  if (!href) {
+    return "";
+  }
+  const external = /^https?:/i.test(href);
+  const attrs = external ? ' target="_blank" rel="noopener noreferrer"' : "";
+  const label = external ? "Resmî açıklamayı aç" : "Haberi oku";
+  return `<a class="detail-link" href="${escapeHtml(href)}"${attrs}>${label}</a>`;
+}
+
 function newsCards(limit) {
-  return news.slice(0, limit || news.length).map((item) => `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}"><div class="news-card-meta"><span class="tag green">${escapeHtml(item.category || "Futbol Gündemi")}</span><time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatFreshnessDate(item.publishedAt) || "Tarih açıklanmadı")}</time></div><div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p></div><div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Resmî kaynak")}</span><a class="detail-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a></div></article>`).join("");
+  return news.slice(0, limit || news.length).map((item) => `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}"><div class="news-card-meta"><span class="tag green">${escapeHtml(item.category || "Futbol Gündemi")}</span><time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatFreshnessDate(item.publishedAt) || "Tarih açıklanmadı")}</time></div><div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p></div><div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Resmî kaynak")}</span>${newsCardAction(item)}</div></article>`).join("");
 }
 
 function fixtureMatchRowHtml(match, round) {

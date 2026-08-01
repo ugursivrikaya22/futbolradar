@@ -5498,11 +5498,25 @@
     }).join("");
   }
 
+  function newsCardUrl(value) {
+    try {
+      var resolved = new URL(String(value || ""), window.location.href);
+      if (!["http:", "https:"].includes(resolved.protocol)) return "";
+      if (resolved.hostname === "www.futbolradar.com" || resolved.hostname === window.location.hostname) {
+        return siteHref(resolved.pathname.replace(/^\/+/, "") + resolved.search + resolved.hash);
+      }
+      return resolved.href;
+    } catch (error) {
+      return "";
+    }
+  }
+
   function renderNewsCard(item) {
-    var sourceUrl = safeImageUrl(item && item.url);
+    var sourceUrl = newsCardUrl(item && item.url);
     var published = formatProfileDate(item && item.publishedAt) || "Tarih açıklanmadı";
+    var external = /^https?:\/\//i.test(sourceUrl);
     var action = sourceUrl
-      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a>'
+      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '"' + (external ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' + (external ? "Resmî açıklamayı aç" : "Haberi oku") + '</a>'
       : "";
 
     return (
