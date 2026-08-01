@@ -75,6 +75,19 @@ function matchSlug(match) {
   return `${slug(match.homeTeam)}-${slug(match.awayTeam)}-${fixtures.season}-r${String(match.round).padStart(2, "0")}`;
 }
 
+function hasCompleteScore(match) {
+  const score = match && match.score;
+  return Boolean(score) && Number.isFinite(Number(score.home)) && Number.isFinite(Number(score.away));
+}
+
+function isVerifiedFinalMatch(match) {
+  const status = String(match && match.status || "").toUpperCase();
+  return status === "FINISHED" &&
+    hasCompleteScore(match) &&
+    String(match.dataStatus || "").toLowerCase() === "verified" &&
+    String(match.publishState || "").toLowerCase() === "complete";
+}
+
 function allFixtures() {
   return (fixtures.rounds || []).flatMap((round) => (round.matches || []).map((match) => ({
     ...match,
@@ -167,6 +180,7 @@ function calendarProgramCards(limit) {
   // homepage showed each neutral-venue friendly twice.
   const upcoming = curatedMatches()
     .filter((match) => String(match.kickoff || "").slice(0, 10) >= today)
+    .filter((match) => String(match.status || "").toUpperCase() !== "FINISHED" || isVerifiedFinalMatch(match))
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
     .slice(0, limit || 6);
 
@@ -180,8 +194,7 @@ function calendarProgramCards(limit) {
     const status = String(match.status || "SCHEDULED").toUpperCase();
     // Biten maçta başlık saati değil skoru göstermeli; statik yedek JS
     // çalışmadığında da günün sonucunu vermek zorunda.
-    const finalScore = match.score && match.score.home !== null && match.score.home !== undefined
-      && match.score.away !== null && match.score.away !== undefined
+    const finalScore = isVerifiedFinalMatch(match)
       ? `${match.score.home}-${match.score.away}`
       : null;
     const headlineValue = status === "FINISHED" && finalScore ? finalScore : (match.time || "");
@@ -269,7 +282,7 @@ function staticFixtureCard(match, meta) {
     <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(match.league)}${escapeHtml(match.league || "Maç programı")}</span><span class="fixture-card-state ${stateClass}">${escapeHtml(stateLabel)}</span></div>
     <div class="fixture-card-rows">${staticFixtureRow(match.homeTeam, homeScore, awayScore)}${staticFixtureRow(match.awayTeam, awayScore, homeScore)}</div>
     ${formHtml ? `<div class="fixture-card-meta">${formHtml}</div>` : ""}
-    <a class="fixture-card-action" href="./canli-skor.html">Analizi İncele</a>
+    <a class="fixture-card-action" href="./canli-skor.html" data-match-click>Maç ayrıntısını aç</a>
   </article>`;
 }
 
@@ -536,8 +549,12 @@ function postMatchCard(record) {
 }
 
 /** Sunum sırası: bitmiş Türk takımı maçları önce, sonra en yeni. */
-function postMatchAnalysisCards(limit) {
-  const ordered = orderForDisplay(postMatchStore());
+function postMatchAnalysisCards(limit, options = {}) {
+  let ordered = orderForDisplay(postMatchStore());
+  if (options.verifiedScoresOnly) {
+    const verifiedIds = new Set(curatedMatches().filter(isVerifiedFinalMatch).map((match) => String(match.id || "")));
+    ordered = ordered.filter((record) => verifiedIds.has(String(record.matchId || "")));
+  }
   const records = limit ? ordered.slice(0, limit) : ordered;
 
   if (!records.length) {
@@ -545,6 +562,38 @@ function postMatchAnalysisCards(limit) {
   }
 
   return records.map(postMatchCard).join("");
+}
+
+function verifiedResultHref(match, reportsByMatch) {
+  if (match.analysisPage) return `./${String(match.analysisPage).replace(/^\.\//, "")}`;
+  const report = reportsByMatch.get(String(match.id || ""));
+  if (report && report.publishState === "page" && report.reportUrl) return report.reportUrl;
+  return `./canli-skor.html#${encodeURIComponent(match.id || "")}`;
+}
+
+function verifiedResultCards(limit = 18) {
+  const reportsByMatch = new Map(postMatchStore().map((record) => [String(record.matchId || ""), record]));
+  const matches = curatedMatches()
+    .filter(isVerifiedFinalMatch)
+    .sort((left, right) => String(right.kickoff || "").localeCompare(String(left.kickoff || "")))
+    .slice(0, limit);
+
+  if (!matches.length) {
+    return '<article class="data-empty" data-card="empty-state"><strong>Doğrulanmış maç sonucu bulunmuyor</strong><span>Resmî veya editoryal olarak doğrulanmış sonuçlar geldiğinde bu liste güncellenir.</span></article>';
+  }
+
+  return matches.map((match) => {
+    const href = verifiedResultHref(match, reportsByMatch);
+    const date = postMatchDateLabel(match.kickoff || match.date);
+    return `<article class="result-card" data-card="verified-result" data-match="${escapeHtml(match.id)}">
+      <div class="result-card-head"><span>${escapeHtml(match.league || "Futbol")}${date ? ` · ${escapeHtml(date)}` : ""}</span><strong>MS</strong></div>
+      <div class="result-card-score" aria-label="${escapeHtml(`${match.homeTeam} ${match.score.home}, ${match.awayTeam} ${match.score.away}`)}">
+        <div><span>${escapeHtml(match.homeTeam)}</span><b>${escapeHtml(match.score.home)}</b></div>
+        <div><span>${escapeHtml(match.awayTeam)}</span><b>${escapeHtml(match.score.away)}</b></div>
+      </div>
+      <div class="result-card-footer"><span class="result-verified">Doğrulanmış sonuç</span><a href="${escapeHtml(href)}" data-match-click data-match="${escapeHtml(match.id)}">Maç ayrıntısı</a></div>
+    </article>`;
+  }).join("");
 }
 
 function matchProgramState(variant) {
@@ -967,7 +1016,11 @@ writePage("index.html", {
 }, fixtureFreshness);
 
 writePage("analizler.html", {
-  "post-match-analyses": postMatchAnalysisCards()
+  "post-match-analyses": postMatchAnalysisCards(undefined, { verifiedScoresOnly: true })
+}, fixtureFreshness);
+
+writePage("mac-sonuclari.html", {
+  "verified-results": verifiedResultCards()
 }, fixtureFreshness);
 
 writePage("haberler.html", {

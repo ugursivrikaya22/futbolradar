@@ -485,6 +485,7 @@ function sitemapXml(files) {
   const core = [
     "index.html",
     "bugunun-maclari.html",
+    "mac-sonuclari.html",
     "super-lig-fikstur.html",
     "canli-skor.html",
     "puan-durumu.html",

@@ -16359,3 +16359,202 @@ body,
   font-weight: 700;
   color: var(--text-soft);
 }
+/* Google Ads arama landingleri: ilk ekranda kararlı boyut, alt bölümlerde
+   daha az stil/yerleşim işi. Ana içerik statik prerender olduğu için bu
+   optimizasyon bilgi kaybına yol açmaz. */
+.ad-search-page [data-api-target="matches-page"],
+.ad-search-page [data-api-target="live-score"] {
+  min-height: 18rem;
+  contain: layout paint;
+}
+
+.ad-search-page h1,
+.ad-search-page h2,
+.ad-search-page h3 {
+  letter-spacing: 0;
+}
+
+.ad-search-page .fixture-card,
+.ad-search-page .live-context-bar,
+.ad-search-page .competition-switcher {
+  border-radius: 8px;
+}
+
+.ad-search-page .route-chain,
+.ad-search-page .search-trap,
+.ad-search-page .post-match-section,
+.ad-search-page .result-policy,
+.ad-search-page .popular-links {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 24rem;
+}
+
+.results-trust-strip {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0 2rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.results-trust-strip div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.results-trust-strip span,
+.result-card-head span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.results-section {
+  margin: 0 0 2rem;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.result-card {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.result-card-head,
+.result-card-footer,
+.result-card-score > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.result-card-head strong {
+  padding: 0.2rem 0.45rem;
+  border-radius: 4px;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  font-size: 0.78rem;
+}
+
+.result-card-score {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.result-card-score span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+
+.result-card-score b {
+  flex: 0 0 2rem;
+  font-size: 1.45rem;
+  text-align: right;
+}
+
+.result-card-footer {
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+}
+
+.result-verified {
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.result-card-footer a {
+  color: var(--text);
+  font-weight: 800;
+}
+
+.result-policy {
+  max-width: 54rem;
+  margin: 0 0 2rem;
+}
+
+.result-policy h2 {
+  margin: 0.35rem 0 0.6rem;
+}
+
+@media (max-width: 900px) {
+  .results-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .ad-search-page .hero-row,
+  .ad-search-page .live-context-bar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .ad-search-page .hero-row > *,
+  .ad-search-page .hero h1,
+  .ad-search-page .hero .lead,
+  .ad-search-page .competition-switcher,
+  .ad-search-page .competition-switcher > *,
+  .ad-search-page .competition-chip-row,
+  .ad-search-page .section-head > *,
+  .ad-search-page .fixture-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .ad-search-page .hero-meta {
+    justify-self: start;
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .ad-search-page .live-context-bar .detail-link {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .ad-search-page .competition-switcher,
+  .ad-search-page .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ad-search-page .competition-switcher {
+    overflow: hidden;
+  }
+
+  .ad-search-page .fixture-card-meta {
+    display: none;
+  }
+
+  .results-trust-strip,
+  .results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .results-trust-strip .detail-link {
+    justify-self: start;
+  }
+
+  .ad-search-page [data-api-target="matches-page"],
+  .ad-search-page [data-api-target="live-score"] {
+    min-height: 14rem;
+  }
+}

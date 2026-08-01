@@ -85,6 +85,7 @@ const pages = [
   ...playerComparisonPages,
   "canli-skor.html",
   "bugunun-maclari.html",
+  "mac-sonuclari.html",
   "haberler.html",
   ...newsArticlePages,
   "momentum.html",
@@ -257,7 +258,7 @@ function checkVercelFunctionLimit() {
 }
 
 function checkPublicMirrors() {
-  for (const file of ["page.css", "app.js", "site.js", "site.webmanifest"]) {
+  for (const file of ["page.css", "app.js", "site.js", "analytics.js", "performance-loader.js", "site.webmanifest"]) {
     const rootFile = path.join(root, file);
     const publicFile = path.join(root, "public", file);
     if (!fs.existsSync(rootFile) || !fs.existsSync(publicFile)) {
@@ -624,7 +625,8 @@ function checkAnalyticsTag() {
   for (const file of htmlFiles) {
     const html = fs.readFileSync(file, "utf8");
     expect(html.includes("data-futbolradar-ga4"), `${path.relative(root, file)}: GA4 tag missing`);
-    expect(html.includes("window.gtag"), `${path.relative(root, file)}: gtag bootstrap missing`);
+    expect(html.includes('src="/analytics.js"'), `${path.relative(root, file)}: analytics loader missing`);
+    expect(!html.includes("G-XXXXXXXXXX"), `${path.relative(root, file)}: analytics placeholder must not ship`);
   }
 }
 

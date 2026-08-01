@@ -14,6 +14,7 @@
 export const NAV_PRIMARY = [
   { href: "bugunun-maclari.html", label: "Bugünün Maçları" },
   { href: "canli-skor.html", label: "Canlı Skor" },
+  { href: "mac-sonuclari.html", label: "Maç Sonuçları" },
   { href: "super-lig-fikstur.html", label: "Süper Lig" },
   { href: "analizler.html", label: "Analizler" },
   { href: "takimlar.html", label: "Takımlar" },

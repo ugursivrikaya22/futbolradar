@@ -41,6 +41,7 @@ function asArray(payload, ...keys) {
 
 const EXTRA_PAGES = [
   { href: "index.html", title: "Ana Sayfa", subtitle: "Canlı skor ve maç merkezi" },
+  { href: "mac-sonuclari.html", title: "Maç Sonuçları", subtitle: "Doğrulanmış tamamlanan maçlar" },
   { href: "mac-merkezi.html", title: "Maç Merkezi", subtitle: "Tüm maç ekranları" },
   { href: "oyuncu-karsilastirmalari.html", title: "Oyuncu Karşılaştırmaları", subtitle: "İki oyuncuyu kıyasla" },
   { href: "takim-trendleri.html", title: "Takım Trendleri", subtitle: "Form ve momentum" },
