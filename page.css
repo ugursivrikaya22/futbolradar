@@ -3715,9 +3715,14 @@ h1 {
       }
 
       /* Kart sayısı değişken olduğu için sabit dört sütun yerine sığdıkça
-         yerleşir; üç maçlık bir günde kartlar dörtte bire düşmez. */
+         yerleşir; üç maçlık bir günde kartlar dörtte bire düşmez.
+
+         Taban, genel maç ızgarasıyla AYNI (228px). Bu seçici daha özgül
+         olduğu için 240px'te bırakıldığında canlı skor sayfası masaüstünde
+         dört sütunda kalıyor, diğer iki yüzey beşe çıkıyordu; aynı kart aynı
+         genişlikte iki farklı sayfada farklı diziliyordu. */
       .live-score-daily .matches-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
       }
 
       .live-score-daily-head {
@@ -11750,6 +11755,13 @@ p,
   gap: var(--sp-4);
 }
 
+/* Maç ızgaralarında boşluk bir basamak dar: on iki kart yan yana dizilirken
+   16px'lik boşluk satır başına bir kart kaybettiriyordu. */
+.matches-grid,
+.league-match-grid {
+  gap: var(--sp-3);
+}
+
 /* Tek kart tüm satırı kaplamasın: okunabilir bir üst sınır. */
 .matches-grid > *,
 .news-grid > * {
@@ -13251,14 +13263,19 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
    Eski kart yalnızca metin listesiydi. Yeni kart: lig satırı, takım logoları,
    skor/saat, form yüzdesi, tahmini kazanma oranı ve analiz düğmesi.
    -------------------------------------------------------------------------- */
+/* KOMPAKT MAÇ KARTI.
+   Boşluklar ve dolgu bir basamak daraltıldı; logo (26px) ve skor tipografisi
+   (--fs-md, 800) BİLEREK dokunulmadı — kartın okunur kalması bu iki öğeye
+   bağlı. Kazanılan yükseklik ~24px, yani beş sütunlu ızgarada iki satır
+   yerine iki buçuk satırda on iki maç. */
 .fixture-card {
   position: relative;
   display: grid;
-  gap: var(--sp-3);
+  gap: var(--sp-2);
   overflow: hidden;
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  padding: 14px;
+  padding: 12px;
   background: var(--glass);
   box-shadow: var(--shadow-md);
   transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
@@ -13336,14 +13353,16 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 
 .fixture-card-rows {
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
+/* Logo sütunu 26px'te sabit: takım rozetleri bundan küçükte tanınmaz hâle
+   geliyor ve kartın ilk okunan öğesi o. */
 .fixture-row {
   display: grid;
   grid-template-columns: 26px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .fixture-row img,
@@ -13365,7 +13384,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 
 .fixture-row-name {
   overflow: hidden;
-  font-size: var(--fs-base);
+  font-size: var(--fs-sm);
   font-weight: 650;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -13388,7 +13407,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--sp-2);
   border-top: 1px solid rgba(14, 26, 22, 0.069);
-  padding-top: 10px;
+  padding-top: 8px;
 }
 
 .fixture-metric {
@@ -13441,6 +13460,67 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 
 .fixture-card-action:hover {
   background: rgba(13, 148, 136, 0.06);
+}
+
+/* Masaüstünde eylem düğmesi bir basamak alçak. `--tap` (40px) dokunmatik
+   hedef alt sınırı; fare kullanılan genişliklerde o sınır geçerli değil ve
+   40px kartın yüksekliğinin altıda birini yiyordu. Dokunmatik genişliklerde
+   kural hiç uygulanmaz. */
+@media (min-width: 761px) {
+  .fixture-card-action {
+    min-height: 34px;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   MAÇ LİSTESİ PENCERESİ — "Daha Fazla Göster"
+   Liste on iki kartta kesilir; gerisi DOM'da durur ama gizlidir. Silmek
+   yerine gizlemek bilinçli: buton basıldığında yeniden çizim gerekmez ve
+   o sırada gelen canlı skorla yarışılmaz.
+   -------------------------------------------------------------------------- */
+
+/* `[hidden]` tek başına yetmiyor: kartlar `display: grid` taşıyor ve bu
+   tarayıcının `[hidden] { display: none }` varsayılanını geçersiz kılıyor. */
+.fixture-card[hidden],
+.live-score-card[hidden] {
+  display: none;
+}
+
+/* Buton ızgaranın içinde duruyor (çizim hedefi ızgaranın kendisi); satırın
+   tamamını kaplamazsa bir kart hücresine sıkışıp kart gibi görünür. */
+.match-more-row {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding-top: var(--sp-2);
+}
+
+.match-more {
+  display: inline-flex;
+  min-height: var(--tap);
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  padding: 0 var(--sp-5);
+  background: var(--surface);
+  color: var(--green);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 750;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.match-more:hover {
+  border-color: var(--green);
+  background: var(--green-tint);
+}
+
+.match-more:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
 }
 
 /* ----------------------------------------------------------------------------
@@ -14093,12 +14173,24 @@ table {
 }
 
 /* Tek maç olduğunda kart tüm satırı kaplayıp devasa görünüyordu.
-   `auto-fill` boş sütunları korur, kart normal genişliğinde kalır. */
-.matches-grid,
+   `auto-fill` boş sütunları korur, kart normal genişliğinde kalır.
+
+   MAÇ IZGARALARI DAHA SIK. 260px'lik taban 1440px'te dört sütun veriyordu;
+   başlangıç penceresi on iki karta çıkınca bu üç satır demekti. 228px beş
+   sütun veriyor ve kart hâlâ ~238px — takım adı, logo ve skor için yeterli.
+   Mobilde (≤430px) 228+12 tek sütundan fazlasına yetmediği için düzen
+   kendiliğinden tek sütunda kalır; okunabilirlik değişmez.
+
+   Haber ve oyuncu ızgaraları eski tabanında bırakıldı: onların kartları
+   metin ağırlıklı ve 228px'te satır sonu bozuluyor. */
 .players-grid,
-.news-grid,
-.league-match-grid {
+.news-grid {
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.matches-grid,
+.league-match-grid {
+  grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
 }
 
 /* Şerit kartları biraz daha geniş: oyuncu kartı yoğun bir bileşen. */

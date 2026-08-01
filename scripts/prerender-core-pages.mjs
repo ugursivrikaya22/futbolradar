@@ -34,6 +34,7 @@ const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
+const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
 
 const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
 const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
@@ -543,8 +544,18 @@ function postMatchAnalysisCards(limit) {
   return records.map(postMatchCard).join("");
 }
 
+/**
+ * Statik yedek, JavaScript çalışmadan ÖNCE görünen listedir. Kart sayısı
+ * istemcinin başlangıç penceresiyle aynı olmak zorunda: altı kart basılıp
+ * hemen ardından on ikiye çıkılsaydı sayfa yüklenirken gözle görülür biçimde
+ * zıplardı. Sayı tek bir yerde (services/matchListWindow.js) duruyor.
+ *
+ * "Daha Fazla Göster" butonu burada BASILMAZ: butonu çalıştıracak JavaScript
+ * yokken basılan buton ölü bir düğmedir. Yedek, penceresi kadarını gösterir
+ * ve okuyucuyu tam listeye bağlantılarla yönlendirir.
+ */
 function matchProgramState(variant) {
-  const cards = calendarProgramCards(variant === "today" ? 6 : 4);
+  const cards = calendarProgramCards(MATCH_LIST_INITIAL);
   return cards || emptyMatchState(variant);
 }
 

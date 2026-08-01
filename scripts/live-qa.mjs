@@ -103,7 +103,10 @@ const appFeatureMarkers = [
   "renderLandingInsights",
   "player-signal-actions",
   "initHomeSearch",
-  "data-home-search"
+  "data-home-search",
+  "renderMatchListWindow",
+  "MATCH_LIST_INITIAL",
+  "initMatchListToggles"
 ];
 const cssFeatureMarkers = [
   "scouting-summary-grid",
@@ -177,7 +180,9 @@ const cssFeatureMarkers = [
   "daily-brief-shell",
   "daily-brief-card",
   "brief-command-grid",
-  "brief-command-card"
+  "brief-command-card",
+  "match-more",
+  "match-more-row"
 ];
 const suspiciousCodes = new Set([0x00c2, 0x00c3, 0x00c4, 0x00c5]);
 const failures = [];
