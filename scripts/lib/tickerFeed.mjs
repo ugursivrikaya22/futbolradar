@@ -1,7 +1,7 @@
 /**
  * SON DAKİKA BANDI — beslenme kuralı
  *
- * Bant iki doğrulanmış kaynaktan beslenir ve elle güncelleme gerektirmez:
+ * Bant DÖRT doğrulanmış kaynaktan beslenir ve elle güncelleme gerektirmez:
  *
  *   1. Sitenin kendi doğrulanmış maç kaydı (data/matches.json). Bu kayıtlar
  *      yayın politikasından (services/matchEligibility.js) geçmiştir ve CI'ın
@@ -11,6 +11,15 @@
  *      "confirmed" ve kaynak bağlantısı olanlar).
  *   3. Editoryal haber kayıtları (data/news.json), yalnızca status "verified"
  *      ve kaynak bağlantısı varsa.
+ *   4. Küratörlü gündem (data/news-ticker.json): resmî açıklama, maç programı,
+ *      sakatlık, teknik direktör/oyuncu sözü ve transfer iddiası. Kural
+ *      katmanı services/newsTicker.js, otomatik bakımı
+ *      scripts/refresh-news-ticker.mjs.
+ *
+ * AYNI HABER İKİ KEZ GÖRÜNMEZ. Dört kaynak aynı olaya farklı açılardan
+ * bakabiliyor ("Inter Turku 2-0 Başakşehir" ile "Başakşehir Avrupa'ya veda
+ * etti"). Havuz birleştirildikten sonra ANLAM düzeyinde bir kez tekleştirilir;
+ * kalan sürüm en açık yazımı ve en yüksek önceliği devralır.
  *
  * TAZELİK: "Son Dakika" bir zaman iddiasıdır. Bant daha önce on bir güne
  * kadar eski haberi bu rozetle gösteriyordu — içerik gerçekti ama sunum
@@ -41,6 +50,8 @@ const {
 } = require("../../services/transferService.js");
 const {
   MAX_CURATED_ITEMS,
+  dedupeByMeaning,
+  editorialRank,
   logRejected,
   normalizeTickerItems
 } = require("../../services/newsTicker.js");
@@ -68,19 +79,33 @@ const TRANSFER_MAX_AGE_HOURS = 24 * 21;
  * Tek bir kategori bandı ele geçirmesin. Altı maç sonucu varken doğrulanmış
  * transferler hiç görünmüyordu; sıralama önceliği doğruydu ama sonuç
  * tek sesli bir banttı.
+ *
+ * Maç kotası dörtten ikiye indirildi: küratörlü gündem artık maç sonuçlarını
+ * da ANLAMIYLA taşıyor ("Beşiktaş tur atladı") ve iki kaynak aynı olayda
+ * çakışıyordu. Çıplak skor satırı hâlâ bantta ama artık bandın yarısını
+ * doldurmuyor.
  */
-const MAX_MATCH_ITEMS = 4;
-const MIN_TRANSFER_SLOTS = 2;
+const MAX_MATCH_ITEMS = 2;
+const MIN_TRANSFER_SLOTS = 1;
 
 /**
  * Küratörlü gündeme (iddia, resmî açıklama, sakatlık, teknik direktör sözü)
  * ayrılan en az yer. Maç sonuçları altı slotu da doldurabildiği için,
  * ayrılmadığında bu kategori hiç görünmüyordu.
+ *
+ * "Gündem" bandın ASIL işi: bir futbol sitesinin üst şeridi skor tablosu
+ * değil, gündem şerididir. Dört slot bu yüzden ayrılıyor.
  */
-const MIN_CURATED_SLOTS = 2;
+const MIN_CURATED_SLOTS = 4;
 
-/** Bant en fazla bu kadar öğe taşır; şerit kalabalıklaşmamalı. */
-const MAX_ITEMS = 6;
+/**
+ * Bant en fazla bu kadar öğe taşır; şerit kalabalıklaşmamalı.
+ *
+ * Altıdan yediye çıktı: küratörlü gündem beş kategoriden yediye genişledi
+ * (maç programı ve oyuncu açıklaması eklendi) ve altı slotta gündeme üç yer
+ * kalıyordu. Yedi, kayan bir şeritte hâlâ okunabilir bir uzunluk.
+ */
+const MAX_ITEMS = 7;
 
 const STATE_FILE = path.join(root, "data", "ticker-state.json");
 
@@ -129,13 +154,23 @@ function matchItems(now) {
     const live = ["LIVE", "IN_PLAY", "1H", "2H", "HT", "HALFTIME", "ET"].includes(status);
     const finished = ["FINISHED", "FT", "AET", "PEN"].includes(status);
 
+    // Gündem sırası tek yerde tanımlı (services/newsTicker.js): dört
+    // büyükler, sonra Avrupa'daki Türk kulüpleri, sonra Süper Lig. Aynı
+    // öncelik listesi dört kaynağın hepsine uygulanıyor ki bant kaynak
+    // değiştirdiğinde sıralama mantığı değişmesin.
+    const rank = editorialRank({
+      teams: [match.homeTeam, match.awayTeam],
+      competition: match.league || match.competition
+    });
+
     if (live && hasScore(match)) {
       items.push({
         label: "Canlı",
         text: `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`,
         href: `canli-skor.html#${match.id}`,
         at: stamp,
-        priority: 0
+        source: "match",
+        priority: 0 + rank / 10
       });
     } else if (finished && hasScore(match)) {
       items.push({
@@ -143,7 +178,8 @@ function matchItems(now) {
         text: `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`,
         href: `canli-skor.html#${match.id}`,
         at: stamp,
-        priority: 1
+        source: "match",
+        priority: 1 + rank / 10
       });
     }
   }
@@ -174,7 +210,8 @@ function transferItems(now) {
       text: `${item.playerName}, ${item.toTeam} kadrosuna katıldı (${item.type})`,
       href: item.sourceUrl,
       at: item.date,
-      priority: 2
+      source: "transfer",
+      priority: 2 + editorialRank({ teams: [item.toTeam, item.fromTeam] }) / 10
     }));
 }
 
@@ -194,7 +231,11 @@ function newsItems(now) {
       text: item.title,
       href: item.url,
       at: item.publishedAt,
-      priority: 3
+      source: "news",
+      // `category` tekleştirmede EDİTORYAL işareti: aynı olayın hem çıplak
+      // skor satırı hem de yazılmış başlığı varsa başlık kazanır.
+      category: item.category || "Gündem",
+      priority: 3 + editorialRank({ team: item.team, competition: item.competition || item.category }) / 10
     }));
 }
 
@@ -213,21 +254,34 @@ function curatedItems(now) {
 
   logRejected("ticker", rejected);
 
-  // Öncelik 1.5: resmî açıklama ve iddialar maç sonuçlarının hemen ardında,
-  // editoryal haberlerin önünde. Kesinleşmemiş öğeler kendi rozetlerini
-  // taşıdıkları için öne çıkmaları yanıltıcı olmuyor.
-  return items.map((item) => ({ ...item, priority: 1.5 + item.priority / 100 }));
+  // İki bant içi öncelik:
+  //   • SON DAKİKA (0.5–0.96) — canlı skorun hemen ardında, biten maçın
+  //     önünde. 24 saatlik pencere dolduğunda işaret kendiliğinden sönüyor
+  //     (services/newsTicker.js), dolayısıyla bu öncelik kalıcı olamaz.
+  //   • Normal gündem (1.5–1.96) — biten maç sonuçlarının ardında,
+  //     editoryal haberlerin önünde.
+  //
+  // İkisinin içinde de sıra: editoryal rütbe (dört büyükler önce), sonra
+  // kategori. Kesinleşmemiş öğeler kendi rozetlerini taşıdıkları için öne
+  // çıkmaları yanıltıcı olmuyor.
+  return items.map((item) => ({
+    ...item,
+    source: "curated",
+    priority: (item.breaking ? 0.5 : 1.5) + item.rank / 10 + item.priority / 100
+  }));
 }
 
-function dedupe(items) {
-  const seen = new Set();
-  const unique = [];
-  for (const item of items) {
-    const key = item.text.toLocaleLowerCase("tr");
-    if (seen.has(key)) continue;
-    seen.add(key);
-    unique.push(item);
-  }
+/**
+ * Aynı olayın farklı yazımlarını eler.
+ *
+ * Kelimesi kelimesine karşılaştırma yetmiyordu: bandın bir kaynağı
+ * "Inter Turku 2-0 Başakşehir" yazarken diğeri "Başakşehir Konferans
+ * Ligi'nde elendi" yazıyor ve okuyucu aynı haberi iki kez görüyordu.
+ * Karşılaştırma kuralı da tek yerde (services/newsTicker.js).
+ */
+function dedupe(items, scope = "ticker") {
+  const { items: unique, dropped } = dedupeByMeaning(items);
+  logRejected(scope, dropped);
   return unique;
 }
 
@@ -262,11 +316,31 @@ export function buildTickerFeed(options = {}) {
   const now = options.now instanceof Date ? options.now : new Date();
 
   const byRecency = (left, right) => String(right.at || "").localeCompare(String(left.at || ""));
+  const byImportance = (left, right) => {
+    if (left.priority !== right.priority) return left.priority - right.priority;
+    return byRecency(left, right);
+  };
 
-  const matches = dedupe(matchItems(now)).sort(byRecency);
-  const transfers = dedupe(transferItems(now)).sort(byRecency);
-  const curated = dedupe(curatedItems(now)).sort(byRecency);
-  const news = dedupe(newsItems(now)).sort(byRecency);
+  // TEKLEŞTİRME BİR KEZ, DÖRT KAYNAK BİRLEŞTİKTEN SONRA.
+  //
+  // Daha önce her kaynak ayrı ayrı ve sonra birleşik liste yeniden
+  // eleniyordu. Aynı olayın maç kaydındaki ve haber kaydındaki sürümü ancak
+  // son turda karşılaşıyordu; o tur da seçim yapıldıktan SONRA geldiği için
+  // seçilmiş bir slot elenip yerine bir şey konmuyordu. Tek turda elemek hem
+  // bu boşluğu kapatıyor hem de "hangi haber hangi kotaya sayılıyor"
+  // sorusunu tek cevaplı hâle getiriyor.
+  const pool = dedupe([
+    ...matchItems(now),
+    ...curatedItems(now),
+    ...transferItems(now),
+    ...newsItems(now)
+  ]);
+
+  const fromSource = (name) => pool.filter((item) => item.source === name).sort(byImportance);
+
+  const matches = fromSource("match");
+  const curated = fromSource("curated");
+  const transfers = fromSource("transfer");
 
   // Kategori kotası: maç sonuçları bandı tek başına doldurmasın, doğrulanmış
   // transferlere ve küratörlü gündeme yer kalsın. Kota dolmazsa boş slot
@@ -289,34 +363,49 @@ export function buildTickerFeed(options = {}) {
     ...transfers.slice(0, reservedForTransfers)
   ];
 
-  // Kalan yerleri önceliğe göre doldur.
-  const rest = dedupe([...matches, ...curated, ...transfers, ...news])
+  // Kalan yerleri önceliğe göre doldur. Havuz zaten tekleştirildiği için
+  // burada nesne kimliğiyle karşılaştırmak güvenli.
+  const rest = pool
     .filter((item) => !picked.includes(item))
-    .sort((left, right) => {
-      if (left.priority !== right.priority) return left.priority - right.priority;
-      return byRecency(left, right);
-    });
+    .sort(byImportance);
 
-  const items = dedupe([...picked, ...rest]).slice(0, MAX_ITEMS);
+  // Bant kendi içinde de önceliğe göre dizilir: kota hangi öğelerin
+  // gireceğini belirler, SIRAYI belirlemez. Kota olmasaydı canlı skor bir
+  // transfer duyurusunun altına düşebilirdi.
+  const items = [...picked, ...rest].slice(0, MAX_ITEMS).sort(byImportance);
   const previous = readState();
 
   // Doğrulanmış hiçbir öğe kalmadıysa son bilinen liste korunur. Bant boş
   // kalmaz ama uydurma da üretilmez: gösterilen her başlık daha önce
   // doğrulanmış gerçek bir kayıttır.
   if (!items.length) {
-    if (previous && Array.isArray(previous.items) && previous.items.length) {
+    // ESKİ AMA DOĞRU ≠ TARİHİ GEÇMİŞ.
+    //
+    // Yedek listenin varlık sebebi "gerçek ama eski başlık göster"; tarihi
+    // geçmiş bir duyuru ise eski değil, YANLIŞ. "5 Ağustos'ta oynanacak"
+    // satırı 20 Ağustos'ta yedekten çizilirse bant okuyucuya yanlış bilgi
+    // vermiş olur. Kesinti sürerken bile bu satırlar elenir; hepsi elenirse
+    // bant boş kalır, çünkü yanlış bir başlık boş bant'tan kötüdür.
+    const stillTrue = (previous && Array.isArray(previous.items) ? previous.items : [])
+      .filter((item) => {
+        const expires = Date.parse(item && item.expiresAt);
+        return Number.isNaN(expires) || now.getTime() <= expires;
+      });
+
+    if (stillTrue.length) {
       // fallbackSince kesintinin ilk görüldüğü andır; kesinti sürerken
       // yeniden yazılmaz, böylece her tur yeni bir commit üretmez.
       if (!previous.usedFallback || !previous.fallbackSince) {
         writeState({
           ...previous,
+          items: stillTrue,
           usedFallback: true,
           fallbackSince: now.toISOString(),
           fallbackReason: "doğrulanmış taze öğe bulunamadı"
         });
       }
       return {
-        items: previous.items,
+        items: stillTrue,
         badge: "Gündem",
         fresh: false,
         generatedAt: previous.generatedAt || null,

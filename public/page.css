@@ -12188,6 +12188,9 @@ body .container {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  /* Rozet asla ezilmesin: dar ekranda ızgara onu daraltıp "Son Dakika"yı
+     iki satıra bölüyordu ve bandın yüksekliği zıplıyordu. */
+  flex: none;
   border-radius: var(--radius-pill);
   padding: 4px 10px;
   background: rgba(200, 30, 45, 0.096);
@@ -12235,6 +12238,16 @@ body .container {
   font-size: var(--fs-sm);
   white-space: nowrap;
   transition: color var(--dur) var(--ease);
+}
+
+/* TAKIM ADI DİKEY KIRILMASIN.
+   Şerit `width: max-content` olduğu için normalde sıkışma yok; ama bant dar
+   bir kapsayıcıya ya da uzun bir başlığa denk geldiğinde satır içi kutular
+   kırılabiliyor ve "Fenerbah- çe" gibi dikey bölünmüş adlar çıkıyordu.
+   Kural öğenin İÇİNDEKİ kutulara da uygulanıyor; başlık tek satırda kalır. */
+.news-ticker-item > * {
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 .news-ticker-item:hover {
@@ -12599,6 +12612,23 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   main > *,
   .news-ticker-track {
     animation: none !important;
+  }
+
+  /* HAREKETİ KAPATMAK İÇERİĞİ GİZLEMEK DEĞİLDİR.
+     Animasyon durunca şerit (`width: max-content`) taşma gizlenen bir
+     pencerede duruyordu: ilk iki başlıktan sonrasına ulaşmanın hiçbir yolu
+     kalmıyordu. Hareket tercihi kapalıysa bant elle kaydırılabilir bir
+     şeride dönüşür; klavye kullanıcısı için de odaklanılabilir kalır. */
+  .news-ticker-viewport {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* İkinci kopya yalnızca kesintisiz DÖNGÜ için basılıyor; döngü yokken
+     aynı başlıkları ikinci kez kaydırmak gereksiz mesafe demek. */
+  .news-ticker-track > .news-ticker-group[aria-hidden="true"] {
+    display: none;
   }
 }
 

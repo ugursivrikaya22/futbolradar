@@ -1,54 +1,117 @@
 {
-  "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-07-31T11:00:00+03:00",
+  "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, otomatik tazeleme: scripts/refresh-news-ticker.mjs, belge: docs/news-ticker.md. ELLE yalnızca `origin` alanı OLMAYAN kayıtlar yazılır; `origin: \"news.json\"` taşıyanlar data/news.json içindeki `ticker` bloklarından her koşuda yeniden üretilir, elle düzenlenmez. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez ve metin bir çekince ifadesi ('iddia', 'aktarıldı', 'öne sürüldü'...) taşımak zorundadır. Tarihi geçince anlamsızlaşan kayıtlar expiresAt taşır.",
+  "updatedAt": "2026-08-01T07:59:03.611Z",
   "items": [
     {
-      "id": "oulai-fiorentina-resmi",
+      "id": "news-galatasaray-musiala-resmi-aciklama",
+      "origin": "news.json",
       "category": "official",
       "confidence": "confirmed",
-      "text": "Trabzonspor, Christ Oulai'nin Fiorentina'ya transferini resmen açıkladı",
-      "team": "Trabzonspor",
-      "timestamp": "2026-07-19T22:03:00+03:00",
+      "text": "Galatasaray, Jamal Musiala transferi iddialarının gerçek dışı olduğunu resmen açıkladı",
+      "timestamp": "2026-07-31T12:31:00+03:00",
       "source": {
-        "name": "Sporx",
-        "url": "https://www.sporx.com/trabzonspor-resmen-acikladi-oulai-SXHBQ1169626SXQ"
-      }
-    },
-    {
-      "id": "sanuc-rizespor-resmi",
-      "category": "official",
-      "confidence": "confirmed",
-      "text": "Tayyip Talha Sanuç, Çaykur Rizespor'a transfer oldu",
-      "team": "Beşiktaş",
-      "timestamp": "2026-07-19T15:30:00+03:00",
-      "source": {
-        "name": "Beşiktaş JK",
-        "url": "https://www.bjk.com.tr/tr/haber/94750/tayyip-talha-sanuc-caykur-rizespora-transfer-oldu.html"
-      }
-    },
-    {
-      "id": "ugochukwu-mali-sartlar",
-      "category": "official",
-      "confidence": "confirmed",
-      "text": "Galatasaray, Ugochukwu transferinin mali şartlarını açıkladı",
+        "name": "Fanatik",
+        "url": "https://www.fanatik.com.tr/galatasaray/galatasaraydan-musiala-aciklamasi-iddialar-gercek-disidir-2632685"
+      },
       "team": "Galatasaray",
-      "timestamp": "2026-07-15T20:00:00+03:00",
+      "updatedAt": "2026-07-31T12:47:00+03:00"
+    },
+    {
+      "id": "news-fenerbahce-sturm-graz-ilk-mac",
+      "origin": "news.json",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "text": "Fenerbahçe, Şampiyonlar Ligi 3. ön elemesinde Sturm Graz'ı 5 Ağustos 21.00'de Kadıköy'de ağırlayacak",
+      "timestamp": "2026-07-31T16:06:00+03:00",
       "source": {
-        "name": "Galatasaray SK",
-        "url": "https://www.galatasaray.org/en/haber/football/official-statement-from-galatasaray-sk/60607"
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/galeri-fenerbahce-sturm-graz-maci-ne-zaman-saat-kacta-hangi-kanalda-fenerbahce-sampiyonlar-ligi-3-eleme-turu-mac-tarihi-43257660"
+      },
+      "team": "Fenerbahçe",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "expiresAt": "2026-08-05T23:59:59+03:00"
+    },
+    {
+      "id": "news-besiktas-hradec-kralove-kura",
+      "origin": "news.json",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "text": "Beşiktaş, Avrupa Ligi 3. ön elemesinde Hradec Kralove ile eşleşti; ilk maç 6 Ağustos'ta deplasmanda",
+      "timestamp": "2026-07-30T23:05:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/besiktasin-avrupa-ligindeki-rakibi-belli-oldu-43257356"
+      },
+      "team": "Beşiktaş",
+      "competition": "UEFA Avrupa Ligi",
+      "expiresAt": "2026-08-06T23:59:59+03:00"
+    },
+    {
+      "id": "fenerbahce-muriqi-donus-raporu",
+      "category": "squad-update",
+      "confidence": "reported",
+      "text": "Vedat Muriqi'nin Sturm Graz eşleşmesinde Fenerbahçe kadrosuna dönebileceği aktarıldı",
+      "team": "Fenerbahçe",
+      "competition": "UEFA Şampiyonlar Ligi",
+      "timestamp": "2026-07-31T11:33:00+03:00",
+      "expiresAt": "2026-08-11T23:59:59+03:00",
+      "source": {
+        "name": "Fanatik",
+        "url": "https://www.fanatik.com.tr/fenerbahce/galeri-fenerbahceye-vedat-muriqi-mujdesi-iste-geri-donecegi-mac-2632682"
       }
     },
     {
-      "id": "trabzonspor-avusturya-kamp-programi",
-      "category": "squad-update",
-      "confidence": "confirmed",
-      "text": "Trabzonspor'un Avusturya kampı hazırlık maçı programı belli oldu",
+      "id": "trabzonspor-onana-ugurcan-yaniti",
+      "category": "player-quote",
+      "confidence": "reported",
+      "text": "Andre Onana'nın Uğurcan Çakır sorusuna \"Futbolda hiç kimsenin yeri doldurulamaz değil\" yanıtını verdiği aktarıldı",
       "team": "Trabzonspor",
-      "timestamp": "2026-07-21T16:00:00+03:00",
+      "timestamp": "2026-07-31T13:14:00+03:00",
       "source": {
-        "name": "Trabzonspor",
-        "url": "https://www.trabzonspor.org.tr/tr/haberler/hazirlik-maci-programimiz-belli-oldu-3-21-07-2026"
+        "name": "Fanatik",
+        "url": "https://www.fanatik.com.tr/trabzonspor/onanadan-ugurcan-cakir-sorusuna-imali-yanit-kimsenin-yeri-doldurulamaz-degil-2632686"
       }
+    },
+    {
+      "id": "salah-al-ittihad-iddiasi",
+      "category": "transfer-rumour",
+      "confidence": "reported",
+      "text": "Beşiktaş'ın ilgilendiği Mohamed Salah'ın Al-Ittihad'ın teklifine olumlu yanıt verdiği İngiliz basınına dayandırılarak aktarıldı",
+      "team": "Beşiktaş",
+      "timestamp": "2026-07-31T11:25:00+03:00",
+      "updatedAt": "2026-07-31T11:31:00+03:00",
+      "source": {
+        "name": "Sözcü",
+        "url": "https://www.sozcu.com.tr/ingiliz-basini-duyurdu-salah-imzayi-atiyor-p341261"
+      }
+    },
+    {
+      "id": "news-basaksehir-inter-turku-avrupa-vedasi",
+      "origin": "news.json",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "text": "Başakşehir, Konferans Ligi 2. ön elemesinde Inter Turku'ya elenerek Avrupa'ya veda etti",
+      "timestamp": "2026-07-30T22:05:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/inter-turku-3-2-0-1-basaksehir-uefa-konferans-ligi-2-eleme-turu-rovans-maci-43256636"
+      },
+      "team": "Başakşehir",
+      "competition": "UEFA Konferans Ligi"
+    },
+    {
+      "id": "news-super-lig-2026-27-acilis-programi",
+      "origin": "news.json",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "text": "Trendyol Süper Lig 2026-2027 sezonu 14 Ağustos'ta Gaziantep FK-Alanyaspor maçıyla başlıyor",
+      "timestamp": "2026-08-01T10:48:00+03:00",
+      "source": {
+        "name": "Yeni Şafak",
+        "url": "https://www.yenisafak.com/galeri/ozgun/super-lig-ne-zaman-basliyor-ilk-mac-hangi-gun-oynanacak-super-lig-2026-2027-sezonu-ilk-hafta-fiksturu-4843777"
+      },
+      "competition": "Trendyol Süper Lig",
+      "expiresAt": "2026-08-14T23:59:59+03:00"
     }
   ]
 }

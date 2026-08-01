@@ -24,10 +24,33 @@
  *   4. Kesinleşmemiş bir öğenin METNİ kesinlik fiili taşıyamaz ("resmen",
  *      "imzaladı", "duyurdu"...). Rozet "Söylenti" derken cümle "imzaladı"
  *      diyorsa okuyucu cümleye inanır. Doğrulama bunu reddeder.
+ *   5. Ve tersi de zorunlu: kesinleşmemiş bir öğenin metni ÇEKİNCE İFADESİ
+ *      TAŞIMAK ZORUNDA ("iddia", "öne sürüldü", "aktarıldı", "görüşmeler
+ *      sürüyor"...). Rozet ekranda küçüktür, cümle büyüktür; çekince
+ *      yalnızca rozette kalırsa okuyucu onu görmeden geçer.
  *
  * KAYNAK ZORUNLU. Kaynağı gösterilemeyen bir iddia yayımlanmaz; söylenti
  * bandı, kaynaksız söylenti bandı demek değildir.
+ *
+ * RAF ÖMRÜ ZORUNLU. Bir başlık "gündem" olmaktan çıktığı anda banttan da
+ * çıkmalı. Üç ayrı mekanizma bunu sağlıyor ve üçü de bu dosyada:
+ *
+ *   • KATEGORİ RAF ÖMRÜ  — haber değeri kategoriye göre farklı hızda tükenir.
+ *   • `breaking` PENCERESİ — son dakika bir zaman iddiasıdır; 24 saat sonra
+ *     öğe "son dakika" olmaktan çıkar (gelişme sürüyorsa `developing`).
+ *   • `expiresAt`        — maç duyurusu gibi tarihi geçince anlamı kalmayan
+ *     kayıtlar için sert son kullanma tarihi. Kalıcı duyuruların bantta
+ *     süresiz asılı kalmasını bu alan engeller.
+ *
+ * SIRALAMA EDİTORYALDİR. Gündem sırası "en yeni en üstte" değildir: önce
+ * son dakika, sonra dört büyükler, sonra Avrupa kupalarındaki Türk
+ * kulüpleri, sonra Süper Lig, sonra büyük Avrupa kulüpleri gelir. Bu sıra
+ * `editorialRank` içinde tek bir yerde yazılı.
  */
+
+const { isMajorClubName } = require("./majorClubs");
+const { isTurkishLeague, isTurkishTeamName } = require("./turkishTeams");
+const { normalizeText } = require("../api/_utils");
 
 /**
  * Kategoriler. Anahtar veri dosyasında, etiket ekranda görünür.
@@ -44,6 +67,8 @@
  *   • Resmî açıklama ise transfer penceresi boyunca geçerliliğini korur —
  *     bu, bu depoda doğrulanmış transferler için zaten uygulanan 21 günlük
  *     pencerenin (scripts/lib/tickerFeed.mjs) aynı gerekçesi.
+ *   • Maç programı duyurusu maç oynanana kadar geçerlidir; oradaki asıl
+ *     sınır raf ömrü değil `expiresAt` alanıdır.
  *
  * Bu, tazelik iddiasını gevşetmez: "Son Dakika" rozeti hâlâ banttaki EN TAZE
  * öğeye göre verilir, eski bir resmî açıklama tek başına o rozeti üretemez.
@@ -51,9 +76,11 @@
 const CATEGORIES = Object.freeze({
   "official": { label: "Resmî açıklama", rumourOnly: false, priority: 0, maxAgeHours: 24 * 21 },
   "post-match": { label: "Maç sonu", rumourOnly: false, priority: 1, maxAgeHours: 24 * 4 },
-  "squad-update": { label: "Kadro & sakatlık", rumourOnly: false, priority: 2, maxAgeHours: 24 * 10 },
-  "manager-quote": { label: "Teknik direktör", rumourOnly: false, priority: 3, maxAgeHours: 24 * 7 },
-  "transfer-rumour": { label: "Transfer iddiası", rumourOnly: true, priority: 4, maxAgeHours: 24 * 7 }
+  "fixture": { label: "Maç programı", rumourOnly: false, priority: 2, maxAgeHours: 24 * 14 },
+  "squad-update": { label: "Kadro & sakatlık", rumourOnly: false, priority: 3, maxAgeHours: 24 * 10 },
+  "manager-quote": { label: "Teknik direktör", rumourOnly: false, priority: 4, maxAgeHours: 24 * 7 },
+  "player-quote": { label: "Oyuncu açıklaması", rumourOnly: false, priority: 5, maxAgeHours: 24 * 7 },
+  "transfer-rumour": { label: "Transfer iddiası", rumourOnly: true, priority: 6, maxAgeHours: 24 * 7 }
 });
 
 /**
@@ -101,8 +128,138 @@ const CONFIRMATION_VERBS = [
   "resmi açıklama"
 ];
 
-/** Bandın küratörlü kaynaktan alabileceği en fazla öğe sayısı. */
-const MAX_CURATED_ITEMS = 4;
+/**
+ * Çekince ifadeleri. Kesinleşmemiş bir öğenin metninde EN AZ BİRİ geçmek
+ * zorunda.
+ *
+ * Gerekçe rozetin kendisiyle ilgili: rozet on piksellik bir etikettir,
+ * cümle ise bandın taşıdığı asıl bilgidir. "Şu oyuncu Beşiktaş'a geliyor"
+ * cümlesi, yanında "SÖYLENTİ" yazsa bile okuyucunun aklında haber olarak
+ * kalır. Çekince cümlenin İÇİNDE olmak zorunda: "geldiği öne sürüldü".
+ */
+const HEDGE_MARKERS = [
+  "iddia",
+  "öne sürül",
+  "ileri sürül",
+  "aktarıl",
+  "aktardı",
+  "bildirdi",
+  "belirtildi",
+  "göre",
+  "basına yansı",
+  "gündeme geldi",
+  "görüşmeler sürüyor",
+  "görüşmelerin sürdüğü",
+  "sürüyor",
+  "yazdı",
+  "rapor",
+  "konuşul",
+  "sıcak bak",
+  "değerlendiriliyor",
+  "beklendiği",
+  "olabileceği",
+  "dönebileceği"
+];
+
+/**
+ * Bandın küratörlü kaynaktan alabileceği en fazla öğe sayısı.
+ *
+ * Ayrılan slot sayısından (MIN_CURATED_SLOTS) fazla: tekleştirme sırasında
+ * bir küratörlü öğe maç kaydındaki sürümüyle birleşip kotadan düşebiliyor.
+ * Yedek olmasa gündem slotu boş kalırdı.
+ */
+const MAX_CURATED_ITEMS = 6;
+
+/**
+ * "Son dakika" bir ZAMAN İDDİASIDIR. Bir öğe `breaking` işaretiyle girse
+ * bile bu pencereden sonra o iddiayı sürdüremez; gelişme gerçekten devam
+ * ediyorsa editör `developing: true` yazmak zorundadır. İşaret kendiliğinden
+ * kalıcı olmaz — kalıcı bir "son dakika" bandın tamamını değersizleştirir.
+ */
+const BREAKING_WINDOW_HOURS = 24;
+
+/**
+ * EDİTORYAL SIRA. Küçük sayı önce çizilir.
+ *
+ * Bu bir futbol sitesinin gündem sırası; "en yeni en üstte" değil. Trabzonspor'un
+ * resmî açıklaması, saatler sonra gelen bir İtalya transfer iddiasının altında
+ * kalmamalı.
+ */
+const EDITORIAL_RANKS = Object.freeze({
+  BIG_FOUR: 0,
+  TURKISH_IN_EUROPE: 1,
+  TURKISH_LEAGUE: 2,
+  MAJOR_EUROPEAN: 3,
+  OTHER: 4
+});
+
+const BIG_FOUR = Object.freeze(["Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor"]);
+const BIG_FOUR_KEYS = new Set(BIG_FOUR.map((name) => normalizeText(name)));
+
+/** Avrupa kupalarını işaret eden turnuva adları (Türkçe ve İngilizce yazım). */
+const EUROPEAN_COMPETITION_HINTS = [
+  "sampiyonlar ligi",
+  "champions league",
+  "avrupa ligi",
+  "europa league",
+  "konferans ligi",
+  "conference league",
+  "uefa",
+  "super kupa",
+  "super cup"
+];
+
+/**
+ * Yinelenme eşiği (Jaccard). İki başlık aynı olayı anlatıyorsa kelimeleri de
+ * büyük ölçüde örtüşür: "Beşiktaş Midtjylland'ı 2-0 yendi" ile "Midtjylland
+ * 0-2 Beşiktaş: Kartal turladı" aynı haberdir ve bant ikisini birden
+ * taşımamalı.
+ *
+ * Eşik dengeli tutuldu. Çok yüksek olursa aynı haberin iki yazımı yan yana
+ * durur (0.6'da "…gerçek dışı olduğunu resmen açıkladı" ile "…iddialarını
+ * resmen yalanladı" ayrı haber sayılıyordu); çok düşük olursa yanlış pozitif
+ * gerçek bir haberi sessizce yutar. Şüphede kalınan yerde iki başlık da kalır.
+ */
+const DUPLICATE_SIMILARITY = 0.5;
+
+/**
+ * KAPSAMA EŞİĞİ — Jaccard'ın tek başına yakalayamadığı hâl.
+ *
+ * Bandın bir kaynağı skor satırı üretiyor ("Midtjylland 0-2 Beşiktaş": iki
+ * anlamlı kelime), diğeri aynı olayı cümleyle anlatıyor ("Beşiktaş,
+ * Midtjylland deplasmanında kazanıp tur atladı": on kelime). Jaccard bu iki
+ * kümeyi asla 0.6'ya çıkaramaz — payda büyük kümeyi de sayar. Oysa küçük
+ * küme büyüğün İÇİNDE: aynı haber.
+ *
+ * Bu yüzden ikinci bir ölçü: kesişimin KÜÇÜK kümeye oranı. İki kelimelik bir
+ * başlık pratikte bir maç skorudur; iki takım adı da örtüşüyorsa aynı
+ * eşleşmedir.
+ */
+const DUPLICATE_CONTAINMENT = 0.8;
+const DUPLICATE_CONTAINMENT_MIN_TOKENS = 2;
+
+/** Oran yolunun geçerli sayılması için gereken en az ortak kelime. */
+const DUPLICATE_MIN_SHARED = 3;
+
+/**
+ * Kelime gövdesi uzunluğu.
+ *
+ * Türkçe çekim ekleri karşılaştırmayı bozuyor: "Midtjylland" ile
+ * "Midtjylland'ı", "Beşiktaş" ile "Beşiktaş'ın", "Turku" ile "Turku'ya"
+ * farklı belirteçler olarak sayılıyor ve aynı haberin iki yazımı yabancı
+ * görünüyordu. Belirteçler gövdelerine indirgeniyor; ek düşüyor, kök kalıyor.
+ *
+ * Beş, kulüp adlarının ayırt edilebildiği en kısa uzunluk: "besik"/"fener"/
+ * "galat"/"trabz" hâlâ birbirinden ayrı, ama "turku"/"turkuya" birleşiyor.
+ */
+const STEM_LENGTH = 5;
+
+/** Örtüşme hesabında sayılmayan, her cümlede geçen kelimeler. */
+const DUPLICATE_STOPWORDS = new Set([
+  "ile", "icin", "olan", "oldu", "bir", "bu", "ve", "the", "and", "for",
+  "gunu", "maci", "macinda", "sonra", "once", "kulubu", "kulup", "takim",
+  "sezonu", "sezon", "yeni", "aciklama", "aciklamasi", "haber"
+]);
 
 function text(value) {
   return String(value === null || value === undefined ? "" : value).trim();
@@ -110,6 +267,69 @@ function text(value) {
 
 function lower(value) {
   return text(value).toLocaleLowerCase("tr");
+}
+
+function isBoolean(value) {
+  return typeof value === "boolean";
+}
+
+function parsedTime(value) {
+  const parsed = Date.parse(text(value));
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+function hoursBetween(fromMs, now) {
+  return (now.getTime() - fromMs) / 3600000;
+}
+
+/** Turnuva adı Avrupa kupalarından birini mi işaret ediyor? */
+function isEuropeanCompetition(competition) {
+  const normalized = normalizeText(competition);
+  if (!normalized) return false;
+  return EUROPEAN_COMPETITION_HINTS.some((hint) => normalized.includes(hint));
+}
+
+/**
+ * Bir kaydın gündem sırası.
+ *
+ * Girdi esnek: tek takım (`team`), birden çok takım (`teams`) ya da yalnızca
+ * turnuva (`competition`) verilebilir. Birden çok takım varsa EN YÜKSEK
+ * öncelik kazanır — Galatasaray'ın rakibi kim olursa olsun haber
+ * Galatasaray haberidir.
+ */
+function editorialRank(input = {}) {
+  const competition = text(input.competition);
+  const names = []
+    .concat(Array.isArray(input.teams) ? input.teams : [])
+    .concat(input.team ? [input.team] : [])
+    .map(text)
+    .filter(Boolean);
+
+  const european = isEuropeanCompetition(competition);
+  let best = EDITORIAL_RANKS.OTHER;
+
+  for (const name of names) {
+    if (BIG_FOUR_KEYS.has(normalizeText(name))) return EDITORIAL_RANKS.BIG_FOUR;
+
+    if (isTurkishTeamName(name)) {
+      best = Math.min(best, european ? EDITORIAL_RANKS.TURKISH_IN_EUROPE : EDITORIAL_RANKS.TURKISH_LEAGUE);
+      continue;
+    }
+
+    if (isMajorClubName(name)) {
+      best = Math.min(best, EDITORIAL_RANKS.MAJOR_EUROPEAN);
+    }
+  }
+
+  // Takım adı taşımayan kayıtlar — federasyon duyurusu, lig takvimi, kura
+  // çekimi. Turnuva alanı bunları doğru banda yerleştirir; aksi hâlde
+  // "Süper Lig 14 Ağustos'ta başlıyor" başlığı listenin en dibine düşerdi.
+  if (best === EDITORIAL_RANKS.OTHER) {
+    if (isTurkishLeague(competition)) return EDITORIAL_RANKS.TURKISH_LEAGUE;
+    if (european) return EDITORIAL_RANKS.MAJOR_EUROPEAN;
+  }
+
+  return best;
 }
 
 /**
@@ -143,8 +363,39 @@ function validateTickerItem(item) {
   }
 
   const timestamp = text(item.timestamp);
+  const publishedMs = parsedTime(timestamp);
   if (!timestamp) errors.push("timestamp yok");
-  else if (Number.isNaN(Date.parse(timestamp))) errors.push(`geçersiz timestamp: ${timestamp}`);
+  else if (publishedMs === null) errors.push(`geçersiz timestamp: ${timestamp}`);
+
+  // Son güncelleme zamanı isteğe bağlı ama VARSA tutarlı olmak zorunda:
+  // yayımdan önceye tarihlenmiş bir güncelleme, kaydın elle düzenlenirken
+  // bozulduğunu gösterir.
+  const updatedAt = text(item.updatedAt);
+  if (updatedAt) {
+    const updatedMs = parsedTime(updatedAt);
+    if (updatedMs === null) errors.push(`geçersiz updatedAt: ${updatedAt}`);
+    else if (publishedMs !== null && updatedMs < publishedMs) {
+      errors.push("updatedAt, timestamp'ten önce olamaz");
+    }
+  }
+
+  const expiresAt = text(item.expiresAt);
+  if (expiresAt && parsedTime(expiresAt) === null) {
+    errors.push(`geçersiz expiresAt: ${expiresAt}`);
+  }
+
+  if (item.breaking !== undefined && !isBoolean(item.breaking)) {
+    errors.push("breaking alanı boolean olmalı");
+  }
+  if (item.developing !== undefined && !isBoolean(item.developing)) {
+    errors.push("developing alanı boolean olmalı");
+  }
+  // "Gelişme sürüyor" yalnızca son dakika penceresini uzatmak için vardır.
+  // `breaking` olmayan bir kayıtta anlamı yok; sessizce yok saymak yerine
+  // editoryal hata olarak bildiriliyor.
+  if (item.developing === true && item.breaking !== true) {
+    errors.push("developing yalnızca breaking öğelerde kullanılabilir");
+  }
 
   const source = item.source || {};
   if (!text(source.name)) errors.push("source.name yok");
@@ -171,6 +422,15 @@ function validateTickerItem(item) {
         "rozet ile cümle çelişiyor"
       );
     }
+
+    // ÇELİŞKİ 3: çekince YALNIZCA rozette kalamaz. Rozet küçük, cümle büyük.
+    if (!HEDGE_MARKERS.some((marker) => haystack.includes(marker))) {
+      errors.push(
+        "kesinleşmemiş öğenin metninde çekince ifadesi yok " +
+        '("iddia", "öne sürüldü", "aktarıldı", "görüşmeler sürüyor" gibi); ' +
+        "çekince yalnızca rozette kalamaz"
+      );
+    }
   }
 
   return { valid: errors.length === 0, errors };
@@ -185,6 +445,184 @@ function confidenceBadge(confidence) {
 function categoryLabel(category) {
   const entry = CATEGORIES[text(category)];
   return entry ? entry.label : "";
+}
+
+/**
+ * Bir kaydın zaman durumu: banttan düşmeli mi, yoksa yalnızca "son dakika"
+ * işaretini mi kaybetmeli?
+ *
+ * Üç ayrı kural, üç ayrı gerekçe:
+ *
+ *   • `expiresAt`  — "5 Ağustos'ta oynanacak" duyurusu 6 Ağustos'ta yanlıştır.
+ *                    Raf ömrü değil, TARİH bitirir.
+ *   • kategori raf ömrü — haber değeri kategoriye göre tükenir.
+ *   • breaking penceresi — DÜŞÜRMEZ, yalnızca rütbe indirir. Haber hâlâ
+ *                    doğrudur; artık "son dakika" değildir.
+ */
+function shelfLifeVerdict(entry, now, overrideMaxAgeHours = null) {
+  const publishedMs = parsedTime(entry.timestamp);
+  if (publishedMs === null) return { drop: "timestamp okunamadı", breaking: false };
+
+  const ageHours = hoursBetween(publishedMs, now);
+
+  // Geleceğe tarihli kayıt: saat hatası ya da yanlış giriş. Bandın "şu an"
+  // iddiasını bozar.
+  if (ageHours < -1) return { drop: "timestamp gelecekte", breaking: false };
+
+  const expiresMs = parsedTime(entry.expiresAt);
+  if (expiresMs !== null && now.getTime() > expiresMs) {
+    return { drop: `geçerlilik tarihi doldu (${text(entry.expiresAt)})`, breaking: false };
+  }
+
+  const shelfLife = Number.isFinite(overrideMaxAgeHours) && overrideMaxAgeHours !== null
+    ? overrideMaxAgeHours
+    : CATEGORIES[text(entry.category)].maxAgeHours;
+
+  if (ageHours > shelfLife) {
+    return {
+      drop: `raf ömrü doldu (${Math.round(ageHours)} saat > ${shelfLife} saat)`,
+      breaking: false
+    };
+  }
+
+  // Son dakika işareti kendiliğinden sönümlenir. `developing` onu uzatır ama
+  // kategori raf ömrünün ötesine taşıyamaz — yukarıdaki kontrol zaten geçildi.
+  const breaking = entry.breaking === true &&
+    (ageHours <= BREAKING_WINDOW_HOURS || entry.developing === true);
+
+  return { drop: null, breaking, ageHours };
+}
+
+/** Örtüşme hesabı için anlamlı kelime gövdeleri. */
+function tokenSet(value) {
+  const normalized = normalizeText(value).replace(/[^a-z0-9\s]+/g, " ");
+  const stems = normalized
+    .split(/\s+/)
+    .filter((token) => token.length > 2 && !DUPLICATE_STOPWORDS.has(token))
+    .map((token) => token.slice(0, STEM_LENGTH));
+  return new Set(stems);
+}
+
+function sharedCount(left, right) {
+  let shared = 0;
+  for (const token of left) {
+    if (right.has(token)) shared += 1;
+  }
+  return shared;
+}
+
+/** Aynı olayın iki yazımı mı? İki ölçü, iki farklı yanılma biçimi için. */
+function sameStory(left, right) {
+  if (!left.size || !right.size) return false;
+
+  const shared = sharedCount(left, right);
+  if (!shared) return false;
+
+  // Oran ölçüsü kısa başlıklarda yanılıyor: "Trabzonspor duyuru yaptı" ile
+  // "Samsunspor duyuru yaptı" üç kelimenin ikisini paylaşıyor ve Jaccard tam
+  // 0.5 çıkıyor — iki AYRI haber aynı sayılıyordu. Oran yolunun geçerli
+  // sayılması için paylaşılan kelime sayısı da anlamlı olmalı.
+  const union = left.size + right.size - shared;
+  if (shared >= DUPLICATE_MIN_SHARED && shared / union >= DUPLICATE_SIMILARITY) return true;
+
+  // Kapsama yolu bilerek daha az kelimeyle çalışır: iki kelimelik bir başlık
+  // pratikte bir maç skorudur ("Midtjylland 0-2 Beşiktaş") ve iki takım adı
+  // da örtüşüyorsa aynı eşleşmedir.
+  const smaller = Math.min(left.size, right.size);
+  return smaller >= DUPLICATE_CONTAINMENT_MIN_TOKENS &&
+    shared / smaller >= DUPLICATE_CONTAINMENT;
+}
+
+/**
+ * Aynı olayın iki farklı yazımını eler.
+ *
+ * HANGİSİ KALIR? "En yenisi" değil — EN GÜVENİLİRİ. Bir olayın hem resmî
+ * açıklaması hem de basın aktarımı bantta yer alıyorsa, iddia sürümü
+ * gitmeli; kulübün kendi açıklaması kalmalı. Eşitlikte kategori önceliği,
+ * sonra tazelik karar verir.
+ */
+function dedupeByMeaning(items) {
+  const kept = [];
+  const dropped = [];
+
+  const strength = (item) => {
+    // Güven alanı taşımayan öğeler TÜRETİLMİŞ kaynaklardan gelir (maç kaydı,
+    // onaylı transfer): oradaki doğrulama yayın politikasında yapılmıştır,
+    // burada eksik alan "söylenti" sayılamaz.
+    const confidenceRank = item.confidence === "reported"
+      ? 1
+      : (item.confidence === "rumour" ? 2 : 0);
+
+    // AYNI OLAYIN İKİ SÜRÜMÜNDE EDİTORYAL BAŞLIK KAZANIR.
+    //
+    // Bandın türetilmiş kaynağı çıplak bir skor satırı üretir
+    // ("Inter Turku 2-0 Başakşehir"); küratörlü kaynak ise o skorun NE
+    // ANLAMA GELDİĞİNİ yazar ("Başakşehir Konferans Ligi'nde elendi").
+    // İkisi aynı haberdir ve biri düşecekse skor satırı düşmeli: skor zaten
+    // canlı skor sayfasında duruyor, anlam yalnızca burada.
+    const editorial = text(item.category) ? 0 : 1;
+
+    const priority = Number.isFinite(item.priority) ? item.priority : 99;
+    return [confidenceRank, editorial, priority, -(parsedTime(item.at) || 0)];
+  };
+
+  const better = (candidate, incumbent) => {
+    const a = strength(candidate);
+    const b = strength(incumbent);
+    for (let index = 0; index < a.length; index += 1) {
+      if (a[index] !== b[index]) return a[index] < b[index];
+    }
+    return false;
+  };
+
+  const label = (item) => text(item.id) || text(item.text) || "(kimliksiz)";
+  const tokensOf = [];
+
+  for (const item of items) {
+    const tokens = tokenSet(item.text);
+    const twinIndex = kept.findIndex((_, index) => sameStory(tokens, tokensOf[index]));
+
+    if (twinIndex === -1) {
+      kept.push(item);
+      tokensOf.push(tokens);
+      continue;
+    }
+
+    const incumbent = kept[twinIndex];
+    const winner = better(item, incumbent) ? item : incumbent;
+    const loser = winner === item ? incumbent : item;
+
+    dropped.push({
+      id: label(loser),
+      errors: [`aynı haberin başka yazımı; "${winner.text}" tercih edildi`]
+    });
+
+    // HABERİN YERİ EN GÜÇLÜ SÜRÜMÜNÜNKİ, METNİ EN AÇIK SÜRÜMÜNÜNKİ.
+    //
+    // Bir maç sonucu bantta hem çıplak skor satırı (yüksek öncelik, düşük
+    // bilgi) hem de editoryal başlık (düşük öncelik, yüksek bilgi) olarak
+    // duruyor. Yalnızca metin seçilse haber bandın dibine düşer ve maç
+    // kotasına hiç giremezdi — Göztepe'nin bir haftalık skoru Beşiktaş'ın
+    // tur atlamasını bandın dışına itiyordu. Yalnızca öncelik seçilse
+    // okuyucu "ne oldu"yu öğrenemezdi.
+    //
+    // Bu yüzden iki alan ayrı ayrı devralınıyor: SUNUM kazanandan
+    // (metin, bağlantı, rozet), YERLEŞİM ise önceliği en yüksek süründen
+    // (`priority` ve ait olduğu kaynak kotası).
+    const strongest = [winner, loser].reduce((best, row) => {
+      const a = Number.isFinite(row.priority) ? row.priority : Infinity;
+      const b = Number.isFinite(best.priority) ? best.priority : Infinity;
+      return a < b ? row : best;
+    }, winner);
+
+    kept[twinIndex] = strongest === winner
+      ? winner
+      : { ...winner, priority: strongest.priority, source: strongest.source };
+
+    if (winner === item) tokensOf[twinIndex] = tokens;
+  }
+
+  return { items: kept, dropped };
 }
 
 /**
@@ -219,48 +657,50 @@ function normalizeTickerItems(payload, options = {}) {
       continue;
     }
 
-    const ageHours = (now.getTime() - Date.parse(entry.timestamp)) / 3600000;
-    const shelfLife = override === null
-      ? CATEGORIES[text(entry.category)].maxAgeHours
-      : override;
-
-    if (ageHours > shelfLife) {
-      rejected.push({
-        id: text(entry.id),
-        errors: [`raf ömrü doldu (${Math.round(ageHours)} saat > ${shelfLife} saat)`]
-      });
-      continue;
-    }
-
-    // Geleceğe tarihli kayıt: saat hatası ya da yanlış giriş. Bandın "şu an"
-    // iddiasını bozar.
-    if (ageHours < -1) {
-      rejected.push({ id: text(entry.id), errors: ["timestamp gelecekte"] });
+    const shelf = shelfLifeVerdict(entry, now, override);
+    if (shelf.drop) {
+      rejected.push({ id: text(entry.id), errors: [shelf.drop] });
       continue;
     }
 
     const category = text(entry.category);
     const confidence = text(entry.confidence);
+    const rank = editorialRank({ team: entry.team, teams: entry.teams, competition: entry.competition });
 
     items.push({
+      id: text(entry.id),
       label: categoryLabel(category),
       text: text(entry.text),
       href: text(entry.source.url),
       at: text(entry.timestamp),
+      updatedAt: text(entry.updatedAt) || text(entry.timestamp),
+      expiresAt: text(entry.expiresAt) || null,
       category,
       confidence,
       confidenceBadge: confidenceBadge(confidence),
       sourceName: text(entry.source.name),
+      team: text(entry.team),
+      competition: text(entry.competition),
+      breaking: shelf.breaking,
+      rank,
       priority: CATEGORIES[category].priority
     });
   }
 
+  // Sıra: önce son dakika, sonra editoryal rütbe, sonra kategori, sonra
+  // tazelik. Requirement'ın "önemli Türk futbolu haberleri önce" kuralı bu
+  // dört anahtarın sırasında yaşıyor.
   items.sort((left, right) => {
+    if (left.breaking !== right.breaking) return left.breaking ? -1 : 1;
+    if (left.rank !== right.rank) return left.rank - right.rank;
     if (left.priority !== right.priority) return left.priority - right.priority;
     return String(right.at).localeCompare(String(left.at));
   });
 
-  return { items: items.slice(0, limit), rejected };
+  const deduped = dedupeByMeaning(items);
+  rejected.push(...deduped.dropped);
+
+  return { items: deduped.items.slice(0, limit), rejected };
 }
 
 /** Elenen öğeleri görünür kılar. Sessiz eleme, hata ayıklanamaz eleme demek. */
@@ -271,13 +711,25 @@ function logRejected(scope, rejected) {
 }
 
 module.exports = {
+  BIG_FOUR,
+  BREAKING_WINDOW_HOURS,
   CATEGORIES,
   CONFIDENCE,
   CONFIRMATION_VERBS,
+  DUPLICATE_CONTAINMENT,
+  DUPLICATE_SIMILARITY,
+  EDITORIAL_RANKS,
+  HEDGE_MARKERS,
   MAX_CURATED_ITEMS,
   categoryLabel,
   confidenceBadge,
+  dedupeByMeaning,
+  editorialRank,
+  isEuropeanCompetition,
   logRejected,
   normalizeTickerItems,
+  sameStory,
+  shelfLifeVerdict,
+  tokenSet,
   validateTickerItem
 };
