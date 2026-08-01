@@ -18,6 +18,7 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { mergeSuperLigTeams } = require("../services/superLigTeams.js");
+const { publishedColumns } = require("../services/columnService.js");
 
 function readJson(file) {
   try {
@@ -84,6 +85,29 @@ for (const article of asArray(readJson("news.json"), "news", "items")) {
     title: article.title,
     subtitle: article.spot || article.summary || "FutbolRadar haberi"
   });
+}
+
+const { columns } = publishedColumns(readJson("columns.json") || {});
+const indexedAuthors = new Set();
+for (const column of columns) {
+  push({
+    type: "column",
+    badge: "YAZ",
+    href: column.path,
+    title: column.title,
+    subtitle: `${column.author} · ${column.categoryLabel}`
+  });
+
+  if (!indexedAuthors.has(column.authorPath)) {
+    indexedAuthors.add(column.authorPath);
+    push({
+      type: "author",
+      badge: "YZR",
+      href: column.authorPath,
+      title: column.author,
+      subtitle: "FutbolRadar yazarı"
+    });
+  }
 }
 
 // Takım kapsamı elle tutulan listeyle sınırlı kalmaz: TFF fikstüründe adı

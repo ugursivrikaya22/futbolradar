@@ -118,6 +118,11 @@ function columnPath(entry) {
   return `kose-yazilari/${slug}.html`;
 }
 
+/** Yazarın tüm yayımlanmış yazılarını listeleyen kalıcı sayfa yolu. */
+function authorPath(name) {
+  return `yazarlar/${slugify(name)}.html`;
+}
+
 /**
  * Yazıyı yüzeylerde kullanılacak biçime çevirir.
  *
@@ -132,6 +137,7 @@ function presentColumn(entry) {
     id: text(entry.id),
     title: text(entry.title),
     author: text(entry.author),
+    authorPath: authorPath(entry.author),
     date: text(entry.date),
     category,
     categoryLabel: CATEGORIES[category] || category,
@@ -197,6 +203,7 @@ module.exports = {
   REQUIRED_FIELDS,
   SECTION_NAME,
   STATUSES,
+  authorPath,
   columnPath,
   draftColumns,
   logRejected,

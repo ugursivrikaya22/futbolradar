@@ -16,6 +16,7 @@ for (const file of [
   "bugunun-maclari.html",
   "mac-sonuclari.html",
   "haberler.html",
+  "kose-yazilari.html",
   "istatistik-merkezi.html",
   "transfer-sezonu-ne-zaman-bitiyor.html",
   "super-lig-transferleri-2026-2027.html",

@@ -1,9 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 
 const root = process.cwd();
+const require = createRequire(import.meta.url);
+const { publishedColumns } = require("../services/columnService.js");
 const domain = "https://www.futbolradar.com";
 const today = "2026-07-22";
 
@@ -479,9 +482,23 @@ function generatedPlayerPages() {
     .map((file) => `oyuncular/${file}`);
 }
 
+function publishedEditorialPages() {
+  try {
+    const store = JSON.parse(fs.readFileSync(path.join(root, "data", "columns.json"), "utf8"));
+    const { columns } = publishedColumns(store);
+    return [
+      ...columns.map((column) => column.path),
+      ...new Set(columns.map((column) => column.authorPath))
+    ];
+  } catch {
+    return [];
+  }
+}
+
 function sitemapXml(files) {
   const comparisonPages = generatedComparisonPages();
   const playerPages = generatedPlayerPages();
+  const editorialPages = publishedEditorialPages();
   const core = [
     "index.html",
     "bugunun-maclari.html",
@@ -505,6 +522,8 @@ function sitemapXml(files) {
     "momentum.html",
     "analizler.html",
     "haberler.html",
+    "kose-yazilari.html",
+    ...editorialPages,
     "gol-kralligi.html",
     "asist-kralligi.html",
     "derbi-radari.html",

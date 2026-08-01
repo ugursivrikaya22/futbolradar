@@ -18,6 +18,7 @@ export const NAV_PRIMARY = [
   { href: "super-lig-fikstur.html", label: "Süper Lig" },
   { href: "analizler.html", label: "Analizler" },
   { href: "takimlar.html", label: "Takımlar" },
+  { href: "kose-yazilari.html", label: "Köşe Yazıları" },
   { href: "puan-durumu.html", label: "Puan Durumu" }
 ];
 
@@ -28,10 +29,7 @@ export const NAV_SECONDARY = [
   { href: "transfer-radari.html", label: "Transfer Radarı" },
   { href: "momentum.html", label: "Momentum" },
   { href: "gol-kralligi.html", label: "Gol Krallığı" },
-  { href: "haberler.html", label: "Haberler" },
-  // Köşe yazıları HABERİN YANINDA ama ayrı bir bağlantı: menüde de yorum ile
-  // haber aynı şey gibi görünmemeli.
-  { href: "kose-yazilari.html", label: "Radar Yorumu" }
+  { href: "haberler.html", label: "Haberler" }
 ];
 
 const FOOTER_LEGAL = [
