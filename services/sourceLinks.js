@@ -72,8 +72,6 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "aspor.com.tr",
     "trtspor.com.tr",
     "aa.com.tr",
-    "gzt.com",
-    "gercekgundem.com",
     "ntvspor.net",
     "fotomac.com.tr",
     "beinsports.com.tr"

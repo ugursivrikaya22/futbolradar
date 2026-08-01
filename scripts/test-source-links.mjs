@@ -65,9 +65,18 @@ function sampleGeneratedHtml(dir, limit) {
   const offenders = new Map();
   let checked = 0;
 
-  for (const file of DATA_FILES) {
-    const full = path.join(root, "data", file);
-    if (!fs.existsSync(full)) continue;
+  // `public/data` yayına giden aynadır: Vercel oradan servis eder. Kaynak
+  // dosyayı denetleyip aynayı atlamak, asıl sunulan dosyayı denetimsiz
+  // bırakırdı — ayna bir derleme adımıyla üretilse bile kapı ikisini de görür.
+  const scanTargets = [];
+  for (const dir of ["data", path.join("public", "data")]) {
+    for (const file of DATA_FILES) {
+      const full = path.join(root, dir, file);
+      if (fs.existsSync(full)) scanTargets.push([path.join(dir, file), full]);
+    }
+  }
+
+  for (const [file, full] of scanTargets) {
     const raw = fs.readFileSync(full, "utf8");
 
     for (const match of raw.matchAll(/https?:\/\/[^\s"'\\]+/g)) {
