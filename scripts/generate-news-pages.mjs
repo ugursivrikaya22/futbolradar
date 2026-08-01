@@ -137,6 +137,10 @@ function pageHtml(article) {
   const tagHtml = tags.length
     ? `<div class="column-tags">${tags.map((tag) => `<span class="column-tag">${escapeHtml(tag)}</span>`).join("")}</div>`
     : "";
+  const updateNote = String(article.updateNote || "").trim();
+  const updateNoteHtml = updateNote
+    ? `<aside class="article-update-note" role="note"><strong>Güncellenecek</strong><p>${escapeHtml(updateNote)}</p></aside>`
+    : "";
   const sourceHtml = sources.length
     ? `<section class="article-sources" aria-labelledby="article-sources-title"><h2 id="article-sources-title">Kaynaklar</h2><ul>${sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.name)}</a></li>`).join("")}</ul></section>`
     : "";
@@ -177,6 +181,7 @@ ${siteHeader({ base: "../" })}
           <p class="lead">${escapeHtml(description)}</p>
           ${tagHtml}
         </header>
+        ${updateNoteHtml}
         <div class="column-body">
         ${body}
         </div>
