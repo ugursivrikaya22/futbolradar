@@ -5528,6 +5528,16 @@
     );
   }
 
+  function publicNewsItems(news) {
+    return (Array.isArray(news) ? news : [])
+      .filter(function (item) {
+        return item && String(item.status || "").toLowerCase() === "verified";
+      })
+      .sort(function (left, right) {
+        return String(right.publishedAt || "").localeCompare(String(left.publishedAt || ""));
+      });
+  }
+
   var PLAYER_FILTER_COPY = {
     all: "FutbolRadar oyuncu performans ekranı; AI rating, gol tehdidi, yaratıcılık, pres gücü, xG, xA ve radar profillerine göre oyuncuları analiz eder.",
     yukselen: "Bu liste, trend yönü, son form artışı ve etki skoruna göre yükselen oyuncuları öne çıkarır.",
@@ -10770,7 +10780,7 @@
       document.querySelector('[data-api-target="news-preview"]'),
       "news",
       function (news) {
-        return news.slice(0, 3).map(renderNewsCard).join("");
+        return publicNewsItems(news).slice(0, 3).map(renderNewsCard).join("");
       },
       "Güncel futbol gündemi yüklenemedi"
     );
@@ -10779,7 +10789,7 @@
       document.querySelector('[data-api-target="news-page"]'),
       "news",
       function (news) {
-        return news.map(renderNewsCard).join("");
+        return publicNewsItems(news).map(renderNewsCard).join("");
       },
       "Güncel futbol gündemi yüklenemedi"
     );
