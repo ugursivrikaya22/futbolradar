@@ -102,8 +102,8 @@ const CONFIRMATION_VERBS = [
   "resmi açıklama"
 ];
 
-/** Bandın küratörlü kaynaktan alabileceği en fazla öğe sayısı. */
-const MAX_CURATED_ITEMS = 4;
+/** Doğrulama katmanının işleyebileceği küratörlü havuz; ekranda son tavan 6. */
+const MAX_CURATED_ITEMS = 8;
 
 function text(value) {
   return String(value === null || value === undefined ? "" : value).trim();

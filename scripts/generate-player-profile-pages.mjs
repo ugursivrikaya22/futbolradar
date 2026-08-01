@@ -11,6 +11,20 @@ const { publicPlayerView } = require("../services/cardCredibility.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const outDir = path.join(root, "oyuncular");
 const publicOutDir = path.join(root, "public", "oyuncular");
+const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
+
+function writeGeneratedFile(file, contents) {
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    try {
+      fs.writeFileSync(file, contents, "utf8");
+      return;
+    } catch (error) {
+      const retryable = ["UNKNOWN", "EBUSY", "EPERM"].includes(error && error.code);
+      if (!retryable || attempt === 11) throw error;
+      Atomics.wait(retryBuffer, 0, 0, 75 * (attempt + 1));
+    }
+  }
+}
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -390,13 +404,13 @@ fs.mkdirSync(publicOutDir, { recursive: true });
 
 for (const player of players) {
   const html = pageHtml(player);
-  fs.writeFileSync(path.join(outDir, `${player.id}.html`), html, "utf8");
-  fs.writeFileSync(path.join(publicOutDir, `${player.id}.html`), html, "utf8");
+  writeGeneratedFile(path.join(outDir, `${player.id}.html`), html);
+  writeGeneratedFile(path.join(publicOutDir, `${player.id}.html`), html);
 
   for (const alias of player.aliases || []) {
     const html = aliasHtml(player, alias);
-    fs.writeFileSync(path.join(outDir, `${alias}.html`), html, "utf8");
-    fs.writeFileSync(path.join(publicOutDir, `${alias}.html`), html, "utf8");
+    writeGeneratedFile(path.join(outDir, `${alias}.html`), html);
+    writeGeneratedFile(path.join(publicOutDir, `${alias}.html`), html);
   }
 }
 

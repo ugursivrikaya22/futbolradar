@@ -73,7 +73,7 @@ for (const page of EXTRA_PAGES) {
 }
 
 for (const article of asArray(readJson("news.json"), "news", "items")) {
-  if (!article || !article.slug || !article.title || !Array.isArray(article.body)) {
+  if (!article || String(article.status || "").toLowerCase() !== "verified" || !article.slug || !article.title || !Array.isArray(article.body)) {
     continue;
   }
   push({

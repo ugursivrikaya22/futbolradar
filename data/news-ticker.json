@@ -1,17 +1,53 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-01T15:00:00+03:00",
+  "updatedAt": "2026-08-01T17:40:00+03:00",
   "items": [
     {
       "id": "aziz-yildirim-divan-kurulu-sert-cikis",
       "category": "club-agenda",
       "confidence": "confirmed",
-      "text": "Fenerbahçe Divan Kurulu’nda tansiyon yükseldi: Aziz Yıldırım’dan sert çıkış.",
+      "text": "Fenerbahçe Yüksek Divan Kurulu’nda gerilim, Aziz Yıldırım’ın sözleri gündem oldu.",
       "team": "Fenerbahçe",
       "timestamp": "2026-08-01T15:00:00+03:00",
       "source": {
         "name": "FutbolRadar",
         "url": "https://www.futbolradar.com/haber/aziz-yildirim-fenerbahce-divan-kurulu-sert-cikis.html"
+      }
+    },
+    {
+      "id": "galatasaray-divan-transfer-mesaji",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "text": "Galatasaray Divanı’nda transfer mesajı: Özbek, önemli olanın açıklama tarihi değil, transferin sağlayacağı fayda olduğunu söyledi.",
+      "team": "Galatasaray",
+      "timestamp": "2026-07-29T17:30:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-divan-kurulu-dursun-ozbek-transfer-aciklamasi.html"
+      }
+    },
+    {
+      "id": "galatasaray-divan-aslantepe-transfer-butcesi",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "text": "Dursun Özbek: Aslantepe projesinin futbol transferleriyle bağlantısı bulunmuyor.",
+      "team": "Galatasaray",
+      "timestamp": "2026-07-29T17:12:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-divan-kurulu-dursun-ozbek-transfer-aciklamasi.html#aslantepe-projesi"
+      }
+    },
+    {
+      "id": "galatasaray-musiala-yalanlama",
+      "category": "official",
+      "confidence": "confirmed",
+      "text": "Galatasaray cephesinden Musiala iddialarına yalanlama.",
+      "team": "Galatasaray",
+      "timestamp": "2026-07-26T23:44:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-musiala-iddialarina-yalanlama.html"
       }
     },
     {

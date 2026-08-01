@@ -77,10 +77,10 @@ const MIN_TRANSFER_SLOTS = 2;
  * ayrılan en az yer. Maç sonuçları altı slotu da doldurabildiği için,
  * ayrılmadığında bu kategori hiç görünmüyordu.
  */
-const MIN_CURATED_SLOTS = 2;
+const MIN_CURATED_SLOTS = 3;
 
 /** Bant en fazla bu kadar öğe taşır; şerit kalabalıklaşmamalı. */
-const MAX_ITEMS = 6;
+const MAX_ITEMS = 8;
 
 const STATE_FILE = path.join(root, "data", "ticker-state.json");
 
@@ -113,9 +113,23 @@ function hasScore(match) {
     score.away !== null && score.away !== undefined;
 }
 
+function slugify(value) {
+  return String(value || "")
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ı/g, "i")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 /** Maç kayıtları: canlı skor, biten sonuç ve bugünün başlama saatleri. */
 function matchItems(now) {
   const matches = asArray(readJson("matches.json", []), "matches");
+  const reports = asArray(readJson("post-match-reports.json", { records: [] }), "records");
+  const reportByMatch = new Map(reports
+    .filter((record) => record && record.matchId && record.publishState === "page" && record.reportUrl)
+    .map((record) => [record.matchId, String(record.reportUrl).replace(/^\.\//, "")]));
   const items = [];
 
   for (const match of matches) {
@@ -141,7 +155,7 @@ function matchItems(now) {
       items.push({
         label: "Sonuç",
         text: `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`,
-        href: `canli-skor.html#${match.id}`,
+        href: match.analysisPage || reportByMatch.get(match.id) || `canli-skor.html#${match.id}`,
         at: stamp,
         priority: 1
       });
@@ -172,7 +186,7 @@ function transferItems(now) {
       label: "Transfer",
       // Yön açıkça yazılıyor: "kadrosunda" ifadesi gidenler için yanıltıcıydı.
       text: `${item.playerName}, ${item.toTeam} kadrosuna katıldı (${item.type})`,
-      href: item.sourceUrl,
+      href: `super-lig-transferleri-2026-2027.html#transfer-${slugify(item.playerName)}`,
       at: item.date,
       priority: 2
     }));
