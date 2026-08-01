@@ -1,8 +1,9 @@
 {
-  "_comment": "TEKNİK DİREKTÖR ARŞİVİ. Her kayıt kaynak bağlantısı ve güven seviyesi taşımak ZORUNDA — kaynağı gösterilemeyen kayıt retrospektif sayfa üretmez (services/managerArchive.js). Alan adları services/sourceLinks.js beyaz listesinden olmalı. `confidence`: 'confirmed' resmî/birincil duyuru, 'reported' güvenilir yayın organı aktardı. `appointedAt` bilinmiyorsa null bırakılır, TAHMİN EDİLMEZ. Kapsam eksikse sayfa 'eksik' der, uydurmaz.",
+  "_comment": "TEKNİK DİREKTÖR ARŞİVİ. Her kayıt kaynak bağlantısı ve güven seviyesi taşımak ZORUNDA — kaynağı gösterilemeyen kayıt retrospektif sayfa üretmez (services/managerArchive.js). Alan adları services/sourceLinks.js beyaz listesinden olmalı. `confidence`: 'confirmed' resmî/birincil duyuru, 'reported' güvenilir yayın organı aktardı. `appointedAt` bilinmiyorsa null bırakılır, TAHMİN EDİLMEZ. Kapsam eksikse sayfa 'eksik' der, uydurmaz. `teamAliases`: kulübün depodaki DİĞER yazımları (kadro verisi 'Amed' derken künye 'Amed Sportif Faaliyetler' diyor). Dönem bilançosu maçları bu adlarla süzer; eş ad tahmin edilmez, elle yazılır.",
   "season": "2026-2027",
   "league": "Trendyol Süper Lig",
-  "updatedAt": "2026-08-01T15:00:00+03:00",
+  "updatedAt": "2026-08-01T17:40:00+03:00",
+  "coverage": "Trendyol Süper Lig 2026-2027: 18 takımın 18'i kaynaklı kayıt taşıyor.",
   "managers": [
     {
       "team": "Galatasaray",
@@ -108,6 +109,7 @@
     },
     {
       "team": "Çaykur Rizespor",
+      "teamAliases": ["Rizespor"],
       "manager": "Recep Uçar",
       "appointedAt": null,
       "continuingFrom": "2025-2026",
@@ -147,6 +149,7 @@
     },
     {
       "team": "Gençlerbirliği",
+      "teamAliases": ["Gençlerbirliği S.K."],
       "manager": "Metin Diyadin",
       "appointedAt": null,
       "continuingFrom": "2025-2026",
@@ -185,6 +188,18 @@
       }
     },
     {
+      "team": "Eyüpspor",
+      "manager": "Özhan Pulat",
+      "appointedAt": "2026-06-29",
+      "confidence": "confirmed",
+      "note": "Sezonu Eyüpspor'da tamamlayan Atila Gerin'in yerine göreve geldi; kulüp duyurusunda sözleşme süresi belirtilmedi.",
+      "source": {
+        "name": "Sporx",
+        "url": "https://www.sporx.com/futbol/superlig/eyupspor/eyupspor-da-yeni-donem-ozhan-pulat-resmen-aciklandi-SXHBQ1167469SXQ",
+        "publishedAt": "2026-06-29"
+      }
+    },
+    {
       "team": "Çorum FK",
       "manager": "Uğur Uçar",
       "appointedAt": "2026-02-17",
@@ -195,20 +210,33 @@
         "url": "https://beinsports.com.tr/haber/arca-corum-fk-teknik-direktor-ugur-ucar-ile-anlasti",
         "publishedAt": "2026-02-17"
       }
-    }
-  ],
-  "missingTeams": [
-    {
-      "team": "Eyüpspor",
-      "reason": "2025-2026 sezonunu Atila Gerin ile tamamladı; yaz döneminde değişiklik yapıldığı görülüyor ancak yeni teknik direktör için beyaz listedeki bir kaynakta doğrulanmış duyuru bulunamadı."
     },
     {
       "team": "Amed Sportif Faaliyetler",
-      "reason": "Süper Lig'e yeni yükseldi; teknik direktör atamasına dair beyaz listedeki bir kaynakta doğrulanmış duyuru bulunamadı."
+      "teamAliases": ["Amed", "Amedspor", "Amed SK"],
+      "manager": "Besnik Hasi",
+      "appointedAt": "2026-06-10",
+      "confidence": "confirmed",
+      "note": "Anderlecht'ten ayrılmasının ardından göreve geldi; kulüp duyurusuna göre sözleşme 2026-2027 ve 2027-2028 sezonlarını kapsıyor. Kulüp 2026-2027 sezonunda Süper Lig'e yükseldi.",
+      "source": {
+        "name": "Sabah",
+        "url": "https://www.sabah.com.tr/spor/futbol/2026/06/10/amed-sportif-faaliyetlerde-besnik-hasi-donemi",
+        "publishedAt": "2026-06-10"
+      }
     },
     {
       "team": "Erzurumspor FK",
-      "reason": "Süper Lig'e yeni yükseldi; teknik direktör atamasına dair beyaz listedeki bir kaynakta doğrulanmış duyuru bulunamadı."
+      "manager": "Serkan Özbalta",
+      "appointedAt": null,
+      "continuingFrom": "2025-2026",
+      "confidence": "confirmed",
+      "note": "Takımı 1. Lig'den Süper Lig'e çıkaran isim; 22 Haziran 2026'da 2026-2027 sezonunu kapsayan bir yıllık yeni sözleşme imzalandı. İlk atama tarihi doğrulanmadığı için boş bırakıldı.",
+      "source": {
+        "name": "beIN Sports Türkiye",
+        "url": "https://beinsports.com.tr/haber/erzurumspor-fk-serkan-ozbalta-ile-sozlesme-yeniledi",
+        "publishedAt": "2026-06-22"
+      }
     }
-  ]
+  ],
+  "missingTeams": []
 }

@@ -28,7 +28,7 @@ import { readJsonFile } from "./lib/readJsonFile.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
-const { seasonLabel, slug } = require("../services/seasonArchive.js");
+const { matchesTeam, seasonLabel, slug } = require("../services/seasonArchive.js");
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
 
 const DOMAIN = "https://www.futbolradar.com";
@@ -135,8 +135,10 @@ function section(title, intro, inner, kicker) {
  * etiket ile sayı yan yana yapışıyordu ("KAYITLI MAÇ12"). Arşiv kutusunun
  * kendi ızgarası var — etiket üstte, sayı altta, not en altta.
  */
+// `text: true` sayı değil metin taşıyan kutular içindir (kulüp adı, tarih);
+// rakam boyutu uzun bir kulüp adını taşıyamıyor.
 function statGrid(entries) {
-  return `<div class="archive-stat-grid">${entries.map((entry) => `<article class="archive-stat"><span class="archive-stat-label">${escapeHtml(entry.label)}</span><strong class="archive-stat-value">${escapeHtml(String(entry.value))}</strong>${entry.note ? `<p class="archive-stat-note">${escapeHtml(entry.note)}</p>` : ""}</article>`).join("")}</div>`;
+  return `<div class="archive-stat-grid">${entries.map((entry) => `<article class="archive-stat"><span class="archive-stat-label">${escapeHtml(entry.label)}</span><strong class="archive-stat-value${entry.text ? " is-text" : ""}">${escapeHtml(String(entry.value))}</strong>${entry.note ? `<p class="archive-stat-note">${escapeHtml(entry.note)}</p>` : ""}</article>`).join("")}</div>`;
 }
 
 // ── Sezon sayfası ──────────────────────────────────────────────────────────
@@ -316,14 +318,17 @@ function managerPage(entry, season, seasonEntry) {
   const file = `arsiv/teknik-direktor-${season}-${slug(entry.manager)}.html`;
 
   // Dönem bilançosu YALNIZCA kayıtlı maçtan çıkar. Maç yoksa bölüm çizilmez.
+  // Eş adlar `teamAliases` ile açıkça verilir: kadro "Amed" derken künye
+  // "Amed Sportif Faaliyetler" diyor ve düz eşitlik maçları ıskalardı.
+  const teamNames = new Set([entry.team, ...(entry.teamAliases || [])]);
   const teamMatches = seasonEntry.matches.filter((match) =>
-    match.homeTeam === entry.team || match.awayTeam === entry.team);
+    matchesTeam(match, entry.team, entry.teamAliases));
 
   let record = null;
   if (teamMatches.length) {
     record = { played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0 };
     for (const match of teamMatches) {
-      const isHome = match.homeTeam === entry.team;
+      const isHome = teamNames.has(match.homeTeam);
       const scored = isHome ? match.score.home : match.score.away;
       const conceded = isHome ? match.score.away : match.score.home;
       record.played += 1;
@@ -340,12 +345,29 @@ function managerPage(entry, season, seasonEntry) {
     : "Güvenilir bir yayın organı aktardı; kulüp duyurusu ile ayrıca doğrulanmadı.";
 
   const body = [
+    // Künye kutuları statGrid ile AYNI yapıyı kullanır: genel `.card` gövdesi
+    // çocuklarını satır içinde akıtıyor ve etiketle değeri "GÖREVE
+    // BAŞLANGIÇ10 Haziran 2026" diye bitiştiriyordu.
     section("Görev bilgisi", "",
-      `<div class="grid">
-        <article class="card"><span class="card-kicker">Kulüp</span><h3>${escapeHtml(entry.team)}</h3><p>${escapeHtml(entry.note || "")}</p></article>
-        <article class="card"><span class="card-kicker">Göreve başlangıç</span><strong class="momentum-number">${escapeHtml(entry.appointedAt ? formatDate(entry.appointedAt) : "Kayıtlı değil")}</strong><p>${escapeHtml(entry.appointedAt ? "" : `${entry.continuingFrom ? seasonLabel(entry.continuingFrom) + " sezonundan görevini sürdürüyor." : "Atama tarihi doğrulanmadığı için tahmin edilmedi."}`)}</p></article>
-        <article class="card"><span class="card-kicker">Kayıt güveni</span><strong class="momentum-number">${entry.confidence === "confirmed" ? "Doğrulandı" : "Basında"}</strong><p>${escapeHtml(confidenceNote)}</p></article>
-      </div>`, "Dönem"),
+      statGrid([
+        { label: "Kulüp", value: entry.team, note: entry.note || "", text: true },
+        {
+          label: "Göreve başlangıç",
+          value: entry.appointedAt ? formatDate(entry.appointedAt) : "Kayıtlı değil",
+          note: entry.appointedAt
+            ? ""
+            : (entry.continuingFrom
+              ? `${seasonLabel(entry.continuingFrom)} sezonundan görevini sürdürüyor.`
+              : "Atama tarihi doğrulanmadığı için tahmin edilmedi."),
+          text: true
+        },
+        {
+          label: "Kayıt güveni",
+          value: entry.confidence === "confirmed" ? "Doğrulandı" : "Basında",
+          note: confidenceNote,
+          text: true
+        }
+      ]), "Dönem"),
 
     record
       ? section(`${label} dönem bilançosu`,

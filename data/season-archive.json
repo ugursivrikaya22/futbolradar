@@ -1,6 +1,6 @@
 {
   "_comment": "SEZON ARŞİVİ — türetilmiş dosya. ELLE DÜZENLENMEZ: scripts/archive-season-data.mjs her koşuda data/matches.json, data/super-lig-squads.json ve data/managers.json üzerinden yeniden üretir. Kural katmanı services/seasonArchive.js.",
-  "updatedAt": "2026-08-01T14:14:17.962Z",
+  "updatedAt": "2026-08-01T14:42:01.757Z",
   "seasons": {
     "2026-2027": {
       "season": "2026-2027",
@@ -3646,6 +3646,9 @@
         },
         {
           "team": "Çaykur Rizespor",
+          "teamAliases": [
+            "Rizespor"
+          ],
           "manager": "Recep Uçar",
           "appointedAt": null,
           "continuingFrom": "2025-2026",
@@ -3685,6 +3688,9 @@
         },
         {
           "team": "Gençlerbirliği",
+          "teamAliases": [
+            "Gençlerbirliği S.K."
+          ],
           "manager": "Metin Diyadin",
           "appointedAt": null,
           "continuingFrom": "2025-2026",
@@ -3723,6 +3729,18 @@
           }
         },
         {
+          "team": "Eyüpspor",
+          "manager": "Özhan Pulat",
+          "appointedAt": "2026-06-29",
+          "confidence": "confirmed",
+          "note": "Sezonu Eyüpspor'da tamamlayan Atila Gerin'in yerine göreve geldi; kulüp duyurusunda sözleşme süresi belirtilmedi.",
+          "source": {
+            "name": "Sporx",
+            "url": "https://www.sporx.com/futbol/superlig/eyupspor/eyupspor-da-yeni-donem-ozhan-pulat-resmen-aciklandi-SXHBQ1167469SXQ",
+            "publishedAt": "2026-06-29"
+          }
+        },
+        {
           "team": "Çorum FK",
           "manager": "Uğur Uçar",
           "appointedAt": "2026-02-17",
@@ -3733,22 +3751,39 @@
             "url": "https://beinsports.com.tr/haber/arca-corum-fk-teknik-direktor-ugur-ucar-ile-anlasti",
             "publishedAt": "2026-02-17"
           }
-        }
-      ],
-      "missingManagerTeams": [
-        {
-          "team": "Eyüpspor",
-          "reason": "2025-2026 sezonunu Atila Gerin ile tamamladı; yaz döneminde değişiklik yapıldığı görülüyor ancak yeni teknik direktör için beyaz listedeki bir kaynakta doğrulanmış duyuru bulunamadı."
         },
         {
           "team": "Amed Sportif Faaliyetler",
-          "reason": "Süper Lig'e yeni yükseldi; teknik direktör atamasına dair beyaz listedeki bir kaynakta doğrulanmış duyuru bulunamadı."
+          "teamAliases": [
+            "Amed",
+            "Amedspor",
+            "Amed SK"
+          ],
+          "manager": "Besnik Hasi",
+          "appointedAt": "2026-06-10",
+          "confidence": "confirmed",
+          "note": "Anderlecht'ten ayrılmasının ardından göreve geldi; kulüp duyurusuna göre sözleşme 2026-2027 ve 2027-2028 sezonlarını kapsıyor. Kulüp 2026-2027 sezonunda Süper Lig'e yükseldi.",
+          "source": {
+            "name": "Sabah",
+            "url": "https://www.sabah.com.tr/spor/futbol/2026/06/10/amed-sportif-faaliyetlerde-besnik-hasi-donemi",
+            "publishedAt": "2026-06-10"
+          }
         },
         {
           "team": "Erzurumspor FK",
-          "reason": "Süper Lig'e yeni yükseldi; teknik direktör atamasına dair beyaz listedeki bir kaynakta doğrulanmış duyuru bulunamadı."
+          "manager": "Serkan Özbalta",
+          "appointedAt": null,
+          "continuingFrom": "2025-2026",
+          "confidence": "confirmed",
+          "note": "Takımı 1. Lig'den Süper Lig'e çıkaran isim; 22 Haziran 2026'da 2026-2027 sezonunu kapsayan bir yıllık yeni sözleşme imzalandı. İlk atama tarihi doğrulanmadığı için boş bırakıldı.",
+          "source": {
+            "name": "beIN Sports Türkiye",
+            "url": "https://beinsports.com.tr/haber/erzurumspor-fk-serkan-ozbalta-ile-sozlesme-yeniledi",
+            "publishedAt": "2026-06-22"
+          }
         }
       ],
+      "missingManagerTeams": [],
       "summary": {
         "matchCount": 12,
         "totalGoals": 30,

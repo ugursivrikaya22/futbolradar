@@ -22,6 +22,7 @@ const require = createRequire(import.meta.url);
 const {
   groupBySeason,
   isArchivable,
+  matchesTeam,
   seasonOf,
   seasonSummary,
   slug,
@@ -115,6 +116,37 @@ function match(overrides = {}) {
   const empty = seasonSummary([]);
   assert.equal(empty.goalsPerMatch, 0, "maç yokken sıfıra bölünmemeli");
   assert.equal(empty.highestScoring, null, "maç yokken en gollü maç uydurulmamalı");
+}
+
+// ── 4b. Eş adlar: bilanço kulübün diğer yazımını ıskalamamalı ──────────────
+//
+// Depoda aynı kulüp birden fazla adla geçiyor (kadro "Amed", künye "Amed
+// Sportif Faaliyetler"). Düz eşitlikle süzülürse teknik direktör sayfası,
+// maçlar KAYITLIYKEN "kayıtlı maç yok" derdi.
+{
+  const amed = { homeTeam: "Amed", awayTeam: "Konyaspor" };
+  assert.equal(matchesTeam(amed, "Amed Sportif Faaliyetler", ["Amed"]), true, "eş ad eşleşmeli");
+  assert.equal(matchesTeam(amed, "Amed Sportif Faaliyetler", []), false, "eş ad verilmeden eşleşmemeli");
+  assert.equal(matchesTeam(amed, "Konyaspor"), true, "deplasman adı da eşleşmeli");
+  assert.equal(matchesTeam(amed, "Amedspor", ["Diyarbekirspor"]), false, "yakın ad kendiliğinden eşleşmemeli");
+
+  // Eş adı olan her kayıt gerçekten depodaki bir yazımı göstermeli; kimseye
+  // ait olmayan bir takma ad sessizce yanlış maç toplayabilir.
+  const doc = JSON.parse(fs.readFileSync(path.join(root, "data", "managers.json"), "utf8"));
+  const claimed = new Map();
+  for (const entry of doc.managers) {
+    for (const name of [entry.team, ...(entry.teamAliases || [])]) {
+      assert.ok(!claimed.has(name), `"${name}" iki kulübe birden atanmış (${claimed.get(name)} / ${entry.team})`);
+      claimed.set(name, entry.team);
+    }
+  }
+
+  // Lig kapsamı: 18 takımın tamamı ya kayıtlı ya da gerekçeli eksik listede.
+  assert.equal(
+    doc.managers.length + (doc.missingTeams || []).length,
+    18,
+    "Süper Lig 18 takım: kayıt + gerekçeli eksik toplamı tutmalı"
+  );
 }
 
 // ── 5. Gerçek arşiv dosyası tutarlı ────────────────────────────────────────

@@ -242,6 +242,25 @@ function groupBySeason(matches) {
   return grouped;
 }
 
+/**
+ * Bir maç, verilen takıma mı ait?
+ *
+ * Depoda aynı kulüp birden fazla adla geçiyor: kadro verisi "Amed" derken
+ * kaynak künyesi "Amed Sportif Faaliyetler", maç kaydı "Çaykur Rizespor"
+ * derken kadro "Rizespor" diyor. Teknik direktör bilançosu düz eşitlikle
+ * süzülürse bu kulüpler için sayfa, maçlar kayıtlıyken bile "kayıtlı maç yok"
+ * derdi — yani veriyi EKSİK gösterirdi.
+ *
+ * Eş adlar TAHMİN EDİLMİYOR (ad kırpma/sponsor ayıklama sessizce yanlış kulüp
+ * eşleştirebilir); veri sahibi `teamAliases` alanında açıkça yazıyor.
+ */
+function matchesTeam(match, team, aliases) {
+  const names = new Set(
+    [team, ...(Array.isArray(aliases) ? aliases : [])].map((name) => text(name)).filter(Boolean)
+  );
+  return names.has(text(match && match.homeTeam)) || names.has(text(match && match.awayTeam));
+}
+
 /** Kadro anlık görüntüsünü arşiv biçimine indirger. */
 function archiveSquad(squad, season) {
   return {
@@ -266,6 +285,7 @@ module.exports = {
   archiveSquad,
   groupBySeason,
   isArchivable,
+  matchesTeam,
   seasonLabel,
   seasonOf,
   seasonSummary,
