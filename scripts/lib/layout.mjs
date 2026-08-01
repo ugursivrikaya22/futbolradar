@@ -22,7 +22,10 @@ export const NAV_PRIMARY = [
   { href: "super-lig-fikstur.html", label: "Süper Lig" },
   { href: "analizler.html", label: "Analizler" },
   { href: "takimlar.html", label: "Takımlar" },
-  { href: "puan-durumu.html", label: "Puan Durumu" }
+  { href: "puan-durumu.html", label: "Puan Durumu" },
+  // Arşiv ana menüde: sezon geçmişi bir alt sayfa değil, sitenin ikinci
+  // ekseni. Buradan girildiğinde her sayfadan (ana sayfa dahil) erişilir.
+  { href: "arsiv.html", label: "Arşiv" }
 ];
 
 /** Mobil çekmecede ve alt bilgide görünen ikincil bağlantılar. */

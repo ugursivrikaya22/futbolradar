@@ -202,7 +202,12 @@ const cssFeatureMarkers = [
   "stats-panel-grid",
   "stats-coverage-grid",
   "match-more",
-  "match-more-row"
+  "match-more-row",
+  "archive-match-row",
+  "archive-table",
+  "archive-squad-list",
+  "archive-stat",
+  "archive-stat-grid"
 ];
 const failures = [];
 

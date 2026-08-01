@@ -16444,3 +16444,167 @@ body,
   font-weight: 700;
   color: var(--text-soft);
 }
+
+/* ----------------------------------------------------------------------------
+   ARŞİV
+   Sezon arşivi, kadro arşivi ve teknik direktör dönem sayfaları. Tablolar
+   dar ekranda kırpılmaz: kendi kabuğunda yatay kayar, sayfayı taşırmaz —
+   bu, deponun 760-820px'te yaşadığı taşmanın aynısını tekrarlamamak için.
+   -------------------------------------------------------------------------- */
+.archive-match-list {
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.archive-match-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  background: var(--glass);
+}
+
+.archive-match-row > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.archive-match-row strong {
+  font-size: var(--fs-base);
+}
+
+.archive-match-date,
+.archive-match-meta {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+/* Tablo kendi kabuğunda kayar; `-webkit-overflow-scrolling` dokunmatik
+   ivmeyi korur. Kabuk olmadan geniş tablo sayfayı yatay taşırırdı. */
+.archive-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  background: var(--glass);
+}
+
+.archive-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.archive-table caption {
+  padding: 12px 14px 0;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  text-align: left;
+}
+
+.archive-table th,
+.archive-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(14, 26, 22, 0.06);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.archive-table th[scope="row"],
+.archive-table thead th:first-child {
+  text-align: left;
+}
+
+.archive-table thead th {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.archive-table tbody tr:last-child th,
+.archive-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.archive-squad-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.archive-squad-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.archive-squad-list li strong {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.archive-squad-list li span:last-child {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.archive-squad-number {
+  flex: 0 0 auto;
+  min-width: 22px;
+  color: var(--green);
+  font-size: var(--fs-xs);
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Arşiv istatistik kutusu. Genel `.card` iç akışında etiket ile sayı yan yana
+   yapışıyordu; buranın kendi dikey ızgarası var. */
+.archive-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+  gap: var(--sp-3);
+}
+
+.archive-stat {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  background: var(--glass);
+}
+
+.archive-stat-label {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.archive-stat-value {
+  color: var(--green);
+  font-size: var(--fs-xl);
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.archive-stat-note {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}

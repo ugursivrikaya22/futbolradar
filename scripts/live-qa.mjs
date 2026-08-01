@@ -182,7 +182,12 @@ const cssFeatureMarkers = [
   "brief-command-grid",
   "brief-command-card",
   "match-more",
-  "match-more-row"
+  "match-more-row",
+  "archive-match-row",
+  "archive-table",
+  "archive-squad-list",
+  "archive-stat",
+  "archive-stat-grid"
 ];
 const suspiciousCodes = new Set([0x00c2, 0x00c3, 0x00c4, 0x00c5]);
 const failures = [];
