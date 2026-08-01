@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import { readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
@@ -198,6 +199,7 @@ const pages = [
   },
   {
     file: "galatasaray-transfer-radar.html",
+    team: "Galatasaray",
     title: "Galatasaray Transfer Radar 2026-2027 | Gelenler ve Gidenler | FutbolRadar",
     description: "Galatasaray transfer radarında 2026-2027 gelen ve giden oyuncuları, kadro ihtiyaçlarını, piyasa bilgilerini ve oyuncu etkisini inceleyin.",
     h1: "Galatasaray Transfer Radar",
@@ -282,6 +284,7 @@ function pageHtml(page) {
       <section class="trend-hero"><div><span class="eyebrow">Gündem · Veri · Analiz</span><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.lead)}</p></div><aside><span>Son kontrol</span><strong>22 Temmuz 2026</strong><small>Doğrulanmayan alanlar kesin bilgi gibi sunulmaz.</small></aside></section>
       ${factCards(page.facts)}
       ${page.body()}
+      ${page.team ? renderTeamNewsSection(readVerifiedTeamNews(root, page.team, 3), { team: page.team, base: "./" }) : ""}
       ${section("İlgili radar ekranları", "Bu konuyu takım, oyuncu, maç ve momentum verileriyle derinleştir.", linkGrid(page.links), "İç bağlantılar")}
       <section class="trend-home-cta"><div><span class="section-kicker">FutbolRadar</span><h2>Skordan fazlasını oku.</h2><p>Canlı maç merkezi, oyuncu performansı, takım formu ve transfer hareketlerini aynı veri dilinde takip et.</p></div><a class="button primary" href="./index.html">Ana sayfaya dön</a></section>
     </main>

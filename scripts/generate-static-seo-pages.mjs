@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import { readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
@@ -82,6 +83,7 @@ const seoPages = [
   },
   {
     file: "galatasaray-oyuncu-radari.html",
+    team: "Galatasaray",
     title: "Galatasaray Oyuncu Radarı | Kadro ve AI Rating | FutbolRadar",
     description: "Galatasaray oyuncu radarı; kadro oyuncularını AI rating, form, yaratıcılık ve gol tehdidi metrikleriyle inceler.",
     h1: "Galatasaray Oyuncu Radarı",
@@ -114,6 +116,7 @@ const seoPages = [
   },
   {
     file: "galatasaray-form-durumu.html",
+    team: "Galatasaray",
     title: "Galatasaray Form Durumu | Momentum ve Son Maçlar | FutbolRadar",
     description: "Galatasaray form durumu; son maç ivmesi, momentum skoru, hücum üretimi ve savunma dengesini özetler.",
     h1: "Galatasaray Form Durumu",
@@ -350,6 +353,14 @@ function landingExtraLinksHtml(page) {
       </section>`;
 }
 
+function teamNewsHtml(page) {
+  if (!page.team) return "";
+  return renderTeamNewsSection(readVerifiedTeamNews(root, page.team, 3), {
+    team: page.team,
+    base: "./"
+  });
+}
+
 function pageHtml(page) {
   const url = `${domain}/${page.file}`;
   const schema = {
@@ -418,6 +429,7 @@ ${nav}
       <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${page.landing}">
         <article class="data-empty" data-card="empty-state"><strong>Oyuncular yükleniyor</strong><span>Doğrulanmış oyuncu profilleri hazırlanıyor.</span></article>
       </section>${landingExtraLinksHtml(page)}` : `<section class="grid three">${cardsHtml(page.cards)}</section>`}
+      ${teamNewsHtml(page)}
       <section class="source-strip" aria-label="İlgili bağlantılar">
         <div><span>İlgili ekran</span><b><a href="./oyuncu-radari.html">Oyuncu Radarı</a></b></div>
         <div><span>Takım verisi</span><b><a href="./momentum.html">Momentum</a></b></div>

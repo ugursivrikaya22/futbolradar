@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 
 const root = process.cwd();
 const news = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
@@ -12,7 +13,8 @@ const publishedIds = new Set(published.map((item) => item.id));
 
 for (const id of [
   "aziz-yildirim-fenerbahce-divan-kurulu-sert-cikis",
-  "galatasaray-musiala-iddialarina-yalanlama"
+  "galatasaray-musiala-iddialarina-yalanlama",
+  "galatasaray-divan-kurulu-dursun-ozbek-transfer-tepkisi"
 ]) {
   const article = published.find((item) => item.id === id);
   assert.ok(article, `${id}: doğrulanmış haber bulunmalı`);
@@ -23,6 +25,24 @@ for (const id of [
     `${id}: ad ve bağlantı taşıyan kaynaklar bulunmalı`
   );
 }
+
+const transferReaction = published.find((item) => item.id === "galatasaray-divan-kurulu-dursun-ozbek-transfer-tepkisi");
+assert.equal(transferReaction.slug, "galatasaray-divan-kurulu-dursun-ozbek-transfer-tepkisi", "haber slugı URL standardına uygun olmalı");
+assert.ok(
+  transferReaction.body.some((paragraph) => paragraph.includes("Basına yansıyan açıklamalara göre")),
+  "istenen basın atfı haber gövdesinde korunmalı"
+);
+assert.match(transferReaction.updateNote || "", /resmî bir özet yayımladığında/, "resmî kulüp özeti için güncelleme notu bulunmalı");
+
+const galatasarayNews = readVerifiedTeamNews(root, "Galatasaray", 3);
+assert.equal(galatasarayNews[0]?.id, transferReaction.id, "yeni haber Galatasaray sayfalarında ilk sırada görünmeli");
+const galatasaraySection = renderTeamNewsSection(galatasarayNews, { team: "Galatasaray", base: "./" });
+assert.match(galatasaraySection, /data-team-news="galatasaray"/, "Galatasaray haber bölümü üretilmeli");
+assert.match(
+  galatasaraySection,
+  /haber\/galatasaray-divan-kurulu-dursun-ozbek-transfer-tepkisi\.html/,
+  "Galatasaray haber kartı yeni detay sayfasına bağlanmalı"
+);
 
 for (const draft of drafts.items || []) {
   assert.equal(draft.public, false, `${draft.id}: taslak public=false olmalı`);
