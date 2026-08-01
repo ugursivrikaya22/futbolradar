@@ -205,6 +205,7 @@ export function columnPageHtml(column) {
       </section>
     </main>
     ${siteFooter({ base })}
+    <script src="${base}site.js" defer></script>
   </body>
 </html>
 `;
@@ -270,6 +271,7 @@ export function authorPageHtml(author) {
       </section>
     </main>
     ${siteFooter({ base })}
+    <script src="${base}site.js" defer></script>
   </body>
 </html>
 `;

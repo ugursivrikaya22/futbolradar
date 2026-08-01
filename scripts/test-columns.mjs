@@ -301,6 +301,7 @@ function column(overrides = {}) {
   const detail = columnPageHtml(presented);
   assert.match(detail, /class="column-standfirst">Kısa özet\./, "detay sayfasında özet görünmeli");
   assert.match(detail, /"@type":"Person","name":"Yazar Adı","url":/, "detay şeması yazarı bağlamalı");
+  assert.match(detail, /src="\.\.\/site\.js" defer/, "detay sayfası ortak etkileşim betiğini yüklemeli");
 
   const authors = groupAuthors([presented]);
   assert.equal(authors.length, 1);
@@ -308,6 +309,7 @@ function column(overrides = {}) {
   assert.match(archive, /<h1>Yazar Adı Yazıları<\/h1>/, "yazar sayfasında açık H1 olmalı");
   assert.match(archive, /"@type":"ProfilePage"/, "yazar sayfasında ProfilePage şeması olmalı");
   assert.match(archive, /Örnek yazı/, "yazar sayfası yayımlanmış yazıyı listelemeli");
+  assert.match(archive, /src="\.\.\/site\.js" defer/, "yazar sayfası ortak etkileşim betiğini yüklemeli");
 }
 
 console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, yazar sayfaları, son üç yazı, temiz rotalar, elle yayın).");
