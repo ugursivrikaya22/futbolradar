@@ -58,7 +58,7 @@ function coreReportSection(report, match) {
       // kısaltılmış alıntı hâlâ tırnak içinde görünür.
       return section.quotes.map((quote) => `<figure class="core-quote">
           <blockquote>${escapeHtml(quote.quote)}</blockquote>
-          <figcaption>${escapeHtml(`${quote.speaker} · ${quote.team}`)} — <a href="${escapeHtml(quote.source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(quote.source.name)}</a></figcaption>
+          <figcaption>${escapeHtml(`${quote.speaker} · ${quote.team}`)} — <a href="${escapeHtml(quote.source.url)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(quote.source.name)}</a></figcaption>
         </figure>`).join("");
     }
 

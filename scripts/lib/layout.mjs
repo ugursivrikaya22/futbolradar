@@ -10,6 +10,11 @@
  *
  * `base` her sayfanın köke göre önekidir: kökte "./", alt klasörde "../".
  */
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+// Dış bağlantı politikası tek yerde: services/sourceLinks.js.
+const { PLAIN_EXTERNAL_REL, SOURCE_LINK_REL } = require("../../services/sourceLinks.js");
 
 export const NAV_PRIMARY = [
   { href: "bugunun-maclari.html", label: "Bugünün Maçları" },
@@ -144,7 +149,8 @@ export function newsTicker(options = {}) {
   const renderItem = (item) => {
     const href = item.href ? item.href : `${base}haberler.html`;
     const external = /^https?:/i.test(href);
-    const rel = external ? ' target="_blank" rel="noopener noreferrer"' : "";
+    // Banttaki dış bağlantı bir kaynak künyesidir: alıntı, tavsiye değil.
+    const rel = external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : "";
     const label = item.label ? `<span class="news-ticker-tag">${escapeHtml(item.label)}</span>` : "";
 
     // GÜVEN ROZETİNİ ŞABLON ÇİZER, EDİTÖR DEĞİL.
@@ -191,7 +197,9 @@ export function siteFooter(options = {}) {
 
   const social = SOCIAL.map(
     (item) =>
-      `<a href="${escapeHtml(item.href)}" aria-label="${escapeHtml(item.label)}" target="_blank" rel="noopener noreferrer">${item.icon}</a>`
+      // Bunlar FutbolRadar'ın KENDİ hesapları; `nofollow` kendi markasını
+      // inkâr etmek olurdu. Yalnızca güvenlik öznitelikleri.
+      `<a href="${escapeHtml(item.href)}" aria-label="${escapeHtml(item.label)}" target="_blank" rel="${PLAIN_EXTERNAL_REL}">${item.icon}</a>`
   ).join("");
 
   return `<footer class="footer footer-premium" data-shared-layout="footer">

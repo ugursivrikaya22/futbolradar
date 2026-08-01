@@ -5666,7 +5666,7 @@
     var sourceUrl = safeImageUrl(item && item.url);
     var published = formatProfileDate(item && item.publishedAt) || "Tarih açıklanmadı";
     var action = sourceUrl
-      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="noopener noreferrer">Resmî açıklamayı aç</a>'
+      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="nofollow noopener noreferrer">Resmî açıklamayı aç</a>'
       : "";
 
     return (
@@ -6631,7 +6631,7 @@
   function renderTransferFeedCard(record) {
     var sourceUrl = safeImageUrl(record && record.sourceUrl);
     var sourceAction = sourceUrl
-      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a>'
+      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="nofollow noopener noreferrer">Transfer detayını aç</a>'
       : "";
     return (
       '<article class="transfer-radar-card" data-card="transfer-record" data-transfer="' + escapeHtml(record.id || record.playerId) + '">' +
@@ -6682,7 +6682,7 @@
       '<div class="home-transfer-player"><div><span>Son kesinleşen transfer</span><h3>' + escapeHtml(leader.playerName) + '</h3><p>' + escapeHtml(leader.type || "Transfer") + ' · ' + escapeHtml(formatProfileDate(leader.date) || leader.season) + '</p></div></div>' +
       '<div class="home-transfer-route"><b>' + escapeHtml(leader.fromTeam) + '</b><em>→</em><b>' + escapeHtml(leader.toTeam) + '</b></div>' +
       '<div class="home-transfer-actions">' +
-      (sourceUrl ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a>' : "") +
+      (sourceUrl ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="nofollow noopener noreferrer">Transfer detayını aç</a>' : "") +
       '<a class="detail-link ghost" href="./transfer-radari.html">Tüm transferler</a></div>' +
       '</article>' +
       '<aside class="home-transfer-side" aria-label="Son transferler"><div class="home-transfer-metrics">' +
@@ -8333,7 +8333,7 @@
       // Kaynak her satırda görünür: doğrulanabilir olmayan bir hareket
       // zaten yayımlanmıyor, yayımlanan da izlenebilir olmalı.
       '<a class="td-transfer-source" href="' + escapeHtml(transfer.sourceUrl) +
-      '" target="_blank" rel="noopener noreferrer">' +
+      '" target="_blank" rel="nofollow noopener noreferrer">' +
       escapeHtml(displayValue(transfer.sourceName) || "Kaynak") + "</a>" +
       "</div>" +
       "</li>"
@@ -9398,7 +9398,7 @@
       "<span>Kaynak" + (detail.sourceName ? ": " + escapeHtml(detail.sourceName) : "") + "</span>" +
       (urls.length
         ? '<span class="md-source-links">' + urls.slice(0, 3).map(function (url, i) {
-          return '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">Kayıt ' + (i + 1) + "</a>";
+          return '<a href="' + escapeHtml(url) + '" target="_blank" rel="nofollow noopener noreferrer">Kayıt ' + (i + 1) + "</a>";
         }).join("") + "</span>"
         : "") +
       (detail.lastVerifiedAt ? "<span>Son doğrulama: " + escapeHtml(String(detail.lastVerifiedAt).slice(0, 10)) + "</span>" : "") +
@@ -9881,7 +9881,7 @@
     return '<ul class="deep-analysis-source-list">' + sources.map(function (source) {
       return "<li><strong>" + escapeHtml(source.publisher) + "</strong> — " + escapeHtml(source.type) +
         "<p>" + escapeHtml(source.usedFor) + "</p>" +
-        '<a href="' + escapeHtml(source.url) + '" target="_blank" rel="noopener noreferrer">Kaynağa git</a>' +
+        '<a href="' + escapeHtml(source.url) + '" target="_blank" rel="nofollow noopener noreferrer">Kaynağa git</a>' +
         (source.publishedAt ? '<span class="deep-analysis-source-date">Yayın: ' + escapeHtml(source.publishedAt) + "</span>" : "") +
         "</li>";
     }).join("") + "</ul>";

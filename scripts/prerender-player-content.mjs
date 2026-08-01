@@ -81,7 +81,7 @@ function transferCard(transfer) {
   const fee = transfer.fee || (Number(transfer.feeEur) > 0 ? formatMarketValueEur(transfer.feeEur) : Number(transfer.feeEur) === 0 ? "Bedelsiz" : "Açıklanmadı");
   const date = new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(`${transfer.date}T12:00:00Z`));
   const sourceAction = transfer.sourceUrl
-    ? `<a class="detail-link" href="${escapeHtml(transfer.sourceUrl)}" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a>`
+    ? `<a class="detail-link" href="${escapeHtml(transfer.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">Transfer detayını aç</a>`
     : "";
 
   return `<article class="transfer-radar-card" data-card="transfer-record" data-transfer="${escapeHtml(transfer.id || transfer.playerId)}">
