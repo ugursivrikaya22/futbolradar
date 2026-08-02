@@ -123,17 +123,36 @@ function pageHtml(article) {
   const tags = Array.isArray(article.tags) ? article.tags.filter(Boolean) : [];
   const sources = articleSources(article);
   const bodyAnchors = Array.isArray(article.bodyAnchors) ? article.bodyAnchors : [];
+  // bodyHeadings, bodyAnchors ile aynı desende paralel bir dizidir: i. paragrafın
+  // ÜSTÜNE bir ara başlık koyar. Uzun haberlerde (zaman çizelgesi, olasılık
+  // değerlendirmesi gibi bölümleri olanlar) okuma sırasını görünür kılar.
+  // Boş bırakılan her satır eskisi gibi düz paragraf üretir.
+  const bodyHeadings = Array.isArray(article.bodyHeadings) ? article.bodyHeadings : [];
   const body = article.body
     .map((paragraph, index) => ({
       paragraph: String(paragraph || "").trim(),
-      anchor: String(bodyAnchors[index] || "").trim()
+      anchor: String(bodyAnchors[index] || "").trim(),
+      heading: String(bodyHeadings[index] || "").trim()
     }))
     .filter(({ paragraph }) => Boolean(paragraph))
-    .map(({ paragraph, anchor }) => {
+    .map(({ paragraph, anchor, heading }) => {
       const id = /^[a-z0-9][a-z0-9-]*$/.test(anchor) ? ` id="${anchor}"` : "";
-      return `<p${id}>${escapeHtml(paragraph)}</p>`;
+      const headingHtml = heading ? `<h2 class="article-section-title">${escapeHtml(heading)}</h2>\n        ` : "";
+      return `${headingHtml}<p${id}>${escapeHtml(paragraph)}</p>`;
     })
     .join("\n        ");
+
+  // Künye kutusu: transfer/iddia haberlerinde durumu tek bakışta okunur kılar.
+  // Satırlar veriden gelir; şablon kendiliğinden bir şey uydurmaz.
+  const infoRows = article.infoBox && Array.isArray(article.infoBox.rows)
+    ? article.infoBox.rows.filter((row) => row && String(row.label || "").trim() && String(row.value || "").trim())
+    : [];
+  const infoBoxHtml = infoRows.length
+    ? `<aside class="article-info-box" aria-labelledby="article-info-box-title">` +
+      `<h2 id="article-info-box-title">${escapeHtml(String((article.infoBox && article.infoBox.title) || "Transfer künyesi"))}</h2>` +
+      `<dl>${infoRows.map((row) => `<dt>${escapeHtml(row.label)}</dt><dd>${escapeHtml(row.value)}</dd>`).join("")}</dl>` +
+      `</aside>`
+    : "";
   const tagHtml = tags.length
     ? `<div class="column-tags">${tags.map((tag) => `<span class="column-tag">${escapeHtml(tag)}</span>`).join("")}</div>`
     : "";
@@ -182,6 +201,7 @@ ${siteHeader({ base: "../" })}
           ${tagHtml}
         </header>
         ${updateNoteHtml}
+        ${infoBoxHtml}
         <div class="column-body">
         ${body}
         </div>

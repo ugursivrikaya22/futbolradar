@@ -12501,6 +12501,60 @@ a.column-author:focus-visible {
   margin: 0;
 }
 
+/* Haber künye kutusu: durum, kulüp, sözleşme, ücret, kaynak güvenilirliği. */
+.article-info-box {
+  margin: var(--sp-3) 0;
+  padding: var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-soft, var(--green-tint));
+}
+
+.article-info-box h2 {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--fs-base);
+  color: var(--green-deep);
+}
+
+.article-info-box dl {
+  display: grid;
+  grid-template-columns: minmax(120px, max-content) 1fr;
+  gap: 6px var(--sp-3);
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+.article-info-box dt {
+  margin: 0;
+  color: var(--text-soft);
+  font-weight: 600;
+}
+
+.article-info-box dd {
+  margin: 0;
+  color: var(--text);
+}
+
+@media (max-width: 520px) {
+  .article-info-box dl {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .article-info-box dd {
+    margin-bottom: 6px;
+  }
+}
+
+/* Uzun haberlerde bölüm başlıkları. */
+.article-section-title {
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-lg, 1.15rem);
+  line-height: 1.3;
+  color: var(--green-deep);
+}
+
 .column-body {
   display: grid;
   gap: var(--sp-3);
