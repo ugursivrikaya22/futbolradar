@@ -1,7 +1,19 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Kayıtlar iki kaynaktan türer, hiçbiri elle uydurulmaz: (1) data/news.json içindeki doğrulanmış, kaynak bağlantılı haberler; (2) live-match kategorisinde, oynanmakta olan maçın canlı veri sağlayıcısından okunan ve en az iki kaynakla teyit edilen skor — bu öğeler canlı skor sayfasına bağlanır ve 6 saatlik raf ömrüyle kendiliğinden düşer. Teyit edilemeyen ayrıntı (ör. golcü adı) banda yazılmaz.",
-  "updatedAt": "2026-08-02T18:51:32.764Z",
+  "updatedAt": "2026-08-02T19:14:02.065Z",
   "items": [
+    {
+      "id": "gs-rennes-canli-2-1",
+      "category": "live-match",
+      "confidence": "confirmed",
+      "text": "Galatasaray ikinci yarıda öne geçti: Rennes karşısında skor 2-1.",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-02T19:14:02.065Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/canli-skor.html"
+      }
+    },
     {
       "id": "gs-rennes-canli-devre",
       "category": "live-match",
