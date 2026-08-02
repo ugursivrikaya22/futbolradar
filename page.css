@@ -16599,3 +16599,100 @@ body,
     min-height: 14rem;
   }
 }
+
+@media (max-width: 560px) {
+  .home-page #hero-canli-skor .hero-featured,
+  .home-page #hero-canli-skor .featured-carousel,
+  .home-page #hero-canli-skor .featured-carousel-viewport,
+  .home-page #hero-canli-skor .featured-carousel-slide {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .home-page #hero-canli-skor .featured-fixture {
+    overflow: hidden;
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .home-page #hero-canli-skor .featured-fixture-board {
+    grid-template-columns: minmax(0, 1fr) minmax(68px, auto) minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .home-page #hero-canli-skor .featured-fixture-team {
+    min-width: 0;
+  }
+
+  .home-page #hero-canli-skor .featured-fixture-team strong {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: 0.82rem;
+  }
+
+  .home-page #hero-canli-skor .featured-fixture-score {
+    min-width: 0;
+  }
+
+  .home-page #hero-canli-skor .featured-fixture-score b {
+    font-size: 1.55rem;
+  }
+
+  .home-page #hero-canli-skor .featured-fixture-score span {
+    padding: 2px 6px;
+    font-size: 0.68rem;
+    white-space: nowrap;
+  }
+
+  .home-page #hero-canli-skor .featured-match-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .home-page #hero-canli-skor .featured-match-actions .button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .home-page #hero-canli-skor .featured-fixture {
+    padding: 14px;
+  }
+
+  .home-page #hero-canli-skor .featured-fixture-head {
+    font-size: 0.68rem;
+    letter-spacing: 0.02em;
+  }
+
+  .home-page #hero-canli-skor .featured-fixture-board {
+    grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .home-page #hero-canli-skor .featured-fixture-team img,
+  .home-page #hero-canli-skor .featured-fixture-team .team-logo-fallback,
+  .home-page #hero-canli-skor .featured-fixture-team .fixture-row-fallback {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    font-size: 0.76rem;
+  }
+
+  .home-page #hero-canli-skor .featured-fixture-team strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .home-page #hero-canli-skor .featured-fixture-score b {
+    font-size: 1.42rem;
+  }
+
+  .home-page #hero-canli-skor .featured-fixture-score span {
+    max-width: 64px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
