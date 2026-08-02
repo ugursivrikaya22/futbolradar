@@ -1,0 +1,149 @@
+name: Transfer Ingestion Automation
+
+# TRANSFER ALIM OTOMASYONU.
+#
+# Depodaki üçüncü iş akışı. match-analysis.yml'den AYRI tutuldu ve bu bilinçli:
+# maç hattı ile transfer hattı birbirinin koşusunu bloklamamalı. Maç
+# otomasyonu 5 dakikada bir canlı skor tazeliyor; transfer alımı oraya
+# eklenseydi bir RSS zaman aşımı maç sonucu güncellemesini de geciktirirdi.
+#
+# İKİ RİTİM, İKİ İŞ:
+#
+#   fast  — 5 dakikada bir. Resmî ve birincil kaynaklar (KAP, ulusal ajans).
+#           Hedef: resmî açıklamadan yayına 3 dakikanın altı. GitHub Actions
+#           zamanlanmış işleri yoğun saatlerde birkaç dakika gecikebilir;
+#           5 dakika platformun izin verdiği en sık aralıktır.
+#   broad — 10 dakikada bir. Geniş haber kaynakları.
+#
+# ÇAKIŞMA KORUMASI: her ritim kendi concurrency grubunda ve
+# cancel-in-progress: false. Bir koşu sürerken ikincisi başlamaz, kuyruğa
+# girer — aynı anda iki koşu data/transfers.json'a yazsaydı biri diğerinin
+# yazdığını ezerdi.
+#
+# COMMIT: yalnızca gerçekten bir şey değiştiyse. Her koşuda boş commit atmak
+# depoyu kullanılamaz hale getirirdi.
+#
+# GEREKLİ SECRET YOK. Hat resmî ve açık kaynaklardan besleniyor; Telegram
+# bildirimi TELEGRAM_BOT_TOKEN ve TELEGRAM_CHAT_ID tanımlıysa gönderilir,
+# tanımlı değilse koşu ÇÖKMEZ ve eksik değişken koşu özetine yazılır.
+
+on:
+  schedule:
+    # Resmî kaynaklar: 5 dakikada bir.
+    - cron: "*/5 * * * *"
+    # Geniş kaynaklar: 10 dakikada bir.
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+    inputs:
+      cadence:
+        description: "Hangi kaynak grubu yoklansın"
+        required: false
+        default: "fast"
+        type: choice
+        options: [fast, broad]
+      dry_run:
+        description: "Kuru koşu — hiçbir dosya yazılmaz, commit atılmaz"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    # Ritim ayrımı: 10 dakikalık cron `broad`, geri kalan her tetikleyici
+    # `fast`. Elle tetiklemede kullanıcının seçimi geçerli.
+    env:
+      CADENCE: >-
+        ${{ github.event.inputs.cadence
+            || (github.event.schedule == '*/10 * * * *' && 'broad' || 'fast') }}
+
+    concurrency:
+      group: transfer-ingestion-${{ github.event.inputs.cadence || (github.event.schedule == '*/10 * * * *' && 'broad' || 'fast') }}
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Alım. Kaynak çökmesi koşuyu düşürmez (fetcher her hatayı rapora
+      # yazar); yalnızca hattın kendisi çökerse adım kırmızıya döner.
+      - name: Transferleri al
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          node scripts/ingest-transfers.mjs \
+            --cadence="$CADENCE" \
+            ${{ github.event.inputs.dry_run == 'true' && '--dry-run' || '' }}
+
+      # Doğrulama kapıları. Biri düşerse commit adımına HİÇ gelinmez:
+      # bozuk veri üretime çıkamaz.
+      - name: Transfer verisini doğrula
+        if: github.event.inputs.dry_run != 'true'
+        run: node scripts/validate-transfer-data.mjs
+
+      - name: Transfer testleri
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          node scripts/test-transfer-ingestion.mjs
+          node scripts/test-transfer-pipeline.mjs
+          node scripts/test-news-ticker.mjs
+          node scripts/test-news-publication.mjs
+
+      # Statik yüzeyleri tazele: haber sayfaları, bant, arama indeksi, sitemap.
+      - name: Yüzeyleri üret
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          node scripts/generate-news-pages.mjs
+          node scripts/generate-search-index.mjs
+          npm run postprocess
+          node scripts/sync-public-assets.mjs
+
+      - name: QA
+        if: github.event.inputs.dry_run != 'true'
+        run: npm run qa
+
+      - name: Değişiklikleri işle
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Değişiklik yok — commit atlanıyor." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "ci(transfer): ${CADENCE} alım koşusu"
+
+          # Yarış çözümü: bu arada başka bir koşu push etmiş olabilir.
+          for attempt in 1 2 3 4; do
+            if git push; then exit 0; fi
+            sleep $((2 ** attempt))
+            git pull --rebase --autostash || exit 1
+          done
+          exit 1
+
+      # Koşu çöktüyse sessiz kalma. Bildirici zaten Telegram'a yazdı;
+      # burada koşu özetine de düşüyor.
+      - name: Hata özeti
+        if: failure()
+        run: |
+          {
+            echo "## Transfer otomasyonu BAŞARISIZ"
+            echo ""
+            echo "- Ritim: \`${CADENCE}\`"
+            echo "- Koşu: ${{ github.run_id }}"
+            echo ""
+            echo "Ayrıntı için adım günlüklerine bakın."
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,39 @@
+{
+  "_comment": "Transfer alım hattı test verisi. Testler CANLI KAYNAĞA BAĞLI DEĞİL: her senaryo burada sabit bir RSS/HTML gövdesiyle temsil ediliyor. Oyuncu adları data/players.json içinde gerçekten bulunan adlardır; oyuncu dizini kapısı (services/transfers/playerDirectory.js) uydurma adı zaten karantinaya alır ve testin gerçek hattı geçmesi gerekir.",
+
+  "official_kap": "<?xml version=\"1.0\"?><rss><channel><item><title>Galatasaray, Semih Kılıçsoy transferini resmen açıkladı</title><description>Galatasaray Spor Kulübü, Beşiktaş'tan Semih Kılıçsoy'un transferi için 12 milyon euro bonservis bedeli ödendiğini KAP'a bildirdi.</description><link>https://www.kap.org.tr/tr/Bildirim/111111</link><pubDate>Sun, 02 Aug 2026 12:00:00 +0300</pubDate></item></channel></rss>",
+
+  "official_media_echo": "<?xml version=\"1.0\"?><rss><channel><item><title>Galatasaray, Semih Kılıçsoy transferini resmen açıkladı</title><description>Galatasaray'ın Beşiktaş'tan Semih Kılıçsoy'u 12 milyon euro bonservisle kadrosuna kattığı bildirildi.</description><link>https://example.com/haber/semih-transfer</link><pubDate>Sun, 02 Aug 2026 12:10:00 +0300</pubDate></item></channel></rss>",
+
+  "rumor_media": "<?xml version=\"1.0\"?><rss><channel><item><title>Fenerbahçe gündeminde Victor Nelsson iddiası</title><description>Fenerbahçe'nin Galatasaray'dan Victor Nelsson ile ilgilendiği iddia edildi. Kulüplerden açıklama gelmedi.</description><link>https://example.com/haber/nelsson-iddia</link><pubDate>Sun, 02 Aug 2026 10:00:00 +0300</pubDate></item></channel></rss>",
+
+  "negotiation_media": "<?xml version=\"1.0\"?><rss><channel><item><title>Beşiktaş, Kaan Ayhan transferinde görüşmelere başladı</title><description>Beşiktaş yönetimi Galatasaray'dan Kaan Ayhan için görüşmelere başladı. Teklif yapıldığı öne sürüldü.</description><link>https://example.com/haber/kaan-gorusme</link><pubDate>Sun, 02 Aug 2026 09:00:00 +0300</pubDate></item></channel></rss>",
+
+  "agreement_then_official_step1": "<?xml version=\"1.0\"?><rss><channel><item><title>Trabzonspor, Günay Güvenç ile anlaşmaya vardı</title><description>Trabzonspor'un Galatasaray'dan Günay Güvenç ile prensipte anlaştığı bildirildi.</description><link>https://example.com/haber/gunay-anlasma</link><pubDate>Sun, 02 Aug 2026 08:00:00 +0300</pubDate></item></channel></rss>",
+
+  "agreement_then_official_step2": "<?xml version=\"1.0\"?><rss><channel><item><title>Trabzonspor, Günay Güvenç transferini resmen açıkladı</title><description>Trabzonspor, Galatasaray'dan Günay Güvenç'in transferini KAP'a bildirdi. Sözleşme 2 yıllık.</description><link>https://www.kap.org.tr/tr/Bildirim/222222</link><pubDate>Sun, 02 Aug 2026 14:00:00 +0300</pubDate></item></channel></rss>",
+
+  "loan": "<?xml version=\"1.0\"?><rss><channel><item><title>Kasımpaşa, Semih Kılıçsoy'u kiralık olarak kadrosuna kattı</title><description>Beşiktaş'tan Semih Kılıçsoy, Kasımpaşa'ya kiralık olarak transfer oldu. Kiralık bedeli açıklanmadı.</description><link>https://www.kap.org.tr/tr/Bildirim/333333</link><pubDate>Sun, 02 Aug 2026 11:00:00 +0300</pubDate></item></channel></rss>",
+
+  "free_transfer": "<?xml version=\"1.0\"?><rss><channel><item><title>Göztepe, Davinson Sánchez transferini resmen açıkladı</title><description>Galatasaray'dan ayrılan Davinson Sánchez, Göztepe ile bonservissiz anlaşma imzaladı.</description><link>https://www.kap.org.tr/tr/Bildirim/444444</link><pubDate>Sun, 02 Aug 2026 13:00:00 +0300</pubDate></item></channel></rss>",
+
+  "termination": "<?xml version=\"1.0\"?><rss><channel><item><title>Antalyaspor ile Abdülkerim Bardakcı karşılıklı fesih kararı aldı</title><description>Antalyaspor, Abdülkerim Bardakcı ile sözleşmesini karşılıklı olarak feshetti.</description><link>https://www.kap.org.tr/tr/Bildirim/555555</link><pubDate>Sun, 02 Aug 2026 15:00:00 +0300</pubDate></item></channel></rss>",
+
+  "cancelled": "<?xml version=\"1.0\"?><rss><channel><item><title>Konyaspor, Kaan Ayhan transferinden vazgeçti</title><description>Konyaspor yönetimi Kaan Ayhan transferini iptal etti.</description><link>https://example.com/haber/kaan-iptal</link><pubDate>Sun, 02 Aug 2026 16:00:00 +0300</pubDate></item></channel></rss>",
+
+  "denied": "<?xml version=\"1.0\"?><rss><channel><item><title>Samsunspor cephesinden Victor Nelsson iddialarına yalanlama</title><description>Samsunspor, Victor Nelsson transferi iddialarının asılsız olduğunu bildirdi.</description><link>https://example.com/haber/nelsson-yalanlama</link><pubDate>Sun, 02 Aug 2026 17:00:00 +0300</pubDate></item></channel></rss>",
+
+  "missing_fee": "<?xml version=\"1.0\"?><rss><channel><item><title>Eyüpspor, Victor Nelsson transferini resmen açıkladı</title><description>Eyüpspor, Galatasaray'dan Victor Nelsson'un transferini duyurdu. Bonservis bedeli açıklanmadı.</description><link>https://www.kap.org.tr/tr/Bildirim/666666</link><pubDate>Sun, 02 Aug 2026 18:00:00 +0300</pubDate></item></channel></rss>",
+
+  "alias_club": "<?xml version=\"1.0\"?><rss><channel><item><title>Cimbom, Semih Kılıçsoy transferinde görüşmelere başladı</title><description>Cimbom, BJK'dan Semih Kılıçsoy için temaslara başladı.</description><link>https://example.com/haber/alias</link><pubDate>Sun, 02 Aug 2026 07:00:00 +0300</pubDate></item></channel></rss>",
+
+  "unknown_player": "<?xml version=\"1.0\"?><rss><channel><item><title>Beşiktaş, Mateusz Kowalski ile anlaşmaya vardı</title><description>Beşiktaş'ın Polonyalı orta saha Mateusz Kowalski ile anlaşmaya vardığı bildirildi.</description><link>https://example.com/haber/kowalski</link><pubDate>Sun, 02 Aug 2026 05:00:00 +0300</pubDate></item></channel></rss>",
+
+  "bogus_player": "<?xml version=\"1.0\"?><rss><channel><item><title>Beşiktaş gündeminde Türk transferi iddiası</title><description>Beşiktaş'ın bir Türk oyuncu için görüşmelere başladığı iddia edildi.</description><link>https://example.com/haber/bogus</link><pubDate>Sun, 02 Aug 2026 06:00:00 +0300</pubDate></item></channel></rss>",
+
+  "irrelevant": "<?xml version=\"1.0\"?><rss><channel><item><title>Galatasaray, hazırlık maçında Rennes ile karşılaştı</title><description>Galatasaray hazırlık maçında Rennes ile berabere kaldı.</description><link>https://example.com/haber/mac</link><pubDate>Sun, 02 Aug 2026 21:00:00 +0300</pubDate></item></channel></rss>",
+
+  "invalid_json": "{ bu gecerli JSON degil ",
+
+  "empty": ""
+}
