@@ -92,10 +92,10 @@ const indexedAuthors = new Set();
 for (const column of columns) {
   push({
     type: "column",
-    badge: "YAZ",
+    badge: "KÖŞE",
     href: column.path,
     title: column.title,
-    subtitle: `${column.author} · ${column.categoryLabel}`
+    subtitle: [column.author, column.categoryLabel].filter(Boolean).join(" · ") || "Köşe Yazısı"
   });
 
   if (!indexedAuthors.has(column.authorPath)) {

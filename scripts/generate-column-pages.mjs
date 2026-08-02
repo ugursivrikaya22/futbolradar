@@ -11,7 +11,7 @@
  * dosya yazılmaz — yazılsaydı, yayına alınmamış bir kanaat adresi bilen
  * herkese açık olurdu ve arama motorları da bulurdu.
  *
- * YORUM/HABER AYRIMI HER SAYFADA. Künye ve "Yorum" rozeti servisten geliyor
+ * YORUM/HABER AYRIMI HER SAYFADA. Künye ve "Köşe Yazısı" rozeti servisten geliyor
  * (services/columnService.js), yani her yüzeyde aynı ve unutulması mümkün
  * değil. Yazı sayfaları ayrıca `noindex` DEĞİL ama JSON-LD'de `OpinionNewsArticle`
  * olarak işaretleniyor: makine tarafında da haber değil yorum.
@@ -37,6 +37,7 @@ const STORE = path.join(root, "data", "columns.json");
 const OUT_DIR = path.join(root, "kose-yazilari");
 const AUTHOR_DIR = path.join(root, "yazarlar");
 const DOMAIN = "https://www.futbolradar.com";
+const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -45,6 +46,19 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function writeGeneratedFile(file, contents) {
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    try {
+      fs.writeFileSync(file, contents, "utf8");
+      return;
+    } catch (error) {
+      const retryable = ["UNKNOWN", "EBUSY", "EPERM"].includes(error && error.code);
+      if (!retryable || attempt === 11) throw error;
+      Atomics.wait(retryBuffer, 0, 0, 75 * (attempt + 1));
+    }
+  }
 }
 
 function readStore() {
@@ -201,7 +215,7 @@ export function columnPageHtml(column) {
       </article>
 
       <section class="column-back">
-        <a class="detail-link" href="${base}kose-yazilari.html">Tüm ${escapeHtml(SECTION_NAME)} yazıları</a>
+        <a class="detail-link" href="${base}kose-yazilari.html">Tüm Köşe Yazıları</a>
       </section>
     </main>
     ${siteFooter({ base })}
@@ -290,11 +304,32 @@ function replaceSlot(html, target, content) {
 function writeBoth(relativePath, html) {
   const target = path.join(root, relativePath);
   fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.writeFileSync(target, html, "utf8");
+  writeGeneratedFile(target, html);
 
   const publicTarget = path.join(root, "public", relativePath);
   fs.mkdirSync(path.dirname(publicTarget), { recursive: true });
-  fs.writeFileSync(publicTarget, html, "utf8");
+  writeGeneratedFile(publicTarget, html);
+}
+
+function sitemapEntry(column) {
+  const lastmod = String(column.date || "").slice(0, 10) || "2026-08-02";
+  return `  <url>
+    <loc>${DOMAIN}/${column.path}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.64</priority>
+  </url>`;
+}
+
+function updateSitemap(columns) {
+  const entries = columns.map(sitemapEntry);
+  for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
+    if (!fs.existsSync(sitemapPath)) continue;
+    let xml = fs.readFileSync(sitemapPath, "utf8");
+    xml = xml.replace(/  <url>\n    <loc>https:\/\/www\.futbolradar\.com\/kose-yazilari\/[^<]+\.html<\/loc>[\s\S]*?  <\/url>\n?/g, "");
+    xml = xml.replace("</urlset>", `${entries.join("\n")}\n</urlset>`);
+    writeGeneratedFile(sitemapPath, xml);
+  }
 }
 
 // ── Koşu ───────────────────────────────────────────────────────────────────
@@ -338,8 +373,8 @@ export function generateColumnPages() {
   const listingPath = path.join(root, "kose-yazilari.html");
   if (fs.existsSync(listingPath)) {
     const html = replaceSlot(fs.readFileSync(listingPath, "utf8"), "columns-page", listingHtml(columns));
-    fs.writeFileSync(listingPath, html, "utf8");
-    fs.writeFileSync(path.join(root, "public", "kose-yazilari.html"), html, "utf8");
+    writeGeneratedFile(listingPath, html);
+    writeGeneratedFile(path.join(root, "public", "kose-yazilari.html"), html);
   }
 
   const homePath = path.join(root, "index.html");
@@ -347,6 +382,10 @@ export function generateColumnPages() {
     let html = fs.readFileSync(homePath, "utf8");
     const content = homeHtml(columns);
     html = replaceSlot(html, "home-columns", content);
+    html = html.replace(
+      /(<a class="section-link" href="\.\/kose-yazilari\.html">)[^<]*(<\/a>)/,
+      "$1Tüm Köşe Yazıları$2"
+    );
 
     const openTag = (html.match(/<section\b[^>]*\bdata-api-section="columns"[^>]*>/) || [])[0];
     if (openTag) {
@@ -356,9 +395,11 @@ export function generateColumnPages() {
       html = html.replace(openTag, next);
     }
 
-    fs.writeFileSync(homePath, html, "utf8");
-    fs.writeFileSync(path.join(root, "public", "index.html"), html, "utf8");
+    writeGeneratedFile(homePath, html);
+    writeGeneratedFile(path.join(root, "public", "index.html"), html);
   }
+
+  updateSitemap(columns);
 
   console.log(
     `[columns] ${columns.length} yayımlanmış yazı ve ${authors.length} yazar sayfası üretildi` +

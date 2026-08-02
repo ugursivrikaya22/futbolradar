@@ -3,7 +3,7 @@
  *
  * Sistemin iki sözü var ve testler bu ikisini koruyor:
  *
- *   1. YORUM İLE HABER AYRIDIR. Her yazı "Yorum" künyesi taşır; künyesiz bir
+ *   1. YORUM İLE HABER AYRIDIR. Her yazı "Köşe Yazısı" künyesi taşır; künyesiz bir
  *      köşe yazısı yayımlanamaz. Okuyucu bir kanaati sitenin doğrulanmış
  *      verisi sanmamalı.
  *   2. TASLAK ÜRETİLİR, YAYIN ELLE AÇILIR. Hiçbir otomatik yol bir yazıyı
@@ -120,7 +120,7 @@ function column(overrides = {}) {
 // ── 4. Künye ve rozet her yazıda ───────────────────────────────────────────
 {
   const presented = presentColumn(column());
-  assert.equal(presented.badge, OPINION_BADGE, "her yazı Yorum rozeti taşımalı");
+  assert.equal(presented.badge, OPINION_BADGE, "her yazı Köşe Yazısı rozeti taşımalı");
   assert.equal(presented.disclaimer, OPINION_DISCLAIMER, "her yazı künye taşımalı");
   assert.equal(presented.authorPath, "yazarlar/yazar-adi.html", "yazar sayfası kalıcı bir yol taşımalı");
   assert.match(presented.disclaimer, /köşe yazısı/i, "künye yazının kanaat olduğunu söylemeli");
@@ -139,12 +139,12 @@ function column(overrides = {}) {
   assert.equal(authorPath("Yazar Adı"), "yazarlar/yazar-adi.html");
 }
 
-// ── 6. Beş kategori ────────────────────────────────────────────────────────
+// ── 6. Altı kategori ───────────────────────────────────────────────────────
 {
   assert.deepEqual(
     Object.keys(CATEGORIES).sort(),
-    ["futbol-gundemi", "lig-analizi", "mac-yorumu", "oyuncu-portresi", "transfer-yorumu"],
-    "kategori listesi beklenen beş değeri taşımalı"
+    ["fenerbahce", "futbol-gundemi", "lig-analizi", "mac-yorumu", "oyuncu-portresi", "transfer-yorumu"],
+    "kategori listesi beklenen altı değeri taşımalı"
   );
 }
 
