@@ -257,7 +257,27 @@ function column(overrides = {}) {
     ids.add(entry.id);
   }
 
-  console.log(`test-columns: ${store.columns.length} kayıt · ${publishedColumns(store).columns.length} yayında`);
+  // Yayımlanmış her yazının VE her yazar arşivinin sitemap'te karşılığı olmalı.
+  // Sayfa üretilip sitemap'e eklenmemesi sessiz bir kayıptır: sayfa ayakta
+  // durur ama arama motoruna hiç duyurulmaz.
+  const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+  const { columns: live } = publishedColumns(store);
+
+  for (const column of live) {
+    assert.ok(
+      sitemap.includes(`<loc>https://www.futbolradar.com/${column.path}</loc>`),
+      `sitemap yazıyı taşımalı: ${column.path}`
+    );
+  }
+
+  for (const author of groupAuthors(live)) {
+    assert.ok(
+      sitemap.includes(`<loc>https://www.futbolradar.com/${author.path}</loc>`),
+      `sitemap yazar arşivini taşımalı: ${author.path}`
+    );
+  }
+
+  console.log(`test-columns: ${store.columns.length} kayıt · ${live.length} yayında`);
 }
 
 // ── 12. Taslak betiği gerçekten yalnızca taslak üretiyor ───────────────────

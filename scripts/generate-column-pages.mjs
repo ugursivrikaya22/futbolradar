@@ -321,12 +321,31 @@ function sitemapEntry(column) {
   </url>`;
 }
 
-function updateSitemap(columns) {
-  const entries = columns.map(sitemapEntry);
+/**
+ * Yazar arşivi de sitemap'e girer. Yeni bir yazarın ilk yazısı yayımlandığında
+ * arşiv sayfası ÜRETİLİYOR ama sitemap'e elle eklenmesi gerekiyordu; unutulunca
+ * sayfa üretilmiş fakat duyurulmamış oluyordu. Kaynak artık tek: bu üretici.
+ */
+function authorSitemapEntry(author) {
+  const latest = author.columns[0];
+  const lastmod = String((latest && latest.date) || "").slice(0, 10) || "2026-08-02";
+  return `  <url>
+    <loc>${DOMAIN}/${author.path}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+}
+
+function updateSitemap(columns, authors) {
+  const entries = [...columns.map(sitemapEntry), ...authors.map(authorSitemapEntry)];
   for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
     if (!fs.existsSync(sitemapPath)) continue;
     let xml = fs.readFileSync(sitemapPath, "utf8");
+    // Önce eski yazı ve yazar kayıtları silinir; yayından kaldırılan bir yazı
+    // ya da yazarı olmayan bir arşiv sitemap'te kalmasın.
     xml = xml.replace(/  <url>\n    <loc>https:\/\/www\.futbolradar\.com\/kose-yazilari\/[^<]+\.html<\/loc>[\s\S]*?  <\/url>\n?/g, "");
+    xml = xml.replace(/  <url>\n    <loc>https:\/\/www\.futbolradar\.com\/yazarlar\/[^<]+\.html<\/loc>[\s\S]*?  <\/url>\n?/g, "");
     xml = xml.replace("</urlset>", `${entries.join("\n")}\n</urlset>`);
     writeGeneratedFile(sitemapPath, xml);
   }
@@ -399,7 +418,7 @@ export function generateColumnPages() {
     writeGeneratedFile(path.join(root, "public", "index.html"), html);
   }
 
-  updateSitemap(columns);
+  updateSitemap(columns, authors);
 
   console.log(
     `[columns] ${columns.length} yayımlanmış yazı ve ${authors.length} yazar sayfası üretildi` +
