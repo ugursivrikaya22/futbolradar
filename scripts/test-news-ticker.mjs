@@ -159,12 +159,49 @@ function item(overrides = {}) {
 
 // ── 8. Kategoriler destekleniyor ───────────────────────────────────────────
 {
-  const expected = ["official", "post-match", "squad-update", "manager-quote", "club-agenda", "transfer-rumour"];
+  const expected = ["live-match", "official", "post-match", "squad-update", "manager-quote", "club-agenda", "transfer-rumour"];
   assert.deepEqual(Object.keys(CATEGORIES).sort(), expected.slice().sort(), "beklenen kategoriler tanımlı olmalı");
   for (const key of expected) {
     assert.ok(CATEGORIES[key].label, `${key}: ekran etiketi olmalı`);
     assert.ok(Number.isFinite(CATEGORIES[key].maxAgeHours), `${key}: raf ömrü tanımlı olmalı`);
   }
+}
+
+// ── 8b. Canlı maç öğesi en üstte ve en kısa ömürlü ─────────────────────────
+//
+// Oynanan maç bandın en acil içeriğidir; ama "şu an 1-0" iddiası ertesi sabah
+// yanlış bir şimdiki zamandır. İki özellik birlikte sınanıyor.
+{
+  assert.equal(
+    CATEGORIES["live-match"].priority,
+    Math.min(...Object.values(CATEGORIES).map((entry) => entry.priority)),
+    "canlı maç bandın en üstünde olmalı"
+  );
+
+  assert.ok(
+    CATEGORIES["live-match"].maxAgeHours < CATEGORIES["post-match"].maxAgeHours,
+    "canlı maç öğesi maç sonu özetinden daha kısa ömürlü olmalı"
+  );
+
+  const live = item({
+    id: "canli",
+    category: "live-match",
+    confidence: "confirmed",
+    text: "Golle 1-0 öne geçildi",
+    timestamp: "2026-07-31T11:30:00+03:00"
+  });
+  assert.equal(validateTickerItem(live).valid, true, "geçerli canlı maç öğesi kabul edilmeli");
+
+  const { items } = normalizeTickerItems({
+    items: [item({ id: "resmi", category: "official" }), live]
+  }, { now });
+  assert.equal(items[0].category, "live-match", "canlı maç öğesi listenin başında olmalı");
+
+  // Dünkü canlı öğe bugün banda giremez.
+  const stale = normalizeTickerItems({
+    items: [item({ id: "dunku-canli", category: "live-match", timestamp: "2026-07-30T12:00:00+03:00" })]
+  }, { now });
+  assert.equal(stale.items.length, 0, "24 saatlik canlı maç öğesi elenmeli (raf ömrü 6 saat)");
 }
 
 // ── 9. Gerçek veri dosyası geçerli ─────────────────────────────────────────

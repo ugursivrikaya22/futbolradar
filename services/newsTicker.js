@@ -49,12 +49,17 @@
  * öğeye göre verilir, eski bir resmî açıklama tek başına o rozeti üretemez.
  */
 const CATEGORIES = Object.freeze({
-  "official": { label: "Resmî açıklama", rumourOnly: false, priority: 0, maxAgeHours: 24 * 21 },
-  "post-match": { label: "Maç sonu", rumourOnly: false, priority: 1, maxAgeHours: 24 * 4 },
-  "squad-update": { label: "Kadro & sakatlık", rumourOnly: false, priority: 2, maxAgeHours: 24 * 10 },
-  "manager-quote": { label: "Teknik direktör", rumourOnly: false, priority: 3, maxAgeHours: 24 * 7 },
-  "club-agenda": { label: "Kulüp gündemi", rumourOnly: false, priority: 4, maxAgeHours: 24 * 4 },
-  "transfer-rumour": { label: "Transfer iddiası", rumourOnly: true, priority: 5, maxAgeHours: 24 * 7 }
+  // Oynanmakta olan maçtan gelen olay. Banda en üstten girer ve EN KISA raf
+  // ömrünü taşır: "Osimhen 23'te attı" ertesi sabah gündem değil, yanlış bir
+  // şimdiki zaman iddiasıdır. Maç bitince bu öğelerin yerini tek bir
+  // `post-match` özeti alır.
+  "live-match": { label: "Canlı maç", rumourOnly: false, priority: 0, maxAgeHours: 6 },
+  "official": { label: "Resmî açıklama", rumourOnly: false, priority: 1, maxAgeHours: 24 * 21 },
+  "post-match": { label: "Maç sonu", rumourOnly: false, priority: 2, maxAgeHours: 24 * 4 },
+  "squad-update": { label: "Kadro & sakatlık", rumourOnly: false, priority: 3, maxAgeHours: 24 * 10 },
+  "manager-quote": { label: "Teknik direktör", rumourOnly: false, priority: 4, maxAgeHours: 24 * 7 },
+  "club-agenda": { label: "Kulüp gündemi", rumourOnly: false, priority: 5, maxAgeHours: 24 * 4 },
+  "transfer-rumour": { label: "Transfer iddiası", rumourOnly: true, priority: 6, maxAgeHours: 24 * 7 }
 });
 
 /**
