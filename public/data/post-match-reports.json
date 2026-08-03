@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-03T13:47:16.264Z",
+  "updatedAt": "2026-08-03T15:44:05.887Z",
   "matchCount": 16,
   "records": [
     {
@@ -808,30 +808,30 @@
       "winner": "Beşiktaş",
       "turkish": true,
       "turkishTeam": "Beşiktaş",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 90,
       "dataSources": {
         "score": {
           "present": true,
-          "source": "curated",
+          "source": "api-football",
           "count": 1
         },
         "events": {
           "present": true,
-          "source": "curated",
+          "source": "api-football",
           "count": 2
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "api-football",
+          "count": 2
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "api-football",
+          "count": 2
         },
         "players": {
           "present": false,
@@ -842,22 +842,14 @@
       "apiKeyPresent": true,
       "availability": {
         "events": 2,
-        "statistics": 0,
-        "lineups": 0,
+        "statistics": 2,
+        "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.4,
-      "providerUpdatedAt": null,
-      "lastSuccessfulSyncAt": null,
+      "dataCompleteness": 0.8,
+      "providerUpdatedAt": "2026-08-03T15:44:05.295Z",
+      "lastSuccessfulSyncAt": "2026-08-03T15:44:04.460Z",
       "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
         {
           "field": "players",
           "label": "Oyuncu istatistikleri"
@@ -867,16 +859,16 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "ea3cc3ef1c33c4ed",
-      "fingerprint": "ea3cc3ef1c33c4ed",
+      "analysisSourceHash": "043e54c0e3a96e78",
+      "fingerprint": "043e54c0e3a96e78",
       "analysisGeneratedAt": "2026-08-01T08:12:37.118Z",
-      "analysisUpdatedAt": "2026-08-03T13:47:16.212Z",
-      "generatedAt": "2026-08-03T13:47:16.212Z",
+      "analysisUpdatedAt": "2026-08-03T15:44:05.887Z",
+      "generatedAt": "2026-08-03T15:44:05.887Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "FC Midtjylland 0-2 Beşiktaş maç raporu: UEFA Avrupa Ligi istatistikleri | FutbolRadar",
-        "description": "FC Midtjylland 0-2 Beşiktaş maç raporu, goller: Milot Rashica, Orkun Kökçü, kırılma anları ve sonraki maç.",
+        "description": "FC Midtjylland 0-2 Beşiktaş maç raporu, goller: Milot Rashica, Orkun Kökçü, xG, şut ve pas istatistikleri, kırılma anları ve sonraki maç.",
         "path": "mac-raporu/fc-midtjylland-besiktas-2026-07-30.html",
         "competition": "UEFA Avrupa Ligi"
       },
@@ -953,8 +945,11 @@
           ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "FC Midtjylland sahaya 4-3-3 dizilişiyle çıktı.",
+            "Beşiktaş sahaya 4-1-4-1 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
           "status": "ready",
@@ -974,10 +969,22 @@
           "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "FC Midtjylland maça 4-3-3 dizilişiyle başladı.",
+            "Beşiktaş maça 4-1-4-1 dizilişiyle başladı."
+          ],
+          "formations": [
+            {
+              "team": "FC Midtjylland",
+              "formation": "4-3-3"
+            },
+            {
+              "team": "Beşiktaş",
+              "formation": "4-1-4-1"
+            }
+          ],
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -991,7 +998,17 @@
           "closing": "Beşiktaş sahadan 2 farkla ayrıldı.",
           "basis": "events-only"
         },
-        "aiRating": null,
+        "aiRating": {
+          "home": {
+            "team": "FC Midtjylland",
+            "score": 14
+          },
+          "away": {
+            "team": "Beşiktaş",
+            "score": 86
+          },
+          "confidence": 0
+        },
         "analysis": [
           {
             "id": "performans",
@@ -1022,14 +1039,17 @@
         "summary",
         "standoutPlayers",
         "momentum",
+        "statistics",
         "firstHalf",
         "secondHalf",
         "turningPoints",
         "lateGame",
-        "finalAssessment"
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 57,
-      "dataStatus": "partial",
+      "coverage": 79,
+      "dataStatus": "complete",
       "intelligenceCoverage": 10,
       "publishState": "page"
     },
@@ -1061,75 +1081,62 @@
       "winner": "Inter Turku",
       "turkish": true,
       "turkishTeam": "Başakşehir",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
-          "source": "curated",
+          "source": "api-football",
           "count": 1
         },
         "events": {
           "present": true,
-          "source": "curated",
+          "source": "api-football",
           "count": 3
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "api-football",
+          "count": 16
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "api-football",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "api-football",
+          "count": 45
         }
       },
       "apiKeyPresent": true,
       "availability": {
         "events": 3,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "statistics": 16,
+        "lineups": 2,
+        "players": 45
       },
-      "dataCompleteness": 0.4,
-      "providerUpdatedAt": null,
-      "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "dataCompleteness": 1,
+      "providerUpdatedAt": "2026-08-03T15:44:05.706Z",
+      "lastSuccessfulSyncAt": "2026-08-03T15:44:04.460Z",
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "3e35afd466582e90",
-      "fingerprint": "3e35afd466582e90",
+      "analysisSourceHash": "d6764fcf1d297570",
+      "fingerprint": "d6764fcf1d297570",
       "analysisGeneratedAt": "2026-08-01T08:12:37.118Z",
-      "analysisUpdatedAt": "2026-08-03T13:47:16.212Z",
-      "generatedAt": "2026-08-03T13:47:16.212Z",
+      "analysisUpdatedAt": "2026-08-03T15:44:05.887Z",
+      "generatedAt": "2026-08-03T15:44:05.887Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Inter Turku 2-0 Başakşehir maç raporu: UEFA Konferans Ligi istatistikleri | FutbolRadar",
-        "description": "Inter Turku 2-0 Başakşehir maç raporu, goller: Jasse Tuominen, Clinton Jephta, kırılma anları ve sonraki maç.",
+        "description": "Inter Turku 2-0 Başakşehir maç raporu, goller: Jasse Tuominen, Clinton Jephta, xG, şut ve pas istatistikleri, kırılma anları ve sonraki maç.",
         "path": "mac-raporu/inter-turku-basaksehir-2026-07-30.html",
         "competition": "UEFA Konferans Ligi"
       },
@@ -1219,8 +1226,11 @@
           ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Inter Turku sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Başakşehir sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
           "status": "ready",
@@ -1242,25 +1252,101 @@
           "goals": 1
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Inter Turku maça 4-2-3-1 dizilişiyle başladı.",
+            "Başakşehir maça 4-2-3-1 dizilişiyle başladı."
+          ],
+          "formations": [
+            {
+              "team": "Inter Turku",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Başakşehir",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Inter Turku, Başakşehir'i 2-0 yendi."
+            "Inter Turku, Başakşehir'i 2-0 yendi.",
+            "İsabetli şutta da öndeydi (7-1); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
+          "strengths": [
+            "Başakşehir topa daha çok sahip oldu (%58).",
+            "Başakşehir daha çok şut denedi (10-12)."
+          ],
           "improvements": [
+            "Başakşehir şut isabetinde geride kaldı (%8); bitiricilik geliştirilmesi gereken alan.",
             "Kırmızı kart maçın seyrini etkiledi (88' Inter Turku)."
           ],
           "closing": "Inter Turku sahadan 2 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
+        "aiRating": {
+          "home": {
+            "team": "Inter Turku",
+            "score": 77
+          },
+          "away": {
+            "team": "Başakşehir",
+            "score": 43
+          },
+          "confidence": 80
+        },
         "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Inter Turku %70, Başakşehir %8.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Inter Turku 41.9, Başakşehir 46.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
           {
             "id": "performans",
             "title": "Öne çıkan katkılar",
@@ -1269,17 +1355,20 @@
               "level": "yüksek",
               "ratio": 1
             }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
           }
         ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -1290,15 +1379,19 @@
         "summary",
         "standoutPlayers",
         "momentum",
+        "signals",
+        "statistics",
         "firstHalf",
         "secondHalf",
         "turningPoints",
         "lateGame",
-        "finalAssessment"
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 57,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 10,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
