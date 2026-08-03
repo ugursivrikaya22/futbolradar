@@ -139,12 +139,12 @@ function column(overrides = {}) {
   assert.equal(authorPath("Yazar Adı"), "yazarlar/yazar-adi.html");
 }
 
-// ── 6. Altı kategori ───────────────────────────────────────────────────────
+// ── 6. Yedi kategori ───────────────────────────────────────────────────────
 {
   assert.deepEqual(
     Object.keys(CATEGORIES).sort(),
-    ["fenerbahce", "futbol-gundemi", "lig-analizi", "mac-yorumu", "oyuncu-portresi", "transfer-yorumu"],
-    "kategori listesi beklenen altı değeri taşımalı"
+    ["fenerbahce", "futbol-gundemi", "galatasaray", "lig-analizi", "mac-yorumu", "oyuncu-portresi", "transfer-yorumu"],
+    "kategori listesi beklenen yedi değeri taşımalı"
   );
 }
 

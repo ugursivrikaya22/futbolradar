@@ -139,7 +139,15 @@ export function groupAuthors(columns) {
 export function columnPageHtml(column) {
   const url = `${DOMAIN}/${column.path}`;
   const base = "../";
-  const body = column.body.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join("\n        ");
+  // "## " önekli satır ara başlıktır: yazının kendi bölüm başlıkları
+  // (ör. "Olumlu Yanlar") paragraf değil <h2> olarak basılır.
+  const body = column.body.map((paragraph) => {
+    const line = String(paragraph ?? "");
+    if (line.startsWith("## ")) {
+      return `<h2>${escapeHtml(line.slice(3).trim())}</h2>`;
+    }
+    return `<p>${escapeHtml(line)}</p>`;
+  }).join("\n        ");
 
   // OpinionNewsArticle: makine tarafında da "haber" değil "yorum".
   const jsonLd = {
@@ -165,7 +173,7 @@ export function columnPageHtml(column) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${escapeHtml(`${column.title} | ${SECTION_NAME}`)}</title>
+    <title>${escapeHtml(`${column.title} | FutbolRadar`)}</title>
     <meta name="description" content="${escapeHtml(column.excerpt || `${column.author} yazdı: ${column.title}`)}" />
     <link rel="canonical" href="${escapeHtml(url)}" />
     <meta name="robots" content="index,follow" />

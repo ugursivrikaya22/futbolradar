@@ -1,125 +1,101 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-02T19:55:00+03:00",
+  "updatedAt": "2026-08-03T11:00:00+03:00",
   "items": [
     {
-      "id": "trabzonspor-ertugrul-dogan-salah-transfer-aciklamasi",
+      "id": "trabzonspor-salah-dev-paket-iddiasi",
+      "category": "transfer-rumour",
+      "confidence": "rumour",
+      "text": "Basında Trabzonspor’un Salah’a yıllık 17 milyon euroluk paket önerdiği öne sürülüyor; kulüpten doğrulama yok.",
+      "team": "Trabzonspor",
+      "timestamp": "2026-08-03T10:45:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/trabzonspor-salah-transfer-iddiasi-son-durum.html"
+      }
+    },
+    {
+      "id": "fenerbahce-sturm-graz-programi",
       "category": "official",
       "confidence": "confirmed",
-      "text": "Ertuğrul Doğan, Salah iddialarında Trabzonspor adına anlaşma bulunmadığını söyledi.",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-02T16:04:00+03:00",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/trabzonspor-ertugrul-dogan-salah-transfer-aciklamasi.html"
-      }
-    },
-    {
-      "id": "alanyaspor-joao-pereira-super-lig-makas-aciklamasi",
-      "category": "manager-quote",
-      "confidence": "confirmed",
-      "text": "Joao Pereira, Süper Lig’de bütçe farkını ve Alanyaspor’un daha akıllı transfer planı ihtiyacını anlattı.",
-      "team": "Alanyaspor",
-      "timestamp": "2026-08-02T11:52:00+03:00",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/alanyaspor-joao-pereira-super-lig-makas-aciklamasi.html"
-      }
-    },
-    {
-      "id": "aziz-yildirim-divan-kurulu-sert-cikis",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Fenerbahçe Yüksek Divan Kurulu’nda gerilim, Aziz Yıldırım’ın sözleri gündem oldu.",
+      "text": "Fenerbahçe, Şampiyonlar Ligi 3. eleme turu ilk maçında çarşamba 21.00’de Sturm Graz’ı konuk edecek.",
       "team": "Fenerbahçe",
-      "timestamp": "2026-08-01T15:00:00+03:00",
+      "timestamp": "2026-08-03T10:30:00+03:00",
       "source": {
         "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/aziz-yildirim-fenerbahce-divan-kurulu-sert-cikis.html"
+        "url": "https://www.futbolradar.com/haber/fenerbahce-sturm-graz-sampiyonlar-ligi-mac-onu.html"
       }
     },
     {
-      "id": "galatasaray-divan-transfer-mesaji",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Galatasaray Divanı’nda transfer mesajı: Özbek, önemli olanın açıklama tarihi değil, transferin sağlayacağı fayda olduğunu söyledi.",
-      "team": "Galatasaray",
-      "timestamp": "2026-07-29T17:30:00+03:00",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-divan-kurulu-dursun-ozbek-transfer-aciklamasi.html"
-      }
-    },
-    {
-      "id": "galatasaray-divan-aslantepe-transfer-butcesi",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Dursun Özbek: Aslantepe projesinin futbol transferleriyle bağlantısı bulunmuyor.",
-      "team": "Galatasaray",
-      "timestamp": "2026-07-29T17:12:00+03:00",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-divan-kurulu-dursun-ozbek-transfer-aciklamasi.html#aslantepe-projesi"
-      }
-    },
-    {
-      "id": "galatasaray-musiala-yalanlama",
+      "id": "besiktas-hradec-kralove-kura",
       "category": "official",
       "confidence": "confirmed",
-      "text": "Galatasaray cephesinden Musiala iddialarına yalanlama.",
-      "team": "Galatasaray",
-      "timestamp": "2026-07-26T23:44:00+03:00",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-musiala-iddialarina-yalanlama.html"
-      }
-    },
-    {
-      "id": "oulai-fiorentina-resmi",
-      "category": "official",
-      "confidence": "confirmed",
-      "text": "Trabzonspor, Christ Oulai'nin Fiorentina'ya transferini resmen açıkladı",
-      "team": "Trabzonspor",
-      "timestamp": "2026-07-19T22:03:00+03:00",
-      "source": {
-        "name": "Sporx",
-        "url": "https://www.sporx.com/trabzonspor-resmen-acikladi-oulai-SXHBQ1169626SXQ"
-      }
-    },
-    {
-      "id": "sanuc-rizespor-resmi",
-      "category": "official",
-      "confidence": "confirmed",
-      "text": "Tayyip Talha Sanuç, Çaykur Rizespor'a transfer oldu",
+      "text": "Beşiktaş’ın Avrupa Ligi 3. eleme turundaki rakibi Hradec Králové; ilk maç 6 Ağustos’ta Çekya’da.",
       "team": "Beşiktaş",
-      "timestamp": "2026-07-19T15:30:00+03:00",
+      "timestamp": "2026-08-03T10:15:00+03:00",
       "source": {
-        "name": "Beşiktaş JK",
-        "url": "https://www.bjk.com.tr/tr/haber/94750/tayyip-talha-sanuc-caykur-rizespora-transfer-oldu.html"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/besiktas-avrupa-ligi-kura-hradec-kralove.html"
       }
     },
     {
-      "id": "ugochukwu-mali-sartlar",
+      "id": "galatasaray-osimhen-premier-league-ilgisi",
+      "category": "transfer-rumour",
+      "confidence": "reported",
+      "text": "İngiliz basını Arsenal ve Tottenham’ın Osimhen için Galatasaray’ın kapısını çaldığını yazıyor; kulüp satışa kapalı.",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-03T10:00:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-osimhen-premier-league-ilgisi-iddialari.html"
+      }
+    },
+    {
+      "id": "besiktas-hucum-listesi-iddialari",
+      "category": "transfer-rumour",
+      "confidence": "rumour",
+      "text": "Beşiktaş’ın hücum listesinde Schick, Vlahovic ve Núñez iddiaları konuşuluyor.",
+      "team": "Beşiktaş",
+      "timestamp": "2026-08-03T09:45:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html"
+      }
+    },
+    {
+      "id": "super-lig-acilis-14-agustos",
       "category": "official",
       "confidence": "confirmed",
-      "text": "Galatasaray, Ugochukwu transferinin mali şartlarını açıkladı",
-      "team": "Galatasaray",
-      "timestamp": "2026-07-15T20:00:00+03:00",
+      "text": "Süper Lig’de 2026-27 sezonu 14 Ağustos Cuma günü Galatasaray-Çorum FK maçıyla başlıyor.",
+      "team": "Süper Lig",
+      "timestamp": "2026-08-03T09:30:00+03:00",
       "source": {
-        "name": "Galatasaray SK",
-        "url": "https://www.galatasaray.org/en/haber/football/official-statement-from-galatasaray-sk/60607"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/super-lig-2026-2027-sezonu-14-agustos-acilis.html"
       }
     },
     {
-      "id": "trabzonspor-avusturya-kamp-programi",
-      "category": "squad-update",
+      "id": "galatasaray-rennes-3-3-sonuc",
+      "category": "post-match",
       "confidence": "confirmed",
-      "text": "Trabzonspor'un Avusturya kampı hazırlık maçı programı belli oldu",
-      "team": "Trabzonspor",
-      "timestamp": "2026-07-21T16:00:00+03:00",
+      "text": "Galatasaray, sezon öncesi son provada Rennes ile 3-3 berabere kaldı.",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-02T23:30:00+03:00",
       "source": {
-        "name": "Trabzonspor",
-        "url": "https://www.trabzonspor.org.tr/tr/haberler/hazirlik-maci-programimiz-belli-oldu-3-21-07-2026"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-rennes-hazirlik-maci-3-3.html"
+      }
+    },
+    {
+      "id": "trabzonspor-udinese-1-0-sonuc",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "text": "Trabzonspor, son hazırlık maçında Udinese’yi Muçi’nin golüyle 1-0 mağlup etti.",
+      "team": "Trabzonspor",
+      "timestamp": "2026-08-02T21:30:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/trabzonspor-udinese-hazirlik-maci-1-0.html"
       }
     }
   ]

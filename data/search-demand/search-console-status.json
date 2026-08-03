@@ -1,0 +1,17 @@
+{
+  "configured": false,
+  "checkedAt": "2026-08-03T09:00:52.488Z",
+  "missing": [
+    "GSC_SITE_URL",
+    "GSC_CLIENT_EMAIL",
+    "GSC_PRIVATE_KEY veya GSC_PRIVATE_KEY_BASE64"
+  ],
+  "note": "Search Console verisi bağlı değil. Panel bu durumu açıkça gösterir; hacim tahmini ÜRETİLMEZ.",
+  "setup": [
+    "1) Google Cloud Console'da bir proje aç ve 'Google Search Console API'yi etkinleştir.",
+    "2) Bir servis hesabı oluştur ve JSON anahtar indir.",
+    "3) Search Console > Ayarlar > Kullanıcılar ve izinler bölümünde servis hesabı e-postasını 'Tam' yetkiyle ekle.",
+    "4) Ortam değişkenlerini tanımla: GSC_SITE_URL, GSC_CLIENT_EMAIL, GSC_PRIVATE_KEY (veya GSC_PRIVATE_KEY_BASE64).",
+    "5) `npm run demand:gsc` komutunu yeniden çalıştır."
+  ]
+}

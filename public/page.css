@@ -12512,6 +12512,20 @@ a.column-author:focus-visible {
   line-height: 1.7;
 }
 
+/* Yazı içi ara başlıklar ("## " öneki ile girilen bölümler). Grid boşluğuna
+   ek olarak üstte nefes payı bırakılır ki bölümler paragraf akışından
+   ayrışsın; mobilde de aynı oran korunur. */
+.column-body h2 {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-lg);
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.column-body h2:first-child {
+  margin-top: 0;
+}
+
 .column-back {
   padding-bottom: var(--sp-5);
 }

@@ -42,7 +42,8 @@ const CATEGORIES = Object.freeze({
   "lig-analizi": "Lig analizi",
   "oyuncu-portresi": "Oyuncu portresi",
   "futbol-gundemi": "Futbol gündemi",
-  "fenerbahce": "Fenerbahçe"
+  "fenerbahce": "Fenerbahçe",
+  "galatasaray": "Galatasaray"
 });
 
 /** Bölüm adı ve künye. Her yüzeyde aynı sözcük kullanılmalı. */
