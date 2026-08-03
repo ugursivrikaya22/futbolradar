@@ -302,6 +302,19 @@ function column(overrides = {}) {
   assert.match(detail, /class="column-standfirst">Kısa özet\./, "detay sayfasında özet görünmeli");
   assert.match(detail, /"@type":"Person","name":"Yazar Adı","url":/, "detay şeması yazarı bağlamalı");
   assert.match(detail, /src="\.\.\/site\.js" defer/, "detay sayfası ortak etkileşim betiğini yüklemeli");
+  assert.match(detail, /Facebook'ta Paylaş/, "detay sayfası Facebook paylaşım eylemi taşımalı");
+  assert.match(detail, /X'te Paylaş/, "detay sayfası X paylaşım eylemi taşımalı");
+  assert.match(detail, /https:\/\/twitter\.com\/intent\/tweet\?text=/, "X Web Intent kullanılmalı");
+  assert.match(detail, /FutbolRadar%20%7C%20futbolradar\.com/, "X metni FutbolRadar markasını taşımalı");
+  assert.match(detail, /https%3A%2F%2Fwww\.futbolradar\.com%2Fkose-yazilari%2Fornek-yazi/, "X kanonik adresi taşımalı");
+  assert.match(detail, /https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=https%3A%2F%2Fwww\.futbolradar\.com%2Fkose-yazilari%2Fornek-yazi/, "Facebook kanonik adresi taşımalı");
+  assert.match(detail, /property="og:title" content="Örnek yazı \| FutbolRadar"/, "OG başlığı markalı olmalı");
+  assert.match(detail, /property="og:description" content="Kısa özet\. — futbolradar\.com"/, "OG açıklaması markalı olmalı");
+  assert.match(detail, /property="og:image:width" content="1200"/, "OG görsel genişliği belirtilmeli");
+  assert.match(detail, /property="og:image:height" content="630"/, "OG görsel yüksekliği belirtilmeli");
+  assert.match(detail, /property="og:image:alt" content="Örnek yazı \| FutbolRadar"/, "OG görsel alternatif metni markalı olmalı");
+  assert.match(detail, /name="twitter:card" content="summary_large_image"/, "X kart türü belirtilmeli");
+  assert.match(detail, /name="twitter:title" content="Örnek yazı \| FutbolRadar"/, "X kart başlığı markalı olmalı");
 
   const authors = groupAuthors([presented]);
   assert.equal(authors.length, 1);
@@ -310,6 +323,20 @@ function column(overrides = {}) {
   assert.match(archive, /"@type":"ProfilePage"/, "yazar sayfasında ProfilePage şeması olmalı");
   assert.match(archive, /Örnek yazı/, "yazar sayfası yayımlanmış yazıyı listelemeli");
   assert.match(archive, /src="\.\.\/site\.js" defer/, "yazar sayfası ortak etkileşim betiğini yüklemeli");
+}
+
+// Paylaşım penceresi tek bir ortak istemci davranışıyla açılır; kart
+// etkileşimiyle çakışmaması ve yeni pencerenin açtığı sayfaya erişememesi gerekir.
+{
+  const card = columnCard(presentColumn(column()), "./", { showShareControls: true });
+  const siteScript = fs.readFileSync(path.join(root, "site.js"), "utf8");
+
+  assert.match(card, /class="column-card-share/, "liste kartında kompakt paylaşım simgeleri olmalı");
+  assert.match(card, /data-share-popup/, "kart simgeleri ortak popup davranışını kullanmalı");
+  assert.match(card, /rel="noopener noreferrer"/, "kart paylaşım bağlantıları korumalı olmalı");
+  assert.match(siteScript, /function setupSharePopups\(\)/, "ortak paylaşım popup kurulumu bulunmalı");
+  assert.match(siteScript, /event\.stopPropagation\(\)/, "paylaşım tıklaması kart gezinmesini tetiklememeli");
+  assert.match(siteScript, /noopener,noreferrer/, "popup noopener ve noreferrer korumasıyla açılmalı");
 }
 
 console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, yazar sayfaları, son üç yazı, temiz rotalar, elle yayın).");
