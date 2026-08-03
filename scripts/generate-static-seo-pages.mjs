@@ -2,7 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
-import { readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
+import { columnCard } from "./generate-column-pages.mjs";
+import { newsSlug, readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -111,6 +112,7 @@ const seoPages = [
   },
   {
     file: "trabzonspor-oyuncu-radari.html",
+    team: "Trabzonspor",
     title: "Trabzonspor Oyuncu Radarı | Kadro ve Performans | FutbolRadar",
     description: "Trabzonspor oyuncu radarı; kadro performansını AI rating, mevki, form ve oyuncu trendleriyle analiz eder.",
     h1: "Trabzonspor Oyuncu Radarı",
@@ -144,6 +146,7 @@ const seoPages = [
   },
   {
     file: "trabzonspor-form-durumu.html",
+    team: "Trabzonspor",
     title: "Trabzonspor Form Durumu | Momentum ve Son Maçlar | FutbolRadar",
     description: "Trabzonspor form durumu; son maç performansı, momentum puanı, gol eğilimi ve savunma dengesini gösterir.",
     h1: "Trabzonspor Form Durumu",
@@ -356,12 +359,44 @@ function landingExtraLinksHtml(page) {
       </section>`;
 }
 
-function teamNewsHtml(page) {
+function readTeamColumns(team, limit = 3) {
+  try {
+    const store = JSON.parse(fs.readFileSync(path.join(root, "data", "columns.json"), "utf8"));
+    const target = newsSlug(team);
+    const { columns } = publishedColumns(store);
+    return columns
+      .filter((column) =>
+        newsSlug(column.category) === target ||
+        newsSlug(column.categoryLabel) === target ||
+        column.tags.some((tag) => newsSlug(tag) === target))
+      .slice(0, limit);
+  } catch {
+    return [];
+  }
+}
+
+function teamColumnsHtml(page) {
   if (!page.team) return "";
-  return renderTeamNewsSection(readVerifiedTeamNews(root, page.team, 3), {
+  if (page.team !== "Trabzonspor") return "";
+  const columns = readTeamColumns(page.team, 3);
+  if (!columns.length) return "";
+
+  const sectionId = `${newsSlug(page.team)}-kose-yazilari`;
+  return `<section class="team-news-section team-columns-section" data-team-columns="${newsSlug(page.team)}" aria-labelledby="${sectionId}">
+    <div class="section-head"><div class="section-title"><span class="section-kicker">${page.team} yorumu</span><h2 id="${sectionId}">${page.team} köşe yazıları</h2><p>Takım gündemine dair FutbolRadar yorumları ve oyuncu gelişimi okumaları.</p></div><a class="section-link" href="./kose-yazilari.html">Tüm Köşe Yazıları</a></div>
+    <div class="column-grid">${columns.map((column) => columnCard(column, "./")).join("")}</div>
+  </section>`;
+}
+
+function teamContentHtml(page) {
+  if (!page.team) return "";
+  const columns = teamColumnsHtml(page);
+  if (page.team === "Trabzonspor") return columns;
+  const news = renderTeamNewsSection(readVerifiedTeamNews(root, page.team, 3), {
     team: page.team,
     base: "./"
   });
+  return `${news}${columns}`;
 }
 
 function pageHtml(page) {
@@ -432,7 +467,7 @@ ${nav}
       <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${page.landing}">
         <article class="data-empty" data-card="empty-state"><strong>Oyuncular yükleniyor</strong><span>Doğrulanmış oyuncu profilleri hazırlanıyor.</span></article>
       </section>${landingExtraLinksHtml(page)}` : `<section class="grid three">${cardsHtml(page.cards)}</section>`}
-      ${teamNewsHtml(page)}
+      ${teamContentHtml(page)}
       <section class="source-strip" aria-label="İlgili bağlantılar">
         <div><span>İlgili ekran</span><b><a href="./oyuncu-radari.html">Oyuncu Radarı</a></b></div>
         <div><span>Takım verisi</span><b><a href="./momentum.html">Momentum</a></b></div>

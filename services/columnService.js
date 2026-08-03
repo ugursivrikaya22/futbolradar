@@ -43,7 +43,8 @@ const CATEGORIES = Object.freeze({
   "oyuncu-portresi": "Oyuncu portresi",
   "futbol-gundemi": "Futbol gündemi",
   "fenerbahce": "Fenerbahçe",
-  "galatasaray": "Galatasaray"
+  "galatasaray": "Galatasaray",
+  "trabzonspor": "Trabzonspor"
 });
 
 /** Bölüm adı ve künye. Her yüzeyde aynı sözcük kullanılmalı. */

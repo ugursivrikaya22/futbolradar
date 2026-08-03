@@ -139,12 +139,12 @@ function column(overrides = {}) {
   assert.equal(authorPath("Yazar Adı"), "yazarlar/yazar-adi.html");
 }
 
-// ── 6. Yedi kategori ───────────────────────────────────────────────────────
+// ── 6. Kategori sözleşmesi ─────────────────────────────────────────────────
 {
   assert.deepEqual(
     Object.keys(CATEGORIES).sort(),
-    ["fenerbahce", "futbol-gundemi", "galatasaray", "lig-analizi", "mac-yorumu", "oyuncu-portresi", "transfer-yorumu"],
-    "kategori listesi beklenen yedi değeri taşımalı"
+    ["fenerbahce", "futbol-gundemi", "galatasaray", "lig-analizi", "mac-yorumu", "oyuncu-portresi", "trabzonspor", "transfer-yorumu"],
+    "kategori listesi beklenen değerleri taşımalı"
   );
 }
 
@@ -295,7 +295,7 @@ function column(overrides = {}) {
 
   const presented = presentColumn(column());
   const card = columnCard(presented);
-  assert.match(card, /Yazıyı oku/, "kartta açık bir detay eylemi olmalı");
+  assert.match(card, /Yazıyı Oku/, "kartta açık bir detay eylemi olmalı");
   assert.match(card, /yazarlar\/yazar-adi\.html/, "kart yazar sayfasına bağlanmalı");
 
   const detail = columnPageHtml(presented);

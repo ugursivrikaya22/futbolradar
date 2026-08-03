@@ -438,6 +438,9 @@ function checkJson() {
 }
 
 function pageUrl(page) {
+  if (columnArticlePages.includes(page)) {
+    return `https://www.futbolradar.com/${page.replace(/\.html$/i, "")}`;
+  }
   return `https://www.futbolradar.com/${page === "index.html" ? "" : page}`;
 }
 
@@ -531,7 +534,8 @@ function checkSeoAndLinks() {
       expect(html.includes('class="column-standfirst"'), `${page}: missing article excerpt`);
       expect(html.includes('class="column-author"'), `${page}: missing linked author`);
       expect(html.includes("yazarlar/"), `${page}: missing author archive route`);
-      expect(html.includes('"@type":"OpinionNewsArticle"'), `${page}: missing opinion article schema`);
+      expect(html.includes('"@type":"Article"'), `${page}: missing article schema`);
+      expect(html.includes('"additionalType":"https://schema.org/OpinionNewsArticle"'), `${page}: missing opinion article schema`);
     }
 
     if (columnAuthorPages.includes(page)) {

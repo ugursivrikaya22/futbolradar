@@ -13,8 +13,8 @@
  *
  * YORUM/HABER AYRIMI HER SAYFADA. Künye ve "Köşe Yazısı" rozeti servisten geliyor
  * (services/columnService.js), yani her yüzeyde aynı ve unutulması mümkün
- * değil. Yazı sayfaları ayrıca `noindex` DEĞİL ama JSON-LD'de `OpinionNewsArticle`
- * olarak işaretleniyor: makine tarafında da haber değil yorum.
+ * değil. Yazı sayfaları ayrıca `noindex` DEĞİL ama JSON-LD'de `Article`
+ * olarak işaretleniyor; yorum niteliği `additionalType` ile korunuyor.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -61,6 +61,14 @@ function writeGeneratedFile(file, contents) {
   }
 }
 
+function cleanPublicPath(filePath) {
+  return String(filePath || "").replace(/\.html$/i, "");
+}
+
+function publicUrl(filePath) {
+  return `${DOMAIN}/${cleanPublicPath(filePath)}`;
+}
+
 function readStore() {
   if (!fs.existsSync(STORE)) return { columns: [] };
   try {
@@ -96,7 +104,7 @@ export function columnCard(column, base = "./") {
         <time datetime="${escapeHtml(column.date)}">${escapeHtml(formatDate(column.date))}</time>
       </div>
       ${tags ? `<div class="column-tags">${tags}</div>` : ""}
-      <div class="column-card-actions"><a class="column-card-detail" href="${escapeHtml(base + column.path)}">Yazıyı oku</a></div>
+      <div class="column-card-actions"><a class="column-card-detail" href="${escapeHtml(base + column.path)}">Yazıyı Oku</a></div>
     </article>`;
 }
 
@@ -137,7 +145,7 @@ export function groupAuthors(columns) {
 
 /** Tek yazı sayfası. */
 export function columnPageHtml(column) {
-  const url = `${DOMAIN}/${column.path}`;
+  const url = publicUrl(column.path);
   const base = "../";
   // "## " önekli satır ara başlıktır: yazının kendi bölüm başlıkları
   // (ör. "Olumlu Yanlar") paragraf değil <h2> olarak basılır.
@@ -149,10 +157,11 @@ export function columnPageHtml(column) {
     return `<p>${escapeHtml(line)}</p>`;
   }).join("\n        ");
 
-  // OpinionNewsArticle: makine tarafında da "haber" değil "yorum".
+  // Article ana tipi SEO sözleşmesini taşır; additionalType yorum niteliğini korur.
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "OpinionNewsArticle",
+    "@type": "Article",
+    additionalType: "https://schema.org/OpinionNewsArticle",
     headline: column.title,
     datePublished: column.date,
     author: { "@type": "Person", name: column.author, url: `${DOMAIN}/${column.authorPath}` },
@@ -322,7 +331,7 @@ function writeBoth(relativePath, html) {
 function sitemapEntry(column) {
   const lastmod = String(column.date || "").slice(0, 10) || "2026-08-02";
   return `  <url>
-    <loc>${DOMAIN}/${column.path}</loc>
+    <loc>${publicUrl(column.path)}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.64</priority>
@@ -334,7 +343,7 @@ function updateSitemap(columns) {
   for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
     if (!fs.existsSync(sitemapPath)) continue;
     let xml = fs.readFileSync(sitemapPath, "utf8");
-    xml = xml.replace(/  <url>\n    <loc>https:\/\/www\.futbolradar\.com\/kose-yazilari\/[^<]+\.html<\/loc>[\s\S]*?  <\/url>\n?/g, "");
+    xml = xml.replace(/  <url>\n    <loc>https:\/\/www\.futbolradar\.com\/kose-yazilari\/[^<]+(?:\.html)?<\/loc>[\s\S]*?  <\/url>\n?/g, "");
     xml = xml.replace("</urlset>", `${entries.join("\n")}\n</urlset>`);
     writeGeneratedFile(sitemapPath, xml);
   }
