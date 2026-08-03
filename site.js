@@ -384,6 +384,38 @@
     });
   }
 
+  function setupSharePopups() {
+    document.addEventListener("click", function (event) {
+      var link = event.target.closest ? event.target.closest("[data-share-popup]") : null;
+
+      if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      // Kartın kendi etkileşimlerine sızmadan, paylaşım penceresini kullanıcı
+      // tıklamasıyla ortada aç. Bağlantıdaki target/rel, JavaScript kapalıyken
+      // aynı güvenli davranışın yedeğidir.
+      event.preventDefault();
+      event.stopPropagation();
+
+      var width = Math.min(640, Math.max(320, window.outerWidth - 32));
+      var height = Math.min(680, Math.max(460, window.outerHeight - 48));
+      var left = Math.max(0, window.screenX + Math.round((window.outerWidth - width) / 2));
+      var top = Math.max(0, window.screenY + Math.round((window.outerHeight - height) / 2));
+      var platform = link.getAttribute("data-share-platform") || "share";
+      var popup = window.open(
+        link.href,
+        "futbolradar-" + platform + "-share",
+        "popup=yes,width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + ",noopener,noreferrer"
+      );
+
+      if (popup) {
+        popup.opener = null;
+        popup.focus();
+      }
+    });
+  }
+
   document.querySelectorAll(".nav").forEach(setupNav);
   document.querySelectorAll(".site-search").forEach(setupSearch);
 
@@ -520,6 +552,7 @@
   markCurrentPage();
   setupStickyHeader();
   setupSliders();
+  setupSharePopups();
 
   // app.js istemci tarafında şerit bastığında yeniden bağlanır.
   document.addEventListener("futbolradar:rendered", setupSliders);

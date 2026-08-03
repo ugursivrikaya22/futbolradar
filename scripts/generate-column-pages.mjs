@@ -37,6 +37,7 @@ const STORE = path.join(root, "data", "columns.json");
 const OUT_DIR = path.join(root, "kose-yazilari");
 const AUTHOR_DIR = path.join(root, "yazarlar");
 const DOMAIN = "https://www.futbolradar.com";
+const SHARE_IMAGE = `${DOMAIN}/assets/og-image.svg`;
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
 
 function escapeHtml(value) {
@@ -69,6 +70,36 @@ function publicUrl(filePath) {
   return `${DOMAIN}/${cleanPublicPath(filePath)}`;
 }
 
+function shareUrls(column) {
+  const url = publicUrl(column.path);
+  const xText = `${column.title} — FutbolRadar | futbolradar.com`;
+
+  return {
+    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+    x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(xText)}&url=${encodeURIComponent(url)}`
+  };
+}
+
+function shareLinks(column, { compact = false } = {}) {
+  const urls = shareUrls(column);
+  const title = escapeHtml(column.title);
+
+  if (compact) {
+    return `<div class="column-card-share-actions" aria-label="${title} yazısını paylaş">
+          <a class="column-card-share column-card-share-facebook" href="${escapeHtml(urls.facebook)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="facebook" aria-label="${title} yazısını Facebook'ta paylaş" title="Facebook'ta paylaş"><span aria-hidden="true">f</span></a>
+          <a class="column-card-share column-card-share-x" href="${escapeHtml(urls.x)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="x" aria-label="${title} yazısını X'te paylaş" title="X'te paylaş"><span aria-hidden="true">X</span></a>
+        </div>`;
+  }
+
+  return `<section class="column-share" aria-label="Yazıyı paylaş">
+          <span class="column-share-label">Bu yazıyı paylaş</span>
+          <div class="column-share-actions">
+            <a class="column-share-button column-share-facebook" href="${escapeHtml(urls.facebook)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="facebook" aria-label="${title} yazısını Facebook'ta paylaş"><span class="column-share-symbol" aria-hidden="true">f</span><span>Facebook'ta Paylaş</span></a>
+            <a class="column-share-button column-share-x" href="${escapeHtml(urls.x)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="x" aria-label="${title} yazısını X'te paylaş"><span class="column-share-symbol" aria-hidden="true">X</span><span>X'te Paylaş</span></a>
+          </div>
+        </section>`;
+}
+
 function readStore() {
   if (!fs.existsSync(STORE)) return { columns: [] };
   try {
@@ -88,9 +119,15 @@ function formatDate(value) {
 }
 
 /** Kart: liste sayfasında ve ana sayfada aynı işaretleme. */
-export function columnCard(column, base = "./") {
+export function columnCard(column, base = "./", { showShareControls = false } = {}) {
   const tags = column.tags.slice(0, 3)
     .map((tag) => `<span class="column-tag">${escapeHtml(tag)}</span>`).join("");
+  const actions = showShareControls
+    ? `<div class="column-card-actions">
+        <a class="column-card-detail" href="${escapeHtml(base + column.path)}">Yazıyı Oku</a>
+        ${shareLinks(column, { compact: true })}
+      </div>`
+    : `<div class="column-card-actions"><a class="column-card-detail" href="${escapeHtml(base + column.path)}">Yazıyı Oku</a></div>`;
 
   return `<article class="column-card" data-card="column">
       <div class="column-card-head">
@@ -104,7 +141,7 @@ export function columnCard(column, base = "./") {
         <time datetime="${escapeHtml(column.date)}">${escapeHtml(formatDate(column.date))}</time>
       </div>
       ${tags ? `<div class="column-tags">${tags}</div>` : ""}
-      <div class="column-card-actions"><a class="column-card-detail" href="${escapeHtml(base + column.path)}">Yazıyı Oku</a></div>
+      ${actions}
     </article>`;
 }
 
@@ -117,7 +154,7 @@ function listingHtml(columns) {
     </article>`;
   }
 
-  return columns.map((column) => columnCard(column, "./")).join("");
+  return columns.map((column) => columnCard(column, "./", { showShareControls: true })).join("");
 }
 
 /** Ana sayfadaki son üç yazı. Yazı yoksa BOŞ DİZE — bölüm gizlenir. */
@@ -147,6 +184,7 @@ export function groupAuthors(columns) {
 export function columnPageHtml(column) {
   const url = publicUrl(column.path);
   const base = "../";
+  const shareDescription = `${column.excerpt || column.title} — futbolradar.com`;
   // "## " önekli satır ara başlıktır: yazının kendi bölüm başlıkları
   // (ör. "Olumlu Yanlar") paragraf değil <h2> olarak basılır.
   const body = column.body.map((paragraph) => {
@@ -174,6 +212,7 @@ export function columnPageHtml(column) {
     articleSection: column.categoryLabel,
     keywords: column.tags.join(", "),
     mainEntityOfPage: url,
+    image: SHARE_IMAGE,
     inLanguage: "tr-TR"
   };
 
@@ -183,7 +222,7 @@ export function columnPageHtml(column) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${escapeHtml(`${column.title} | FutbolRadar`)}</title>
-    <meta name="description" content="${escapeHtml(column.excerpt || `${column.author} yazdı: ${column.title}`)}" />
+    <meta name="description" content="${escapeHtml(shareDescription)}" />
     <link rel="canonical" href="${escapeHtml(url)}" />
     <meta name="robots" content="index,follow" />
     <meta name="theme-color" content="#0b8f5a" />
@@ -191,13 +230,16 @@ export function columnPageHtml(column) {
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:url" content="${escapeHtml(url)}" />
-    <meta property="og:title" content="${escapeHtml(column.title)}" />
-    <meta property="og:description" content="${escapeHtml(column.excerpt || column.title)}" />
-    <meta property="og:image" content="${DOMAIN}/assets/og-image.svg" />
+    <meta property="og:title" content="${escapeHtml(`${column.title} | FutbolRadar`)}" />
+    <meta property="og:description" content="${escapeHtml(shareDescription)}" />
+    <meta property="og:image" content="${SHARE_IMAGE}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="${escapeHtml(`${column.title} | FutbolRadar`)}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${escapeHtml(column.title)}" />
-    <meta name="twitter:description" content="${escapeHtml(column.excerpt || column.title)}" />
-    <meta name="twitter:image" content="${DOMAIN}/assets/og-image.svg" />
+    <meta name="twitter:title" content="${escapeHtml(`${column.title} | FutbolRadar`)}" />
+    <meta name="twitter:description" content="${escapeHtml(shareDescription)}" />
+    <meta name="twitter:image" content="${SHARE_IMAGE}" />
     <link rel="icon" href="${base}favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="${base}site.webmanifest" />
     <link rel="stylesheet" href="${base}page.css" />
@@ -222,6 +264,7 @@ export function columnPageHtml(column) {
         </header>
 
         <p class="column-standfirst">${escapeHtml(column.excerpt)}</p>
+        ${shareLinks(column)}
         <p class="column-disclaimer">${escapeHtml(column.disclaimer)}</p>
 
         <div class="column-body">

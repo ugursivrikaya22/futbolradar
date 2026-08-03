@@ -146,6 +146,7 @@ const SHARE_HOSTS = Object.freeze([
   "wa.me",
   "t.me",
   "telegram.me",
+  "facebook.com/sharer",
   // "X'te paylaş" düğmesi. Daha önce kendi hesap listesindeki çıplak
   // "twitter.com" girdisi sayesinde KAZAYLA geçiyordu; hesap kontrolü tam
   // adrese bağlanınca ortaya çıktı. Doğru yeri burası: paylaşım hedefi bir
