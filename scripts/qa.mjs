@@ -127,7 +127,10 @@ const appFeatureMarkers = [
   "renderDailyHeadlines",
   "visibleQuickStats",
   "applyEmptyHide",
-  "initShareBlocks"
+  "initShareBlocks",
+  "renderMatchListWindow",
+  "MATCH_LIST_INITIAL",
+  "initMatchListToggles"
 ];
 const cssFeatureMarkers = [
   "scouting-summary-grid",
@@ -211,7 +214,14 @@ const cssFeatureMarkers = [
   "brief-command-card",
   "stats-summary",
   "stats-panel-grid",
-  "stats-coverage-grid"
+  "stats-coverage-grid",
+  "match-more",
+  "match-more-row",
+  "archive-match-row",
+  "archive-table",
+  "archive-squad-list",
+  "archive-stat",
+  "archive-stat-grid"
 ];
 const failures = [];
 

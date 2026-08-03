@@ -472,7 +472,7 @@ const items = [
     publishWindow: "gelişme olursa",
     linkTargets: ["haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html", "transfer-radari.html", "besiktas-form-durumu.html"],
     evidence: [
-      SERP("https://www.duhuliye.com/futbol/besiktasin-forvet-plani-netlesti-iste-4-aday-13548", "Tavolieri kaynaklı kiralık iddiası Beşiktaş basınında dolaşımda.")
+      SERP("https://www.sporx.com/besiktas-ta-darwin-nunez-gelismesi-SXHBQ1171174SXQ", "Tavolieri kaynaklı kiralık iddiası Sporx üzerinden aktarıldı.")
     ],
     dims: { demand: 55, trend: 70, turkey: 90, fit: 70, comp: 50, time: 70, links: 70, evergreen: 15 }
   }),

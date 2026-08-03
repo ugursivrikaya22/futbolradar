@@ -1,5 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
+// Dış kaynak künyesi `nofollow` taşır; kural services/sourceLinks.js.
+const { SOURCE_LINK_REL } = createRequire(import.meta.url)("../services/sourceLinks.js");
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 
@@ -54,7 +57,7 @@ function transferCards(records) {
       <div><span class="card-kicker">${escapeHtml(transfer.position || "Oyuncu")}</span><h3>${escapeHtml(transfer.playerName)}</h3></div>
       <div class="trend-transfer-route"><span>${escapeHtml(transfer.fromTeam)}</span><b aria-label="takım değişikliği">→</b><span>${escapeHtml(transfer.toTeam)}</span></div>
       <dl class="trend-mini-stats"><div><dt>Transfer tipi</dt><dd>${escapeHtml(transfer.type || "Açıklanmadı")}</dd></div><div><dt>Bedel</dt><dd>${escapeHtml(transfer.fee || "Açıklanmadı")}</dd></div></dl>
-      <div class="trend-card-actions">${playerLink(transfer)}<a class="detail-link ghost" href="./transfer-radari.html">Transfer Radar</a>${transfer.sourceUrl ? `<a class="detail-link ghost" href="${escapeHtml(transfer.sourceUrl)}" target="_blank" rel="noopener noreferrer">Kaynak</a>` : ""}</div>
+      <div class="trend-card-actions">${playerLink(transfer)}<a class="detail-link ghost" href="./transfer-radari.html">Transfer Radar</a>${transfer.sourceUrl ? `<a class="detail-link ghost" href="${escapeHtml(transfer.sourceUrl)}" target="_blank" rel="${SOURCE_LINK_REL}">Kaynak</a>` : ""}</div>
     </article>`;
   }).join("");
 }
@@ -153,7 +156,7 @@ const pages = [
       { label: "Değerlendirme", value: "5 sezon", note: "Ülke sırası beş sezonluk toplamla oluşur." },
       { label: "Güncelleme", value: "Tur sonrasında", note: "UEFA sıralaması tamamlanan turlardan sonra yenilenir." }
     ],
-    body: () => `${section("Ülke puanı neyi belirler?", "Sıralama, ülkelerin sonraki sezonlarda Avrupa kupalarına kaç takımla ve hangi aşamadan katılacağını etkiler.", `<div class="trend-explainer-grid"><article><span>1</span><h3>Maç puanı oluşur</h3><p>Galibiyet, beraberlik ve aşama bonusları kulüp hanesine eklenir.</p></article><article><span>2</span><h3>Temsilci sayısına bölünür</h3><p>Bir ülkenin sezon toplamı, o sezon yarışan kulüp sayısıyla oranlanır.</p></article><article><span>3</span><h3>Beş sezon birleşir</h3><p>Son beş sezonun katsayıları ülke sırasını oluşturur.</p></article></div>`, "Puan sistemi")}${section("Türkiye için maç etkisi", "Ön eleme turlarındaki her sonuç sezon katsayısına katkı verir; güncel sıra resmî UEFA tablosu üzerinden doğrulanmalıdır.", `<div class="trend-note"><strong>Kesin sıra uydurulmaz.</strong><p>UEFA tablosu tamamlanan turların ardından değişebildiği için FutbolRadar doğrulanmamış anlık sıra yayımlamaz. Temsilcilerin maçlarını ve oluşan etkileri analiz sayfalarında izler.</p><a class="detail-link" href="https://www.uefa.com/nationalassociations/uefarankings/?year=2026" target="_blank" rel="noopener noreferrer">Resmî UEFA sıralamasını aç</a></div>`, "Doğruluk notu")}`,
+    body: () => `${section("Ülke puanı neyi belirler?", "Sıralama, ülkelerin sonraki sezonlarda Avrupa kupalarına kaç takımla ve hangi aşamadan katılacağını etkiler.", `<div class="trend-explainer-grid"><article><span>1</span><h3>Maç puanı oluşur</h3><p>Galibiyet, beraberlik ve aşama bonusları kulüp hanesine eklenir.</p></article><article><span>2</span><h3>Temsilci sayısına bölünür</h3><p>Bir ülkenin sezon toplamı, o sezon yarışan kulüp sayısıyla oranlanır.</p></article><article><span>3</span><h3>Beş sezon birleşir</h3><p>Son beş sezonun katsayıları ülke sırasını oluşturur.</p></article></div>`, "Puan sistemi")}${section("Türkiye için maç etkisi", "Ön eleme turlarındaki her sonuç sezon katsayısına katkı verir; güncel sıra resmî UEFA tablosu üzerinden doğrulanmalıdır.", `<div class="trend-note"><strong>Kesin sıra uydurulmaz.</strong><p>UEFA tablosu tamamlanan turların ardından değişebildiği için FutbolRadar doğrulanmamış anlık sıra yayımlamaz. Temsilcilerin maçlarını ve oluşan etkileri analiz sayfalarında izler.</p><a class="detail-link" href="https://www.uefa.com/nationalassociations/uefarankings/?year=2026" target="_blank" rel="nofollow noopener noreferrer">Resmî UEFA sıralamasını aç</a></div>`, "Doğruluk notu")}`,
     links: [
       { href: "./sampiyonlar-ligi-on-eleme-maclari.html", kicker: "UEFA", title: "Şampiyonlar Ligi ön eleme maçları", text: "Eleme takvimini ve temsilci maçlarını incele." },
       { href: "./fenerbahce-avrupa-maclari.html", kicker: "Temsilci", title: "Fenerbahçe Avrupa maçları", text: "Fenerbahçe'nin sonuç ve fikstür akışını aç." },

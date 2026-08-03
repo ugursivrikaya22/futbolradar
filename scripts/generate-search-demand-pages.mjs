@@ -23,6 +23,14 @@ import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/la
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { validateContentPlanEntry, HIGH_PRIORITY_THRESHOLD } = require("../services/searchDemand.js");
+// Dış kaynak künyesi `nofollow` taşır: alıntı bir atıftır, tavsiye değil.
+// Kural tek yerde (services/sourceLinks.js) duruyor, burada tekrarlanmıyor.
+const { SOURCE_LINK_REL, isSiteHost, hostOf } = require("../services/sourceLinks.js");
+
+/** İç bağlantı sade; dışarı çıkan künye nofollow ile ve yeni sekmede. */
+function sourceAnchorAttrs(url) {
+  return isSiteHost(hostOf(url)) ? "" : ` target="_blank" rel="${SOURCE_LINK_REL}"`;
+}
 
 const domain = "https://www.futbolradar.com";
 const plan = JSON.parse(fs.readFileSync(path.join(root, "data", "search-demand", "content-plan.json"), "utf8"));
@@ -128,7 +136,7 @@ function claimsTable(page) {
   const rows = (page.claims || []).map((claim) => {
     const conf = CONFIDENCE_LABELS[claim.confidence] || CONFIDENCE_LABELS.rumour;
     const source = claim.sourceUrl
-      ? `<a href="${escapeHtml(claim.sourceUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(claim.sourceName || "Kaynak")}</a>`
+      ? `<a href="${escapeHtml(claim.sourceUrl)}"${sourceAnchorAttrs(claim.sourceUrl)}>${escapeHtml(claim.sourceName || "Kaynak")}</a>`
       : escapeHtml(claim.sourceName || "");
     return `<article class="card demand-claim" data-confidence="${escapeHtml(claim.confidence)}">
           <div class="news-card-meta"><span class="${conf.tag}">${escapeHtml(conf.label)}</span><time datetime="${escapeHtml(claim.date || "")}">${escapeHtml(claim.date || "")}</time></div>
@@ -159,7 +167,7 @@ function faqSection(page) {
 function sourcesSection(page) {
   const sources = Array.isArray(page.sources) ? page.sources : [];
   if (!sources.length) return "";
-  return `<section class="article-sources" aria-labelledby="sources-title"><h2 id="sources-title">Kaynaklar</h2><ul>${sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.name)}</a></li>`).join("")}</ul></section>`;
+  return `<section class="article-sources" aria-labelledby="sources-title"><h2 id="sources-title">Kaynaklar</h2><ul>${sources.map((source) => `<li><a href="${escapeHtml(source.url)}"${sourceAnchorAttrs(source.url)}>${escapeHtml(source.name)}</a></li>`).join("")}</ul></section>`;
 }
 
 function relatedLinks(page) {

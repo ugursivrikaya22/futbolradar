@@ -3503,6 +3503,157 @@
     return renderFeaturedCarousel(selections, activeIndex) + quickStats;
   }
 
+  // match-list-window:start
+  /**
+   * BAŞLANGIÇTA GÖRÜNEN MAÇ SAYISI.
+   *
+   * Bu sayı burada VE services/matchListWindow.js içinde geçiyor; ikisi
+   * ayrışırsa statik yedek ile JavaScript'in bastığı liste farklı uzunlukta
+   * olur ve sayfa yüklenirken zıplar. Ayrışmayı scripts/test-match-list-window.mjs
+   * kapatıyor — sayıyı burada değiştirirsen orayı da değiştirmen gerekir.
+   */
+  var MATCH_LIST_INITIAL = 12;
+
+  /**
+   * Hangi listeler açılmış durumda?
+   *
+   * Genişletme DOM'da tutulamaz: canlı yoklama `setContent` ile innerHTML'i
+   * baştan yazıyor ve kullanıcının açtığı liste beş dakikada bir kendiliğinden
+   * kapanırdı. Durum bu yüzden çizimden bağımsız bir yerde duruyor ve her
+   * çizimde yeniden okunuyor.
+   */
+  var expandedMatchLists = Object.create(null);
+
+  /**
+   * Fazlalık kartı gizli olarak işaretler.
+   *
+   * Kartlar SİLİNMİYOR, gizleniyor: buton basıldığında yeniden çizim
+   * gerekmesin diye. Yeniden çizim, o sırada gelen canlı skorla yarışır ve
+   * kullanıcının açtığı liste bir anlığına kapanıp tekrar açılırdı.
+   *
+   * `hidden` özniteliği bilinçli: erişilebilirlik ağacından da düşer, ekran
+   * okuyucu gizli kartları okumaz.
+   */
+  function markMatchOverflow(html) {
+    return String(html).replace(/^(\s*<[a-z0-9-]+)/i, '$1 hidden data-match-overflow');
+  }
+
+  /**
+   * "Daha Fazla Göster" satırı.
+   *
+   * Gizlenecek kart yoksa BOŞ DİZE döner — buton hiç basılmaz. Ölü bir buton
+   * arkasında içerik olduğunu vaat edip boş açılır; kullanıcı bunu bir hata
+   * sanır.
+   */
+  function matchMoreRowHtml(key, hiddenCount, expanded) {
+    if (!hiddenCount && !expanded) {
+      return "";
+    }
+
+    var moreLabel = "Daha Fazla Göster" + (hiddenCount ? " (+" + hiddenCount + " maç)" : "");
+
+    return (
+      '<div class="match-more-row">' +
+      '<button class="match-more" type="button" data-match-more="' + escapeHtml(key) + '"' +
+      ' aria-expanded="' + (expanded ? "true" : "false") + '">' +
+      '<span class="match-more-label" data-match-more-label="collapsed"' + (expanded ? " hidden" : "") + ">" +
+      escapeHtml(moreLabel) + "</span>" +
+      '<span class="match-more-label" data-match-more-label="expanded"' + (expanded ? "" : " hidden") + ">" +
+      "Daha Az Göster</span>" +
+      "</button></div>"
+    );
+  }
+
+  /**
+   * Maç listesini pencereler: ilk MATCH_LIST_INITIAL kart görünür, gerisi
+   * gizli, altında buton.
+   *
+   * @param {Array} matches Sıralanmış maç listesi.
+   * @param {Function} cardRenderer Tek kartın işaretlemesini üreten fonksiyon.
+   * @param {string} key Liste kimliği; genişletme durumu bu anahtarla saklanır.
+   * @param {Function} [groupRenderer] Verilirse görünür/gizli ayrımı yerine
+   *   TÜM liste bu fonksiyona verilir (lig bloklarında olduğu gibi) ve
+   *   fazlalık kartlar işaretleme üzerinden gizlenir.
+   */
+  function renderMatchListWindow(matches, cardRenderer, key, groupRenderer) {
+    var list = Array.isArray(matches) ? matches : [];
+    var expanded = expandedMatchLists[key] === true;
+    var hiddenCount = expanded ? 0 : Math.max(0, list.length - MATCH_LIST_INITIAL);
+
+    // Fazlalık kartın işaretlemesi kartı üreten fonksiyonun İÇİNDE damgalanır;
+    // böylece lig bloklarında da (kart sarmalayıcının derinliğinden bağımsız)
+    // doğru öğe gizlenir.
+    var index = 0;
+    var stamped = function (match) {
+      var html = cardRenderer(match);
+      if (!expanded && index >= MATCH_LIST_INITIAL) {
+        html = markMatchOverflow(html);
+      }
+      index += 1;
+      return html;
+    };
+
+    var body = groupRenderer
+      ? groupRenderer(list, stamped)
+      : list.map(stamped).join("");
+
+    return body + matchMoreRowHtml(key, hiddenCount, expanded);
+  }
+
+  /**
+   * Butonun kapsamı: kartların bulunduğu API hedefi. Aynı sayfada birden çok
+   * liste olabilir, bu yüzden `document` geneline değil bu kapsama bakılır.
+   */
+  function matchListScope(button) {
+    return (button.closest && button.closest("[data-api-target]")) || document;
+  }
+
+  function toggleMatchListExpansion(button, expanded) {
+    var scope = matchListScope(button);
+    var overflow = scope.querySelectorAll("[data-match-overflow]");
+
+    for (var index = 0; index < overflow.length; index += 1) {
+      if (expanded) {
+        overflow[index].removeAttribute("hidden");
+      } else {
+        overflow[index].setAttribute("hidden", "");
+      }
+    }
+
+    button.setAttribute("aria-expanded", expanded ? "true" : "false");
+
+    var labels = button.querySelectorAll("[data-match-more-label]");
+    for (var labelIndex = 0; labelIndex < labels.length; labelIndex += 1) {
+      var label = labels[labelIndex];
+      var isExpandedLabel = label.getAttribute("data-match-more-label") === "expanded";
+      if (isExpandedLabel === expanded) {
+        label.removeAttribute("hidden");
+      } else {
+        label.setAttribute("hidden", "");
+      }
+    }
+  }
+
+  function initMatchListToggles() {
+    // Olay yetkilendirme: butonlar her çizimde yeniden üretiliyor, tek tek
+    // bağlanan bir dinleyici ilk canlı yoklamada kopardı.
+    document.addEventListener("click", function (event) {
+      var button = event.target && event.target.closest
+        ? event.target.closest("[data-match-more]")
+        : null;
+      if (!button) {
+        return;
+      }
+
+      event.preventDefault();
+      var key = button.getAttribute("data-match-more") || "";
+      var expanded = expandedMatchLists[key] !== true;
+      expandedMatchLists[key] = expanded;
+      toggleMatchListExpansion(button, expanded);
+    });
+  }
+  // match-list-window:end
+
   function renderMatchesByLeague(matches, renderer) {
     var groups = new Map();
     matches.forEach(function (match) {
@@ -3598,7 +3749,7 @@
       return "";
     }
 
-    return matches.slice().sort(function (left, right) {
+    var ordered = matches.slice().sort(function (left, right) {
       function rank(match) {
         var status = String(match.status || match.providerStatus || "").toUpperCase();
         if (isLiveMatch(match)) return 0;
@@ -3607,7 +3758,11 @@
       }
 
       return rank(left) - rank(right) || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
-    }).slice(0, 8).map(renderFixtureCard).join("");
+    });
+
+    // Sekiz kart, yoğun bir Avrupa gecesinde günün yarısını gizliyordu. On iki
+    // görünür, gerisi butonun arkasında; on ikiden azsa buton hiç basılmaz.
+    return renderMatchListWindow(ordered, renderFixtureCard, "today-matches");
   }
 
   function renderMatchesPageSection(matches, analysesIndex) {
@@ -3621,9 +3776,16 @@
       );
     }
 
-    return renderMatchesByLeague(filteredMatches, function (match) {
-      return renderMatchPageCard(match, analysesIndex);
-    });
+    // Lig blokları korunuyor; pencere blokların İÇİNDEKİ kart sırasına göre
+    // uygulanıyor, böylece toplam görünen kart sayısı yine on iki oluyor.
+    return renderMatchListWindow(
+      filteredMatches,
+      function (match) {
+        return renderMatchPageCard(match, analysesIndex);
+      },
+      "matches-page",
+      renderMatchesByLeague
+    );
   }
 
   function upcomingMatchesAfter(matches, fromDate, limit) {
@@ -3931,7 +4093,7 @@
     var liveMatches = list.filter(isLiveMatch);
 
     if (liveMatches.length) {
-      return renderMatchesByLeague(liveMatches, renderLiveMatch);
+      return renderMatchListWindow(liveMatches, renderLiveMatch, "live-score", renderMatchesByLeague);
     }
 
     if (!list.length) {
@@ -3961,7 +4123,9 @@
       "<span>" + escapeHtml(formatMatchDate(todayInIstanbul())) + "</span>" +
       "<strong>" + escapeHtml(heading) + "</strong>" +
       "</div>" +
-      '<div class="matches-grid">' + ordered.map(renderFixtureCard).join("") + "</div>" +
+      '<div class="matches-grid">' +
+      renderMatchListWindow(ordered, renderFixtureCard, "live-score-daily") +
+      "</div>" +
       '<div class="match-empty-actions">' +
       '<a class="detail-link" href="./bugunun-maclari.html">Maç merkezini aç</a>' +
       '<a class="detail-link ghost" href="./super-lig-fikstur.html">Sezon fikstürüne git</a>' +
@@ -5537,7 +5701,10 @@
     var published = formatProfileDate(item && item.publishedAt) || "Tarih açıklanmadı";
     var external = /^https?:\/\//i.test(sourceUrl);
     var action = sourceUrl
-      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '"' + (external ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' + (external ? "Resmî açıklamayı aç" : "Haberi oku") + '</a>'
+      // İç bağlantı sade açılır; DIŞARI çıkan kaynak künyesi yeni sekmede ve
+      // nofollow ile açılır (services/sourceLinks.js#SOURCE_LINK_REL ile aynı
+      // kural): künye bir atıftır, oy değil.
+      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '"' + (external ? ' target="_blank" rel="nofollow noopener noreferrer"' : '') + '>' + (external ? "Resmî açıklamayı aç" : "Haberi oku") + '</a>'
       : "";
 
     return (
@@ -6512,7 +6679,7 @@
   function renderTransferFeedCard(record) {
     var sourceUrl = safeImageUrl(record && record.sourceUrl);
     var sourceAction = sourceUrl
-      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a>'
+      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="nofollow noopener noreferrer">Transfer detayını aç</a>'
       : "";
     return (
       '<article class="transfer-radar-card" data-card="transfer-record" data-transfer="' + escapeHtml(record.id || record.playerId) + '">' +
@@ -6563,7 +6730,7 @@
       '<div class="home-transfer-player"><div><span>Son kesinleşen transfer</span><h3>' + escapeHtml(leader.playerName) + '</h3><p>' + escapeHtml(leader.type || "Transfer") + ' · ' + escapeHtml(formatProfileDate(leader.date) || leader.season) + '</p></div></div>' +
       '<div class="home-transfer-route"><b>' + escapeHtml(leader.fromTeam) + '</b><em>→</em><b>' + escapeHtml(leader.toTeam) + '</b></div>' +
       '<div class="home-transfer-actions">' +
-      (sourceUrl ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a>' : "") +
+      (sourceUrl ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="nofollow noopener noreferrer">Transfer detayını aç</a>' : "") +
       '<a class="detail-link ghost" href="./transfer-radari.html">Tüm transferler</a></div>' +
       '</article>' +
       '<aside class="home-transfer-side" aria-label="Son transferler"><div class="home-transfer-metrics">' +
@@ -8214,7 +8381,7 @@
       // Kaynak her satırda görünür: doğrulanabilir olmayan bir hareket
       // zaten yayımlanmıyor, yayımlanan da izlenebilir olmalı.
       '<a class="td-transfer-source" href="' + escapeHtml(transfer.sourceUrl) +
-      '" target="_blank" rel="noopener noreferrer">' +
+      '" target="_blank" rel="nofollow noopener noreferrer">' +
       escapeHtml(displayValue(transfer.sourceName) || "Kaynak") + "</a>" +
       "</div>" +
       "</li>"
@@ -9279,7 +9446,7 @@
       "<span>Kaynak" + (detail.sourceName ? ": " + escapeHtml(detail.sourceName) : "") + "</span>" +
       (urls.length
         ? '<span class="md-source-links">' + urls.slice(0, 3).map(function (url, i) {
-          return '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">Kayıt ' + (i + 1) + "</a>";
+          return '<a href="' + escapeHtml(url) + '" target="_blank" rel="nofollow noopener noreferrer">Kayıt ' + (i + 1) + "</a>";
         }).join("") + "</span>"
         : "") +
       (detail.lastVerifiedAt ? "<span>Son doğrulama: " + escapeHtml(String(detail.lastVerifiedAt).slice(0, 10)) + "</span>" : "") +
@@ -9762,7 +9929,7 @@
     return '<ul class="deep-analysis-source-list">' + sources.map(function (source) {
       return "<li><strong>" + escapeHtml(source.publisher) + "</strong> — " + escapeHtml(source.type) +
         "<p>" + escapeHtml(source.usedFor) + "</p>" +
-        '<a href="' + escapeHtml(source.url) + '" target="_blank" rel="noopener noreferrer">Kaynağa git</a>' +
+        '<a href="' + escapeHtml(source.url) + '" target="_blank" rel="nofollow noopener noreferrer">Kaynağa git</a>' +
         (source.publishedAt ? '<span class="deep-analysis-source-date">Yayın: ' + escapeHtml(source.publishedAt) + "</span>" : "") +
         "</li>";
     }).join("") + "</ul>";
@@ -10592,6 +10759,9 @@
     initAnalytics();
     initCompetitionFilters();
     initMatchExplorer();
+    // Kartlardan ÖNCE bağlanır: dinleyici yetkilendirilmiş olduğu için henüz
+    // basılmamış butonları da yakalar, çizim sırasına bağlı değildir.
+    initMatchListToggles();
 
     // Maç kartları form yüzdesi için takım verisine, kazanma oranı için de
     // maç analizlerine ihtiyaç duyar. İkisi de kartlar basılmadan önce

@@ -4,6 +4,8 @@ import { createRequire } from "node:module";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
+// Dış bağlantı politikası tek yerde: services/sourceLinks.js.
+const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const momentum = JSON.parse(fs.readFileSync(path.join(root, "data", "momentum.json"), "utf8"));
@@ -37,6 +39,7 @@ const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
+const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
 
 const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
 const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
@@ -596,8 +599,18 @@ function verifiedResultCards(limit = 18) {
   }).join("");
 }
 
+/**
+ * Statik yedek, JavaScript çalışmadan ÖNCE görünen listedir. Kart sayısı
+ * istemcinin başlangıç penceresiyle aynı olmak zorunda: altı kart basılıp
+ * hemen ardından on ikiye çıkılsaydı sayfa yüklenirken gözle görülür biçimde
+ * zıplardı. Sayı tek bir yerde (services/matchListWindow.js) duruyor.
+ *
+ * "Daha Fazla Göster" butonu burada BASILMAZ: butonu çalıştıracak JavaScript
+ * yokken basılan buton ölü bir düğmedir. Yedek, penceresi kadarını gösterir
+ * ve okuyucuyu tam listeye bağlantılarla yönlendirir.
+ */
 function matchProgramState(variant) {
-  const cards = calendarProgramCards(variant === "today" ? 6 : 4);
+  const cards = calendarProgramCards(MATCH_LIST_INITIAL);
   return cards || emptyMatchState(variant);
 }
 
@@ -808,7 +821,9 @@ function newsCardAction(item) {
     return "";
   }
   const external = /^https?:/i.test(href);
-  const attrs = external ? ' target="_blank" rel="noopener noreferrer"' : "";
+  // Dışarı çıkan künye `nofollow` taşır (services/sourceLinks.js ile aynı
+  // kural): alıntı bir atıftır, tavsiye değil. İç bağlantı sade açılır.
+  const attrs = external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : "";
   const label = external ? "Resmî açıklamayı aç" : "Haberi oku";
   return `<a class="detail-link" href="${escapeHtml(href)}"${attrs}>${label}</a>`;
 }
@@ -863,7 +878,7 @@ function transferWatch() {
   }
 
   const leader = selected[0];
-  return `<article class="home-transfer-feature" data-card="home-transfer-watch"><div class="home-transfer-player"><div><span>Son kesinleşen transfer</span><h3>${escapeHtml(leader.playerName)}</h3><p>${escapeHtml(leader.type || "Transfer")} · ${escapeHtml(leader.date)}</p></div></div><div class="home-transfer-route"><b>${escapeHtml(leader.fromTeam)}</b><em>→</em><b>${escapeHtml(leader.toTeam)}</b></div><div class="home-transfer-actions"><a class="detail-link" href="${escapeHtml(leader.sourceUrl)}" target="_blank" rel="noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./transfer-radari.html">Tüm transferler</a></div></article><aside class="home-transfer-side"><div class="home-transfer-list">${selected.slice(1).map((transfer) => `<a class="home-transfer-row" href="./transfer-radari.html?team=${encodeURIComponent(transfer.toTeam || "")}"><span>${escapeHtml(transfer.date)}</span><strong>${escapeHtml(transfer.playerName)}</strong><b>${escapeHtml(transfer.toTeam)}</b></a>`).join("")}</div></aside>`;
+  return `<article class="home-transfer-feature" data-card="home-transfer-watch"><div class="home-transfer-player"><div><span>Son kesinleşen transfer</span><h3>${escapeHtml(leader.playerName)}</h3><p>${escapeHtml(leader.type || "Transfer")} · ${escapeHtml(leader.date)}</p></div></div><div class="home-transfer-route"><b>${escapeHtml(leader.fromTeam)}</b><em>→</em><b>${escapeHtml(leader.toTeam)}</b></div><div class="home-transfer-actions"><a class="detail-link" href="${escapeHtml(leader.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./transfer-radari.html">Tüm transferler</a></div></article><aside class="home-transfer-side"><div class="home-transfer-list">${selected.slice(1).map((transfer) => `<a class="home-transfer-row" href="./transfer-radari.html?team=${encodeURIComponent(transfer.toTeam || "")}"><span>${escapeHtml(transfer.date)}</span><strong>${escapeHtml(transfer.playerName)}</strong><b>${escapeHtml(transfer.toTeam)}</b></a>`).join("")}</div></aside>`;
 }
 
 function replaceSlot(html, target, content) {

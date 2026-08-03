@@ -310,7 +310,13 @@ function testMobileLayoutRulesExist() {
 
   assert.ok(/@media \(max-width: 640px\)[\s\S]{0,400}\.pmi-grid/.test(block),
     "mobilde pano tek sütuna inmeli");
-  assert.ok(/minmax\(\d+px, 1fr\)/.test(block), "pano duyarlı ızgara kullanmalı");
+  // Taban `min(100%, Npx)` biçiminde de yazılabilir: yer varken aynı taban,
+  // yer yokken kapsayıcıyı taşırmaz. Kural "duyarlı ızgara olsun"; hangi
+  // yazımla olduğunu şart koşmak, taşma düzeltmesini yanlışlıkla reddediyordu.
+  assert.ok(
+    /minmax\((?:min\(100%,\s*)?\d+px\)?, 1fr\)/.test(block),
+    "pano duyarlı ızgara kullanmalı"
+  );
 
   // Tema değişkenleriyle boyanmalı: sabit renk, koyu temada okunmaz olur.
   const dashboardCss = block.slice(0, block.indexOf("@media"));

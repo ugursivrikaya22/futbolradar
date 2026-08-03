@@ -1,5 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
+// Dış kaynak künyesi `nofollow` taşır; kural services/sourceLinks.js.
+const { SOURCE_LINK_REL } = createRequire(import.meta.url)("../services/sourceLinks.js");
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
 
 const root = process.cwd();
@@ -142,7 +145,7 @@ function pageHtml(article) {
     ? `<aside class="article-update-note" role="note"><strong>Güncellenecek</strong><p>${escapeHtml(updateNote)}</p></aside>`
     : "";
   const sourceHtml = sources.length
-    ? `<section class="article-sources" aria-labelledby="article-sources-title"><h2 id="article-sources-title">Kaynaklar</h2><ul>${sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.name)}</a></li>`).join("")}</ul></section>`
+    ? `<section class="article-sources" aria-labelledby="article-sources-title"><h2 id="article-sources-title">Kaynaklar</h2><ul>${sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="${SOURCE_LINK_REL}">${escapeHtml(source.name)}</a></li>`).join("")}</ul></section>`
     : "";
 
   return `<!doctype html>
