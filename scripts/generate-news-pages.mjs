@@ -232,10 +232,43 @@ function updateSitemap(articles) {
   }
 }
 
+/**
+ * Google News haritası: yalnızca son 48 saatin haberleri (News protokolü
+ * gereği). Eski haberler normal site haritasında kalmaya devam eder.
+ */
+function updateNewsSitemap(articles) {
+  const cutoff = Date.now() - 48 * 3600000;
+  const fresh = articles.filter((article) => {
+    const time = Date.parse(article.publishedAt || "");
+    return Number.isFinite(time) && time >= cutoff;
+  });
+  const entries = fresh.map((article) => `  <url>
+    <loc>${articleUrl(article)}</loc>
+    <news:news>
+      <news:publication>
+        <news:name>FutbolRadar</news:name>
+        <news:language>tr</news:language>
+      </news:publication>
+      <news:publication_date>${escapeHtml(article.publishedAt || "")}</news:publication_date>
+      <news:title>${escapeHtml(article.title)}</news:title>
+    </news:news>
+  </url>`).join("\n");
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+${entries}
+</urlset>
+`;
+  for (const target of [path.join(root, "news-sitemap.xml"), path.join(root, "public", "news-sitemap.xml")]) {
+    writeGeneratedFile(target, xml);
+  }
+  return fresh.length;
+}
+
 const articles = publishableArticles();
 for (const article of articles) {
   writeArticle(article);
 }
 updateSitemap(articles);
+const freshCount = updateNewsSitemap(articles);
 
-console.log(`Generated ${articles.length} news article page${articles.length === 1 ? "" : "s"}`);
+console.log(`Generated ${articles.length} news article page${articles.length === 1 ? "" : "s"} (news-sitemap: ${freshCount} taze haber)`);
