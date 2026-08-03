@@ -48,7 +48,21 @@ function log(line) {
   console.log(`[archive] ${line}`);
 }
 
-const matches = readJsonFile(path.join(root, "data", "matches.json"), []);
+const liveMatches = readJsonFile(path.join(root, "data", "matches.json"), []);
+const permanentArchive = readJsonFile(path.join(root, "data", "historical-match-archive.json"), { records: [] });
+// Kalıcı arşiv önceliklidir: sağlayıcının güncel pencereden çıkardığı maçlar
+// `matches.json` daralsa bile bu kayıtlar sezon sayfasından silinmez.
+const matches = Array.isArray(permanentArchive.records) && permanentArchive.records.length
+  ? permanentArchive.records
+    .filter((record) => record.workflowState !== "needs_manual_review")
+    .map((record) => ({
+      ...record.match,
+      archiveCoverageLevel: record.coverageLevel,
+      archiveWorkflowState: record.workflowState,
+      archiveSources: record.sources,
+      lastVerifiedAt: record.lastVerifiedAt || record.match.lastVerifiedAt
+    }))
+  : liveMatches;
 const squads = readJsonFile(path.join(root, "data", "super-lig-squads.json"), []);
 const managerDoc = readJsonFile(path.join(root, "data", "managers.json"), { managers: [] });
 const previous = readJsonFile(ARCHIVE_PATH, { seasons: {} });

@@ -94,7 +94,7 @@ function hasScore(match) {
   return present(score.home) && present(score.away);
 }
 
-const FINISHED = new Set(["FINISHED", "FT", "AET", "PEN"]);
+const FINISHED = new Set(["FINISHED", "FT", "AET", "PEN", "AWD", "WO", "AWARDED"]);
 
 /** Arşive girmeye uygun mu? Yalnızca BİTMİŞ ve skoru olan maç. */
 function isArchivable(match) {
@@ -124,7 +124,10 @@ function archiveMatch(match) {
       : null,
     reportPage: `mac-raporu/${text(match.id)}.html`,
     sourceUrls: Array.isArray(match.sourceUrls) ? match.sourceUrls.slice() : [],
-    lastVerifiedAt: text(match.lastVerifiedAt) || text(match.fetchedAt) || null
+    lastVerifiedAt: text(match.lastVerifiedAt) || text(match.fetchedAt) || null,
+    coverageLevel: text(match.archiveCoverageLevel) || "LIMITED",
+    workflowState: text(match.archiveWorkflowState) || "limited_complete",
+    sources: Array.isArray(match.archiveSources) ? match.archiveSources : []
   };
 }
 

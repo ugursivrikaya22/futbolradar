@@ -47,7 +47,26 @@ function readStore() {
 }
 
 const previousStore = readStore();
-const pool = curatedMatches();
+const permanentArchive = (() => {
+  const archivePath = path.join(root, "data", "historical-match-archive.json");
+  if (!fs.existsSync(archivePath)) return [];
+  try {
+    const archive = JSON.parse(fs.readFileSync(archivePath, "utf8"));
+    return (archive.records || [])
+      .filter((record) => record && record.workflowState !== "needs_manual_review" && record.match)
+      .map((record) => ({ ...record.match, id: record.match.id || record.canonicalId }));
+  } catch (error) {
+    console.warn(`[post-match-reports] kalıcı arşiv okunamadı: ${error.message}`);
+    return [];
+  }
+})();
+
+// Canlı/son dönem veri ile kalıcı arşiv birleşir. Bir sağlayıcı eski fikstürü
+// güncel pencereden kaldırdığında raporun ve kanonik URL'nin kaybolmaması için
+// arşiv kaydı havuzda kalır; güncel doğrulanmış kayıt aynı id ile önceliklidir.
+const poolById = new Map(permanentArchive.map((match) => [match.id, match]));
+for (const match of curatedMatches()) poolById.set(match.id, match);
+const pool = [...poolById.values()];
 
 // Hükmen sonuçlar analiz edilmez (maç oynanmadı, olay/istatistik yok) ama
 // sessizce yok sayılmaz — sayıları günlüğe yazılır.

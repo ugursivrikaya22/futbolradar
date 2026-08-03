@@ -150,8 +150,10 @@ function matchRows(matches, base) {
     const link = reportExists
       ? `<a class="detail-link" href="${base}${escapeHtml(match.reportPage)}">Maç raporu</a>`
       : `<span class="tag soft">Rapor yok</span>`;
+    const verification = match.lastVerifiedAt ? `Doğrulama: ${formatDate(match.lastVerifiedAt)}` : "Doğrulama tarihi kaydedilmedi";
+    const source = Array.isArray(match.sources) && match.sources.length ? `Kaynak: ${match.sources.map((item) => item.name).join(", ")}` : "Kaynak: doğrulanmış depo kaydı";
     return `<article class="archive-match-row" data-card="archive-match" data-match="${escapeHtml(match.id)}">
-      <div><span class="archive-match-date">${escapeHtml(formatDate(match.kickoff))}</span><strong>${escapeHtml(label)}</strong><span class="archive-match-meta">${escapeHtml(match.league)}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""}</span></div>
+      <div><span class="archive-match-date">${escapeHtml(formatDate(match.kickoff))}</span><strong>${escapeHtml(label)}</strong><span class="archive-match-meta">${escapeHtml(match.league)}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""} · ${escapeHtml(match.coverageLevel || "LIMITED")} · ${escapeHtml(verification)} · ${escapeHtml(source)}</span></div>
       ${link}
     </article>`;
   }).join("");
