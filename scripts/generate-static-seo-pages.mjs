@@ -544,8 +544,6 @@ function sitemapXml(files) {
     "takimlar.html",
     "oyuncu-radari.html",
     "oyuncu-karsilastirmalari.html",
-    "players/position/forvet.html",
-    "players/league/super-lig.html",
     "oyuncular/forvetler.html",
     "oyuncular/kaleciler.html",
     "oyuncular/defanslar.html",

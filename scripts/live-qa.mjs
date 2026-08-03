@@ -310,6 +310,7 @@ async function checkStaticAssets() {
 
   const robots = await fetchText("/robots.txt?v=liveqa");
   expect(robots.text.includes(`Sitemap: ${baseUrl}/sitemap.xml`), "robots.txt sitemap URL mismatch");
+  expect(robots.text.includes(`Sitemap: ${baseUrl}/sitemap-index.xml`), "robots.txt sitemap index URL mismatch");
 
   const manifest = await fetchText("/site.webmanifest?v=liveqa");
   try {

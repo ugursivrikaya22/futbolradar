@@ -4,6 +4,9 @@ const { enrichPlayerRating } = require("../services/ratingService");
 const { MODEL_VERSION: MATCH_PREDICTION_MODEL_VERSION } = require("../services/matchPredictionService");
 const { getFixtureWeeks, groupMatchesIntoWeeks } = require("../services/superLigFixtureService");
 const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
+const { getLiveMatchFeed } = require("../services/liveMatchFeedService");
+const { recordNewsIngestion, snapshot: ingestionSnapshot } = require("../services/ingestionMonitor");
+const { buildBreakingNewsFeed } = require("../services/newsIngestionService");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -45,6 +48,45 @@ async function getPlayerData(query) {
 function routeName(req) {
   const url = new URL(req.url || "/", "http://localhost");
   return normalizeText(url.pathname.replace(/^\/api\/?/, "").split("/")[0]);
+}
+
+function suppliedIngestionHealthToken(req) {
+  return String((req.headers && req.headers["x-futbolradar-health-token"]) || "").trim();
+}
+
+async function handleLiveMatches(req, res) {
+  setCachePolicy(res, "live-feed");
+  if (enforceRateLimit(req, res)) return;
+
+  const feed = await getLiveMatchFeed();
+  return sendSuccess(res, feed.items, feed.provider || "verified-live-feed", feed.updatedAt, {
+    ...feed.meta,
+    stale: feed.stale,
+    awaitingVerifiedData: Boolean(feed.awaitingVerifiedData),
+    lastSuccessfulUpdateAt: feed.updatedAt
+  });
+}
+
+async function handleBreakingNews(req, res) {
+  setCachePolicy(res, "breaking-news");
+  if (enforceRateLimit(req, res)) return;
+
+  const startedAt = Date.now();
+  const data = buildBreakingNewsFeed();
+  recordNewsIngestion({ imported: data.length, rejected: 0, durationMs: Date.now() - startedAt });
+  return sendSuccess(res, data, "FutbolRadar verified news", data[0] && data[0].time, {
+    verifiedOnly: data.every((item) => item.status === "verified"),
+    count: data.length
+  });
+}
+
+function handleIngestionHealth(req, res) {
+  setCachePolicy(res, "health");
+  const expected = String(process.env.INGESTION_HEALTH_TOKEN || "").trim();
+  if (!expected || suppliedIngestionHealthToken(req) !== expected) {
+    return sendError(res, 404, "Kaynak bulunamadi.", "NOT_FOUND");
+  }
+  return sendSuccess(res, ingestionSnapshot(), "FutbolRadar ingestion monitor", new Date().toISOString());
 }
 
 function requestedPlayers(query) {
@@ -254,6 +296,18 @@ module.exports = async function handler(req, res) {
   }
 
   const route = routeName(req);
+  if (route === "ingestion-health") {
+    return handleIngestionHealth(req, res);
+  }
+
+  if (route === "live-matches") {
+    return handleLiveMatches(req, res);
+  }
+
+  if (route === "breaking-news") {
+    return handleBreakingNews(req, res);
+  }
+
   setCachePolicy(res, route === "match-analysis" ? "match-analysis" : "players");
   if (enforceRateLimit(req, res)) return;
 

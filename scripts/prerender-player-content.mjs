@@ -191,6 +191,31 @@ function rootLandingConfig(slug) {
   return configs[slug];
 }
 
+function landingStructuredData(slug, selected) {
+  const names = {
+    forvetler: "Forvet Oyuncuları",
+    kaleciler: "Kaleciler",
+    defanslar: "Defans Oyuncuları",
+    "orta-sahalar": "Orta Saha Oyuncuları",
+    "genc-yetenekler": "Genç Yetenekler",
+    "en-iyi-oyuncular": "En İyi Oyuncular"
+  };
+  const canonical = `https://www.futbolradar.com/oyuncular/${slug}.html`;
+  return JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: `${names[slug]} | FutbolRadar`,
+    url: canonical,
+    numberOfItems: selected.length,
+    itemListElement: selected.map((player, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: player.name,
+      url: `https://www.futbolradar.com/oyuncular/${player.id}.html`
+    }))
+  });
+}
+
 function updateSitemapIndexability(file, shouldIndex) {
   if (shouldIndex) return;
   const canonical = `https://www.futbolradar.com/${file}`;
@@ -226,7 +251,9 @@ for (const slug of ["forvetler", "kaleciler", "defanslar", "orta-sahalar", "genc
     : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadi</strong><span>Yeni ve doğrulanmış oyuncu verileri geldikçe liste genişleyecek.</span></article>`;
   replaceFile(`oyuncular/${slug}.html`, (html) => html
     .replace(/<span class="hero-meta" data-landing-count>[^<]*<\/span>/, `<span class="hero-meta" data-landing-count>${selected.length} oyuncu</span>`)
-    .replace(/<section class="grid" data-api-section="player-seo-landing"[\s\S]*?<\/section>/, `<section class="grid" data-api-section="player-seo-landing" data-api-target="player-seo-landing" data-player-landing="${slug}">${content}</section>`));
+    .replace(/<section class="grid" data-api-section="player-seo-landing"[\s\S]*?<\/section>/, `<section class="grid" data-api-section="player-seo-landing" data-api-target="player-seo-landing" data-player-landing="${slug}">${content}</section>`)
+    .replace(/\s*<script type="application\/ld\+json" data-player-landing-schema>[\s\S]*?<\/script>/, "")
+    .replace("</head>", `    <script type="application/ld+json" data-player-landing-schema>${landingStructuredData(slug, selected)}</script>\n  </head>`));
 }
 
 for (const slug of [

@@ -2,9 +2,7 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const liveMatches = require("../api/live-matches.js");
-const breakingNews = require("../api/breaking-news.js");
-const ingestionHealth = require("../api/ingestion-health.js");
+const apiRouter = require("../api/[...route].js");
 
 function response() {
   return {
@@ -19,7 +17,7 @@ function response() {
 const baseRequest = { method: "GET", url: "/api/test", headers: { "x-forwarded-for": "203.0.113.80" } };
 
 const newsRes = response();
-await breakingNews(baseRequest, newsRes);
+await apiRouter({ ...baseRequest, url: "/api/breaking-news" }, newsRes);
 assert.equal(newsRes.statusCode, 200);
 assert.equal(newsRes.payload.ok, true);
 assert.ok(Array.isArray(newsRes.payload.data));
@@ -27,16 +25,16 @@ assert.equal(newsRes.headers["vercel-cdn-cache-control"], "public, s-maxage=30, 
 
 process.env.INGESTION_HEALTH_TOKEN = "test-health-token";
 const denied = response();
-await ingestionHealth(baseRequest, denied);
+await apiRouter({ ...baseRequest, url: "/api/ingestion-health" }, denied);
 assert.equal(denied.statusCode, 404);
 
 const allowed = response();
-await ingestionHealth({ ...baseRequest, headers: { ...baseRequest.headers, "x-futbolradar-health-token": "test-health-token" } }, allowed);
+await apiRouter({ ...baseRequest, url: "/api/ingestion-health", headers: { ...baseRequest.headers, "x-futbolradar-health-token": "test-health-token" } }, allowed);
 assert.equal(allowed.statusCode, 200);
 assert.equal(allowed.payload.data.persistence, "process-memory");
 
 const liveRes = response();
-await liveMatches(baseRequest, liveRes);
+await apiRouter({ ...baseRequest, url: "/api/live-matches" }, liveRes);
 assert.equal(liveRes.statusCode, 200);
 assert.equal(liveRes.payload.ok, true);
 assert.ok(Array.isArray(liveRes.payload.data));

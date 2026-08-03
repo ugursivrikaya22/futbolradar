@@ -648,6 +648,15 @@ function checkSeoAndLinks() {
 
   const robots = fs.readFileSync(path.join(root, "robots.txt"), "utf8");
   expect(robots.includes("Sitemap: https://www.futbolradar.com/sitemap.xml"), "robots.txt missing sitemap URL");
+  expect(robots.includes("Sitemap: https://www.futbolradar.com/sitemap-index.xml"), "robots.txt missing sitemap index URL");
+  const sitemapIndexPath = path.join(root, "sitemap-index.xml");
+  expect(fs.existsSync(sitemapIndexPath), "missing sitemap-index.xml");
+  const sitemapIndex = fs.readFileSync(sitemapIndexPath, "utf8");
+  for (const sitemapName of ["sitemap-core.xml", "sitemap-matches.xml", "sitemap-players.xml", "sitemap-editorial.xml"]) {
+    expect(sitemapIndex.includes(`<loc>https://www.futbolradar.com/${sitemapName}</loc>`), `sitemap index missing ${sitemapName}`);
+    expect(fs.existsSync(path.join(root, sitemapName)), `missing ${sitemapName}`);
+    expect(fs.existsSync(path.join(root, "public", sitemapName)), `public missing ${sitemapName}`);
+  }
   expect(fs.existsSync(path.join(root, "assets", "og-image.svg")), "missing assets/og-image.svg");
   expect(fs.existsSync(path.join(root, "public", "assets", "og-image.svg")), "missing public/assets/og-image.svg");
   expect(fs.existsSync(path.join(root, "site.webmanifest")), "missing site.webmanifest");
