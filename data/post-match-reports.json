@@ -1,9 +1,591 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-01T07:28:09.181Z",
-  "matchCount": 12,
+  "updatedAt": "2026-08-03T08:29:04.834Z",
+  "matchCount": 13,
   "records": [
+    {
+      "matchId": "galatasaray-rennes-2026-08-02",
+      "fixtureId": "2549420",
+      "provider": "api-football",
+      "slug": "galatasaray-rennes-2026-08-02",
+      "kickoff": "2026-08-02T21:00:00+03:00",
+      "kickoffUtc": "2026-08-02T18:00:00.000Z",
+      "kickoffLocal": "2026-08-02T21:00",
+      "date": "2026-08-02",
+      "status": "FINISHED",
+      "providerStatus": "FINISHED",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Galatasaray",
+      "awayTeam": "Rennes",
+      "venue": "Rams Park",
+      "score": {
+        "home": 3,
+        "away": 3
+      },
+      "finalScore": "3-3",
+      "winner": "draw",
+      "turkish": true,
+      "turkishTeam": "Galatasaray",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "b0e9dcac5028858a",
+      "fingerprint": "b0e9dcac5028858a",
+      "analysisGeneratedAt": "2026-08-03T08:28:33.777Z",
+      "analysisUpdatedAt": "2026-08-03T08:28:33.777Z",
+      "generatedAt": "2026-08-03T08:28:33.777Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Galatasaray 3-3 Rennes maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
+        "description": "Rams Park'ta oynanan hazırlık maçında Galatasaray ile Rennes birbirini geçemedi: 3-3.",
+        "path": "mac-raporu/galatasaray-rennes-2026-08-02.html",
+        "competition": "Hazırlık Maçı"
+      },
+      "reportUrl": "./mac-raporu/galatasaray-rennes-2026-08-02.html",
+      "digest": {
+        "headline": "Galatasaray ile Rennes 3-3 berabere kaldı",
+        "paragraph": "Rams Park'ta oynanan hazırlık maçında Galatasaray ile Rennes birbirini geçemedi: 3-3. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 3-3 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "3-3 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "trabzonspor-udinese-2026-08-02",
+      "fixtureId": "2549418",
+      "provider": "api-football",
+      "slug": "trabzonspor-udinese-2026-08-02",
+      "kickoff": "2026-08-02T17:30:00+03:00",
+      "kickoffUtc": "2026-08-02T14:30:00.000Z",
+      "kickoffLocal": "2026-08-02T17:30",
+      "date": "2026-08-02",
+      "status": "FINISHED",
+      "providerStatus": "FINISHED",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Trabzonspor",
+      "awayTeam": "Udinese",
+      "venue": "Papara Park",
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "finalScore": "1-0",
+      "winner": "Trabzonspor",
+      "turkish": true,
+      "turkishTeam": "Trabzonspor",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "5552bd796d85d69a",
+      "fingerprint": "5552bd796d85d69a",
+      "analysisGeneratedAt": "2026-08-03T08:28:33.777Z",
+      "analysisUpdatedAt": "2026-08-03T08:28:33.777Z",
+      "generatedAt": "2026-08-03T08:28:33.777Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Trabzonspor 1-0 Udinese maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
+        "description": "Papara Park'ta oynanan hazırlık maçını Trabzonspor 1-0 kazandı; Udinese sahadan puansız ayrıldı.",
+        "path": "mac-raporu/trabzonspor-udinese-2026-08-02.html",
+        "competition": "Hazırlık Maçı"
+      },
+      "reportUrl": "./mac-raporu/trabzonspor-udinese-2026-08-02.html",
+      "digest": {
+        "headline": "Trabzonspor, Udinese'yi 1-0 yendi",
+        "paragraph": "Papara Park'ta oynanan hazırlık maçını Trabzonspor 1-0 kazandı; Udinese sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Trabzonspor",
+          "loser": "Udinese",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Trabzonspor, Udinese'yi 1-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Trabzonspor sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "kasimpasa-hull-city-2026-08-01",
+      "fixtureId": "2529472",
+      "provider": "api-football",
+      "slug": "kasimpasa-hull-city-2026-08-01",
+      "kickoff": "2026-08-01T19:00:00+03:00",
+      "kickoffUtc": "2026-08-01T16:00:00.000Z",
+      "kickoffLocal": "2026-08-01T19:00",
+      "date": "2026-08-01",
+      "status": "FINISHED",
+      "providerStatus": "FINISHED",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Kasımpaşa",
+      "awayTeam": "Hull City",
+      "venue": "Recep Tayyip Erdoğan Stadyumu",
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "finalScore": "1-1",
+      "winner": "draw",
+      "turkish": true,
+      "turkishTeam": "Kasımpaşa",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "a97a0f6a477e8fd7",
+      "fingerprint": "a97a0f6a477e8fd7",
+      "analysisGeneratedAt": "2026-08-03T08:28:33.777Z",
+      "analysisUpdatedAt": "2026-08-03T08:28:33.777Z",
+      "generatedAt": "2026-08-03T08:28:33.777Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Kasımpaşa 1-1 Hull City maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
+        "description": "Kasımpaşa ile Hull City, Recep Tayyip Erdoğan Stadyumu'nda oynanan hazırlık karşılaşmasında 1-1 berabere kaldı.",
+        "path": "mac-raporu/kasimpasa-hull-city-2026-08-01.html",
+        "competition": "Hazırlık Maçı"
+      },
+      "reportUrl": "./mac-raporu/kasimpasa-hull-city-2026-08-01.html",
+      "digest": {
+        "headline": "Kasımpaşa ile Hull City 1-1 berabere kaldı",
+        "paragraph": "Kasımpaşa ile Hull City, Recep Tayyip Erdoğan Stadyumu'nda oynanan hazırlık karşılaşmasında 1-1 berabere kaldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 1-1 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "caykur-rizespor-abha-2026-07-31",
       "fixtureId": "2537262",
@@ -169,394 +751,6 @@
           "strengths": [],
           "improvements": [],
           "closing": "0-0 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
-          "basis": "events-only"
-        },
-        "aiRating": null,
-        "analysis": [],
-        "analysisOmitted": [
-          "hucum",
-          "savunma",
-          "sahiplik",
-          "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
-          "performans",
-          "taktik",
-          "sonuc",
-          "gecis-oyunu",
-          "pas-agi",
-          "en-zayif-performans"
-        ]
-      },
-      "readySections": [
-        "summary",
-        "finalAssessment"
-      ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
-      "publishState": "page"
-    },
-    {
-      "matchId": "trabzonspor-al-sadd-2026-07-30",
-      "fixtureId": "2549371",
-      "provider": "api-football",
-      "slug": "trabzonspor-al-sadd-2026-07-30",
-      "kickoff": "2026-07-30T19:00:00+03:00",
-      "kickoffUtc": "2026-07-30T16:00:00.000Z",
-      "kickoffLocal": "2026-07-30T19:00",
-      "date": "2026-07-30",
-      "status": "FINISHED",
-      "providerStatus": "FINISHED",
-      "finishType": "regular",
-      "finishLabel": "Normal sürede tamamlandı",
-      "league": "Hazırlık Maçı",
-      "competition": "Hazırlık Maçı",
-      "competitionType": null,
-      "season": null,
-      "homeTeam": "Trabzonspor",
-      "awayTeam": "Al-Sadd",
-      "venue": "Papara Park",
-      "score": {
-        "home": 0,
-        "away": 1
-      },
-      "finalScore": "0-1",
-      "winner": "Al-Sadd",
-      "turkish": true,
-      "turkishTeam": "Trabzonspor",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
-      "dataSources": {
-        "score": {
-          "present": true,
-          "source": "curated",
-          "count": 1
-        },
-        "events": {
-          "present": false,
-          "source": null,
-          "count": 0
-        },
-        "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
-        },
-        "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
-        },
-        "players": {
-          "present": false,
-          "source": null,
-          "count": 0
-        }
-      },
-      "apiKeyPresent": true,
-      "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
-      },
-      "dataCompleteness": 0.2,
-      "providerUpdatedAt": null,
-      "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
-      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
-      "analysisVersion": "futbolradar-post-match-v4",
-      "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "0c7b18817242dcd2",
-      "fingerprint": "0c7b18817242dcd2",
-      "analysisGeneratedAt": "2026-07-31T10:05:14.130Z",
-      "analysisUpdatedAt": "2026-07-31T11:02:21.906Z",
-      "generatedAt": "2026-07-31T11:02:21.906Z",
-      "analysisError": null,
-      "analysisAttempts": 0,
-      "seo": {
-        "title": "Trabzonspor 0-1 Al-Sadd maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
-        "description": "Al-Sadd, Papara Park'ta oynanan hazırlık karşılaşmasında Trabzonspor'u 1-0 mağlup etti.",
-        "path": "mac-raporu/trabzonspor-al-sadd-2026-07-30.html",
-        "competition": "Hazırlık Maçı"
-      },
-      "reportUrl": "./mac-raporu/trabzonspor-al-sadd-2026-07-30.html",
-      "digest": {
-        "headline": "Al-Sadd, Trabzonspor'u 1-0 yendi",
-        "paragraph": "Al-Sadd, Papara Park'ta oynanan hazırlık karşılaşmasında Trabzonspor'u 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
-        "result": {
-          "winner": "Al-Sadd",
-          "loser": "Trabzonspor",
-          "draw": false,
-          "margin": 1
-        },
-        "finish": {
-          "status": "ready",
-          "type": "regular",
-          "label": "Normal sürede tamamlandı",
-          "wentToExtraTime": false,
-          "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
-        },
-        "turningPoints": {
-          "status": "unavailable",
-          "moments": []
-        },
-        "lateGame": {
-          "status": "unavailable",
-          "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
-        },
-        "keyPlayers": {
-          "status": "unavailable",
-          "players": []
-        },
-        "tactical": {
-          "status": "unavailable",
-          "notes": []
-        },
-        "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
-        },
-        "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
-        },
-        "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
-        },
-        "finalAssessment": {
-          "status": "ready",
-          "verdict": [
-            "Al-Sadd, Trabzonspor'u 0-1 yendi."
-          ],
-          "strengths": [],
-          "improvements": [],
-          "closing": "Al-Sadd sahadan 1 farkla ayrıldı.",
-          "basis": "events-only"
-        },
-        "aiRating": null,
-        "analysis": [],
-        "analysisOmitted": [
-          "hucum",
-          "savunma",
-          "sahiplik",
-          "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
-          "performans",
-          "taktik",
-          "sonuc",
-          "gecis-oyunu",
-          "pas-agi",
-          "en-zayif-performans"
-        ]
-      },
-      "readySections": [
-        "summary",
-        "finalAssessment"
-      ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
-      "publishState": "page"
-    },
-    {
-      "matchId": "konyaspor-al-dhafra-2026-07-29",
-      "fixtureId": "2553315",
-      "provider": "api-football",
-      "slug": "konyaspor-al-dhafra-2026-07-29",
-      "kickoff": "2026-07-29T18:30:00+03:00",
-      "kickoffUtc": "2026-07-29T15:30:00.000Z",
-      "kickoffLocal": "2026-07-29T18:30",
-      "date": "2026-07-29",
-      "status": "FINISHED",
-      "providerStatus": "FINISHED",
-      "finishType": "regular",
-      "finishLabel": "Normal sürede tamamlandı",
-      "league": "Hazırlık Maçı",
-      "competition": "Hazırlık Maçı",
-      "competitionType": null,
-      "season": null,
-      "homeTeam": "Konyaspor",
-      "awayTeam": "Al Dhafra",
-      "venue": "Konya Büyükşehir Belediye Stadyumu",
-      "score": {
-        "home": 2,
-        "away": 0
-      },
-      "finalScore": "2-0",
-      "winner": "Konyaspor",
-      "turkish": true,
-      "turkishTeam": "Konyaspor",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
-      "dataSources": {
-        "score": {
-          "present": true,
-          "source": "curated",
-          "count": 1
-        },
-        "events": {
-          "present": false,
-          "source": null,
-          "count": 0
-        },
-        "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
-        },
-        "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
-        },
-        "players": {
-          "present": false,
-          "source": null,
-          "count": 0
-        }
-      },
-      "apiKeyPresent": true,
-      "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
-      },
-      "dataCompleteness": 0.2,
-      "providerUpdatedAt": null,
-      "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
-      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
-      "analysisVersion": "futbolradar-post-match-v4",
-      "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "0427f341b34bcfdb",
-      "fingerprint": "0427f341b34bcfdb",
-      "analysisGeneratedAt": "2026-07-31T10:05:14.130Z",
-      "analysisUpdatedAt": "2026-07-31T11:02:21.906Z",
-      "generatedAt": "2026-07-31T11:02:21.906Z",
-      "analysisError": null,
-      "analysisAttempts": 0,
-      "seo": {
-        "title": "Konyaspor 2-0 Al Dhafra maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
-        "description": "Konyaspor, Konya Büyükşehir Belediye Stadyumu'nda oynanan hazırlık karşılaşmasında Al Dhafra'yı 2-0 mağlup etti.",
-        "path": "mac-raporu/konyaspor-al-dhafra-2026-07-29.html",
-        "competition": "Hazırlık Maçı"
-      },
-      "reportUrl": "./mac-raporu/konyaspor-al-dhafra-2026-07-29.html",
-      "digest": {
-        "headline": "Konyaspor, Al Dhafra'yı 2-0 yendi",
-        "paragraph": "Konyaspor, Konya Büyükşehir Belediye Stadyumu'nda oynanan hazırlık karşılaşmasında Al Dhafra'yı 2-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
-        "result": {
-          "winner": "Konyaspor",
-          "loser": "Al Dhafra",
-          "draw": false,
-          "margin": 2
-        },
-        "finish": {
-          "status": "ready",
-          "type": "regular",
-          "label": "Normal sürede tamamlandı",
-          "wentToExtraTime": false,
-          "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
-        },
-        "turningPoints": {
-          "status": "unavailable",
-          "moments": []
-        },
-        "lateGame": {
-          "status": "unavailable",
-          "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
-        },
-        "keyPlayers": {
-          "status": "unavailable",
-          "players": []
-        },
-        "tactical": {
-          "status": "unavailable",
-          "notes": []
-        },
-        "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
-        },
-        "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
-        },
-        "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
-        },
-        "finalAssessment": {
-          "status": "ready",
-          "verdict": [
-            "Konyaspor, Al Dhafra'yı 2-0 yendi."
-          ],
-          "strengths": [],
-          "improvements": [],
-          "closing": "Konyaspor sahadan 2 farkla ayrıldı.",
           "basis": "events-only"
         },
         "aiRating": null,
