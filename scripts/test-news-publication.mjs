@@ -35,7 +35,15 @@ assert.ok(
 assert.match(transferReaction.updateNote || "", /resmî bir özet yayımladığında/, "resmî kulüp özeti için güncelleme notu bulunmalı");
 
 const galatasarayNews = readVerifiedTeamNews(root, "Galatasaray", 3);
-assert.equal(galatasarayNews[0]?.id, transferReaction.id, "yeni haber Galatasaray sayfalarında ilk sırada görünmeli");
+assert.equal(
+  galatasarayNews[0]?.id,
+  "galatasaray-osimhen-premier-league-ilgisi-iddialari",
+  "en yeni Galatasaray haberi takım sayfalarında ilk sırada görünmeli"
+);
+const sortedByRecency = galatasarayNews
+  .map((item) => String(item.publishedAt || ""))
+  .every((stamp, index, list) => index === 0 || list[index - 1] >= stamp);
+assert.ok(sortedByRecency, "takım haberleri yayın tarihine göre yeniden eskiye sıralanmalı");
 const galatasaraySection = renderTeamNewsSection(galatasarayNews, { team: "Galatasaray", base: "./" });
 assert.match(galatasaraySection, /data-team-news="galatasaray"/, "Galatasaray haber bölümü üretilmeli");
 assert.match(
@@ -51,10 +59,20 @@ for (const draft of drafts.items || []) {
   assert.ok(!(ticker.items || []).some((item) => item.id === draft.id), `${draft.id}: taslak gündem bandına sızmamalı`);
 }
 
-for (const tickerId of ["aziz-yildirim-divan-kurulu-sert-cikis", "galatasaray-musiala-yalanlama"]) {
+for (const tickerId of ["trabzonspor-salah-dev-paket-iddiasi", "fenerbahce-sturm-graz-programi"]) {
   const item = (ticker.items || []).find((entry) => entry.id === tickerId);
   assert.ok(item, `${tickerId}: gündem bandı kaydı bulunmalı`);
   assert.match(item.source.url, /^https:\/\/www\.futbolradar\.com\/haber\//, `${tickerId}: iç detay sayfasına bağlanmalı`);
+}
+
+// Bant kısa başlık taşır, ayrıntı haber sayfasında: her küratörlü öğe iç
+// detay sayfasına bağlanmalı ve kesinleşmemiş Salah dosyası söylenti
+// rozetinden çıkarılmamalı.
+const salahTicker = (ticker.items || []).find((entry) => entry.id === "trabzonspor-salah-dev-paket-iddiasi");
+assert.equal(salahTicker.category, "transfer-rumour", "Salah bandı transfer iddiası kategorisinde kalmalı");
+assert.notEqual(salahTicker.confidence, "confirmed", "Salah bandı doğrulanmış gibi sunulmamalı");
+for (const entry of ticker.items || []) {
+  assert.match(entry.source.url, /^https:\/\/www\.futbolradar\.com\/haber\//, `${entry.id}: bant öğesi iç haber sayfasına bağlanmalı`);
 }
 
 console.log(`Haber yayın testi geçti (${published.length} doğrulanmış haber, ${(drafts.items || []).length} kaynak bekleyen taslak).`);
