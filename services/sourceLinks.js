@@ -42,6 +42,9 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
   club: Object.freeze([
     "galatasaray.org",
     "fenerbahce.org",
+    // Fenerbahçe'nin kendi medya kolu; kulüp duyurularını fenerbahce.org
+    // ile aynı yetkiyle yayımlıyor.
+    "fenermedia.com",
     "bjk.com.tr",
     "trabzonspor.org.tr",
     "ibfk.com.tr",
@@ -73,8 +76,35 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "trtspor.com.tr",
     "aa.com.tr",
     "ntvspor.net",
+    "ntv.com.tr",
     "fotomac.com.tr",
-    "beinsports.com.tr"
+    "fotospor.com.tr",
+    "beinsports.com.tr",
+    "milliyet.com.tr",
+    "haberturk.com",
+    "ahaber.com.tr",
+    "takvim.com.tr",
+    "t24.com.tr"
+  ]),
+
+  // Yurt dışı yayın organları. Türk basınında karşılığı olmayan haberlerde
+  // (yabancı oyuncunun kendi ülkesindeki gazete, Avrupa kupası özetleri)
+  // birincil yayına atıf yapılabilsin diye ayrı tutuluyor.
+  international: Object.freeze([
+    "espn.com",
+    "vanguardngr.com"
+  ]),
+
+  // BİRİNCİL KAYIT PLATFORMU — diğer gruplardan farkı bilinçli.
+  //
+  // youtube.com bir YAYIN ORGANI DEĞİL; oraya herkes yükleme yapabilir. Bu
+  // yüzden listedeki en zayıf halka ve bilerek tek başına bırakılmadı:
+  // depoda yalnızca kulüp divan toplantılarının zaman damgalı kaydına atıf
+  // için kullanılıyor ve her kullanımda YANINDA resmî kulüp bağlantısı da
+  // veriliyor (galatasaray.org, fenermedia.com). Bir video tek kaynak olarak
+  // kalıyorsa o haber gözden geçirilmeli.
+  record: Object.freeze([
+    "youtube.com"
   ]),
 
   // İstatistik ve maç verisi sağlayıcıları
@@ -89,12 +119,22 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
 
 /**
  * SİTENİN KENDİ HESAPLARI. Alıntı değil, kimlik: `nofollow` ALMAZLAR.
+ *
+ * Ana bilgisayar adı tek başına YETMİYOR. "youtube.com" bütünüyle kendi
+ * hesabımız sayıldığında, kaynak olarak ALINTILANAN bir üçüncü taraf videosu
+ * da (kulüp divan toplantısının kaydı gibi) kimlik bağlantısı muamelesi
+ * görüyor ve hak ettiği `nofollow`u kaybediyordu. Kendi kanalımız yol
+ * kısmıyla ayrışıyor: youtube.com/@futbolradar.
+ *
+ * Girdi ya salt ana bilgisayar ya da "ana bilgisayar/yol öneki" biçiminde
+ * yazılır; yol verilmişse adresin yolu o önekle başlamak zorundadır.
+ * Kaynak: scripts/lib/layout.mjs#SOCIAL.
  */
 const OWN_PROFILE_HOSTS = Object.freeze([
-  "x.com",
-  "twitter.com",
-  "instagram.com",
-  "youtube.com"
+  "x.com/futbolradar",
+  "twitter.com/futbolradar",
+  "instagram.com/futbolradar",
+  "youtube.com/@futbolradar"
 ]);
 
 /**
@@ -105,7 +145,13 @@ const SHARE_HOSTS = Object.freeze([
   "api.whatsapp.com",
   "wa.me",
   "t.me",
-  "telegram.me"
+  "telegram.me",
+  // "X'te paylaş" düğmesi. Daha önce kendi hesap listesindeki çıplak
+  // "twitter.com" girdisi sayesinde KAZAYLA geçiyordu; hesap kontrolü tam
+  // adrese bağlanınca ortaya çıktı. Doğru yeri burası: paylaşım hedefi bir
+  // kaynak iddiası taşımaz.
+  "twitter.com/intent",
+  "x.com/intent"
 ]);
 
 /** Tüm beyaz liste, tek düz dizi. */
@@ -150,14 +196,43 @@ function isAllowedSourceUrl(url) {
   return isAllowedSourceHost(hostOf(url));
 }
 
-function isOwnProfileHost(host) {
-  const normalized = String(host || "").replace(/^www\./i, "").toLowerCase();
-  return OWN_PROFILE_HOSTS.some((entry) => matchesHost(normalized, entry));
+/**
+ * "ana bilgisayar" ya da "ana bilgisayar/yol öneki" biçimindeki bir girdiye
+ * karşı adres eşleştirir.
+ *
+ * Tam adres bekler. Yalnızca ana bilgisayar verilirse (eski çağrı biçimi)
+ * yol kısıtı olmayan girdilerle eşleşir — yol taşıyan girdiler eşleşmez,
+ * çünkü bir hesabı ya da paylaşım hedefini yolu olmadan doğrulayamayız.
+ */
+function matchesHostEntry(value, entries) {
+  const raw = String(value || "").trim();
+  if (!raw) return false;
+
+  const host = hostOf(raw) || raw.replace(/^www\./i, "").toLowerCase();
+  let pathname = "";
+  try {
+    pathname = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`).pathname;
+  } catch {
+    pathname = "";
+  }
+
+  return entries.some((entry) => {
+    const slash = entry.indexOf("/");
+    if (slash === -1) return matchesHost(host, entry);
+    const entryHost = entry.slice(0, slash);
+    const entryPath = entry.slice(slash).toLowerCase();
+    return matchesHost(host, entryHost) && pathname.toLowerCase().startsWith(entryPath);
+  });
 }
 
-function isShareHost(host) {
-  const normalized = String(host || "").replace(/^www\./i, "").toLowerCase();
-  return SHARE_HOSTS.some((entry) => matchesHost(normalized, entry));
+/** Bu adres SİTENİN KENDİ hesabı mı? */
+function isOwnProfileHost(value) {
+  return matchesHostEntry(value, OWN_PROFILE_HOSTS);
+}
+
+/** Bu adres bir PAYLAŞIM hedefi mi? */
+function isShareHost(value) {
+  return matchesHostEntry(value, SHARE_HOSTS);
 }
 
 /**

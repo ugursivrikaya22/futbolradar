@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SEO İçerik Fırsatları Paneli | FutbolRadar Editoryal</title>
+    <meta name="description" content="FutbolRadar editoryal ekibi için arama talebi fırsat paneli: sorgular, puanlar, niyet ve yayın durumu." />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./page.css" />
+    <style>
+      .demand-table-wrap { overflow-x: auto; }
+      .demand-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+      .demand-table th, .demand-table td { padding: 0.55rem 0.6rem; text-align: left; border-bottom: 1px solid rgba(128, 128, 128, 0.25); vertical-align: top; }
+      .demand-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0; }
+      .demand-filters select, .demand-filters input { padding: 0.45rem 0.6rem; border-radius: 8px; border: 1px solid rgba(128, 128, 128, 0.4); background: inherit; color: inherit; }
+    </style>
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+    <script src="/analytics.js" defer data-futbolradar-ga4 data-ga4-id="" data-google-ads-id="" data-page-view-label="" data-match-click-label=""></script>
+    <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
+  </head>
+  <body class="subpage">
+<header class="topbar topbar-premium" data-shared-layout="header">
+      <div class="topbar-inner">
+        <nav class="container-wide nav" aria-label="Ana menü">
+          <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa">
+            <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 12 17 8"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+            <span class="brand-text"><b>Futbol</b>Radar</span>
+          </a>
+          <button class="nav-search-toggle nav-search-toggle-mobile" type="button" aria-label="Takım ve futbolcu ara" aria-controls="primary-menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></button>
+          <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
+          <div class="nav-menu" id="primary-menu">
+            <div class="nav-links"><a href="./bugunun-maclari.html">Bugünün Maçları</a><a href="./canli-skor.html">Canlı Skor</a><a href="./mac-sonuclari.html">Maç Sonuçları</a><a href="./super-lig-fikstur.html">Süper Lig</a><a href="./analizler.html">Analizler</a><a href="./takimlar.html">Takımlar</a><a href="./kose-yazilari.html">Köşe Yazıları</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./arsiv.html">Arşiv</a></div>
+            <div class="nav-links nav-links-secondary"><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./istatistik-merkezi.html">İstatistik Merkezi</a><a href="./transfer-radari.html">Transfer Radarı</a><a href="./momentum.html">Momentum</a><a href="./gol-kralligi.html">Gol Krallığı</a><a href="./haberler.html">Haberler</a></div>
+            <a class="cta" href="./mac-merkezi.html">Maç Merkezi</a>
+            <button class="nav-search-toggle nav-search-toggle-desktop" type="button" data-search-open aria-label="Takım ve futbolcu ara" aria-expanded="false" title="Takım ve futbolcu ara"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></button>
+            <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Koyu temaya geç">
+              <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+              <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+              <span class="theme-toggle-label">Koyu Tema</span>
+            </button>
+          </div>
+          <form class="site-search" role="search" method="get" action="./oyuncu-radari.html" data-search-base="./" autocomplete="off">
+            <span class="site-search-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></span>
+            <input class="site-search-input" type="search" name="search" placeholder="Takım, oyuncu ara" aria-label="Sitede ara" aria-expanded="false" aria-controls="site-search-results" role="combobox" />
+            <button class="site-search-clear" type="button" aria-label="Aramayı temizle" hidden>×</button>
+            <div class="site-search-panel" id="site-search-results" role="listbox" hidden></div>
+          </form>
+        </nav>
+      </div>
+    </header>
+      <!-- shared-layout:ticker:start --><div class="news-ticker" data-shared-layout="ticker" aria-label="Son dakika futbol gündemi">
+      <div class="container-wide news-ticker-inner">
+        <span class="news-ticker-badge is-live"><i class="live-pulse" aria-hidden="true"></i>Son Dakika</span>
+        <div class="news-ticker-viewport">
+          <div class="news-ticker-track" style="--ticker-duration:80s">
+            <div class="news-ticker-group"><a class="news-ticker-item" href="./mac-raporu/gornik-zabrze-fenerbahce-2026-07-29.html"><span class="news-ticker-tag">Sonuç</span><span>Górnik Zabrze 1-1 Fenerbahçe</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="./mac-raporu/fc-midtjylland-besiktas-2026-07-30.html"><span class="news-ticker-tag">Sonuç</span><span>FC Midtjylland 0-2 Beşiktaş</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="./mac-raporu/inter-turku-basaksehir-2026-07-30.html"><span class="news-ticker-tag">Sonuç</span><span>Inter Turku 2-0 Başakşehir</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.futbolradar.com/haber/fenerbahce-sturm-graz-sampiyonlar-ligi-mac-onu.html" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Resmî açıklama</span><span>Fenerbahçe, Şampiyonlar Ligi 3. eleme turu ilk maçında çarşamba 21.00’de Sturm Graz’ı konuk edecek.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.futbolradar.com/haber/besiktas-avrupa-ligi-kura-hradec-kralove.html" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Resmî açıklama</span><span>Beşiktaş’ın Avrupa Ligi 3. eleme turundaki rakibi Hradec Králové; ilk maç 6 Ağustos’ta Çekya’da.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.futbolradar.com/haber/galatasaray-rennes-hazirlik-maci-3-3.html" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Maç sonu</span><span>Galatasaray, sezon öncesi son provada Rennes ile 3-3 berabere kaldı.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.futbolradar.com/haber/trabzonspor-udinese-hazirlik-maci-1-0.html" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Maç sonu</span><span>Trabzonspor, son hazırlık maçında Udinese’yi Muçi’nin golüyle 1-0 mağlup etti.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="./super-lig-transferleri-2026-2027.html#transfer-tayyip-talha-sanuc"><span class="news-ticker-tag">Transfer</span><span>Tayyip Talha Sanuç, Çaykur Rizespor kadrosuna katıldı (Bonservis)</span></a></div>
+            <div class="news-ticker-group" aria-hidden="true"><a class="news-ticker-item" href="./mac-raporu/gornik-zabrze-fenerbahce-2026-07-29.html"><span class="news-ticker-tag">Sonuç</span><span>Górnik Zabrze 1-1 Fenerbahçe</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="./mac-raporu/fc-midtjylland-besiktas-2026-07-30.html"><span class="news-ticker-tag">Sonuç</span><span>FC Midtjylland 0-2 Beşiktaş</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="./mac-raporu/inter-turku-basaksehir-2026-07-30.html"><span class="news-ticker-tag">Sonuç</span><span>Inter Turku 2-0 Başakşehir</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.futbolradar.com/haber/fenerbahce-sturm-graz-sampiyonlar-ligi-mac-onu.html" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Resmî açıklama</span><span>Fenerbahçe, Şampiyonlar Ligi 3. eleme turu ilk maçında çarşamba 21.00’de Sturm Graz’ı konuk edecek.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.futbolradar.com/haber/besiktas-avrupa-ligi-kura-hradec-kralove.html" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Resmî açıklama</span><span>Beşiktaş’ın Avrupa Ligi 3. eleme turundaki rakibi Hradec Králové; ilk maç 6 Ağustos’ta Çekya’da.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.futbolradar.com/haber/galatasaray-rennes-hazirlik-maci-3-3.html" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Maç sonu</span><span>Galatasaray, sezon öncesi son provada Rennes ile 3-3 berabere kaldı.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.futbolradar.com/haber/trabzonspor-udinese-hazirlik-maci-1-0.html" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Maç sonu</span><span>Trabzonspor, son hazırlık maçında Udinese’yi Muçi’nin golüyle 1-0 mağlup etti.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="./super-lig-transferleri-2026-2027.html#transfer-tayyip-talha-sanuc"><span class="news-ticker-tag">Transfer</span><span>Tayyip Talha Sanuç, Çaykur Rizespor kadrosuna katıldı (Bonservis)</span></a></div>
+          </div>
+        </div>
+        <a class="news-ticker-all" href="./haberler.html">Tümü</a>
+      </div>
+    </div><!-- shared-layout:ticker:end -->
+    <main class="container-wide">
+      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><span>SEO İçerik Fırsatları</span></nav>
+      <header class="column-article-head">
+        <div class="column-article-meta"><span>Editoryal panel · dizine kapalı</span><time datetime="2026-08-03T12:30:00+03:00">Son üretim: 3 Ağustos 2026 12:30 TSİ</time></div>
+        <h1>SEO İçerik Fırsatları</h1>
+        <p class="lead">Arama talebi fırsatları: puanlar kanıtlı boyutlardan hesaplanır (services/searchDemand.js). ★ = yüksek öncelik (≥75).</p>
+      </header>
+      <section class="fixture-overview">
+        <article class="metric-tile"><strong>Bağlı değil</strong><span>Search Console — kurulum: docs/search-demand-engine.md</span></article>
+        <article class="metric-tile"><strong>ok</strong><span>Autocomplete sinyalleri (15 tohum)</span></article>
+        <article class="metric-tile"><strong>56</strong><span>Fırsat kaydı</span></article>
+        <article class="metric-tile"><strong>10</strong><span>Yüksek öncelik (≥75)</span></article>
+      </section>
+      <section class="card" aria-label="Veri boşlukları">
+        <span class="card-kicker">Veri boşlukları — açıkça beyan</span>
+        <ul><li>Search Console API bağlı değil — gösterim/tıklama raporları için VERİ YOK (kurulum: docs/search-demand-engine.md).</li><li>Site içi arama kayıtları toplanmıyor — site-search kanıtı şu an kullanılamıyor.</li><li>Google Trends programatik erişimi kurulmadı — trend kanıtı SERP gözlemi ve yayın yoğunluğuna dayanıyor.</li></ul>
+      </section>
+      <div class="demand-filters" role="search">
+        <input type="search" id="f-query" placeholder="Sorgu ara..." aria-label="Sorgu ara" />
+        <select id="f-team" aria-label="Takım süz"><option value="">Takım (tümü)</option><option>Beşiktaş</option><option>Çaykur Rizespor</option><option>Dünya Futbolu</option><option>Fenerbahçe</option><option>Galatasaray</option><option>Kocaelispor</option><option>Samsunspor</option><option>Süper Lig</option><option>Trabzonspor</option></select>
+        <select id="f-class" aria-label="Niyet süz"><option value="">Niyet (tümü)</option><option value="breaking">Breaking</option><option value="today">Today</option><option value="evergreen">Evergreen</option><option value="match-intent">Maç</option><option value="transfer-intent">Transfer</option><option value="informational">Bilgi</option><option value="opinion">Köşe</option><option value="commercial-potential">Reklam değeri</option></select>
+        <select id="f-decision" aria-label="Karar süz"><option value="">Yeni/Güncelleme (tümü)</option><option value="new">Yeni içerik</option><option value="update">Güncelleme</option></select>
+        <select id="f-high" aria-label="Öncelik süz"><option value="">Puan (tümü)</option><option value="high">Yüksek öncelik ≥75</option></select>
+      </div>
+      <div class="demand-table-wrap">
+        <table class="demand-table" id="demand-table">
+          <thead><tr><th>#</th><th>Sorgu / önerilen başlık</th><th>Puan</th><th>Tür</th><th>Niyet</th><th>Takım / oyuncu</th><th>Karar</th><th>Yayın penceresi</th><th>Durum</th></tr></thead>
+          <tbody>
+          <tr data-team="Trabzonspor" data-class="breaking transfer-intent informational" data-type="transfer-hub" data-decision="new" data-score="83">
+            <td>1</td>
+            <td><b>salah trabzonspor son dakika</b><br /><small>Mohamed Salah-Trabzonspor iddiasında son durum: bilinenler ve doğrulanmayanlar</small></td>
+            <td>83 ★</td>
+            <td>transfer-hub</td>
+            <td>breaking, transfer-intent, informational</td>
+            <td>Trabzonspor<br /><small>Mohamed Salah</small></td>
+            <td>Yeni içerik</td>
+            <td>2026-08-03 (gündem sıcak)</td>
+            <td><a href="./mohamed-salah-trabzonspor-transfer-son-durum.html">yayında</a></td>
+          </tr>
+          <tr data-team="Fenerbahçe" data-class="today match-intent informational commercial-potential" data-type="match-guide" data-decision="new" data-score="82">
+            <td>2</td>
+            <td><b>fenerbahçe sturm graz maçı ne zaman hangi kanalda</b><br /><small>Fenerbahçe-Sturm Graz maçı ne zaman, saat kaçta, hangi kanalda?</small></td>
+            <td>82 ★</td>
+            <td>match-guide</td>
+            <td>today, match-intent, informational, commercial-potential</td>
+            <td>Fenerbahçe</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-03 (maçtan 2 gün önce)</td>
+            <td><a href="./fenerbahce-sturm-graz-ne-zaman-hangi-kanalda.html">yayında</a></td>
+          </tr>
+          <tr data-team="Beşiktaş" data-class="today match-intent informational commercial-potential" data-type="match-guide" data-decision="new" data-score="79">
+            <td>3</td>
+            <td><b>hradec kralove beşiktaş maçı ne zaman hangi kanalda</b><br /><small>Hradec Králové-Beşiktaş maçı ne zaman, saat kaçta, hangi kanalda?</small></td>
+            <td>79 ★</td>
+            <td>match-guide</td>
+            <td>today, match-intent, informational, commercial-potential</td>
+            <td>Beşiktaş</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-03 (maçtan 3 gün önce)</td>
+            <td><a href="./hradec-kralove-besiktas-ne-zaman-hangi-kanalda.html">yayında</a></td>
+          </tr>
+          <tr data-team="Fenerbahçe" data-class="breaking match-intent" data-type="quick-news" data-decision="new" data-score="79">
+            <td>4</td>
+            <td><b>fenerbahçe sturm graz maç sonucu</b><br /><small>Fenerbahçe-Sturm Graz maç sonucu ve öne çıkanlar</small></td>
+            <td>79 ★</td>
+            <td>quick-news</td>
+            <td>breaking, match-intent</td>
+            <td>Fenerbahçe</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-05 (maç bitiminde)</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Galatasaray" data-class="today transfer-intent informational" data-type="transfer-hub" data-decision="new" data-score="78">
+            <td>5</td>
+            <td><b>osimhen transfer son durum</b><br /><small>Victor Osimhen transferinde son durum: İngiliz kulüpleri iddiaları ve Galatasaray&#039;ın tavrı</small></td>
+            <td>78 ★</td>
+            <td>transfer-hub</td>
+            <td>today, transfer-intent, informational</td>
+            <td>Galatasaray<br /><small>Victor Osimhen</small></td>
+            <td>Yeni içerik</td>
+            <td>2026-08-03</td>
+            <td><a href="./victor-osimhen-transfer-son-durum.html">yayında</a></td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="today informational commercial-potential" data-type="qa" data-decision="new" data-score="77">
+            <td>6</td>
+            <td><b>süper lig ne zaman başlıyor 2026</b><br /><small>Süper Lig ne zaman başlıyor? 2026-27 sezonu açılış tarihi ve ilk hafta programı</small></td>
+            <td>77 ★</td>
+            <td>qa</td>
+            <td>today, informational, commercial-potential</td>
+            <td>Süper Lig</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-03 (açılışa 11 gün)</td>
+            <td><a href="./super-lig-2026-2027-ne-zaman-basliyor.html">yayında</a></td>
+          </tr>
+          <tr data-team="Fenerbahçe" data-class="today match-intent informational" data-type="update-existing" data-decision="update" data-score="76">
+            <td>7</td>
+            <td><b>fenerbahçe sturm graz muhtemel 11</b><br /><small>Fenerbahçe-Sturm Graz muhtemel 11&#039;ler</small></td>
+            <td>76 ★</td>
+            <td>update-existing</td>
+            <td>today, match-intent, informational</td>
+            <td>Fenerbahçe</td>
+            <td>Güncelle: fenerbahce-sturm-graz-ne-zaman-hangi-kanalda.html</td>
+            <td>2026-08-04 (maç günü -1, kadro verisi doğrulanınca)</td>
+            <td><a href="./fenerbahce-sturm-graz-ne-zaman-hangi-kanalda.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="match-intent commercial-potential" data-type="update-existing" data-decision="update" data-score="76">
+            <td>8</td>
+            <td><b>süper lig canlı skor ilk hafta</b><br /><small>Süper Lig ilk hafta canlı skor ve sonuçlar</small></td>
+            <td>76 ★</td>
+            <td>update-existing</td>
+            <td>match-intent, commercial-potential</td>
+            <td>Süper Lig</td>
+            <td>Güncelle: canli-skor.html</td>
+            <td>2026-08-14..17 (maç günleri)</td>
+            <td><a href="./canli-skor.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Beşiktaş" data-class="breaking match-intent" data-type="quick-news" data-decision="new" data-score="76">
+            <td>9</td>
+            <td><b>hradec kralove beşiktaş maç sonucu</b><br /><small>Hradec Králové-Beşiktaş maç sonucu ve tur senaryosu</small></td>
+            <td>76 ★</td>
+            <td>quick-news</td>
+            <td>breaking, match-intent</td>
+            <td>Beşiktaş</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-06 (maç bitiminde)</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="informational commercial-potential evergreen" data-type="update-existing" data-decision="update" data-score="75">
+            <td>10</td>
+            <td><b>süper lig puan durumu</b><br /><small>Süper Lig puan durumu (2026-27)</small></td>
+            <td>75 ★</td>
+            <td>update-existing</td>
+            <td>informational, commercial-potential, evergreen</td>
+            <td>Süper Lig</td>
+            <td>Güncelle: puan-durumu.html</td>
+            <td>sezonla birlikte sürekli</td>
+            <td><a href="./puan-durumu.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Beşiktaş" data-class="today transfer-intent informational" data-type="transfer-hub" data-decision="new" data-score="73">
+            <td>11</td>
+            <td><b>vlahovic beşiktaş son dakika</b><br /><small>Dusan Vlahovic-Beşiktaş iddiasında son durum: teklif iddiaları ve bilinenler</small></td>
+            <td>73</td>
+            <td>transfer-hub</td>
+            <td>today, transfer-intent, informational</td>
+            <td>Beşiktaş<br /><small>Dusan Vlahovic</small></td>
+            <td>Yeni içerik</td>
+            <td>2026-08-03</td>
+            <td><a href="./dusan-vlahovic-besiktas-transfer-son-durum.html">yayında</a></td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="informational evergreen" data-type="update-existing" data-decision="update" data-score="73">
+            <td>12</td>
+            <td><b>süper lig fikstürü 2026 2027</b><br /><small>Süper Lig 2026-27 fikstürü: hafta hafta program</small></td>
+            <td>73</td>
+            <td>update-existing</td>
+            <td>informational, evergreen</td>
+            <td>Süper Lig</td>
+            <td>Güncelle: super-lig-fikstur.html</td>
+            <td>TFF saat atamalarıyla sürekli</td>
+            <td><a href="./super-lig-fikstur.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Galatasaray" data-class="today match-intent informational" data-type="match-guide" data-decision="new" data-score="72">
+            <td>13</td>
+            <td><b>galatasaray çorum fk maçı ne zaman</b><br /><small>Galatasaray-Çorum FK maçı ne zaman, saat kaçta? Süper Lig açılış maçı</small></td>
+            <td>72</td>
+            <td>match-guide</td>
+            <td>today, match-intent, informational</td>
+            <td>Galatasaray</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-03 (açılışa 11 gün, erken pozisyon)</td>
+            <td><a href="./galatasaray-corum-fk-ne-zaman-hangi-kanalda.html">yayında</a></td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="match-intent commercial-potential" data-type="update-existing" data-decision="update" data-score="71">
+            <td>14</td>
+            <td><b>bugün hangi maçlar var</b><br /><small>Bugünün maçları: gün gün program ve yayın akışı</small></td>
+            <td>71</td>
+            <td>update-existing</td>
+            <td>match-intent, commercial-potential</td>
+            <td>Süper Lig</td>
+            <td>Güncelle: bugunun-maclari.html</td>
+            <td>her gün</td>
+            <td><a href="./bugunun-maclari.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Beşiktaş" data-class="today transfer-intent informational" data-type="qa" data-decision="new" data-score="70">
+            <td>15</td>
+            <td><b>beşiktaş yeni transferleri kimler</b><br /><small>Beşiktaş&#039;ın 2026-27 transferleri: Gelenler, gidenler ve gündemdeki isimler</small></td>
+            <td>70</td>
+            <td>qa</td>
+            <td>today, transfer-intent, informational</td>
+            <td>Beşiktaş</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-03</td>
+            <td><a href="./besiktas-yeni-transferleri-2026-2027.html">yayında</a></td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="today informational evergreen" data-type="qa" data-decision="new" data-score="69">
+            <td>16</td>
+            <td><b>süper lig derbi tarihleri 2026 2027</b><br /><small>Süper Lig derbi takvimi 2026-27: Derbiler hangi hafta oynanacak?</small></td>
+            <td>69</td>
+            <td>qa</td>
+            <td>today, informational, evergreen</td>
+            <td>Süper Lig</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-03</td>
+            <td><a href="./super-lig-derbi-takvimi-2026-2027.html">yayında</a></td>
+          </tr>
+          <tr data-team="" data-class="transfer-intent informational" data-type="update-existing" data-decision="update" data-score="69">
+            <td>17</td>
+            <td><b>salah maaşı ne kadar</b><br /><small>Salah&#039;ın maaşı ne kadar? Trabzonspor iddiasındaki rakamların kaynağı</small></td>
+            <td>69</td>
+            <td>update-existing</td>
+            <td>transfer-intent, informational</td>
+            <td>-<br /><small>Mohamed Salah</small></td>
+            <td>Güncelle: mohamed-salah-trabzonspor-transfer-son-durum.html</td>
+            <td>merkez sayfada bölüm</td>
+            <td><a href="./mohamed-salah-trabzonspor-transfer-son-durum.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Fenerbahçe" data-class="match-intent informational" data-type="update-existing" data-decision="update" data-score="68">
+            <td>18</td>
+            <td><b>fenerbahçe avrupa maçları 2026</b><br /><small>Fenerbahçe&#039;nin Avrupa yolu: eleme takvimi ve sonuçlar</small></td>
+            <td>68</td>
+            <td>update-existing</td>
+            <td>match-intent, informational</td>
+            <td>Fenerbahçe</td>
+            <td>Güncelle: fenerbahce-avrupa-maclari.html</td>
+            <td>her eleme maçından sonra</td>
+            <td><a href="./fenerbahce-avrupa-maclari.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Fenerbahçe" data-class="today match-intent informational" data-type="match-guide" data-decision="new" data-score="66">
+            <td>19</td>
+            <td><b>sturm graz fenerbahçe rövanş ne zaman</b><br /><small>Sturm Graz-Fenerbahçe rövanşı ne zaman? Tur atlama senaryoları</small></td>
+            <td>66</td>
+            <td>match-guide</td>
+            <td>today, match-intent, informational</td>
+            <td>Fenerbahçe</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-06 (ilk maç sonrası)</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="informational evergreen" data-type="update-existing" data-decision="update" data-score="66">
+            <td>20</td>
+            <td><b>transfer dönemi ne zaman bitiyor 2026</b><br /><small>Transfer dönemi ne zaman bitiyor? 2026 yaz penceresi kapanış tarihleri</small></td>
+            <td>66</td>
+            <td>update-existing</td>
+            <td>informational, evergreen</td>
+            <td>Süper Lig</td>
+            <td>Güncelle: transfer-sezonu-ne-zaman-bitiyor.html</td>
+            <td>2026-08-04 (mevcut sayfa tazelenecek)</td>
+            <td><a href="./transfer-sezonu-ne-zaman-bitiyor.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="match-intent informational" data-type="update-existing" data-decision="update" data-score="66">
+            <td>21</td>
+            <td><b>muhtemel 11 süper lig</b><br /><small>Muhtemel 11&#039;ler: hafta hafta tahmini kadrolar</small></td>
+            <td>66</td>
+            <td>update-existing</td>
+            <td>match-intent, informational</td>
+            <td>Süper Lig</td>
+            <td>Güncelle: mac-merkezi.html</td>
+            <td>lig başlayınca maç günleri</td>
+            <td><a href="./mac-merkezi.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Beşiktaş" data-class="today match-intent informational" data-type="update-existing" data-decision="update" data-score="65">
+            <td>22</td>
+            <td><b>beşiktaş hradec kralove rövanş ne zaman</b><br /><small>Beşiktaş-Hradec Králové rövanşı ne zaman, nerede oynanacak?</small></td>
+            <td>65</td>
+            <td>update-existing</td>
+            <td>today, match-intent, informational</td>
+            <td>Beşiktaş</td>
+            <td>Güncelle: hradec-kralove-besiktas-ne-zaman-hangi-kanalda.html</td>
+            <td>2026-08-07 (ilk maç sonrası)</td>
+            <td><a href="./hradec-kralove-besiktas-ne-zaman-hangi-kanalda.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Galatasaray" data-class="today match-intent informational" data-type="quick-news" data-decision="new" data-score="65">
+            <td>23</td>
+            <td><b>galatasaray villarreal hazırlık maçı ne zaman</b><br /><small>Galatasaray-Villarreal hazırlık maçı ne zaman, saat kaçta?</small></td>
+            <td>65</td>
+            <td>quick-news</td>
+            <td>today, match-intent, informational</td>
+            <td>Galatasaray</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-07 (maçtan 1 gün önce)</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Beşiktaş" data-class="transfer-intent informational" data-type="update-existing" data-decision="update" data-score="65">
+            <td>24</td>
+            <td><b>darwin nunez beşiktaş</b><br /><small>Darwin Núñez-Beşiktaş iddiası: kiralık formül gündemde</small></td>
+            <td>65</td>
+            <td>update-existing</td>
+            <td>transfer-intent, informational</td>
+            <td>Beşiktaş<br /><small>Darwin Núñez</small></td>
+            <td>Güncelle: haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html</td>
+            <td>gelişme olursa</td>
+            <td><a href="./haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="evergreen informational" data-type="update-existing" data-decision="update" data-score="65">
+            <td>25</td>
+            <td><b>uefa ülke puanı sıralaması türkiye</b><br /><small>UEFA ülke puanında Türkiye kaçıncı sırada?</small></td>
+            <td>65</td>
+            <td>update-existing</td>
+            <td>evergreen, informational</td>
+            <td>Süper Lig</td>
+            <td>Güncelle: uefa-ulke-puani-siralamasi.html</td>
+            <td>eleme haftalarında güncel tutulacak</td>
+            <td><a href="./uefa-ulke-puani-siralamasi.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="match-intent commercial-potential" data-type="update-existing" data-decision="update" data-score="65">
+            <td>26</td>
+            <td><b>süper lig maç tahminleri</b><br /><small>Süper Lig maç tahminleri: ilk hafta değerlendirmesi</small></td>
+            <td>65</td>
+            <td>update-existing</td>
+            <td>match-intent, commercial-potential</td>
+            <td>Süper Lig</td>
+            <td>Güncelle: bugunku-mac-tahminleri.html</td>
+            <td>2026-08-13</td>
+            <td><a href="./bugunku-mac-tahminleri.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="" data-class="informational" data-type="update-existing" data-decision="update" data-score="64">
+            <td>27</td>
+            <td><b>osimhen galatasaray kaç gol attı</b><br /><small>Osimhen Galatasaray&#039;da kaç gol attı? Sezon sezon istatistikler</small></td>
+            <td>64</td>
+            <td>update-existing</td>
+            <td>informational</td>
+            <td>-<br /><small>Victor Osimhen</small></td>
+            <td>Güncelle: victor-osimhen-transfer-son-durum.html</td>
+            <td>merkez sayfada bölüm</td>
+            <td><a href="./victor-osimhen-transfer-son-durum.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Fenerbahçe" data-class="match-intent informational" data-type="match-guide" data-decision="new" data-score="63">
+            <td>28</td>
+            <td><b>gençlerbirliği fenerbahçe maçı ne zaman</b><br /><small>Gençlerbirliği-Fenerbahçe maçı ne zaman, saat kaçta?</small></td>
+            <td>63</td>
+            <td>match-guide</td>
+            <td>match-intent, informational</td>
+            <td>Fenerbahçe</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-12 (lig açılış haftası)</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Fenerbahçe" data-class="evergreen informational" data-type="update-existing" data-decision="update" data-score="63">
+            <td>29</td>
+            <td><b>şampiyonlar ligi eleme turları nasıl işliyor</b><br /><small>Şampiyonlar Ligi eleme turları: sistem nasıl işliyor?</small></td>
+            <td>63</td>
+            <td>update-existing</td>
+            <td>evergreen, informational</td>
+            <td>Fenerbahçe</td>
+            <td>Güncelle: sampiyonlar-ligi-on-eleme-maclari.html</td>
+            <td>2026-08-04 (mevcut sayfa güçlendirilecek)</td>
+            <td><a href="./sampiyonlar-ligi-on-eleme-maclari.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Trabzonspor" data-class="match-intent informational" data-type="match-guide" data-decision="new" data-score="62">
+            <td>30</td>
+            <td><b>kasımpaşa trabzonspor maçı ne zaman</b><br /><small>Kasımpaşa-Trabzonspor maçı ne zaman, saat kaçta?</small></td>
+            <td>62</td>
+            <td>match-guide</td>
+            <td>match-intent, informational</td>
+            <td>Trabzonspor</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-12</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Beşiktaş" data-class="transfer-intent informational" data-type="update-existing" data-decision="update" data-score="62">
+            <td>31</td>
+            <td><b>patrick schick beşiktaş</b><br /><small>Patrick Schick-Beşiktaş iddiası: bilinenler ve doğrulanmayanlar</small></td>
+            <td>62</td>
+            <td>update-existing</td>
+            <td>transfer-intent, informational</td>
+            <td>Beşiktaş<br /><small>Patrick Schick</small></td>
+            <td>Güncelle: haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html</td>
+            <td>gelişme olursa</td>
+            <td><a href="./haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Fenerbahçe" data-class="opinion match-intent" data-type="column" data-decision="new" data-score="62">
+            <td>32</td>
+            <td><b>fenerbahçe şampiyonlar ligi yorum</b><br /><small>Kadıköy&#039;de Avrupa gecesi: Fenerbahçe&#039;nin eleme matematiği (köşe yazısı)</small></td>
+            <td>62</td>
+            <td>column</td>
+            <td>opinion, match-intent</td>
+            <td>Fenerbahçe</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-04</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="informational match-intent" data-type="update-existing" data-decision="update" data-score="62">
+            <td>33</td>
+            <td><b>sakat ve cezalı oyuncular süper lig</b><br /><small>Süper Lig sakat ve cezalı oyuncular listesi (haftalık)</small></td>
+            <td>62</td>
+            <td>update-existing</td>
+            <td>informational, match-intent</td>
+            <td>Süper Lig</td>
+            <td>Güncelle: super-lig-oyuncu-radari.html</td>
+            <td>lig başlayınca haftalık</td>
+            <td><a href="./super-lig-oyuncu-radari.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Beşiktaş" data-class="evergreen informational" data-type="evergreen-guide" data-decision="new" data-score="61">
+            <td>34</td>
+            <td><b>avrupa ligi eleme sistemi nasıl işliyor</b><br /><small>UEFA Avrupa Ligi eleme sistemi: Turlar, play-off ve lig aşaması nasıl işliyor?</small></td>
+            <td>61</td>
+            <td>evergreen-guide</td>
+            <td>evergreen, informational</td>
+            <td>Beşiktaş</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-03 (BJK eleme haftası bağlamıyla)</td>
+            <td><a href="./avrupa-ligi-eleme-sistemi-rehberi.html">yayında</a></td>
+          </tr>
+          <tr data-team="Beşiktaş" data-class="match-intent informational" data-type="match-guide" data-decision="new" data-score="61">
+            <td>35</td>
+            <td><b>beşiktaş eyüpspor maçı ne zaman</b><br /><small>Beşiktaş-Eyüpspor maçı ne zaman, saat kaçta?</small></td>
+            <td>61</td>
+            <td>match-guide</td>
+            <td>match-intent, informational</td>
+            <td>Beşiktaş</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-13</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="informational evergreen" data-type="update-existing" data-decision="update" data-score="61">
+            <td>36</td>
+            <td><b>süper lig gol krallığı 2026 27</b><br /><small>Süper Lig gol krallığı: sezonun golcü sıralaması</small></td>
+            <td>61</td>
+            <td>update-existing</td>
+            <td>informational, evergreen</td>
+            <td>Süper Lig</td>
+            <td>Güncelle: gol-kralligi.html</td>
+            <td>sezonla birlikte</td>
+            <td><a href="./gol-kralligi.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Beşiktaş" data-class="transfer-intent informational" data-type="update-existing" data-decision="update" data-score="60">
+            <td>37</td>
+            <td><b>matias soule beşiktaş</b><br /><small>Matías Soulé-Beşiktaş iddiası: sağ kanat planındaki yeri</small></td>
+            <td>60</td>
+            <td>update-existing</td>
+            <td>transfer-intent, informational</td>
+            <td>Beşiktaş<br /><small>Matías Soulé</small></td>
+            <td>Güncelle: haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html</td>
+            <td>gelişme olursa</td>
+            <td><a href="./haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="match-intent informational" data-type="update-existing" data-decision="update" data-score="59">
+            <td>38</td>
+            <td><b>fenerbahçe beşiktaş derbisi ne zaman</b><br /><small>Fenerbahçe-Beşiktaş derbisi ne zaman? 4. hafta programı</small></td>
+            <td>59</td>
+            <td>update-existing</td>
+            <td>match-intent, informational</td>
+            <td>Süper Lig</td>
+            <td>Güncelle: super-lig-derbi-takvimi-2026-2027.html</td>
+            <td>TFF saat ataması gelince</td>
+            <td><a href="./super-lig-derbi-takvimi-2026-2027.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Galatasaray" data-class="informational transfer-intent" data-type="qa" data-decision="new" data-score="58">
+            <td>39</td>
+            <td><b>icardi hangi takımda</b><br /><small>Icardi hangi takımda? Galatasaray sonrası son durum</small></td>
+            <td>58</td>
+            <td>qa</td>
+            <td>informational, transfer-intent</td>
+            <td>Galatasaray<br /><small>Mauro Icardi</small></td>
+            <td>Yeni içerik</td>
+            <td>2026-08-08</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Trabzonspor" data-class="transfer-intent informational" data-type="update-existing" data-decision="update" data-score="57">
+            <td>40</td>
+            <td><b>andre onana trabzonspor</b><br /><small>Onana Trabzonspor&#039;da: kiralık transferin kapsamı</small></td>
+            <td>57</td>
+            <td>update-existing</td>
+            <td>transfer-intent, informational</td>
+            <td>Trabzonspor<br /><small>Andre Onana</small></td>
+            <td>Güncelle: super-lig-transferleri-2026-2027.html</td>
+            <td>mevcut sayfada bölüm güçlendirme</td>
+            <td><a href="./super-lig-transferleri-2026-2027.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Fenerbahçe" data-class="transfer-intent informational" data-type="update-existing" data-decision="update" data-score="57">
+            <td>41</td>
+            <td><b>mason greenwood fenerbahçe</b><br /><small>Greenwood Fenerbahçe&#039;de: transferin doğrulanmış detayları</small></td>
+            <td>57</td>
+            <td>update-existing</td>
+            <td>transfer-intent, informational</td>
+            <td>Fenerbahçe<br /><small>Mason Greenwood</small></td>
+            <td>Güncelle: super-lig-transferleri-2026-2027.html</td>
+            <td>mevcut sayfada bölüm güçlendirme</td>
+            <td><a href="./super-lig-transferleri-2026-2027.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Beşiktaş" data-class="transfer-intent informational" data-type="update-existing" data-decision="update" data-score="56">
+            <td>42</td>
+            <td><b>leandro trossard beşiktaş</b><br /><small>Trossard Beşiktaş&#039;ta: doğrulanmış transferin detayları</small></td>
+            <td>56</td>
+            <td>update-existing</td>
+            <td>transfer-intent, informational</td>
+            <td>Beşiktaş<br /><small>Leandro Trossard</small></td>
+            <td>Güncelle: super-lig-transferleri-2026-2027.html</td>
+            <td>mevcut sayfada bölüm güçlendirme</td>
+            <td><a href="./super-lig-transferleri-2026-2027.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="opinion evergreen" data-type="column" data-decision="new" data-score="56">
+            <td>43</td>
+            <td><b>süper lig transfer politikası analiz</b><br /><small>Bütçe makası ve akıllı transfer: Anadolu kulüplerinin tek yolu (köşe yazısı)</small></td>
+            <td>56</td>
+            <td>column</td>
+            <td>opinion, evergreen</td>
+            <td>Süper Lig</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-05</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Trabzonspor" data-class="opinion informational" data-type="column" data-decision="new" data-score="56">
+            <td>44</td>
+            <td><b>trabzonspor kadro analizi 2026</b><br /><small>Onana&#039;dan Muçi&#039;ye: Trabzonspor&#039;un sessiz kadro inşası (köşe yazısı)</small></td>
+            <td>56</td>
+            <td>column</td>
+            <td>opinion, informational</td>
+            <td>Trabzonspor</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-06</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Kocaelispor" data-class="informational evergreen" data-type="team-file" data-decision="new" data-score="56">
+            <td>45</td>
+            <td><b>kocaelispor süper lig kadrosu</b><br /><small>Süper Lig&#039;e dönen Kocaelispor: kadro ve sezon beklentisi</small></td>
+            <td>56</td>
+            <td>team-file</td>
+            <td>informational, evergreen</td>
+            <td>Kocaelispor</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-10 (kadro verisi doğrulanınca)</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Süper Lig" data-class="informational evergreen" data-type="update-existing" data-decision="update" data-score="56">
+            <td>46</td>
+            <td><b>süper lig genç oyuncular 2026</b><br /><small>Süper Lig&#039;de sezonun takip edilecek genç oyuncuları</small></td>
+            <td>56</td>
+            <td>update-existing</td>
+            <td>informational, evergreen</td>
+            <td>Süper Lig</td>
+            <td>Güncelle: genc-yetenekler.html</td>
+            <td>2026-08-11</td>
+            <td><a href="./genc-yetenekler.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Fenerbahçe" data-class="match-intent informational" data-type="match-guide" data-decision="new" data-score="55">
+            <td>47</td>
+            <td><b>fenerbahçe konyaspor maçı ne zaman</b><br /><small>Fenerbahçe-Konyaspor maçı ne zaman? 2. hafta programı</small></td>
+            <td>55</td>
+            <td>match-guide</td>
+            <td>match-intent, informational</td>
+            <td>Fenerbahçe</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-19 (TFF saat ataması sonrası)</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Galatasaray" data-class="match-intent informational" data-type="match-guide" data-decision="new" data-score="55">
+            <td>48</td>
+            <td><b>erzurumspor galatasaray maçı ne zaman</b><br /><small>Erzurumspor FK-Galatasaray maçı ne zaman? 2. hafta programı</small></td>
+            <td>55</td>
+            <td>match-guide</td>
+            <td>match-intent, informational</td>
+            <td>Galatasaray</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-19</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="" data-class="transfer-intent informational" data-type="update-existing" data-decision="update" data-score="55">
+            <td>49</td>
+            <td><b>edin dzeko schalke</b><br /><small>Edin Džeko-Schalke&#039;de son durum: imza süreci</small></td>
+            <td>55</td>
+            <td>update-existing</td>
+            <td>transfer-intent, informational</td>
+            <td>-<br /><small>Edin Džeko</small></td>
+            <td>Güncelle: haber/avrupa-futbolundan-kisa-kisa-3-agustos-2026.html</td>
+            <td>resmî açıklama gelince haber</td>
+            <td><a href="./haber/avrupa-futbolundan-kisa-kisa-3-agustos-2026.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Galatasaray" data-class="informational evergreen" data-type="qa" data-decision="new" data-score="54">
+            <td>50</td>
+            <td><b>galatasaray teknik direktörü kim</b><br /><small>Galatasaray&#039;ın teknik direktörü kim? Teknik heyet dosyası</small></td>
+            <td>54</td>
+            <td>qa</td>
+            <td>informational, evergreen</td>
+            <td>Galatasaray</td>
+            <td>Yeni içerik</td>
+            <td>kadro/heyet verisi doğrulanınca</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Çaykur Rizespor" data-class="match-intent informational" data-type="quick-news" data-decision="new" data-score="54">
+            <td>51</td>
+            <td><b>rizespor pyramids maçı ne zaman</b><br /><small>Çaykur Rizespor-Pyramids hazırlık maçı ne zaman?</small></td>
+            <td>54</td>
+            <td>quick-news</td>
+            <td>match-intent, informational</td>
+            <td>Çaykur Rizespor</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-07</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Samsunspor" data-class="match-intent informational" data-type="match-guide" data-decision="new" data-score="54">
+            <td>52</td>
+            <td><b>samsunspor göztepe maçı ne zaman</b><br /><small>Samsunspor-Göztepe maçı ne zaman, saat kaçta?</small></td>
+            <td>54</td>
+            <td>match-guide</td>
+            <td>match-intent, informational</td>
+            <td>Samsunspor</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-14</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="Trabzonspor" data-class="transfer-intent informational" data-type="update-existing" data-decision="update" data-score="53">
+            <td>53</td>
+            <td><b>nwaiwu trabzonspor ayrılıyor mu</b><br /><small>Nwaiwu Trabzonspor&#039;dan ayrılıyor mu? Başkanın açıklaması</small></td>
+            <td>53</td>
+            <td>update-existing</td>
+            <td>transfer-intent, informational</td>
+            <td>Trabzonspor<br /><small>Chibuike Nwaiwu</small></td>
+            <td>Güncelle: haber/trabzonspor-ertugrul-dogan-salah-transfer-aciklamasi.html</td>
+            <td>gelişme olursa</td>
+            <td><a href="./haber/trabzonspor-ertugrul-dogan-salah-transfer-aciklamasi.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Fenerbahçe" data-class="informational" data-type="qa" data-decision="new" data-score="53">
+            <td>54</td>
+            <td><b>kante fenerbahçe kadrosunda mı</b><br /><small>Kanté Fenerbahçe kadrosunda mı? Doğrulanmış kadro durumu</small></td>
+            <td>53</td>
+            <td>qa</td>
+            <td>informational</td>
+            <td>Fenerbahçe<br /><small>N&#039;Golo Kanté</small></td>
+            <td>Yeni içerik</td>
+            <td>kadro verisi doğrulanınca</td>
+            <td>planlandı</td>
+          </tr>
+          <tr data-team="" data-class="transfer-intent informational" data-type="update-existing" data-decision="update" data-score="52">
+            <td>55</td>
+            <td><b>kolo muani juventus son dakika</b><br /><small>Kolo Muani-Juventus&#039;ta son durum: sağlık kontrolü aşaması</small></td>
+            <td>52</td>
+            <td>update-existing</td>
+            <td>transfer-intent, informational</td>
+            <td>-<br /><small>Randal Kolo Muani</small></td>
+            <td>Güncelle: haber/avrupa-futbolundan-kisa-kisa-3-agustos-2026.html</td>
+            <td>resmî açıklama gelince haber</td>
+            <td><a href="./haber/avrupa-futbolundan-kisa-kisa-3-agustos-2026.html">mevcut sayfa</a></td>
+          </tr>
+          <tr data-team="Dünya Futbolu" data-class="informational" data-type="qa" data-decision="new" data-score="50">
+            <td>56</td>
+            <td><b>premier lig ne zaman başlıyor</b><br /><small>Premier Lig ne zaman başlıyor? 2026-27 sezon takvimi</small></td>
+            <td>50</td>
+            <td>qa</td>
+            <td>informational</td>
+            <td>Dünya Futbolu</td>
+            <td>Yeni içerik</td>
+            <td>2026-08-17 (açılış haftası öncesi)</td>
+            <td>planlandı</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+<footer class="footer footer-premium" data-shared-layout="footer">
+      <div class="container-wide footer-grid">
+        <div class="footer-brand">
+          <a class="brand" href="./index.html" aria-label="FutbolRadar ana sayfa">
+            <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 12 17 8"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
+            <span class="brand-text"><b>Futbol</b>Radar</span>
+          </a>
+          <p>Süper Lig ve Avrupa kupalarında canlı skor, maç programı, puan durumu, oyuncu istatistikleri ve doğrulanmış transfer hareketleri. Veriler resmî kaynaklardan derlenir, üretilmez.</p>
+          <div class="footer-social" aria-label="Sosyal medya"><a href="https://x.com/futbolradar" aria-label="X (Twitter)" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 3h3.1l-6.8 7.8L21.8 21h-6.2l-4.9-6.4L5.1 21H2l7.3-8.3L2.4 3h6.3l4.4 5.8ZM16.4 19.2h1.7L7.7 4.7H5.9Z"/></svg></a><a href="https://www.instagram.com/futbolradar" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" stroke="none"/></svg></a><a href="https://www.youtube.com/@futbolradar" aria-label="YouTube" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="4.5"/><path d="M10.4 9.3 15 12l-4.6 2.7Z" fill="currentColor" stroke="none"/></svg></a></div>
+        </div>
+        <div class="footer-col">
+          <h2>Maç</h2>
+          <div class="footer-col-links"><a href="./bugunun-maclari.html">Bugünün Maçları</a><a href="./canli-skor.html">Canlı Skor</a><a href="./mac-sonuclari.html">Maç Sonuçları</a><a href="./super-lig-fikstur.html">Süper Lig</a><a href="./analizler.html">Analizler</a><a href="./takimlar.html">Takımlar</a><a href="./kose-yazilari.html">Köşe Yazıları</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./arsiv.html">Arşiv</a></div>
+        </div>
+        <div class="footer-col">
+          <h2>Veri</h2>
+          <div class="footer-col-links"><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./istatistik-merkezi.html">İstatistik Merkezi</a><a href="./transfer-radari.html">Transfer Radarı</a><a href="./momentum.html">Momentum</a><a href="./gol-kralligi.html">Gol Krallığı</a><a href="./haberler.html">Haberler</a></div>
+        </div>
+        <div class="footer-col">
+          <h2>Kurumsal</h2>
+          <div class="footer-col-links"><a href="./hakkinda.html">Hakkında</a><a href="./iletisim.html">İletişim</a><a href="./veri-notu.html">Veri Notu</a><a href="./gizlilik.html">Gizlilik</a><a href="./kullanim-sartlari.html">Kullanım Şartları</a></div>
+        </div>
+      </div>
+      <div class="container-wide footer-bottom">
+        <span>© 2026 FutbolRadar · Canlı skor ve futbol istatistikleri</span>
+        <span class="footer-links"><a href="./veri-notu.html">Veri Notu</a><a href="./iletisim.html">İletişim</a></span>
+      </div>
+    </footer>
+    <script>
+      (function () {
+        var q = document.getElementById("f-query");
+        var team = document.getElementById("f-team");
+        var cls = document.getElementById("f-class");
+        var dec = document.getElementById("f-decision");
+        var high = document.getElementById("f-high");
+        var rows = Array.prototype.slice.call(document.querySelectorAll("#demand-table tbody tr"));
+        function apply() {
+          var needle = (q.value || "").toLocaleLowerCase("tr");
+          rows.forEach(function (row) {
+            var ok = true;
+            if (needle && row.textContent.toLocaleLowerCase("tr").indexOf(needle) === -1) ok = false;
+            if (team.value && row.getAttribute("data-team") !== team.value) ok = false;
+            if (cls.value && (row.getAttribute("data-class") || "").indexOf(cls.value) === -1) ok = false;
+            if (dec.value && row.getAttribute("data-decision") !== dec.value) ok = false;
+            if (high.value === "high" && Number(row.getAttribute("data-score")) < 75) ok = false;
+            row.style.display = ok ? "" : "none";
+          });
+        }
+        [q, team, cls, dec, high].forEach(function (el) { el.addEventListener("input", apply); });
+      })();
+    </script>
+  </body>
+</html>

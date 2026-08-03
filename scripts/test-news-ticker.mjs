@@ -162,10 +162,11 @@ function item(overrides = {}) {
   assert.equal(future.items.length, 0, "gelecek tarihli öğe bandın 'şu an' iddiasını bozar");
 }
 
-// ── 8. Yedi kategori de destekleniyor ──────────────────────────────────────
+// ── 8. Sekiz kategori de destekleniyor ─────────────────────────────────────
 //
 // Kategori listesi bandın kapsamıdır: resmî açıklama, maç sonu, maç programı,
-// kadro/sakatlık, teknik direktör ve oyuncu sözü, transfer iddiası.
+// kadro/sakatlık, teknik direktör ve oyuncu sözü, kulüp gündemi, transfer
+// iddiası.
 {
   const expected = [
     "official",
@@ -174,9 +175,10 @@ function item(overrides = {}) {
     "squad-update",
     "manager-quote",
     "player-quote",
+    "club-agenda",
     "transfer-rumour"
   ];
-  assert.deepEqual(Object.keys(CATEGORIES).sort(), expected.slice().sort(), "yedi kategori tanımlı olmalı");
+  assert.deepEqual(Object.keys(CATEGORIES).sort(), expected.slice().sort(), "sekiz kategori tanımlı olmalı");
   for (const key of expected) {
     assert.ok(CATEGORIES[key].label, `${key}: ekran etiketi olmalı`);
     assert.ok(Number.isFinite(CATEGORIES[key].maxAgeHours), `${key}: raf ömrü tanımlı olmalı`);

@@ -89,6 +89,34 @@
   ],
   "rewrites": [
     {
+      "source": "/mac-sonuclari",
+      "destination": "/mac-sonuclari.html"
+    },
+    {
+      "source": "/bugunun-maclari",
+      "destination": "/bugunun-maclari.html"
+    },
+    {
+      "source": "/canli-skor",
+      "destination": "/canli-skor.html"
+    },
+    {
+      "source": "/analizler",
+      "destination": "/analizler.html"
+    },
+    {
+      "source": "/kose-yazilari",
+      "destination": "/kose-yazilari.html"
+    },
+    {
+      "source": "/kose-yazilari/:slug",
+      "destination": "/kose-yazilari/:slug.html"
+    },
+    {
+      "source": "/yazarlar/:slug",
+      "destination": "/yazarlar/:slug.html"
+    },
+    {
       "source": "/oyuncular/forvetler",
       "destination": "/oyuncular/forvetler.html"
     },
@@ -123,6 +151,10 @@
     {
       "source": "/karsilastirma/:slug",
       "destination": "/karsilastirma/:slug.html"
+    },
+    {
+      "source": "/haber/:slug",
+      "destination": "/haber/:slug.html"
     }
   ],
   "headers": [
@@ -137,6 +169,24 @@
     },
     {
       "source": "/site.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/analytics.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/performance-loader.js",
       "headers": [
         {
           "key": "Cache-Control",
@@ -183,7 +233,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests"
         }
       ]
     }

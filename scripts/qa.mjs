@@ -7,8 +7,17 @@ import { createRequire } from "node:module";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { validatePlayerData } = require("../services/playerService.js");
+const { publishedColumns } = require("../services/columnService.js");
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+const newsData = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
+const columnData = JSON.parse(fs.readFileSync(path.join(root, "data", "columns.json"), "utf8"));
 const playerProfilePages = players.map((player) => `oyuncular/${player.id}.html`);
+const newsArticlePages = (Array.isArray(newsData) ? newsData : newsData.items || newsData.news || [])
+  .filter((article) => article && String(article.status || "").toLowerCase() === "verified" && article.slug && Array.isArray(article.body))
+  .map((article) => `haber/${article.slug}.html`);
+const { columns: publishedColumnRecords } = publishedColumns(columnData);
+const columnArticlePages = publishedColumnRecords.map((column) => column.path);
+const columnAuthorPages = [...new Set(publishedColumnRecords.map((column) => column.authorPath))];
 const comparisonPagesDir = path.join(root, "karsilastirma");
 const playerComparisonPages = fs.existsSync(comparisonPagesDir)
   ? fs.readdirSync(comparisonPagesDir).filter((file) => file.endsWith(".html")).sort().map((file) => `karsilastirma/${file}`)
@@ -81,7 +90,12 @@ const pages = [
   ...playerComparisonPages,
   "canli-skor.html",
   "bugunun-maclari.html",
+  "mac-sonuclari.html",
   "haberler.html",
+  ...newsArticlePages,
+  "kose-yazilari.html",
+  ...columnArticlePages,
+  ...columnAuthorPages,
   "momentum.html",
   "analizler.html"
 ];
@@ -262,7 +276,7 @@ function checkVercelFunctionLimit() {
 }
 
 function checkPublicMirrors() {
-  for (const file of ["page.css", "app.js", "site.js", "site.webmanifest"]) {
+  for (const file of ["page.css", "app.js", "site.js", "analytics.js", "performance-loader.js", "site.webmanifest"]) {
     const rootFile = path.join(root, file);
     const publicFile = path.join(root, "public", file);
     if (!fs.existsSync(rootFile) || !fs.existsSync(publicFile)) {
@@ -504,6 +518,26 @@ function checkSeoAndLinks() {
       expect(html.includes("puan-durumu.html"), `${page}: missing standings route`);
       expect(html.includes("momentum.html"), `${page}: missing momentum route`);
       expect(html.includes("analizler.html"), `${page}: missing analysis hub route`);
+      expect(html.includes('data-api-target="home-columns"'), `${page}: missing latest columns block`);
+      expect(html.includes("Son Köşe Yazıları"), `${page}: latest columns heading is unclear`);
+    }
+
+    if (page === "kose-yazilari.html") {
+      expect(html.includes('data-api-target="columns-page"'), `${page}: missing column listing target`);
+      expect(html.includes("Köşe Yazıları"), `${page}: missing visible section label`);
+    }
+
+    if (columnArticlePages.includes(page)) {
+      expect(html.includes('class="column-standfirst"'), `${page}: missing article excerpt`);
+      expect(html.includes('class="column-author"'), `${page}: missing linked author`);
+      expect(html.includes("yazarlar/"), `${page}: missing author archive route`);
+      expect(html.includes('"@type":"OpinionNewsArticle"'), `${page}: missing opinion article schema`);
+    }
+
+    if (columnAuthorPages.includes(page)) {
+      expect(html.includes('class="column-grid"'), `${page}: missing author article grid`);
+      expect(html.includes('"@type":"ProfilePage"'), `${page}: missing author profile schema`);
+      expect(html.includes("Köşe Yazıları"), `${page}: missing route back to columns`);
     }
 
     if (page === "oyuncu-radari.html") {
@@ -629,7 +663,8 @@ function checkAnalyticsTag() {
   for (const file of htmlFiles) {
     const html = fs.readFileSync(file, "utf8");
     expect(html.includes("data-futbolradar-ga4"), `${path.relative(root, file)}: GA4 tag missing`);
-    expect(html.includes("window.gtag"), `${path.relative(root, file)}: gtag bootstrap missing`);
+    expect(html.includes('src="/analytics.js"'), `${path.relative(root, file)}: analytics loader missing`);
+    expect(!html.includes("G-XXXXXXXXXX"), `${path.relative(root, file)}: analytics placeholder must not ship`);
   }
 }
 

@@ -135,7 +135,10 @@ function sampleGeneratedHtml(dir, limit) {
         missingSecurity.push(`${rel}: ${host} rel="${relValue}"`);
       }
 
-      if (isOwnProfileHost(host) || isShareHost(host)) {
+      // Kendi hesap kontrolü TAM ADRESLE yapılır: youtube.com'un tamamı
+      // "bizim" değil, yalnızca /@futbolradar. Alıntılanan bir video
+      // kimlik bağlantısı sayılıp nofollow'unu kaybetmemeli.
+      if (isOwnProfileHost(match[2]) || isShareHost(match[2])) {
         // Kendi hesabı / paylaşım hedefi: alıntı değil, `nofollow` OLMAMALI.
         if (tokens.includes("nofollow")) {
           wrongNofollow.push(`${rel}: ${host}`);

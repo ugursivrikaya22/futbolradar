@@ -80,7 +80,10 @@ const CATEGORIES = Object.freeze({
   "squad-update": { label: "Kadro & sakatlık", rumourOnly: false, priority: 3, maxAgeHours: 24 * 10 },
   "manager-quote": { label: "Teknik direktör", rumourOnly: false, priority: 4, maxAgeHours: 24 * 7 },
   "player-quote": { label: "Oyuncu açıklaması", rumourOnly: false, priority: 5, maxAgeHours: 24 * 7 },
-  "transfer-rumour": { label: "Transfer iddiası", rumourOnly: true, priority: 6, maxAgeHours: 24 * 7 }
+  // Kulüp gündemi: kulübü ilgilendiren ama maç ya da transfer olmayan
+  // gelişme (kongre, ceza, tesis, yönetim). Dört günde tazeliğini yitirir.
+  "club-agenda": { label: "Kulüp gündemi", rumourOnly: false, priority: 6, maxAgeHours: 24 * 4 },
+  "transfer-rumour": { label: "Transfer iddiası", rumourOnly: true, priority: 7, maxAgeHours: 24 * 7 }
 });
 
 /**
@@ -151,7 +154,13 @@ const HEDGE_MARKERS = [
   "görüşmeler sürüyor",
   "görüşmelerin sürdüğü",
   "sürüyor",
+  // "yazdı" tek başına yetmiyordu: Türkçe çekimlendiği için "basını ...
+  // yazıyor" ve "yazdığını yazıyor" kalıpları eleniyordu — oysa ikisi de
+  // iddiayı kaynağa atfeden, tam da bu kuralın istediği ifadeler. Kök
+  // olarak "yaz" yazılamaz: "yaz transfer dönemi" yanlış eşleşirdi.
   "yazdı",
+  "yazıyor",
+  "yazdığı",
   "rapor",
   "konuşul",
   "sıcak bak",
@@ -162,13 +171,17 @@ const HEDGE_MARKERS = [
 ];
 
 /**
- * Bandın küratörlü kaynaktan alabileceği en fazla öğe sayısı.
+ * Doğrulama katmanının işleyebileceği küratörlü HAVUZ — ekrandaki tavan
+ * değil. Ekranda kaç öğe görüneceğini scripts/lib/tickerFeed.mjs içindeki
+ * MAX_ITEMS belirler.
  *
- * Ayrılan slot sayısından (MIN_CURATED_SLOTS) fazla: tekleştirme sırasında
- * bir küratörlü öğe maç kaydındaki sürümüyle birleşip kotadan düşebiliyor.
- * Yedek olmasa gündem slotu boş kalırdı.
+ * Havuz, ayrılan slot sayısından (MIN_CURATED_SLOTS) bilinçli olarak geniş:
+ * tekleştirme sırasında bir küratörlü öğe maç kaydındaki sürümüyle birleşip
+ * kotadan düşebiliyor. Yedek olmasa gündem slotu boş kalırdı. Gündem
+ * dosyasındaki kayıt sayısı arttıkça bu havuzun da geniş kalması gerekiyor,
+ * yoksa sıralamanın altındaki kayıtlar doğrulamaya hiç ulaşamaz.
  */
-const MAX_CURATED_ITEMS = 6;
+const MAX_CURATED_ITEMS = 8;
 
 /**
  * "Son dakika" bir ZAMAN İDDİASIDIR. Bir öğe `breaking` işaretiyle girse

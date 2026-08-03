@@ -69,7 +69,7 @@ function testOnlyVerifiedSources() {
 
 function testNotCrowded() {
   const feed = buildTickerFeed();
-  assert.ok(feed.items.length <= 7, `bant en fazla 7 öğe taşımalı, ${feed.items.length} var`);
+  assert.ok(feed.items.length <= 8, `bant en fazla 8 öğe taşımalı, ${feed.items.length} var`);
 }
 
 /**
@@ -129,16 +129,35 @@ function testCuratedAgendaHasRoom() {
   );
 }
 
+/**
+ * Test saati VERİDEN türetilir, sabit yazılmaz.
+ *
+ * Burada bir kez sabit tarih ("2026-08-01T14:20") yazıldı ve gündem dosyası
+ * iki gün ilerlediğinde test çürüdü: sabit saate göre haberler "gelecekte"
+ * kalıyordu. Bandın sözleşmesi tarihe değil, EN TAZE ÖĞEYE GÖRELİ pencereye
+ * dayanıyor; test de öyle bakmalı.
+ */
+function newestItemTime() {
+  const feed = buildTickerFeed();
+  const stamps = feed.items
+    .map((item) => Date.parse(item.at))
+    .filter((value) => Number.isFinite(value));
+  assert.ok(stamps.length, "ön koşul: bantta zaman damgalı öğe olmalı");
+  return new Date(Math.max(...stamps));
+}
+
 function testFreshBadgeIsATimeClaim() {
-  // Taze içerik: rozet "Son Dakika".
-  const fresh = buildTickerFeed({ now: new Date("2026-08-01T14:20:00+03:00") });
+  const newest = newestItemTime();
+
+  // En taze öğenin hemen ardından bakıldığında içerik tazedir.
+  const justAfter = new Date(newest.getTime() + 60 * 1000);
+  const fresh = buildTickerFeed({ now: justAfter });
   assert.equal(fresh.badge, "Son Dakika", "taze içerikte rozet Son Dakika olmalı");
   assert.equal(fresh.fresh, true);
 
-  // Aynı veri, çok ileri bir tarihten bakıldığında artık taze değil:
-  // rozet sessizce nötrleşmeli, "Son Dakika" iddiası sürdürülmemeli.
-  const later = new Date("2026-08-01T14:20:00+03:00");
-  later.setHours(later.getHours() + FRESH_WINDOW_HOURS + 6);
+  // Aynı veri, pencerenin ötesinden bakıldığında artık taze değil: rozet
+  // sessizce nötrleşmeli, "Son Dakika" iddiası sürdürülmemeli.
+  const later = new Date(newest.getTime() + (FRESH_WINDOW_HOURS + 6) * 60 * 60 * 1000);
   const stale = buildTickerFeed({ now: later });
   assert.notEqual(stale.badge, "Son Dakika", "eski içerikte Son Dakika rozeti kalmamalı");
   assert.equal(stale.fresh, false);

@@ -3,7 +3,7 @@
  *
  * Sistemin iki sözü var ve testler bu ikisini koruyor:
  *
- *   1. YORUM İLE HABER AYRIDIR. Her yazı "Yorum" künyesi taşır; künyesiz bir
+ *   1. YORUM İLE HABER AYRIDIR. Her yazı "Köşe Yazısı" künyesi taşır; künyesiz bir
  *      köşe yazısı yayımlanamaz. Okuyucu bir kanaati sitenin doğrulanmış
  *      verisi sanmamalı.
  *   2. TASLAK ÜRETİLİR, YAYIN ELLE AÇILIR. Hiçbir otomatik yol bir yazıyı
@@ -17,6 +17,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
+import { NAV_PRIMARY, NAV_SECONDARY } from "./lib/layout.mjs";
+import { authorPageHtml, columnCard, columnPageHtml, groupAuthors } from "./generate-column-pages.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -26,6 +28,7 @@ const {
   OPINION_BADGE,
   OPINION_DISCLAIMER,
   STATUSES,
+  authorPath,
   draftColumns,
   presentColumn,
   publishedColumns,
@@ -117,8 +120,9 @@ function column(overrides = {}) {
 // ── 4. Künye ve rozet her yazıda ───────────────────────────────────────────
 {
   const presented = presentColumn(column());
-  assert.equal(presented.badge, OPINION_BADGE, "her yazı Yorum rozeti taşımalı");
+  assert.equal(presented.badge, OPINION_BADGE, "her yazı Köşe Yazısı rozeti taşımalı");
   assert.equal(presented.disclaimer, OPINION_DISCLAIMER, "her yazı künye taşımalı");
+  assert.equal(presented.authorPath, "yazarlar/yazar-adi.html", "yazar sayfası kalıcı bir yol taşımalı");
   assert.match(presented.disclaimer, /köşe yazısı/i, "künye yazının kanaat olduğunu söylemeli");
   assert.match(presented.disclaimer, /doğrulanmış maç verisi/i, "künye veriyle karıştırılmamayı söylemeli");
 
@@ -132,14 +136,15 @@ function column(overrides = {}) {
   assert.equal(slugify("Fenerbahçe'nin Avrupa sınavı"), "fenerbahce-nin-avrupa-sinavi");
   assert.equal(slugify("Şampiyonluk yarışı: İlk perde"), "sampiyonluk-yarisi-ilk-perde");
   assert.equal(slugify("Göztepe'nin çıkışı"), "goztepe-nin-cikisi");
+  assert.equal(authorPath("Yazar Adı"), "yazarlar/yazar-adi.html");
 }
 
-// ── 6. Beş kategori ────────────────────────────────────────────────────────
+// ── 6. Yedi kategori ───────────────────────────────────────────────────────
 {
   assert.deepEqual(
     Object.keys(CATEGORIES).sort(),
-    ["futbol-gundemi", "lig-analizi", "mac-yorumu", "oyuncu-portresi", "transfer-yorumu"],
-    "kategori listesi beklenen beş değeri taşımalı"
+    ["fenerbahce", "futbol-gundemi", "galatasaray", "lig-analizi", "mac-yorumu", "oyuncu-portresi", "transfer-yorumu"],
+    "kategori listesi beklenen yedi değeri taşımalı"
   );
 }
 
@@ -269,4 +274,42 @@ function column(overrides = {}) {
   assert.ok(!/"published"/.test(output), "çıktı published içermemeli");
 }
 
-console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, künye/rozet, elle yayın, Telegram mesajı, sır sızıntısı yok).");
+// ── 13. Köşe yazıları gezinme, rota ve üretim sözleşmesi ────────────────────
+{
+  const primaryItem = NAV_PRIMARY.find((item) => item.href === "kose-yazilari.html");
+  assert.equal(primaryItem?.label, "Köşe Yazıları", "köşe yazıları birincil menüde olmalı");
+  assert.ok(!NAV_SECONDARY.some((item) => item.href === "kose-yazilari.html"), "menüde yinelenmemeli");
+
+  const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
+  const rewrites = new Map(vercel.rewrites.map((rule) => [rule.source, rule.destination]));
+  assert.equal(rewrites.get("/kose-yazilari"), "/kose-yazilari.html");
+  assert.equal(rewrites.get("/kose-yazilari/:slug"), "/kose-yazilari/:slug.html");
+  assert.equal(rewrites.get("/yazarlar/:slug"), "/yazarlar/:slug.html");
+
+  const generator = fs.readFileSync(path.join(root, "scripts", "generate-column-pages.mjs"), "utf8");
+  assert.match(generator, /columns\.slice\(0, 3\)/, "ana sayfa yalnızca son üç yazıyı göstermeli");
+  assert.match(generator, /function authorPageHtml\(/, "yazar arşivi üreticisi bulunmalı");
+  assert.match(generator, /class="column-card-detail"/, "kartta detay bağlantısı bulunmalı");
+  assert.match(generator, /class="column-standfirst"/, "detay sayfasında özet bulunmalı");
+  assert.match(generator, /column\.authorPath/, "kart ve detay sayfası yazara bağlanmalı");
+
+  const presented = presentColumn(column());
+  const card = columnCard(presented);
+  assert.match(card, /Yazıyı oku/, "kartta açık bir detay eylemi olmalı");
+  assert.match(card, /yazarlar\/yazar-adi\.html/, "kart yazar sayfasına bağlanmalı");
+
+  const detail = columnPageHtml(presented);
+  assert.match(detail, /class="column-standfirst">Kısa özet\./, "detay sayfasında özet görünmeli");
+  assert.match(detail, /"@type":"Person","name":"Yazar Adı","url":/, "detay şeması yazarı bağlamalı");
+  assert.match(detail, /src="\.\.\/site\.js" defer/, "detay sayfası ortak etkileşim betiğini yüklemeli");
+
+  const authors = groupAuthors([presented]);
+  assert.equal(authors.length, 1);
+  const archive = authorPageHtml(authors[0]);
+  assert.match(archive, /<h1>Yazar Adı Yazıları<\/h1>/, "yazar sayfasında açık H1 olmalı");
+  assert.match(archive, /"@type":"ProfilePage"/, "yazar sayfasında ProfilePage şeması olmalı");
+  assert.match(archive, /Örnek yazı/, "yazar sayfası yayımlanmış yazıyı listelemeli");
+  assert.match(archive, /src="\.\.\/site\.js" defer/, "yazar sayfası ortak etkileşim betiğini yüklemeli");
+}
+
+console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, yazar sayfaları, son üç yazı, temiz rotalar, elle yayın).");

@@ -1,0 +1,63 @@
+name: Search Demand Daily
+
+# Search Demand Engine'in günlük döngüsü. Bu depoda otomasyon MAIN'E YAZMAZ:
+# çıktı, koşu kimliğiyle adlandırılmış bir automation dalına gider ve oradan
+# gözden geçirilerek alınır (post-match enrichment iş akışıyla aynı sözleşme).
+#
+# Kimlik bilgisi yoksa GSC adımı "bağlı değil" durumu yazar ve koşu yine
+# tamamlanır — sahte veri üretilmez.
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # Hafta içi her sabah 06:15 UTC (09:15 TSİ) — gün başlamadan sinyaller hazır.
+    - cron: "15 6 * * 1-5"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: search-demand-daily
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Sinyalleri topla (autocomplete + iç veriler)
+        run: node scripts/fetch-search-signals.mjs
+
+      - name: Search Console raporları (bağlıysa)
+        env:
+          GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+          GSC_CLIENT_EMAIL: ${{ secrets.GSC_CLIENT_EMAIL }}
+          GSC_PRIVATE_KEY: ${{ secrets.GSC_PRIVATE_KEY }}
+        run: node scripts/fetch-search-console.mjs
+
+      - name: Fırsat envanterini ve paneli yeniden üret
+        run: |
+          node scripts/build-search-demand-data.mjs
+          node scripts/generate-search-demand-pages.mjs
+
+      - name: Kural testleri
+        run: node scripts/test-search-demand.mjs
+
+      - name: Değişiklikleri automation dalına it
+        run: |
+          git config user.name "futbolradar-automation"
+          git config user.email "automation@futbolradar.com"
+          if git diff --quiet -- data/search-demand seo-icerik-firsatlari.html public/seo-icerik-firsatlari.html; then
+            echo "Değişiklik yok; dal açılmadı."
+            exit 0
+          fi
+          BRANCH="automation/search-demand-${{ github.run_id }}"
+          git checkout -b "$BRANCH"
+          git add data/search-demand seo-icerik-firsatlari.html public/seo-icerik-firsatlari.html
+          git commit -m "ci(search-demand): günlük sinyal ve fırsat tazelemesi"
+          git push origin "$BRANCH"

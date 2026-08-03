@@ -101,11 +101,13 @@ const MIN_CURATED_SLOTS = 4;
 /**
  * Bant en fazla bu kadar öğe taşır; şerit kalabalıklaşmamalı.
  *
- * Altıdan yediye çıktı: küratörlü gündem beş kategoriden yediye genişledi
- * (maç programı ve oyuncu açıklaması eklendi) ve altı slotta gündeme üç yer
- * kalıyordu. Yedi, kayan bir şeritte hâlâ okunabilir bir uzunluk.
+ * Altıdan sekize çıktı. İki ayrı gerekçe aynı yöne işaret etti: küratörlü
+ * gündem beş kategoriden sekize genişledi (maç programı, oyuncu açıklaması,
+ * kulüp gündemi) ve gündem dosyası dokuz habere büyüdü. Altı slotta gündeme
+ * üç yer kalıyordu. Sekiz, kayan bir şeritte hâlâ okunabilir bir uzunluk —
+ * 320px'e kadar tek satır kalması ayrıca sınanıyor.
  */
-const MAX_ITEMS = 7;
+const MAX_ITEMS = 8;
 
 const STATE_FILE = path.join(root, "data", "ticker-state.json");
 
@@ -138,9 +140,23 @@ function hasScore(match) {
     score.away !== null && score.away !== undefined;
 }
 
+function slugify(value) {
+  return String(value || "")
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ı/g, "i")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 /** Maç kayıtları: canlı skor, biten sonuç ve bugünün başlama saatleri. */
 function matchItems(now) {
   const matches = asArray(readJson("matches.json", []), "matches");
+  const reports = asArray(readJson("post-match-reports.json", { records: [] }), "records");
+  const reportByMatch = new Map(reports
+    .filter((record) => record && record.matchId && record.publishState === "page" && record.reportUrl)
+    .map((record) => [record.matchId, String(record.reportUrl).replace(/^\.\//, "")]));
   const items = [];
 
   for (const match of matches) {
@@ -176,7 +192,7 @@ function matchItems(now) {
       items.push({
         label: "Sonuç",
         text: `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`,
-        href: `canli-skor.html#${match.id}`,
+        href: match.analysisPage || reportByMatch.get(match.id) || `canli-skor.html#${match.id}`,
         at: stamp,
         source: "match",
         priority: 1 + rank / 10
@@ -208,7 +224,7 @@ function transferItems(now) {
       label: "Transfer",
       // Yön açıkça yazılıyor: "kadrosunda" ifadesi gidenler için yanıltıcıydı.
       text: `${item.playerName}, ${item.toTeam} kadrosuna katıldı (${item.type})`,
-      href: item.sourceUrl,
+      href: `super-lig-transferleri-2026-2027.html#transfer-${slugify(item.playerName)}`,
       at: item.date,
       source: "transfer",
       priority: 2 + editorialRank({ teams: [item.toTeam, item.fromTeam] }) / 10
@@ -224,6 +240,7 @@ function newsItems(now) {
       item &&
       item.title &&
       String(item.status || "").toLowerCase() === "verified" &&
+      item.includeInTicker !== false &&
       item.url)
     .filter((item) => hoursSince(item.publishedAt, now) <= MAX_AGE_HOURS)
     .map((item) => ({

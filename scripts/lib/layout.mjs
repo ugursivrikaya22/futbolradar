@@ -19,9 +19,11 @@ const { PLAIN_EXTERNAL_REL, SOURCE_LINK_REL } = require("../../services/sourceLi
 export const NAV_PRIMARY = [
   { href: "bugunun-maclari.html", label: "Bugünün Maçları" },
   { href: "canli-skor.html", label: "Canlı Skor" },
+  { href: "mac-sonuclari.html", label: "Maç Sonuçları" },
   { href: "super-lig-fikstur.html", label: "Süper Lig" },
   { href: "analizler.html", label: "Analizler" },
   { href: "takimlar.html", label: "Takımlar" },
+  { href: "kose-yazilari.html", label: "Köşe Yazıları" },
   { href: "puan-durumu.html", label: "Puan Durumu" },
   // Arşiv ana menüde: sezon geçmişi bir alt sayfa değil, sitenin ikinci
   // ekseni. Buradan girildiğinde her sayfadan (ana sayfa dahil) erişilir.
@@ -35,10 +37,7 @@ export const NAV_SECONDARY = [
   { href: "transfer-radari.html", label: "Transfer Radarı" },
   { href: "momentum.html", label: "Momentum" },
   { href: "gol-kralligi.html", label: "Gol Krallığı" },
-  { href: "haberler.html", label: "Haberler" },
-  // Köşe yazıları HABERİN YANINDA ama ayrı bir bağlantı: menüde de yorum ile
-  // haber aynı şey gibi görünmemeli.
-  { href: "kose-yazilari.html", label: "Radar Yorumu" }
+  { href: "haberler.html", label: "Haberler" }
 ];
 
 const FOOTER_LEGAL = [
@@ -179,11 +178,13 @@ export function newsTicker(options = {}) {
 
   const track = items.map(renderItem).join('<span class="news-ticker-sep" aria-hidden="true"></span>');
 
+  const duration = Math.max(36, items.length * 10);
+
   return `<div class="news-ticker" data-shared-layout="ticker" aria-label="Son dakika futbol gündemi">
       <div class="container-wide news-ticker-inner">
         <span class="news-ticker-badge${badge === "Son Dakika" ? " is-live" : ""}">${badge === "Son Dakika" ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(badge)}</span>
         <div class="news-ticker-viewport">
-          <div class="news-ticker-track">
+          <div class="news-ticker-track" style="--ticker-duration:${duration}s">
             <div class="news-ticker-group">${track}</div>
             <div class="news-ticker-group" aria-hidden="true">${track}</div>
           </div>

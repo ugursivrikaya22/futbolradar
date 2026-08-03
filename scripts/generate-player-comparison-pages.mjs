@@ -11,6 +11,7 @@ const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "p
 const outDir = path.join(root, "karsilastirma");
 const publicOutDir = path.join(root, "public", "karsilastirma");
 const domain = "https://www.futbolradar.com";
+const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -19,6 +20,19 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function writeGeneratedFile(file, contents) {
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    try {
+      fs.writeFileSync(file, contents, "utf8");
+      return;
+    } catch (error) {
+      const retryable = ["UNKNOWN", "EBUSY", "EPERM"].includes(error && error.code);
+      if (!retryable || attempt === 11) throw error;
+      Atomics.wait(retryBuffer, 0, 0, 75 * (attempt + 1));
+    }
+  }
 }
 
 function stripTags(value) {
@@ -466,13 +480,13 @@ for (const directory of [outDir, publicOutDir]) {
 
 for (const pair of pairs) {
   const html = pageHtml(pair);
-  fs.writeFileSync(path.join(outDir, `${pair.slug}.html`), html, "utf8");
-  fs.writeFileSync(path.join(publicOutDir, `${pair.slug}.html`), html, "utf8");
+  writeGeneratedFile(path.join(outDir, `${pair.slug}.html`), html);
+  writeGeneratedFile(path.join(publicOutDir, `${pair.slug}.html`), html);
 }
 
 const indexHtml = comparisonIndexHtml(pairs);
-fs.writeFileSync(path.join(root, "oyuncu-karsilastirmalari.html"), indexHtml, "utf8");
-fs.writeFileSync(path.join(root, "public", "oyuncu-karsilastirmalari.html"), indexHtml, "utf8");
+writeGeneratedFile(path.join(root, "oyuncu-karsilastirmalari.html"), indexHtml);
+writeGeneratedFile(path.join(root, "public", "oyuncu-karsilastirmalari.html"), indexHtml);
 
 for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
   if (!fs.existsSync(sitemapPath)) continue;
@@ -481,7 +495,7 @@ for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "publ
     .filter((entry) => !entry.includes(`${domain}/karsilastirma/`));
   const entries = pairs.map((pair) => `  <url>\n    <loc>${domain}/karsilastirma/${pair.slug}.html</loc>\n    <lastmod>2026-07-13</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.65</priority>\n  </url>`);
   const content = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${retained.concat(entries).join("\n")}\n</urlset>\n`;
-  fs.writeFileSync(sitemapPath, content, "utf8");
+  writeGeneratedFile(sitemapPath, content);
 }
 
 console.log(`Generated ${pairs.length} static player comparison pages and index`);

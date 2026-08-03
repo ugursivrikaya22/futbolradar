@@ -16,7 +16,7 @@
  *      verisiyle aynı yapıya hiç karışmaz.
  *   2. YÜZEY: yazılar kendi bölümünde ve kendi sayfalarında yayımlanır;
  *      haber akışına, bandına ya da maç raporuna karışmaz.
- *   3. ETİKET: her yazı "Yorum" künyesi ve yazar adı taşır. Künyesiz bir
+ *   3. ETİKET: her yazı "Köşe Yazısı" künyesi ve yazar adı taşır. Künyesiz bir
  *      köşe yazısı yayımlanamaz — doğrulama reddeder.
  *
  * YAYIN AKIŞI: TASLAK ÜRETİLİR, YAYIN ELLE AÇILIR.
@@ -41,12 +41,14 @@ const CATEGORIES = Object.freeze({
   "transfer-yorumu": "Transfer yorumu",
   "lig-analizi": "Lig analizi",
   "oyuncu-portresi": "Oyuncu portresi",
-  "futbol-gundemi": "Futbol gündemi"
+  "futbol-gundemi": "Futbol gündemi",
+  "fenerbahce": "Fenerbahçe",
+  "galatasaray": "Galatasaray"
 });
 
 /** Bölüm adı ve künye. Her yüzeyde aynı sözcük kullanılmalı. */
 const SECTION_NAME = "Radar Yorumu";
-const OPINION_BADGE = "Yorum";
+const OPINION_BADGE = "Köşe Yazısı";
 
 /**
  * Künye metni. Köşe yazısının haberden ayrıldığını SÖYLEYEN cümle bu;
@@ -118,10 +120,15 @@ function columnPath(entry) {
   return `kose-yazilari/${slug}.html`;
 }
 
+/** Yazarın tüm yayımlanmış yazılarını listeleyen kalıcı sayfa yolu. */
+function authorPath(name) {
+  return `yazarlar/${slugify(name)}.html`;
+}
+
 /**
  * Yazıyı yüzeylerde kullanılacak biçime çevirir.
  *
- * Künye ve "Yorum" rozeti BURADA ekleniyor; her yüzeyin kendi başına
+ * Künye ve "Köşe Yazısı" rozeti BURADA ekleniyor; her yüzeyin kendi başına
  * hatırlaması gerekmesin diye. Rozeti unutmak mümkün olmamalı.
  */
 function presentColumn(entry) {
@@ -132,6 +139,7 @@ function presentColumn(entry) {
     id: text(entry.id),
     title: text(entry.title),
     author: text(entry.author),
+    authorPath: authorPath(entry.author),
     date: text(entry.date),
     category,
     categoryLabel: CATEGORIES[category] || category,
@@ -197,6 +205,7 @@ module.exports = {
   REQUIRED_FIELDS,
   SECTION_NAME,
   STATUSES,
+  authorPath,
   columnPath,
   draftColumns,
   logRejected,

@@ -1,6 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
+// Dış kaynak künyesi `nofollow` taşır; kural services/sourceLinks.js.
+const { SOURCE_LINK_REL } = createRequire(import.meta.url)("../services/sourceLinks.js");
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import { readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
@@ -48,12 +52,12 @@ function transferCards(records) {
 
   return records.map((transfer) => {
     const directionTeam = transfer.toTeam === "Serbest oyuncu" ? transfer.fromTeam : transfer.toTeam;
-    return `<article class="trend-transfer-card" data-card="transfer-record" data-team="${escapeHtml(slugify(directionTeam))}">
+    return `<article class="trend-transfer-card" id="transfer-${escapeHtml(slugify(transfer.playerName))}" data-card="transfer-record" data-team="${escapeHtml(slugify(directionTeam))}">
       <div class="trend-transfer-head"><span class="tag green">${escapeHtml(transfer.status === "confirmed" ? "Doğrulandı" : "Takipte")}</span><time datetime="${escapeHtml(transfer.date)}">${escapeHtml(formatDate(transfer.date))}</time></div>
       <div><span class="card-kicker">${escapeHtml(transfer.position || "Oyuncu")}</span><h3>${escapeHtml(transfer.playerName)}</h3></div>
       <div class="trend-transfer-route"><span>${escapeHtml(transfer.fromTeam)}</span><b aria-label="takım değişikliği">→</b><span>${escapeHtml(transfer.toTeam)}</span></div>
       <dl class="trend-mini-stats"><div><dt>Transfer tipi</dt><dd>${escapeHtml(transfer.type || "Açıklanmadı")}</dd></div><div><dt>Bedel</dt><dd>${escapeHtml(transfer.fee || "Açıklanmadı")}</dd></div></dl>
-      <div class="trend-card-actions">${playerLink(transfer)}<a class="detail-link ghost" href="./transfer-radari.html">Transfer Radar</a></div>
+      <div class="trend-card-actions">${playerLink(transfer)}<a class="detail-link ghost" href="./transfer-radari.html">Transfer Radar</a>${transfer.sourceUrl ? `<a class="detail-link ghost" href="${escapeHtml(transfer.sourceUrl)}" target="_blank" rel="${SOURCE_LINK_REL}">Kaynak</a>` : ""}</div>
     </article>`;
   }).join("");
 }
@@ -198,6 +202,7 @@ const pages = [
   },
   {
     file: "galatasaray-transfer-radar.html",
+    team: "Galatasaray",
     title: "Galatasaray Transfer Radar 2026-2027 | Gelenler ve Gidenler | FutbolRadar",
     description: "Galatasaray transfer radarında 2026-2027 gelen ve giden oyuncuları, kadro ihtiyaçlarını, piyasa bilgilerini ve oyuncu etkisini inceleyin.",
     h1: "Galatasaray Transfer Radar",
@@ -282,6 +287,7 @@ function pageHtml(page) {
       <section class="trend-hero"><div><span class="eyebrow">Gündem · Veri · Analiz</span><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.lead)}</p></div><aside><span>Son kontrol</span><strong>22 Temmuz 2026</strong><small>Doğrulanmayan alanlar kesin bilgi gibi sunulmaz.</small></aside></section>
       ${factCards(page.facts)}
       ${page.body()}
+      ${page.team ? renderTeamNewsSection(readVerifiedTeamNews(root, page.team, 3), { team: page.team, base: "./" }) : ""}
       ${section("İlgili radar ekranları", "Bu konuyu takım, oyuncu, maç ve momentum verileriyle derinleştir.", linkGrid(page.links), "İç bağlantılar")}
       <section class="trend-home-cta"><div><span class="section-kicker">FutbolRadar</span><h2>Skordan fazlasını oku.</h2><p>Canlı maç merkezi, oyuncu performansı, takım formu ve transfer hareketlerini aynı veri dilinde takip et.</p></div><a class="button primary" href="./index.html">Ana sayfaya dön</a></section>
     </main>

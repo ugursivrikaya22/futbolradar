@@ -18,6 +18,7 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { mergeSuperLigTeams } = require("../services/superLigTeams.js");
+const { publishedColumns } = require("../services/columnService.js");
 
 function readJson(file) {
   try {
@@ -41,6 +42,7 @@ function asArray(payload, ...keys) {
 
 const EXTRA_PAGES = [
   { href: "index.html", title: "Ana Sayfa", subtitle: "Canlı skor ve maç merkezi" },
+  { href: "mac-sonuclari.html", title: "Maç Sonuçları", subtitle: "Doğrulanmış tamamlanan maçlar" },
   { href: "mac-merkezi.html", title: "Maç Merkezi", subtitle: "Tüm maç ekranları" },
   { href: "oyuncu-karsilastirmalari.html", title: "Oyuncu Karşılaştırmaları", subtitle: "İki oyuncuyu kıyasla" },
   { href: "takim-trendleri.html", title: "Takım Trendleri", subtitle: "Form ve momentum" },
@@ -70,6 +72,42 @@ for (const link of [...NAV_PRIMARY, ...NAV_SECONDARY]) {
 
 for (const page of EXTRA_PAGES) {
   push({ type: "page", badge: "SYF", href: page.href, title: page.title, subtitle: page.subtitle });
+}
+
+for (const article of asArray(readJson("news.json"), "news", "items")) {
+  if (!article || String(article.status || "").toLowerCase() !== "verified" || !article.slug || !article.title || !Array.isArray(article.body)) {
+    continue;
+  }
+  push({
+    type: "news",
+    badge: "HBR",
+    href: `haber/${article.slug}.html`,
+    title: article.title,
+    subtitle: article.spot || article.summary || "FutbolRadar haberi"
+  });
+}
+
+const { columns } = publishedColumns(readJson("columns.json") || {});
+const indexedAuthors = new Set();
+for (const column of columns) {
+  push({
+    type: "column",
+    badge: "KÖŞE",
+    href: column.path,
+    title: column.title,
+    subtitle: [column.author, column.categoryLabel].filter(Boolean).join(" · ") || "Köşe Yazısı"
+  });
+
+  if (!indexedAuthors.has(column.authorPath)) {
+    indexedAuthors.add(column.authorPath);
+    push({
+      type: "author",
+      badge: "YZR",
+      href: column.authorPath,
+      title: column.author,
+      subtitle: "FutbolRadar yazarı"
+    });
+  }
 }
 
 // Takım kapsamı elle tutulan listeyle sınırlı kalmaz: TFF fikstüründe adı

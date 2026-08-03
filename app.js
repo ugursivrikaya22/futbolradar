@@ -41,6 +41,19 @@
     postMatchReports: { fallback: "post-match-reports", reportSource: false }
   };
 
+  function isInformationalLanding() {
+    return Boolean(document.body && document.body.classList.contains("ad-search-page"));
+  }
+
+  function matchHasVerifiedFinalScore(match) {
+    if (!match || !isFinishedMatch(match)) return true;
+    var score = match.score || {};
+    return Number.isFinite(Number(score.home)) &&
+      Number.isFinite(Number(score.away)) &&
+      String(match.dataStatus || "").toLowerCase() === "verified" &&
+      String(match.publishState || "").toLowerCase() === "complete";
+  }
+
   function escapeHtml(value) {
     return String(value == null ? "" : value).replace(/[&<>"']/g, function (char) {
       return {
@@ -2054,6 +2067,9 @@
     }
 
     if (finished) {
+      if (!matchHasVerifiedFinalScore(match)) {
+        return { className: "is-unverified", label: "Sonuç doğrulanıyor", live: false, finished: true, scoreVerified: false };
+      }
       return { className: "is-final", label: "MS", live: false, finished: true };
     }
 
@@ -2119,6 +2135,7 @@
   }
 
   function fixtureProbabilityHtml(match) {
+    if (isInformationalLanding()) return "";
     var analysis = cardAnalysisIndex ? findAnalysisForMatch(cardAnalysisIndex, match) : null;
     var probabilities = analysis && analysis.probabilities;
 
@@ -2166,7 +2183,8 @@
   function fixtureRowHtml(match, side) {
     var team = matchTeam(match, side);
     var name = getTeamName(team) || match[side + "Team"] || "";
-    var score = match.score && match.score[side] !== null && match.score[side] !== undefined ? match.score[side] : null;
+    var allowScore = !isFinishedMatch(match) || matchHasVerifiedFinalScore(match);
+    var score = allowScore && match.score && match.score[side] !== null && match.score[side] !== undefined ? match.score[side] : null;
     var otherSide = side === "home" ? "away" : "home";
     var otherScore = match.score && match.score[otherSide] !== null && match.score[otherSide] !== undefined
       ? match.score[otherSide]
@@ -3672,7 +3690,7 @@
     var analysis = findAnalysisForMatch(analysesIndex, match);
     var prediction = analysis && analysis.prediction;
     var chips =
-      (analysis
+      (analysis && !isInformationalLanding()
         ? '<div class="tag-row">' +
           '<span class="tag soft">' + simpleBalanceLabel(prediction, match.homeTeam, match.awayTeam) + "</span>" +
           goalPotentialBadgeHtml(prediction && prediction.goalPotential) +
@@ -3825,11 +3843,13 @@
       return Boolean(balance) && balance.label === "balanced";
     }).length;
 
-    return '<div class="stats-match-grid" aria-label="Günün maç özeti">' +
+    var basic = '<div class="stats-match-grid" aria-label="Günün maç özeti">' +
       "<article><span>Bugünkü maç</span><strong>" + list.length + "</strong></article>" +
       "<article><span>Canlı</span><strong>" + live + "</strong></article>" +
       "<article><span>Tamamlanan</span><strong>" + finished + "</strong></article>" +
-      "<article><span>Analizi hazır</span><strong>" + analysesReady + "</strong></article>" +
+      "<article><span>Analizi hazır</span><strong>" + analysesReady + "</strong></article>";
+    if (isInformationalLanding()) return basic + "</div>";
+    return basic +
       "<article><span>Yüksek gol potansiyeli</span><strong>" + highGoalPotential + "</strong></article>" +
       "<article><span>Dengeli maç</span><strong>" + balancedCount + "</strong></article>" +
       "</div>";
@@ -4081,7 +4101,8 @@
     }
 
     var finished = list.filter(function (match) {
-      return ["FINISHED", "FT", "AET", "PEN"].includes(String(match.status || match.providerStatus || "").toUpperCase());
+      var isFinished = ["FINISHED", "FT", "AET", "PEN"].includes(String(match.status || match.providerStatus || "").toUpperCase());
+      return isFinished && (!isInformationalLanding() || matchHasVerifiedFinalScore(match));
     });
     var upcoming = list.filter(function (match) {
       return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(String(match.status || match.providerStatus || "").toUpperCase());
@@ -5662,11 +5683,28 @@
     }).join("");
   }
 
+  function newsCardUrl(value) {
+    try {
+      var resolved = new URL(String(value || ""), window.location.href);
+      if (!["http:", "https:"].includes(resolved.protocol)) return "";
+      if (resolved.hostname === "www.futbolradar.com" || resolved.hostname === window.location.hostname) {
+        return siteHref(resolved.pathname.replace(/^\/+/, "") + resolved.search + resolved.hash);
+      }
+      return resolved.href;
+    } catch (error) {
+      return "";
+    }
+  }
+
   function renderNewsCard(item) {
-    var sourceUrl = safeImageUrl(item && item.url);
+    var sourceUrl = newsCardUrl(item && item.url);
     var published = formatProfileDate(item && item.publishedAt) || "Tarih açıklanmadı";
+    var external = /^https?:\/\//i.test(sourceUrl);
     var action = sourceUrl
-      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="nofollow noopener noreferrer">Resmî açıklamayı aç</a>'
+      // İç bağlantı sade açılır; DIŞARI çıkan kaynak künyesi yeni sekmede ve
+      // nofollow ile açılır (services/sourceLinks.js#SOURCE_LINK_REL ile aynı
+      // kural): künye bir atıftır, oy değil.
+      ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '"' + (external ? ' target="_blank" rel="nofollow noopener noreferrer"' : '') + '>' + (external ? "Resmî açıklamayı aç" : "Haberi oku") + '</a>'
       : "";
 
     return (
@@ -5676,6 +5714,16 @@
       '<div class="news-card-footer"><span>' + escapeHtml(item.sourceName || "Resmî kaynak") + '</span>' + action + '</div>' +
       '</article>'
     );
+  }
+
+  function publicNewsItems(news) {
+    return (Array.isArray(news) ? news : [])
+      .filter(function (item) {
+        return item && String(item.status || "").toLowerCase() === "verified";
+      })
+      .sort(function (left, right) {
+        return String(right.publishedAt || "").localeCompare(String(left.publishedAt || ""));
+      });
   }
 
   var PLAYER_FILTER_COPY = {
@@ -10923,7 +10971,7 @@
       document.querySelector('[data-api-target="news-preview"]'),
       "news",
       function (news) {
-        return news.slice(0, 3).map(renderNewsCard).join("");
+        return publicNewsItems(news).slice(0, 3).map(renderNewsCard).join("");
       },
       "Güncel futbol gündemi yüklenemedi"
     );
@@ -10932,7 +10980,7 @@
       document.querySelector('[data-api-target="news-page"]'),
       "news",
       function (news) {
-        return news.map(renderNewsCard).join("");
+        return publicNewsItems(news).map(renderNewsCard).join("");
       },
       "Güncel futbol gündemi yüklenemedi"
     );
