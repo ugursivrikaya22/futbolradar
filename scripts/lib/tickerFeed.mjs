@@ -1,22 +1,19 @@
 /**
  * SON DAKİKA BANDI — beslenme kuralı
  *
- * Bant DÖRT doğrulanmış kaynaktan beslenir ve elle güncelleme gerektirmez:
+ * Türkiye futbol gündemi bandı ÜÇ doğrulanmış kaynaktan beslenir. Skorlar,
+ * ayrı ve hızlı `buildLiveScoreTickerFeed` akışında tutulur:
  *
- *   1. Sitenin kendi doğrulanmış maç kaydı (data/matches.json). Bu kayıtlar
- *      yayın politikasından (services/matchEligibility.js) geçmiştir ve CI'ın
- *      beş dakikalık döngüsünde tazelenir; biten bir maçın skoru bandı
- *      kendiliğinden günceller.
- *   2. Doğrulanmış transfer hareketleri (data/transfers.json, status
+ *   1. Doğrulanmış transfer hareketleri (data/transfers.json, status
  *      "confirmed" ve kaynak bağlantısı olanlar).
- *   3. Editoryal haber kayıtları (data/news.json), yalnızca status "verified"
+ *   2. Editoryal haber kayıtları (data/news.json), yalnızca status "verified"
  *      ve kaynak bağlantısı varsa.
- *   4. Küratörlü gündem (data/news-ticker.json): resmî açıklama, maç programı,
+ *   3. Küratörlü gündem (data/news-ticker.json): resmî açıklama, maç programı,
  *      sakatlık, teknik direktör/oyuncu sözü ve transfer iddiası. Kural
  *      katmanı services/newsTicker.js, otomatik bakımı
  *      scripts/refresh-news-ticker.mjs.
  *
- * AYNI HABER İKİ KEZ GÖRÜNMEZ. Dört kaynak aynı olaya farklı açılardan
+ * AYNI HABER İKİ KEZ GÖRÜNMEZ. Üç kaynak aynı olaya farklı açılardan
  * bakabiliyor ("Inter Turku 2-0 Başakşehir" ile "Başakşehir Avrupa'ya veda
  * etti"). Havuz birleştirildikten sonra ANLAM düzeyinde bir kez tekleştirilir;
  * kalan sürüm en açık yazımı ve en yüksek önceliği devralır.
@@ -75,24 +72,6 @@ const MAX_AGE_HOURS = 24 * 7;
  */
 const TRANSFER_MAX_AGE_HOURS = 24 * 21;
 
-/**
- * Çıplak skor satırının SERT TAVANI. Tek bir kategori bandı ele geçirmesin:
- * altı maç sonucu varken doğrulanmış transferler hiç görünmüyordu; sıralama
- * önceliği doğruydu ama sonuç tek sesli bir banttı.
- *
- * Maç kotası dörtten ikiye indirildi: küratörlü gündem artık maç sonuçlarını
- * da ANLAMIYLA taşıyor ("Beşiktaş tur atladı") ve iki kaynak aynı olayda
- * çakışıyordu.
- *
- * TAVAN, KOTA DEĞİL. Bu sayı bir süre yalnızca "rezervasyon" gibi davrandı:
- * ayrılan yerleri doldurduktan sonra artan slot önceliğe göre dolduğu için
- * ve maç öğesinin önceliği en yüksek olduğu için, artan her slota bir çıplak
- * skor daha giriyordu. MAX_ITEMS 7 iken kota bandı tam doldurduğundan sınır
- * tesadüfen tutuyordu; 8'e çıkınca üçüncü skor satırı sızdı ve gündem
- * dosyasındaki üç transfer iddiası birden banda hiç giremedi — yani söylenti
- * bandı söylentisiz kaldı. Sınır artık `rest` doldururken de uygulanıyor.
- */
-export const MAX_MATCH_ITEMS = 2;
 const MIN_TRANSFER_SLOTS = 1;
 
 /**
@@ -115,6 +94,10 @@ export const MIN_CURATED_SLOTS = 4;
  * 320px'e kadar tek satır kalması ayrıca sınanıyor.
  */
 export const MAX_ITEMS = 8;
+
+/** Ust bantta gosterilen dogrulanmis skor kaydi sayisi. */
+export const LIVE_SCORE_MAX_ITEMS = 6;
+const LIVE_SCORE_MAX_AGE_HOURS = 36;
 
 const STATE_FILE = path.join(root, "data", "ticker-state.json");
 
@@ -147,6 +130,14 @@ function hasScore(match) {
     score.away !== null && score.away !== undefined;
 }
 
+function isVerifiedMatch(match) {
+  const source = String(match && match.source || "").trim();
+  const sourceName = String(match && match.sourceName || "").trim();
+  const sourceUrls = Array.isArray(match && match.sourceUrls) ? match.sourceUrls : [];
+
+  return Boolean(match && match.lastVerifiedAt && source && sourceName && sourceUrls.some((url) => /^https?:\/\//i.test(url)));
+}
+
 function slugify(value) {
   return String(value || "")
     .toLocaleLowerCase("tr-TR")
@@ -158,7 +149,7 @@ function slugify(value) {
 }
 
 /** Maç kayıtları: canlı skor, biten sonuç ve bugünün başlama saatleri. */
-function matchItems(now) {
+function matchItems(now, maxAgeHours = MAX_AGE_HOURS) {
   const matches = asArray(readJson("matches.json", []), "matches");
   const reports = asArray(readJson("post-match-reports.json", { records: [] }), "records");
   const reportByMatch = new Map(reports
@@ -169,10 +160,12 @@ function matchItems(now) {
   for (const match of matches) {
     if (!match || !match.homeTeam || !match.awayTeam) continue;
 
+    if (!isVerifiedMatch(match)) continue;
+
     const status = String(match.status || "").toUpperCase();
-    const stamp = match.lastVerifiedAt || match.fetchedAt || match.kickoff;
+    const stamp = match.lastVerifiedAt;
     const age = hoursSince(stamp, now);
-    if (age > MAX_AGE_HOURS) continue;
+    if (age > maxAgeHours) continue;
 
     const live = ["LIVE", "IN_PLAY", "1H", "2H", "HT", "HALFTIME", "ET"].includes(status);
     const finished = ["FINISHED", "FT", "AET", "PEN"].includes(status);
@@ -193,6 +186,8 @@ function matchItems(now) {
         href: `canli-skor.html#${match.id}`,
         at: stamp,
         source: "match",
+        sourceName: match.sourceName,
+        verified: true,
         priority: 0 + rank / 10
       });
     } else if (finished && hasScore(match)) {
@@ -202,12 +197,32 @@ function matchItems(now) {
         href: match.analysisPage || reportByMatch.get(match.id) || `canli-skor.html#${match.id}`,
         at: stamp,
         source: "match",
+        sourceName: match.sourceName,
+        verified: true,
         priority: 1 + rank / 10
       });
     }
   }
 
   return items;
+}
+
+/** Ust bant yalnizca kaynakli, zaman damgali skor kayitlarini tasir. */
+export function buildLiveScoreTickerFeed(options = {}) {
+  const now = options.now instanceof Date ? options.now : new Date();
+  const items = matchItems(now, LIVE_SCORE_MAX_AGE_HOURS)
+    .sort((left, right) => {
+      if (left.priority !== right.priority) return left.priority - right.priority;
+      return String(right.at || "").localeCompare(String(left.at || ""));
+    })
+    .slice(0, LIVE_SCORE_MAX_ITEMS);
+
+  return {
+    items,
+    badge: "CANLI SKOR",
+    fresh: items.some((item) => item.label === "Canlı"),
+    generatedAt: now.toISOString()
+  };
 }
 
 /**
@@ -345,7 +360,7 @@ export function buildTickerFeed(options = {}) {
     return byRecency(left, right);
   };
 
-  // TEKLEŞTİRME BİR KEZ, DÖRT KAYNAK BİRLEŞTİKTEN SONRA.
+  // TEKLEŞTİRME BİR KEZ, ÜÇ KAYNAK BİRLEŞTİKTEN SONRA.
   //
   // Daha önce her kaynak ayrı ayrı ve sonra birleşik liste yeniden
   // eleniyordu. Aynı olayın maç kaydındaki ve haber kaydındaki sürümü ancak
@@ -354,7 +369,6 @@ export function buildTickerFeed(options = {}) {
   // bu boşluğu kapatıyor hem de "hangi haber hangi kotaya sayılıyor"
   // sorusunu tek cevaplı hâle getiriyor.
   const pool = dedupe([
-    ...matchItems(now),
     ...curatedItems(now),
     ...transferItems(now),
     ...newsItems(now)
@@ -362,27 +376,14 @@ export function buildTickerFeed(options = {}) {
 
   const fromSource = (name) => pool.filter((item) => item.source === name).sort(byImportance);
 
-  const matches = fromSource("match");
   const curated = fromSource("curated");
   const transfers = fromSource("transfer");
 
-  // Kategori kotası: maç sonuçları bandı tek başına doldurmasın, doğrulanmış
-  // transferlere ve küratörlü gündeme yer kalsın. Kota dolmazsa boş slot
-  // israf edilmez, kalan yerler önceliğe göre doldurulur.
-  //
-  // Küratörlü gündeme yer AYRILMASI şart: altı maç sonucu varken transfer
-  // iddiaları ve resmî açıklamalar hiç görünmüyordu — transferler için
-  // zaten yaşanmış ve çözülmüş olan sorunun aynısı.
+  // Gündem bandı skor tablosu değildir. Küratörlü gündeme ve doğrulanmış
+  // transferlere yer ayrılır; kalan slotlar önem sırasıyla doldurulur.
   const reservedForTransfers = Math.min(transfers.length, MIN_TRANSFER_SLOTS);
   const reservedForCurated = Math.min(curated.length, MIN_CURATED_SLOTS);
-  const matchQuota = Math.min(
-    matches.length,
-    MAX_MATCH_ITEMS,
-    MAX_ITEMS - reservedForTransfers - reservedForCurated
-  );
-
   const picked = [
-    ...matches.slice(0, Math.max(matchQuota, 0)),
     ...curated.slice(0, reservedForCurated),
     ...transfers.slice(0, reservedForTransfers)
   ];
@@ -390,20 +391,9 @@ export function buildTickerFeed(options = {}) {
   // Kalan yerleri önceliğe göre doldur. Havuz zaten tekleştirildiği için
   // burada nesne kimliğiyle karşılaştırmak güvenli.
   //
-  // Maç öğesi için SERT TAVAN burada da geçerli: süzgeç sıralamadan SONRA
-  // çalışıyor, böylece kalan yer varsa en önemli maç girer — ama tavan
-  // aşılmaz. Süzgeç olmasaydı maç en yüksek öncelikli kaynak olduğu için
-  // artan her slotu o kapardı ve gündem hiç görünmezdi.
-  let matchRoom = Math.max(0, MAX_MATCH_ITEMS - Math.max(matchQuota, 0));
   const rest = pool
     .filter((item) => !picked.includes(item))
-    .sort(byImportance)
-    .filter((item) => {
-      if (item.source !== "match") return true;
-      if (matchRoom <= 0) return false;
-      matchRoom -= 1;
-      return true;
-    });
+    .sort(byImportance);
 
   // Bant kendi içinde de önceliğe göre dizilir: kota hangi öğelerin
   // gireceğini belirler, SIRAYI belirlemez. Kota olmasaydı canlı skor bir

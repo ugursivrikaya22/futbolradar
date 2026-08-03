@@ -12,8 +12,8 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { siteHeader, siteFooter, newsTicker } from "./lib/layout.mjs";
-import { buildTickerFeed } from "./lib/tickerFeed.mjs";
+import { siteHeader, siteFooter, liveScoreTicker, turkeyFootballTicker } from "./lib/layout.mjs";
+import { buildLiveScoreTickerFeed, buildTickerFeed } from "./lib/tickerFeed.mjs";
 
 const root = process.cwd();
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
@@ -126,6 +126,8 @@ function baseFor(file) {
 // gerçekten taze bir öğe varsa "Son Dakika" olur.
 const tickerFeed = buildTickerFeed();
 const tickerItems = tickerFeed.items;
+const liveScoreFeed = buildLiveScoreTickerFeed();
+const liveScoreItems = liveScoreFeed.items;
 const files = [...collectHtmlFiles(root), ...collectHtmlFiles(path.join(root, "public"))]
   .filter((file) => !path.relative(root, file).startsWith("node_modules"));
 
@@ -141,9 +143,9 @@ for (const file of files) {
   }
 
   const base = baseFor(file);
-  const ticker = newsTicker({ base, items: rebaseItems(tickerItems, base), badge: tickerFeed.badge });
-  const headerBlock = ticker
-    ? `${siteHeader({ base })}\n      <!-- shared-layout:ticker:start -->${ticker}<!-- shared-layout:ticker:end -->`
+  const tickers = `${liveScoreTicker({ base, items: rebaseItems(liveScoreItems, base) })}${turkeyFootballTicker({ base, items: rebaseItems(tickerItems, base), badge: tickerFeed.badge })}`;
+  const headerBlock = tickers
+    ? `${siteHeader({ base })}\n      <!-- shared-layout:ticker:start -->${tickers}<!-- shared-layout:ticker:end -->`
     : siteHeader({ base });
 
   let next = original.replace(TICKER_RE, "");
@@ -158,6 +160,6 @@ for (const file of files) {
 
 console.log(
   `Shared layout applied: ${updated} updated, ${skipped} without layout blocks, ` +
-  `${tickerItems.length} ticker items (${tickerFeed.badge}` +
+  `${liveScoreItems.length} live score, ${tickerItems.length} agenda items (${tickerFeed.badge}` +
   `${tickerFeed.usedFallback ? ", son doğrulanmış içerik korundu" : ""})`
 );

@@ -361,6 +361,52 @@
     };
   }
 
+  function renderLiveScoreTicker(root, items, stale) {
+    var verified = (Array.isArray(items) ? items : []).filter(function (item) {
+      return item && item.isVerified === true && item.homeTeam && item.awayTeam && item.score;
+    });
+    var inner = root.querySelector(".news-ticker-inner");
+    if (!inner) return;
+
+    var badge = '<span class="news-ticker-badge is-live"><i class="live-pulse" aria-hidden="true"></i>CANLI SKOR</span>';
+    if (!verified.length) {
+      root.classList.add("is-empty");
+      inner.innerHTML = badge + '<p class="news-ticker-empty">Şampiyonlar Ligi kura çekimi için canlı veri bekleniyor</p>';
+      return;
+    }
+
+    root.classList.remove("is-empty");
+    var rows = verified.map(function (item) {
+      var minute = Number.isFinite(Number(item.minute)) ? " " + Number(item.minute) + "'" : "";
+      var text = item.homeTeam + " " + item.score.home + "-" + item.score.away + " " + item.awayTeam + minute;
+      return '<a class="news-ticker-item" href="' + escapeHtml(safeSiteUrl(item.href, siteHref("canli-skor.html"))) + '">' +
+        '<span class="news-ticker-tag">Canlı</span><span>' + escapeHtml(text) + "</span></a>";
+    }).join('<span class="news-ticker-sep" aria-hidden="true"></span>');
+    var note = stale ? '<span class="news-ticker-stale">Güncelleme gecikti</span>' : "";
+    inner.innerHTML = badge +
+      '<div class="news-ticker-viewport"><div class="news-ticker-track" style="--ticker-duration:' + Math.max(32, verified.length * 8) + 's">' +
+      '<div class="news-ticker-group">' + rows + "</div>" +
+      '<div class="news-ticker-group" aria-hidden="true">' + rows + "</div></div></div>" +
+      note + '<a class="news-ticker-all" href="' + escapeHtml(siteHref("canli-skor.html")) + '">Skorlar</a>';
+  }
+
+  function initLiveScoreTicker() {
+    var tickers = Array.prototype.slice.call(document.querySelectorAll("[data-live-score-ticker]"));
+    if (!tickers.length || window.location.protocol === "file:") return;
+
+    createLivePoller(MATCH_LIVE_POLL_MS, function () {
+      return fetchJson(API_ROOT + "live-matches")
+        .then(function (result) {
+          var payload = result && result.data ? result.data : [];
+          var stale = Boolean(result && result.meta && result.meta.stale);
+          tickers.forEach(function (ticker) { renderLiveScoreTicker(ticker, payload, stale); });
+        })
+        .catch(function () {
+          // Son başarılı görsel korunur; erişilemeyen uç için sıfır skor yazılmaz.
+        });
+    }).start();
+  }
+
   function setContent(target, html) {
     if (!target) {
       return;
@@ -10762,6 +10808,7 @@
     // Kartlardan ÖNCE bağlanır: dinleyici yetkilendirilmiş olduğu için henüz
     // basılmamış butonları da yakalar, çizim sırasına bağlı değildir.
     initMatchListToggles();
+    initLiveScoreTicker();
 
     // Maç kartları form yüzdesi için takım verisine, kazanma oranı için de
     // maç analizlerine ihtiyaç duyar. İkisi de kartlar basılmadan önce

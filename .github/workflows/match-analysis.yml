@@ -255,6 +255,10 @@ jobs:
         with:
           node-version: 20
 
+      - name: Ingest allowlisted breaking-news feeds
+        continue-on-error: true
+        run: node scripts/ingest-breaking-news.mjs --apply
+
       # Sağlayıcıya ihtiyaç duyan üç adım anahtar yokken açıkça ATLANIR.
       # Daha önce koşup sessizce hiçbir şey yapmıyorlardı; koşu yeşil
       # görünüyor ama neden bir şey olmadığı görünmüyordu. Burada ön kontrol

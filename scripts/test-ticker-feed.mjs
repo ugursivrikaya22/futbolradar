@@ -16,10 +16,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import {
+  buildLiveScoreTickerFeed,
   buildTickerFeed,
   FRESH_WINDOW_HOURS,
+  LIVE_SCORE_MAX_ITEMS,
   MAX_ITEMS,
-  MAX_MATCH_ITEMS
 } from "./lib/tickerFeed.mjs";
 
 const require = createRequire(import.meta.url);
@@ -80,6 +81,31 @@ function testNotCrowded() {
   assert.ok(
     feed.items.length <= MAX_ITEMS,
     `bant en fazla ${MAX_ITEMS} öğe taşımalı, ${feed.items.length} var`
+  );
+}
+
+function testLiveScoreFeedUsesOnlyVerifiedMatchRecords() {
+  const feed = buildLiveScoreTickerFeed();
+
+  assert.ok(
+    feed.items.length <= LIVE_SCORE_MAX_ITEMS,
+    `canli skor bandi en fazla ${LIVE_SCORE_MAX_ITEMS} oge tasimali`
+  );
+
+  for (const item of feed.items) {
+    assert.equal(item.source, "match", "canli skor bandi yalnizca mac kaydi tasimali");
+    assert.equal(item.verified, true, "canli skor kaydi dogrulanmis olmali");
+    assert.ok(item.sourceName, "canli skor kaynaginin adi olmali");
+    assert.ok(item.at && !Number.isNaN(Date.parse(item.at)), "canli skorun dogrulama zamani olmali");
+  }
+}
+
+function testAgendaDoesNotContainScoreRows() {
+  const feed = buildTickerFeed();
+  assert.equal(
+    feed.items.some((item) => item.source === "match"),
+    false,
+    "Turkiye futbol gundemi bandi skor satiri tasimamali"
   );
 }
 
@@ -168,12 +194,12 @@ function newestItemTime() {
  * birden banda hiç giremedi. Hiçbir test bunu yakalamadı — bu test o boşluk.
  */
 function testMatchItemsAreHardCapped() {
-  const feed = buildTickerFeed();
-  const matchItems = feed.items.filter((item) => item.source === "match");
+  const feed = buildLiveScoreTickerFeed();
+  const matchItems = feed.items;
 
   assert.ok(
-    matchItems.length <= MAX_MATCH_ITEMS,
-    `çıplak skor satırı tavanı aşıldı: ${matchItems.length} > ${MAX_MATCH_ITEMS}\n` +
+    matchItems.length <= LIVE_SCORE_MAX_ITEMS,
+    `çıplak skor satırı tavanı aşıldı: ${matchItems.length} > ${LIVE_SCORE_MAX_ITEMS}\n` +
     feed.items.map((item) => `  [${item.source}] ${item.text}`).join("\n")
   );
 
@@ -182,7 +208,7 @@ function testMatchItemsAreHardCapped() {
   if (feed.items.length < MAX_ITEMS) {
     const pool = feed.items.length;
     assert.ok(
-      matchItems.length < MAX_MATCH_ITEMS || pool >= MAX_MATCH_ITEMS,
+      matchItems.length < LIVE_SCORE_MAX_ITEMS || pool >= LIVE_SCORE_MAX_ITEMS,
       "tavan bandı gereksiz yere kısaltmamalı"
     );
   }
@@ -385,6 +411,8 @@ function testStaleEditorialNewsIsDropped() {
 }
 
 testOnlyVerifiedSources();
+testLiveScoreFeedUsesOnlyVerifiedMatchRecords();
+testAgendaDoesNotContainScoreRows();
 testNotCrowded();
 testNoDuplicateStories();
 testSortedByImportance();

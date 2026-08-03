@@ -6,6 +6,8 @@ const CACHE_POLICIES = Object.freeze({
   // stale-while-revalidate, oynanan bir maçta dört dakikaya kadar eski skor
   // servis edebiliyordu. Canlı yanıt kısa ömürlü olmalı.
   "matches-live": { maxAge: 10, stale: 20 },
+  "live-feed": { maxAge: 5, stale: 10 },
+  "breaking-news": { maxAge: 30, stale: 120 },
   "match-detail": { maxAge: 30, stale: 120 },
   standings: { maxAge: 300, stale: 900 },
   teams: { maxAge: 1800, stale: 7200 },

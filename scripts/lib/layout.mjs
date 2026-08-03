@@ -137,6 +137,7 @@ export function siteHeader(options = {}) {
 export function newsTicker(options = {}) {
   const base = normalizeBase(options.base);
   const items = Array.isArray(options.items) ? options.items.filter(Boolean) : [];
+  const type = options.type === "scores" ? "scores" : "agenda";
   // Rozet çağırandan gelir: "Son Dakika" bir zaman iddiasıdır ve yalnızca
   // gerçekten taze içerik varsa yazılır. Taze içerik yoksa bant kaldırılmaz,
   // rozet nötr "Gündem" olur — okuyucu gerçek ama eski başlık görür.
@@ -144,8 +145,15 @@ export function newsTicker(options = {}) {
     ? options.badge.trim()
     : "Gündem";
 
+  const emptyText = options.emptyText || "Doğrulanmış veri bekleniyor";
+
   if (!items.length) {
-    return "";
+    return `<div class="news-ticker news-ticker--${type} is-empty" data-shared-layout="ticker"${type === "scores" ? " data-live-score-ticker" : ""} aria-live="polite">
+      <div class="container-wide news-ticker-inner">
+        <span class="news-ticker-badge${type === "scores" ? " is-live" : ""}">${type === "scores" ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(badge)}</span>
+        <p class="news-ticker-empty">${escapeHtml(emptyText)}</p>
+      </div>
+    </div>`;
   }
 
   const renderItem = (item) => {
@@ -178,20 +186,47 @@ export function newsTicker(options = {}) {
 
   const track = items.map(renderItem).join('<span class="news-ticker-sep" aria-hidden="true"></span>');
 
-  const duration = Math.max(36, items.length * 10);
+  const duration = Number.isFinite(options.duration)
+    ? Math.max(18, options.duration)
+    : Math.max(90, items.length * 18);
+  const allHref = type === "scores" ? `${base}canli-skor.html` : `${base}haberler.html`;
+  const allLabel = type === "scores" ? "Skorlar" : "Tümü";
+  const ariaLabel = type === "scores" ? "Canlı skorlar ve sonuçlar" : "Türkiye futbol gündemi";
 
-  return `<div class="news-ticker" data-shared-layout="ticker" aria-label="Son dakika futbol gündemi">
+  return `<div class="news-ticker news-ticker--${type}" data-shared-layout="ticker"${type === "scores" ? " data-live-score-ticker" : ""} aria-label="${ariaLabel}">
       <div class="container-wide news-ticker-inner">
-        <span class="news-ticker-badge${badge === "Son Dakika" ? " is-live" : ""}">${badge === "Son Dakika" ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(badge)}</span>
+        <span class="news-ticker-badge${type === "scores" || badge === "Son Dakika" ? " is-live" : ""}">${type === "scores" || badge === "Son Dakika" ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(badge)}</span>
         <div class="news-ticker-viewport">
           <div class="news-ticker-track" style="--ticker-duration:${duration}s">
             <div class="news-ticker-group">${track}</div>
             <div class="news-ticker-group" aria-hidden="true">${track}</div>
           </div>
         </div>
-        <a class="news-ticker-all" href="${base}haberler.html">Tümü</a>
+        <a class="news-ticker-all" href="${allHref}">${allLabel}</a>
       </div>
     </div>`;
+}
+
+/** Turkish football news, transfers and club agenda. Slow enough to read. */
+export function turkeyFootballTicker(options = {}) {
+  return newsTicker({
+    ...options,
+    type: "agenda",
+    badge: "TÜRKİYE FUTBOL GÜNDEMİ",
+    duration: Number.isFinite(options.duration) ? options.duration : Math.max(96, (options.items || []).length * 18),
+    emptyText: "Doğrulanmış Türkiye futbol gündemi bekleniyor"
+  });
+}
+
+/** Verified live scores and recent results. Faster than the agenda band. */
+export function liveScoreTicker(options = {}) {
+  return newsTicker({
+    ...options,
+    type: "scores",
+    badge: "CANLI SKOR",
+    duration: Number.isFinite(options.duration) ? options.duration : Math.max(32, (options.items || []).length * 8),
+    emptyText: "Doğrulanmış canlı skor verisi bekleniyor"
+  });
 }
 
 /** Kurumsal alt bilgi: hakkında metni, gezinme sütunları, sosyal ikonlar. */
