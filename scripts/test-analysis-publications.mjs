@@ -1,0 +1,5 @@
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url); const { buildPublications, coverageScore, validate } = require("../services/analysisPublicationService.js");
+const report = { matchId:"galatasaray-test-2026", slug:"galatasaray-test-2026", homeTeam:"Galatasaray", awayTeam:"Fenerbahçe", league:"Trendyol Süper Lig", turkish:true, score:{home:2,away:1}, coveragePercent:90, coverageGrade:"full", fingerprint:"a", digest:{headline:"Galatasaray kazandı",paragraph:"Galatasaray, Fenerbahçe karşısında 2-1 kazandı.",turningPoints:{moments:[{detail:"60. dakikadaki gol"}]},keyPlayers:{players:[{name:"Oyuncu",contribution:"gol"}]},tactical:{status:"ready",notes:["Diziliş baskıyı destekledi."]},analysis:[]} };
+const result=buildPublications([report],[]); assert.ok(result.publications.length >= 4); assert.ok(result.publications.every((item)=>validate(item,report).ok)); assert.ok(coverageScore(report)>80); assert.equal(new Set(result.publications.map((item)=>item.slug)).size,result.publications.length); console.log("test-analysis-publications: OK");
