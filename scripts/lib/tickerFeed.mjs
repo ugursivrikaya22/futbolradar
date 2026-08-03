@@ -76,16 +76,23 @@ const MAX_AGE_HOURS = 24 * 7;
 const TRANSFER_MAX_AGE_HOURS = 24 * 21;
 
 /**
- * Tek bir kategori bandı ele geçirmesin. Altı maç sonucu varken doğrulanmış
- * transferler hiç görünmüyordu; sıralama önceliği doğruydu ama sonuç
- * tek sesli bir banttı.
+ * Çıplak skor satırının SERT TAVANI. Tek bir kategori bandı ele geçirmesin:
+ * altı maç sonucu varken doğrulanmış transferler hiç görünmüyordu; sıralama
+ * önceliği doğruydu ama sonuç tek sesli bir banttı.
  *
  * Maç kotası dörtten ikiye indirildi: küratörlü gündem artık maç sonuçlarını
  * da ANLAMIYLA taşıyor ("Beşiktaş tur atladı") ve iki kaynak aynı olayda
- * çakışıyordu. Çıplak skor satırı hâlâ bantta ama artık bandın yarısını
- * doldurmuyor.
+ * çakışıyordu.
+ *
+ * TAVAN, KOTA DEĞİL. Bu sayı bir süre yalnızca "rezervasyon" gibi davrandı:
+ * ayrılan yerleri doldurduktan sonra artan slot önceliğe göre dolduğu için
+ * ve maç öğesinin önceliği en yüksek olduğu için, artan her slota bir çıplak
+ * skor daha giriyordu. MAX_ITEMS 7 iken kota bandı tam doldurduğundan sınır
+ * tesadüfen tutuyordu; 8'e çıkınca üçüncü skor satırı sızdı ve gündem
+ * dosyasındaki üç transfer iddiası birden banda hiç giremedi — yani söylenti
+ * bandı söylentisiz kaldı. Sınır artık `rest` doldururken de uygulanıyor.
  */
-const MAX_MATCH_ITEMS = 2;
+export const MAX_MATCH_ITEMS = 2;
 const MIN_TRANSFER_SLOTS = 1;
 
 /**
@@ -96,7 +103,7 @@ const MIN_TRANSFER_SLOTS = 1;
  * "Gündem" bandın ASIL işi: bir futbol sitesinin üst şeridi skor tablosu
  * değil, gündem şerididir. Dört slot bu yüzden ayrılıyor.
  */
-const MIN_CURATED_SLOTS = 4;
+export const MIN_CURATED_SLOTS = 4;
 
 /**
  * Bant en fazla bu kadar öğe taşır; şerit kalabalıklaşmamalı.
@@ -107,7 +114,7 @@ const MIN_CURATED_SLOTS = 4;
  * üç yer kalıyordu. Sekiz, kayan bir şeritte hâlâ okunabilir bir uzunluk —
  * 320px'e kadar tek satır kalması ayrıca sınanıyor.
  */
-const MAX_ITEMS = 8;
+export const MAX_ITEMS = 8;
 
 const STATE_FILE = path.join(root, "data", "ticker-state.json");
 
@@ -382,9 +389,21 @@ export function buildTickerFeed(options = {}) {
 
   // Kalan yerleri önceliğe göre doldur. Havuz zaten tekleştirildiği için
   // burada nesne kimliğiyle karşılaştırmak güvenli.
+  //
+  // Maç öğesi için SERT TAVAN burada da geçerli: süzgeç sıralamadan SONRA
+  // çalışıyor, böylece kalan yer varsa en önemli maç girer — ama tavan
+  // aşılmaz. Süzgeç olmasaydı maç en yüksek öncelikli kaynak olduğu için
+  // artan her slotu o kapardı ve gündem hiç görünmezdi.
+  let matchRoom = Math.max(0, MAX_MATCH_ITEMS - Math.max(matchQuota, 0));
   const rest = pool
     .filter((item) => !picked.includes(item))
-    .sort(byImportance);
+    .sort(byImportance)
+    .filter((item) => {
+      if (item.source !== "match") return true;
+      if (matchRoom <= 0) return false;
+      matchRoom -= 1;
+      return true;
+    });
 
   // Bant kendi içinde de önceliğe göre dizilir: kota hangi öğelerin
   // gireceğini belirler, SIRAYI belirlemez. Kota olmasaydı canlı skor bir

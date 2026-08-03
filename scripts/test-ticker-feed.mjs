@@ -15,7 +15,12 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { buildTickerFeed, FRESH_WINDOW_HOURS } from "./lib/tickerFeed.mjs";
+import {
+  buildTickerFeed,
+  FRESH_WINDOW_HOURS,
+  MAX_ITEMS,
+  MAX_MATCH_ITEMS
+} from "./lib/tickerFeed.mjs";
 
 const require = createRequire(import.meta.url);
 
@@ -68,8 +73,14 @@ function testOnlyVerifiedSources() {
 }
 
 function testNotCrowded() {
+  // Sayı KAYNAKTAN geliyor, kopyalanmıyor: tavan burada bir kez elle yazıldı
+  // ve üretim tarafı değiştiğinde test sessizce eski sayıyı savunmaya devam
+  // etti. Sabit tek yerde durmalı.
   const feed = buildTickerFeed();
-  assert.ok(feed.items.length <= 8, `bant en fazla 8 öğe taşımalı, ${feed.items.length} var`);
+  assert.ok(
+    feed.items.length <= MAX_ITEMS,
+    `bant en fazla ${MAX_ITEMS} öğe taşımalı, ${feed.items.length} var`
+  );
 }
 
 /**
@@ -144,6 +155,37 @@ function newestItemTime() {
     .filter((value) => Number.isFinite(value));
   assert.ok(stamps.length, "ön koşul: bantta zaman damgalı öğe olmalı");
   return new Date(Math.max(...stamps));
+}
+
+/**
+ * ÇIPLAK SKOR SATIRININ TAVANI SERTTİR.
+ *
+ * Bu sınır bir kez yalnızca "rezervasyon" gibi davrandı: ayrılan yerler
+ * dolduktan sonra artan slot önceliğe göre doluyordu ve maç öğesi en yüksek
+ * öncelikli kaynak olduğu için artan her slota bir skor satırı daha giriyordu.
+ * MAX_ITEMS 7 iken kota bandı tam doldurduğu için sınır TESADÜFEN tutuyordu;
+ * 8'e çıkınca üçüncü skor sızdı ve gündem dosyasındaki üç transfer iddiası
+ * birden banda hiç giremedi. Hiçbir test bunu yakalamadı — bu test o boşluk.
+ */
+function testMatchItemsAreHardCapped() {
+  const feed = buildTickerFeed();
+  const matchItems = feed.items.filter((item) => item.source === "match");
+
+  assert.ok(
+    matchItems.length <= MAX_MATCH_ITEMS,
+    `çıplak skor satırı tavanı aşıldı: ${matchItems.length} > ${MAX_MATCH_ITEMS}\n` +
+    feed.items.map((item) => `  [${item.source}] ${item.text}`).join("\n")
+  );
+
+  // Tavan bandı daraltmamalı: yer varsa gündem/transfer ile dolmalı, boş
+  // kalmamalı. Aksi hâlde "tavan" sessizce bandı kısaltan bir kurala dönerdi.
+  if (feed.items.length < MAX_ITEMS) {
+    const pool = feed.items.length;
+    assert.ok(
+      matchItems.length < MAX_MATCH_ITEMS || pool >= MAX_MATCH_ITEMS,
+      "tavan bandı gereksiz yere kısaltmamalı"
+    );
+  }
 }
 
 function testFreshBadgeIsATimeClaim() {
@@ -347,6 +389,7 @@ testNotCrowded();
 testNoDuplicateStories();
 testSortedByImportance();
 testCuratedAgendaHasRoom();
+testMatchItemsAreHardCapped();
 testFreshBadgeIsATimeClaim();
 testFallbackKeepsLastVerified();
 testFallbackDropsExpiredAnnouncements();
