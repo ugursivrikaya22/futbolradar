@@ -59,10 +59,21 @@ function articleSources(article) {
     .filter((source) => source && source.name && /^https?:\/\//i.test(String(source.url || "")));
 }
 
+function articleInternalLinks(article) {
+  return (Array.isArray(article.internalLinks) ? article.internalLinks : [])
+    .filter((link) =>
+      link &&
+      link.label &&
+      typeof link.href === "string" &&
+      !/^https?:\/\//i.test(link.href) &&
+      !/^javascript:/i.test(link.href));
+}
+
 function teamPage(article) {
   const pages = {
     "Fenerbahçe": "fenerbahce-form-durumu.html",
-    "Galatasaray": "galatasaray-form-durumu.html"
+    "Galatasaray": "galatasaray-form-durumu.html",
+    "Trabzonspor": "trabzonspor-form-durumu.html"
   };
   return pages[article.team] || `takimlar.html?team=${encodeURIComponent(article.team || "")}`;
 }
@@ -119,12 +130,14 @@ function jsonLd(article) {
 }
 
 function pageHtml(article) {
-  const url = articleUrl(article);
-  const title = `${article.title} | FutbolRadar`;
-  const description = article.spot || article.summary || article.title;
+  const seo = article && typeof article.seo === "object" && article.seo ? article.seo : {};
+  const url = /^https?:\/\//i.test(String(seo.canonical || "")) ? String(seo.canonical) : articleUrl(article);
+  const title = String(seo.metaTitle || `${article.title} | FutbolRadar`).trim();
+  const description = String(seo.metaDescription || article.spot || article.summary || article.title).trim();
   const dateLabel = formatDate(article.publishedAt);
   const tags = Array.isArray(article.tags) ? article.tags.filter(Boolean) : [];
   const sources = articleSources(article);
+  const internalLinks = articleInternalLinks(article);
   const bodyAnchors = Array.isArray(article.bodyAnchors) ? article.bodyAnchors : [];
   const body = article.body
     .map((paragraph, index) => ({
@@ -146,6 +159,9 @@ function pageHtml(article) {
     : "";
   const sourceHtml = sources.length
     ? `<section class="article-sources" aria-labelledby="article-sources-title"><h2 id="article-sources-title">Kaynaklar</h2><ul>${sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="${SOURCE_LINK_REL}">${escapeHtml(source.name)}</a></li>`).join("")}</ul></section>`
+    : "";
+  const internalLinksHtml = internalLinks.length
+    ? `<section class="article-sources" aria-labelledby="article-internal-links-title"><h2 id="article-internal-links-title">Ilgili baglantilar</h2><ul>${internalLinks.map((link) => `<li><a href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></li>`).join("")}</ul></section>`
     : "";
 
   return `<!doctype html>
@@ -188,6 +204,7 @@ ${siteHeader({ base: "../" })}
         <div class="column-body">
         ${body}
         </div>
+        ${internalLinksHtml}
         ${sourceHtml}
       </article>
       <section class="source-strip" aria-label="Haberden devam rotası">

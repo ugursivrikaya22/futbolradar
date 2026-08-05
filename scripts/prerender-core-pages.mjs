@@ -4,6 +4,20 @@ import { createRequire } from "node:module";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
+const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
+
+function writeGeneratedFile(file, contents) {
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    try {
+      fs.writeFileSync(file, contents, "utf8");
+      return;
+    } catch (error) {
+      const retryable = ["UNKNOWN", "EBUSY", "EPERM"].includes(error && error.code);
+      if (!retryable || attempt === 11) throw error;
+      Atomics.wait(retryBuffer, 0, 0, 75 * (attempt + 1));
+    }
+  }
+}
 // Dış bağlantı politikası tek yerde: services/sourceLinks.js.
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
@@ -1006,8 +1020,8 @@ function writePage(file, slots, freshness) {
   });
   html = updateMetaLabels(html, freshness);
   html = updateRobotsDirective(html, file);
-  fs.writeFileSync(sourcePath, html, "utf8");
-  fs.writeFileSync(path.join(root, "public", file), html, "utf8");
+  writeGeneratedFile(sourcePath, html);
+  writeGeneratedFile(path.join(root, "public", file), html);
 }
 
 const confirmed = allFixtures();
@@ -1081,8 +1095,8 @@ for (const file of noindexShellPages) {
   const sourcePath = path.join(root, file);
   if (!fs.existsSync(sourcePath)) continue;
   const html = updateRobotsDirective(fs.readFileSync(sourcePath, "utf8"), file);
-  fs.writeFileSync(sourcePath, html, "utf8");
-  fs.writeFileSync(path.join(root, "public", file), html, "utf8");
+  writeGeneratedFile(sourcePath, html);
+  writeGeneratedFile(path.join(root, "public", file), html);
 }
 
 console.log("Prerendered critical page fallbacks");

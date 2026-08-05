@@ -14,7 +14,8 @@ const publishedIds = new Set(published.map((item) => item.id));
 for (const id of [
   "aziz-yildirim-fenerbahce-divan-kurulu-sert-cikis",
   "galatasaray-musiala-iddialarina-yalanlama",
-  "galatasaray-divan-kurulu-dursun-ozbek-transfer-tepkisi"
+  "galatasaray-divan-kurulu-dursun-ozbek-transfer-tepkisi",
+  "mohamed-salah-trabzonspor-transferi-resmen-aciklandi"
 ]) {
   const article = published.find((item) => item.id === id);
   assert.ok(article, `${id}: doğrulanmış haber bulunmalı`);
@@ -59,20 +60,32 @@ for (const draft of drafts.items || []) {
   assert.ok(!(ticker.items || []).some((item) => item.id === draft.id), `${draft.id}: taslak gündem bandına sızmamalı`);
 }
 
-for (const tickerId of ["trabzonspor-salah-dev-paket-iddiasi", "fenerbahce-sturm-graz-programi"]) {
+for (const tickerId of ["fenerbahce-sturm-graz-programi"]) {
   const item = (ticker.items || []).find((entry) => entry.id === tickerId);
-  assert.ok(item, `${tickerId}: gündem bandı kaydı bulunmalı`);
-  assert.match(item.source.url, /^https:\/\/www\.futbolradar\.com\/haber\//, `${tickerId}: iç detay sayfasına bağlanmalı`);
+  assert.ok(item, `${tickerId}: gundem bandi kaydi bulunmali`);
+  assert.match(item.source.url, /^https:\/\/www\.futbolradar\.com\/haber\//, `${tickerId}: ic detay sayfasina baglanmali`);
 }
 
-// Bant kısa başlık taşır, ayrıntı haber sayfasında: her küratörlü öğe iç
-// detay sayfasına bağlanmalı ve kesinleşmemiş Salah dosyası söylenti
-// rozetinden çıkarılmamalı.
-const salahTicker = (ticker.items || []).find((entry) => entry.id === "trabzonspor-salah-dev-paket-iddiasi");
-assert.equal(salahTicker.category, "transfer-rumour", "Salah bandı transfer iddiası kategorisinde kalmalı");
-assert.notEqual(salahTicker.confidence, "confirmed", "Salah bandı doğrulanmış gibi sunulmamalı");
+const archivedSalahRumors = [
+  "trabzonspor-mohamed-salah-transfer-iddiasi",
+  "trabzonspor-salah-transfer-iddiasi-son-durum"
+];
+for (const id of archivedSalahRumors) {
+  const article = news.find((item) => item.id === id);
+  assert.equal(article?.status, "archived", `${id}: official confirmation should archive the stale rumor article`);
+}
+
+assert.ok(
+  !(ticker.items || []).some((entry) => entry.id === "trabzonspor-salah-dev-paket-iddiasi"),
+  "Salah rumor ticker item should not remain after official confirmation"
+);
+const salahTicker = (ticker.items || []).find((entry) => entry.id === "trabzonspor-mohamed-salah-resmi-transfer-0508");
+assert.equal(salahTicker?.category, "official", "Salah ticker should use the official category");
+assert.equal(salahTicker?.confidence, "confirmed", "Salah ticker should be confirmed after official club wording");
+assert.match(salahTicker?.source?.url || "", /^https:\/\/www\.trabzonspor\.org\.tr\/news\//, "Salah ticker should link to the official club source");
 for (const entry of ticker.items || []) {
-  assert.match(entry.source.url, /^https:\/\/www\.futbolradar\.com\/haber\//, `${entry.id}: bant öğesi iç haber sayfasına bağlanmalı`);
+  if (entry.id === "trabzonspor-mohamed-salah-resmi-transfer-0508") continue;
+  assert.match(entry.source.url, /^https:\/\/www\.futbolradar\.com\/haber\//, `${entry.id}: bant ogesi ic haber sayfasina baglanmali`);
 }
 
 console.log(`Haber yayın testi geçti (${published.length} doğrulanmış haber, ${(drafts.items || []).length} kaynak bekleyen taslak).`);

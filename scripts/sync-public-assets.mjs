@@ -3,6 +3,21 @@ import path from "node:path";
 
 const root = process.cwd();
 const publicDir = path.join(root, "public");
+const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
+
+function copyGeneratedFile(source, target) {
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    try {
+      fs.copyFileSync(source, target);
+      return;
+    } catch (error) {
+      const retryable = ["UNKNOWN", "EBUSY", "EPERM"].includes(error && error.code);
+      if (!retryable || attempt === 11) throw error;
+      Atomics.wait(retryBuffer, 0, 0, 75 * (attempt + 1));
+    }
+  }
+}
+
 for (const file of [
   "page.css",
   "app.js",
@@ -29,7 +44,7 @@ for (const file of [
   "fenerbahce-transfer-radar.html",
   "en-iyi-super-lig-oyunculari.html"
 ]) {
-  fs.copyFileSync(path.join(root, file), path.join(publicDir, file));
+  copyGeneratedFile(path.join(root, file), path.join(publicDir, file));
 }
 for (const file of [
   "analyses.json",
@@ -45,6 +60,6 @@ for (const file of [
   "teams.json",
   "transfers.json"
 ]) {
-  fs.copyFileSync(path.join(root, "data", file), path.join(publicDir, "data", file));
+  copyGeneratedFile(path.join(root, "data", file), path.join(publicDir, "data", file));
 }
 console.log("Synced public assets");
