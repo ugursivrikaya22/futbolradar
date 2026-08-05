@@ -70,6 +70,14 @@ function publicUrl(filePath) {
   return `${DOMAIN}/${cleanPublicPath(filePath)}`;
 }
 
+function publicAssetUrl(filePath) {
+  return `${DOMAIN}/${String(filePath || "").replace(/^\.?\//, "")}`;
+}
+
+function relativeAssetUrl(filePath, base = "./") {
+  return `${base}${String(filePath || "").replace(/^\.?\//, "")}`;
+}
+
 function shareUrls(column) {
   const url = publicUrl(column.path);
   const xText = `${column.title} — FutbolRadar | futbolradar.com`;
@@ -122,19 +130,25 @@ function formatDate(value) {
 export function columnCard(column, base = "./", { showShareControls = false } = {}) {
   const tags = column.tags.slice(0, 3)
     .map((tag) => `<span class="column-tag">${escapeHtml(tag)}</span>`).join("");
+  const href = escapeHtml(base + column.path);
+  const badge = column.contentType || column.badge;
+  const cardImage = column.featuredImage
+    ? `<a class="column-card-image" href="${href}" aria-label="${escapeHtml(column.title)} yazısını oku"><img src="${escapeHtml(relativeAssetUrl(column.featuredImage, base))}" alt="${escapeHtml(column.featuredImageAlt || column.title)}" loading="lazy" decoding="async" /></a>`
+    : "";
   const actions = showShareControls
     ? `<div class="column-card-actions">
-        <a class="column-card-detail" href="${escapeHtml(base + column.path)}">Yazıyı Oku</a>
+        <a class="column-card-detail" href="${href}">Yazıyı Oku</a>
         ${shareLinks(column, { compact: true })}
       </div>`
-    : `<div class="column-card-actions"><a class="column-card-detail" href="${escapeHtml(base + column.path)}">Yazıyı Oku</a></div>`;
+    : `<div class="column-card-actions"><a class="column-card-detail" href="${href}">Yazıyı Oku</a></div>`;
 
   return `<article class="column-card" data-card="column">
+      ${cardImage}
       <div class="column-card-head">
-        <span class="column-badge">${escapeHtml(column.badge)}</span>
+        <span class="column-badge">${escapeHtml(badge)}</span>
         <span class="column-category">${escapeHtml(column.categoryLabel)}</span>
       </div>
-      <h3><a href="${escapeHtml(base + column.path)}">${escapeHtml(column.title)}</a></h3>
+      <h3><a href="${href}">${escapeHtml(column.title)}</a></h3>
       ${column.excerpt ? `<p>${escapeHtml(column.excerpt)}</p>` : ""}
       <div class="column-card-meta">
         <a class="column-author" href="${escapeHtml(base + column.authorPath)}">${escapeHtml(column.author)}</a>
@@ -186,8 +200,10 @@ export function columnPageHtml(column) {
   const base = "../";
   const pageTitle = column.seoTitle || `${column.title} | FutbolRadar`;
   const pageDescription = column.metaDescription || column.excerpt || `${column.author} yazdı: ${column.title}`;
-  const standfirst = column.spot || column.excerpt;
+  const standfirst = column.hideStandfirst ? "" : (column.spot || column.excerpt);
   const shareDescription = `${pageDescription} — futbolradar.com`;
+  const shareImage = column.featuredImage ? publicAssetUrl(column.featuredImage) : SHARE_IMAGE;
+  const badge = column.contentType || column.badge;
   // "## " önekli satır ara başlıktır: yazının kendi bölüm başlıkları
   // (ör. "Olumlu Yanlar") paragraf değil <h2> olarak basılır.
   const body = column.body.map((paragraph) => {
@@ -215,7 +231,7 @@ export function columnPageHtml(column) {
     articleSection: column.categoryLabel,
     keywords: column.tags.join(", "),
     mainEntityOfPage: url,
-    image: SHARE_IMAGE,
+    image: shareImage,
     inLanguage: "tr-TR"
   };
 
@@ -235,14 +251,14 @@ export function columnPageHtml(column) {
     <meta property="og:url" content="${escapeHtml(url)}" />
     <meta property="og:title" content="${escapeHtml(pageTitle)}" />
     <meta property="og:description" content="${escapeHtml(shareDescription)}" />
-    <meta property="og:image" content="${SHARE_IMAGE}" />
+    <meta property="og:image" content="${escapeHtml(shareImage)}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="${escapeHtml(pageTitle)}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(pageTitle)}" />
     <meta name="twitter:description" content="${escapeHtml(shareDescription)}" />
-    <meta name="twitter:image" content="${SHARE_IMAGE}" />
+    <meta name="twitter:image" content="${escapeHtml(shareImage)}" />
     <link rel="icon" href="${base}favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="${base}site.webmanifest" />
     <link rel="stylesheet" href="${base}page.css" />
@@ -256,7 +272,7 @@ export function columnPageHtml(column) {
       <article class="column-article">
         <header class="column-article-head">
           <div class="column-card-head">
-            <span class="column-badge">${escapeHtml(column.badge)}</span>
+            <span class="column-badge">${escapeHtml(badge)}</span>
             <span class="column-category">${escapeHtml(column.categoryLabel)}</span>
           </div>
           <h1>${escapeHtml(column.title)}</h1>
@@ -266,7 +282,8 @@ export function columnPageHtml(column) {
           </div>
         </header>
 
-        <p class="column-standfirst">${escapeHtml(standfirst)}</p>
+        ${column.featuredImage ? `<figure class="column-featured-image"><img src="${escapeHtml(relativeAssetUrl(column.featuredImage, base))}" alt="${escapeHtml(column.featuredImageAlt || column.title)}" loading="eager" decoding="async" /></figure>` : ""}
+        ${standfirst ? `<p class="column-standfirst">${escapeHtml(standfirst)}</p>` : ""}
         ${shareLinks(column)}
         <p class="column-disclaimer">${escapeHtml(column.disclaimer)}</p>
 
