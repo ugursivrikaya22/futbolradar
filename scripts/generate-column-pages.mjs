@@ -184,7 +184,10 @@ export function groupAuthors(columns) {
 export function columnPageHtml(column) {
   const url = publicUrl(column.path);
   const base = "../";
-  const shareDescription = `${column.excerpt || column.title} — futbolradar.com`;
+  const pageTitle = column.seoTitle || `${column.title} | FutbolRadar`;
+  const pageDescription = column.metaDescription || column.excerpt || `${column.author} yazdı: ${column.title}`;
+  const standfirst = column.spot || column.excerpt;
+  const shareDescription = `${pageDescription} — futbolradar.com`;
   // "## " önekli satır ara başlıktır: yazının kendi bölüm başlıkları
   // (ör. "Olumlu Yanlar") paragraf değil <h2> olarak basılır.
   const body = column.body.map((paragraph) => {
@@ -221,8 +224,8 @@ export function columnPageHtml(column) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${escapeHtml(`${column.title} | FutbolRadar`)}</title>
-    <meta name="description" content="${escapeHtml(shareDescription)}" />
+    <title>${escapeHtml(pageTitle)}</title>
+    <meta name="description" content="${escapeHtml(pageDescription)}" />
     <link rel="canonical" href="${escapeHtml(url)}" />
     <meta name="robots" content="index,follow" />
     <meta name="theme-color" content="#0b8f5a" />
@@ -230,14 +233,14 @@ export function columnPageHtml(column) {
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:url" content="${escapeHtml(url)}" />
-    <meta property="og:title" content="${escapeHtml(`${column.title} | FutbolRadar`)}" />
+    <meta property="og:title" content="${escapeHtml(pageTitle)}" />
     <meta property="og:description" content="${escapeHtml(shareDescription)}" />
     <meta property="og:image" content="${SHARE_IMAGE}" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="${escapeHtml(`${column.title} | FutbolRadar`)}" />
+    <meta property="og:image:alt" content="${escapeHtml(pageTitle)}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${escapeHtml(`${column.title} | FutbolRadar`)}" />
+    <meta name="twitter:title" content="${escapeHtml(pageTitle)}" />
     <meta name="twitter:description" content="${escapeHtml(shareDescription)}" />
     <meta name="twitter:image" content="${SHARE_IMAGE}" />
     <link rel="icon" href="${base}favicon.svg" type="image/svg+xml" />
@@ -263,7 +266,7 @@ export function columnPageHtml(column) {
           </div>
         </header>
 
-        <p class="column-standfirst">${escapeHtml(column.excerpt)}</p>
+        <p class="column-standfirst">${escapeHtml(standfirst)}</p>
         ${shareLinks(column)}
         <p class="column-disclaimer">${escapeHtml(column.disclaimer)}</p>
 

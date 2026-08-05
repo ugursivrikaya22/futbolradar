@@ -149,6 +149,9 @@ function presentColumn(entry) {
     statusLabel: STATUSES[status] ? STATUSES[status].label : status,
     isPublic: Boolean(STATUSES[status] && STATUSES[status].public),
     excerpt: text(entry.excerpt),
+    spot: text(entry.spot),
+    seoTitle: text(entry.seoTitle),
+    metaDescription: text(entry.metaDescription),
     body: Array.isArray(entry.body) ? entry.body.map(text).filter(Boolean) : [],
     path: columnPath(entry),
     // Ayrımı taşıyan iki alan. Her kart ve her sayfa bunları basar.
