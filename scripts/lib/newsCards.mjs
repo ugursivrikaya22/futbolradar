@@ -53,7 +53,7 @@ export function renderTeamNewsSection(articles, { team, base = "./" }) {
   const sectionId = `${newsSlug(team)}-haberleri`;
   const cards = articles.map((article) => {
     const slug = newsSlug(article.slug || article.id || article.title);
-    const href = `${base}haber/${slug}.html`;
+    const href = `${base}haber/${slug}`;
     return `<article class="news-card" data-card="news" data-news="${escapeHtml(article.id || slug)}">
       <div class="news-card-meta"><span class="tag green">${escapeHtml(article.category || team)}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(formatDate(article.publishedAt))}</time></div>
       <div><span class="card-kicker">${escapeHtml(team)}</span><h3>${escapeHtml(article.title)}</h3><p>${escapeHtml(article.summary || article.spot || "")}</p></div>

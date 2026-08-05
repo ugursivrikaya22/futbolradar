@@ -824,7 +824,8 @@ function newsCardHref(item) {
   const url = String(item && item.url || "").trim();
   const ownPrefix = "https://www.futbolradar.com/";
   if (url.startsWith(ownPrefix)) {
-    return `./${url.slice(ownPrefix.length)}`;
+    const localPath = url.slice(ownPrefix.length);
+    return localPath.startsWith("haber/") ? `./${localPath.replace(/\.html$/, "")}` : `./${localPath}`;
   }
   return url;
 }

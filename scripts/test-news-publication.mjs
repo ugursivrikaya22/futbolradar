@@ -49,7 +49,7 @@ const galatasaraySection = renderTeamNewsSection(galatasarayNews, { team: "Galat
 assert.match(galatasaraySection, /data-team-news="galatasaray"/, "Galatasaray haber bölümü üretilmeli");
 assert.match(
   galatasaraySection,
-  /haber\/galatasaray-divan-kurulu-dursun-ozbek-transfer-tepkisi\.html/,
+  /haber\/galatasaray-divan-kurulu-dursun-ozbek-transfer-tepkisi"/,
   "Galatasaray haber kartı yeni detay sayfasına bağlanmalı"
 );
 

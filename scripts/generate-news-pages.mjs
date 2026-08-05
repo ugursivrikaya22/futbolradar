@@ -51,7 +51,7 @@ function articleFile(article) {
 }
 
 function articleUrl(article) {
-  return `${domain}/${articleFile(article)}`;
+  return `${domain}/haber/${articleSlug(article)}`;
 }
 
 function articleSources(article) {
@@ -246,7 +246,7 @@ function updateSitemap(articles) {
   for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
     if (!fs.existsSync(sitemapPath)) continue;
     let xml = fs.readFileSync(sitemapPath, "utf8");
-    xml = xml.replace(/  <url>\n    <loc>https:\/\/www\.futbolradar\.com\/haber\/[^<]+\.html<\/loc>[\s\S]*?  <\/url>\n?/g, "");
+    xml = xml.replace(/  <url>\n    <loc>https:\/\/www\.futbolradar\.com\/haber\/[^<]+(?:\.html)?<\/loc>[\s\S]*?  <\/url>\n?/g, "");
     xml = xml.replace("</urlset>", `${entries.join("\n")}\n</urlset>`);
     writeGeneratedFile(sitemapPath, xml);
   }
