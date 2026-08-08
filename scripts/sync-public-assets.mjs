@@ -27,6 +27,7 @@ for (const file of [
   "site.webmanifest",
   "404.html",
   "index.html",
+  "admin-updates.html",
   "canli-skor.html",
   "bugunun-maclari.html",
   "mac-sonuclari.html",
@@ -56,9 +57,11 @@ for (const file of [
   "news.json",
   "players.json",
   "signals.json",
+  "squad-statuses.json",
   "super-lig-fixtures.json",
   "teams.json",
-  "transfers.json"
+  "transfers.json",
+  "update-status.json"
 ]) {
   copyGeneratedFile(path.join(root, "data", file), path.join(publicDir, "data", file));
 }

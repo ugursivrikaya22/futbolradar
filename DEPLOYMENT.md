@@ -119,6 +119,10 @@ COMPETITION_CODE
 After changing Vercel variables, create a new Production deployment. Serverless
 functions only see the updated environment after a fresh deployment.
 
+Automatic repository-backed refreshes are configured separately in GitHub
+Actions. See `docs/scheduled-updates.md` for schedules, required Actions
+secrets, failure handling, locks, and the admin status view.
+
 ## Live API health check
 
 Use `/api/health` after deployment. It never returns the secret value, only
