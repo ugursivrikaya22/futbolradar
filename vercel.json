@@ -209,20 +209,20 @@
       ]
     },
     {
-      "source": "/data/update-status.json",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-store, max-age=0"
-        }
-      ]
-    },
-    {
       "source": "/data/:path*",
       "headers": [
         {
           "key": "Cache-Control",
           "value": "public, max-age=0, s-maxage=300, stale-while-revalidate=600"
+        }
+      ]
+    },
+    {
+      "source": "/data/update-status.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0"
         }
       ]
     },
