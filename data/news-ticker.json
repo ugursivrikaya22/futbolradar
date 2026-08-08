@@ -1,7 +1,43 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-08T19:04:18.687Z",
+  "updatedAt": "2026-08-08T20:33:17.699Z",
   "items": [
+    {
+      "id": "auto-news-5d0ba1a939042e4bd61d",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Galatasaray 1-2 Villarreal",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-08T20:03:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE9yaEEwSTZfYTdZbFl5RlR2TllxQUh6NC1IN21xSkJyaUViRnYwamR1blJlTzNsbF9Ma1hyTTl3ZE44RUZFQ0dLVmJvbXctbUVYUFlrNksxa3hvZUhoTFozNXU5cWd6TEpPbnM4UGJZWVNSc1o3Xzk2VTNSem4tQQ?oc=5"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1
+      }
+    },
+    {
+      "id": "auto-news-d190361d8a854d04ac68",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "GALATASARAY 0-1 YOUNG BOYS",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-08T05:49:41.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9QTXNfZVlabkVJNTcyLWpvcVVrVW1PQ0xPMkdrUk45a0pVbDFlWHpQaWIxVXNGTDZzMnJIUGhXN2VGWGUzMzBYLTZuUTdWQ1J0a1EtSjRSZm9FTF9CMGVxZTdqYU0yZmNVOXc?oc=5"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1
+      }
+    },
     {
       "id": "auto-news-ad66c95187c6d5cdd095",
       "category": "official",
@@ -93,6 +129,42 @@
       }
     },
     {
+      "id": "auto-news-e3c7f0686cf49728968e",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Eski Yöneticimiz Yalçın Haker’e başsağlığı dileriz",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-08T20:06:30.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQVkZoOEZBcm83RENhYVU0eFp2T2lMVU1rQ05vOFlfQUFxZWZfeEk4b0RvXzNMZzNJVi0zZ0NhQU4wRVZiNlE2ZjFuRnNsWE5EVkZ6em5aQjZFSEtpbmJsMklQUXJSSU5zYmM4U2pLNDhDZVIxMlN3RklmR1p0VzNqLVZRdV82dGxtM19xUGt4eTU3TzJ5ZVZMTXludUwySnp5?oc=5"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2
+      }
+    },
+    {
+      "id": "auto-news-cae4c1afd91e534d7a93",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Sturm Graz maçı hazırlıkları sürüyor",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-08T20:06:30.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxObjlDX2FKbEhzSmJWZWxLODl4NUlEMjdvYjQ0REl0SHhiSnpCVkcyY3RuWldLRExQd0s4UjViWTNTbzBHem9ZZ25Fd1lGY3JRQUdtbWxoWTFVNkJqWnJRMFJWdE9zMnE0V3hjcndDWEwtZW1ILXdHbkpZeUlfbmVIdmVKdC1RM2s3b3JuUXNmdw?oc=5"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2
+      }
+    },
+    {
       "id": "auto-news-461da6592c9c08ddba2e",
       "category": "squad-update",
       "confidence": "confirmed",
@@ -157,24 +229,6 @@
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxORFk3anByYm55NVg5akRPLW94ZXFlbXF1U292VExKUWhiWTBETEszZk9vbFhlN1d5d2RtR2R2emM0enU2ak9ZSE1iLU5GSnkwQTNvSDMyb0NkWkd0a0xHRTlkNUxKM0NhcVBFYlloUnJQNENJVzFYbWU0OVdXM05Kbl8zZVp5MjJfdzZTcmFuR2d3TDExbGFDTmdUcDRlRlVOdjNnRGQyZ1hTczhxSXVpTE9HTQ?oc=5"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2
-      }
-    },
-    {
-      "id": "auto-news-9a5e76490042f5870e46",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Şampiyonlar Ligi yolunda muhteşem destek",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-04T19:45:19.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQeDBqb3ZEZy1PWFNyWFd2ZDVkUHRoZEhqMFdFWEkxNENjc0FPa2xZaWRXOW04S3BLR3hlNS1LSTVsNUJzTFh6Q0ZicWlWQVUzMHJVazhUV1JWbHNOb2dXeUhSTHlUclBZZlZ5bE1pMEUybkRYUWYtcmNZYjNINjRMZzVNbGk4b2VIWnc2ZXFZQTNPVjIt?oc=5"
       },
       "automation": {
         "source": "rss",
@@ -265,60 +319,6 @@
       "source": {
         "name": "Trabzonspor Kulübü Resmi Web Sitesi",
         "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOdHBXTE42OW4zV2kzYlktWktrTDNvcXFYdXRlYkNiYlVWblpCeklZZUtVbEhoMDVPMloxSE5MX1pNNnpacjNaMjdwanQ0cjE4cU02M0MzWUdSVEtGckV5QWwxRjBPNklZa0NwY1FrQVlmdnQ2SHRHRUdCWjJOZkZpSWJUMF9zQ05DTXliTnVXaHRlSkhzQWFuem1pYTQ5WFpwaWU2a25BaFV4YS0yZlJz?oc=5"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4
-      }
-    },
-    {
-      "id": "auto-news-071436e2af17cee4b581",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Yeni sezon hazırlıklarımız devam ediyor",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-07T10:19:51.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQa2VaWUE2UXBDT3pIWG9CSDh4OFlxS1ZkVGtKaXl0RFFDaUwwdjAxejVodEsyRDFJNy1QR1hySDI2S2drSDFLS24zaDVKMlJBMERFc3d5dTFDSUZIZjhOR2FKTHJIWVNZWHhTRldOY0V1aW82dFRZbTNfN3JQY2pWUkstRmNBRWNyc2RhRE1JdGRFbkE?oc=5"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4
-      }
-    },
-    {
-      "id": "auto-news-8e1ff10d91d2121abe3a",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "transfer",
-      "text": "Mohamed Salah ile sözleşme imzaladık",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-06T12:14:25.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxNTlc3NThvYTNjeWNhcVhuRVV0M2JzMXZGenREbmRmR2ZpbUxFd1pSS3FzN1g0RGxtdzFlcmdWZ2ZYVEthY0NRdVh0WEZSM0lIVkVqZmd4Yi1aSGIwSGlNcHZVcXZydURDTGtZaUJDYUxzUGd4Y19WdmVIRDZKWUNuS2t3LThWWldlQ3dF?oc=5"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4
-      }
-    },
-    {
-      "id": "auto-news-0fb4ca0735183b674525",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Kamuoyuna Duyuru",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-06T12:04:24.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE80RG1uaTk3b1JMNl80aWtjSm5GcVlBeDA2dVU1Qjd3ak9ZMWdFV0V5YnhwQm5ELVYzdE5uMkpSVVRBZWdUMUVNMVpHR0ZZb0JGNWtmQXZkZWZIUzVpOWNscFp4eFBZTXlrZUVSSVI1TXJOMld6?oc=5"
       },
       "automation": {
         "source": "rss",
