@@ -404,7 +404,9 @@ async function main() {
       counts: { matchesUpdated: 0, newsUpdated: 0, transfersUpdated: 0, teamsUpdated: 0, playersUpdated: 0, filesChanged: 0 },
       errors: []
     };
-    writeStatus(record);
+    // A fallback schedule may arrive after the primary run. Keep the published
+    // last-success record intact and capture this no-op in the Actions log only.
+    appendGithubSummary(record);
     console.log(`[scheduled-update] ${record.reason}`);
     return;
   }
