@@ -1,7 +1,25 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-08T20:33:17.699Z",
+  "updatedAt": "2026-08-08T21:33:56.416Z",
   "items": [
+    {
+      "id": "auto-news-6a22728183d7e9bbaf6c",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Yunus Akgün'den maç sonrası açıklamalar",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-08T20:37:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNaG10WWhweGp3Z2U5OWF3YXNZTEJLNmlGek9yZllLZnBtbnBVTF9ZWGdUUU1aWU1JdldNaHpaZmFtRURCT0JMeEZMem9rS1NZVEZIczl1MmZmVVF6aXlsRjV6R0dQWThsZ3F6TkNLTVh3TEFuVDFscm1UcXVDbWo1bHNMOGtOVGdpOFAzeEN3?oc=5"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1
+      }
+    },
     {
       "id": "auto-news-5d0ba1a939042e4bd61d",
       "category": "official",
@@ -126,6 +144,42 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1
+      }
+    },
+    {
+      "id": "auto-news-a101683eae9a5331ebdc",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Teknik Direktörümüz Gökhan Bozkaya, OH Leuven maçını değerlendirdi",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-08T21:16:34.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxOYkJxdFAzZVUySjdrT2VENktaYzExbGdVclByVEg3TmpqTVkwdXZEaW1CUl9WUkJFNjhqZnV1MkhBdWQteEJnNzFVUHBpTFl3b3l1OGxhMk55WW0zelhIWUx0cHVWWTBEdGFHOW8xLUFWalBWdk5IMFB1S3o5NkkzTC1xdkhmWjJqTVBUMVlDVGdsM05ma0I2ZmkwTTRnbXVlRjBhSGhXTkZyaGN2Nzh0N296RHNpclU2ekNkaTB3?oc=5"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2
+      }
+    },
+    {
+      "id": "auto-news-553a770d194a6b936e1c",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe arsaVev, Avrupa yolculuğunu UEFA Kadınlar Avrupa Ligi 2. eleme turunda sürdürecek",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-08T20:51:31.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxNdWZsTktKa0dXSDFiNGZWdVZxanBaQXI2Y1lqdHRLN3lyRTRfOEl4Si1KbGdoMXFEZnRUeUg1QzhIMUtzT1l5bkNPdnN1OFZKWm9KdUtMVzNGN2d5d04yYTlhMC1WX3htTzlzUlVOdHprWUhJTjlRT1lRMGQ4VjJIU0p6dndXRkxUd0xtRDJlX29oby12NVJCb2RuTmY0ckNtdTQ2OFZLRmxpNnpfMVRuVEg3S0tEd2hQMGFvU1dMblRwN1FPYXZNWWR0eGlpZzl4bjJCWUxFMXIzbWN5dC1z?oc=5"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2
       }
     },
     {
@@ -270,60 +324,6 @@
         "source": "rss",
         "feed": "besiktas",
         "priority": 3
-      }
-    },
-    {
-      "id": "auto-news-7d21442ef10dd3a7ce82",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Beşiktaş Basketbol Takımımızın 2026/27 Türkiye Sigorta Basketbol Süper Ligi Fikstürü Belli Oldu",
-      "team": "Beşiktaş",
-      "timestamp": "2026-08-06T09:11:10.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5MZjdHNllaZWcyVmh4TWZUNnRNMDF3MDBXYjFlVGZQU18zS3NCaFVhWkRrOE5kam9VZ0kxTU1zZ2ZJQXR6REJnZnY5aHBmZHFEeXhzU05HcGc2NGM?oc=5"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3
-      }
-    },
-    {
-      "id": "auto-news-5a7834e7fa8ca0d4f446",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Vefat ve Başsağlığı - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-08-05T19:10:20.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1lZGw4WnVYVE1fRHlkcWRaYm9UQnBuRERvb2ppNWN4QWNUeGlrVU1XVVpGbFBJOVROVVBXdmdVOHl3U0R6alRaMG9zbW1pWjAybVBMU2FyVUVQNW8?oc=5"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3
-      }
-    },
-    {
-      "id": "auto-news-c27e36c56e97c4537fa3",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Futbolcumuz Tim Jabol Folcarelli Başarılı Bir Operasyon Geçirdi",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-07T12:09:40.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOdHBXTE42OW4zV2kzYlktWktrTDNvcXFYdXRlYkNiYlVWblpCeklZZUtVbEhoMDVPMloxSE5MX1pNNnpacjNaMjdwanQ0cjE4cU02M0MzWUdSVEtGckV5QWwxRjBPNklZa0NwY1FrQVlmdnQ2SHRHRUdCWjJOZkZpSWJUMF9zQ05DTXliTnVXaHRlSkhzQWFuem1pYTQ5WFpwaWU2a25BaFV4YS0yZlJz?oc=5"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4
       }
     },
     {

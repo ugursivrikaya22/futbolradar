@@ -6,36 +6,36 @@
     "hourlyUtc": "0 0-1,3-23 * * *",
     "fullLocal": "05:00"
   },
-  "updatedAt": "2026-08-08T20:33:41.547Z",
+  "updatedAt": "2026-08-08T21:34:20.500Z",
   "lastUpdate": {
-    "id": "31277159548",
-    "dedupeKey": "hourly:2026-08-08T23",
+    "id": "31279590498",
+    "dedupeKey": "hourly:2026-08-09T00",
     "type": "hourly",
     "trigger": "schedule",
     "timezone": "Europe/Istanbul",
-    "startedAt": "2026-08-08T20:33:10.278Z",
-    "finishedAt": "2026-08-08T20:33:41.547Z",
-    "durationMs": 31269,
+    "startedAt": "2026-08-08T21:33:48.098Z",
+    "finishedAt": "2026-08-08T21:34:20.500Z",
+    "durationMs": 32402,
     "status": "success",
     "sourceControl": {
       "repository": "ugursivrikaya22/futbolradar",
-      "commit": "e8bf1baf11f83e1d18592c882a6ddf3fc93f8357",
-      "runUrl": "https://github.com/ugursivrikaya22/futbolradar/actions/runs/31277159548"
+      "commit": "176d5f2ea600ab74818af682559b8d8e0351d0c1",
+      "runUrl": "https://github.com/ugursivrikaya22/futbolradar/actions/runs/31279590498"
     },
     "sourcesChecked": [
       {
         "id": "live-fixtures",
         "source": "api-football",
         "status": "success",
-        "durationMs": 6529,
+        "durationMs": 7340,
         "attempts": 2,
         "summary": {
           "source": "api-football",
-          "checked": 209,
+          "checked": 242,
           "detailsChecked": 8,
-          "added": 0,
-          "updated": 38,
-          "unchanged": 171,
+          "added": 70,
+          "updated": 33,
+          "unchanged": 139,
           "errors": []
         },
         "error": null
@@ -44,7 +44,7 @@
         "id": "standings",
         "source": "api-football",
         "status": "success",
-        "durationMs": 380,
+        "durationMs": 452,
         "attempts": 2,
         "summary": {
           "source": "api-football",
@@ -58,7 +58,7 @@
         "id": "injuries-suspensions",
         "source": "api-football",
         "status": "success",
-        "durationMs": 405,
+        "durationMs": 411,
         "attempts": 2,
         "summary": {
           "source": "api-football",
@@ -72,7 +72,7 @@
         "id": "football-news",
         "source": "rss",
         "status": "success",
-        "durationMs": 3539,
+        "durationMs": 3155,
         "attempts": 2,
         "summary": {
           "source": "rss",
@@ -88,7 +88,7 @@
         "id": "official-lineups",
         "source": "api-football",
         "status": "success",
-        "durationMs": 49,
+        "durationMs": 51,
         "attempts": 2,
         "summary": null,
         "error": null
@@ -97,7 +97,7 @@
         "id": "provider-identities",
         "source": "api-football",
         "status": "success",
-        "durationMs": 767,
+        "durationMs": 817,
         "attempts": 1,
         "summary": null,
         "error": null
@@ -106,7 +106,7 @@
         "id": "match-results",
         "source": "api-football",
         "status": "success",
-        "durationMs": 54,
+        "durationMs": 53,
         "attempts": 2,
         "summary": null,
         "error": null
@@ -115,15 +115,15 @@
         "id": "refetch-finished",
         "source": "api-football",
         "status": "success",
-        "durationMs": 53,
+        "durationMs": 54,
         "attempts": 1,
         "summary": null,
         "error": null
       }
     ],
     "counts": {
-      "matchesUpdated": 38,
-      "newsUpdated": 8,
+      "matchesUpdated": 103,
+      "newsUpdated": 6,
       "transfersUpdated": 0,
       "teamsUpdated": 0,
       "playersUpdated": 0,
@@ -141,49 +141,49 @@
         "id": "live-fixtures",
         "kind": "source",
         "status": "success",
-        "durationMs": 6529,
+        "durationMs": 7340,
         "error": null
       },
       {
         "id": "standings",
         "kind": "source",
         "status": "success",
-        "durationMs": 380,
+        "durationMs": 452,
         "error": null
       },
       {
         "id": "injuries-suspensions",
         "kind": "source",
         "status": "success",
-        "durationMs": 405,
+        "durationMs": 411,
         "error": null
       },
       {
         "id": "football-news",
         "kind": "source",
         "status": "success",
-        "durationMs": 3539,
+        "durationMs": 3155,
         "error": null
       },
       {
         "id": "official-lineups",
         "kind": "source",
         "status": "success",
-        "durationMs": 49,
+        "durationMs": 51,
         "error": null
       },
       {
         "id": "provider-identities",
         "kind": "source",
         "status": "success",
-        "durationMs": 767,
+        "durationMs": 817,
         "error": null
       },
       {
         "id": "match-results",
         "kind": "source",
         "status": "success",
-        "durationMs": 54,
+        "durationMs": 53,
         "error": null
       },
       {
@@ -197,63 +197,63 @@
         "id": "refetch-finished",
         "kind": "source",
         "status": "success",
-        "durationMs": 53,
+        "durationMs": 54,
         "error": null
       },
       {
         "id": "post-match-store",
         "kind": "transform",
         "status": "success",
-        "durationMs": 207,
+        "durationMs": 241,
         "error": null
       },
       {
         "id": "post-match-backfill",
         "kind": "transform",
         "status": "success",
-        "durationMs": 139,
+        "durationMs": 147,
         "error": null
       },
       {
         "id": "validate-transfers",
         "kind": "validation",
         "status": "success",
-        "durationMs": 87,
+        "durationMs": 84,
         "error": null
       },
       {
         "id": "validate-coverage",
         "kind": "validation",
         "status": "success",
-        "durationMs": 155,
+        "durationMs": 162,
         "error": null
       },
       {
         "id": "validate-analyses",
         "kind": "validation",
         "status": "success",
-        "durationMs": 61,
+        "durationMs": 67,
         "error": null
       },
       {
         "id": "render-news-pages",
         "kind": "build",
         "status": "success",
-        "durationMs": 82,
+        "durationMs": 76,
         "error": null
       },
       {
         "id": "render-match-pages",
         "kind": "build",
         "status": "success",
-        "durationMs": 891,
+        "durationMs": 848,
         "error": null
       },
       {
         "id": "render-post-match-pages",
         "kind": "build",
         "status": "success",
-        "durationMs": 532,
+        "durationMs": 640,
         "error": null
       },
       {
@@ -267,90 +267,90 @@
         "id": "render-core-pages",
         "kind": "build",
         "status": "success",
-        "durationMs": 518,
+        "durationMs": 541,
         "error": null
       },
       {
         "id": "sync-public-assets",
         "kind": "build",
         "status": "success",
-        "durationMs": 41,
+        "durationMs": 43,
         "error": null
       },
       {
         "id": "search-index",
         "kind": "build",
         "status": "success",
-        "durationMs": 104,
+        "durationMs": 111,
         "error": null
       },
       {
         "id": "shared-layout",
         "kind": "build",
         "status": "success",
-        "durationMs": 3326,
+        "durationMs": 3342,
         "error": null
       },
       {
         "id": "theme-boot",
         "kind": "build",
         "status": "success",
-        "durationMs": 677,
+        "durationMs": 694,
         "error": null
       },
       {
         "id": "analytics",
         "kind": "build",
         "status": "success",
-        "durationMs": 2900,
+        "durationMs": 3156,
         "error": null
       },
       {
         "id": "site-verification",
         "kind": "build",
         "status": "success",
-        "durationMs": 866,
+        "durationMs": 865,
         "error": null
       },
       {
         "id": "qa",
         "kind": "validation",
         "status": "success",
-        "durationMs": 8535,
+        "durationMs": 8663,
         "error": null
       }
     ]
   },
   "lastFull": null,
   "lastHourly": {
-    "id": "31277159548",
-    "dedupeKey": "hourly:2026-08-08T23",
+    "id": "31279590498",
+    "dedupeKey": "hourly:2026-08-09T00",
     "type": "hourly",
     "trigger": "schedule",
     "timezone": "Europe/Istanbul",
-    "startedAt": "2026-08-08T20:33:10.278Z",
-    "finishedAt": "2026-08-08T20:33:41.547Z",
-    "durationMs": 31269,
+    "startedAt": "2026-08-08T21:33:48.098Z",
+    "finishedAt": "2026-08-08T21:34:20.500Z",
+    "durationMs": 32402,
     "status": "success",
     "sourceControl": {
       "repository": "ugursivrikaya22/futbolradar",
-      "commit": "e8bf1baf11f83e1d18592c882a6ddf3fc93f8357",
-      "runUrl": "https://github.com/ugursivrikaya22/futbolradar/actions/runs/31277159548"
+      "commit": "176d5f2ea600ab74818af682559b8d8e0351d0c1",
+      "runUrl": "https://github.com/ugursivrikaya22/futbolradar/actions/runs/31279590498"
     },
     "sourcesChecked": [
       {
         "id": "live-fixtures",
         "source": "api-football",
         "status": "success",
-        "durationMs": 6529,
+        "durationMs": 7340,
         "attempts": 2,
         "summary": {
           "source": "api-football",
-          "checked": 209,
+          "checked": 242,
           "detailsChecked": 8,
-          "added": 0,
-          "updated": 38,
-          "unchanged": 171,
+          "added": 70,
+          "updated": 33,
+          "unchanged": 139,
           "errors": []
         },
         "error": null
@@ -359,7 +359,7 @@
         "id": "standings",
         "source": "api-football",
         "status": "success",
-        "durationMs": 380,
+        "durationMs": 452,
         "attempts": 2,
         "summary": {
           "source": "api-football",
@@ -373,7 +373,7 @@
         "id": "injuries-suspensions",
         "source": "api-football",
         "status": "success",
-        "durationMs": 405,
+        "durationMs": 411,
         "attempts": 2,
         "summary": {
           "source": "api-football",
@@ -387,7 +387,7 @@
         "id": "football-news",
         "source": "rss",
         "status": "success",
-        "durationMs": 3539,
+        "durationMs": 3155,
         "attempts": 2,
         "summary": {
           "source": "rss",
@@ -403,7 +403,7 @@
         "id": "official-lineups",
         "source": "api-football",
         "status": "success",
-        "durationMs": 49,
+        "durationMs": 51,
         "attempts": 2,
         "summary": null,
         "error": null
@@ -412,7 +412,7 @@
         "id": "provider-identities",
         "source": "api-football",
         "status": "success",
-        "durationMs": 767,
+        "durationMs": 817,
         "attempts": 1,
         "summary": null,
         "error": null
@@ -421,7 +421,7 @@
         "id": "match-results",
         "source": "api-football",
         "status": "success",
-        "durationMs": 54,
+        "durationMs": 53,
         "attempts": 2,
         "summary": null,
         "error": null
@@ -430,15 +430,15 @@
         "id": "refetch-finished",
         "source": "api-football",
         "status": "success",
-        "durationMs": 53,
+        "durationMs": 54,
         "attempts": 1,
         "summary": null,
         "error": null
       }
     ],
     "counts": {
-      "matchesUpdated": 38,
-      "newsUpdated": 8,
+      "matchesUpdated": 103,
+      "newsUpdated": 6,
       "transfersUpdated": 0,
       "teamsUpdated": 0,
       "playersUpdated": 0,
@@ -456,49 +456,49 @@
         "id": "live-fixtures",
         "kind": "source",
         "status": "success",
-        "durationMs": 6529,
+        "durationMs": 7340,
         "error": null
       },
       {
         "id": "standings",
         "kind": "source",
         "status": "success",
-        "durationMs": 380,
+        "durationMs": 452,
         "error": null
       },
       {
         "id": "injuries-suspensions",
         "kind": "source",
         "status": "success",
-        "durationMs": 405,
+        "durationMs": 411,
         "error": null
       },
       {
         "id": "football-news",
         "kind": "source",
         "status": "success",
-        "durationMs": 3539,
+        "durationMs": 3155,
         "error": null
       },
       {
         "id": "official-lineups",
         "kind": "source",
         "status": "success",
-        "durationMs": 49,
+        "durationMs": 51,
         "error": null
       },
       {
         "id": "provider-identities",
         "kind": "source",
         "status": "success",
-        "durationMs": 767,
+        "durationMs": 817,
         "error": null
       },
       {
         "id": "match-results",
         "kind": "source",
         "status": "success",
-        "durationMs": 54,
+        "durationMs": 53,
         "error": null
       },
       {
@@ -512,63 +512,63 @@
         "id": "refetch-finished",
         "kind": "source",
         "status": "success",
-        "durationMs": 53,
+        "durationMs": 54,
         "error": null
       },
       {
         "id": "post-match-store",
         "kind": "transform",
         "status": "success",
-        "durationMs": 207,
+        "durationMs": 241,
         "error": null
       },
       {
         "id": "post-match-backfill",
         "kind": "transform",
         "status": "success",
-        "durationMs": 139,
+        "durationMs": 147,
         "error": null
       },
       {
         "id": "validate-transfers",
         "kind": "validation",
         "status": "success",
-        "durationMs": 87,
+        "durationMs": 84,
         "error": null
       },
       {
         "id": "validate-coverage",
         "kind": "validation",
         "status": "success",
-        "durationMs": 155,
+        "durationMs": 162,
         "error": null
       },
       {
         "id": "validate-analyses",
         "kind": "validation",
         "status": "success",
-        "durationMs": 61,
+        "durationMs": 67,
         "error": null
       },
       {
         "id": "render-news-pages",
         "kind": "build",
         "status": "success",
-        "durationMs": 82,
+        "durationMs": 76,
         "error": null
       },
       {
         "id": "render-match-pages",
         "kind": "build",
         "status": "success",
-        "durationMs": 891,
+        "durationMs": 848,
         "error": null
       },
       {
         "id": "render-post-match-pages",
         "kind": "build",
         "status": "success",
-        "durationMs": 532,
+        "durationMs": 640,
         "error": null
       },
       {
@@ -582,61 +582,375 @@
         "id": "render-core-pages",
         "kind": "build",
         "status": "success",
-        "durationMs": 518,
+        "durationMs": 541,
         "error": null
       },
       {
         "id": "sync-public-assets",
         "kind": "build",
         "status": "success",
-        "durationMs": 41,
+        "durationMs": 43,
         "error": null
       },
       {
         "id": "search-index",
         "kind": "build",
         "status": "success",
-        "durationMs": 104,
+        "durationMs": 111,
         "error": null
       },
       {
         "id": "shared-layout",
         "kind": "build",
         "status": "success",
-        "durationMs": 3326,
+        "durationMs": 3342,
         "error": null
       },
       {
         "id": "theme-boot",
         "kind": "build",
         "status": "success",
-        "durationMs": 677,
+        "durationMs": 694,
         "error": null
       },
       {
         "id": "analytics",
         "kind": "build",
         "status": "success",
-        "durationMs": 2900,
+        "durationMs": 3156,
         "error": null
       },
       {
         "id": "site-verification",
         "kind": "build",
         "status": "success",
-        "durationMs": 866,
+        "durationMs": 865,
         "error": null
       },
       {
         "id": "qa",
         "kind": "validation",
         "status": "success",
-        "durationMs": 8535,
+        "durationMs": 8663,
         "error": null
       }
     ]
   },
   "history": [
+    {
+      "id": "31279590498",
+      "dedupeKey": "hourly:2026-08-09T00",
+      "type": "hourly",
+      "trigger": "schedule",
+      "timezone": "Europe/Istanbul",
+      "startedAt": "2026-08-08T21:33:48.098Z",
+      "finishedAt": "2026-08-08T21:34:20.500Z",
+      "durationMs": 32402,
+      "status": "success",
+      "sourceControl": {
+        "repository": "ugursivrikaya22/futbolradar",
+        "commit": "176d5f2ea600ab74818af682559b8d8e0351d0c1",
+        "runUrl": "https://github.com/ugursivrikaya22/futbolradar/actions/runs/31279590498"
+      },
+      "sourcesChecked": [
+        {
+          "id": "live-fixtures",
+          "source": "api-football",
+          "status": "success",
+          "durationMs": 7340,
+          "attempts": 2,
+          "summary": {
+            "source": "api-football",
+            "checked": 242,
+            "detailsChecked": 8,
+            "added": 70,
+            "updated": 33,
+            "unchanged": 139,
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "id": "standings",
+          "source": "api-football",
+          "status": "success",
+          "durationMs": 452,
+          "attempts": 2,
+          "summary": {
+            "source": "api-football",
+            "checked": 18,
+            "updated": 0,
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "id": "injuries-suspensions",
+          "source": "api-football",
+          "status": "success",
+          "durationMs": 411,
+          "attempts": 2,
+          "summary": {
+            "source": "api-football",
+            "checked": 0,
+            "updated": 0,
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "id": "football-news",
+          "source": "rss",
+          "status": "success",
+          "durationMs": 3155,
+          "attempts": 2,
+          "summary": {
+            "source": "rss",
+            "feedsChecked": 7,
+            "candidates": 35,
+            "accepted": 19,
+            "updated": 19,
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "id": "official-lineups",
+          "source": "api-football",
+          "status": "success",
+          "durationMs": 51,
+          "attempts": 2,
+          "summary": null,
+          "error": null
+        },
+        {
+          "id": "provider-identities",
+          "source": "api-football",
+          "status": "success",
+          "durationMs": 817,
+          "attempts": 1,
+          "summary": null,
+          "error": null
+        },
+        {
+          "id": "match-results",
+          "source": "api-football",
+          "status": "success",
+          "durationMs": 53,
+          "attempts": 2,
+          "summary": null,
+          "error": null
+        },
+        {
+          "id": "refetch-finished",
+          "source": "api-football",
+          "status": "success",
+          "durationMs": 54,
+          "attempts": 1,
+          "summary": null,
+          "error": null
+        }
+      ],
+      "counts": {
+        "matchesUpdated": 103,
+        "newsUpdated": 6,
+        "transfersUpdated": 0,
+        "teamsUpdated": 0,
+        "playersUpdated": 0,
+        "squadStatusesUpdated": 0,
+        "analysesUpdated": 0,
+        "filesChanged": 2
+      },
+      "changedDataFiles": [
+        "data/fixture-calendar.json",
+        "data/news-ticker.json"
+      ],
+      "errors": [],
+      "steps": [
+        {
+          "id": "live-fixtures",
+          "kind": "source",
+          "status": "success",
+          "durationMs": 7340,
+          "error": null
+        },
+        {
+          "id": "standings",
+          "kind": "source",
+          "status": "success",
+          "durationMs": 452,
+          "error": null
+        },
+        {
+          "id": "injuries-suspensions",
+          "kind": "source",
+          "status": "success",
+          "durationMs": 411,
+          "error": null
+        },
+        {
+          "id": "football-news",
+          "kind": "source",
+          "status": "success",
+          "durationMs": 3155,
+          "error": null
+        },
+        {
+          "id": "official-lineups",
+          "kind": "source",
+          "status": "success",
+          "durationMs": 51,
+          "error": null
+        },
+        {
+          "id": "provider-identities",
+          "kind": "source",
+          "status": "success",
+          "durationMs": 817,
+          "error": null
+        },
+        {
+          "id": "match-results",
+          "kind": "source",
+          "status": "success",
+          "durationMs": 53,
+          "error": null
+        },
+        {
+          "id": "upcoming-analyses",
+          "kind": "transform",
+          "status": "success",
+          "durationMs": 104,
+          "error": null
+        },
+        {
+          "id": "refetch-finished",
+          "kind": "source",
+          "status": "success",
+          "durationMs": 54,
+          "error": null
+        },
+        {
+          "id": "post-match-store",
+          "kind": "transform",
+          "status": "success",
+          "durationMs": 241,
+          "error": null
+        },
+        {
+          "id": "post-match-backfill",
+          "kind": "transform",
+          "status": "success",
+          "durationMs": 147,
+          "error": null
+        },
+        {
+          "id": "validate-transfers",
+          "kind": "validation",
+          "status": "success",
+          "durationMs": 84,
+          "error": null
+        },
+        {
+          "id": "validate-coverage",
+          "kind": "validation",
+          "status": "success",
+          "durationMs": 162,
+          "error": null
+        },
+        {
+          "id": "validate-analyses",
+          "kind": "validation",
+          "status": "success",
+          "durationMs": 67,
+          "error": null
+        },
+        {
+          "id": "render-news-pages",
+          "kind": "build",
+          "status": "success",
+          "durationMs": 76,
+          "error": null
+        },
+        {
+          "id": "render-match-pages",
+          "kind": "build",
+          "status": "success",
+          "durationMs": 848,
+          "error": null
+        },
+        {
+          "id": "render-post-match-pages",
+          "kind": "build",
+          "status": "success",
+          "durationMs": 640,
+          "error": null
+        },
+        {
+          "id": "render-update-admin",
+          "kind": "build",
+          "status": "success",
+          "durationMs": 35,
+          "error": null
+        },
+        {
+          "id": "render-core-pages",
+          "kind": "build",
+          "status": "success",
+          "durationMs": 541,
+          "error": null
+        },
+        {
+          "id": "sync-public-assets",
+          "kind": "build",
+          "status": "success",
+          "durationMs": 43,
+          "error": null
+        },
+        {
+          "id": "search-index",
+          "kind": "build",
+          "status": "success",
+          "durationMs": 111,
+          "error": null
+        },
+        {
+          "id": "shared-layout",
+          "kind": "build",
+          "status": "success",
+          "durationMs": 3342,
+          "error": null
+        },
+        {
+          "id": "theme-boot",
+          "kind": "build",
+          "status": "success",
+          "durationMs": 694,
+          "error": null
+        },
+        {
+          "id": "analytics",
+          "kind": "build",
+          "status": "success",
+          "durationMs": 3156,
+          "error": null
+        },
+        {
+          "id": "site-verification",
+          "kind": "build",
+          "status": "success",
+          "durationMs": 865,
+          "error": null
+        },
+        {
+          "id": "qa",
+          "kind": "validation",
+          "status": "success",
+          "durationMs": 8663,
+          "error": null
+        }
+      ]
+    },
     {
       "id": "31277159548",
       "dedupeKey": "hourly:2026-08-08T23",
