@@ -92,6 +92,7 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
   // birincil yayına atıf yapılabilsin diye ayrı tutuluyor.
   international: Object.freeze([
     "espn.com",
+    "aljazeera.com",
     "vanguardngr.com"
   ]),
 
@@ -104,6 +105,7 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
   // veriliyor (galatasaray.org, fenermedia.com). Bir video tek kaynak olarak
   // kalıyorsa o haber gözden geçirilmeli.
   record: Object.freeze([
+    "kap.org.tr",
     "youtube.com"
   ]),
 

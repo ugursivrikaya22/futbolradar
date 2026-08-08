@@ -387,7 +387,11 @@ function checkJson() {
       }
 
       const target = destination.replace(/^\/+/, "");
-      expect(fs.existsSync(path.join(root, target)), `vercel redirect target missing ${destination}`);
+      const targetPath = path.join(root, target);
+      expect(
+        fs.existsSync(targetPath) || (!path.extname(targetPath) && fs.existsSync(`${targetPath}.html`)),
+        `vercel redirect target missing ${destination}`
+      );
     }
   } catch (error) {
     failures.push(`vercel config parse failed: ${error.message}`);
@@ -438,7 +442,7 @@ function checkJson() {
 }
 
 function pageUrl(page) {
-  if (columnArticlePages.includes(page)) {
+  if (columnArticlePages.includes(page) || newsArticlePages.includes(page)) {
     return `https://www.futbolradar.com/${page.replace(/\.html$/i, "")}`;
   }
   return `https://www.futbolradar.com/${page === "index.html" ? "" : page}`;
@@ -469,7 +473,11 @@ function checkSeoAndLinks() {
     expect(Boolean(description), `${page}: missing meta description`);
     expect(canonical === expectedUrl, `${page}: canonical mismatch`);
     expect(ogUrl === expectedUrl, `${page}: og:url mismatch`);
-    expect(ogImage === "https://www.futbolradar.com/assets/og-image.svg", `${page}: og:image mismatch`);
+    expect(ogImage.startsWith("https://www.futbolradar.com/"), `${page}: og:image must use the canonical host`);
+    if (ogImage.startsWith("https://www.futbolradar.com/")) {
+      const ogImagePath = path.join(root, ogImage.replace("https://www.futbolradar.com/", ""));
+      expect(fs.existsSync(ogImagePath), `${page}: og:image target missing`);
+    }
     expect(["index,follow", "noindex,follow"].includes(robots), `${page}: robots directive is invalid`);
     expect(Boolean(ogTitle), `${page}: missing og:title`);
     expect(Boolean(ogDescription), `${page}: missing og:description`);
@@ -531,7 +539,10 @@ function checkSeoAndLinks() {
     }
 
     if (columnArticlePages.includes(page)) {
-      expect(html.includes('class="column-standfirst"'), `${page}: missing article excerpt`);
+      const columnRecord = publishedColumnRecords.find((column) => column.path === page);
+      if (!columnRecord || !columnRecord.hideStandfirst) {
+        expect(html.includes('class="column-standfirst"'), `${page}: missing article excerpt`);
+      }
       expect(html.includes('class="column-author"'), `${page}: missing linked author`);
       expect(html.includes("yazarlar/"), `${page}: missing author archive route`);
       expect(html.includes('"@type":"Article"'), `${page}: missing article schema`);
@@ -604,7 +615,10 @@ function checkSeoAndLinks() {
       const resolvedTarget = cleanTarget.startsWith("/")
         ? path.join(root, cleanTarget.replace(/^\/+/, ""))
         : path.resolve(root, pageDir, cleanTarget);
-      expect(fs.existsSync(resolvedTarget), `${page}: missing local target ${target}`);
+      expect(
+        fs.existsSync(resolvedTarget) || (!path.extname(resolvedTarget) && fs.existsSync(`${resolvedTarget}.html`)),
+        `${page}: missing local target ${target}`
+      );
     }
   }
 

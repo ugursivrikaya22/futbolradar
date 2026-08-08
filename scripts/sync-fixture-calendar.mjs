@@ -227,6 +227,9 @@ function normalizeEvent(event) {
     kickoff: stamp.iso,
     time: stamp.time,
     venue: event.strVenue || null,
+    broadcast: event.strTVStation
+      ? { turkey: event.strTVStation, source: "thesportsdb" }
+      : null,
     homeTeam,
     awayTeam,
     status: normalizeStatus(event),

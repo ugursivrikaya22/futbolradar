@@ -31,6 +31,19 @@ const { normalizeText } = require("./matchRadarService");
 /** Yalnızca bu durum yayımlanır. Geri kalanı söylentidir. */
 const PUBLISHABLE_STATUS = "confirmed";
 
+const SQUAD_STATUSES = Object.freeze({
+  ACTIVE: "active",
+  LOANED_IN: "loaned_in",
+  LOANED_OUT: "loaned_out",
+  TRANSFERRED_OUT: "transferred_out",
+  RELEASED: "released"
+});
+
+const CURRENT_SQUAD_STATUSES = new Set([
+  SQUAD_STATUSES.ACTIVE,
+  SQUAD_STATUSES.LOANED_IN
+]);
+
 /** Kaynağı olmayan hareket yayımlanmaz. */
 const REQUIRED_FIELDS = ["playerName", "fromTeam", "toTeam", "type", "date", "sourceName", "sourceUrl"];
 
@@ -198,6 +211,53 @@ function superLigNames() {
   return cachedSuperLigNames;
 }
 
+function isSuperLigTeam(teamName, teamNames) {
+  const value = normalizeText(teamName);
+  if (!value) return false;
+  const names = teamNames || superLigNames();
+  return names.some((name) => name === value || name.includes(value) || value.includes(name));
+}
+
+function isLoanTransfer(transfer) {
+  const type = normalizeText(transfer && transfer.type);
+  return type.includes("kiralik") || type.includes("loan");
+}
+
+function isReleaseTransfer(transfer) {
+  const type = normalizeText(transfer && transfer.type);
+  const destination = normalizeText(transfer && transfer.toTeam);
+  return type.includes("sozlesme sonu") || type.includes("released") ||
+    destination === "serbest oyuncu" || destination === "free agent";
+}
+
+function squadMembershipForTransfer(transfer, teamNames) {
+  const destinationIsSuperLig = isSuperLigTeam(transfer && transfer.toTeam, teamNames);
+  const sourceIsSuperLig = isSuperLigTeam(transfer && transfer.fromTeam, teamNames);
+
+  if (destinationIsSuperLig) {
+    return {
+      squadStatus: isLoanTransfer(transfer) ? SQUAD_STATUSES.LOANED_IN : SQUAD_STATUSES.ACTIVE,
+      isCurrentSuperLigPlayer: true
+    };
+  }
+
+  if (sourceIsSuperLig) {
+    if (isReleaseTransfer(transfer)) {
+      return { squadStatus: SQUAD_STATUSES.RELEASED, isCurrentSuperLigPlayer: false };
+    }
+    if (isLoanTransfer(transfer)) {
+      return { squadStatus: SQUAD_STATUSES.LOANED_OUT, isCurrentSuperLigPlayer: false };
+    }
+    return { squadStatus: SQUAD_STATUSES.TRANSFERRED_OUT, isCurrentSuperLigPlayer: false };
+  }
+
+  return { squadStatus: null, isCurrentSuperLigPlayer: false };
+}
+
+function isCurrentSquadStatus(status) {
+  return CURRENT_SQUAD_STATUSES.has(String(status || "").toLowerCase());
+}
+
 /** İç günlük: yayımlanmayan hareketler gerekçesiyle. */
 function logExcludedTransfers(scope, excluded) {
   for (const item of excluded || []) {
@@ -215,8 +275,15 @@ function logDuplicateTransfers(scope, duplicates) {
 module.exports = {
   PUBLISHABLE_STATUS,
   REQUIRED_FIELDS,
+  SQUAD_STATUSES,
+  CURRENT_SQUAD_STATUSES,
   evaluateTransfer,
   involvesSuperLigTeam,
+  isCurrentSquadStatus,
+  isLoanTransfer,
+  isReleaseTransfer,
+  isSuperLigTeam,
+  squadMembershipForTransfer,
   transferIdentity,
   publishableTransfers,
   transfersForTeam,
