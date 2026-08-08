@@ -124,6 +124,9 @@ assert.doesNotMatch(workflow, /\*\/5/);
 assert.match(workflow, /group: futbolradar-production-update/);
 assert.match(workflow, /FUTBOLRADAR_AUTOMATION_TOKEN/);
 
+const orchestrator = fs.readFileSync(path.join(root, "scripts", "run-scheduled-update.mjs"), "utf8");
+assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\.mjs"/);
+
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 assert.ok(vercel.headers.some((entry) => entry.source === "/data/update-status.json" && entry.headers.some((header) => header.value.includes("no-store"))));
 

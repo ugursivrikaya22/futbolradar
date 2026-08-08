@@ -329,6 +329,7 @@ function hourlyBuildSteps(diff) {
   if (diff.playersUpdated) steps.push(nodeStep("render-player-pages", "generate-player-profile-pages.mjs", [], { kind: "build", required: true, timeoutMs: 10 * 60 * 1000 }));
   if (diff.teamsUpdated) steps.push(nodeStep("render-team-pages", "generate-teams.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }));
   steps.push(
+    nodeStep("render-news-pages", "generate-news-pages.mjs", [], { kind: "build", required: true, timeoutMs: 5 * 60 * 1000 }),
     nodeStep("render-match-pages", "generate-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-post-match-pages", "generate-post-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-update-admin", "generate-update-admin.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
