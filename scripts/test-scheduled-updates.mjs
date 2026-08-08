@@ -129,6 +129,9 @@ assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\
 
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 assert.ok(vercel.headers.some((entry) => entry.source === "/data/update-status.json" && entry.headers.some((header) => header.value.includes("no-store"))));
+const generalDataHeaderIndex = vercel.headers.findIndex((entry) => entry.source === "/data/:path*");
+const updateStatusHeaderIndex = vercel.headers.findIndex((entry) => entry.source === "/data/update-status.json");
+assert.ok(generalDataHeaderIndex < updateStatusHeaderIndex, "specific update status cache policy must override the general data policy");
 
 const adminGenerator = fs.readFileSync(path.join(root, "scripts", "generate-update-admin.mjs"), "utf8");
 assert.match(adminGenerator, /data-update-monitor/);
