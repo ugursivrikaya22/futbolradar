@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-09T12:56:25.595Z",
+  "fetchedAt": "2026-08-09T13:25:54.110Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -102144,13 +102144,13 @@
       "awayTeam": "Atletico Madrid",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/50.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/530.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
+      "status": "FINISHED",
+      "providerStatus": "FT",
       "minute": 90,
       "elapsed": 90,
-      "live": true,
+      "live": false,
       "score": {
-        "home": 2,
+        "home": 3,
         "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
@@ -102169,8 +102169,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T12:56:26.904Z",
-      "staleAfter": "2026-08-09T13:01:26.904Z",
+      "fetchedAt": "2026-08-09T13:25:55.486Z",
+      "staleAfter": "2026-08-09T13:30:55.486Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -102179,14 +102179,14 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 59' O. Marmoush tarafından kaydedildi. Kulübeler oyuna müdahale etti; 15 oyuncu değişikliği kayda geçti. Skor üstünlüğü Manchester City tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 90' R. Ait-Nouri tarafından kaydedildi. Kulübeler oyuna müdahale etti; 15 oyuncu değişikliği kayda geçti. Skor üstünlüğü Manchester City tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "59'",
-            "text": "Son gol 59' O. Marmoush tarafından kaydedildi."
+            "value": "90'",
+            "text": "Son gol 90' R. Ait-Nouri tarafından kaydedildi."
           },
           {
             "label": "Teknik hamleler",
@@ -102195,11 +102195,11 @@
           },
           {
             "label": "Canlı skor",
-            "value": "2-1",
+            "value": "3-1",
             "text": "Manchester City skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 20,
+        "eventCount": 21,
         "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
@@ -103358,6 +103358,16 @@
           "detail": "Yellow Card",
           "value": "J. Gvardiol · Yellow Card",
           "comments": ""
+        },
+        {
+          "time": "90'",
+          "team": {
+            "name": "Manchester City"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "R. Ait-Nouri · Asist: D. Mubama · Normal Goal",
+          "comments": ""
         }
       ]
     },
@@ -103375,12 +103385,12 @@
       "awayTeamLogo": "https://media.api-sports.io/football/teams/6813.png",
       "status": "LIVE",
       "providerStatus": "2H",
-      "minute": 65,
-      "elapsed": 65,
+      "minute": 90,
+      "elapsed": 90,
       "live": true,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 3,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -103398,8 +103408,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T12:56:26.904Z",
-      "staleAfter": "2026-08-09T13:01:26.904Z",
+      "fetchedAt": "2026-08-09T13:25:55.486Z",
+      "staleAfter": "2026-08-09T13:30:55.486Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -103409,7 +103419,7 @@
       "competitionId": "premier-league",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Dynamo topa sahip olma oranında önde. Dinamo Makhachkala daha fazla şut üretti.",
+        "summary": "Dynamo topa sahip olma oranında önde. Dynamo daha fazla şut üretti. Skor üstünlüğü Dynamo tarafında.",
         "confidence": "Yüksek",
         "signals": [
           {
@@ -103419,27 +103429,32 @@
           },
           {
             "label": "Şut hacmi",
-            "value": "5-7",
-            "text": "Dinamo Makhachkala daha fazla şut üretti."
+            "value": "8-8",
+            "text": "Dynamo daha fazla şut üretti."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "2-1",
+            "value": "5-2",
             "text": "Dynamo isabetli şutlarda önde."
           },
           {
+            "label": "Gol akışı",
+            "value": "90+3'",
+            "text": "Son gol 90+3' A. Miranchuk tarafından kaydedildi."
+          },
+          {
             "label": "Teknik hamleler",
-            "value": "2 değişiklik",
-            "text": "Kulübeler oyuna müdahale etti; 2 oyuncu değişikliği kayda geçti."
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "3-1",
+            "text": "Dynamo skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 5,
-        "dataPoints": 5,
+        "eventCount": 20,
+        "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -104652,14 +104667,164 @@
           "detail": "Substitution 2",
           "value": "Rubens · Asist: D. Skopintsev · Substitution 2",
           "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Dinamo Makhachkala"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "D. Lesovoy · Asist: A. Sandrachuk · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Dinamo Makhachkala"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "E. Smelov · Asist: A. Dzhabrailov · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "Dinamo Makhachkala"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "Miro · Asist: G. Agalarov · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "73'",
+          "team": {
+            "name": "Dynamo"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "V. Okishor · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "Dynamo"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "D. Fomin · Asist: A. Miranchuk · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "Dynamo"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "Y. Gladyshev · Asist: I. Sergeev · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "77'",
+          "team": {
+            "name": "Dynamo"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "T. Marinkin · Asist: V. Okishor · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Dynamo"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "D. Skopintsev · Asist: K. Tyukavin · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Dinamo Makhachkala"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "G. Agalarov · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "82'",
+          "team": {
+            "name": "Dinamo Makhachkala"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "H. Mrezigue · Asist: R. Magomedov · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "82'",
+          "team": {
+            "name": "Dinamo Makhachkala"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "N. Glushkov · Asist: V. Khubulov · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "Dinamo Makhachkala"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "T. Sundukov · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "86'",
+          "team": {
+            "name": "Dinamo Makhachkala"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Apshatsev · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "89'",
+          "team": {
+            "name": "Dynamo"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "K. Tyukavin · Asist: D. Glebov · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "90+3'",
+          "team": {
+            "name": "Dynamo"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Miranchuk · Normal Goal",
+          "comments": ""
         }
       ],
       "statistics": [
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 2,
-          "away": 1,
+          "home": 5,
+          "away": 2,
           "higherIsBetter": true
         },
         {
@@ -104671,8 +104836,8 @@
         {
           "category": "Hücum",
           "type": "Toplam şut",
-          "home": 5,
-          "away": 7,
+          "home": 8,
+          "away": 8,
           "higherIsBetter": true
         },
         {
@@ -104685,25 +104850,25 @@
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
           "home": 2,
-          "away": 3,
+          "away": 4,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 3,
+          "home": 6,
           "away": 4
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 10,
-          "away": 10
+          "home": 13,
+          "away": 16
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 3,
+          "home": 4,
           "away": 2
         },
         {
@@ -104723,34 +104888,34 @@
         {
           "category": "Disiplin",
           "type": "Sarı kart",
-          "home": 2,
-          "away": 1
+          "home": 3,
+          "away": 3
         },
         {
           "category": "Savunma",
           "type": "Kurtarış",
           "home": 1,
-          "away": 2
+          "away": 3
         },
         {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 390,
-          "away": 178,
+          "home": 574,
+          "away": 267,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 317,
-          "away": 115,
+          "home": 465,
+          "away": 167,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
           "home": 81,
-          "away": 65,
+          "away": 63,
           "unit": "%",
           "higherIsBetter": true
         }
@@ -104815,14 +104980,14 @@
       "awayTeam": "Chelsea",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2523.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/49.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 64,
+      "elapsed": 64,
       "live": true,
       "score": {
         "home": 1,
-        "away": 1,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -104840,8 +105005,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T12:56:26.904Z",
-      "staleAfter": "2026-08-09T13:01:26.904Z",
+      "fetchedAt": "2026-08-09T13:25:55.486Z",
+      "staleAfter": "2026-08-09T13:30:55.486Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -104851,22 +105016,27 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Son gol 43' L. Delap tarafından kaydedildi. Skor dengede.",
+        "summary": "Son gol 62' L. Delap tarafından kaydedildi. Kulübeler oyuna müdahale etti; 2 oyuncu değişikliği kayda geçti. Skor üstünlüğü Chelsea tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "43'",
-            "text": "Son gol 43' L. Delap tarafından kaydedildi."
+            "value": "62'",
+            "text": "Son gol 62' L. Delap tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "2 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 2 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "1-1",
-            "text": "Skor dengede."
+            "value": "1-2",
+            "text": "Chelsea skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 5,
-        "dataPoints": 2,
+        "eventCount": 9,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -105588,6 +105758,46 @@
           "detail": "Yellow Card",
           "value": "L. Delap · Yellow Card",
           "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Chelsea"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "T. Sharman-Lowe · Asist: G. Slonina · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "52'",
+          "team": {
+            "name": "Johor Darul Takzim FC"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "J. Silva · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "54'",
+          "team": {
+            "name": "Chelsea"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Estevao · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "62'",
+          "team": {
+            "name": "Chelsea"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "L. Delap · Penalty",
+          "comments": ""
         }
       ]
     },
@@ -105603,10 +105813,10 @@
       "awayTeam": "Shakhtar Donetsk",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/14434.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/550.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 21,
-      "elapsed": 21,
+      "status": "HALFTIME",
+      "providerStatus": "HT",
+      "minute": 45,
+      "elapsed": 45,
       "live": true,
       "score": {
         "home": 0,
@@ -105628,8 +105838,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T12:56:26.904Z",
-      "staleAfter": "2026-08-09T13:01:26.904Z",
+      "fetchedAt": "2026-08-09T13:25:55.486Z",
+      "staleAfter": "2026-08-09T13:30:55.486Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -106554,14 +106764,14 @@
       "awayTeam": "Okzhetpes",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/562.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/4558.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 25,
+      "elapsed": 25,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -106579,8 +106789,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T12:56:26.904Z",
-      "staleAfter": "2026-08-09T13:01:26.904Z",
+      "fetchedAt": "2026-08-09T13:25:55.486Z",
+      "staleAfter": "2026-08-09T13:30:55.486Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -106589,12 +106799,23 @@
       },
       "competitionId": "premier-league",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
-        "confidence": "Sınırlı",
-        "signals": [],
-        "eventCount": 0,
-        "dataPoints": 0,
+        "title": "Canlı Radar Analizi",
+        "summary": "Son gol 20' B. Lototskyi tarafından kaydedildi. Okzhetpes skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Okzhetpes tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "20'",
+            "text": "Son gol 20' B. Lototskyi tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "0-1",
+            "text": "Okzhetpes skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 1,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -108049,6 +108270,18 @@
             "Usevalad Sadovski"
           ]
         }
+      ],
+      "events": [
+        {
+          "time": "20'",
+          "team": {
+            "name": "Okzhetpes"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "B. Lototskyi · Normal Goal",
+          "comments": ""
+        }
       ]
     },
     {
@@ -108063,14 +108296,14 @@
       "awayTeam": "Van",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/709.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/6286.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 25,
+      "elapsed": 25,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -108088,8 +108321,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T11:32:05.357Z",
-      "staleAfter": "2026-08-09T11:37:05.357Z",
+      "fetchedAt": "2026-08-09T13:25:55.486Z",
+      "staleAfter": "2026-08-09T13:30:55.486Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -108098,12 +108331,23 @@
       },
       "competitionId": "premier-league",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
-        "confidence": "Sınırlı",
-        "signals": [],
-        "eventCount": 0,
-        "dataPoints": 0,
+        "title": "Canlı Radar Analizi",
+        "summary": "Son gol 13' I. Pikis tarafından kaydedildi. Pyunik Yerevan skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Pyunik Yerevan tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "13'",
+            "text": "Son gol 13' I. Pikis tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-0",
+            "text": "Pyunik Yerevan skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 1,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -109470,7 +109714,19 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "13'",
+          "team": {
+            "name": "Pyunik Yerevan"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "I. Pikis · Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "arsenal-borussia-dortmund-2026-08-09",
