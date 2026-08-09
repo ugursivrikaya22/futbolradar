@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-09T08:46:26.690Z",
+  "updatedAt": "2026-08-09T10:00:58.400Z",
   "items": [
     {
       "id": "auto-news-6a22728183d7e9bbaf6c",
@@ -144,6 +144,24 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1
+      }
+    },
+    {
+      "id": "auto-news-d0e03297f3d9e8e9186c",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Sturm Graz-Fenerbahçe maçı medya programı",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-09T09:47:02.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxObjY4RVNRVXVpYXFoTEhZdWQ2NlFiOGZKQ2dOeXZ3alBVVDkwRkhnYVpJUDEtM3hJMldrUzNKcVBlenNfZ0FSWTBfbUdxazVHV1MyN1VUam0zRVI5R0E5bkFQUHlzT21PVVBVZkFYMU9aTXVqejJrQm9PTXg2RXcyeFRLa2tZVzNXTWZLRWpzWloxV0RoT2c?oc=5"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2
       }
     },
     {
@@ -306,24 +324,6 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2
-      }
-    },
-    {
-      "id": "auto-news-c18bd5edb412d7fcab91",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Nazmi Bilge'yi Kabri Başında Andık - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-08-08T09:43:51.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1lUUhDWHBaUDBfS2FJOGwtR3VPUDhZRUgtWVNOWjlNR2ZQejJnUjd0UWE4NnEyU2o1aFZqMXdPZExVWFpQNzRtY1cwY3lpN0lEdER4SDJkR0RSMmM?oc=5"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3
       }
     },
     {
