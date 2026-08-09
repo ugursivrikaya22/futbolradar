@@ -180,7 +180,7 @@ export function newsTicker(options = {}) {
 
   const duration = Math.max(36, items.length * 10);
 
-  return `<div class="news-ticker" data-shared-layout="ticker" aria-label="Son dakika futbol gündemi">
+  return `<div class="news-ticker" data-shared-layout="ticker" data-ticker-source="ticker-feed" aria-label="Son dakika futbol gündemi">
       <div class="container-wide news-ticker-inner">
         <span class="news-ticker-badge${badge === "Son Dakika" ? " is-live" : ""}">${badge === "Son Dakika" ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(badge)}</span>
         <div class="news-ticker-viewport">

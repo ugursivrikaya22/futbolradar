@@ -83,7 +83,7 @@
         </nav>
       </div>
     </header>
-      <!-- shared-layout:ticker:start --><div class="news-ticker" data-shared-layout="ticker" aria-label="Son dakika futbol gündemi">
+      <!-- shared-layout:ticker:start --><div class="news-ticker" data-shared-layout="ticker" data-ticker-source="ticker-feed" aria-label="Son dakika futbol gündemi">
       <div class="container-wide news-ticker-inner">
         <span class="news-ticker-badge is-live"><i class="live-pulse" aria-hidden="true"></i>Son Dakika</span>
         <div class="news-ticker-viewport">
@@ -95,6 +95,17 @@
         <a class="news-ticker-all" href="./haberler.html">Tümü</a>
       </div>
     </div><!-- shared-layout:ticker:end -->
+
+    <div class="transfer-radar-ticker" data-component="TransferRadarTicker" data-transfer-source="/api/transfers" data-source="loading" role="region" aria-label="Transfer Radarı">
+      <div class="container-wide transfer-radar-ticker__inner">
+        <span class="transfer-radar-ticker__label">Transfer Radarı</span>
+        <div class="transfer-radar-ticker__viewport" aria-live="polite">
+          <div class="transfer-radar-ticker__track is-static" data-transfer-radar-track>
+            <div class="transfer-radar-ticker__group"><span class="transfer-radar-ticker__empty">Transfer güncellemeleri hazırlanıyor.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
 
 

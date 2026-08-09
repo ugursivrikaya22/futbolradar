@@ -10749,7 +10749,159 @@
     });
   }
 
+  var TransferRadarTicker = (function () {
+    var TARGET_SELECTOR = '[data-component="TransferRadarTicker"]';
+    var PRIORITY_CLUBS = [
+      "Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor",
+      "Başakşehir", "Eyüpspor", "Samsunspor", "Göztepe"
+    ];
+    var SAFE_FALLBACK = [
+      { playerName: "Mohamed Salah", toTeam: "Trabzonspor", fromTeam: "Serbest oyuncu", date: "2026-08-05", displayStatus: "Official", sourceUrl: "https://www.trabzonspor.org.tr/news/yeni-transferimiz-mohamed-salah-icin-imza-toreni-duzenlenecek-05-08-2026" },
+      { playerName: "Tayyip Talha Sanuç", toTeam: "Çaykur Rizespor", fromTeam: "Beşiktaş", date: "2026-07-19", displayStatus: "Official", sourceUrl: "https://www.bjk.com.tr/tr/haber/94750/tayyip-talha-sanuc-caykur-rizespora-transfer-oldu.html" },
+      { playerName: "Christ Oulai", toTeam: "Fiorentina", fromTeam: "Trabzonspor", date: "2026-07-19", displayStatus: "Official", sourceUrl: "https://www.sporx.com/trabzonspor-resmen-acikladi-oulai-SXHBQ1169626SXQ" },
+      { playerName: "Cenk Özkaçar", toTeam: "Trabzonspor", fromTeam: "Valencia", date: "2026-07-18", displayStatus: "Official", sourceUrl: "https://www.trabzonspor.org.tr/tr/haberler/kamuoyuna-duyuru-62-18-07-2026" }
+    ];
+
+    function clubPriority(record) {
+      var teams = [record && record.toTeam, record && record.fromTeam]
+        .filter(Boolean)
+        .map(normalizeSearchText);
+      for (var index = 0; index < PRIORITY_CLUBS.length; index += 1) {
+        if (teams.includes(normalizeSearchText(PRIORITY_CLUBS[index]))) return index;
+      }
+      return PRIORITY_CLUBS.length;
+    }
+
+    function dateTimestamp(record) {
+      var value = record && (record.date || record.publishedAt || record.lastVerifiedAt || record.updatedAt);
+      var parsed = value ? Date.parse(value) : NaN;
+      return Number.isNaN(parsed) ? 0 : parsed;
+    }
+
+    function displayStatus(record) {
+      if (record && ["Official", "Rumor", "Talks", "Loan"].includes(record.displayStatus)) {
+        return record.displayStatus;
+      }
+      var raw = normalizeSearchText([
+        record && record.type,
+        record && record.status,
+        record && record.stage
+      ].filter(Boolean).join(" "));
+      if (/kiralik|loan/.test(raw)) return "Loan";
+      if (/talk|negotiat|gorus|temas/.test(raw)) return "Talks";
+      if (/rumou?r|iddia|reported|linked/.test(raw)) return "Rumor";
+      if (/confirm|official|complete|signed|resmi|kesin/.test(raw)) return "Official";
+      return "Rumor";
+    }
+
+    function normalizeRecord(record) {
+      var playerName = String(record && (record.playerName || record.name) || "").trim();
+      var toTeam = String(record && (record.toTeam || record.newTeam) || "").trim();
+      var fromTeam = String(record && (record.fromTeam || record.oldTeam) || "").trim();
+      if (!playerName || !toTeam || !fromTeam) return null;
+      return {
+        playerName: playerName,
+        toTeam: toTeam,
+        fromTeam: fromTeam,
+        date: record.date || record.publishedAt || record.lastVerifiedAt || record.updatedAt || "",
+        status: displayStatus(record),
+        url: record.url || record.sourceUrl || (record.source && record.source.url) || ""
+      };
+    }
+
+    function sortedRecords(records) {
+      return (Array.isArray(records) ? records : [])
+        .map(normalizeRecord)
+        .filter(Boolean)
+        .sort(function (left, right) {
+          return dateTimestamp(right) - dateTimestamp(left) ||
+            clubPriority(left) - clubPriority(right) ||
+            left.playerName.localeCompare(right.playerName, "tr");
+        })
+        .slice(0, 12);
+    }
+
+    function safeTransferUrl(value) {
+      if (!value) return "";
+      try {
+        var resolved = new URL(String(value), window.location.href);
+        return ["http:", "https:"].includes(resolved.protocol) ? resolved.href : "";
+      } catch (error) {
+        return "";
+      }
+    }
+
+    function itemHtml(item, duplicate) {
+      var href = safeTransferUrl(item.url);
+      var tag = href ? "a" : "span";
+      var external = href && new URL(href).origin !== window.location.origin;
+      var attributes = href
+        ? ' href="' + escapeHtml(href) + '"' + (external ? ' target="_blank" rel="noopener noreferrer"' : "") + (duplicate ? ' tabindex="-1"' : "")
+        : "";
+      var label = "BREAKING | " + item.playerName + " → " + item.toTeam + " | From: " + item.fromTeam + " | " + item.status;
+      return '<' + tag + ' class="transfer-radar-ticker__item"' + attributes + ' aria-label="' + escapeHtml(label) + '">' +
+        '<span class="transfer-radar-ticker__breaking">BREAKING</span>' +
+        '<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>' +
+        '<strong>' + escapeHtml(item.playerName) + ' <span aria-hidden="true">→</span> ' + escapeHtml(item.toTeam) + '</strong>' +
+        '<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>' +
+        '<span>From: ' + escapeHtml(item.fromTeam) + '</span>' +
+        '<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>' +
+        '<span class="transfer-radar-ticker__status is-' + item.status.toLowerCase() + '">' + escapeHtml(item.status) + '</span>' +
+        '</' + tag + '>';
+    }
+
+    function render(target, records, source) {
+      var items = sortedRecords(records);
+      var track = target && target.querySelector("[data-transfer-radar-track]");
+      if (!target || !track) return;
+      target.dataset.source = source || "fallback";
+
+      if (!items.length) {
+        track.classList.add("is-static");
+        track.innerHTML = '<div class="transfer-radar-ticker__group"><span class="transfer-radar-ticker__empty">Transfer güncellemeleri hazırlanıyor.</span></div>';
+        return;
+      }
+
+      track.classList.remove("is-static");
+      var primary = items.map(function (item) { return itemHtml(item, false); }).join("");
+      var duplicate = items.map(function (item) { return itemHtml(item, true); }).join("");
+      track.style.setProperty("--transfer-ticker-duration", Math.max(34, Math.min(80, items.length * 9)) + "s");
+      track.innerHTML =
+        '<div class="transfer-radar-ticker__group">' + primary + '</div>' +
+        '<div class="transfer-radar-ticker__group" aria-hidden="true">' + duplicate + '</div>';
+    }
+
+    function init() {
+      var target = document.querySelector(TARGET_SELECTOR);
+      if (!target) return;
+      if (window.location.protocol === "file:") {
+        render(target, SAFE_FALLBACK, "fallback");
+        return;
+      }
+
+      var source = target.getAttribute("data-transfer-source") || (API_ROOT + "transfers");
+      fetchJson(source)
+        .then(function (result) {
+          var records = result && result.data;
+          if (!Array.isArray(records) || !records.length || !sortedRecords(records).length) {
+            render(target, [], "empty");
+            return;
+          }
+          render(target, records, "api");
+        })
+        .catch(function (error) {
+          if (window.console && typeof window.console.error === "function") {
+            window.console.error("[futbolradar:transfer-radar]", error);
+          }
+          render(target, SAFE_FALLBACK, "fallback");
+        });
+    }
+
+    return { init: init, render: render, sort: sortedRecords };
+  })();
+
   function initDataLayer() {
+    TransferRadarTicker.init();
     // Ön render edilmiş karusel veri gelmeden de dönmeye başlasın; ilk
     // istek yavaşsa kart donmuş görünmemeli.
     initFeaturedCarousel(document);
