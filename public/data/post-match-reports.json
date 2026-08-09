@@ -1,9 +1,514 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-09T09:07:02.227Z",
-  "matchCount": 214,
+  "updatedAt": "2026-08-09T12:56:35.796Z",
+  "matchCount": 216,
   "records": [
+    {
+      "matchId": "zorya-luhansk-kryvbas-kr-2026-08-09",
+      "fixtureId": "1565444",
+      "provider": "api-football",
+      "slug": "zorya-luhansk-kryvbas-kr-2026-08-09",
+      "kickoff": "2026-08-09T10:00:00+00:00",
+      "kickoffUtc": "2026-08-09T10:00:00.000Z",
+      "kickoffLocal": "2026-08-09T13:00",
+      "date": "2026-08-09",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Premier League",
+      "competition": "Premier League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Zorya Luhansk",
+      "awayTeam": "Kryvbas KR",
+      "venue": "Slavutych-Arena",
+      "score": {
+        "home": 1,
+        "away": 3
+      },
+      "finalScore": "1-3",
+      "winner": "Kryvbas KR",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 60,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 14
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 14,
+        "statistics": 0,
+        "lineups": 2,
+        "players": 0
+      },
+      "dataCompleteness": 0.6,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "77c206056a9022af",
+      "fingerprint": "77c206056a9022af",
+      "analysisGeneratedAt": "2026-08-09T12:56:35.745Z",
+      "analysisUpdatedAt": "2026-08-09T12:56:35.745Z",
+      "generatedAt": "2026-08-09T12:56:35.745Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Zorya Luhansk 1-3 Kryvbas KR maç raporu: Premier League istatistikleri | FutbolRadar",
+        "description": "Slavutych-Arena'da oynanan Premier League maçını Kryvbas KR 3-1 kazandı; Zorya Luhansk sahadan puansız ayrıldı.",
+        "path": "mac-raporu/zorya-luhansk-kryvbas-kr-2026-08-09.html",
+        "competition": "Premier League"
+      },
+      "reportUrl": "./mac-raporu/zorya-luhansk-kryvbas-kr-2026-08-09.html",
+      "digest": {
+        "headline": "Kryvbas KR, Zorya Luhansk'ı 3-1 yendi",
+        "paragraph": "Slavutych-Arena'da oynanan Premier League maçını Kryvbas KR 3-1 kazandı; Zorya Luhansk sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Kryvbas KR",
+          "loser": "Zorya Luhansk",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 1
+        },
+        "turningPoints": {
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "30'",
+              "team": "Zorya Luhansk",
+              "type": "Goal",
+              "detail": "Own Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "44'",
+              "team": "Kryvbas KR",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "46'",
+              "team": "Kryvbas KR",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Kryvbas KR",
+              "type": "subst",
+              "detail": "Substitution 2",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Zorya Luhansk",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Kryvbas KR",
+              "type": "subst",
+              "detail": "Substitution 3",
+              "decisive": false
+            },
+            {
+              "minute": "90+1'",
+              "team": "Kryvbas KR",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "Zorya Luhansk sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Kryvbas KR sahaya 4-1-4-1 dizilişiyle çıktı."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Zorya Luhansk maça 4-2-3-1 dizilişiyle başladı.",
+            "Kryvbas KR maça 4-1-4-1 dizilişiyle başladı.",
+            "46' Kryvbas KR değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "67' Zorya Luhansk değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "67' Zorya Luhansk değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "68' Zorya Luhansk değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Zorya Luhansk",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Kryvbas KR",
+              "formation": "4-1-4-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Kryvbas KR, Zorya Luhansk'ı 1-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Kryvbas KR sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 50,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "radomiak-radom-ael-2026-08-09",
+      "fixtureId": "1618905",
+      "provider": "api-football",
+      "slug": "radomiak-radom-ael-2026-08-09",
+      "kickoff": "2026-08-09T10:00:00+00:00",
+      "kickoffUtc": "2026-08-09T10:00:00.000Z",
+      "kickoffLocal": "2026-08-09T13:00",
+      "date": "2026-08-09",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Radomiak Radom",
+      "awayTeam": "AEL",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "finalScore": "1-1",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 8
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 8,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "49e5929b39483ed7",
+      "fingerprint": "49e5929b39483ed7",
+      "analysisGeneratedAt": "2026-08-09T12:56:35.745Z",
+      "analysisUpdatedAt": "2026-08-09T12:56:35.745Z",
+      "generatedAt": "2026-08-09T12:56:35.745Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Radomiak Radom 1-1 AEL maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Friendlies Clubs maçında Radomiak Radom ile AEL birbirini geçemedi: 1-1.",
+        "path": "mac-raporu/radomiak-radom-ael-2026-08-09.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/radomiak-radom-ael-2026-08-09.html",
+      "digest": {
+        "headline": "Radomiak Radom ile AEL 1-1 berabere kaldı",
+        "paragraph": "Friendlies Clubs maçında Radomiak Radom ile AEL birbirini geçemedi: 1-1. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "8'",
+              "team": "AEL",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "13'",
+              "team": "Radomiak Radom",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "26'",
+              "team": "Radomiak Radom",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "88'",
+              "team": "AEL",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
+            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "35' Radomiak Radom değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "37' Radomiak Radom değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 1-1 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 50,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "puntarenas-fc-deportivo-saprissa-2026-08-09",
       "fixtureId": "1551661",
