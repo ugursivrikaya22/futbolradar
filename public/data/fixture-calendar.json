@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-09T04:19:48.360Z",
+  "fetchedAt": "2026-08-09T05:48:39.109Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -53492,14 +53492,14 @@
       "awayTeam": "Pelister",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/4353.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/693.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 4,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -53517,8 +53517,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-08T17:33:44.808Z",
-      "staleAfter": "2026-08-08T17:38:44.808Z",
+      "fetchedAt": "2026-08-09T05:48:40.094Z",
+      "staleAfter": "2026-08-09T05:53:40.094Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -56242,14 +56242,14 @@
       "awayTeam": "Real Madrid III",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9587.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/22142.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -56267,8 +56267,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-08T17:33:44.808Z",
-      "staleAfter": "2026-08-08T17:38:44.808Z",
+      "fetchedAt": "2026-08-09T05:48:40.094Z",
+      "staleAfter": "2026-08-09T05:53:40.094Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -83101,8 +83101,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T04:19:49.438Z",
-      "staleAfter": "2026-08-09T04:24:49.438Z",
+      "fetchedAt": "2026-08-09T05:48:40.094Z",
+      "staleAfter": "2026-08-09T05:53:40.094Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -83154,17 +83154,27 @@
       ],
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "H&H Export skor üstünlüğünü elinde tutuyor. Skor üstünlüğü H&H Export tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "H&H Export kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 90+3' Missed Penalty tarafından kaydedildi. Skor üstünlüğü H&H Export tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Disiplin dengesi",
+            "value": "2 kırmızı kart",
+            "text": "H&H Export kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "90+3'",
+            "text": "Son gol 90+3' Missed Penalty tarafından kaydedildi."
+          },
           {
             "label": "Canlı skor",
             "value": "0-1",
             "text": "H&H Export skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 4,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -84459,76 +84469,6 @@
                 "away": null
               }
             }
-          },
-          {
-            "fixture": {
-              "id": 1156183,
-              "referee": "F. Mojica",
-              "timezone": "UTC",
-              "date": "2024-01-20T21:00:00+00:00",
-              "timestamp": 1705784400,
-              "periods": {
-                "first": 1705784400,
-                "second": 1705788000
-              },
-              "venue": {
-                "id": 12039,
-                "name": "Estadio Alejandro Ramos Turcio",
-                "city": "Jalapa"
-              },
-              "status": {
-                "long": "Match Finished",
-                "short": "FT",
-                "elapsed": 90,
-                "extra": null
-              }
-            },
-            "league": {
-              "id": 396,
-              "name": "Primera Division",
-              "country": "Nicaragua",
-              "logo": "https://media.api-sports.io/football/leagues/396.png",
-              "flag": "https://media.api-sports.io/flags/ni.svg",
-              "season": 2023,
-              "round": "Clausura - 1",
-              "standings": true
-            },
-            "teams": {
-              "home": {
-                "id": 10160,
-                "name": "Jalapa",
-                "logo": "https://media.api-sports.io/football/teams/10160.png",
-                "winner": false
-              },
-              "away": {
-                "id": 17135,
-                "name": "H&H Export",
-                "logo": "https://media.api-sports.io/football/teams/17135.png",
-                "winner": true
-              }
-            },
-            "goals": {
-              "home": 1,
-              "away": 2
-            },
-            "score": {
-              "halftime": {
-                "home": 0,
-                "away": 0
-              },
-              "fulltime": {
-                "home": 1,
-                "away": 2
-              },
-              "extratime": {
-                "home": null,
-                "away": null
-              },
-              "penalty": {
-                "home": null,
-                "away": null
-              }
-            }
           }
         ]
       }
@@ -85604,8 +85544,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T04:19:49.438Z",
-      "staleAfter": "2026-08-09T04:24:49.438Z",
+      "fetchedAt": "2026-08-09T05:48:40.094Z",
+      "staleAfter": "2026-08-09T05:53:40.094Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -86622,13 +86562,23 @@
             "text": "Coritiba daha yüksek pozisyon kalitesi üretti."
           },
           {
+            "label": "Gol akışı",
+            "value": "90+5'",
+            "text": "Son gol 90+5' Tulio tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
+          },
+          {
             "label": "Canlı skor",
             "value": "2-1",
             "text": "Coritiba skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 5,
+        "eventCount": 16,
+        "dataPoints": 7,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -88104,8 +88054,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T03:31:15.772Z",
-      "staleAfter": "2026-08-09T03:36:15.772Z",
+      "fetchedAt": "2026-08-09T05:48:40.094Z",
+      "staleAfter": "2026-08-09T05:53:40.094Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -88117,14 +88067,64 @@
         {
           "team": "Aurora",
           "formation": null,
-          "players": [],
-          "substitutes": []
+          "players": [
+            "R. Cordano",
+            "S. Altamirano",
+            "L. Barboza",
+            "J. Velazquez",
+            "M. Ortiz",
+            "L. Viviani",
+            "A. Amarilla",
+            "E. Sanchez",
+            "A. Terrazas",
+            "M. Rangel",
+            "J. Torrico"
+          ],
+          "substitutes": [
+            "M. Barba Cortez",
+            "H. Mojica",
+            "H. Sanchez",
+            "H. Vaca",
+            "I. Huayhuata",
+            "O. Vaca",
+            "I. Vidaurre",
+            "A. Pacheco",
+            "S. Rojas",
+            "A. Flores",
+            "F. Pinedo",
+            "M. Aguada"
+          ]
         },
         {
           "team": "Bolívar",
           "formation": null,
-          "players": [],
-          "substitutes": []
+          "players": [
+            "C. Lampe",
+            "J. Sagredo",
+            "S. Echeverria",
+            "X. Arreaga",
+            "E. Freita",
+            "Robson Matheus",
+            "E. Saavedra",
+            "L. Justiniano",
+            "J. Velasquez",
+            "D. Romero",
+            "D. Asprilla"
+          ],
+          "substitutes": [
+            "J. Lopez",
+            "Pato Rodriguez",
+            "D. Batallini",
+            "B. Miranda",
+            "B. Arce",
+            "C. A. Melgar",
+            "L. Paz",
+            "E. Vaca Moreno",
+            "M. Cauteruccio",
+            "L. Zabala",
+            "L. L. Chavez Cruz",
+            "F. Mena"
+          ]
         }
       ],
       "events": [
@@ -88410,8 +88410,8 @@
             "last_5": {
               "played": 5,
               "form": "40%",
-              "att": "78%",
-              "def": "11%",
+              "att": "70%",
+              "def": "20%",
               "goals": {
                 "for": {
                   "total": 7,
@@ -88724,8 +88724,8 @@
             "last_5": {
               "played": 5,
               "form": "67%",
-              "att": "100%",
-              "def": "56%",
+              "att": "90%",
+              "def": "60%",
               "goals": {
                 "for": {
                   "total": 9,
@@ -89696,76 +89696,6 @@
                 "away": null
               }
             }
-          },
-          {
-            "fixture": {
-              "id": 1000973,
-              "referee": "J. Justiniano",
-              "timezone": "UTC",
-              "date": "2023-03-12T21:30:00+00:00",
-              "timestamp": 1678656600,
-              "periods": {
-                "first": 1678656600,
-                "second": 1678660200
-              },
-              "venue": {
-                "id": 198,
-                "name": "Estadio Hernando Siles",
-                "city": "La Paz"
-              },
-              "status": {
-                "long": "Match Finished",
-                "short": "FT",
-                "elapsed": 90,
-                "extra": null
-              }
-            },
-            "league": {
-              "id": 344,
-              "name": "Primera División",
-              "country": "Bolivia",
-              "logo": "https://media.api-sports.io/football/leagues/344.png",
-              "flag": "https://media.api-sports.io/flags/bo.svg",
-              "season": 2023,
-              "round": "Regular Season - 6",
-              "standings": true
-            },
-            "teams": {
-              "home": {
-                "id": 3702,
-                "name": "Bolívar",
-                "logo": "https://media.api-sports.io/football/teams/3702.png",
-                "winner": true
-              },
-              "away": {
-                "id": 3637,
-                "name": "Aurora",
-                "logo": "https://media.api-sports.io/football/teams/3637.png",
-                "winner": false
-              }
-            },
-            "goals": {
-              "home": 1,
-              "away": 0
-            },
-            "score": {
-              "halftime": {
-                "home": 0,
-                "away": 0
-              },
-              "fulltime": {
-                "home": 1,
-                "away": 0
-              },
-              "extratime": {
-                "home": null,
-                "away": null
-              },
-              "penalty": {
-                "home": null,
-                "away": null
-              }
-            }
           }
         ]
       }
@@ -89807,8 +89737,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T03:31:16.120Z",
-      "staleAfter": "2026-08-09T03:36:16.120Z",
+      "fetchedAt": "2026-08-09T05:48:40.405Z",
+      "staleAfter": "2026-08-09T05:53:40.405Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -90876,23 +90806,13 @@
             "text": "Botafogo daha yüksek pozisyon kalitesi üretti."
           },
           {
-            "label": "Gol akışı",
-            "value": "58'",
-            "text": "Son gol 58' Ignacio tarafından kaydedildi."
-          },
-          {
-            "label": "Teknik hamleler",
-            "value": "10 değişiklik",
-            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
-          },
-          {
             "label": "Canlı skor",
             "value": "1-1",
             "text": "Skor dengede."
           }
         ],
-        "eventCount": 19,
-        "dataPoints": 7,
+        "eventCount": 0,
+        "dataPoints": 5,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -90931,8 +90851,8 @@
             "last_5": {
               "played": 5,
               "form": "53%",
-              "att": "63%",
-              "def": "50%",
+              "att": "45%",
+              "def": "64%",
               "goals": {
                 "for": {
                   "total": 5,
@@ -91261,8 +91181,8 @@
             "last_5": {
               "played": 5,
               "form": "27%",
-              "att": "38%",
-              "def": "50%",
+              "att": "27%",
+              "def": "64%",
               "goals": {
                 "for": {
                   "total": 3,
@@ -92229,76 +92149,6 @@
                 "away": null
               }
             }
-          },
-          {
-            "fixture": {
-              "id": 1005710,
-              "referee": "Braulio da Silva Machado",
-              "timezone": "UTC",
-              "date": "2023-05-20T21:30:00+00:00",
-              "timestamp": 1684618200,
-              "periods": {
-                "first": 1684618200,
-                "second": 1684621800
-              },
-              "venue": {
-                "id": 218,
-                "name": "Estádio Nilton Santos",
-                "city": "Rio de Janeiro"
-              },
-              "status": {
-                "long": "Match Finished",
-                "short": "FT",
-                "elapsed": 90,
-                "extra": null
-              }
-            },
-            "league": {
-              "id": 71,
-              "name": "Serie A",
-              "country": "Brazil",
-              "logo": "https://media.api-sports.io/football/leagues/71.png",
-              "flag": "https://media.api-sports.io/flags/br.svg",
-              "season": 2023,
-              "round": "Regular Season - 7",
-              "standings": true
-            },
-            "teams": {
-              "home": {
-                "id": 120,
-                "name": "Botafogo",
-                "logo": "https://media.api-sports.io/football/teams/120.png",
-                "winner": true
-              },
-              "away": {
-                "id": 124,
-                "name": "Fluminense",
-                "logo": "https://media.api-sports.io/football/teams/124.png",
-                "winner": false
-              }
-            },
-            "goals": {
-              "home": 1,
-              "away": 0
-            },
-            "score": {
-              "halftime": {
-                "home": 0,
-                "away": 0
-              },
-              "fulltime": {
-                "home": 1,
-                "away": 0
-              },
-              "extratime": {
-                "home": null,
-                "away": null
-              },
-              "penalty": {
-                "home": null,
-                "away": null
-              }
-            }
           }
         ]
       }
@@ -92340,15 +92190,1317 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T01:56:08.145Z",
-      "staleAfter": "2026-08-09T02:01:08.145Z",
+      "fetchedAt": "2026-08-09T05:48:40.405Z",
+      "staleAfter": "2026-08-09T05:53:40.405Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1586097"
       },
-      "competitionId": "la-liga"
+      "competitionId": "la-liga",
+      "events": [
+        {
+          "time": "62'",
+          "team": {
+            "name": "Diriangén"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "M. Hernandez · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "Diriangén"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "L. Coronel · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "78'",
+          "team": {
+            "name": "Diriangén"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "Red Card",
+          "comments": ""
+        },
+        {
+          "time": "80'",
+          "team": {
+            "name": "Rancho Santana"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "T. Guarch · Penalty",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "Rancho Santana"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "Red Card",
+          "comments": ""
+        }
+      ],
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "İki takım kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 80' T. Guarch tarafından kaydedildi. Skor üstünlüğü Diriangén tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Disiplin dengesi",
+            "value": "2 kırmızı kart",
+            "text": "İki takım kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "80'",
+            "text": "Son gol 80' T. Guarch tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "2-1",
+            "text": "Diriangén skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 5,
+        "dataPoints": 3,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 4641,
+            "name": "Diriangén",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": null,
+          "goals": {
+            "home": "-2.5",
+            "away": "-1.5"
+          },
+          "advice": "Double chance : Diriangén or draw",
+          "percent": {
+            "home": "50%",
+            "draw": "50%",
+            "away": "0%"
+          }
+        },
+        "league": {
+          "id": 396,
+          "name": "Primera Division",
+          "country": "Nicaragua",
+          "logo": "https://media.api-sports.io/football/leagues/396.png",
+          "flag": "https://media.api-sports.io/flags/ni.svg",
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 4641,
+            "name": "Diriangén",
+            "logo": "https://media.api-sports.io/football/teams/4641.png",
+            "last_5": {
+              "played": 3,
+              "form": "56%",
+              "att": "28%",
+              "def": "83%",
+              "goals": {
+                "for": {
+                  "total": 5,
+                  "average": "1.7"
+                },
+                "against": {
+                  "total": 3,
+                  "average": "1.0"
+                }
+              }
+            },
+            "league": {
+              "form": "DWD",
+              "fixtures": {
+                "played": {
+                  "home": 2,
+                  "away": 1,
+                  "total": 3
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "draws": {
+                  "home": 2,
+                  "away": 0,
+                  "total": 2
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 2,
+                    "away": 3,
+                    "total": 5
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "3.0",
+                    "total": "1.7"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "16-30": {
+                      "total": 2,
+                      "percentage": "50.00%"
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 2,
+                    "away": 1,
+                    "total": 3
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 2,
+                      "percentage": "50.00%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 1,
+                  "draws": 1,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": "1-3"
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 1,
+                    "away": 3
+                  },
+                  "against": {
+                    "home": 1,
+                    "away": 1
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 1,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 1
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 24510,
+            "name": "Rancho Santana",
+            "logo": "https://media.api-sports.io/football/teams/24510.png",
+            "last_5": {
+              "played": 3,
+              "form": "0%",
+              "att": "6%",
+              "def": "72%",
+              "goals": {
+                "for": {
+                  "total": 1,
+                  "average": "0.3"
+                },
+                "against": {
+                  "total": 5,
+                  "average": "1.7"
+                }
+              }
+            },
+            "league": {
+              "form": "LLL",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 2,
+                  "total": 3
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 1,
+                  "away": 2,
+                  "total": 3
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 1,
+                    "total": 1
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.5",
+                    "total": "0.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 1,
+                    "away": 4,
+                    "total": 5
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "2.0",
+                    "total": "1.7"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 3
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": "0-1",
+                  "away": "2-0"
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 1
+                  },
+                  "against": {
+                    "home": 1,
+                    "away": 2
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 1,
+                "away": 1,
+                "total": 2
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "att": {
+            "home": "83%",
+            "away": "17%"
+          },
+          "def": {
+            "home": "63%",
+            "away": "38%"
+          },
+          "poisson_distribution": {
+            "home": "76%",
+            "away": "24%"
+          },
+          "h2h": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "goals": {
+            "home": "93%",
+            "away": "7%"
+          },
+          "total": {
+            "home": "78.8%",
+            "away": "21.5%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1525789,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2026-02-26T21:00:00+00:00",
+              "timestamp": 1772139600,
+              "periods": {
+                "first": 1772139600,
+                "second": 1772143200
+              },
+              "venue": {
+                "id": null,
+                "name": null,
+                "city": null
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 3
+              }
+            },
+            "league": {
+              "id": 396,
+              "name": "Primera Division",
+              "country": "Nicaragua",
+              "logo": "https://media.api-sports.io/football/leagues/396.png",
+              "flag": "https://media.api-sports.io/flags/ni.svg",
+              "season": 2025,
+              "round": "Clausura - 10",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 4641,
+                "name": "Diriangén",
+                "logo": "https://media.api-sports.io/football/teams/4641.png",
+                "winner": true
+              },
+              "away": {
+                "id": 24510,
+                "name": "Rancho Santana",
+                "logo": "https://media.api-sports.io/football/teams/24510.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 5,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 4,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 5,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1504831,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2026-01-22T00:00:00+00:00",
+              "timestamp": 1769040000,
+              "periods": {
+                "first": 1769040000,
+                "second": 1769043600
+              },
+              "venue": {
+                "id": null,
+                "name": null,
+                "city": null
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 2
+              }
+            },
+            "league": {
+              "id": 396,
+              "name": "Primera Division",
+              "country": "Nicaragua",
+              "logo": "https://media.api-sports.io/football/leagues/396.png",
+              "flag": "https://media.api-sports.io/flags/ni.svg",
+              "season": 2025,
+              "round": "Clausura - 1",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 24510,
+                "name": "Rancho Santana",
+                "logo": "https://media.api-sports.io/football/teams/24510.png",
+                "winner": false
+              },
+              "away": {
+                "id": 4641,
+                "name": "Diriangén",
+                "logo": "https://media.api-sports.io/football/teams/4641.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 4
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 2
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 4
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1446494,
+              "referee": "Joel Hernández",
+              "timezone": "UTC",
+              "date": "2025-09-20T23:00:00+00:00",
+              "timestamp": 1758409200,
+              "periods": {
+                "first": 1758409200,
+                "second": 1758412800
+              },
+              "venue": {
+                "id": 22703,
+                "name": "Estadio Nacional de Fútbol",
+                "city": "Managua"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 1
+              }
+            },
+            "league": {
+              "id": 396,
+              "name": "Primera Division",
+              "country": "Nicaragua",
+              "logo": "https://media.api-sports.io/football/leagues/396.png",
+              "flag": "https://media.api-sports.io/flags/ni.svg",
+              "season": 2025,
+              "round": "Apertura - 10",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 24510,
+                "name": "Rancho Santana",
+                "logo": "https://media.api-sports.io/football/teams/24510.png",
+                "winner": false
+              },
+              "away": {
+                "id": 4641,
+                "name": "Diriangén",
+                "logo": "https://media.api-sports.io/football/teams/4641.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 8
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 3
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 8
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1405331,
+              "referee": "Erlan Escorcia",
+              "timezone": "UTC",
+              "date": "2025-07-19T02:00:00+00:00",
+              "timestamp": 1752890400,
+              "periods": {
+                "first": 1752890400,
+                "second": 1752894000
+              },
+              "venue": {
+                "id": 3498,
+                "name": "Estadio Cacique Diriangén",
+                "city": "Diriamba"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 396,
+              "name": "Primera Division",
+              "country": "Nicaragua",
+              "logo": "https://media.api-sports.io/football/leagues/396.png",
+              "flag": "https://media.api-sports.io/flags/ni.svg",
+              "season": 2025,
+              "round": "Apertura - 1",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 4641,
+                "name": "Diriangén",
+                "logo": "https://media.api-sports.io/football/teams/4641.png",
+                "winner": true
+              },
+              "away": {
+                "id": 24510,
+                "name": "Rancho Santana",
+                "logo": "https://media.api-sports.io/football/teams/24510.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 6,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 2,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 6,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1372842,
+              "referee": "R. Mendoza",
+              "timezone": "UTC",
+              "date": "2025-04-28T01:00:00+00:00",
+              "timestamp": 1745802000,
+              "periods": {
+                "first": 1745802000,
+                "second": 1745805600
+              },
+              "venue": {
+                "id": 3498,
+                "name": "Estadio Cacique Diriangén",
+                "city": "Diriamba"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 1
+              }
+            },
+            "league": {
+              "id": 396,
+              "name": "Primera Division",
+              "country": "Nicaragua",
+              "logo": "https://media.api-sports.io/football/leagues/396.png",
+              "flag": "https://media.api-sports.io/flags/ni.svg",
+              "season": 2024,
+              "round": "Clausura - 17",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 4641,
+                "name": "Diriangén",
+                "logo": "https://media.api-sports.io/football/teams/4641.png",
+                "winner": true
+              },
+              "away": {
+                "id": 24510,
+                "name": "Rancho Santana",
+                "logo": "https://media.api-sports.io/football/teams/24510.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 2,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1352456,
+              "referee": "N. Sandoval",
+              "timezone": "UTC",
+              "date": "2025-02-21T01:00:00+00:00",
+              "timestamp": 1740099600,
+              "periods": {
+                "first": 1740099600,
+                "second": 1740103200
+              },
+              "venue": {
+                "id": 3498,
+                "name": "Estadio Cacique Diriangén",
+                "city": "Diriamba"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 6
+              }
+            },
+            "league": {
+              "id": 396,
+              "name": "Primera Division",
+              "country": "Nicaragua",
+              "logo": "https://media.api-sports.io/football/leagues/396.png",
+              "flag": "https://media.api-sports.io/flags/ni.svg",
+              "season": 2024,
+              "round": "Clausura - 8",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 24510,
+                "name": "Rancho Santana",
+                "logo": "https://media.api-sports.io/football/teams/24510.png",
+                "winner": false
+              },
+              "away": {
+                "id": 4641,
+                "name": "Diriangén",
+                "logo": "https://media.api-sports.io/football/teams/4641.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1316116,
+              "referee": "J. Ojeda",
+              "timezone": "UTC",
+              "date": "2024-11-21T23:00:00+00:00",
+              "timestamp": 1732230000,
+              "periods": {
+                "first": 1732230000,
+                "second": 1732233600
+              },
+              "venue": {
+                "id": 3498,
+                "name": "Estadio Cacique Diriangén",
+                "city": "Diriamba"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 396,
+              "name": "Primera Division",
+              "country": "Nicaragua",
+              "logo": "https://media.api-sports.io/football/leagues/396.png",
+              "flag": "https://media.api-sports.io/flags/ni.svg",
+              "season": 2024,
+              "round": "Apertura - 17",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 24510,
+                "name": "Rancho Santana",
+                "logo": "https://media.api-sports.io/football/teams/24510.png",
+                "winner": false
+              },
+              "away": {
+                "id": 4641,
+                "name": "Diriangén",
+                "logo": "https://media.api-sports.io/football/teams/4641.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 6
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 3
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 6
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1307078,
+              "referee": "M. López",
+              "timezone": "UTC",
+              "date": "2024-09-22T00:00:00+00:00",
+              "timestamp": 1726963200,
+              "periods": {
+                "first": 1726963200,
+                "second": 1726966800
+              },
+              "venue": {
+                "id": 3498,
+                "name": "Estadio Cacique Diriangén",
+                "city": "Diriamba"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 7
+              }
+            },
+            "league": {
+              "id": 396,
+              "name": "Primera Division",
+              "country": "Nicaragua",
+              "logo": "https://media.api-sports.io/football/leagues/396.png",
+              "flag": "https://media.api-sports.io/flags/ni.svg",
+              "season": 2024,
+              "round": "Apertura - 8",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 4641,
+                "name": "Diriangén",
+                "logo": "https://media.api-sports.io/football/teams/4641.png",
+                "winner": false
+              },
+              "away": {
+                "id": 24510,
+                "name": "Rancho Santana",
+                "logo": "https://media.api-sports.io/football/teams/24510.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 3
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 3
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "escorpiones-belen-perez-zeledon-2026-08-09",
@@ -92387,15 +93539,821 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T02:33:30.986Z",
-      "staleAfter": "2026-08-09T02:38:30.986Z",
+      "fetchedAt": "2026-08-09T05:48:40.405Z",
+      "staleAfter": "2026-08-09T05:53:40.405Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1598808"
       },
-      "competitionId": "la-liga"
+      "competitionId": "la-liga",
+      "events": [
+        {
+          "time": "46'",
+          "team": {
+            "name": "Escorpiones Belén"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "I. Espinoza · Asist: E. Davila · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "52'",
+          "team": {
+            "name": "Escorpiones Belén"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "C. Munoz · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "68'",
+          "team": {
+            "name": "Perez Zeledon"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "J. Alvarado · Asist: D. Pimpinati · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "Escorpiones Belén"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "E. Morales · Asist: F. Chaves · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "73'",
+          "team": {
+            "name": "Perez Zeledon"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "M. Angulo · Asist: Luis Vega · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "73'",
+          "team": {
+            "name": "Perez Zeledon"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "K. Gonzalez · Asist: J. Cordoba · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "83'",
+          "team": {
+            "name": "Escorpiones Belén"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "R. Montiel · Asist: R. Lopez · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "83'",
+          "team": {
+            "name": "Escorpiones Belén"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "G. Fonseca · Asist: A. Hidalgo · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "84'",
+          "team": {
+            "name": "Perez Zeledon"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "W. Renteria · Asist: A. Amador · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "84'",
+          "team": {
+            "name": "Perez Zeledon"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "A. Porras · Asist: E. Drummond · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "90+1'",
+          "team": {
+            "name": "Perez Zeledon"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "W. Fernandez · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "90+8'",
+          "team": {
+            "name": "Perez Zeledon"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Trinidad Aguilar Pena · Yellow Card",
+          "comments": ""
+        }
+      ],
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Kulübeler oyuna müdahale etti; 9 oyuncu değişikliği kayda geçti. Skor dengede.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Teknik hamleler",
+            "value": "9 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 9 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
+        "eventCount": 12,
+        "dataPoints": 2,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 819,
+            "name": "Perez Zeledon",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": null,
+          "goals": {
+            "home": "-1.5",
+            "away": "-1.5"
+          },
+          "advice": "Double chance : draw or Perez Zeledon",
+          "percent": {
+            "home": "10%",
+            "draw": "45%",
+            "away": "45%"
+          }
+        },
+        "league": {
+          "id": 162,
+          "name": "Primera División",
+          "country": "Costa-Rica",
+          "logo": "https://media.api-sports.io/football/leagues/162.png",
+          "flag": "https://media.api-sports.io/flags/cr.svg",
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 17377,
+            "name": "Escorpiones Belén",
+            "logo": "https://media.api-sports.io/football/teams/17377.png",
+            "last_5": {
+              "played": 1,
+              "form": "0%",
+              "att": "8%",
+              "def": "83%",
+              "goals": {
+                "for": {
+                  "total": 1,
+                  "average": "1.0"
+                },
+                "against": {
+                  "total": 2,
+                  "average": "2.0"
+                }
+              }
+            },
+            "league": {
+              "form": "L",
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 1,
+                    "total": 1
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "100.00%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 1
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 2,
+                    "total": 2
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "2.0",
+                    "total": "2.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 1
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": "2-1"
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 1
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 2
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 819,
+            "name": "Perez Zeledon",
+            "logo": "https://media.api-sports.io/football/teams/819.png",
+            "last_5": {
+              "played": 2,
+              "form": "50%",
+              "att": "17%",
+              "def": "58%",
+              "goals": {
+                "for": {
+                  "total": 2,
+                  "average": "1.0"
+                },
+                "against": {
+                  "total": 5,
+                  "average": "2.5"
+                }
+              }
+            },
+            "league": {
+              "form": "LW",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                },
+                "wins": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 1,
+                    "away": 1,
+                    "total": 2
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 5,
+                    "total": 5
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "5.0",
+                    "total": "2.5"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": 2,
+                      "percentage": "40.00%"
+                    },
+                    "61-75": {
+                      "total": 2,
+                      "percentage": "40.00%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 1,
+                      "under": 1
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": "1-0",
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": "5-1"
+                },
+                "goals": {
+                  "for": {
+                    "home": 1,
+                    "away": 1
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 5
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 1,
+                "away": 0,
+                "total": 1
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": 1,
+                    "percentage": "20.00%"
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": 2,
+                    "percentage": "40.00%"
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": 2,
+                    "percentage": "40.00%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "att": {
+            "home": "33%",
+            "away": "67%"
+          },
+          "def": {
+            "home": "71%",
+            "away": "29%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "goals": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "total": {
+            "home": "52.0%",
+            "away": "48.0%"
+          }
+        },
+        "h2h": []
+      }
     },
     {
       "id": "sport-boys-alianza-lima-2026-08-09",
@@ -92434,15 +94392,2212 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T03:31:16.120Z",
-      "staleAfter": "2026-08-09T03:36:16.120Z",
+      "fetchedAt": "2026-08-09T05:48:40.405Z",
+      "staleAfter": "2026-08-09T05:53:40.405Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1549443"
       },
-      "competitionId": "la-liga"
+      "competitionId": "la-liga",
+      "lineups": [
+        {
+          "team": "Sport Boys",
+          "formation": "4-3-3",
+          "players": [
+            "Diego Melián",
+            "Emilio Saba",
+            "Carlos Zambrano",
+            "Hansell Riojas",
+            "Mathias Llontop",
+            "Oslimg Mora",
+            "Hernan Da Campo",
+            "Jostin Alarcón",
+            "Pablo Erustes",
+            "Luciano Nequecaur",
+            "Luis Urruti"
+          ],
+          "substitutes": [
+            "Erick Gonzales",
+            "Percy Liza",
+            "Christian Cueva",
+            "Carlos López",
+            "Jeferson Nolasco",
+            "Renzo Alfani",
+            "Gustavo Dulanto",
+            "Federico Illanes",
+            "Yuriel Celi"
+          ]
+        },
+        {
+          "team": "Alianza Lima",
+          "formation": "4-1-3-2",
+          "players": [
+            "Alejandro Duarte",
+            "Luis Advíncula",
+            "Renzo Garcés",
+            "Mateo Antoni",
+            "Marco Huamán",
+            "Esteban Pavez",
+            "Fernando Gaibor",
+            "Paolo Guerrero",
+            "Jairo Vélez",
+            "Eryc Castillo",
+            "Federico Girotti"
+          ],
+          "substitutes": [
+            "Nicolás Díaz",
+            "Alan Cantero",
+            "Ángel de la Cruz",
+            "Gianfranco Chávez",
+            "Jesús Castillo",
+            "Christian Neira",
+            "Jean Pierre Archimbaud",
+            "Gaspar Gentile",
+            "Geray Motta"
+          ]
+        }
+      ],
+      "statistics": [
+        {
+          "category": "Hücum",
+          "type": "İsabetli şut",
+          "home": 2,
+          "away": 2,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 3,
+          "away": 7
+        },
+        {
+          "category": "Hücum",
+          "type": "Toplam şut",
+          "home": 7,
+          "away": 11,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 2,
+          "away": 2
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası içinden şut",
+          "home": 3,
+          "away": 6,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası dışından şut",
+          "home": 4,
+          "away": 5
+        },
+        {
+          "category": "Disiplin",
+          "type": "Faul",
+          "home": 14,
+          "away": 9
+        },
+        {
+          "category": "Genel",
+          "type": "Korner",
+          "home": 0,
+          "away": 4
+        },
+        {
+          "category": "Genel",
+          "type": "Ofsayt",
+          "home": 2,
+          "away": 1
+        },
+        {
+          "category": "Genel",
+          "type": "Topla oynama",
+          "home": 37,
+          "away": 63,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 2,
+          "away": 1
+        },
+        {
+          "category": "Savunma",
+          "type": "Kurtarış",
+          "home": 1,
+          "away": 1
+        },
+        {
+          "category": "Pas",
+          "type": "Toplam pas",
+          "home": 262,
+          "away": 448,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "İsabetli pas",
+          "home": 196,
+          "away": 369,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "Pas isabeti",
+          "home": 75,
+          "away": 82,
+          "unit": "%",
+          "higherIsBetter": true
+        }
+      ],
+      "players": [
+        {
+          "name": "Diego Melián",
+          "team": "Sport Boys",
+          "providerPlayerId": "51679",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "G",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "saves": 1,
+          "passes": 25,
+          "passAccuracy": 13,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Emilio Saba",
+          "team": "Sport Boys",
+          "providerPlayerId": "195113",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 23,
+          "passAccuracy": 17,
+          "tackles": 2,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Carlos Zambrano",
+          "team": "Sport Boys",
+          "providerPlayerId": "48379",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 22,
+          "passAccuracy": 15,
+          "tackles": 3,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Hansell Riojas",
+          "team": "Sport Boys",
+          "providerPlayerId": "39414",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 33,
+          "passAccuracy": 24,
+          "duelsWon": 5,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Mathias Llontop",
+          "team": "Sport Boys",
+          "providerPlayerId": "196693",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 20,
+          "passAccuracy": 19,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Oslimg Mora",
+          "team": "Sport Boys",
+          "providerPlayerId": "39855",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 34,
+          "passAccuracy": 31,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Hernan Da Campo",
+          "team": "Sport Boys",
+          "providerPlayerId": "6547",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 28,
+          "passAccuracy": 19,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jostin Alarcón",
+          "team": "Sport Boys",
+          "providerPlayerId": "307525",
+          "source": "api-football",
+          "minutes": 72,
+          "position": "M",
+          "providerRating": 7.6,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "assists": 0,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 15,
+          "passAccuracy": 13,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Pablo Erustes",
+          "team": "Sport Boys",
+          "providerPlayerId": "403604",
+          "source": "api-football",
+          "minutes": 72,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 14,
+          "passAccuracy": 12,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Luciano Nequecaur",
+          "team": "Sport Boys",
+          "providerPlayerId": "36247",
+          "source": "api-football",
+          "minutes": 88,
+          "position": "F",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 3,
+          "shotsOnTarget": 1,
+          "passes": 12,
+          "passAccuracy": 7,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Luis Urruti",
+          "team": "Sport Boys",
+          "providerPlayerId": "51753",
+          "source": "api-football",
+          "minutes": 88,
+          "position": "F",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "passes": 13,
+          "passAccuracy": 8,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Erick Gonzales",
+          "team": "Sport Boys",
+          "providerPlayerId": "40028",
+          "source": "api-football",
+          "minutes": 18,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 14,
+          "passAccuracy": 13,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Percy Liza",
+          "team": "Sport Boys",
+          "providerPlayerId": "39806",
+          "source": "api-football",
+          "minutes": 18,
+          "position": "F",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 5,
+          "passAccuracy": 3,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Christian Cueva",
+          "team": "Sport Boys",
+          "providerPlayerId": "2428",
+          "source": "api-football",
+          "minutes": 10,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 1,
+          "passAccuracy": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Carlos López",
+          "team": "Sport Boys",
+          "providerPlayerId": "13660",
+          "source": "api-football",
+          "minutes": 10,
+          "position": "F",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 3,
+          "passAccuracy": 1,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jeferson Nolasco",
+          "team": "Sport Boys",
+          "providerPlayerId": "156130",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Renzo Alfani",
+          "team": "Sport Boys",
+          "providerPlayerId": "75001",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gustavo Dulanto",
+          "team": "Sport Boys",
+          "providerPlayerId": "39687",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Federico Illanes",
+          "team": "Sport Boys",
+          "providerPlayerId": "59026",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Yuriel Celi",
+          "team": "Sport Boys",
+          "providerPlayerId": "39389",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Alejandro Duarte",
+          "team": "Alianza Lima",
+          "providerPlayerId": "35796",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "G",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "saves": 1,
+          "passes": 28,
+          "passAccuracy": 26,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Luis Advíncula",
+          "team": "Alianza Lima",
+          "providerPlayerId": "2419",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 29,
+          "passAccuracy": 28,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Renzo Garcés",
+          "team": "Alianza Lima",
+          "providerPlayerId": "39534",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "shots": 1,
+          "passes": 54,
+          "passAccuracy": 44,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mateo Antoni",
+          "team": "Alianza Lima",
+          "providerPlayerId": "311770",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 67,
+          "passAccuracy": 53,
+          "tackles": 2,
+          "duelsWon": 7,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Marco Huamán",
+          "team": "Alianza Lima",
+          "providerPlayerId": "291686",
+          "source": "api-football",
+          "minutes": 10,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 1,
+          "passAccuracy": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Esteban Pavez",
+          "team": "Alianza Lima",
+          "providerPlayerId": "2559",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "M",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 75,
+          "passAccuracy": 66,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Fernando Gaibor",
+          "team": "Alianza Lima",
+          "providerPlayerId": "6087",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 51,
+          "passAccuracy": 44,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Paolo Guerrero",
+          "team": "Alianza Lima",
+          "providerPlayerId": "10401",
+          "source": "api-football",
+          "minutes": 89,
+          "position": "M",
+          "providerRating": 5.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 22,
+          "passAccuracy": 15,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jairo Vélez",
+          "team": "Alianza Lima",
+          "providerPlayerId": "36308",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 34,
+          "passAccuracy": 25,
+          "tackles": 2,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Eryc Castillo",
+          "team": "Alianza Lima",
+          "providerPlayerId": "35688",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 9,
+          "passAccuracy": 5,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Federico Girotti",
+          "team": "Alianza Lima",
+          "providerPlayerId": "6012",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "F",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "assists": 0,
+          "shots": 4,
+          "shotsOnTarget": 1,
+          "passes": 30,
+          "passAccuracy": 20,
+          "duelsWon": 8,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nicolás Díaz",
+          "team": "Alianza Lima",
+          "providerPlayerId": "11597",
+          "source": "api-football",
+          "minutes": 80,
+          "position": "D",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 46,
+          "passAccuracy": 40,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Alan Cantero",
+          "team": "Alianza Lima",
+          "providerPlayerId": "170119",
+          "source": "api-football",
+          "minutes": 9,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 2,
+          "passes": 2,
+          "passAccuracy": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ángel de la Cruz",
+          "team": "Alianza Lima",
+          "providerPlayerId": "532558",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gianfranco Chávez",
+          "team": "Alianza Lima",
+          "providerPlayerId": "39781",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jesús Castillo",
+          "team": "Alianza Lima",
+          "providerPlayerId": "39388",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Christian Neira",
+          "team": "Alianza Lima",
+          "providerPlayerId": "118339",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jean Pierre Archimbaud",
+          "team": "Alianza Lima",
+          "providerPlayerId": "39693",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gaspar Gentile",
+          "team": "Alianza Lima",
+          "providerPlayerId": "58779",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Geray Motta",
+          "team": "Alianza Lima",
+          "providerPlayerId": "635946",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        }
+      ],
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Alianza Lima topa sahip olma oranında önde. Alianza Lima daha fazla şut üretti.",
+        "confidence": "Yüksek",
+        "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "37%-63%",
+            "text": "Alianza Lima topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "7-11",
+            "text": "Alianza Lima daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "2-2",
+            "text": "Sport Boys isabetli şutlarda önde."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-1",
+            "text": "Skor dengede."
+          }
+        ],
+        "eventCount": 0,
+        "dataPoints": 4,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 2553,
+            "name": "Alianza Lima",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": "-3.5",
+          "goals": {
+            "home": "-1.5",
+            "away": "-2.5"
+          },
+          "advice": "Combo Double chance : draw or Alianza Lima and -3.5 goals",
+          "percent": {
+            "home": "10%",
+            "draw": "45%",
+            "away": "45%"
+          }
+        },
+        "league": {
+          "id": 281,
+          "name": "Primera División",
+          "country": "Peru",
+          "logo": "https://media.api-sports.io/football/leagues/281.png",
+          "flag": "https://media.api-sports.io/flags/pe.svg",
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 2544,
+            "name": "Sport Boys",
+            "logo": "https://media.api-sports.io/football/teams/2544.png",
+            "last_5": {
+              "played": 5,
+              "form": "67%",
+              "att": "36%",
+              "def": "91%",
+              "goals": {
+                "for": {
+                  "total": 4,
+                  "average": "0.8"
+                },
+                "against": {
+                  "total": 1,
+                  "average": "0.2"
+                }
+              }
+            },
+            "league": {
+              "form": "DLWLDLLWLLWDLDWDWLWW",
+              "fixtures": {
+                "played": {
+                  "home": 10,
+                  "away": 10,
+                  "total": 20
+                },
+                "wins": {
+                  "home": 5,
+                  "away": 2,
+                  "total": 7
+                },
+                "draws": {
+                  "home": 4,
+                  "away": 1,
+                  "total": 5
+                },
+                "loses": {
+                  "home": 1,
+                  "away": 7,
+                  "total": 8
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 11,
+                    "away": 7,
+                    "total": 18
+                  },
+                  "average": {
+                    "home": "1.1",
+                    "away": "0.7",
+                    "total": "0.9"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "5.56%"
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "5.56%"
+                    },
+                    "31-45": {
+                      "total": 2,
+                      "percentage": "11.11%"
+                    },
+                    "46-60": {
+                      "total": 8,
+                      "percentage": "44.44%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 6,
+                      "percentage": "33.33%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 13,
+                      "under": 7
+                    },
+                    "1.5": {
+                      "over": 4,
+                      "under": 16
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 19
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 20
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 20
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 5,
+                    "away": 15,
+                    "total": 20
+                  },
+                  "average": {
+                    "home": "0.5",
+                    "away": "1.5",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 3,
+                      "percentage": "15.00%"
+                    },
+                    "16-30": {
+                      "total": 3,
+                      "percentage": "15.00%"
+                    },
+                    "31-45": {
+                      "total": 5,
+                      "percentage": "25.00%"
+                    },
+                    "46-60": {
+                      "total": 2,
+                      "percentage": "10.00%"
+                    },
+                    "61-75": {
+                      "total": 3,
+                      "percentage": "15.00%"
+                    },
+                    "76-90": {
+                      "total": 4,
+                      "percentage": "20.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 10,
+                      "under": 10
+                    },
+                    "1.5": {
+                      "over": 5,
+                      "under": 15
+                    },
+                    "2.5": {
+                      "over": 5,
+                      "under": 15
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 20
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 20
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 1,
+                  "draws": 1,
+                  "loses": 2
+                },
+                "wins": {
+                  "home": "3-0",
+                  "away": "0-1"
+                },
+                "loses": {
+                  "home": "1-3",
+                  "away": "3-0"
+                },
+                "goals": {
+                  "for": {
+                    "home": 3,
+                    "away": 2
+                  },
+                  "against": {
+                    "home": 3,
+                    "away": 3
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 7,
+                "away": 3,
+                "total": 10
+              },
+              "failed_to_score": {
+                "home": 2,
+                "away": 5,
+                "total": 7
+              },
+              "penalty": {
+                "scored": {
+                  "total": 3,
+                  "percentage": "60.00%"
+                },
+                "missed": {
+                  "total": 2,
+                  "percentage": "40.00%"
+                },
+                "total": 5
+              },
+              "lineups": [
+                {
+                  "formation": "4-2-3-1",
+                  "played": 12
+                },
+                {
+                  "formation": "5-3-2",
+                  "played": 2
+                },
+                {
+                  "formation": "4-4-2",
+                  "played": 1
+                },
+                {
+                  "formation": "4-1-4-1",
+                  "played": 1
+                },
+                {
+                  "formation": "3-4-1-2",
+                  "played": 1
+                },
+                {
+                  "formation": "5-4-1",
+                  "played": 1
+                },
+                {
+                  "formation": "4-1-3-2",
+                  "played": 1
+                },
+                {
+                  "formation": "4-3-3",
+                  "played": 1
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": 1,
+                    "percentage": "1.96%"
+                  },
+                  "16-30": {
+                    "total": 7,
+                    "percentage": "13.73%"
+                  },
+                  "31-45": {
+                    "total": 6,
+                    "percentage": "11.76%"
+                  },
+                  "46-60": {
+                    "total": 11,
+                    "percentage": "21.57%"
+                  },
+                  "61-75": {
+                    "total": 9,
+                    "percentage": "17.65%"
+                  },
+                  "76-90": {
+                    "total": 12,
+                    "percentage": "23.53%"
+                  },
+                  "91-105": {
+                    "total": 5,
+                    "percentage": "9.80%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": 2,
+                    "percentage": "33.33%"
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": 2,
+                    "percentage": "33.33%"
+                  },
+                  "76-90": {
+                    "total": 2,
+                    "percentage": "33.33%"
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 2553,
+            "name": "Alianza Lima",
+            "logo": "https://media.api-sports.io/football/teams/2553.png",
+            "last_5": {
+              "played": 5,
+              "form": "73%",
+              "att": "100%",
+              "def": "55%",
+              "goals": {
+                "for": {
+                  "total": 11,
+                  "average": "2.2"
+                },
+                "against": {
+                  "total": 5,
+                  "average": "1.0"
+                }
+              }
+            },
+            "league": {
+              "form": "WWDWWWDWLWWWWDWWDWDW",
+              "fixtures": {
+                "played": {
+                  "home": 10,
+                  "away": 10,
+                  "total": 20
+                },
+                "wins": {
+                  "home": 9,
+                  "away": 5,
+                  "total": 14
+                },
+                "draws": {
+                  "home": 1,
+                  "away": 4,
+                  "total": 5
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 27,
+                    "away": 10,
+                    "total": 37
+                  },
+                  "average": {
+                    "home": "2.7",
+                    "away": "1.0",
+                    "total": "1.9"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 3,
+                      "percentage": "8.57%"
+                    },
+                    "16-30": {
+                      "total": 5,
+                      "percentage": "14.29%"
+                    },
+                    "31-45": {
+                      "total": 9,
+                      "percentage": "25.71%"
+                    },
+                    "46-60": {
+                      "total": 4,
+                      "percentage": "11.43%"
+                    },
+                    "61-75": {
+                      "total": 4,
+                      "percentage": "11.43%"
+                    },
+                    "76-90": {
+                      "total": 10,
+                      "percentage": "28.57%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 18,
+                      "under": 2
+                    },
+                    "1.5": {
+                      "over": 10,
+                      "under": 10
+                    },
+                    "2.5": {
+                      "over": 4,
+                      "under": 16
+                    },
+                    "3.5": {
+                      "over": 1,
+                      "under": 19
+                    },
+                    "4.5": {
+                      "over": 1,
+                      "under": 19
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 6,
+                    "away": 6,
+                    "total": 12
+                  },
+                  "average": {
+                    "home": "0.6",
+                    "away": "0.6",
+                    "total": "0.6"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "7.14%"
+                    },
+                    "16-30": {
+                      "total": 2,
+                      "percentage": "14.29%"
+                    },
+                    "31-45": {
+                      "total": 3,
+                      "percentage": "21.43%"
+                    },
+                    "46-60": {
+                      "total": 4,
+                      "percentage": "28.57%"
+                    },
+                    "61-75": {
+                      "total": 2,
+                      "percentage": "14.29%"
+                    },
+                    "76-90": {
+                      "total": 2,
+                      "percentage": "14.29%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 11,
+                      "under": 9
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 19
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 20
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 20
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 20
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 4,
+                  "draws": 1,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": "8-0",
+                  "away": "1-2"
+                },
+                "loses": {
+                  "home": null,
+                  "away": "1-0"
+                },
+                "goals": {
+                  "for": {
+                    "home": 8,
+                    "away": 2
+                  },
+                  "against": {
+                    "home": 1,
+                    "away": 2
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 4,
+                "away": 5,
+                "total": 9
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 2,
+                "total": 2
+              },
+              "penalty": {
+                "scored": {
+                  "total": 2,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 2
+              },
+              "lineups": [
+                {
+                  "formation": "4-2-3-1",
+                  "played": 6
+                },
+                {
+                  "formation": "4-1-3-2",
+                  "played": 5
+                },
+                {
+                  "formation": "5-3-2",
+                  "played": 4
+                },
+                {
+                  "formation": "4-3-3",
+                  "played": 2
+                },
+                {
+                  "formation": "4-4-2",
+                  "played": 2
+                },
+                {
+                  "formation": "4-1-4-1",
+                  "played": 1
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": 3,
+                    "percentage": "7.32%"
+                  },
+                  "16-30": {
+                    "total": 6,
+                    "percentage": "14.63%"
+                  },
+                  "31-45": {
+                    "total": 7,
+                    "percentage": "17.07%"
+                  },
+                  "46-60": {
+                    "total": 10,
+                    "percentage": "24.39%"
+                  },
+                  "61-75": {
+                    "total": 10,
+                    "percentage": "24.39%"
+                  },
+                  "76-90": {
+                    "total": 3,
+                    "percentage": "7.32%"
+                  },
+                  "91-105": {
+                    "total": 2,
+                    "percentage": "4.88%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "48%",
+            "away": "52%"
+          },
+          "att": {
+            "home": "27%",
+            "away": "73%"
+          },
+          "def": {
+            "home": "83%",
+            "away": "17%"
+          },
+          "poisson_distribution": {
+            "home": "43%",
+            "away": "57%"
+          },
+          "h2h": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "goals": {
+            "home": "10%",
+            "away": "90%"
+          },
+          "total": {
+            "home": "42.2%",
+            "away": "57.8%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1512508,
+              "referee": "J. Espinoza",
+              "timezone": "UTC",
+              "date": "2026-02-21T01:00:00+00:00",
+              "timestamp": 1771635600,
+              "periods": {
+                "first": 1771635600,
+                "second": 1771639200
+              },
+              "venue": {
+                "id": 1230,
+                "name": "Estadio Alejandro Villanueva",
+                "city": "Lima"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 8
+              }
+            },
+            "league": {
+              "id": 281,
+              "name": "Primera División",
+              "country": "Peru",
+              "logo": "https://media.api-sports.io/football/leagues/281.png",
+              "flag": "https://media.api-sports.io/flags/pe.svg",
+              "season": 2026,
+              "round": "Apertura - 4",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 2553,
+                "name": "Alianza Lima",
+                "logo": "https://media.api-sports.io/football/teams/2553.png",
+                "winner": true
+              },
+              "away": {
+                "id": 2544,
+                "name": "Sport Boys",
+                "logo": "https://media.api-sports.io/football/teams/2544.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1479791,
+              "referee": "Joel Alarcon, Peru",
+              "timezone": "UTC",
+              "date": "2025-10-17T01:00:00+00:00",
+              "timestamp": 1760662800,
+              "periods": {
+                "first": 1760662800,
+                "second": 1760666400
+              },
+              "venue": {
+                "id": 1230,
+                "name": "Estadio Alejandro Villanueva",
+                "city": "Lima"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 3
+              }
+            },
+            "league": {
+              "id": 281,
+              "name": "Primera División",
+              "country": "Peru",
+              "logo": "https://media.api-sports.io/football/leagues/281.png",
+              "flag": "https://media.api-sports.io/flags/pe.svg",
+              "season": 2025,
+              "round": "Clausura - 14",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 2553,
+                "name": "Alianza Lima",
+                "logo": "https://media.api-sports.io/football/teams/2553.png",
+                "winner": true
+              },
+              "away": {
+                "id": 2544,
+                "name": "Sport Boys",
+                "logo": "https://media.api-sports.io/football/teams/2544.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1340408,
+              "referee": "C. Lozano",
+              "timezone": "UTC",
+              "date": "2025-05-24T01:00:00+00:00",
+              "timestamp": 1748048400,
+              "periods": {
+                "first": 1748048400,
+                "second": 1748052000
+              },
+              "venue": {
+                "id": null,
+                "name": "Estadio Miguel Grau",
+                "city": "Callao"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 7
+              }
+            },
+            "league": {
+              "id": 281,
+              "name": "Primera División",
+              "country": "Peru",
+              "logo": "https://media.api-sports.io/football/leagues/281.png",
+              "flag": "https://media.api-sports.io/flags/pe.svg",
+              "season": 2025,
+              "round": "Apertura - 14",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 2544,
+                "name": "Sport Boys",
+                "logo": "https://media.api-sports.io/football/teams/2544.png",
+                "winner": false
+              },
+              "away": {
+                "id": 2553,
+                "name": "Alianza Lima",
+                "logo": "https://media.api-sports.io/football/teams/2553.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1246555,
+              "referee": "D. Haro",
+              "timezone": "UTC",
+              "date": "2024-09-22T01:30:00+00:00",
+              "timestamp": 1726968600,
+              "periods": {
+                "first": 1726968600,
+                "second": 1726972200
+              },
+              "venue": {
+                "id": 1238,
+                "name": "Estadio Miguel Grau del Callao",
+                "city": "Callao"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 4
+              }
+            },
+            "league": {
+              "id": 281,
+              "name": "Primera División",
+              "country": "Peru",
+              "logo": "https://media.api-sports.io/football/leagues/281.png",
+              "flag": "https://media.api-sports.io/flags/pe.svg",
+              "season": 2024,
+              "round": "Clausura - 12",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 2544,
+                "name": "Sport Boys",
+                "logo": "https://media.api-sports.io/football/teams/2544.png",
+                "winner": false
+              },
+              "away": {
+                "id": 2553,
+                "name": "Alianza Lima",
+                "logo": "https://media.api-sports.io/football/teams/2553.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 3
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 2
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 3
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1225841,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2024-07-06T20:30:00+00:00",
+              "timestamp": 1720297800,
+              "periods": {
+                "first": null,
+                "second": null
+              },
+              "venue": {
+                "id": null,
+                "name": null,
+                "city": null
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 667,
+              "name": "Friendlies Clubs",
+              "country": "World",
+              "logo": "https://media.api-sports.io/football/leagues/667.png",
+              "flag": null,
+              "season": 2024,
+              "round": "Club Friendlies 4",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 2544,
+                "name": "Sport Boys",
+                "logo": "https://media.api-sports.io/football/teams/2544.png",
+                "winner": false
+              },
+              "away": {
+                "id": 2553,
+                "name": "Alianza Lima",
+                "logo": "https://media.api-sports.io/football/teams/2553.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": null,
+                "away": null
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1177978,
+              "referee": "A. Menéndez",
+              "timezone": "UTC",
+              "date": "2024-04-19T01:00:00+00:00",
+              "timestamp": 1713488400,
+              "periods": {
+                "first": 1713488400,
+                "second": 1713492000
+              },
+              "venue": {
+                "id": 1230,
+                "name": "Estadio Alejandro Villanueva",
+                "city": "Lima"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 281,
+              "name": "Primera División",
+              "country": "Peru",
+              "logo": "https://media.api-sports.io/football/leagues/281.png",
+              "flag": "https://media.api-sports.io/flags/pe.svg",
+              "season": 2024,
+              "round": "Apertura - 12",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 2553,
+                "name": "Alianza Lima",
+                "logo": "https://media.api-sports.io/football/teams/2553.png",
+                "winner": true
+              },
+              "away": {
+                "id": 2544,
+                "name": "Sport Boys",
+                "logo": "https://media.api-sports.io/football/teams/2544.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1047999,
+              "referee": "D. Haro",
+              "timezone": "UTC",
+              "date": "2023-07-16T20:00:00+00:00",
+              "timestamp": 1689537600,
+              "periods": {
+                "first": 1689537600,
+                "second": 1689541200
+              },
+              "venue": {
+                "id": 1228,
+                "name": "Estadio Nacional de Lima",
+                "city": "Lima"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 281,
+              "name": "Primera División",
+              "country": "Peru",
+              "logo": "https://media.api-sports.io/football/leagues/281.png",
+              "flag": "https://media.api-sports.io/flags/pe.svg",
+              "season": 2023,
+              "round": "Clausura - 4",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 2544,
+                "name": "Sport Boys",
+                "logo": "https://media.api-sports.io/football/teams/2544.png",
+                "winner": true
+              },
+              "away": {
+                "id": 2553,
+                "name": "Alianza Lima",
+                "logo": "https://media.api-sports.io/football/teams/2553.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 985107,
+              "referee": "J. Alarcón",
+              "timezone": "UTC",
+              "date": "2023-02-12T21:00:00+00:00",
+              "timestamp": 1676235600,
+              "periods": {
+                "first": 1676235600,
+                "second": 1676239200
+              },
+              "venue": {
+                "id": 1230,
+                "name": "Estadio Alejandro Villanueva",
+                "city": "Lima"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 281,
+              "name": "Primera División",
+              "country": "Peru",
+              "logo": "https://media.api-sports.io/football/leagues/281.png",
+              "flag": "https://media.api-sports.io/flags/pe.svg",
+              "season": 2023,
+              "round": "Apertura - 4",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 2553,
+                "name": "Alianza Lima",
+                "logo": "https://media.api-sports.io/football/teams/2553.png",
+                "winner": true
+              },
+              "away": {
+                "id": 2544,
+                "name": "Sport Boys",
+                "logo": "https://media.api-sports.io/football/teams/2544.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 875049,
+              "referee": "R. Pérez",
+              "timezone": "UTC",
+              "date": "2022-07-17T18:15:00+00:00",
+              "timestamp": 1658081700,
+              "periods": {
+                "first": 1658081700,
+                "second": 1658085300
+              },
+              "venue": {
+                "id": 1230,
+                "name": "Estadio Alejandro Villanueva",
+                "city": "Lima"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 281,
+              "name": "Primera División",
+              "country": "Peru",
+              "logo": "https://media.api-sports.io/football/leagues/281.png",
+              "flag": "https://media.api-sports.io/flags/pe.svg",
+              "season": 2022,
+              "round": "Clausura - 2",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 2553,
+                "name": "Alianza Lima",
+                "logo": "https://media.api-sports.io/football/teams/2553.png",
+                "winner": true
+              },
+              "away": {
+                "id": 2544,
+                "name": "Sport Boys",
+                "logo": "https://media.api-sports.io/football/teams/2544.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 2,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 836001,
+              "referee": "R. Pérez",
+              "timezone": "UTC",
+              "date": "2022-02-13T20:30:00+00:00",
+              "timestamp": 1644784200,
+              "periods": {
+                "first": 1644784200,
+                "second": 1644787800
+              },
+              "venue": {
+                "id": 1238,
+                "name": "Estadio Miguel Grau del Callao",
+                "city": "Callao"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 281,
+              "name": "Primera División",
+              "country": "Peru",
+              "logo": "https://media.api-sports.io/football/leagues/281.png",
+              "flag": "https://media.api-sports.io/flags/pe.svg",
+              "season": 2022,
+              "round": "Apertura - 2",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 2544,
+                "name": "Sport Boys",
+                "logo": "https://media.api-sports.io/football/teams/2544.png",
+                "winner": null
+              },
+              "away": {
+                "id": 2553,
+                "name": "Alianza Lima",
+                "logo": "https://media.api-sports.io/football/teams/2553.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "firpo-municipal-limeno-2026-08-09",

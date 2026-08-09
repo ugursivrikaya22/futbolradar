@@ -1,8 +1,8 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-09T04:20:00.149Z",
-  "matchCount": 212,
+  "updatedAt": "2026-08-09T05:48:49.066Z",
+  "matchCount": 214,
   "records": [
     {
       "matchId": "puntarenas-fc-deportivo-saprissa-2026-08-09",
@@ -420,10 +420,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -436,58 +436,46 @@
           "count": 0
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
         "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "statistics": 15,
+        "lineups": 2,
+        "players": 40
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "events",
           "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "5aeb4485542001ac",
-      "fingerprint": "5aeb4485542001ac",
+      "analysisSourceHash": "6e064efb97a57731",
+      "fingerprint": "6e064efb97a57731",
       "analysisGeneratedAt": "2026-08-09T03:31:35.780Z",
-      "analysisUpdatedAt": "2026-08-09T03:31:35.780Z",
-      "generatedAt": "2026-08-09T03:31:35.780Z",
+      "analysisUpdatedAt": "2026-08-09T05:48:49.004Z",
+      "generatedAt": "2026-08-09T05:48:49.004Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -530,8 +518,12 @@
           "players": []
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "Sport Boys sahaya 4-3-3 dizilişiyle çıktı.",
+            "Alianza Lima sahaya 4-1-3-2 dizilişiyle çıktı.",
+            "Alianza Lima topu elinde tutarken Sport Boys derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
           "status": "unavailable",
@@ -544,33 +536,113 @@
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Sport Boys maça 4-3-3 dizilişiyle başladı.",
+            "Alianza Lima maça 4-1-3-2 dizilişiyle başladı."
+          ],
+          "formations": [
+            {
+              "team": "Sport Boys",
+              "formation": "4-3-3"
+            },
+            {
+              "team": "Alianza Lima",
+              "formation": "4-1-3-2"
+            }
+          ],
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
             "Maç 1-1 berabere bitti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Alianza Lima topa daha çok sahip oldu (%63).",
+            "Alianza Lima daha çok şut denedi (7-11)."
+          ],
+          "improvements": [
+            "Alianza Lima şut isabetinde geride kaldı (%18); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Sport Boys",
+            "score": 46
+          },
+          "away": {
+            "team": "Alianza Lima",
+            "score": 57
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Sport Boys %28.6, Alianza Lima %18.2."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Sport Boys 37.4, Alianza Lima 40.7 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -579,11 +651,16 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "signals",
+        "statistics",
+        "tactical",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 50,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -955,10 +1032,10 @@
       "winner": "Diriangén",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -966,9 +1043,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 5
         },
         "statistics": {
           "present": false,
@@ -988,19 +1065,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 5,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -1018,11 +1091,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "0f3e3fbd8682a41d",
-      "fingerprint": "0f3e3fbd8682a41d",
+      "analysisSourceHash": "75a014edbcdecba2",
+      "fingerprint": "75a014edbcdecba2",
       "analysisGeneratedAt": "2026-08-09T01:56:17.394Z",
-      "analysisUpdatedAt": "2026-08-09T01:56:17.394Z",
-      "generatedAt": "2026-08-09T01:56:17.394Z",
+      "analysisUpdatedAt": "2026-08-09T05:48:49.004Z",
+      "generatedAt": "2026-08-09T05:48:49.004Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1050,15 +1123,69 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "62'",
+              "team": "Diriangén",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "76'",
+              "team": "Diriangén",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "78'",
+              "team": "Diriangén",
+              "type": "Card",
+              "detail": "Red Card",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Diriangén",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Diriangén",
+              "type": "Card",
+              "detail": "Red Card",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Rancho Santana",
+              "type": "Goal",
+              "detail": "Penalty",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "Rancho Santana",
+              "type": "Card",
+              "detail": "Red Card",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -1074,8 +1201,10 @@
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı dengeli bir olay akışı üretti (5 olay)."
+          ],
           "goals": 0
         },
         "coaching": {
@@ -1114,10 +1243,13 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "secondHalf",
+        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 36,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -1149,10 +1281,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -1160,9 +1292,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 12
         },
         "statistics": {
           "present": false,
@@ -1182,19 +1314,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 12,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -1212,11 +1340,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "bf57b15aa5b04440",
-      "fingerprint": "bf57b15aa5b04440",
+      "analysisSourceHash": "d2edc9b0575534f3",
+      "fingerprint": "d2edc9b0575534f3",
       "analysisGeneratedAt": "2026-08-09T02:33:41.755Z",
-      "analysisUpdatedAt": "2026-08-09T02:33:41.755Z",
-      "generatedAt": "2026-08-09T02:33:41.755Z",
+      "analysisUpdatedAt": "2026-08-09T05:48:49.004Z",
+      "generatedAt": "2026-08-09T05:48:49.004Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1241,18 +1369,72 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 2
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "46'",
+              "team": "Escorpiones Belén",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            },
+            {
+              "minute": "52'",
+              "team": "Escorpiones Belén",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "68'",
+              "team": "Perez Zeledon",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 6 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "83'",
+              "team": "Escorpiones Belén",
+              "type": "subst",
+              "detail": "Substitution 3",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Escorpiones Belén",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Perez Zeledon",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Perez Zeledon",
+              "type": "subst",
+              "detail": "Substitution 5",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -1268,15 +1450,25 @@
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "46' Escorpiones Belén değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "68' Perez Zeledon değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "70' Escorpiones Belén değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "73' Perez Zeledon değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "73' Perez Zeledon değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "83' Escorpiones Belén değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1308,10 +1500,14 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "secondHalf",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -1398,11 +1594,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "8d7778b2859e27ab",
-      "fingerprint": "8d7778b2859e27ab",
+      "analysisSourceHash": "4ee81a299d2dfd3f",
+      "fingerprint": "4ee81a299d2dfd3f",
       "analysisGeneratedAt": "2026-08-09T01:56:17.394Z",
-      "analysisUpdatedAt": "2026-08-09T03:31:35.780Z",
-      "generatedAt": "2026-08-09T03:31:35.780Z",
+      "analysisUpdatedAt": "2026-08-09T05:48:49.004Z",
+      "generatedAt": "2026-08-09T05:48:49.004Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -14210,6 +14406,200 @@
       "publishState": "page"
     },
     {
+      "matchId": "real-valladolid-ii-real-madrid-iii-2026-08-08",
+      "fixtureId": "1618895",
+      "provider": "api-football",
+      "slug": "real-valladolid-ii-real-madrid-iii-2026-08-08",
+      "kickoff": "2026-08-08T17:00:00+00:00",
+      "kickoffUtc": "2026-08-08T17:00:00.000Z",
+      "kickoffLocal": "2026-08-08T20:00",
+      "date": "2026-08-08",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Real Valladolid II",
+      "awayTeam": "Real Madrid III",
+      "venue": null,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "Real Madrid III",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "b94cc822bb4f108b",
+      "fingerprint": "b94cc822bb4f108b",
+      "analysisGeneratedAt": "2026-08-09T05:48:49.004Z",
+      "analysisUpdatedAt": "2026-08-09T05:48:49.004Z",
+      "generatedAt": "2026-08-09T05:48:49.004Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Real Valladolid II 0-1 Real Madrid III maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Real Madrid III, Friendlies Clubs karşılaşmasında Real Valladolid II'yı 1-0 mağlup etti.",
+        "path": "mac-raporu/real-valladolid-ii-real-madrid-iii-2026-08-08.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/real-valladolid-ii-real-madrid-iii-2026-08-08.html",
+      "digest": {
+        "headline": "Real Madrid III, Real Valladolid II'yı 1-0 yendi",
+        "paragraph": "Real Madrid III, Friendlies Clubs karşılaşmasında Real Valladolid II'yı 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Real Madrid III",
+          "loser": "Real Valladolid II",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Real Madrid III, Real Valladolid II'yı 0-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Real Madrid III sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
       "matchId": "coventry-espanyol-2026-08-08",
       "fixtureId": "1585071",
       "provider": "api-football",
@@ -17812,6 +18202,200 @@
         "finalAssessment"
       ],
       "coverage": 29,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "novaci-pelister-2026-08-08",
+      "fixtureId": "1589320",
+      "provider": "api-football",
+      "slug": "novaci-pelister-2026-08-08",
+      "kickoff": "2026-08-08T16:00:00+00:00",
+      "kickoffUtc": "2026-08-08T16:00:00.000Z",
+      "kickoffLocal": "2026-08-08T19:00",
+      "date": "2026-08-08",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Novaci",
+      "awayTeam": "Pelister",
+      "venue": null,
+      "score": {
+        "home": 4,
+        "away": 2
+      },
+      "finalScore": "4-2",
+      "winner": "Novaci",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "07b2a0fac608713c",
+      "fingerprint": "07b2a0fac608713c",
+      "analysisGeneratedAt": "2026-08-09T05:48:49.004Z",
+      "analysisUpdatedAt": "2026-08-09T05:48:49.004Z",
+      "generatedAt": "2026-08-09T05:48:49.004Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Novaci 4-2 Pelister maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Novaci, Friendlies Clubs karşılaşmasında Pelister'i 4-2 mağlup etti.",
+        "path": "mac-raporu/novaci-pelister-2026-08-08.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/novaci-pelister-2026-08-08.html",
+      "digest": {
+        "headline": "Novaci, Pelister'i 4-2 yendi",
+        "paragraph": "Novaci, Friendlies Clubs karşılaşmasında Pelister'i 4-2 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Novaci",
+          "loser": "Pelister",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Novaci, Pelister'i 4-2 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Novaci sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
       "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
