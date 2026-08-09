@@ -1,9 +1,591 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-09T21:35:29.671Z",
-  "matchCount": 258,
+  "updatedAt": "2026-08-09T22:34:49.585Z",
+  "matchCount": 261,
   "records": [
+    {
+      "matchId": "fbc-melgar-fc-cajamarca-2026-08-09",
+      "fixtureId": "1549441",
+      "provider": "api-football",
+      "slug": "fbc-melgar-fc-cajamarca-2026-08-09",
+      "kickoff": "2026-08-09T20:30:00+00:00",
+      "kickoffUtc": "2026-08-09T20:30:00.000Z",
+      "kickoffLocal": "2026-08-09T23:30",
+      "date": "2026-08-09",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primera División",
+      "competition": "Primera División",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "FBC Melgar",
+      "awayTeam": "FC Cajamarca",
+      "venue": "Estadio de la UNSA",
+      "score": {
+        "home": 2,
+        "away": 4
+      },
+      "finalScore": "2-4",
+      "winner": "FC Cajamarca",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "fd394181539a482f",
+      "fingerprint": "fd394181539a482f",
+      "analysisGeneratedAt": "2026-08-09T22:34:49.502Z",
+      "analysisUpdatedAt": "2026-08-09T22:34:49.502Z",
+      "generatedAt": "2026-08-09T22:34:49.502Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "FBC Melgar 2-4 FC Cajamarca maç raporu: Primera División istatistikleri | FutbolRadar",
+        "description": "FC Cajamarca, Estadio de la UNSA'da oynanan Primera División karşılaşmasında FBC Melgar'ı 4-2 mağlup etti.",
+        "path": "mac-raporu/fbc-melgar-fc-cajamarca-2026-08-09.html",
+        "competition": "Primera División"
+      },
+      "reportUrl": "./mac-raporu/fbc-melgar-fc-cajamarca-2026-08-09.html",
+      "digest": {
+        "headline": "FC Cajamarca, FBC Melgar'ı 4-2 yendi",
+        "paragraph": "FC Cajamarca, Estadio de la UNSA'da oynanan Primera División karşılaşmasında FBC Melgar'ı 4-2 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "FC Cajamarca",
+          "loser": "FBC Melgar",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "FC Cajamarca, FBC Melgar'ı 2-4 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "FC Cajamarca sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "trujillanos-fc-deportivo-tachira-fc-2026-08-09",
+      "fixtureId": "1612523",
+      "provider": "api-football",
+      "slug": "trujillanos-fc-deportivo-tachira-fc-2026-08-09",
+      "kickoff": "2026-08-09T20:00:00+00:00",
+      "kickoffUtc": "2026-08-09T20:00:00.000Z",
+      "kickoffLocal": "2026-08-09T23:00",
+      "date": "2026-08-09",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primera División",
+      "competition": "Primera División",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Trujillanos FC",
+      "awayTeam": "Deportivo Tachira FC",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 3
+      },
+      "finalScore": "1-3",
+      "winner": "Deportivo Tachira FC",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "3830217f375d140d",
+      "fingerprint": "3830217f375d140d",
+      "analysisGeneratedAt": "2026-08-09T22:34:49.502Z",
+      "analysisUpdatedAt": "2026-08-09T22:34:49.502Z",
+      "generatedAt": "2026-08-09T22:34:49.502Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Trujillanos FC 1-3 Deportivo Tachira FC maç raporu: Primera División istatistikleri | FutbolRadar",
+        "description": "Primera División maçını Deportivo Tachira FC 3-1 kazandı; Trujillanos FC sahadan puansız ayrıldı.",
+        "path": "mac-raporu/trujillanos-fc-deportivo-tachira-fc-2026-08-09.html",
+        "competition": "Primera División"
+      },
+      "reportUrl": "./mac-raporu/trujillanos-fc-deportivo-tachira-fc-2026-08-09.html",
+      "digest": {
+        "headline": "Deportivo Tachira FC, Trujillanos FC'u 3-1 yendi",
+        "paragraph": "Primera División maçını Deportivo Tachira FC 3-1 kazandı; Trujillanos FC sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Deportivo Tachira FC",
+          "loser": "Trujillanos FC",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Deportivo Tachira FC, Trujillanos FC'u 1-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Deportivo Tachira FC sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "zamora-fc-puerto-cabello-2026-08-09",
+      "fixtureId": "1612524",
+      "provider": "api-football",
+      "slug": "zamora-fc-puerto-cabello-2026-08-09",
+      "kickoff": "2026-08-09T20:00:00+00:00",
+      "kickoffUtc": "2026-08-09T20:00:00.000Z",
+      "kickoffLocal": "2026-08-09T23:00",
+      "date": "2026-08-09",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primera División",
+      "competition": "Primera División",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Zamora FC",
+      "awayTeam": "Puerto Cabello",
+      "venue": null,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "Puerto Cabello",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "0930e6a0b99c4dd1",
+      "fingerprint": "0930e6a0b99c4dd1",
+      "analysisGeneratedAt": "2026-08-09T22:34:49.502Z",
+      "analysisUpdatedAt": "2026-08-09T22:34:49.502Z",
+      "generatedAt": "2026-08-09T22:34:49.502Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Zamora FC 0-1 Puerto Cabello maç raporu: Primera División istatistikleri | FutbolRadar",
+        "description": "Primera División maçını Puerto Cabello 1-0 kazandı; Zamora FC sahadan puansız ayrıldı.",
+        "path": "mac-raporu/zamora-fc-puerto-cabello-2026-08-09.html",
+        "competition": "Primera División"
+      },
+      "reportUrl": "./mac-raporu/zamora-fc-puerto-cabello-2026-08-09.html",
+      "digest": {
+        "headline": "Puerto Cabello, Zamora FC'ı 1-0 yendi",
+        "paragraph": "Primera División maçını Puerto Cabello 1-0 kazandı; Zamora FC sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Puerto Cabello",
+          "loser": "Zamora FC",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Puerto Cabello, Zamora FC'ı 0-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Puerto Cabello sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "anzoategui-fc-portuguesa-fc-2026-08-09",
       "fixtureId": "1612522",
@@ -3912,10 +4494,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -3923,9 +4505,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "statistics": {
           "present": false,
@@ -3945,19 +4527,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 2,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -3975,11 +4553,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "ef18253512a4166a",
-      "fingerprint": "ef18253512a4166a",
+      "analysisSourceHash": "329740d2efdfe846",
+      "fingerprint": "329740d2efdfe846",
       "analysisGeneratedAt": "2026-08-09T18:45:09.036Z",
-      "analysisUpdatedAt": "2026-08-09T18:45:09.036Z",
-      "generatedAt": "2026-08-09T18:45:09.036Z",
+      "analysisUpdatedAt": "2026-08-09T22:34:49.502Z",
+      "generatedAt": "2026-08-09T22:34:49.502Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -4007,15 +4585,41 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "41'",
+              "team": "Radnik Hadžići",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "90'",
+              "team": "Stupčanica Olovo",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "90'",
+              "team": "Stupčanica Olovo",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -4026,13 +4630,17 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay)."
+          ],
           "goals": 0
         },
         "coaching": {
@@ -4071,10 +4679,14 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -4106,10 +4718,10 @@
       "winner": "Marseille",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -4117,9 +4729,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 27
         },
         "statistics": {
           "present": false,
@@ -4139,19 +4751,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 27,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -4169,11 +4777,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "e9c90f97fb508498",
-      "fingerprint": "e9c90f97fb508498",
+      "analysisSourceHash": "b0484ed235e625da",
+      "fingerprint": "b0484ed235e625da",
       "analysisGeneratedAt": "2026-08-09T18:45:09.036Z",
-      "analysisUpdatedAt": "2026-08-09T18:45:09.036Z",
-      "generatedAt": "2026-08-09T18:45:09.036Z",
+      "analysisUpdatedAt": "2026-08-09T22:34:49.502Z",
+      "generatedAt": "2026-08-09T22:34:49.502Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -4201,15 +4809,69 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "10'",
+              "team": "Marseille",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "17'",
+              "team": "Athletic Club",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "34'",
+              "team": "Athletic Club",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 6 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "Athletic Club",
+              "type": "subst",
+              "detail": "Substitution 6",
+              "decisive": false
+            },
+            {
+              "minute": "77'",
+              "team": "Athletic Club",
+              "type": "subst",
+              "detail": "Substitution 7",
+              "decisive": false
+            },
+            {
+              "minute": "77'",
+              "team": "Athletic Club",
+              "type": "subst",
+              "detail": "Substitution 8",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Marseille",
+              "type": "subst",
+              "detail": "Substitution 10",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -4220,20 +4882,32 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (21 olay).",
+            "İkinci yarı içinde 19 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "46' Marseille değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Marseille değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Marseille değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "63' Marseille değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "63' Marseille değişikliği (Substitution 5). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "64' Athletic Club değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -4265,10 +4939,15 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -4300,10 +4979,10 @@
       "winner": "Lecce",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -4311,9 +4990,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 1
         },
         "statistics": {
           "present": false,
@@ -4333,19 +5012,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 1,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -4363,11 +5038,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "eae8b988233766d4",
-      "fingerprint": "eae8b988233766d4",
+      "analysisSourceHash": "dc263ac7092abe94",
+      "fingerprint": "dc263ac7092abe94",
       "analysisGeneratedAt": "2026-08-09T18:45:09.036Z",
-      "analysisUpdatedAt": "2026-08-09T18:45:09.036Z",
-      "generatedAt": "2026-08-09T18:45:09.036Z",
+      "analysisUpdatedAt": "2026-08-09T22:34:49.502Z",
+      "generatedAt": "2026-08-09T22:34:49.502Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -4395,14 +5070,25 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "15'",
+              "team": "Lecce",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
           "moments": []
         },
         "keyPlayers": {
@@ -4414,8 +5100,10 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
@@ -4459,9 +5147,11 @@
       },
       "readySections": [
         "summary",
+        "firstHalf",
+        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 14,
+      "coverage": 29,
       "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
@@ -4960,7 +5650,7 @@
       "coverageGrade": "partial",
       "coverageLabel": "Kısmi analiz",
       "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 40,
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -4973,9 +5663,9 @@
           "count": 0
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 17
         },
         "lineups": {
           "present": true,
@@ -4991,32 +5681,28 @@
       "apiKeyPresent": true,
       "availability": {
         "events": 0,
-        "statistics": 0,
+        "statistics": 17,
         "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "events",
           "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "3ccd35a2751e4fe0",
-      "fingerprint": "3ccd35a2751e4fe0",
+      "analysisSourceHash": "04a7c348e090fdb9",
+      "fingerprint": "04a7c348e090fdb9",
       "analysisGeneratedAt": "2026-08-09T17:00:47.297Z",
-      "analysisUpdatedAt": "2026-08-09T21:35:29.587Z",
-      "generatedAt": "2026-08-09T21:35:29.587Z",
+      "analysisUpdatedAt": "2026-08-09T22:34:49.502Z",
+      "generatedAt": "2026-08-09T22:34:49.502Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -5096,26 +5782,105 @@
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Rapid Vienna, Ried'i 1-2 yendi."
+            "Rapid Vienna, Ried'i 1-2 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (3-9); eldeki veri sonucun verimlilikle geldiğini gösteriyor."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Rapid Vienna topa daha çok sahip oldu (%54).",
+            "Ried daha çok şut denedi (18-12)."
+          ],
+          "improvements": [
+            "Rapid Vienna şut isabetinde geride kaldı (%25); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Rapid Vienna sahadan 1 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Ried",
+            "score": 67
+          },
+          "away": {
+            "team": "Rapid Vienna",
+            "score": 66
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Ried %50, Rapid Vienna %25."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Ried 23.9, Rapid Vienna 42.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Ried 0.072, Rapid Vienna 0.136. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -5123,12 +5888,15 @@
       },
       "readySections": [
         "summary",
+        "signals",
+        "statistics",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 21,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 43,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
@@ -5159,10 +5927,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 70,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -5175,9 +5943,9 @@
           "count": 18
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 17
         },
         "lineups": {
           "present": true,
@@ -5193,28 +5961,23 @@
       "apiKeyPresent": true,
       "availability": {
         "events": 18,
-        "statistics": 0,
+        "statistics": 17,
         "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "afb6d5e09f13aa67",
-      "fingerprint": "afb6d5e09f13aa67",
+      "analysisSourceHash": "7de37eedf3c74951",
+      "fingerprint": "7de37eedf3c74951",
       "analysisGeneratedAt": "2026-08-09T17:00:47.297Z",
-      "analysisUpdatedAt": "2026-08-09T21:35:29.587Z",
-      "generatedAt": "2026-08-09T21:35:29.587Z",
+      "analysisUpdatedAt": "2026-08-09T22:34:49.502Z",
+      "generatedAt": "2026-08-09T22:34:49.502Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -5311,10 +6074,11 @@
           "players": []
         },
         "tactical": {
-          "status": "partial",
+          "status": "ready",
           "notes": [
             "Wolfsberger AC sahaya 3-4-2-1 dizilişiyle çıktı.",
-            "Red Bull Salzburg sahaya 4-2-3-1 dizilişiyle çıktı."
+            "Red Bull Salzburg sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Red Bull Salzburg topu elinde tutarken Wolfsberger AC derin blokta savunma yapmayı tercih etti."
           ]
         },
         "firstHalf": {
@@ -5359,24 +6123,102 @@
           "verdict": [
             "Maç 1-1 berabere bitti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Red Bull Salzburg topa daha çok sahip oldu (%67).",
+            "Red Bull Salzburg daha çok şut denedi (11-18)."
+          ],
+          "improvements": [
+            "Wolfsberger AC şut isabetinde geride kaldı (%9); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Wolfsberger AC",
+            "score": 45
+          },
+          "away": {
+            "team": "Red Bull Salzburg",
+            "score": 84
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Wolfsberger AC %9.1, Red Bull Salzburg %55.6."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Wolfsberger AC 22.3, Red Bull Salzburg 29.1 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Wolfsberger AC 0.085, Red Bull Salzburg 0.196. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -5385,15 +6227,19 @@
       "readySections": [
         "summary",
         "momentum",
+        "signals",
+        "statistics",
+        "tactical",
         "firstHalf",
         "secondHalf",
         "lateGame",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 50,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 79,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
@@ -5424,10 +6270,10 @@
       "winner": "Dynamo Kyiv",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -5435,9 +6281,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "statistics": {
           "present": false,
@@ -5457,19 +6303,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 15,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -5487,11 +6329,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "da7e216a82d9e2fd",
-      "fingerprint": "da7e216a82d9e2fd",
+      "analysisSourceHash": "3ef6a6eafa3638a6",
+      "fingerprint": "3ef6a6eafa3638a6",
       "analysisGeneratedAt": "2026-08-09T17:00:47.297Z",
-      "analysisUpdatedAt": "2026-08-09T17:00:47.297Z",
-      "generatedAt": "2026-08-09T17:00:47.297Z",
+      "analysisUpdatedAt": "2026-08-09T22:34:49.502Z",
+      "generatedAt": "2026-08-09T22:34:49.502Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -5516,18 +6358,72 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 2
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "15'",
+              "team": "Dynamo Kyiv",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "16'",
+              "team": "Veres Rivne",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "38'",
+              "team": "Dynamo Kyiv",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Dynamo Kyiv",
+              "type": "subst",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "87'",
+              "team": "Veres Rivne",
+              "type": "subst",
+              "detail": "Substitution 2",
+              "decisive": false
+            },
+            {
+              "minute": "90+2'",
+              "team": "Dynamo Kyiv",
+              "type": "Goal",
+              "detail": "Penalty",
+              "decisive": false
+            },
+            {
+              "minute": "90+3'",
+              "team": "Veres Rivne",
+              "type": "subst",
+              "detail": "Substitution 3",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -5538,20 +6434,32 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "46' Dynamo Kyiv değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "58' Dynamo Kyiv değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "58' Dynamo Kyiv değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "69' Dynamo Kyiv değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "71' Veres Rivne değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "78' Dynamo Kyiv değişikliği (Substitution 5). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -5583,10 +6491,15 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
