@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-09T05:48:49.066Z",
+  "updatedAt": "2026-08-09T06:04:01.460Z",
   "matchCount": 214,
   "records": [
     {
@@ -226,10 +226,10 @@
       "winner": "Firpo",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -237,9 +237,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "statistics": {
           "present": false,
@@ -259,19 +259,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 2,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -289,11 +285,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "e76328f52ce7217a",
-      "fingerprint": "e76328f52ce7217a",
+      "analysisSourceHash": "e7f20f7aedbe62a0",
+      "fingerprint": "e7f20f7aedbe62a0",
       "analysisGeneratedAt": "2026-08-09T03:31:35.780Z",
-      "analysisUpdatedAt": "2026-08-09T03:31:35.780Z",
-      "generatedAt": "2026-08-09T03:31:35.780Z",
+      "analysisUpdatedAt": "2026-08-09T06:04:01.399Z",
+      "generatedAt": "2026-08-09T06:04:01.399Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -321,15 +317,41 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "6'",
+              "team": "Firpo",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "80'",
+              "team": "Firpo",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "80'",
+              "team": "Firpo",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -340,13 +362,17 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay)."
+          ],
           "goals": 0
         },
         "coaching": {
@@ -385,10 +411,14 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -420,10 +450,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 70,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -431,9 +461,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 12
         },
         "statistics": {
           "present": true,
@@ -453,29 +483,24 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 12,
         "statistics": 15,
         "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "6e064efb97a57731",
-      "fingerprint": "6e064efb97a57731",
+      "analysisSourceHash": "fdb66b82db4dd079",
+      "fingerprint": "fdb66b82db4dd079",
       "analysisGeneratedAt": "2026-08-09T03:31:35.780Z",
-      "analysisUpdatedAt": "2026-08-09T05:48:49.004Z",
-      "generatedAt": "2026-08-09T05:48:49.004Z",
+      "analysisUpdatedAt": "2026-08-09T06:04:01.399Z",
+      "generatedAt": "2026-08-09T06:04:01.399Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -503,15 +528,69 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "8'",
+              "team": "Sport Boys",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "10'",
+              "team": "Alianza Lima",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            },
+            {
+              "minute": "28'",
+              "team": "Sport Boys",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "79'",
+              "team": "Alianza Lima",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "decisive": false
+            },
+            {
+              "minute": "88'",
+              "team": "Sport Boys",
+              "type": "subst",
+              "detail": "Substitution 3",
+              "decisive": false
+            },
+            {
+              "minute": "88'",
+              "team": "Sport Boys",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            },
+            {
+              "minute": "89'",
+              "team": "Alianza Lima",
+              "type": "subst",
+              "detail": "Substitution 2",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -526,20 +605,30 @@
           ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (8 olay).",
+            "İkinci yarı içinde 5 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Sport Boys maça 4-3-3 dizilişiyle başladı.",
-            "Alianza Lima maça 4-1-3-2 dizilişiyle başladı."
+            "Alianza Lima maça 4-1-3-2 dizilişiyle başladı.",
+            "10' Alianza Lima değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "72' Sport Boys değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "72' Sport Boys değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "88' Sport Boys değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
           "formations": [
             {
@@ -551,7 +640,7 @@
               "formation": "4-1-3-2"
             }
           ],
-          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -651,15 +740,19 @@
       },
       "readySections": [
         "summary",
+        "momentum",
         "signals",
         "statistics",
         "tactical",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 50,
-      "dataStatus": "partial",
+      "coverage": 79,
+      "dataStatus": "complete",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
