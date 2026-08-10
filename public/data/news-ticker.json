@@ -1,7 +1,25 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-10T10:19:21.395Z",
+  "updatedAt": "2026-08-10T11:49:56.324Z",
   "items": [
+    {
+      "id": "auto-news-a19c675f3a93b2da078d",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Çorum FK maçı biletleri öncelikli satışta",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-10T11:03:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPQWxYNWJxR1IwUkE5MFZkbmRPRExlbkpOVUlhS0R3Z3FuOFR6Nm9mS0tsZ3lzVUZxOWdXdjFaMy1wQjBLUl9mcDlBbW1IYk43WTVpTXltQTBrTXBBMG1GRXNJajdLTzFoZjBpMjc5d281SkwzamNUWktuaWtNXzZoa3g1ci16YTYzcDZXWEpIMkx2TUJGTGRsS2dGZW9RUQ?oc=5"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1
+      }
+    },
     {
       "id": "auto-news-03404861ec0e025a7632",
       "category": "official",
@@ -165,6 +183,42 @@
       }
     },
     {
+      "id": "auto-news-cdbc1ec3acb9e9ce62db",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe Erkek Basketbol Takımımız yeni sezon hazırlıklarına başlıyor",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-10T10:23:49.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxNaTh6WDdVdHY4cUt6cDlJWmlaaWY2Z0ZWOTB2YS04cWQ5RUpOOG1UZVdTUWRDQVY5T0NwZEVvV0psX2dIWl9pRXNwUTFEcDQtMFZsZjQzc1BvY01tZ05BcE5uYVFKYTVtN05kcFdFZlJicER1REhxYUk0ZEstellIRmFNMExEU0FsVFZYUWRpQUNYUXh5aHkzbTNFSWJhY094TDZQYXA1eV96TjgtcmZwcUxlLUVVdjZmZlczTlpqQl9EdVgzbGsyRjZR?oc=5"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2
+      }
+    },
+    {
+      "id": "auto-news-1c31b3282a5dedc9d3d6",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçemizin, Sturm Graz maçı kamp kadrosu belli oldu",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-10T10:18:45.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQcVRZNDRkSnlGaVBDam1CaDZ6Zm9lX1hjTkItOVdvRmFnYjBvZ294V3VSWG1reHM2TUgxb0VISUNFVUdJbWs5QjFBN3ozRHB4c1A0dmdCNHBXMUJROHFkLXNTYkIwVW5Ba3F2d2dsZmlIYmtoNGQ2TGtvQkFjdGR6VUMzZWJJSEdRQnRxUU5QUHM5dEVJUEhJSHNFZC1DMmdybDBNbUtVUkI?oc=5"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2
+      }
+    },
+    {
       "id": "auto-news-0f9a12214e03d3c5553a",
       "category": "official",
       "confidence": "confirmed",
@@ -205,11 +259,11 @@
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Fenerbahçeli 16 milli atlet Avrupa Şampiyonası sahnesine çıkıyor",
+      "text": "Fenerbahçeli 17 milli atlet Avrupa Şampiyonası sahnesine çıkıyor",
       "team": "Fenerbahçe",
       "timestamp": "2026-08-09T08:11:59.000Z",
       "source": {
-        "name": "fenerbahce.org",
+        "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQQ2VwcnlEM1JQal9jRGVOdWZLUElTSXhVZXdfT1ZmQ2FWblhKSFFIazVMd2d5UG5lWlBwLUR5R0d4ZElTZkxuMnlVejI5bTFUdnpiXzRaeDgwT0lTNG5rVl9MaEVjZmtRbm9DTlFkLWt6eWtsdUxaZUlBYVpRem40dTRDNHhiclR5NzlObm81S01rZ1pLNm9MQTdXaGpZQVltSFF5cmtLVGlrVHZrYmhWQnNOdlJ0enc?oc=5"
       },
       "automation": {
@@ -265,60 +319,6 @@
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQVkZoOEZBcm83RENhYVU0eFp2T2lMVU1rQ05vOFlfQUFxZWZfeEk4b0RvXzNMZzNJVi0zZ0NhQU4wRVZiNlE2ZjFuRnNsWE5EVkZ6em5aQjZFSEtpbmJsMklQUXJSSU5zYmM4U2pLNDhDZVIxMlN3RklmR1p0VzNqLVZRdV82dGxtM19xUGt4eTU3TzJ5ZVZMTXludUwySnp5?oc=5"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2
-      }
-    },
-    {
-      "id": "auto-news-cae4c1afd91e534d7a93",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Sturm Graz maçı hazırlıkları sürüyor",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-08T20:06:30.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxObjlDX2FKbEhzSmJWZWxLODl4NUlEMjdvYjQ0REl0SHhiSnpCVkcyY3RuWldLRExQd0s4UjViWTNTbzBHem9ZZ25Fd1lGY3JRQUdtbWxoWTFVNkJqWnJRMFJWdE9zMnE0V3hjcndDWEwtZW1ILXdHbkpZeUlfbmVIdmVKdC1RM2s3b3JuUXNmdw?oc=5"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2
-      }
-    },
-    {
-      "id": "auto-news-461da6592c9c08ddba2e",
-      "category": "squad-update",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Futbol Akademimizden 7 oyuncu U16 Millî Takımımızın aday kadrosuna davet edildi",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-08T11:36:17.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQdzRGVkNMUExsWi04YXlNTDh5dXNsM09NeDZrYnNlU0Q0WElCeHF1a0xmX3ZWbnAyWHJOR2VuTWFZUUpiellQdFpsd2xSWWhSbmVKR3hKLU93X1oxQ0Rfc1FNU0tpS2F2QWRzczZ1RldIZExXTXQwdXNmeTlOczVMSUF0dERTNmUxV2p5TS1FVTZmZ0xFQkdxcjk5a0xEaHQ3dkpmYWhPTWk3MDN0TWM3eHVSR2JRdmhGSm9fWXY4eDNXd2I2bHVRanRKTTRRWVZUNV9v?oc=5"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2
-      }
-    },
-    {
-      "id": "auto-news-5d1dd99952539091adb8",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Zey Yapı, Fenerbahçe Erkek Basketbol Takımımızın ‘Şort Arkası Sponsoru’ oldu",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-07T09:20:15.000Z",
-      "source": {
-        "name": "fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxPdzRweHl6QnhLRFJfNUpwZl9yX1VkaFFwazVRLThWMkxWN0d3dng2WFpxeXIxd2VLWVotVUhPVHVKM1FjWWI0Q1ZlYjJVNzZOX3FreGwxOTJBZzFtb1FFbzJUallGd0xxSXkzTkFrYTJDbUdZS2VvS2tBNGZDZlZVNFd4SmJXSXBYT2tWSmNfWEFwbEEteXlfazVYX2ptQ1RFcnBqLWtKRnM0MGRxTGYtTzB5N05tZVg0VkZkd2JOOEc3VUw2b0Q3TWJxaW1YWUdFT1k5bU5za00?oc=5"
       },
       "automation": {
         "source": "rss",
