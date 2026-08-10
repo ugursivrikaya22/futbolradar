@@ -11031,6 +11031,14 @@
       // kalanının kullandığı yolun aynısı: /data/transfers.json.
       var apiSource = target.getAttribute("data-transfer-source") || (API_ROOT + "transfers");
       var staticSource = DATA_ROOT + "transfers.json";
+      // Varsayılan kaynakta (her sayfada aynı /api/transfers) `loadData`
+      // zaten paylaşımlı bir önbellek tutuyor — ana sayfa transfer paneli
+      // ve diğer tüketiciler aynı isteği kullanıyor. Bant burada ayrıca
+      // `fetchJson(apiSource)` çağırdığı için AYNI kaynak İKİNCİ KEZ ağa
+      // çıkıyordu. Sayfa özel bir kaynak bildirdiyse (data-transfer-source)
+      // paylaşımlı önbellek o kaynağı bilmez; o durumda eski doğrudan yol
+      // korunur.
+      var isDefaultTransferSource = apiSource === (API_ROOT + "transfers");
 
       function paint(result, source) {
         var records = result && result.data;
@@ -11047,7 +11055,11 @@
         return;
       }
 
-      fetchJson(apiSource)
+      var primaryFetch = isDefaultTransferSource
+        ? loadData("transfers").then(function (records) { return { data: records }; })
+        : fetchJson(apiSource);
+
+      primaryFetch
         .then(function (result) { paint(result, "api"); })
         .catch(function (apiError) {
           return fetchJson(staticSource)
