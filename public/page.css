@@ -17097,6 +17097,8 @@ body,
   margin: 2px 0 0;
   color: var(--muted);
   font-size: var(--fs-xs);
+}
+
 /* Google Ads arama landingleri: ilk ekranda kararlı boyut, alt bölümlerde
    daha az stil/yerleşim işi. Ana içerik statik prerender olduğu için bu
    optimizasyon bilgi kaybına yol açmaz. */
@@ -17392,4 +17394,90 @@ body,
     overflow: hidden;
     text-overflow: ellipsis;
   }
+}
+
+/* --- Takım maç sayfaları (galatasaray-maclari.html ve eşleri) --------------
+   Sayfanın büyük kısmı zaten stillenmiş sınıfları kullanıyor: hero
+   `.trend-hero`, bölümler `.trend-section`, tablolar `.archive-table`
+   (mobilde kendi içinde yatay kaydırır, sayfayı taşırmaz), bağlantı ızgarası
+   `.trend-link-grid`. Aşağısı yalnızca bu sayfaya özgü üç küçük parça. */
+.team-next-match-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.team-next-match-facts {
+  display: grid;
+  /* Dar ekranda tek sütuna iner; takım adları ve stat isimleri uzun. */
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--sp-2);
+  margin: var(--sp-3) 0 0;
+}
+
+.team-next-match-facts dt {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.team-next-match-facts dd {
+  margin: 2px 0 0;
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+
+.team-match-result {
+  display: grid;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  min-width: 0;
+}
+
+.team-match-result-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.team-match-result h3 {
+  margin: 0;
+  font-size: var(--fs-md);
+  /* Uzun takım adları kartı taşırmasın. */
+  overflow-wrap: anywhere;
+}
+
+.team-match-result h3 b {
+  padding: 0 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.team-match-transfer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.team-match-transfer-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  font-size: var(--fs-sm);
+}
+
+.team-match-transfer-list li span:first-child {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }

@@ -42,9 +42,28 @@ export function readVerifiedTeamNews(root, team, limit = 3) {
       article &&
       article.team === team &&
       String(article.status || "").toLowerCase() === "verified" &&
+      hasPublishedPage(article) &&
       newsSlug(article.slug || article.id || article.title))
     .sort((left, right) => String(right.publishedAt || "").localeCompare(String(left.publishedAt || "")))
     .slice(0, limit);
+}
+
+/**
+ * SAYFASI ÜRETİLMEYECEK HABERE BAĞLANTI VERİLMEZ.
+ *
+ * `status: "verified"` tek başına "bu haberin sayfası var" demek değil.
+ * `scripts/generate-news-pages.mjs` sayfayı yalnızca DOLU BİR GÖVDE varsa
+ * üretiyor; gövdesi olmayan kayıtlar başlıktan ibaret taslaklar ve haklı
+ * olarak atlanıyor. Bu süzgeç ise yalnızca `status`'a bakıyordu, dolayısıyla
+ * takım haber bölümleri hiç var olmayan `haber/<slug>` sayfalarına bağlantı
+ * basıyordu — 24 doğrulanmış kaydın 9'unun sayfası yok.
+ *
+ * Kural artık üreticinin kuralıyla AYNI: gövdesi olmayan kayıt listelenmez.
+ * Kayıt silinmez, gövdesi yazıldığında kendiliğinden geri gelir.
+ */
+function hasPublishedPage(article) {
+  return Array.isArray(article.body) &&
+    article.body.some((paragraph) => String(paragraph || "").trim());
 }
 
 export function renderTeamNewsSection(articles, { team, base = "./" }) {

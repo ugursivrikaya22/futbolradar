@@ -25,6 +25,10 @@ const playerComparisonPages = fs.existsSync(comparisonPagesDir)
 const pages = [
   "404.html",
   "index.html",
+  "galatasaray-maclari.html",
+  "fenerbahce-maclari.html",
+  "besiktas-maclari.html",
+  "trabzonspor-maclari.html",
   "puan-durumu.html",
   "takimlar.html",
   "oyuncu-radari.html",
@@ -568,6 +572,26 @@ function checkSeoAndLinks() {
     if (page === "oyuncu-karsilastirmalari.html") {
       expect(html.includes("comparison-index-grid"), `${page}: missing comparison index grid`);
       expect(html.includes("./karsilastirma/"), `${page}: missing static comparison links`);
+    }
+
+    // Takım maç sayfaları: arama trafiği hedefleyen landing'ler. İnce içerik
+    // ya da öksüz sayfa üretmediğimizin kapısı — ikisi de sıralamayı yakar.
+    if (/^(galatasaray|fenerbahce|besiktas|trabzonspor)-maclari\.html$/.test(page)) {
+      expect(html.includes('"@type":"BreadcrumbList"') || html.includes('"@type": "BreadcrumbList"'), `${page}: missing breadcrumb schema`);
+      expect(html.includes('class="breadcrumb"'), `${page}: missing visible breadcrumb`);
+      expect(html.includes("./takimlar.html"), `${page}: missing parent link`);
+      expect(html.includes("archive-table"), `${page}: missing fixture table`);
+      // Metin gövdesi: kabuk sayfa (yalnızca menü + altbilgi) yayımlanmamalı.
+      const bodyText = html
+        .replace(/<script[\s\S]*?<\/script>/g, "")
+        .replace(/<style[\s\S]*?<\/style>/g, "")
+        .replace(/<[^>]+>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      expect(bodyText.length > 3000, `${page}: thin content (${bodyText.length} karakter)`);
+      // Sayfa Takımlar sayfasından bağlantı almalı; öksüz sayfa taranmaz.
+      const teamsIndex = fs.readFileSync(path.join(root, "takimlar.html"), "utf8");
+      expect(teamsIndex.includes(`./${page}`), `${page}: takimlar.html içinden bağlantı yok`);
     }
 
     if (playerComparisonPages.includes(page)) {
