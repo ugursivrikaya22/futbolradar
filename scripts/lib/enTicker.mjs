@@ -47,7 +47,7 @@ function readJson(file, fallback) {
   }
 }
 
-function transferTypeEn(value) {
+export function transferTypeEn(value) {
   return TRANSFER_TYPE_EN[String(value || "").trim().toLowerCase()] || null;
 }
 

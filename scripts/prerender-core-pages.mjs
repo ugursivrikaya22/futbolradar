@@ -1,6 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import {
+  fixtureCard as sharedFixtureCard,
+  fixtureRow as sharedFixtureRow,
+  trendCard as sharedTrendCard,
+  transferWatchShell
+} from "./lib/matchCards.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -282,14 +288,9 @@ function staticFormPercent(name) {
   return Math.round((earned / (form.length * 3)) * 100);
 }
 
-function staticFixtureRow(name, score, otherScore) {
-  const winner = score !== null && otherScore !== null && Number(score) > Number(otherScore);
-  return `<div class="fixture-row${winner ? " is-winner" : ""}">` +
-    `<span class="fixture-row-fallback" aria-hidden="true">${escapeHtml(fixtureTeamInitials(name))}</span>` +
-    `<span class="fixture-row-name">${escapeHtml(name)}</span>` +
-    `<span class="fixture-row-score">${escapeHtml(score === null ? "–" : score)}</span>` +
-    `</div>`;
-}
+// İşaretleme artık ortak bileşende: scripts/lib/matchCards.mjs. Türkçe ve
+// İngilizce üretici AYNI şablonu çağırır; iki dilin kartları ayrışamaz.
+const staticFixtureRow = sharedFixtureRow;
 
 function staticFixtureCard(match, meta) {
   const { headlineValue, status, finalScore } = meta;
@@ -306,12 +307,21 @@ function staticFixtureCard(match, meta) {
     ? ""
     : `<div class="fixture-metric"><span>Form (son 5)</span><b>${homeForm === null ? "–" : `%${homeForm}`} · ${awayForm === null ? "–" : `%${awayForm}`}</b></div>`;
 
-  return `<article class="fixture-card${isLive ? " is-live" : ""}" data-card="fixture" data-match="${escapeHtml(match.id)}">
-    <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(match.league)}${escapeHtml(match.league || "Maç programı")}</span><span class="fixture-card-state ${stateClass}">${escapeHtml(stateLabel)}</span></div>
-    <div class="fixture-card-rows">${staticFixtureRow(match.homeTeam, homeScore, awayScore)}${staticFixtureRow(match.awayTeam, awayScore, homeScore)}</div>
-    ${formHtml ? `<div class="fixture-card-meta">${formHtml}</div>` : ""}
-    <a class="fixture-card-action" href="./canli-skor.html" data-match-click>Maç ayrıntısını aç</a>
-  </article>`;
+  return sharedFixtureCard({
+    locale: "tr",
+    id: match.id,
+    league: match.league,
+    live: isLive,
+    stateClass,
+    stateLabel,
+    homeTeam: match.homeTeam,
+    awayTeam: match.awayTeam,
+    homeScore,
+    awayScore,
+    formHtml,
+    actionHref: "./canli-skor.html",
+    withMatchClick: true
+  });
 }
 
 /**
@@ -701,15 +711,18 @@ function trendTeamCards() {
     .slice()
     .sort((left, right) => Number(right.momentum || 0) - Number(left.momentum || 0))
     .slice(0, 8)
-    .map((team) => {
-      const initials = fixtureTeamInitials(team.name);
-      return `<article class="trend-card" data-card="trend-team" data-team="${escapeHtml(team.id)}">
-      <div class="trend-card-head"><span class="trend-card-avatar" aria-hidden="true">${escapeHtml(initials)}</span><span><strong>${escapeHtml(team.name)}</strong><span>${escapeHtml(team.league || "Takım")}</span></span><b class="trend-card-score">${escapeHtml(team.momentum ?? "–")}</b></div>
-      ${formDots(team.form)}
-      <dl class="trend-card-stats"><div><dt>Hücum</dt><dd>${escapeHtml(team.attack ?? "–")}</dd></div><div><dt>Savunma</dt><dd>${escapeHtml(team.defense ?? "–")}</dd></div><div><dt>Form</dt><dd>${escapeHtml(team.formScore ?? "–")}</dd></div></dl>
-      <a class="fixture-card-action" href="./takim-detay.html?team=${encodeURIComponent(team.name)}">Takım radarını aç</a>
-    </article>`;
-    })
+    .map((team) => sharedTrendCard({
+      locale: "tr",
+      id: team.id,
+      name: team.name,
+      leagueLabel: team.league,
+      momentum: team.momentum,
+      formDotsHtml: formDots(team.form),
+      attack: team.attack,
+      defense: team.defense,
+      formScore: team.formScore,
+      actionHref: `./takim-detay.html?team=${encodeURIComponent(team.name)}`
+    }))
     .join("");
 }
 
@@ -904,7 +917,15 @@ function transferWatch() {
   }
 
   const leader = selected[0];
-  return `<article class="home-transfer-feature" data-card="home-transfer-watch"><div class="home-transfer-player"><div><span>Son kesinleşen transfer</span><h3>${escapeHtml(leader.playerName)}</h3><p>${escapeHtml(leader.type || "Transfer")} · ${escapeHtml(leader.date)}</p></div></div><div class="home-transfer-route"><b>${escapeHtml(leader.fromTeam)}</b><em>→</em><b>${escapeHtml(leader.toTeam)}</b></div><div class="home-transfer-actions"><a class="detail-link" href="${escapeHtml(leader.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">Transfer detayını aç</a><a class="detail-link ghost" href="./transfer-radari.html">Tüm transferler</a></div></article><aside class="home-transfer-side"><div class="home-transfer-list">${selected.slice(1).map((transfer) => `<a class="home-transfer-row" href="./transfer-radari.html?team=${encodeURIComponent(transfer.toTeam || "")}"><span>${escapeHtml(transfer.date)}</span><strong>${escapeHtml(transfer.playerName)}</strong><b>${escapeHtml(transfer.toTeam)}</b></a>`).join("")}</div></aside>`;
+  return transferWatchShell({
+    locale: "tr",
+    leader: { ...leader, typeLabel: leader.type || "Transfer" },
+    allHref: "./transfer-radari.html",
+    rows: selected.slice(1).map((transfer) => ({
+      ...transfer,
+      href: `./transfer-radari.html?team=${encodeURIComponent(transfer.toTeam || "")}`
+    }))
+  });
 }
 
 function replaceSlot(html, target, content) {

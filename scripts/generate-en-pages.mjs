@@ -21,6 +21,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import {
+  fixtureCard as sharedFixtureCard,
+  fixtureTeamInitials,
+  leagueMarkHtml,
+  trendCard as sharedTrendCard,
+  transferWatchShell
+} from "./lib/matchCards.mjs";
+import { transferTypeEn } from "./lib/enTicker.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -152,48 +160,50 @@ function finishedMatches(limit) {
 // ── Parçacıklar ─────────────────────────────────────────────────────────────
 
 /**
- * MAÇ KARTI — TÜRKÇE SAYFAYLA AYNI İŞARETLEME.
+ * MAÇ KARTI — TÜRKÇE SAYFALARLA AYNI BİLEŞEN.
  *
- * `.fixture-card` sınıfları Türkçe ana sayfadaki kartlarla birebir aynı:
- * page.css iki sürümü de aynı kurallarla çizer, responsive davranış da
- * kendiliğinden eşitlenir. İngilizce için ayrı bir kart tasarımı yoktur;
- * değişen yalnızca şablon dizgeleri.
+ * İşaretleme scripts/lib/matchCards.mjs'de, BİR KEZ. Türkçe üretici
+ * (prerender-core-pages.mjs) ile bu dosya aynı şablonu çağırır; kart
+ * tasarımı iki dilde ayrışamaz. Buradaki iş yalnızca durum etiketini
+ * İngilizce hesaplamak.
  *
  * Skor yalnızca sağlayıcı gerçekten skor verdiyse yazılır. "Live" ibaresi
  * ise `liveVerdict` onaylamadan basılmaz: başlama saati geçmiş ama
  * doğrulanmış canlı verisi olmayan bir maçı canlı göstermek, sitenin en
  * temel iddiasını (skorun doğruluğu) çürütürdü.
  */
-function teamInitials(name) {
-  return String(name || "").split(/\s+/).map((word) => word[0]).filter(Boolean).slice(0, 2).join("").toUpperCase() || "?";
-}
-
-function leagueMark(league) {
-  const text = String(league || "");
-  const initials = text.split(/\s+/).map((word) => word[0]).filter(Boolean).slice(0, 2).join("").toUpperCase() || "?";
-  return `<i class="league-mark league-mark-0" aria-hidden="true">${escapeHtml(initials)}</i>`;
-}
-
 function fixtureCard(match) {
   const state = canonicalStatus(match.status);
   const verdict = liveVerdict(match);
-  const live = verdict && verdict.isLive;
+  const live = Boolean(verdict && verdict.isLive);
   const hasScore = match.score && match.score.home !== null && match.score.home !== undefined &&
     match.score.away !== null && match.score.away !== undefined;
-  const stateText = live
+  const stateLabel = live
     ? `${label("status.LIVE")}${Number.isFinite(Number(match.minute)) ? ` ${match.minute}'` : ""}`
     : state === "SCHEDULED"
       ? formatTime(match.kickoff, LOCALE)
-      : statusLabelFor(state, LOCALE);
-  const competition = competitionLabel(match.league, LOCALE);
-  const row = (team, score) => `<div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">${escapeHtml(teamInitials(team))}</span><span class="fixture-row-name">${escapeHtml(team || "")}</span><span class="fixture-row-score">${escapeHtml(score)}</span></div>`;
+      : state === "FINISHED"
+        ? label("card.fullTimeShort")
+        : statusLabelFor(state, LOCALE);
 
-  return `<article class="fixture-card${live ? " is-live" : ""}" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league">${leagueMark(competition)}${escapeHtml(competition)}</span><span class="fixture-card-state ${live ? "is-live" : ""}">${escapeHtml(stateText)}</span></div>
-    <div class="fixture-card-rows">${row(match.homeTeam, hasScore ? String(match.score.home) : "–")}${row(match.awayTeam, hasScore ? String(match.score.away) : "–")}</div>
-    <a class="fixture-card-action" href="./live-scores.html">${escapeHtml(label("common.viewAll"))}</a>
-  </article>`;
+  return sharedFixtureCard({
+    locale: LOCALE,
+    league: competitionLabel(match.league, LOCALE),
+    live,
+    stateClass: live ? "is-live" : state === "FINISHED" ? "is-final" : "",
+    stateLabel,
+    homeTeam: match.homeTeam,
+    awayTeam: match.awayTeam,
+    homeScore: hasScore ? Number(match.score.home) : null,
+    awayScore: hasScore ? Number(match.score.away) : null,
+    formHtml: "",
+    actionHref: "./live-scores.html",
+    withMatchClick: false
+  });
 }
+
+const teamInitials = fixtureTeamInitials;
+const leagueMark = leagueMarkHtml;
 
 function matchList(list, emptyKey = "common.noData") {
   if (!list.length) return `<p class="muted-copy">${escapeHtml(label(emptyKey))}</p>`;
@@ -493,11 +503,17 @@ function trendTeamsSection() {
     const dots = form.length
       ? `<div class="form-dots">${form.map((entry) => `<span class="form-dot ${escapeHtml(entry.result || "draw")}">${escapeHtml(map[entry.result] || "D")}</span>`).join("")}</div>`
       : "";
-    return `<article class="trend-card" data-card="trend-team">
-      <div class="trend-card-head"><span class="trend-card-avatar" aria-hidden="true">${escapeHtml(teamInitials(team.name))}</span><span><strong>${escapeHtml(team.name)}</strong><span>Süper Lig</span></span><b class="trend-card-score">${escapeHtml(team.momentum ?? "")}</b></div>
-      ${dots}
-      <div class="metric-grid compact"><span>Attack <b>${escapeHtml(team.attack ?? "–")}</b></span><span>Defence <b>${escapeHtml(team.defense ?? "–")}</b></span></div>
-    </article>`;
+    return sharedTrendCard({
+      locale: LOCALE,
+      name: team.name,
+      leagueLabel: "Süper Lig",
+      momentum: team.momentum,
+      formDotsHtml: dots,
+      attack: team.attack,
+      defense: team.defense,
+      formScore: team.formScore,
+      actionHref: "./teams.html"
+    });
   }).join("\n");
   return `<section class="container section section-trend-teams" aria-labelledby="trend-teams-title">
           ${sectionHead("Team momentum", "trend-teams-title", "Teams on the rise", "Recent form, attacking output and defensive balance.", "./teams.html", label("common.viewAll"))}
@@ -516,13 +532,16 @@ function transferWatchSection() {
     .sort((left, right) => String(right.date || "").localeCompare(String(left.date || "")));
   if (!rows.length) return "";
   const featured = rows[0];
-  const side = rows.slice(1, 5).map((row) => `<a class="home-transfer-row" href="./index.html"><span>${escapeHtml(row.date || "")}</span><strong>${escapeHtml(row.playerName)}</strong><b>${escapeHtml(row.toTeam)}</b></a>`).join("");
+  // Transfer türünün İngilizce karşılığı bant beslemesiyle AYNI eşlemeden.
+  const shell = transferWatchShell({
+    locale: LOCALE,
+    leader: { ...featured, typeLabel: transferTypeEn(featured.type) || label("transfer.fallbackType") },
+    allHref: null,
+    rows: rows.slice(1, 5).map((row) => ({ ...row, href: "./index.html" }))
+  });
   return `<section class="container section home-transfer-watch" aria-labelledby="transfer-title">
           ${sectionHead("Transfer Radar", "transfer-title", "Confirmed transfers", "Only moves verified through official club sources.", null, "")}
-          <div class="home-transfer-watch-shell">
-            <article class="home-transfer-feature" data-card="home-transfer-watch"><div class="home-transfer-player"><div><span>Latest confirmed move</span><h3>${escapeHtml(featured.playerName)}</h3><p>${escapeHtml(featured.date || "")}</p></div></div><div class="home-transfer-route"><b>${escapeHtml(featured.fromTeam || "—")}</b><em>→</em><b>${escapeHtml(featured.toTeam)}</b></div>${featured.sourceUrl ? `<div class="home-transfer-actions"><a class="detail-link" href="${escapeHtml(featured.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(label("common.source"))}</a></div>` : ""}</article>
-            <aside class="home-transfer-side"><div class="home-transfer-list">${side}</div></aside>
-          </div>
+          <div class="home-transfer-watch-shell">${shell}</div>
         </section>`;
 }
 
