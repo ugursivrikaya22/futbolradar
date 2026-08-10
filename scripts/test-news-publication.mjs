@@ -60,10 +60,24 @@ for (const draft of drafts.items || []) {
   assert.ok(!(ticker.items || []).some((item) => item.id === draft.id), `${draft.id}: taslak gündem bandına sızmamalı`);
 }
 
-for (const tickerId of ["fenerbahce-sturm-graz-programi"]) {
-  const item = (ticker.items || []).find((entry) => entry.id === tickerId);
-  assert.ok(item, `${tickerId}: gundem bandi kaydi bulunmali`);
-  assert.match(item.source.url, /^https:\/\/www\.futbolradar\.com\/haber\//, `${tickerId}: ic detay sayfasina baglanmali`);
+// Küratörlü bant kayıtları iç haber sayfasına bağlanmalı.
+//
+// Bu denetim eskiden TEK bir kimliği ("fenerbahce-sturm-graz-programi")
+// adıyla arıyordu. O kayıt 5 Ağustos'taki ilk maçı duyuran, tarihi geçince
+// anlamı kalmayan bir duyuruydu; bant onu raf ömrü kuralıyla düşürdüğünde
+// test kırıldı — yani denetim, bandın DOĞRU davranışını hata sayıyordu.
+// Kural artık kimliğe değil sınıfa bakıyor: küratörlü ve iç sayfaya
+// bağlanan her kaydın hedefi gerçekten üretilmiş bir haber sayfası olmalı.
+const internalCuratedTickerItems = (ticker.items || [])
+  .filter((entry) => !entry.automation && /^https:\/\/www\.futbolradar\.com\//.test(entry.source?.url || ""));
+
+for (const item of internalCuratedTickerItems) {
+  assert.match(item.source.url, /^https:\/\/www\.futbolradar\.com\/haber\//, `${item.id}: ic detay sayfasina baglanmali`);
+  const slug = item.source.url.replace(/^https:\/\/www\.futbolradar\.com\/haber\//, "").replace(/\.html$/, "");
+  assert.ok(
+    fs.existsSync(path.join(root, "haber", `${slug}.html`)),
+    `${item.id}: bağlandığı haber sayfası (haber/${slug}.html) üretilmiş olmalı`
+  );
 }
 
 const archivedSalahRumors = [
@@ -83,8 +97,35 @@ const salahTicker = (ticker.items || []).find((entry) => entry.id === "trabzonsp
 assert.equal(salahTicker?.category, "official", "Salah ticker should use the official category");
 assert.equal(salahTicker?.confidence, "confirmed", "Salah ticker should be confirmed after official club wording");
 assert.match(salahTicker?.source?.url || "", /^https:\/\/www\.trabzonspor\.org\.tr\/news\//, "Salah ticker should link to the official club source");
+// ── Bandın iki katmanı, iki ayrı bağlantı sözleşmesi ──────────────────────
+//
+// 1. KÜRATÖRLÜ kayıtlar (elle yazılan, `automation` taşımayanlar): arkasında
+//    bu sitede yayımlanmış bir haber sayfası vardır ve okuyucuyu oraya
+//    götürmek zorundadır. Tek istisna, kaynağı doğrudan kulübün resmî
+//    duyurusu olan kayıtlar — orada aracı sayfa değil, birincil kaynak
+//    daha dürüst bir bağlantıdır.
+// 2. OTOMATİK kayıtlar (`automation.source === "rss"`, kulüplerin resmî
+//    beslemelerinden gelir): arkalarında bir FutbolRadar sayfası YOKTUR.
+//    Onlara iç bağlantı şartı koşmak, var olmayan bir sayfaya işaret etmek
+//    demekti; bu döngü otomasyon eklenmeden önce yazılmıştı ve o günden beri
+//    kırmızıydı. Sözleşmeleri farklı: kaynak adı, https bağlantı ve besleme
+//    işareti taşımak zorundalar.
+const OFFICIAL_SOURCE_TICKER_IDS = new Set(["trabzonspor-mohamed-salah-resmi-transfer-0508"]);
+
 for (const entry of ticker.items || []) {
-  if (entry.id === "trabzonspor-mohamed-salah-resmi-transfer-0508") continue;
+  if (entry.automation) {
+    assert.equal(entry.automation.source, "rss", `${entry.id}: otomatik kayıt beslemesini bildirmeli`);
+    assert.ok(entry.source && entry.source.name, `${entry.id}: otomatik kaydın kaynak adı olmalı`);
+    assert.match(entry.source.url || "", /^https:\/\//, `${entry.id}: otomatik kayıt https bağlantı taşımalı`);
+    assert.doesNotMatch(
+      entry.source.url || "",
+      /^https:\/\/www\.futbolradar\.com\//,
+      `${entry.id}: otomatik kayıt üretilmemiş bir iç sayfaya bağlanmamalı`
+    );
+    continue;
+  }
+
+  if (OFFICIAL_SOURCE_TICKER_IDS.has(entry.id)) continue;
   assert.match(entry.source.url, /^https:\/\/www\.futbolradar\.com\/haber\//, `${entry.id}: bant ogesi ic haber sayfasina baglanmali`);
 }
 

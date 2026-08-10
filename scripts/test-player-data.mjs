@@ -7,6 +7,7 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const {
   getPlayerBySlug,
+  getPlayers,
   normalizePlayer,
   updatePlayerTransfer,
   validatePlayerData
@@ -86,5 +87,62 @@ assert.equal(incomplete.stats.goals, null, "missing goals must stay unknown");
 assert.equal(incomplete.stats.minutesPlayed, null, "missing minutes must stay unknown");
 assert.equal(incomplete.isStale, true, "expired player records must be marked stale");
 assert.equal(incomplete.needsReview, true, "expired player records must require review");
+
+// ── Mevki grubu: sağlayıcının İngilizce sözcükleri de tanınmalı ────────────
+//
+// "Defender" hiçbir kalıba uymadığı için varsayılan gruba ("forward")
+// düşüyordu ve 526 güncel oyuncunun 165'i — ligin defans hattı — forvet
+// sayılıyordu. Grup yalnızca etiket değil: puan ağırlıkları, sıralama
+// sayfaları ve radar grafikleri buna bakıyor. Kapı burada.
+const POSITION_GROUP_CASES = [
+  ["Goalkeeper", "goalkeeper"], ["Kaleci", "goalkeeper"],
+  ["Defender", "defender"], ["Stoper", "defender"], ["Sağ bek", "defender"], ["Centre Back", "defender"],
+  ["Midfielder", "midfielder"], ["Merkez orta saha", "midfielder"], ["Ön libero", "midfielder"],
+  ["Attacker", "forward"], ["Santrfor", "forward"], ["Forvet", "forward"],
+  ["Sol kanat", "winger"], ["Sağ kanat", "winger"]
+];
+
+for (const [position, expected] of POSITION_GROUP_CASES) {
+  assert.equal(
+    normalizePlayer({ id: `pos-${expected}-${position}`, name: "Mevki Testi", currentTeam: "Test SK", position }).positionGroup,
+    expected,
+    `"${position}" mevkisi ${expected} grubuna düşmeli`
+  );
+}
+
+// Tanınmayan mevki SESSİZCE bir gruba atanmamalı: hatayı gizleyen şey
+// tam olarak "bilinmeyeni forvet say" davranışıydı.
+assert.equal(
+  normalizePlayer({ id: "pos-unknown", name: "Mevki Testi", currentTeam: "Test SK", position: "Bilinmeyen Rol" }).positionGroup,
+  "unknown",
+  "tanınmayan mevki bir gruba varsayılmamalı"
+);
+
+// Dosyada saklanan eski/yanlış grup, mevkiden türetilen doğru grubu ezmemeli.
+assert.equal(
+  normalizePlayer({
+    id: "pos-stale-group",
+    name: "Mevki Testi",
+    currentTeam: "Test SK",
+    position: "Defender",
+    positionGroup: "forward"
+  }).positionGroup,
+  "defender",
+  "kayıtta duran eski grup, mevkiden türetilen grubu ezmemeli"
+);
+
+// Gerçek veri: bir ligin defans hattı forvetlerden kalabalık olamaz ama
+// forvet sayısının defans sayısını KATLAMASI da yapısal bir hatadır.
+{
+  const current = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")))
+    .filter((player) => player.isCurrentSuperLigPlayer);
+  const defenders = current.filter((player) => player.positionGroup === "defender").length;
+  const forwards = current.filter((player) => ["forward", "winger"].includes(player.positionGroup)).length;
+  assert.ok(defenders > 0, "güncel kadrolarda defans oyuncusu bulunmalı");
+  assert.ok(
+    defenders >= forwards * 0.5,
+    `defans/forvet dağılımı gerçekçi değil (defans ${defenders}, forvet ${forwards}) — mevki eşlemesi bozulmuş olabilir`
+  );
+}
 
 console.log("FutbolRadar player data tests passed");

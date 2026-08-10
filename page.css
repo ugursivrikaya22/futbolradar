@@ -12451,6 +12451,14 @@ a.transfer-radar-ticker__item:focus-visible {
   color: #fff;
 }
 
+/* Üç günden eski hareket "son dakika" değildir: kırmızı acil rozet yerine
+   sakin bir tarih etiketi taşır. Aynı kutu, farklı vaat. */
+.transfer-radar-ticker__breaking.is-dated {
+  border-color: rgba(148, 163, 184, 0.38);
+  background: rgba(148, 163, 184, 0.16);
+  color: #cbd5e1;
+}
+
 .transfer-radar-ticker__status.is-official {
   background: #15803d;
   color: #f0fdf4;

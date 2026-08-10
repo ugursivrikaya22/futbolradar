@@ -30,6 +30,16 @@
 
 const TIMEZONE = "Europe/Istanbul";
 
+/**
+ * Yayına giren fikstür durumları.
+ *
+ * TFF önce eşleşmeleri ("confirmed-pairing"), gün/saat atamalarını sonra
+ * açıklıyor. Atama geldiğinde kayıt "confirmed-date" oluyor — daha kesin bir
+ * durum, daha az değil. Sayfa üreticiler tek bir dizeyi eşitlikle sınadığı
+ * için tarih atanan maçlar listeden DÜŞÜYORDU; küme burada tek yerde durur.
+ */
+const CONFIRMED_FIXTURE_STATUSES = new Set(["confirmed-pairing", "confirmed-date", "confirmed"]);
+
 function normalizeText(value) {
   return String(value || "")
     .normalize("NFD")
@@ -320,5 +330,6 @@ module.exports = {
   filterWeeksByTeam,
   groupMatchesIntoWeeks,
   formatDateRangeLabel,
+  CONFIRMED_FIXTURE_STATUSES,
   TIMEZONE
 };

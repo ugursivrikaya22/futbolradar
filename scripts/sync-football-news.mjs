@@ -100,6 +100,61 @@ function isTrusted(item) {
   return item.feed.trusted === true || domainAllowed(hostname(item.sourceUrl), TRUSTED_DOMAINS);
 }
 
+/**
+ * BAŞKA BRANŞ, BAŞKA SİTE.
+ *
+ * Beslemeler kulüplerin resmî sitelerine daraltılmış ("site:galatasaray.org")
+ * ama o siteler çok şubeli: basketbol, voleybol, atletizm... Google bunları
+ * ayırmıyor, dolayısıyla bir FUTBOL bandına "Erkek Basketbol Takımımız yeni
+ * sezon hazırlıklarına başlıyor" ve basketbol transferleri düşüyordu.
+ * Okuyucu için bu yanlış bilgi değil, ALAKASIZ bilgi — ama bant "gündem"
+ * diyorsa gündemi futbol olmalı.
+ *
+ * Eleme YALNIZCA başlık üzerinden ve açık işaretlerle yapılır: branş adları
+ * ve kulüplerin futbol dışı takım markaları. Gövde metnine bakılmaz, çünkü
+ * bir futbol haberinde geçen "basketbol" kelimesi haberi basketbol yapmaz.
+ */
+const OTHER_SPORT_PATTERNS = [
+  /basketbol/i,
+  /voleybol/i,
+  /hentbol/i,
+  /atletizm/i,
+  /\batlet(?:ler|imiz|leri)?\b/i,
+  /yelken/i,
+  /\bboks\b/i,
+  /yüzme/i,
+  /masa tenisi/i,
+  /buz hokeyi/i,
+  /satranç/i,
+  /\be-?spor/i,
+  /badminton/i,
+  /\bkürek\b/i,
+  /cimnastik|jimnastik/i,
+  /tekerlekli sandalye/i,
+  /\bgüreş\b/i,
+  /taekwondo|karate|\bjudo\b/i,
+  /okçuluk|eskrim|halter|triatlon|kürek/i,
+  /bisiklet/i,
+  /\bşubemiz\b/i,
+  // Kulüplerin futbol dışı takım/sponsor markaları.
+  /mct technic/i,
+  /\bbeko\b/i,
+  /daikin/i,
+  /eczacıbaşı/i
+];
+
+/**
+ * Başlıkta hem branş işareti hem "futbol" geçiyorsa haber futboldur
+ * ("Futbol Takımımız ... basketbol takımıyla ortak antrenman"). Elemenin
+ * kapsamı bilinçli olarak dar: şüphede kalırsa haber BANTTA KALIR, çünkü
+ * yanlış eleme gerçek bir futbol haberini gizler.
+ */
+function isFootballTopic(item) {
+  const title = String((item && item.title) || "");
+  if (/futbol/i.test(title)) return true;
+  return !OTHER_SPORT_PATTERNS.some((pattern) => pattern.test(title));
+}
+
 function classify(item) {
   const text = item.title.toLocaleLowerCase("tr-TR");
   if (/transfer|imza|kiral|bonservis/.test(text)) return isOfficial(item) ? "official" : "transfer-rumour";
@@ -123,7 +178,11 @@ export function toTickerItem(item) {
     text: item.title.replace(/\s+-\s+[^-]+$/, "").trim(),
     team: item.feed.team || null,
     timestamp: new Date(item.publishedAt).toISOString(),
-    source: { name: item.sourceName, url: item.link },
+    // `url` toplayıcı üzerinden yazının kendisine gider; `publisher` ise
+    // haberin gerçekte hangi kurumda yayımlandığını kayıtta tutar. İkisi
+    // ayrı durur ki kaydı okuyan (ya da denetleyen) kimse bağlantının
+    // hedefiyle kaynağın kimliğini birbirine karıştırmasın.
+    source: { name: item.sourceName, url: item.link, publisher: hostname(item.sourceUrl) || null },
     automation: { source: "rss", feed: item.feed.id || item.feed.url, priority: item.feed.priority || 99 }
   };
 }
@@ -177,7 +236,13 @@ export function mergeNewsItems(payload, incoming, options = {}) {
   const nowMs = options.nowMs || Date.now();
   const existing = Array.isArray(payload && payload.items) ? payload.items : [];
   const curated = existing.filter((item) => !item.automation);
-  const retainedAutomated = existing.filter((item) => item.automation && nowMs - Date.parse(item.timestamp) <= MAX_AGE_MS);
+  // Branş süzgeci saklanan kayıtlara da uygulanır. Yalnızca girişte süzmek,
+  // süzgeç eklenmeden önce banda düşmüş basketbol/voleybol başlıklarının
+  // raf ömrü dolana kadar orada kalması demekti.
+  const retainedAutomated = existing.filter((item) =>
+    item.automation &&
+    nowMs - Date.parse(item.timestamp) <= MAX_AGE_MS &&
+    isFootballTopic({ title: item.text }));
   const byId = new Map(retainedAutomated.map((item) => [item.id, item]));
   for (const item of incoming || []) byId.set(item.id, item);
   const automated = [...byId.values()]
@@ -210,7 +275,7 @@ export async function synchronizeFootballNews(options = {}) {
   const accepted = [];
   const seen = new Set();
   for (const candidate of candidates
-    .filter((item) => Date.parse(item.publishedAt) >= cutoff && isTrusted(item))
+    .filter((item) => Date.parse(item.publishedAt) >= cutoff && isTrusted(item) && isFootballTopic(item))
     .sort((left, right) => Number(left.feed.priority || 99) - Number(right.feed.priority || 99) || Date.parse(right.publishedAt) - Date.parse(left.publishedAt))) {
     const tickerItem = toTickerItem(candidate);
     const verdict = validateTickerItem(tickerItem);

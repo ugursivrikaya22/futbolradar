@@ -410,7 +410,7 @@
 
   function matchDateValue(match) {
     var value = match && (match.kickoff || match.date || match.utcDate);
-    return value ? String(value).slice(0, 10) : "";
+    return value ? istanbulDayOf(value) : "";
   }
 
   function matchCompetitionMatches(match, selectedLeague) {
@@ -506,6 +506,37 @@
     render();
   }
 
+  /**
+   * ÖLÇÜM ADLARI TEK YERDE.
+   *
+   * Adlar kod içine serpiştirilmiş dize sabitleriydi; hangi etkileşimin
+   * ölçüldüğünü görmek için tüm dosyayı taramak gerekiyordu ve yeni bir
+   * yüzey eklendiğinde ad uydurmak kolaydı. GA4'te yanlış yazılmış bir ad
+   * sessizce ayrı bir event olur — rapor bölünür, kimse fark etmez.
+   *
+   * MEVCUT ADLAR KORUNUYOR. `match_open`, `player_open`, `team_open` çoktan
+   * veri topluyor; yeniden adlandırmak geçmiş ölçümü ikiye böler. Eksik
+   * olanlar (analiz, transfer, bant, canlı maç takibi) buraya EKLENDİ.
+   *
+   * `LIVE_MATCH_FOLLOW`, canlı bir maça girişi işaretler. Bugün yalnızca
+   * ölçüm; takip/bildirim özelliği geldiğinde tetikleyeceği yer burasıdır,
+   * bu yüzden şimdiden ayrı bir ad taşıyor.
+   */
+  var ANALYTICS_EVENTS = {
+    MATCH_OPEN: "match_open",
+    ANALYSIS_CLICK: "analysis_click",
+    TEAM_OPEN: "team_open",
+    PLAYER_OPEN: "player_open",
+    TRANSFER_CLICK: "transfer_click",
+    TICKER_CLICK: "ticker_click",
+    LIVE_MATCH_FOLLOW: "live_match_follow",
+    COMPARE_START: "compare_start",
+    SHARE_CLICK: "share_click",
+    DATA_SOURCE_OPEN: "data_source_open",
+    RELATED_CONTENT_CLICK: "related_content_click",
+    RADAR_EXPLANATION_OPEN: "radar_explanation_open"
+  };
+
   function trackEvent(name, properties) {
     var payload = Object.assign({ event: name, page: window.location.pathname }, properties || {});
 
@@ -531,28 +562,50 @@
 
       var href = element.getAttribute("href") || "";
       if (element.hasAttribute("data-share-player") || element.hasAttribute("data-share-comparison")) {
-        trackEvent("share_click", { area: "player" });
+        trackEvent(ANALYTICS_EVENTS.SHARE_CLICK, { area: "player" });
         return;
       }
-      if (href.indexOf("/mac/") !== -1) {
-        trackEvent("match_open", { href: href });
+
+      // Bant tıklaması, hedefinden bağımsız olarak ÖNCE ölçülür: okuyucunun
+      // bandı kullanıp kullanmadığı, nereye gittiğinden ayrı bir soru.
+      var ticker = element.closest(".news-ticker, .transfer-radar-ticker");
+      if (ticker) {
+        trackEvent(ANALYTICS_EVENTS.TICKER_CLICK, {
+          href: href,
+          ticker: ticker.classList.contains("transfer-radar-ticker") ? "transfer-radar" : "son-dakika"
+        });
+      }
+
+      if (href.indexOf("/mac/") !== -1 || href.indexOf("/mac-raporu/") !== -1) {
+        trackEvent(ANALYTICS_EVENTS.MATCH_OPEN, { href: href });
+        // Kart canlı bir maça aitse ayrıca takip sinyali gönderilir; takip
+        // /bildirim özelliği bu ölçümün üzerine kurulacak.
+        var card = element.closest("[data-match]");
+        var live = card && (card.dataset.matchLive === "true" || card.querySelector(".is-live"));
+        if (live) {
+          trackEvent(ANALYTICS_EVENTS.LIVE_MATCH_FOLLOW, { href: href, matchId: card.dataset.match || "" });
+        }
       } else if (href.indexOf("/oyuncular/") !== -1) {
-        trackEvent("player_open", { href: href });
+        trackEvent(ANALYTICS_EVENTS.PLAYER_OPEN, { href: href });
       } else if (href.indexOf("karsilastir") !== -1) {
-        trackEvent("compare_start", { href: href });
+        trackEvent(ANALYTICS_EVENTS.COMPARE_START, { href: href });
+      } else if (href.indexOf("transfer") !== -1) {
+        trackEvent(ANALYTICS_EVENTS.TRANSFER_CLICK, { href: href });
+      } else if (href.indexOf("analiz") !== -1) {
+        trackEvent(ANALYTICS_EVENTS.ANALYSIS_CLICK, { href: href });
       } else if (href.indexOf("takim") !== -1 || href.indexOf("form-durumu") !== -1) {
-        trackEvent("team_open", { href: href });
+        trackEvent(ANALYTICS_EVENTS.TEAM_OPEN, { href: href });
       } else if (href.indexOf("veri-notu") !== -1) {
-        trackEvent("data_source_open", { href: href });
+        trackEvent(ANALYTICS_EVENTS.DATA_SOURCE_OPEN, { href: href });
       } else if (element.closest(".popular-links, .route-chain, .search-trap, .match-related-grid, .static-profile-links")) {
-        trackEvent("related_content_click", { href: href });
+        trackEvent(ANALYTICS_EVENTS.RELATED_CONTENT_CLICK, { href: href });
       }
     });
 
     document.addEventListener("toggle", function (event) {
       var target = event.target;
       if (target && target.matches && target.matches("[data-radar-explanation]") && target.open) {
-        trackEvent("radar_explanation_open");
+        trackEvent(ANALYTICS_EVENTS.RADAR_EXPLANATION_OPEN);
       }
     }, true);
   }
@@ -2555,6 +2608,7 @@
     "turkish-in-progress": "Oynanmakta olan Türk takımı maçı",
     "turkish-upcoming": "Bugünün en yakın Türk takımı maçı",
     "turkish-played": "Bugün oynanan son Türk takımı maçı",
+    "turkish-next": "Bugün Türk takımı maçı yok; sıradaki karşılaşma",
     "major-live": "Büyük kulübün canlı maçı",
     live: "Canlı maç",
     "in-progress": "Oynanmakta olan maç",
@@ -2694,7 +2748,7 @@
     });
 
     if (ordered.length) {
-      return ordered.slice(0, limit).map(function (match) {
+      var cards = ordered.slice(0, limit).map(function (match) {
         return describeFeaturedSelection(
           match,
           featuredReasonFor(match, nowMs),
@@ -2704,6 +2758,28 @@
           turkishCount
         );
       });
+
+      // Bugün Türk maçı yoksa hero yabancı maça bırakılmaz; en yakın Türk
+      // karşılaşması ilk karta geçer. Kural services/featuredMatchSelector.js
+      // ile aynı — ayrışırsa scripts/test-featured-turkish-match.mjs kırılır.
+      if (!turkishCount) {
+        var nextTurkish = list.filter(function (match) {
+          return isTurkishMatch(match) &&
+            matchDateValue(match) > today &&
+            !isUnplayedMatch(match);
+        }).sort(function (left, right) {
+          return featuredKickoffTime(left).value - featuredKickoffTime(right).value;
+        })[0];
+
+        if (nextTurkish) {
+          cards.unshift(describeFeaturedSelection(
+            nextTurkish, "turkish-next", "upcoming", featuredTierOf(nextTurkish, nowMs), pool.length, turkishCount
+          ));
+          cards.length = Math.min(cards.length, limit);
+        }
+      }
+
+      return cards;
     }
 
     // Bugün maç yoksa karusel boş kalmasın: takvimdeki sıradaki karşılaşmalar.
@@ -3164,6 +3240,46 @@
   // services/dailyHeadlines.js ve services/homeQuickStats.js ile aynı
   // girdilerde çalıştırılır; iki taraf ayrışırsa test kırılır. İşaret
   // yorumlarını silme.
+
+  // Takvim günü HER ZAMAN Europe/Istanbul'a göre hesaplanır.
+  //
+  // Kayıtların başlama saati TSİ ofsetiyle yazılıyor (bkz.
+  // services/providers/apiFootballProvider.js ve
+  // scripts/sync-fixture-calendar.mjs), dolayısıyla ilk on karakter zaten
+  // doğru günü verir. Ama tek savunma o sözleşme olmamalı: UTC ofsetli tek
+  // bir kayıt sızdığında TSİ 00:00-02:59 arası başlayan maçlar bir önceki
+  // güne düşer ve "Bugünün Maçları" dünün maçını gösterir. Bu yüzden gün,
+  // dizeyi dilimleyerek değil, anı TSİ'ye çevirerek okunur.
+  //
+  // Saat taşımayan kayıtlar (yalnızca "2026-07-17") olduğu gibi kalır:
+  // onlarda çevrilecek bir an yoktur, uydurulmaz.
+  //
+  // Servis tarafındaki eşi: services/matchStatus.js -> istanbulDay().
+  // Bu blokta durmasının sebebi, test-home-signals'ın istemci ile servisi
+  // aynı girdilerle karşılaştırırken bu yardımcıyı da kapsaması.
+  function istanbulDayOf(value) {
+    var raw = String(value || "");
+    if (!raw) {
+      return "";
+    }
+
+    if (raw.indexOf("T") === -1) {
+      return raw.slice(0, 10);
+    }
+
+    var parsed = new Date(raw);
+    if (Number.isNaN(parsed.getTime())) {
+      return raw.slice(0, 10);
+    }
+
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Istanbul",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).format(parsed);
+  }
+
   var DAILY_HEADLINE_LIMIT = 3;
   var DAILY_HEADLINE_RANKS = {
     LIVE_TURKISH: 0, LIVE_OTHER: 1,
@@ -3335,7 +3451,7 @@
   function headlineIsOnDay(match, day) {
     if (!day) return true;
     var kickoff = headlineText(match && (match.kickoff || match.date));
-    return kickoff.slice(0, 10) === day;
+    return istanbulDayOf(kickoff) === day;
   }
 
   /**
@@ -4363,6 +4479,9 @@
       confirmed: "Onaylı",
       "confirmed-pairing": "Eşleşme onaylı",
       "confirmed-pairings": "Eşleşmeler onaylı",
+      // Eşleşme + gün/saat ataması yapılmış maç. "Eşleşme onaylı" demek,
+      // elimizdeki kesin başlama saatini yokmuş gibi göstermek olurdu.
+      "confirmed-date": "Tarih ve saat onaylı",
       "partially-confirmed": "Kısmi fikstür",
       "pending-verification": "Kontrol bekliyor",
       "awaiting-official-match-list": "Resmi liste bekleniyor"
@@ -8752,7 +8871,7 @@
   /** Künye: yalnızca gerçekten kayıtlı alanlar basılır. */
   function mdFactsHtml(detail) {
     var facts = [
-      ["Tarih", detail.kickoff ? formatMatchDate(String(detail.kickoff).slice(0, 10)) : ""],
+      ["Tarih", detail.kickoff ? formatMatchDate(istanbulDayOf(detail.kickoff)) : ""],
       ["Başlama", matchTimeLabel(detail)],
       ["Stat", detail.venue],
       ["Şehir", detail.city],
@@ -10755,12 +10874,16 @@
       "Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor",
       "Başakşehir", "Eyüpspor", "Samsunspor", "Göztepe"
     ];
-    var SAFE_FALLBACK = [
-      { playerName: "Mohamed Salah", toTeam: "Trabzonspor", fromTeam: "Serbest oyuncu", date: "2026-08-05", displayStatus: "Official", sourceUrl: "https://www.trabzonspor.org.tr/news/yeni-transferimiz-mohamed-salah-icin-imza-toreni-duzenlenecek-05-08-2026" },
-      { playerName: "Tayyip Talha Sanuç", toTeam: "Çaykur Rizespor", fromTeam: "Beşiktaş", date: "2026-07-19", displayStatus: "Official", sourceUrl: "https://www.bjk.com.tr/tr/haber/94750/tayyip-talha-sanuc-caykur-rizespora-transfer-oldu.html" },
-      { playerName: "Christ Oulai", toTeam: "Fiorentina", fromTeam: "Trabzonspor", date: "2026-07-19", displayStatus: "Official", sourceUrl: "https://www.sporx.com/trabzonspor-resmen-acikladi-oulai-SXHBQ1169626SXQ" },
-      { playerName: "Cenk Özkaçar", toTeam: "Trabzonspor", fromTeam: "Valencia", date: "2026-07-18", displayStatus: "Official", sourceUrl: "https://www.trabzonspor.org.tr/tr/haberler/kamuoyuna-duyuru-62-18-07-2026" }
-    ];
+    // "BREAKING" ROZETİ YALNIZCA GERÇEKTEN YENİ HAREKETE.
+    //
+    // Bant her kayda koşulsuz BREAKING basıyordu. Transfer listesi tarihe
+    // göre sıralanıp ilk 12'si alındığı için iki ay önce açıklanmış bir
+    // transfer de ana sayfanın en üstünde "BREAKING" olarak duruyordu.
+    // Eski haberi güncel gelişme gibi göstermek, bandın anlatmaya çalıştığı
+    // şeyin tam tersi. Bu eşiğin dışında kalan kayıt banttan atılmaz —
+    // tarihiyle gösterilir, çünkü transfer bilgisi eskiyince yanlış olmaz,
+    // yalnızca "son dakika" olmaktan çıkar.
+    var BREAKING_WINDOW_MS = 3 * 24 * 60 * 60 * 1000;
 
     function clubPriority(record) {
       var teams = [record && record.toTeam, record && record.fromTeam]
@@ -10794,16 +10917,34 @@
       return "Rumor";
     }
 
+    /** Sınıf anahtarı İngilizce, okuyucunun gördüğü metin Türkçe. */
+    function statusLabelTr(status) {
+      return {
+        Official: "Resmî",
+        Rumor: "İddia",
+        Talks: "Görüşme",
+        Loan: "Kiralık"
+      }[status] || status;
+    }
+
     function normalizeRecord(record) {
       var playerName = String(record && (record.playerName || record.name) || "").trim();
       var toTeam = String(record && (record.toTeam || record.newTeam) || "").trim();
       var fromTeam = String(record && (record.fromTeam || record.oldTeam) || "").trim();
       if (!playerName || !toTeam || !fromTeam) return null;
+      var date = record.date || record.publishedAt || record.lastVerifiedAt || record.updatedAt || "";
+      var parsed = date ? Date.parse(date) : NaN;
       return {
         playerName: playerName,
         toTeam: toTeam,
         fromTeam: fromTeam,
-        date: record.date || record.publishedAt || record.lastVerifiedAt || record.updatedAt || "",
+        date: date,
+        // Tarihi okunamayan kayıt "yeni" SAYILMAZ: bilinmeyen tarih,
+        // son dakika olduğuna dair bir kanıt değil.
+        isBreaking: Number.isFinite(parsed) && (Date.now() - parsed) <= BREAKING_WINDOW_MS,
+        dateLabel: Number.isFinite(parsed)
+          ? new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "short", timeZone: "Europe/Istanbul" }).format(new Date(parsed))
+          : "",
         status: displayStatus(record),
         url: record.url || record.sourceUrl || (record.source && record.source.url) || ""
       };
@@ -10838,15 +10979,20 @@
       var attributes = href
         ? ' href="' + escapeHtml(href) + '"' + (external ? ' target="_blank" rel="noopener noreferrer"' : "") + (duplicate ? ' tabindex="-1"' : "")
         : "";
-      var label = "BREAKING | " + item.playerName + " → " + item.toTeam + " | From: " + item.fromTeam + " | " + item.status;
+      var lead = item.isBreaking ? "SON DAKİKA" : (item.dateLabel || "TRANSFER");
+      var label = lead + " | " + item.playerName + " → " + item.toTeam + " | Önceki: " + item.fromTeam + " | " + statusLabelTr(item.status);
       return '<' + tag + ' class="transfer-radar-ticker__item"' + attributes + ' aria-label="' + escapeHtml(label) + '">' +
-        '<span class="transfer-radar-ticker__breaking">BREAKING</span>' +
+        '<span class="transfer-radar-ticker__breaking' + (item.isBreaking ? "" : " is-dated") + '">' + escapeHtml(lead) + '</span>' +
         '<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>' +
         '<strong>' + escapeHtml(item.playerName) + ' <span aria-hidden="true">→</span> ' + escapeHtml(item.toTeam) + '</strong>' +
         '<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>' +
-        '<span>From: ' + escapeHtml(item.fromTeam) + '</span>' +
+        '<span>Önceki: ' + escapeHtml(item.fromTeam) + '</span>' +
         '<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>' +
-        '<span class="transfer-radar-ticker__status is-' + item.status.toLowerCase() + '">' + escapeHtml(item.status) + '</span>' +
+        // Sınıf anahtarı İngilizce kalır (CSS onunla renklendiriyor), GÖRÜNEN
+        // metin Türkçedir. Eskiden İngilizce etiket basılıyordu ve CSS'teki
+        // `text-transform: uppercase` Türkçe yerelde "Official" kelimesini
+        // "OFFİCİAL" yapıyordu — noktalı İ, İngilizce bir kelimede yanlış.
+        '<span class="transfer-radar-ticker__status is-' + item.status.toLowerCase() + '">' + escapeHtml(statusLabelTr(item.status)) + '</span>' +
         '</' + tag + '>';
     }
 
@@ -10874,26 +11020,45 @@
     function init() {
       var target = document.querySelector(TARGET_SELECTOR);
       if (!target) return;
+
+      // API erişilemezse DEPODAKİ GERÇEK VERİYE düşülür.
+      //
+      // Buradaki yedek eskiden app.js içine gömülmüş dört transferden
+      // oluşan sabit bir diziydi. İki sorunu vardı: (1) doğrulanmış veri
+      // dosyası elimizdeyken kullanılmıyordu, (2) sabit olduğu için zamanla
+      // her koşulda bayatlıyor ve API her düştüğünde okuyucuya aylar öncesi
+      // transferleri güncel gibi gösteriyordu. Yedek artık sitenin geri
+      // kalanının kullandığı yolun aynısı: /data/transfers.json.
+      var apiSource = target.getAttribute("data-transfer-source") || (API_ROOT + "transfers");
+      var staticSource = DATA_ROOT + "transfers.json";
+
+      function paint(result, source) {
+        var records = result && result.data;
+        if (!Array.isArray(records) || !records.length || !sortedRecords(records).length) {
+          render(target, [], "empty");
+          return false;
+        }
+        render(target, records, source);
+        return true;
+      }
+
       if (window.location.protocol === "file:") {
-        render(target, SAFE_FALLBACK, "fallback");
+        render(target, [], "empty");
         return;
       }
 
-      var source = target.getAttribute("data-transfer-source") || (API_ROOT + "transfers");
-      fetchJson(source)
-        .then(function (result) {
-          var records = result && result.data;
-          if (!Array.isArray(records) || !records.length || !sortedRecords(records).length) {
-            render(target, [], "empty");
-            return;
-          }
-          render(target, records, "api");
-        })
-        .catch(function (error) {
-          if (window.console && typeof window.console.error === "function") {
-            window.console.error("[futbolradar:transfer-radar]", error);
-          }
-          render(target, SAFE_FALLBACK, "fallback");
+      fetchJson(apiSource)
+        .then(function (result) { paint(result, "api"); })
+        .catch(function (apiError) {
+          return fetchJson(staticSource)
+            .then(function (result) { paint(result, "static"); })
+            .catch(function (staticError) {
+              if (window.console && typeof window.console.error === "function") {
+                window.console.error("[futbolradar:transfer-radar]", apiError, staticError);
+              }
+              // Uydurma yok: iki kaynak da yoksa bant boş durumunu yazar.
+              render(target, [], "empty");
+            });
         });
     }
 

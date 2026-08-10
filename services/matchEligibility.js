@@ -36,6 +36,27 @@ const APPROVED_SOURCES = new Set([
 ]);
 
 /**
+ * Aynı maç iki sağlayıcıda da doğrulandığında kayıt birleşik bir kaynak adı
+ * taşır: "api-football+thesportsdb". Liste tek adlarla karşılaştırma yaptığı
+ * için bu satırlar "kaynağı onaylı değil" diye ELENİYORDU — yani iki bağımsız
+ * sağlayıcının teyit ettiği maç, tek sağlayıcıdan gelenden daha zayıf
+ * sayılıyordu. Sturm Graz-Fenerbahçe dahil dört karşılaşma bu yüzden
+ * yayından düşmüştü.
+ *
+ * Kural korunuyor, yalnızca doğru okunuyor: birleşik adın HER parçası onaylı
+ * listede olmak zorunda. Tek bir onaysız parça kaydı yine eler.
+ */
+function sourceApproved(value) {
+  const parts = String(value || "")
+    .toLowerCase()
+    .split("+")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  return parts.length > 0 && parts.every((part) => APPROVED_SOURCES.has(part));
+}
+
+/**
  * KİMLİK alanları: bunlar olmadan dürüst bir fikstür satırı çizilemez.
  * Eksikse maç yayımlanmaz.
  */
@@ -125,7 +146,7 @@ function evaluateMatch(match, options = {}) {
   }
 
   const source = String(match.source || "").toLowerCase();
-  if (!APPROVED_SOURCES.has(source)) {
+  if (!sourceApproved(source)) {
     // Uydurma fikstür üretmiyoruz: kaynağı onaylı olmayan kayıt yayımlanmaz.
     return reject(`kaynak onaylı değil: ${source || "belirtilmemiş"}`);
   }
@@ -265,6 +286,7 @@ function logDataGaps(scope, pending) {
 
 module.exports = {
   APPROVED_SOURCES,
+  sourceApproved,
   REQUIRED_FIELDS,
   IDENTITY_FIELDS,
   PUBLISH_STATE,

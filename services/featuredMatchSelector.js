@@ -58,6 +58,7 @@ const REASON_LABELS = {
   "turkish-in-progress": "Oynanmakta olan Türk takımı maçı",
   "turkish-upcoming": "Bugünün en yakın Türk takımı maçı",
   "turkish-played": "Bugün oynanan son Türk takımı maçı",
+  "turkish-next": "Bugün Türk takımı maçı yok; sıradaki karşılaşma",
   "major-live": "Büyük kulübün canlı maçı",
   live: "Canlı maç",
   "in-progress": "Oynanmakta olan maç",
@@ -242,9 +243,39 @@ function selectFeaturedMatches(matches, options) {
   });
 
   if (ordered.length) {
-    return ordered.slice(0, limit).map((match) => describe(
+    const cards = ordered.slice(0, limit).map((match) => describe(
       match, reasonFor(match, nowMs), bandOf(match, nowMs), tierOf(match, nowMs), pool.length, turkishCount
     ));
+
+    // BUGÜN TÜRK MAÇI YOKSA HERO'YU YABANCI MAÇA BIRAKMA.
+    //
+    // Kademe sırası bugün bir Türk maçı VARSA doğru çalışıyordu. Hiç yoksa
+    // havuz doluydu (22 yabancı maç) ve "bugün maç yok" yedeği hiç
+    // devreye girmiyordu; ana sayfanın en büyük kartı Fakel-Akhmat ya da
+    // Volos-Kalamata oluyordu. Türkiye'den gelen okuyucu ilk ekranda
+    // Türk futboluna dair hiçbir şey görmüyor, oysa ertesi gün
+    // Sturm Graz-Fenerbahçe oynanıyordu.
+    //
+    // Çözüm takvimde ZATEN OLAN bir maçı öne almak: en yakın Türk takımı
+    // karşılaşması ilk karta geçer. Kart "bugün oynanıyor" DEMEZ — kendi
+    // tarihiyle ve "sıradaki" gerekçesiyle görünür; uydurma yok, günün
+    // maçları da karuselden düşmez, yalnızca bir sıra geri kayar.
+    if (!turkishCount) {
+      const nextTurkish = list
+        .filter((match) => isTurkishMatch(match) &&
+          matchDateValue(match) > today &&
+          !isUnplayedStatus(match))
+        .sort((left, right) => kickoffTime(left).value - kickoffTime(right).value)[0];
+
+      if (nextTurkish) {
+        cards.unshift(describe(
+          nextTurkish, "turkish-next", "upcoming", tierOf(nextTurkish, nowMs), pool.length, turkishCount
+        ));
+        cards.length = Math.min(cards.length, limit);
+      }
+    }
+
+    return cards;
   }
 
   // Bugün maç yoksa karusel boş kalmasın: takvimdeki sıradaki karşılaşmalar.

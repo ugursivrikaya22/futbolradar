@@ -206,7 +206,20 @@ function normalizePlayer(player, options) {
   const stats = normalizeStats(player);
   const rawRating = player.rating ?? player.aiRating ?? player.overallRating ?? null;
   const minutesPlayed = stats.minutesPlayed;
-  const positionGroup = player.positionGroup || resolvePositionGroup(player.position);
+  // MEVKİ GRUBU MEVKİDEN TÜRETİLİR, kayıttan okunmaz.
+  //
+  // Grup, `position` alanının saf bir fonksiyonu. Dosyada ayrıca saklanması
+  // yalnızca hız içindi ama iki kaynak arasında sessizce ayrışmaya açıktı:
+  // türetme kuralı düzeltildiğinde dosyadaki eski değer üstte kaldığı için
+  // düzeltme hiçbir kayda ULAŞMIYORDU. 165 stoper "forvet" olarak
+  // saklanmıştı ve kural düzeltilse bile öyle kalacaktı.
+  //
+  // Artık türetme kazanır; saklanan değer yalnızca mevki tanınamadığında
+  // (elle girilmiş bir grup varsa) devreye girer.
+  const derivedPositionGroup = resolvePositionGroup(player.position);
+  const positionGroup = derivedPositionGroup !== "unknown"
+    ? derivedPositionGroup
+    : (player.positionGroup || derivedPositionGroup);
   const source = normalizeSource({
     ...player,
     currentTeam,

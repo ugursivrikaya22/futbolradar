@@ -50,22 +50,54 @@ function statValue(player, key, fallback) {
   return numberFrom(player, [key], fallback);
 }
 
+/**
+ * MEVKİ GRUBU — sağlayıcının sözcük dağarcığı da tanınmak zorunda.
+ *
+ * Bu eşleme kurulurken yalnızca kürasyonlu Türkçe mevki adları vardı
+ * ("Stoper", "Sağ bek", "Santrfor"). API-Football ise dört geniş İngilizce
+ * etiket döndürüyor: Goalkeeper / Defender / Midfielder / Attacker. Üçü
+ * tesadüfen eşleşiyordu — "goalkeeper" ve "midfield" listede vardı,
+ * "attacker" da zaten varsayılan olan "forward"a düşüyordu. DEFENDER
+ * EŞLEŞMİYORDU: hiçbir kalıba uymadığı için son satıra, yani "forward"a
+ * düşüyordu.
+ *
+ * Sonuç sessiz ama büyüktü: 526 güncel Süper Lig oyuncusunun 165'i —
+ * ligin defans oyuncularının neredeyse tamamı — FORVET sayıldı. Bu grup
+ * yalnızca etiket değil; `computeOverallRating` puanı gruba göre farklı
+ * ağırlıklarla hesaplıyor, sıralama sayfaları ve radar grafikleri de gruba
+ * bakıyor. Yani bir stoper, forvet ölçütleriyle puanlanıp "forvetler"
+ * listesinde görünüyordu.
+ *
+ * Varsayılanın "forward" olması bu hatayı görünmez yapan şeydi: tanınmayan
+ * her değer sessizce forvet oluyor. Tanınmayan değer artık "unknown"
+ * dönüyor ki bir daha aynı hata bir mevki grubunun içinde saklanmasın.
+ */
 function positionGroup(position) {
   const normalized = normalizeText(position);
-  if (normalized.includes("kaleci") || normalized.includes("goalkeeper")) {
+
+  if (!normalized) {
+    return "unknown";
+  }
+
+  if (normalized.includes("kaleci") || normalized.includes("goalkeeper") || normalized === "gk") {
     return "goalkeeper";
   }
+
+  // Kanat kontrolü defanstan ÖNCE gelmiyor: "wing back" bir defans oyuncusu.
+  // Ama "sol kanat"/"sağ kanat" hücum mevkileri; onlar "bek"/"back" içermez.
   if (
     normalized.includes("stoper") ||
     normalized.includes("defans") ||
+    normalized.includes("defender") ||
+    normalized.includes("defence") ||
+    normalized.includes("defense") ||
     normalized.includes("bek") ||
-    normalized.includes("sag bek") ||
-    normalized.includes("sol bek") ||
-    normalized.includes("centre back") ||
-    normalized.includes("full back")
+    normalized.includes("back") ||
+    normalized.includes("libero") && normalized.includes("son")
   ) {
     return "defender";
   }
+
   if (
     normalized.includes("kanat") ||
     normalized.includes("wing") ||
@@ -74,9 +106,12 @@ function positionGroup(position) {
   ) {
     return "winger";
   }
+
   if (
     normalized.includes("orta") ||
     normalized.includes("10 numara") ||
+    // Aksansız/harfi düşmüş yazımlar da gelebiliyor: "On numara".
+    normalized.includes("on numara") ||
     normalized.includes("merkez") ||
     normalized.includes("midfield") ||
     // "Ön libero" is the Turkish term for the holding midfielder, not a
@@ -86,7 +121,19 @@ function positionGroup(position) {
     return "midfielder";
   }
 
-  return "forward";
+  if (
+    normalized.includes("forvet") ||
+    normalized.includes("santrfor") ||
+    normalized.includes("santrafor") ||
+    normalized.includes("striker") ||
+    normalized.includes("attack") ||
+    normalized.includes("forward") ||
+    normalized.includes("hucum")
+  ) {
+    return "forward";
+  }
+
+  return "unknown";
 }
 
 function ageDevelopmentScore(player) {

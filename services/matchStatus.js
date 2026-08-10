@@ -240,6 +240,41 @@ function kickoffMs(match) {
 }
 
 /**
+ * TAKVİM GÜNÜ — TEK TANIM.
+ *
+ * "Bu maç hangi güne ait?" sorusu sitenin her yerinde ISO dizesinin ilk on
+ * karakteri dilimlenerek yanıtlanıyordu. Bu, YALNIZCA başlama saati TSİ
+ * ofsetiyle yazılmışsa doğrudur. UTC ofsetli tek bir kayıt (sağlayıcı öyle
+ * döndürüyordu) TSİ 00:00-02:59 arasında başlayan maçları bir önceki güne
+ * yazar: gece yarısını geçen maç "dün oynanmış" görünür, "Bugünün Maçları"
+ * listesi de onu yanlış güne koyar.
+ *
+ * Burada gün, dizeyi kesip atarak değil, anı Europe/Istanbul'a çevirerek
+ * bulunur. Saat taşımayan kayıtlarda (yalnızca "2026-07-17") çevrilecek bir
+ * an yoktur; değer olduğu gibi kullanılır — gün UYDURULMAZ.
+ */
+const ISTANBUL_DAY_FORMATTER = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "Europe/Istanbul",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit"
+});
+
+function istanbulDay(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  if (!raw.includes("T")) return raw.slice(0, 10);
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) return raw.slice(0, 10);
+  return ISTANBUL_DAY_FORMATTER.format(parsed);
+}
+
+/** Kaydın takvim günü (kickoff/date/utcDate sırasıyla). */
+function matchDay(match) {
+  return istanbulDay(match && (match.kickoff || match.date || match.utcDate));
+}
+
+/**
  * BAYAT CANLI KORUMASI.
  *
  * "Bu maç şu anda canlı gösterilmeli mi?" sorusunun tek cevabı. Üç sonuç:
@@ -331,8 +366,10 @@ module.exports = {
   isFinishedStatus,
   isLiveStatus,
   isUnplayedStatus,
+  istanbulDay,
   kickoffMs,
   liveVerdict,
+  matchDay,
   matchState,
   normalizeStatusToken,
   statusLabel,
