@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-10T06:11:44.210Z",
+  "fetchedAt": "2026-08-10T08:41:06.628Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -125579,10 +125579,10 @@
       "venue": null,
       "kickoff": "2026-08-09T15:30:00+00:00",
       "time": "18:30",
-      "homeTeam": "Stupčanica Olovo",
-      "awayTeam": "Radnik Hadžići",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/17901.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/7531.png",
+      "homeTeam": "Radnik Hadžići",
+      "awayTeam": "Stupčanica Olovo",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/7531.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/17901.png",
       "status": "FINISHED",
       "providerStatus": "FT",
       "minute": 90,
@@ -125608,8 +125608,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T22:34:41.512Z",
-      "staleAfter": "2026-08-09T22:39:41.512Z",
+      "fetchedAt": "2026-08-10T08:41:07.326Z",
+      "staleAfter": "2026-08-10T08:46:07.326Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -178587,8 +178587,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T06:11:45.505Z",
-      "staleAfter": "2026-08-10T06:16:45.505Z",
+      "fetchedAt": "2026-08-10T08:41:07.469Z",
+      "staleAfter": "2026-08-10T08:46:07.469Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -178598,17 +178598,22 @@
       "competitionId": "la-liga",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Managua skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Managua tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 85' B. Morgan tarafından kaydedildi. Managua skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Managua tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "85'",
+            "text": "Son gol 85' B. Morgan tarafından kaydedildi."
+          },
           {
             "label": "Canlı skor",
             "value": "0-3",
             "text": "Managua skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 3,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -179975,7 +179980,39 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "13'",
+          "team": {
+            "name": "Managua"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "D. Diaz · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "16'",
+          "team": {
+            "name": "Managua"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "N. Gomez · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "Managua"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "B. Morgan · Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "polessya-fc-kharkiv-2026-08-10",
