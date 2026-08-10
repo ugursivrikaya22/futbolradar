@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-10T03:52:02.188Z",
+  "updatedAt": "2026-08-10T04:40:45.028Z",
   "matchCount": 277,
   "records": [
     {
@@ -1242,11 +1242,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "b6a1be139fc75d7d",
-      "fingerprint": "b6a1be139fc75d7d",
+      "analysisSourceHash": "637e08ca11005330",
+      "fingerprint": "637e08ca11005330",
       "analysisGeneratedAt": "2026-08-10T02:01:06.058Z",
-      "analysisUpdatedAt": "2026-08-10T03:51:24.109Z",
-      "generatedAt": "2026-08-10T03:51:24.109Z",
+      "analysisUpdatedAt": "2026-08-10T04:40:44.937Z",
+      "generatedAt": "2026-08-10T04:40:44.937Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1271,7 +1271,7 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 1
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
           "status": "partial",
@@ -1317,16 +1317,16 @@
             },
             {
               "minute": "80'",
-              "team": "Vitoria",
-              "type": "subst",
-              "detail": "Substitution 4",
+              "team": "Flamengo",
+              "type": "Goal",
+              "detail": "Normal Goal",
               "decisive": false
             },
             {
               "minute": "80'",
-              "team": "Flamengo",
-              "type": "Goal",
-              "detail": "Normal Goal",
+              "team": "Vitoria",
+              "type": "subst",
+              "detail": "Substitution 4",
               "decisive": false
             },
             {
@@ -2114,11 +2114,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "7b136eda7e0ae41a",
-      "fingerprint": "7b136eda7e0ae41a",
+      "analysisSourceHash": "c71e17a679b8565f",
+      "fingerprint": "c71e17a679b8565f",
       "analysisGeneratedAt": "2026-08-09T23:34:03.251Z",
-      "analysisUpdatedAt": "2026-08-10T03:51:24.109Z",
-      "generatedAt": "2026-08-10T03:51:24.109Z",
+      "analysisUpdatedAt": "2026-08-10T04:40:44.937Z",
+      "generatedAt": "2026-08-10T04:40:44.937Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2242,8 +2242,8 @@
             "RB Bragantino maça 4-2-3-1 dizilişiyle başladı.",
             "Corinthians maça 4-2-3-1 dizilişiyle başladı.",
             "46' RB Bragantino değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "66' Corinthians değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
             "66' RB Bragantino değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' Corinthians değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
             "72' RB Bragantino değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
           "formations": [
@@ -2411,10 +2411,10 @@
       "winner": "Atletico Paranaense",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 70,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -2432,45 +2432,36 @@
           "count": 17
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
         "events": 13,
         "statistics": 17,
-        "lineups": 0,
-        "players": 0
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "8bf73a328e0e2e38",
-      "fingerprint": "8bf73a328e0e2e38",
+      "analysisSourceHash": "d3fa333149e5369c",
+      "fingerprint": "d3fa333149e5369c",
       "analysisGeneratedAt": "2026-08-09T23:34:03.251Z",
-      "analysisUpdatedAt": "2026-08-10T03:51:24.109Z",
-      "generatedAt": "2026-08-10T03:51:24.109Z",
+      "analysisUpdatedAt": "2026-08-10T04:40:44.937Z",
+      "generatedAt": "2026-08-10T04:40:44.937Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2560,8 +2551,10 @@
           "players": []
         },
         "tactical": {
-          "status": "partial",
+          "status": "ready",
           "notes": [
+            "Santos sahaya 4-2-2-2 dizilişiyle çıktı.",
+            "Atletico Paranaense sahaya 3-4-2-1 dizilişiyle çıktı.",
             "Santos topu elinde tutarken Atletico Paranaense derin blokta savunma yapmayı tercih etti."
           ]
         },
@@ -2583,14 +2576,23 @@
         "coaching": {
           "status": "ready",
           "notes": [
+            "Santos maça 4-2-2-2 dizilişiyle başladı.",
+            "Atletico Paranaense maça 3-4-2-1 dizilişiyle başladı.",
             "46' Santos değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
             "60' Atletico Paranaense değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
             "60' Atletico Paranaense değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "61' Atletico Paranaense değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "61' Santos değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "71' Atletico Paranaense değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "61' Santos değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
-          "formations": [],
+          "formations": [
+            {
+              "team": "Santos",
+              "formation": "4-2-2-2"
+            },
+            {
+              "team": "Atletico Paranaense",
+              "formation": "3-4-2-1"
+            }
+          ],
           "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
@@ -2706,6 +2708,7 @@
         "momentum",
         "signals",
         "statistics",
+        "tactical",
         "firstHalf",
         "secondHalf",
         "lateGame",
@@ -2713,7 +2716,7 @@
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 71,
+      "coverage": 79,
       "dataStatus": "complete",
       "intelligenceCoverage": 70,
       "publishState": "page"
@@ -3083,7 +3086,7 @@
       "coverageGrade": "events-only",
       "coverageLabel": "Sadece olaylar",
       "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coveragePercent": 60,
       "dataSources": {
         "score": {
           "present": true,
@@ -3101,9 +3104,9 @@
           "count": 0
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": false,
@@ -3115,20 +3118,16 @@
       "availability": {
         "events": 16,
         "statistics": 0,
-        "lineups": 0,
+        "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
         },
         {
           "field": "players",
@@ -3139,11 +3138,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "c9fdf01bcf6af1fe",
-      "fingerprint": "c9fdf01bcf6af1fe",
+      "analysisSourceHash": "cd8dde2fafc5c4bc",
+      "fingerprint": "cd8dde2fafc5c4bc",
       "analysisGeneratedAt": "2026-08-09T23:34:03.251Z",
-      "analysisUpdatedAt": "2026-08-10T03:51:24.109Z",
-      "generatedAt": "2026-08-10T03:51:24.109Z",
+      "analysisUpdatedAt": "2026-08-10T04:40:44.937Z",
+      "generatedAt": "2026-08-10T04:40:44.937Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -7656,7 +7655,7 @@
       "season": null,
       "homeTeam": "Rubin",
       "awayTeam": "FC Orenburg",
-      "venue": "Ak Bars Arena",
+      "venue": "Kazan Arena",
       "score": {
         "home": 1,
         "away": 1
@@ -7728,23 +7727,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "42a0d3f5d9532aae",
-      "fingerprint": "42a0d3f5d9532aae",
+      "analysisSourceHash": "983772c49a118ee9",
+      "fingerprint": "983772c49a118ee9",
       "analysisGeneratedAt": "2026-08-09T20:36:07.519Z",
-      "analysisUpdatedAt": "2026-08-10T02:01:06.058Z",
-      "generatedAt": "2026-08-10T02:01:06.058Z",
+      "analysisUpdatedAt": "2026-08-10T04:40:44.937Z",
+      "generatedAt": "2026-08-10T04:40:44.937Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Rubin 1-1 FC Orenburg maç raporu: Premier League istatistikleri | FutbolRadar",
-        "description": "Ak Bars Arena'da oynanan Premier League maçında Rubin ile FC Orenburg birbirini geçemedi: 1-1.",
+        "description": "Kazan Arena'da oynanan Premier League maçında Rubin ile FC Orenburg birbirini geçemedi: 1-1.",
         "path": "mac-raporu/rubin-fc-orenburg-2026-08-09.html",
         "competition": "Premier League"
       },
       "reportUrl": "./mac-raporu/rubin-fc-orenburg-2026-08-09.html",
       "digest": {
         "headline": "Rubin ile FC Orenburg 1-1 berabere kaldı",
-        "paragraph": "Ak Bars Arena'da oynanan Premier League maçında Rubin ile FC Orenburg birbirini geçemedi: 1-1. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Kazan Arena'da oynanan Premier League maçında Rubin ile FC Orenburg birbirini geçemedi: 1-1. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
         "result": {
           "winner": null,
           "loser": null,
@@ -11086,7 +11085,7 @@
       "season": null,
       "homeTeam": "Ried",
       "awayTeam": "Rapid Vienna",
-      "venue": "Innviertel Arena",
+      "venue": "Josko Arena",
       "score": {
         "home": 1,
         "away": 2
@@ -11146,23 +11145,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "227e868ed93f1e6a",
-      "fingerprint": "227e868ed93f1e6a",
+      "analysisSourceHash": "04a7c348e090fdb9",
+      "fingerprint": "04a7c348e090fdb9",
       "analysisGeneratedAt": "2026-08-09T17:00:47.297Z",
-      "analysisUpdatedAt": "2026-08-10T02:01:06.058Z",
-      "generatedAt": "2026-08-10T02:01:06.058Z",
+      "analysisUpdatedAt": "2026-08-10T04:40:44.937Z",
+      "generatedAt": "2026-08-10T04:40:44.937Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Ried 1-2 Rapid Vienna maç raporu: Bundesliga istatistikleri | FutbolRadar",
-        "description": "Innviertel Arena'da oynanan Bundesliga maçını Rapid Vienna 2-1 kazandı; Ried sahadan puansız ayrıldı.",
+        "description": "Josko Arena'da oynanan Bundesliga maçını Rapid Vienna 2-1 kazandı; Ried sahadan puansız ayrıldı.",
         "path": "mac-raporu/ried-rapid-vienna-2026-08-09.html",
         "competition": "Bundesliga"
       },
       "reportUrl": "./mac-raporu/ried-rapid-vienna-2026-08-09.html",
       "digest": {
         "headline": "Rapid Vienna, Ried'i 2-1 yendi",
-        "paragraph": "Innviertel Arena'da oynanan Bundesliga maçını Rapid Vienna 2-1 kazandı; Ried sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Josko Arena'da oynanan Bundesliga maçını Rapid Vienna 2-1 kazandı; Ried sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
         "result": {
           "winner": "Rapid Vienna",
           "loser": "Ried",
@@ -14605,7 +14604,7 @@
       "season": null,
       "homeTeam": "Epitsentr Dunayivtsi",
       "awayTeam": "Shakhtar Donetsk",
-      "venue": "Tonkocheyev Stadium",
+      "venue": "Roman Shukhevych Ternopil City Stadium",
       "score": {
         "home": 0,
         "away": 2
@@ -14669,23 +14668,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "bb4d5c492b18ae8d",
-      "fingerprint": "bb4d5c492b18ae8d",
+      "analysisSourceHash": "56e60ba654962733",
+      "fingerprint": "56e60ba654962733",
       "analysisGeneratedAt": "2026-08-09T14:37:40.895Z",
-      "analysisUpdatedAt": "2026-08-10T02:01:06.058Z",
-      "generatedAt": "2026-08-10T02:01:06.058Z",
+      "analysisUpdatedAt": "2026-08-10T04:40:44.937Z",
+      "generatedAt": "2026-08-10T04:40:44.937Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Epitsentr Dunayivtsi 0-2 Shakhtar Donetsk maç raporu: Premier League istatistikleri | FutbolRadar",
-        "description": "Tonkocheyev Stadium'da oynanan Premier League maçını Shakhtar Donetsk 2-0 kazandı; Epitsentr Dunayivtsi sahadan puansız ayrıldı.",
+        "description": "Roman Shukhevych Ternopil City Stadium'da oynanan Premier League maçını Shakhtar Donetsk 2-0 kazandı; Epitsentr Dunayivtsi sahadan puansız ayrıldı.",
         "path": "mac-raporu/epitsentr-dunayivtsi-shakhtar-donetsk-2026-08-09.html",
         "competition": "Premier League"
       },
       "reportUrl": "./mac-raporu/epitsentr-dunayivtsi-shakhtar-donetsk-2026-08-09.html",
       "digest": {
         "headline": "Shakhtar Donetsk, Epitsentr Dunayivtsi'yi 2-0 yendi",
-        "paragraph": "Tonkocheyev Stadium'da oynanan Premier League maçını Shakhtar Donetsk 2-0 kazandı; Epitsentr Dunayivtsi sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Roman Shukhevych Ternopil City Stadium'da oynanan Premier League maçını Shakhtar Donetsk 2-0 kazandı; Epitsentr Dunayivtsi sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
         "result": {
           "winner": "Shakhtar Donetsk",
           "loser": "Epitsentr Dunayivtsi",
