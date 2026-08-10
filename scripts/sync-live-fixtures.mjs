@@ -7,7 +7,7 @@ import { pathToFileURL } from "node:url";
 const require = createRequire(import.meta.url);
 const apiFootballProvider = require("../services/providers/apiFootballProvider.js");
 const { findCompetition, normalizeKey } = require("../services/competitionCatalog.js");
-const { canonicalStatus } = require("../services/matchStatus.js");
+const { canonicalStatus, istanbulDay } = require("../services/matchStatus.js");
 
 const root = process.cwd();
 const CALENDAR_PATH = path.join(root, "data", "fixture-calendar.json");
@@ -58,8 +58,11 @@ function addDays(dateString, offset) {
   return istanbulDate(date);
 }
 
+// Kimlik ve sorgu anahtarı olarak kullanılan takvim günü; TSİ'ye göre.
+// Ham dilimleme, gece yarısını geçen maçları bir önceki güne yazıyordu ve
+// `naturalId` de o yanlış günü taşıyordu (bkz. services/matchStatus.js).
 function dateOnly(match) {
-  return String((match && (match.kickoff || match.date)) || "").slice(0, 10);
+  return istanbulDay((match && (match.kickoff || match.date)) || "");
 }
 
 function fixtureIdentity(match) {

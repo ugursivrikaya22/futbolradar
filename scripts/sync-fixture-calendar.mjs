@@ -244,6 +244,13 @@ function normalizeEvent(event) {
   };
 }
 
+/** TSİ takvim gününe gün ekler/çıkarır. */
+function addIstanbulDays(day, offset) {
+  const date = new Date(`${day}T12:00:00+03:00`);
+  date.setUTCDate(date.getUTCDate() + offset);
+  return istanbulDateOnly(date);
+}
+
 function withinWindow(match, today) {
   const start = new Date(`${today}T00:00:00+03:00`);
   const matchDate = new Date(`${String(match.kickoff).slice(0, 10)}T00:00:00+03:00`);
@@ -281,6 +288,90 @@ async function collectMatches() {
   return { matches: [...collected.values()], failures };
 }
 
+/**
+ * Takvim dosyasının İKİ yazarı var ve ikisi aynı satırları yazmıyor:
+ *
+ *   • bu betik (TheSportsDB)  — 18 Süper Lig takımının -3/+35 günlük
+ *     penceresi. İLERİ fikstürün tek kaynağı: yarından sonrası yalnızca
+ *     buradan geliyor.
+ *   • sync-live-fixtures.mjs (API-Football) — dün/bugün/yarın, tüm
+ *     turnuvalar. Canlı skor ve maç detayının kaynağı.
+ *
+ * Bu betik eskiden dosyayı KOMPLE ezip yerine yalnızca kendi satırlarını
+ * yazıyordu. İki sonucu vardı ve ikincisi birincisini gizledi:
+ *
+ *   1. Yazabilseydi, API-Football'un yüzlerce satırını silecekti.
+ *   2. Yazamadı — çünkü "%50 düşüş" koruması, KENDİ 6 satırını dosyadaki
+ *      317 satırla kıyaslıyordu. Elmayla armut: koruma her tam koşuda
+ *      tetiklendi, adım "failed" işaretlendi ve İLERİ FİKSTÜR AYLARDIR
+ *      TAKVİME HİÇ GİRMEDİ. Ligin açılış haftası dosyada yoktu.
+ *
+ * Artık birleştiriyor: kendi satırlarını kimliğe göre günceller, başka
+ * sağlayıcının satırlarına dokunmaz, koruma da yalnızca kendi satır
+ * sayısını kendi önceki satır sayısıyla karşılaştırır.
+ */
+function ownsRow(match) {
+  const source = String((match && match.source) || "");
+  return source.includes("thesportsdb");
+}
+
+function identityOf(match) {
+  return [slug(match && match.homeTeam), slug(match && match.awayTeam), String(match && match.kickoff || "").slice(0, 10)].join("|");
+}
+
+function mergeIntoCalendar(previousMatches, incoming) {
+  const output = (Array.isArray(previousMatches) ? previousMatches : []).map((row) => ({ ...row }));
+  const byIdentity = new Map();
+  const bySportsDbId = new Map();
+  output.forEach((row, index) => {
+    byIdentity.set(identityOf(row), index);
+    const id = (row.providerIds && row.providerIds.theSportsDb) || (ownsRow(row) ? row.providerId : null);
+    if (id) bySportsDbId.set(String(id), index);
+  });
+
+  let added = 0;
+  let updated = 0;
+
+  for (const row of incoming) {
+    const index = (row.providerId && bySportsDbId.has(String(row.providerId)))
+      ? bySportsDbId.get(String(row.providerId))
+      : byIdentity.get(identityOf(row));
+
+    if (index === undefined) {
+      output.push(row);
+      const at = output.length - 1;
+      byIdentity.set(identityOf(row), at);
+      if (row.providerId) bySportsDbId.set(String(row.providerId), at);
+      added += 1;
+      continue;
+    }
+
+    // Aynı maç iki sağlayıcıda da varsa: API-Football'un canlı alanları
+    // (skor, durum, dakika, detay) KORUNUR — o kaynak daha sık tazeleniyor.
+    // TheSportsDB yalnızca kendi doldurduğu alanları getirir; en değerlisi
+    // yayın bilgisi, çünkü API-Football onu vermiyor.
+    const existing = output[index];
+    const fromApiFootball = String(existing.source || "").includes("api-football");
+    const merged = fromApiFootball
+      ? {
+        ...existing,
+        venue: existing.venue || row.venue,
+        broadcast: existing.broadcast || row.broadcast,
+        round: existing.round ?? row.round,
+        providerIds: { ...(existing.providerIds || {}), ...(row.providerId ? { theSportsDb: row.providerId } : {}) },
+        source: row.providerId ? "api-football+thesportsdb" : existing.source,
+        sourceUrls: Array.from(new Set([...(existing.sourceUrls || []), ...(row.sourceUrls || [])]))
+      }
+      : { ...existing, ...row };
+
+    if (JSON.stringify(existing) === JSON.stringify(merged)) continue;
+    output[index] = merged;
+    updated += 1;
+  }
+
+  return { matches: output, added, updated };
+}
+
 async function main() {
   const today = istanbulDateOnly(new Date());
   const { matches, failures } = await collectMatches();
@@ -303,31 +394,56 @@ async function main() {
   const previous = fs.existsSync(OUTPUT_PATH)
     ? JSON.parse(fs.readFileSync(OUTPUT_PATH, "utf8"))
     : { matches: [] };
-  const previousCount = Array.isArray(previous.matches) ? previous.matches.length : 0;
+  const previousMatches = Array.isArray(previous.matches) ? previous.matches : [];
+  const previousOwned = previousMatches.filter(ownsRow).length;
 
   // Sayı düşüşü koruması: sağlayıcı kısmi cevap verdiyse (ör. hız limiti)
   // dolu bir takvimi yarısına indirmek yerine mevcut dosya korunur.
-  if (previousCount >= 6 && windowed.length < previousCount * 0.5) {
+  // KIYAS AYNI KÜME ÜZERİNDEN: bu betiğin sahiplendiği satırlar.
+  if (previousOwned >= 6 && windowed.length < previousOwned * 0.5) {
     console.error(
-      `Fixture calendar sync aborted: provider returned ${windowed.length} matches vs ${previousCount} stored (>50% drop).`
+      `Fixture calendar sync aborted: provider returned ${windowed.length} TheSportsDB matches vs ${previousOwned} stored (>50% drop).`
     );
     process.exitCode = 1;
     return;
   }
 
+  const merged = mergeIntoCalendar(previousMatches, windowed);
+
+  // Pencere dışına düşmüş GEÇMİŞ satırlar atılır. Bu dosya statik yedek
+  // olarak tarayıcıya da iniyor; sınırsız büyüyen bir takvim hem taşıma
+  // maliyeti hem de "eski maç bugünün listesinde" riski demek. İleri
+  // tarihli satırlar hiçbir koşulda atılmaz.
+  const kept = [];
+  let pruned = 0;
+  for (const row of merged.matches) {
+    const day = String(row.kickoff || "").slice(0, 10);
+    if (day && day < addIstanbulDays(today, -PAST_WINDOW_DAYS)) {
+      pruned += 1;
+      continue;
+    }
+    kept.push(row);
+  }
+  kept.sort((left, right) => String(left.kickoff || "").localeCompare(String(right.kickoff || "")));
+
   const output = {
-    source: "TheSportsDB",
+    ...previous,
+    source: "TheSportsDB + API-Football",
     provider: "thesportsdb",
+    providers: Array.from(new Set([...(previous.providers || []), "thesportsdb"])),
     fetchedAt: new Date().toISOString(),
     windowDays: { past: PAST_WINDOW_DAYS, future: FUTURE_WINDOW_DAYS },
     teamCount: TRACKED_TEAMS.length,
     requestFailures: failures.length,
-    matches: windowed
+    matches: kept
   };
 
-  const todayCount = windowed.filter((match) => String(match.kickoff).slice(0, 10) === today).length;
+  const todayCount = kept.filter((match) => String(match.kickoff).slice(0, 10) === today).length;
+  const upcomingCount = kept.filter((match) => String(match.kickoff).slice(0, 10) > today).length;
   console.log(
-    `Fixture calendar: ${windowed.length} matches in window (${todayCount} today, ${failures.length} request failures).`
+    `Fixture calendar: ${windowed.length} TheSportsDB matches in window ` +
+    `(+${merged.added} new, ${merged.updated} updated, ${pruned} pruned) -> ${kept.length} rows total ` +
+    `(${todayCount} today, ${upcomingCount} upcoming, ${failures.length} request failures).`
   );
 
   if (!APPLY) {

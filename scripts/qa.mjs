@@ -1255,7 +1255,90 @@ function checkDataJsonSyntax() {
   expect(checked > 0, "veri dizininde JSON dosyası bulunamadı");
 }
 
+/**
+ * PUAN TABLOSU ARİTMETİĞİ.
+ *
+ * Tablo sağlayıcıdan satır satır kopyalanıyor ve hiçbir yerde tutarlılığı
+ * sınanmıyordu. Sağlayıcı bir maçı iki kez sayarsa ya da bir alanı eksik
+ * gönderirse tablo sessizce yanlış yayımlanır: O ≠ G+B+M olan, averajı
+ * gollerine uymayan ya da puanı galibiyet sayısıyla çelişen bir satır
+ * okuyucuya doğru veriymiş gibi görünür.
+ *
+ * Denetlenen kimlikler:
+ *   O = G + B + M
+ *   AV = AG - YG
+ *   P  = 3·G + B            (varsa `pointDeduction` düşülür)
+ *   Sıra numaraları tekil.
+ *
+ * SEZON ÖNCESİ SIRALAMA DENETLENMEZ: hiç maç oynanmamışken tüm satırlar
+ * sıfırdır ve sağlayıcının verdiği sıra alfabetiktir. O durumda sıralamayı
+ * puana göre sınamak, olmayan bir hatayı raporlamak olurdu — arayüz zaten
+ * sezon başlamadan tabloyu basmıyor.
+ */
+function checkStandingsIntegrity() {
+  const teamsPath = path.join(root, "data", "teams.json");
+  if (!fs.existsSync(teamsPath)) return;
+
+  const rows = JSON.parse(fs.readFileSync(teamsPath, "utf8"));
+  expect(Array.isArray(rows) && rows.length > 0, "data/teams.json boş");
+
+  const seenRanks = new Map();
+  let playedTotal = 0;
+
+  for (const row of rows) {
+    const label = row.name || row.id || "bilinmeyen takım";
+    const played = Number(row.played || 0);
+    const won = Number(row.won || 0);
+    const drawn = Number(row.drawn || 0);
+    const lost = Number(row.lost || 0);
+    const goalsFor = Number(row.goalsFor || 0);
+    const goalsAgainst = Number(row.goalsAgainst || 0);
+    const goalDifference = Number(row.goalDifference || 0);
+    const points = Number(row.points || 0);
+    const deduction = Number(row.pointDeduction || 0);
+
+    for (const [field, value] of Object.entries({ played, won, drawn, lost, goalsFor, goalsAgainst, points })) {
+      expect(Number.isInteger(value) && value >= 0, `${label}: ${field} negatif ya da tam sayı değil (${value})`);
+    }
+
+    expect(played === won + drawn + lost, `${label}: O(${played}) ≠ G(${won})+B(${drawn})+M(${lost})`);
+    expect(goalDifference === goalsFor - goalsAgainst, `${label}: AV(${goalDifference}) ≠ AG(${goalsFor})-YG(${goalsAgainst})`);
+    expect(points === won * 3 + drawn - deduction, `${label}: P(${points}) ≠ 3·G(${won})+B(${drawn})-ceza(${deduction})`);
+
+    if (row.rank != null) {
+      const rank = Number(row.rank);
+      expect(Number.isInteger(rank) && rank > 0, `${label}: geçersiz sıra (${row.rank})`);
+      expect(!seenRanks.has(rank), `sıra ${rank} iki takımda birden: ${seenRanks.get(rank)} / ${label}`);
+      seenRanks.set(rank, label);
+    }
+
+    playedTotal += played;
+  }
+
+  // Lig başladıysa sıralama puana/averaja uymalı.
+  if (playedTotal > 0) {
+    const ordered = rows
+      .filter((row) => row.rank != null)
+      .slice()
+      .sort((left, right) => Number(left.rank) - Number(right.rank));
+
+    for (let index = 1; index < ordered.length; index += 1) {
+      const above = ordered[index - 1];
+      const below = ordered[index];
+      const better = Number(above.points || 0) > Number(below.points || 0) ||
+        (Number(above.points || 0) === Number(below.points || 0) &&
+          Number(above.goalDifference || 0) >= Number(below.goalDifference || 0));
+      expect(better, `sıralama puan/averajla çelişiyor: ${above.name}(${above.points}p) sırası ${below.name}(${below.points}p) üstünde`);
+    }
+  }
+
+  // Sezon etiketi tüm satırlarda aynı olmalı; karışık sezon = karışık tablo.
+  const seasons = new Set(rows.map((row) => row.standingsSeason).filter(Boolean));
+  expect(seasons.size <= 1, `puan tablosunda birden fazla sezon etiketi: ${[...seasons].join(", ")}`);
+}
+
 checkDataJsonSyntax();
+checkStandingsIntegrity();
 checkProviderSecretNaming();
 checkWorkflowYaml();
 checkEmptyHideSections();

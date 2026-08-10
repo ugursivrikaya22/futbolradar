@@ -284,13 +284,21 @@ function sourceSteps(type, providerReady) {
   const noProvider = providerReady ? false : "API-Football preflight/configuration is unavailable; last valid provider cache is preserved.";
   return [
     ...(full ? [nodeStep("fixture-calendar", "sync-fixture-calendar.mjs", ["--apply"], { kind: "source", source: "thesportsdb", attempts: 2, timeoutMs: 8 * 60 * 1000 })] : []),
+    // Takvimden gelen kesinleşmiş gün/saatler TFF eşleşme listesine işlenir.
+    // Sağlayıcıya istek atmaz; yalnızca iki dosyayı hizalar, bu yüzden
+    // fixture-calendar başarısız olsa bile çalışması güvenli.
+    ...(full ? [nodeStep("super-lig-fixture-dates", "sync-super-lig-fixture-dates.mjs", ["--apply"], { kind: "transform", timeoutMs: 2 * 60 * 1000 })] : []),
     nodeStep("live-fixtures", "sync-live-fixtures.mjs", ["--apply", `--mode=${type}`], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider }),
     nodeStep("standings", "sync-standings.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("injuries-suspensions", "sync-squad-statuses.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("football-news", "sync-football-news.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 4 * 60 * 1000 }),
     nodeStep("official-lineups", "refresh-official-lineups.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("provider-identities", "backfill-provider-ids.mjs", ["--apply"], { kind: "source", source: "api-football", timeoutMs: 5 * 60 * 1000, skip: noProvider }),
-    nodeStep("match-results", "sync-match-results.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider })
+    nodeStep("match-results", "sync-match-results.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider }),
+    // Sayfalarda görünen "Son kontrol" etiketleri, senkronların gerçekten
+    // yazdığı zaman damgalarından tazelenir. Bu adım olmadan defter elle
+    // güncellenmeyi bekliyor ve taze veriyi "güncelleme gerekli" gösteriyordu.
+    nodeStep("freshness-ledger", "refresh-freshness-ledger.mjs", ["--apply"], { kind: "transform", timeoutMs: 60 * 1000 })
   ];
 }
 

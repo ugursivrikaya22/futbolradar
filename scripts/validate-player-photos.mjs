@@ -1,18 +1,41 @@
+#!/usr/bin/env node
+/**
+ * OYUNCU FOTOĞRAFI DOĞRULAMA.
+ *
+ * Kural tek yerde: services/playerPhotoService.js. Fotoğraf ya lisanslı
+ * hostta duran bir adrestir (media.api-sports.io) ya da gerçek bir sağlayıcı
+ * kimliğinden TÜRETİLİR; ikisi de yoksa oyuncu baş harfleriyle gösterilir.
+ * Bu betik o kuralın veri tarafındaki karşılığını denetler: kayıtlı adres
+ * hâlâ görsel mi döndürüyor, yoksa kırık mı.
+ *
+ * NEDEN YENİDEN YAZILDI. Betik, servisin ARTIK VAR OLMAYAN bir sürümüne
+ * göre yazılmıştı: `normalizePlayerPhoto`, `getPlayerPhotoUrl`,
+ * `isApprovedLocalPhotoUrl` ve `photoMatchesProviderId` dışa aktarılmıyor.
+ * İlk çağrıda `normalizePlayerPhoto is not a function` fırlatıyor, catch
+ * bloğu bunu "failed safely" diye yazıp exit 1 veriyordu. Yani haftalık
+ * fotoğraf denetimi HİÇ ÇALIŞMADI; her pazar sessizce düştü. Ayrıca
+ * `player.photo` alanını nesne sanıp `{...current, url, status}` yazıyordu;
+ * veri dosyasında o alan bir DİZE, servis de dize bekliyor — apply yolu
+ * çalışsaydı 533 oyuncunun fotoğrafını kullanılamaz hâle getirecekti.
+ *
+ * Artık servisin gerçek sözleşmesini kullanır ve `photo` alanını dize
+ * olarak korur. Doğrulama izleri ayrı alanlarda tutulur:
+ *   photoStatus       "verified" | "broken" | "unverified" | "placeholder"
+ *   photoCheckedAt    son ağ denetiminin zamanı
+ * KIRIK ADRES SİLİNMEZ, işaretlenir: adres yanlışsa da kaydın geçmişi
+ * kaybolmasın; arayüz zaten `resolvePlayerPhoto` üzerinden yer tutucuya
+ * düşüyor.
+ */
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const {
-  getPlayerPhotoUrl,
-  isAllowedPhotoUrl,
-  isApprovedLocalPhotoUrl,
-  normalizePlayerPhoto,
-  photoMatchesProviderId
-} = require("../services/playerPhotoService.js");
+const { isAllowedPhotoUrl, providerPhotoId, resolvePlayerPhoto } = require("../services/playerPhotoService.js");
 
 const root = process.cwd();
 const PLAYERS_PATH = path.join(root, "data", "players.json");
+const PUBLIC_PLAYERS_PATH = path.join(root, "public", "data", "players.json");
 const REPORT_PATH = path.join(root, "outputs", "player-photo-validation.json");
 
 function parseArgs(argv) {
@@ -36,12 +59,8 @@ function atomicWrite(file, value) {
   fs.renameSync(temp, file);
 }
 
-function localAssetPath(url) {
-  return path.join(root, String(url).replace(/^\.\.\//, "").replace(/^\.\//, "").replace(/^\//, ""));
-}
-
-function recentlyVerified(photo, staleDays) {
-  const timestamp = Date.parse(photo.lastVerifiedAt || "");
+function recentlyChecked(player, staleDays) {
+  const timestamp = Date.parse((player && player.photoCheckedAt) || "");
   return Number.isFinite(timestamp) && Date.now() - timestamp < staleDays * 86400000;
 }
 
@@ -62,6 +81,8 @@ async function remoteCheck(url, timeoutMs) {
     if ([404, 410].includes(response.status) || (response.ok && !contentType.toLowerCase().startsWith("image/"))) {
       return { outcome: "broken", httpStatus: response.status, contentType };
     }
+    // 403/429/5xx: adres kırık DEĞİL, doğrulanamadı. İkisini ayırmak şart —
+    // hız limitine takılan bir koşu 500 fotoğrafı "kırık" işaretlememeli.
     return { outcome: "unverified", httpStatus: response.status, contentType };
   } catch (error) {
     return {
@@ -72,13 +93,17 @@ async function remoteCheck(url, timeoutMs) {
   }
 }
 
+/**
+ * Aynı adresi birden fazla OYUNCU kullanıyorsa bu bir veri hatasıdır:
+ * sağlayıcı adresi kimlikten türetiliyor, kimlik de oyuncuya özgü.
+ */
 function duplicatePhotoRows(players) {
   const byUrl = new Map();
   for (const player of players) {
-    const url = getPlayerPhotoUrl(player);
-    if (!url) continue;
-    if (!byUrl.has(url)) byUrl.set(url, []);
-    byUrl.get(url).push({ id: player.id, name: player.name, providerId: player.providerId || null });
+    const photo = resolvePlayerPhoto(player);
+    if (photo.isPlaceholder || !photo.url) continue;
+    if (!byUrl.has(photo.url)) byUrl.set(photo.url, []);
+    byUrl.get(photo.url).push({ id: player.id, name: player.name, providerId: player.providerId || null });
   }
   return Array.from(byUrl.entries())
     .filter(([, rows]) => new Set(rows.map((row) => row.providerId || row.id)).size > 1)
@@ -98,26 +123,36 @@ async function main() {
       const index = cursor;
       cursor += 1;
       const player = targets[index];
-      const photo = normalizePlayerPhoto(player);
-      const url = getPlayerPhotoUrl(player);
+      const photo = resolvePlayerPhoto(player);
       let check;
 
-      if (!url) {
-        check = { outcome: "missing" };
-      } else if (!isAllowedPhotoUrl(url) || !photoMatchesProviderId(player)) {
-        check = { outcome: "broken", reason: "invalid-source-or-provider-id-mismatch" };
-      } else if (isApprovedLocalPhotoUrl(url)) {
-        check = fs.existsSync(localAssetPath(url))
-          ? { outcome: "verified", contentType: `image/${path.extname(url).slice(1)}` }
-          : { outcome: "broken", reason: "local-file-missing" };
-      } else if (args.offline || recentlyVerified(photo, args.staleDays)) {
-        check = { outcome: args.offline ? "structural-only" : "recently-verified" };
+      if (photo.isPlaceholder) {
+        // Fotoğrafı olmayan oyuncu hata değil: sağlayıcı kimliği yoksa adres
+        // ÜRETİLMEZ, baş harf gösterilir. Bu bilinçli bir durum.
+        check = { outcome: "placeholder" };
+      } else if (!isAllowedPhotoUrl(photo.url)) {
+        check = { outcome: "broken", reason: "unlicensed-host" };
+      } else if (photo.source === "provider" && providerPhotoId(player) &&
+        !photo.url.includes(`/${providerPhotoId(player)}.`)) {
+        // Kayıtlı adres BAŞKA bir oyuncunun kimliğini taşıyor.
+        check = { outcome: "broken", reason: "provider-id-mismatch" };
+      } else if (args.offline) {
+        check = { outcome: "structural-only" };
+      } else if (recentlyChecked(player, args.staleDays)) {
+        check = { outcome: "recently-verified" };
       } else {
-        check = await remoteCheck(url, args.timeoutMs);
+        check = await remoteCheck(photo.url, args.timeoutMs);
         await new Promise((resolve) => setTimeout(resolve, 75));
       }
 
-      results[index] = { id: player.id, name: player.name, providerId: player.providerId || null, url: url || null, ...check };
+      results[index] = {
+        id: player.id,
+        name: player.name,
+        providerId: player.providerId || null,
+        url: photo.url || null,
+        photoSource: photo.source,
+        ...check
+      };
     }
   }
 
@@ -128,6 +163,7 @@ async function main() {
     summary[item.outcome] = (summary[item.outcome] || 0) + 1;
     return summary;
   }, {});
+  const failures = results.filter((item) => ["broken", "transport-error", "unverified"].includes(item.outcome));
   const report = {
     generatedAt,
     mode: args.apply ? "apply" : "dry-run",
@@ -136,7 +172,7 @@ async function main() {
     checkedPlayers: targets.length,
     counts,
     duplicatePhotoUrls: duplicates,
-    failures: results.filter((item) => ["broken", "transport-error", "unverified"].includes(item.outcome))
+    failures
   };
 
   console.log(JSON.stringify({
@@ -148,37 +184,37 @@ async function main() {
   }, null, 2));
 
   if (!args.apply) {
-    console.log("Dry run: photo metadata was not changed.");
+    console.log("Kuru koşu: fotoğraf verisi değiştirilmedi.");
     return;
   }
 
   const byId = new Map(results.map((result) => [result.id, result]));
+  let changed = 0;
   const updated = rawPlayers.map((player) => {
     const result = byId.get(player.id);
-    const current = normalizePlayerPhoto(player);
-    if (!result) return { ...player, photo: current };
-    if (result.outcome === "verified") {
-      return {
-        ...player,
-        photo: {
-          ...current,
-          url: result.url,
-          source: isApprovedLocalPhotoUrl(result.url) ? "local" : "api-football",
-          status: isApprovedLocalPhotoUrl(result.url) ? "verified" : "provider",
-          lastVerifiedAt: generatedAt,
-          updatedAt: current.updatedAt || generatedAt
-        }
-      };
+    if (!result) return player;
+
+    // Ağ denetimi yapılamayan durumlar kaydı DEĞİŞTİRMEZ: "doğrulanamadı"
+    // ile "kırık" aynı şey değil, önceki doğrulama izi de silinmemeli.
+    if (["unverified", "transport-error", "recently-verified", "structural-only"].includes(result.outcome)) {
+      return player;
     }
-    if (result.outcome === "broken") {
-      return { ...player, photo: { ...current, status: "broken", updatedAt: generatedAt } };
-    }
-    return { ...player, photo: current };
+
+    const next = { ...player, photoStatus: result.outcome };
+    if (result.outcome === "verified") next.photoCheckedAt = generatedAt;
+    if (player.photoStatus === next.photoStatus && player.photoCheckedAt === next.photoCheckedAt) return player;
+    changed += 1;
+    return next;
   });
 
-  atomicWrite(PLAYERS_PATH, updated);
+  if (changed) {
+    atomicWrite(PLAYERS_PATH, updated);
+    if (fs.existsSync(path.dirname(PUBLIC_PLAYERS_PATH))) atomicWrite(PUBLIC_PLAYERS_PATH, updated);
+  }
   atomicWrite(REPORT_PATH, report);
-  console.log(`Updated ${path.relative(root, PLAYERS_PATH)} and wrote internal validation report.`);
+  console.log(changed
+    ? `${changed} oyuncu kaydının fotoğraf denetim izi güncellendi.`
+    : "Fotoğraf denetim izlerinde değişiklik yok; oyuncu dosyası aynen bırakıldı.");
 }
 
 main().catch((error) => {

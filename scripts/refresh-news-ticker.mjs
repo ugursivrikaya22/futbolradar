@@ -59,6 +59,7 @@ const {
 } = require("../services/newsTicker.js");
 
 const TICKER_PATH = path.join(root, "data", "news-ticker.json");
+const PUBLIC_TICKER_PATH = path.join(root, "public", "data", "news-ticker.json");
 const NEWS_PATH = path.join(root, "data", "news.json");
 
 /**
@@ -277,11 +278,28 @@ if (!apply) {
   process.exit(strict && invalid.length ? 1 : 0);
 }
 
-if (sameContent) {
-  log("içerik değişmedi, dosya yeniden yazılmadı.");
-} else {
+if (!sameContent) {
   fs.writeFileSync(TICKER_PATH, serialized, "utf8");
   log(`yazıldı: ${path.relative(root, TICKER_PATH)}`);
+} else {
+  log("içerik değişmedi, dosya yeniden yazılmadı.");
+}
+
+// AYNA AYRI DEĞERLENDİRİLİR.
+//
+// Bu betik `npm run postprocess` içinde, yani `sync-public-assets.mjs`ten
+// SONRA çalışıyor: ayna bir önceki hâlde kalıyor ve iki kopya her koşuda
+// ayrışıyordu. "İçerik değişmedi" kararı yalnızca kök dosyaya bakıyordu,
+// dolayısıyla bayat bir aynayı kendi başına düzeltemiyordu da. Ayna artık
+// kendi içeriğiyle karşılaştırılır; kök dosya yazılmasa bile hizalanır.
+const publicDir = path.dirname(PUBLIC_TICKER_PATH);
+if (fs.existsSync(publicDir)) {
+  const published = fs.existsSync(TICKER_PATH) ? fs.readFileSync(TICKER_PATH, "utf8") : serialized;
+  const mirrored = fs.existsSync(PUBLIC_TICKER_PATH) ? fs.readFileSync(PUBLIC_TICKER_PATH, "utf8") : "";
+  if (mirrored !== published) {
+    fs.writeFileSync(PUBLIC_TICKER_PATH, published, "utf8");
+    log(`ayna hizalandı: ${path.relative(root, PUBLIC_TICKER_PATH)}`);
+  }
 }
 
 process.exit(strict && invalid.length ? 1 : 0);

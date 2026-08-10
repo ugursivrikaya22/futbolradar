@@ -11,6 +11,8 @@ const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), 
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
 const { getPlayers } = require("../services/playerService.js");
+const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureService.js");
+const { sameClub } = require("../services/superLigTeams.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const {
   confidenceLabel,
@@ -51,11 +53,17 @@ function flattenFixtures() {
     roundLabel: round.label,
     dateRange: match.dateLabel || round.dateRange || null,
     freshness: match.freshness || fixtures.freshness
-  }))).filter((match) => match.homeTeam && match.awayTeam && match.fixtureStatus === "confirmed-pairing");
+  // "confirmed-date" = eşleşme onaylı VE gün/saat atanmış. İkisi de yayına
+  // girer; tarih atanmış maçı dışarıda bırakmak, onaylanmış bir fikstürün
+  // sayfasını yok etmek olurdu.
+  }))).filter((match) => match.homeTeam && match.awayTeam && CONFIRMED_FIXTURE_STATUSES.has(match.fixtureStatus));
 }
 
+// Kaynaklar arası yazım farkı için bkz. services/superLigTeams.js#sameClub.
 function getTeam(name) {
-  return teams.find((team) => normalizeText(team.name || team.team) === normalizeText(name)) || null;
+  return teams.find((team) => normalizeText(team.name || team.team) === normalizeText(name)) ||
+    teams.find((team) => sameClub(team.name || team.team, name)) ||
+    null;
 }
 
 function formHtml(team) {

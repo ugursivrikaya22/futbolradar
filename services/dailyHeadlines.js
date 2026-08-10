@@ -30,7 +30,7 @@
 // değil — içeride `matchState(match)` çağırıyorlar ve o da canlı-zaman aşımı
 // gibi kayda bağlı kuralları uyguluyor. Bunlara kanonik durum dizesi
 // geçirmek sessizce her zaman `false` döndürür.
-const { isFinishedStatus, isLiveStatus } = require("./matchStatus");
+const { isFinishedStatus, isLiveStatus, istanbulDay } = require("./matchStatus");
 const { isTurkishMatch } = require("./turkishTeams");
 
 /** Ekranda en fazla kaç başlık? Üç, "seçilmiş" ile "liste" arasındaki sınır. */
@@ -242,8 +242,7 @@ function upcomingHeadline(match, reports) {
 /** Kayıt bugüne mi ait? Tarih karşılaştırması İstanbul gününe göre. */
 function isOnDay(match, day) {
   if (!day) return true;
-  const kickoff = text(match && (match.kickoff || match.date));
-  return kickoff.slice(0, 10) === day;
+  return istanbulDay(text(match && (match.kickoff || match.date))) === day;
 }
 
 /**

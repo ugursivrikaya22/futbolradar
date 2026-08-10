@@ -452,6 +452,58 @@ function todayInIstanbul() {
   }).format(new Date());
 }
 
+/**
+ * BAŞLAMA SAATİ HER ZAMAN TSİ OFSETİYLE YAZILIR.
+ *
+ * API-Football `fixture.date` alanını UTC ofsetiyle ("...T22:30:00+00:00")
+ * döndürüyor. Zincirin tamamı ise takvim gününü ISO dizesinin ilk on
+ * karakterinden okuyor (`app.js:matchDateValue`, `sync-live-fixtures.mjs`,
+ * `prerender-core-pages.mjs`, `services/dailyHeadlines.js` ...). Aynı kural
+ * `scripts/sync-fixture-calendar.mjs` içinde de yazılı: TheSportsDB zaman
+ * damgası TSİ'ye çevrildikten sonra saklanır, "böylece tarih
+ * karşılaştırmaları doğru güne düşer".
+ *
+ * Bu sağlayıcı o sözleşmenin dışında kalmıştı. Sonucu bir GÜNLÜK KAYMA:
+ * TSİ 21:00'den sonra başlayan her maç (UTC'de ertesi gün değil, aynı gün
+ * 21:00+ olanlar değil — UTC 21:00'i geçenler) bir önceki güne düşüyordu.
+ * "2026-08-10T22:30:00+00:00" TSİ'de 11 Ağustos 01:30'dur; dosyada ise
+ * 10 Ağustos maçı gibi duruyordu ve "Bugünün Maçları" onu yanlış güne
+ * koyuyordu.
+ *
+ * Aynı ANDIR, yalnızca gösterimi değişir: `Date.parse` iki biçim için de
+ * aynı değeri verir, değişen tek şey dizeyi dilimleyen kodun gördüğü gün.
+ */
+function toIstanbulOffsetIso(value) {
+  const raw = String(value || "").trim();
+  if (!raw) {
+    return "";
+  }
+
+  const parsed = new Date(raw);
+  if (Number.isNaN(parsed.getTime())) {
+    // Çözümlenemeyen değer UYDURULMAZ; sağlayıcının yazdığı gibi taşınır.
+    return raw;
+  }
+
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Europe/Istanbul",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false
+    }).formatToParts(parsed).map((part) => [part.type, part.value])
+  );
+
+  // Intl gece yarısını "24" olarak verebiliyor; gün zaten doğru olduğu için
+  // yalnızca saat alanı normalize edilir.
+  const hour = parts.hour === "24" ? "00" : parts.hour;
+  return `${parts.year}-${parts.month}-${parts.day}T${hour}:${parts.minute}:${parts.second}+03:00`;
+}
+
 function responseItems(payload) {
   return Array.isArray(payload && payload.response) ? payload.response : [];
 }
@@ -527,7 +579,7 @@ function normalizeFixture(item) {
   const league = item.league || {};
   const teams = item.teams || {};
   const goals = item.goals || {};
-  const kickoff = fixture.date || "";
+  const kickoff = toIstanbulOffsetIso(fixture.date);
   const homeTeam = teams.home || {};
   const awayTeam = teams.away || {};
 

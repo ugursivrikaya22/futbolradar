@@ -410,7 +410,7 @@
 
   function matchDateValue(match) {
     var value = match && (match.kickoff || match.date || match.utcDate);
-    return value ? String(value).slice(0, 10) : "";
+    return value ? istanbulDayOf(value) : "";
   }
 
   function matchCompetitionMatches(match, selectedLeague) {
@@ -3164,6 +3164,46 @@
   // services/dailyHeadlines.js ve services/homeQuickStats.js ile aynı
   // girdilerde çalıştırılır; iki taraf ayrışırsa test kırılır. İşaret
   // yorumlarını silme.
+
+  // Takvim günü HER ZAMAN Europe/Istanbul'a göre hesaplanır.
+  //
+  // Kayıtların başlama saati TSİ ofsetiyle yazılıyor (bkz.
+  // services/providers/apiFootballProvider.js ve
+  // scripts/sync-fixture-calendar.mjs), dolayısıyla ilk on karakter zaten
+  // doğru günü verir. Ama tek savunma o sözleşme olmamalı: UTC ofsetli tek
+  // bir kayıt sızdığında TSİ 00:00-02:59 arası başlayan maçlar bir önceki
+  // güne düşer ve "Bugünün Maçları" dünün maçını gösterir. Bu yüzden gün,
+  // dizeyi dilimleyerek değil, anı TSİ'ye çevirerek okunur.
+  //
+  // Saat taşımayan kayıtlar (yalnızca "2026-07-17") olduğu gibi kalır:
+  // onlarda çevrilecek bir an yoktur, uydurulmaz.
+  //
+  // Servis tarafındaki eşi: services/matchStatus.js -> istanbulDay().
+  // Bu blokta durmasının sebebi, test-home-signals'ın istemci ile servisi
+  // aynı girdilerle karşılaştırırken bu yardımcıyı da kapsaması.
+  function istanbulDayOf(value) {
+    var raw = String(value || "");
+    if (!raw) {
+      return "";
+    }
+
+    if (raw.indexOf("T") === -1) {
+      return raw.slice(0, 10);
+    }
+
+    var parsed = new Date(raw);
+    if (Number.isNaN(parsed.getTime())) {
+      return raw.slice(0, 10);
+    }
+
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Istanbul",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).format(parsed);
+  }
+
   var DAILY_HEADLINE_LIMIT = 3;
   var DAILY_HEADLINE_RANKS = {
     LIVE_TURKISH: 0, LIVE_OTHER: 1,
@@ -3335,7 +3375,7 @@
   function headlineIsOnDay(match, day) {
     if (!day) return true;
     var kickoff = headlineText(match && (match.kickoff || match.date));
-    return kickoff.slice(0, 10) === day;
+    return istanbulDayOf(kickoff) === day;
   }
 
   /**
@@ -4363,6 +4403,9 @@
       confirmed: "Onaylı",
       "confirmed-pairing": "Eşleşme onaylı",
       "confirmed-pairings": "Eşleşmeler onaylı",
+      // Eşleşme + gün/saat ataması yapılmış maç. "Eşleşme onaylı" demek,
+      // elimizdeki kesin başlama saatini yokmuş gibi göstermek olurdu.
+      "confirmed-date": "Tarih ve saat onaylı",
       "partially-confirmed": "Kısmi fikstür",
       "pending-verification": "Kontrol bekliyor",
       "awaiting-official-match-list": "Resmi liste bekleniyor"
@@ -8752,7 +8795,7 @@
   /** Künye: yalnızca gerçekten kayıtlı alanlar basılır. */
   function mdFactsHtml(detail) {
     var facts = [
-      ["Tarih", detail.kickoff ? formatMatchDate(String(detail.kickoff).slice(0, 10)) : ""],
+      ["Tarih", detail.kickoff ? formatMatchDate(istanbulDayOf(detail.kickoff)) : ""],
       ["Başlama", matchTimeLabel(detail)],
       ["Stat", detail.venue],
       ["Şehir", detail.city],

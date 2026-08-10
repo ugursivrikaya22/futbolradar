@@ -40,7 +40,7 @@ const calendarMatches = fs.existsSync(fixtureCalendarPath)
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
-const { getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigFixtureService.js");
+const { CONFIRMED_FIXTURE_STATUSES, getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigFixtureService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const {
   ROTATION_INTERVAL_MS,
@@ -52,8 +52,12 @@ const { renderQuickStats } = require("../services/homeQuickStats.js");
 const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
-const { fixtureTeamNames } = require("../services/superLigTeams.js");
+const { fixtureTeamNames, sameClub } = require("../services/superLigTeams.js");
 const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
+// Statik yedeğin takvim günü, istemcinin kullandığı kuralla AYNI olmalı
+// (app.js: istanbulDayOf). Ayrışırsa JavaScript açılana kadar farklı bir
+// gün listelenir ve sayfa gözün önünde değişir.
+const { istanbulDay } = require("../services/matchStatus.js");
 
 const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
 const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
@@ -113,11 +117,18 @@ function allFixtures() {
     dateRange: match.dateLabel || round.dateRange || "Tarih ve saat bekleniyor",
     league: fixtures.league,
     freshness: fixtures.freshness
-  }))).filter((match) => match.fixtureStatus === "confirmed-pairing");
+  }))).filter((match) => CONFIRMED_FIXTURE_STATUSES.has(match.fixtureStatus));
 }
 
+// Aynı kulüp kaynaklara göre farklı yazılıyor: sağlayıcı "Rizespor" derken
+// TFF fikstürü "Çaykur Rizespor" diyor. Tam eşitlik arandığı sürece bu üç
+// kulüp (Rizespor, Gençlerbirliği, Amed) fikstür kartlarında takım kaydına
+// hiç bağlanamıyordu: form, momentum ve rozet boş kalıyordu. Kural zaten
+// services/superLigTeams.js#sameClub içinde tanımlı; burada da o kullanılır.
 function teamByName(name) {
-  return teams.find((team) => normalizeText(team.name) === normalizeText(name)) || null;
+  return teams.find((team) => normalizeText(team.name) === normalizeText(name)) ||
+    teams.find((team) => sameClub(team.name, name)) ||
+    null;
 }
 
 function radarFor(match) {
@@ -196,7 +207,7 @@ function calendarProgramCards(limit) {
   // calendar here rendered those duplicates into the static fallback, so the
   // homepage showed each neutral-venue friendly twice.
   const upcoming = curatedMatches()
-    .filter((match) => String(match.kickoff || "").slice(0, 10) >= today)
+    .filter((match) => istanbulDay(match.kickoff) >= today)
     .filter((match) => String(match.status || "").toUpperCase() !== "FINISHED" || isVerifiedFinalMatch(match))
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
     .slice(0, limit || 6);
@@ -206,7 +217,7 @@ function calendarProgramCards(limit) {
   }
 
   return upcoming.map((match) => {
-    const date = String(match.kickoff || "").slice(0, 10);
+    const date = istanbulDay(match.kickoff);
     const isToday = date === today;
     const status = String(match.status || "SCHEDULED").toUpperCase();
     // Biten maçta başlık saati değil skoru göstermeli; statik yedek JS
@@ -320,11 +331,11 @@ function staticFeaturedFixture() {
   const today = istanbulToday();
   const all = curatedMatches();
   const list = all
-    .filter((match) => String(match.kickoff || "").slice(0, 10) >= today)
+    .filter((match) => istanbulDay(match.kickoff) >= today)
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)));
 
   const liveCount = list.filter((match) => String(match.status || "").toUpperCase() === "LIVE").length;
-  const todayList = list.filter((match) => String(match.kickoff || "").slice(0, 10) === today);
+  const todayList = list.filter((match) => istanbulDay(match.kickoff) === today);
   const finishedCount = todayList.filter((match) => String(match.status || "").toUpperCase() === "FINISHED").length;
   const upcomingCount = todayList.length - finishedCount - liveCount;
   const selections = selectFeaturedMatches(all, { today });
@@ -383,7 +394,7 @@ function staticFeaturedFixture() {
     const headline = hasScore ? `${match.score.home} - ${match.score.away}` : (match.time || "—");
     // Skor/saat büyük alanda zaten yazıyor; rozet onu tekrar etmesin.
     const stateLabel = status === "FINISHED" ? "Maç sonucu" : status === "LIVE" ? "Canlı" : "Başlama saati";
-    const dateLabel = String(match.kickoff || "").slice(0, 10) === today ? "Bugün" : longDateLabel(match.kickoff);
+    const dateLabel = istanbulDay(match.kickoff) === today ? "Bugün" : longDateLabel(match.kickoff);
 
     return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}" data-featured-reason="${escapeHtml(entry.reason)}" data-featured-turkish="${entry.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(entry.reasonLabel)}">
       <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMarkHtml(match.league)}${escapeHtml(match.league || "Maç programı")}</span><span>${escapeHtml(`${dateLabel} · ${match.venue || "Saha bilgisi bekleniyor"}`)}</span></div>

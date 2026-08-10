@@ -116,6 +116,25 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "sofascore.com",
     "fotmob.com",
     "ssportplus.com"
+  ]),
+
+  // TOPLAYICI — kendisi yayın organı değil, yayın organına GİDEN yol.
+  //
+  // `scripts/sync-football-news.mjs` gündem bandını kulüplerin resmî
+  // sitelerine daraltılmış Google Haberler beslemelerinden besliyor
+  // ("site:galatasaray.org" gibi). Besleme, haberin kendi adresini vermiyor;
+  // yalnızca bir news.google.com bağlantısı ve yayıncının alan adını
+  // (`<source url>`) döndürüyor. Yani seçenekler: okuyucuyu yazının kendisine
+  // götüren toplayıcı bağlantısı ya da yazıya HİÇ götürmeyen kurum ana
+  // sayfası. Birincisi tercih edildi.
+  //
+  // Bu alan adı buraya EKLENMEDİĞİ için otomatik bant kayıtları kaynak
+  // denetiminden geçemiyordu ve `npm test` bu yüzden kırmızıydı. Kural
+  // gevşetilmiyor: bant kayıtları yalnızca beyaz listedeki resmî kulüp
+  // beslemelerinden geliyor, yayıncının adı da kayıtta ayrıca duruyor
+  // (`source.name`, `source.publisher`).
+  aggregator: Object.freeze([
+    "news.google.com"
   ])
 });
 
