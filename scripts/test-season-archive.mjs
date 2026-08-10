@@ -15,6 +15,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { siteHeader } from "./lib/layout.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -222,8 +223,16 @@ function match(overrides = {}) {
   assert.ok(index.includes('href="./arsiv.html"'), "ana sayfada arşiv bağlantısı olmalı");
   assert.ok(index.includes('id="arsiv-girisi"'), "ana sayfada arşiv bölümü olmalı");
 
-  const layout = fs.readFileSync(path.join(root, "scripts", "lib", "layout.mjs"), "utf8");
-  assert.ok(/href:\s*"arsiv\.html"/.test(layout), "arşiv ana menüde olmalı");
+  // Denetim ÜRETİLEN MENÜYE bakıyor, kaynak dosyanın metnine değil.
+  //
+  // Eskiden `scripts/lib/layout.mjs` içinde `href: "arsiv.html"` dizesi
+  // aranıyordu. Menü listesi iki dilli sürümle birlikte
+  // `services/i18n.js`e taşınınca bu regex, menü hâlâ doğru çalıştığı hâlde
+  // kırıldı: test bir davranışı değil, bir uygulama ayrıntısını sınıyordu.
+  // Başlığı gerçekten çizip bağlantıya bakmak her iki hatayı da yakalar ve
+  // yeniden düzenlemeden etkilenmez.
+  const header = siteHeader({ base: "./" });
+  assert.ok(header.includes('href="./arsiv.html"'), "arşiv ana menüde olmalı");
 }
 
 console.log(

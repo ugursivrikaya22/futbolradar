@@ -12,8 +12,11 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
 import { siteHeader, siteFooter, newsTicker } from "./lib/layout.mjs";
 import { buildTickerFeed } from "./lib/tickerFeed.mjs";
+
+const { counterpartPath, localeOfPath } = createRequire(import.meta.url)("../services/i18n.js");
 
 const root = process.cwd();
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
@@ -141,14 +144,27 @@ for (const file of files) {
   }
 
   const base = baseFor(file);
-  const ticker = newsTicker({ base, items: rebaseItems(tickerItems, base), badge: tickerFeed.badge });
+  const sitePath = path.relative(siteRootFor(file), file).split(path.sep).join("/");
+  const locale = localeOfPath(sitePath);
+  // Dil kutusu AYNI SAYFANIN karşılığına gider; karşılığı olmayan sayfalarda
+  // (7.900 üretilmiş sayfanın büyük kısmı) hedef dilin ana sayfası güvenli
+  // yedektir. Kullanıcıyı alakasız bir sayfaya atmaktansa dilin girişine
+  // götürmek dürüst davranıştır.
+  const altHref = counterpartPath(sitePath, locale === "en" ? "tr" : "en");
+
+  // Bant Türkçe editoryal içerikten besleniyor; İngilizce sayfada Türkçe
+  // başlık akıtmak "İngilizce sayfada Türkçe metin bırakma" kuralını ihlal
+  // ederdi. İngilizce bant Phase 2'de kendi kaynağıyla gelecek.
+  const ticker = locale === "en"
+    ? ""
+    : newsTicker({ base, items: rebaseItems(tickerItems, base), badge: tickerFeed.badge });
   const headerBlock = ticker
-    ? `${siteHeader({ base })}\n      <!-- shared-layout:ticker:start -->${ticker}<!-- shared-layout:ticker:end -->`
-    : siteHeader({ base });
+    ? `${siteHeader({ base, locale, altHref })}\n      <!-- shared-layout:ticker:start -->${ticker}<!-- shared-layout:ticker:end -->`
+    : siteHeader({ base, locale, altHref });
 
   let next = original.replace(TICKER_RE, "");
   next = next.replace(HEADER_RE, () => headerBlock);
-  next = next.replace(FOOTER_RE, () => siteFooter({ base }));
+  next = next.replace(FOOTER_RE, () => siteFooter({ base, locale }));
 
   if (next !== original) {
     writeGeneratedFile(file, next);

@@ -17481,3 +17481,224 @@ body,
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
+
+/* ==========================================================================
+   İKİ DİLLİ SÜRÜM — DİL KUTUSU VE İNGİLİZCE SAYFA BİLEŞENLERİ
+   ==========================================================================
+   Dil kutusu `.nav-menu` DIŞINDA duruyor (bkz. scripts/lib/layout.mjs):
+   menü mobilde katlandığı için kutu orada kalsaydı hamburgerin içinde
+   kaybolurdu. Kullanıcı dil değiştirmek için menü açmak zorunda kalmamalı.
+
+   Ölçüler bilinçli olarak küçük: kutu `--tap` yüksekliğini paylaşıyor ama
+   yatayda dar; 375 px'te logo + ENG + hamburger aynı satıra sığar ve başlık
+   yüksekliği değişmez. */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  min-width: 44px;
+  padding: 0 var(--sp-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill, 999px);
+  background: var(--surface);
+  color: var(--text-soft);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 160ms var(--ease, ease), border-color 160ms var(--ease, ease), color 160ms var(--ease, ease);
+}
+
+.lang-switch:hover,
+.lang-switch:focus-visible {
+  border-color: var(--line-strong);
+  color: var(--text);
+  background: var(--surface-tint, var(--surface));
+}
+
+/* KONUMLANDIRMA IZGARADA AÇIKÇA YAPILIR.
+   `.nav` bir grid; yeni bir çocuğu otomatik yerleşime bırakmak onu İKİNCİ
+   SATIRA düşürür ve üst çubuğun yüksekliğini büyütür. Mevcut çubuk zaten
+   `.nav-toggle` ve `.nav-search-toggle` için açık yerleşim kullanıyor;
+   dil kutusu da aynı sözleşmeye uyuyor. Kırılma noktası 1180/1181 —
+   çekmece menünün açıldığı yer. */
+@media (min-width: 1181px) {
+  .topbar-premium .nav {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    /* Üçüncü sütun ikinci bir boşluk getiriyor; sütun aralığı 22→14 px'e
+       inerek onu geri veriyor. Satır aralığı değişmiyor. */
+    column-gap: 14px;
+  }
+
+  .topbar-premium .nav .brand {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .topbar-premium .nav .nav-menu {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .topbar-premium .nav .lang-switch {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  /* YENİ ÖĞE KENDİ YERİNİ AÇAR.
+     Ölçüm: `.nav-links` masaüstünde zaten kutusunu 111 px aşıyordu (site
+     Inter'i barındırmıyor, çoğu ziyaretçide sistem yazı tipi daha geniş
+     çiziliyor). Dil kutusu bunun üstüne 25 px daha koyuyordu. Bağlantı
+     dolgusunu 12→9 px indirmek dokuz bağlantıda 54 px geri veriyor: çubuk
+     dil kutusu EKLENMEDEN ÖNCEKİ hâlinden daha az taşıyor (111 → 82 px).
+     Alt çizgi göstergesi de aynı hizada kalsın diye birlikte daralıyor. */
+  .topbar-premium .nav-links a {
+    padding: 0 9px;
+  }
+
+  .topbar-premium .nav-links a::after {
+    right: 9px;
+    left: 9px;
+  }
+}
+
+/* Çekmece düzeni: marka | büyüteç | ENG | hamburger — hepsi TEK SATIRDA.
+   Kutu menünün içine alınmıyor; kullanıcı dil değiştirmek için hamburgere
+   basmak zorunda kalmamalı. */
+@media (max-width: 1180px) {
+  .topbar-premium .nav {
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+  }
+
+  .topbar-premium .nav .lang-switch {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .topbar-premium .nav-toggle {
+    grid-column: 4;
+  }
+}
+
+@media (max-width: 400px) {
+  /* 375 px: kutu daralır ama 44 px dokunma genişliğinin altına inmez.
+     Marka `minmax(0, 1fr)` sütununda olduğu için daralan tek şey odur. */
+  .lang-switch {
+    padding: 0 6px;
+    letter-spacing: 0;
+  }
+}
+
+/* --- İngilizce sayfa listeleri ------------------------------------------- */
+.en-match-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sp-2);
+}
+
+.en-match-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto auto;
+  gap: var(--sp-2);
+  align-items: center;
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--fs-sm);
+}
+
+.en-match-row:last-child {
+  border-bottom: 0;
+}
+
+.en-match-time {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.en-match-teams {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--text);
+}
+
+.en-match-score {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  padding: 0 6px;
+}
+
+.en-match-meta,
+.en-match-state {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+}
+
+.en-match-row.is-live .en-match-state {
+  color: var(--live, #d33);
+  font-weight: 800;
+}
+
+/* Dar ekranda turnuva ve durum alt satıra iner; satır yana taşmaz. */
+@media (max-width: 640px) {
+  .en-match-row {
+    grid-template-columns: 52px minmax(0, 1fr);
+  }
+
+  .en-match-meta,
+  .en-match-state {
+    grid-column: 2;
+  }
+}
+
+/* --- İngilizce puan tablosu ---------------------------------------------- */
+.en-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.en-table th,
+.en-table td {
+  padding: var(--sp-2) var(--sp-2);
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.en-table thead th {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.en-table th[scope="row"] {
+  text-align: left;
+  color: var(--text);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.en-table tbody tr:last-child th,
+.en-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Ekran okuyucuya görünür, göze görünmez başlık. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

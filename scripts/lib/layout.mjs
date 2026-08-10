@@ -15,37 +15,41 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 // Dış bağlantı politikası tek yerde: services/sourceLinks.js.
 const { PLAIN_EXTERNAL_REL, SOURCE_LINK_REL } = require("../../services/sourceLinks.js");
+// Sözlük, rota eşlemesi ve dil yardımcıları tek yerde: services/i18n.js.
+const { NAV_KEYS, normalizeLocale, t } = require("../../services/i18n.js");
 
-export const NAV_PRIMARY = [
-  { href: "bugunun-maclari.html", label: "Bugünün Maçları" },
-  { href: "canli-skor.html", label: "Canlı Skor" },
-  { href: "mac-sonuclari.html", label: "Maç Sonuçları" },
-  { href: "super-lig-fikstur.html", label: "Süper Lig" },
-  { href: "analizler.html", label: "Analizler" },
-  { href: "takimlar.html", label: "Takımlar" },
-  { href: "kose-yazilari.html", label: "Köşe Yazıları" },
-  { href: "puan-durumu.html", label: "Puan Durumu" },
-  // Arşiv ana menüde: sezon geçmişi bir alt sayfa değil, sitenin ikinci
-  // ekseni. Buradan girildiğinde her sayfadan (ana sayfa dahil) erişilir.
-  { href: "arsiv.html", label: "Arşiv" }
-];
+/**
+ * Menü listeleri artık sözlükten TÜRETİLİYOR.
+ *
+ * Etiketler burada sabit yazılıydı; İngilizce sürüm için ikinci bir kopya
+ * çıkarmak, aynı menünün iki yerde ayrışması demekti. Türkçe çıktı birebir
+ * aynı kalıyor — `locales/tr.json` içindeki karşılıklar eski sabit metinlerle
+ * aynı dizgeler.
+ */
+function navList(locale, group) {
+  const resolved = NAV_KEYS[normalizeLocale(locale)] || NAV_KEYS.tr;
+  return (resolved[group] || []).map((item) => ({ href: item.href, label: t(item.key, locale) }));
+}
+
+export const NAV_PRIMARY = navList("tr", "primary");
 
 /** Mobil çekmecede ve alt bilgide görünen ikincil bağlantılar. */
-export const NAV_SECONDARY = [
-  { href: "oyuncu-radari.html", label: "Oyuncu Radarı" },
-  { href: "istatistik-merkezi.html", label: "İstatistik Merkezi" },
-  { href: "transfer-radari.html", label: "Transfer Radarı" },
-  { href: "momentum.html", label: "Momentum" },
-  { href: "gol-kralligi.html", label: "Gol Krallığı" },
-  { href: "haberler.html", label: "Haberler" }
-];
+export const NAV_SECONDARY = navList("tr", "secondary");
 
+/**
+ * Kurumsal bağlantılar yalnızca Türkçede var.
+ *
+ * Bu sayfaların (hakkında, gizlilik, kullanım şartları) İngilizce karşılığı
+ * henüz üretilmiyor. İngilizce alt bilgide Türkçe hukuk metinlerine bağlantı
+ * vermek, "İngilizce sayfada Türkçe içerik gösterme" kuralını ihlal ederdi;
+ * bu yüzden İngilizce alt bilgide bu sütun hiç çizilmiyor.
+ */
 const FOOTER_LEGAL = [
-  { href: "hakkinda.html", label: "Hakkında" },
-  { href: "iletisim.html", label: "İletişim" },
-  { href: "veri-notu.html", label: "Veri Notu" },
-  { href: "gizlilik.html", label: "Gizlilik" },
-  { href: "kullanim-sartlari.html", label: "Kullanım Şartları" }
+  { href: "hakkinda.html", key: "footer.about" },
+  { href: "iletisim.html", key: "footer.contact" },
+  { href: "veri-notu.html", key: "footer.dataNote" },
+  { href: "gizlilik.html", key: "footer.privacy" },
+  { href: "kullanim-sartlari.html", key: "footer.terms" }
 ];
 
 const ICONS = {
@@ -92,37 +96,85 @@ function linkList(items, base, className) {
  * Görsel yenileme `topbar-premium` sınıfı üzerinden yapılır, böylece eski
  * kurallar bozulmadan üzerine yazılır.
  */
+/**
+ * DİL KUTUSU — GERÇEK BİR BAĞLANTI, DÜĞME DEĞİL.
+ *
+ * `<a href>` seçilmesi bilinçli. JavaScript ile dil değiştiren bir düğme
+ * arama motoru için görünmez olurdu; bu bağlantı ise iki dilli sürümü
+ * taranabilir kılar ve `hreflang` çiftini gövde içinde de destekler.
+ * Aynı sebeple klavye erişimi ve orta tıkla yeni sekmede açma bedava gelir.
+ *
+ * Kutu `.nav-menu` içinde DEĞİL, doğrudan `.nav` altında duruyor: menü
+ * mobilde katlanıyor ve kutu orada kalsaydı hamburgerin içinde kaybolurdu.
+ * Kullanıcı dil değiştirmek için menü açmak zorunda kalmamalı.
+ *
+ * `altHref` köke göre karşı sayfanın yolu; `base` ile birleştirilir.
+ */
+function languageSwitch(base, locale, altHref) {
+  const current = normalizeLocale(locale);
+  const target = current === "en" ? "tr" : "en";
+  const fallback = target === "en" ? "en/index.html" : "index.html";
+  const href = `${base}${String(altHref || fallback).replace(/^\.?\//, "")}`;
+  // Etiket HEDEF dilin sözlüğünden değil, MEVCUT dilin sözlüğünden gelir:
+  // Türkçe sayfada "ENG" yazar ve aria etiketi İngilizcedir ("Switch to
+  // English"), çünkü etiket kullanıcıyı GİDECEĞİ yere çağırır.
+  const text = t("lang.switchText", current);
+  const label = t("lang.switchLabel", current);
+
+  return `<a class="lang-switch" href="${escapeHtml(href)}" lang="${target}" hreflang="${target === "en" ? "en" : "tr-TR"}" data-lang-switch="${target}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}">${escapeHtml(text)}</a>`;
+}
+
 export function siteHeader(options = {}) {
   const base = normalizeBase(options.base);
-  const primary = linkList(NAV_PRIMARY, base);
-  const secondary = linkList(NAV_SECONDARY, base);
+  const locale = normalizeLocale(options.locale);
+  const primary = linkList(navList(locale, "primary"), base);
+  const secondaryItems = navList(locale, "secondary");
+  const secondary = secondaryItems.length
+    ? `<div class="nav-links nav-links-secondary">${linkList(secondaryItems, base)}</div>`
+    : "";
+  // Maç Merkezi'nin İngilizce karşılığı henüz üretilmiyor; İngilizce başlıkta
+  // var olmayan bir sayfaya düğme koymaktansa düğme hiç çizilmiyor.
+  const cta = locale === "tr"
+    ? `<a class="cta" href="${base}mac-merkezi.html">${escapeHtml(t("nav.matchCentre", locale))}</a>`
+    : "";
+  const search = locale === "tr"
+    ? `<form class="site-search" role="search" method="get" action="${base}oyuncu-radari.html" data-search-base="${base}" autocomplete="off">
+            <span class="site-search-icon" aria-hidden="true">${ICONS.search}</span>
+            <input class="site-search-input" type="search" name="search" placeholder="${escapeHtml(t("nav.searchPlaceholder", locale))}" aria-label="${escapeHtml(t("nav.searchInSite", locale))}" aria-expanded="false" aria-controls="site-search-results" role="combobox" />
+            <button class="site-search-clear" type="button" aria-label="${escapeHtml(t("nav.searchClear", locale))}" hidden>×</button>
+            <div class="site-search-panel" id="site-search-results" role="listbox" hidden></div>
+          </form>`
+    : "";
+  // Arama dizini yalnızca Türkçe içerik taşıyor; İngilizce başlıkta arama
+  // kutusu açmak, Türkçe sonuç döndüren bir kutu göstermek olurdu.
+  const searchToggles = locale === "tr"
+    ? {
+      mobile: `<button class="nav-search-toggle nav-search-toggle-mobile" type="button" aria-label="${escapeHtml(t("nav.search", locale))}" aria-controls="primary-menu">${ICONS.search}</button>`,
+      desktop: `<button class="nav-search-toggle nav-search-toggle-desktop" type="button" data-search-open aria-label="${escapeHtml(t("nav.search", locale))}" aria-expanded="false" title="${escapeHtml(t("nav.search", locale))}">${ICONS.search}</button>`
+    }
+    : { mobile: "", desktop: "" };
 
   return `<header class="topbar topbar-premium" data-shared-layout="header">
       <div class="topbar-inner">
-        <nav class="container-wide nav" aria-label="Ana menü">
-          <a class="brand" href="${base}index.html" aria-label="FutbolRadar ana sayfa">
+        <nav class="container-wide nav" aria-label="${escapeHtml(t("nav.ariaLabel", locale))}">
+          <a class="brand" href="${base}${locale === "en" ? "en/index.html" : "index.html"}" aria-label="${escapeHtml(t("nav.brandAria", locale))}">
             <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 12 17 8"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
             <span class="brand-text"><b>Futbol</b>Radar</span>
           </a>
-          <button class="nav-search-toggle nav-search-toggle-mobile" type="button" aria-label="Takım ve futbolcu ara" aria-controls="primary-menu">${ICONS.search}</button>
-          <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
+          ${searchToggles.mobile}${languageSwitch(base, locale, options.altHref)}
+          <button class="nav-toggle" type="button" aria-label="${escapeHtml(t("nav.openMenu", locale))}" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
           <div class="nav-menu" id="primary-menu">
             <div class="nav-links">${primary}</div>
-            <div class="nav-links nav-links-secondary">${secondary}</div>
-            <a class="cta" href="${base}mac-merkezi.html">Maç Merkezi</a>
-            <button class="nav-search-toggle nav-search-toggle-desktop" type="button" data-search-open aria-label="Takım ve futbolcu ara" aria-expanded="false" title="Takım ve futbolcu ara">${ICONS.search}</button>
-            <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Koyu temaya geç">
+            ${secondary}
+            ${cta}
+            ${searchToggles.desktop}
+            <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="${escapeHtml(t("nav.themeToDark", locale))}">
               <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
               <svg class="theme-icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-              <span class="theme-toggle-label">Koyu Tema</span>
+              <span class="theme-toggle-label">${escapeHtml(t("nav.themeDark", locale))}</span>
             </button>
           </div>
-          <form class="site-search" role="search" method="get" action="${base}oyuncu-radari.html" data-search-base="${base}" autocomplete="off">
-            <span class="site-search-icon" aria-hidden="true">${ICONS.search}</span>
-            <input class="site-search-input" type="search" name="search" placeholder="Takım, oyuncu ara" aria-label="Sitede ara" aria-expanded="false" aria-controls="site-search-results" role="combobox" />
-            <button class="site-search-clear" type="button" aria-label="Aramayı temizle" hidden>×</button>
-            <div class="site-search-panel" id="site-search-results" role="listbox" hidden></div>
-          </form>
+          ${search}
         </nav>
       </div>
     </header>`;
@@ -197,7 +249,13 @@ export function newsTicker(options = {}) {
 /** Kurumsal alt bilgi: hakkında metni, gezinme sütunları, sosyal ikonlar. */
 export function siteFooter(options = {}) {
   const base = normalizeBase(options.base);
+  const locale = normalizeLocale(options.locale);
   const year = options.year || new Date().getFullYear();
+  const primaryItems = navList(locale, "primary");
+  const secondaryItems = navList(locale, "secondary");
+  const legalItems = locale === "tr"
+    ? FOOTER_LEGAL.map((item) => ({ href: item.href, label: t(item.key, locale) }))
+    : [];
 
   const social = SOCIAL.map(
     (item) =>
@@ -206,32 +264,34 @@ export function siteFooter(options = {}) {
       `<a href="${escapeHtml(item.href)}" aria-label="${escapeHtml(item.label)}" target="_blank" rel="${PLAIN_EXTERNAL_REL}">${item.icon}</a>`
   ).join("");
 
+  const column = (titleKey, items) => (items.length
+    ? `<div class="footer-col">
+          <h2>${escapeHtml(t(titleKey, locale))}</h2>
+          <div class="footer-col-links">${linkList(items, base)}</div>
+        </div>`
+    : "");
+
+  const bottomLinks = locale === "tr"
+    ? `<span class="footer-links"><a href="${base}veri-notu.html">${escapeHtml(t("footer.dataNote", locale))}</a><a href="${base}iletisim.html">${escapeHtml(t("footer.contact", locale))}</a></span>`
+    : "";
+
   return `<footer class="footer footer-premium" data-shared-layout="footer">
       <div class="container-wide footer-grid">
         <div class="footer-brand">
-          <a class="brand" href="${base}index.html" aria-label="FutbolRadar ana sayfa">
+          <a class="brand" href="${base}${locale === "en" ? "en/index.html" : "index.html"}" aria-label="${escapeHtml(t("nav.brandAria", locale))}">
             <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 12 17 8"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
             <span class="brand-text"><b>Futbol</b>Radar</span>
           </a>
-          <p>Süper Lig ve Avrupa kupalarında canlı skor, maç programı, puan durumu, oyuncu istatistikleri ve doğrulanmış transfer hareketleri. Veriler resmî kaynaklardan derlenir, üretilmez.</p>
-          <div class="footer-social" aria-label="Sosyal medya">${social}</div>
+          <p>${escapeHtml(t("footer.blurb", locale))}</p>
+          <div class="footer-social" aria-label="${escapeHtml(t("footer.social", locale))}">${social}</div>
         </div>
-        <div class="footer-col">
-          <h2>Maç</h2>
-          <div class="footer-col-links">${linkList(NAV_PRIMARY, base)}</div>
-        </div>
-        <div class="footer-col">
-          <h2>Veri</h2>
-          <div class="footer-col-links">${linkList(NAV_SECONDARY, base)}</div>
-        </div>
-        <div class="footer-col">
-          <h2>Kurumsal</h2>
-          <div class="footer-col-links">${linkList(FOOTER_LEGAL, base)}</div>
-        </div>
+        ${column("footer.match", primaryItems)}
+        ${column("footer.data", secondaryItems)}
+        ${column("footer.corporate", legalItems)}
       </div>
       <div class="container-wide footer-bottom">
-        <span>© ${escapeHtml(year)} FutbolRadar · Canlı skor ve futbol istatistikleri</span>
-        <span class="footer-links"><a href="${base}veri-notu.html">Veri Notu</a><a href="${base}iletisim.html">İletişim</a></span>
+        <span>© ${escapeHtml(year)} FutbolRadar · ${escapeHtml(t("site.tagline", locale))}</span>
+        ${bottomLinks}
       </div>
     </footer>`;
 }

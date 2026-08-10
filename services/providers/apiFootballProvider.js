@@ -286,6 +286,58 @@ function resetProviderRequestStats() {
 }
 
 /**
+ * SAĞLAYICI KOTASININ SON BİLİNEN DURUMU.
+ *
+ * `requestCounter` yalnızca BU koşuda yapılan istekleri sayar; gün içinde
+ * daha önce çalışmış adımların harcadığı kotayı bilmez. Kota ise günlük ve
+ * hesap genelindedir. Uzun toplu işler (18 takımlık sayfalı oyuncu çekimi
+ * gibi) bu yüzden yerel sayaca güvenerek duramaz — kotanın gerçekte ne kadar
+ * kaldığını yalnızca sağlayıcının yanıt başlıkları söyler.
+ *
+ * `x-ratelimit-requests-*` GÜNLÜK kotadır ve toplu işleri durduran ölçü odur.
+ * `x-ratelimit-*` (ön ek yok) dakikalık penceredir; ayrı alanlarda tutulur
+ * çünkü ikisini karıştırmak "kota bitti" diye erken durmak demektir.
+ *
+ * Değerler null ise kota BİLİNMİYOR demektir (henüz ağa çıkılmadı ya da
+ * yanıt önbellekten geldi). Bilinmeyen kotayı "bitti" saymak, çalışan bir
+ * adımı sebepsiz durdurmak olurdu; çağıran taraf null'ı "durma" olarak
+ * yorumlamalıdır.
+ */
+const rateLimitState = {
+  limit: null,
+  remaining: null,
+  minuteLimit: null,
+  minuteRemaining: null,
+  observedAt: null
+};
+
+function headerNumber(headers, name) {
+  const raw = headers && typeof headers.get === "function" ? headers.get(name) : null;
+  if (raw === null || raw === undefined || raw === "") return null;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : null;
+}
+
+function recordRateLimit(headers) {
+  const limit = headerNumber(headers, "x-ratelimit-requests-limit");
+  const remaining = headerNumber(headers, "x-ratelimit-requests-remaining");
+  const minuteLimit = headerNumber(headers, "x-ratelimit-limit");
+  const minuteRemaining = headerNumber(headers, "x-ratelimit-remaining");
+  if (limit === null && remaining === null && minuteLimit === null && minuteRemaining === null) {
+    return;
+  }
+  if (limit !== null) rateLimitState.limit = limit;
+  if (remaining !== null) rateLimitState.remaining = remaining;
+  if (minuteLimit !== null) rateLimitState.minuteLimit = minuteLimit;
+  if (minuteRemaining !== null) rateLimitState.minuteRemaining = minuteRemaining;
+  rateLimitState.observedAt = new Date().toISOString();
+}
+
+function getProviderRateLimit() {
+  return { ...rateLimitState };
+}
+
+/**
  * Önbellekli sağlayıcı çağrısı.
  *
  * services/providerCache.js yazılmıştı ama HİÇBİR ÇAĞRI YERİ ONU
@@ -350,6 +402,8 @@ async function providerFetchUncached(path, params) {
 const RETRYABLE_CODES = new Set(["PROVIDER_HTTP_ERROR", "PROVIDER_TIMEOUT", "PROVIDER_NETWORK_ERROR"]);
 const MAX_ATTEMPTS = 3;
 const RETRY_BASE_DELAY_MS = 250;
+/** Sayfalı çekimde ardışık istekler arası nefes; dakikalık pencereyi korur. */
+const PAGINATION_DELAY_MS = 250;
 
 function isRetryable(error) {
   if (!error) return false;
@@ -398,6 +452,10 @@ async function providerFetchOnce(path, params, apiKey, config) {
       "x-apisports-key": apiKey
     }
   }).then(async (response) => {
+    // Kota başlıkları hata yanıtlarında da gelir; hatta asıl önemli oldukları
+    // an odur. Bu yüzden `response.ok` denetiminden ÖNCE okunuyor.
+    recordRateLimit(response.headers);
+
     let payload = null;
     try {
       payload = await response.json();
@@ -925,6 +983,85 @@ async function getPlayers(query) {
     page: query && query.page
   }));
   return stampProviderData(responseItems(payload).map(normalizePlayer), "players", 24 * 60 * 60 * 1000);
+}
+
+/**
+ * SAYFALI OYUNCU ÇEKİMİ — EKSİK KADRO SESSİZCE KABUL EDİLMEZ.
+ *
+ * API-Football `/players` uç noktası sayfa başına 20 kayıt döner ve toplam
+ * sayfa sayısını yalnızca yanıtın `paging: { current, total }` alanında
+ * bildirir. `getPlayers()` bu alanı atıyor: 34 kişilik bir kadro için ilk
+ * 20 oyuncuyu döndürüp geri kalanını sessizce düşürüyordu. Derin
+ * zenginleştirme (boy, doğum tarihi, forma numarası, uyruk) tam kadro
+ * gerektirdiği için bu kabul edilemez — yarısı doldurulmuş bir kadro,
+ * eksik olduğu belli olmayan bir kadrodur.
+ *
+ * Bu yüzden dönüş değeri ham liste değil, kapsama bilgisiyle birlikte
+ * gelir. Çağıran taraf `complete` yanlışsa YAZMAMALIDIR; kısmi veriyi
+ * tam veri gibi kaydetmek, hatayı veriye gömmek olur.
+ *
+ * @param {object} query   { teamId, league, season, search }
+ * @param {object} options { requestBudget, maxPages }
+ * @returns {Promise<{players: Array, pages: number, totalPages: number, complete: boolean, stoppedBy: string|null}>}
+ */
+async function getPlayersPaginated(query, options = {}) {
+  const maxPages = Math.max(1, Number(options.maxPages) || 10);
+  const budgetValue = Number(options.requestBudget);
+  const requestBudget = Number.isFinite(budgetValue) ? Math.max(0, budgetValue) : Infinity;
+
+  const league = resolveLeague(query && query.league);
+  const season = resolveSeason(query && query.season);
+  const baseParams = compactParams({
+    team: query && (query.teamId || query.team),
+    league,
+    season,
+    search: query && query.search
+  });
+
+  const collected = [];
+  const seen = new Set();
+  let pages = 0;
+  let totalPages = 1;
+  let stoppedBy = null;
+
+  for (let page = 1; page <= totalPages; page += 1) {
+    if (pages >= maxPages) {
+      stoppedBy = "max-pages";
+      break;
+    }
+    if (pages >= requestBudget) {
+      stoppedBy = "request-budget";
+      break;
+    }
+
+    // Sayfalar peş peşe istendiğinde dakikalık pencere zorlanır ve 429
+    // yeniden denenmeyen bir hatadır (kotayı yakmamak için bilerek öyle).
+    // İlk sayfadan sonraki her istekten önce kısa bir nefes, tüm adımı
+    // düşürecek o hatayı ucuza önler.
+    if (pages > 0) await delay(PAGINATION_DELAY_MS);
+
+    const payload = await providerFetch("/players", { ...baseParams, page });
+    pages += 1;
+
+    const reported = Number(payload && payload.paging && payload.paging.total);
+    if (Number.isFinite(reported) && reported > 0) totalPages = reported;
+
+    for (const item of responseItems(payload)) {
+      const normalized = normalizePlayer(item);
+      const key = String(normalized.providerId || normalized.name || "");
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      collected.push(normalized);
+    }
+  }
+
+  return {
+    players: stampProviderData(collected, "players", 24 * 60 * 60 * 1000),
+    pages,
+    totalPages,
+    complete: pages >= totalPages && !stoppedBy,
+    stoppedBy
+  };
 }
 
 async function getPlayerById(query) {
@@ -1508,6 +1645,7 @@ module.exports = {
   getTeams,
   getSquad,
   getPlayers,
+  getPlayersPaginated,
   getPlayerById,
   getPlayerTransfers,
   getTopScorers,
@@ -1519,6 +1657,7 @@ module.exports = {
   normalizeFixturePlayers,
   providerRequestStats,
   resetProviderRequestStats,
+  getProviderRateLimit,
   getFixturesByDate,
   getPredictions,
   getMatchDetail,

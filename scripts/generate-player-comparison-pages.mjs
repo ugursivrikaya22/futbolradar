@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -491,10 +492,10 @@ writeGeneratedFile(path.join(root, "public", "oyuncu-karsilastirmalari.html"), i
 for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
   if (!fs.existsSync(sitemapPath)) continue;
   const current = fs.readFileSync(sitemapPath, "utf8");
-  const retained = (current.match(/  <url>[\s\S]*?  <\/url>/g) || [])
+  const retained = (current.match(URL_ENTRY_RE) || [])
     .filter((entry) => !entry.includes(`${domain}/karsilastirma/`));
   const entries = pairs.map((pair) => `  <url>\n    <loc>${domain}/karsilastirma/${pair.slug}.html</loc>\n    <lastmod>2026-07-13</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.65</priority>\n  </url>`);
-  const content = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${retained.concat(entries).join("\n")}\n</urlset>\n`;
+  const content = wrapUrlset(retained.concat(entries));
   writeGeneratedFile(sitemapPath, content);
 }
 
