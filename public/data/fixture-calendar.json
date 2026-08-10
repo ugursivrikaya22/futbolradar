@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-10T19:08:57.057Z",
+  "fetchedAt": "2026-08-10T21:06:41.343Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -183946,8 +183946,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T19:01:11.502Z",
-      "staleAfter": "2026-08-10T19:06:11.502Z",
+      "fetchedAt": "2026-08-10T20:45:22.498Z",
+      "staleAfter": "2026-08-10T20:50:22.498Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -183957,17 +183957,27 @@
       "competitionId": "premier-league",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Alashkert skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Alashkert tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 90+2' H. Hakobyan tarafından kaydedildi. Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti. Skor üstünlüğü Alashkert tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "90+2'",
+            "text": "Son gol 90+2' H. Hakobyan tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
+          },
           {
             "label": "Canlı skor",
             "value": "3-0",
             "text": "Alashkert skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 13,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -185505,8 +185515,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T19:01:11.502Z",
-      "staleAfter": "2026-08-10T19:06:11.502Z",
+      "fetchedAt": "2026-08-10T21:06:42.084Z",
+      "staleAfter": "2026-08-10T21:11:42.084Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -185516,9 +185526,24 @@
       "competitionId": "premier-league",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti. Skor dengede.",
-        "confidence": "Orta",
+        "summary": "Fakel topa sahip olma oranında önde. Fakel daha fazla şut üretti.",
+        "confidence": "Yüksek",
         "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "54%-46%",
+            "text": "Fakel topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "13-12",
+            "text": "Fakel daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "3-2",
+            "text": "Fakel isabetli şutlarda önde."
+          },
           {
             "label": "Teknik hamleler",
             "value": "8 değişiklik",
@@ -185531,60 +185556,60 @@
           }
         ],
         "eventCount": 11,
-        "dataPoints": 2,
+        "dataPoints": 5,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "statistics": [
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 2,
-          "away": 1,
-          "higherIsBetter": true
-        },
-        {
-          "category": "Hücum",
-          "type": "İsabetsiz şut",
-          "home": 2,
-          "away": 2
-        },
-        {
-          "category": "Hücum",
-          "type": "Toplam şut",
-          "home": 9,
-          "away": 5,
-          "higherIsBetter": true
-        },
-        {
-          "category": "Hücum",
-          "type": "Engellenen şut",
-          "home": 5,
-          "away": 2
-        },
-        {
-          "category": "Hücum",
-          "type": "Ceza sahası içinden şut",
           "home": 3,
           "away": 2,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 5,
+          "away": 4
+        },
+        {
+          "category": "Hücum",
+          "type": "Toplam şut",
+          "home": 13,
+          "away": 12,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 5,
+          "away": 6
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası içinden şut",
+          "home": 7,
+          "away": 7,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
           "type": "Ceza sahası dışından şut",
           "home": 6,
-          "away": 3
+          "away": 5
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 9,
-          "away": 12
+          "home": 11,
+          "away": 14
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 7,
-          "away": 1
+          "home": 10,
+          "away": 4
         },
         {
           "category": "Genel",
@@ -185595,42 +185620,42 @@
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 53,
-          "away": 47,
+          "home": 54,
+          "away": 46,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Disiplin",
           "type": "Sarı kart",
-          "home": 1,
+          "home": 2,
           "away": 1
         },
         {
           "category": "Savunma",
           "type": "Kurtarış",
-          "home": 1,
-          "away": 2
+          "home": 3,
+          "away": 3
         },
         {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 367,
-          "away": 325,
+          "home": 439,
+          "away": 373,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 271,
-          "away": 252,
+          "home": 326,
+          "away": 285,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
           "home": 74,
-          "away": 78,
+          "away": 76,
           "unit": "%",
           "higherIsBetter": true
         }
@@ -185654,17 +185679,17 @@
           ],
           "substitutes": [
             "Belajdi Pusi",
+            "Anton Kovalev",
+            "Butta Magomedov",
+            "Abdula Bagamaev",
+            "Axel Gnapi",
             "Vyacheslav Dorovskikh",
             "Igor Obukhov",
             "Houdaifa El Mahasni",
             "Yuriy Zhuravlev",
             "Kirill Simonov",
-            "Abdula Bagamaev",
-            "Anton Kovalev",
-            "Butta Magomedov",
             "Aleksandr Belyaev",
-            "Merabi Uridia",
-            "Axel Gnapi"
+            "Merabi Uridia"
           ]
         },
         {
@@ -185684,15 +185709,15 @@
             "Georgiy Melkadze"
           ],
           "substitutes": [
+            "Ismael Silva",
+            "Erald Maksuti",
+            "Manuel Keliano",
             "Rasul Mitsaev",
             "Giorgi Shelia",
             "Maksim Sidorov",
-            "Manuel Keliano",
             "Galymzhan Kenzhebek",
-            "Ismael Silva",
             "Aleksey Kasadzhikov",
-            "Abakar Gadzhiev",
-            "Erald Maksuti"
+            "Abakar Gadzhiev"
           ]
         }
       ],
@@ -187549,14 +187574,14 @@
       "awayTeam": "Kalamata",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2110.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/5046.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
-        "away": 1,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -187574,8 +187599,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T19:01:11.502Z",
-      "staleAfter": "2026-08-10T19:06:11.502Z",
+      "fetchedAt": "2026-08-10T21:06:42.084Z",
+      "staleAfter": "2026-08-10T21:11:42.084Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -187584,23 +187609,18 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 43' J. Bolivar tarafından kaydedildi. Kalamata skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Kalamata tarafında.",
-        "confidence": "Orta",
+        "title": "Maç Radar Analizi",
+        "summary": "Kalamata skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Kalamata tarafında.",
+        "confidence": "Sınırlı",
         "signals": [
           {
-            "label": "Gol akışı",
-            "value": "43'",
-            "text": "Son gol 43' J. Bolivar tarafından kaydedildi."
-          },
-          {
             "label": "Canlı skor",
-            "value": "0-1",
+            "value": "0-2",
             "text": "Kalamata skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 1,
-        "dataPoints": 2,
+        "eventCount": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -188277,6 +188297,16 @@
           "detail": "Normal Goal",
           "value": "J. Bolivar · Normal Goal",
           "comments": ""
+        },
+        {
+          "time": "90+5'",
+          "team": {
+            "name": "Kalamata"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "J. Bonetto · Penalty",
+          "comments": ""
         }
       ]
     },
@@ -188292,14 +188322,14 @@
       "awayTeam": "Estudiantes de Merida FC",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/16847.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/2818.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 73,
+      "elapsed": 73,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 2,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -188317,8 +188347,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T18:08:08.978Z",
-      "staleAfter": "2026-08-10T18:13:08.978Z",
+      "fetchedAt": "2026-08-10T21:06:42.084Z",
+      "staleAfter": "2026-08-10T21:11:42.084Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -188327,12 +188357,33 @@
       },
       "competitionId": "la-liga",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
-        "confidence": "Sınırlı",
-        "signals": [],
-        "eventCount": 0,
-        "dataPoints": 0,
+        "title": "Canlı Radar Analizi",
+        "summary": "Estudiantes de Merida FC kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 25' C. Romero tarafından kaydedildi. Skor üstünlüğü Rayo Zuliano tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Disiplin dengesi",
+            "value": "1 kırmızı kart",
+            "text": "Estudiantes de Merida FC kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "25'",
+            "text": "Son gol 25' C. Romero tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "7 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 7 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "2-0",
+            "text": "Rayo Zuliano skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 15,
+        "dataPoints": 4,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -189559,7 +189610,159 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "22'",
+          "team": {
+            "name": "Rayo Zuliano"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "J. Ochoa · Asist: C. Romero · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "25'",
+          "team": {
+            "name": "Rayo Zuliano"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "C. Romero · Asist: S. Orejuela · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Estudiantes de Merida FC"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "M. Maldonado · Asist: J. A. Montilla Maldonado · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Estudiantes de Merida FC"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "G. Montes · Asist: C. Caicedo · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "52'",
+          "team": {
+            "name": "Rayo Zuliano"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "D. Copete · Asist: F. Chavez · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "56'",
+          "team": {
+            "name": "Estudiantes de Merida FC"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "W. S. Ramirez Holguin · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "58'",
+          "team": {
+            "name": "Estudiantes de Merida FC"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "A. Montero · Asist: A. Pena · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "59'",
+          "team": {
+            "name": "Estudiantes de Merida FC"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "J. Lobo · Asist: R. Chacon · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "62'",
+          "team": {
+            "name": "Rayo Zuliano"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "C. Romero · Yellow Card",
+          "comments": "Unsportsmanlike conduct"
+        },
+        {
+          "time": "62'",
+          "team": {
+            "name": "Estudiantes de Merida FC"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "H. Acosta · Yellow Card",
+          "comments": "Unsportsmanlike conduct"
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "Estudiantes de Merida FC"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "R. Chacon · Red Card",
+          "comments": "Unsportsmanlike conduct"
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "Rayo Zuliano"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "S. Orejuela · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Rayo Zuliano"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "D. A. Vasquez Ferrer · Asist: J. D. Churi Leon · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Rayo Zuliano"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "C. Romero · Asist: L. Dugarte · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Rayo Zuliano"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "F. Chavez · Yellow Card",
+          "comments": "Foul"
+        }
+      ]
     },
     {
       "id": "deportivo-maldonado-racing-montevideo-2026-08-10",
@@ -189674,7 +189877,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -189690,8 +189895,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -189719,7 +189924,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -189735,8 +189942,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -189764,7 +189971,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -189780,8 +189989,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -189809,7 +190018,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -189825,8 +190036,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -189854,7 +190065,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -189870,8 +190083,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -189899,7 +190112,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -189915,8 +190130,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -189944,7 +190159,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -189960,8 +190177,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -189989,7 +190206,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190005,8 +190224,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190034,7 +190253,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190050,8 +190271,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190079,7 +190300,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190095,8 +190318,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190124,7 +190347,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190140,8 +190365,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190169,7 +190394,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190185,8 +190412,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190214,7 +190441,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190230,8 +190459,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190259,7 +190488,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190275,8 +190506,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190304,7 +190535,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190320,8 +190553,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190349,7 +190582,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190365,8 +190600,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190383,10 +190618,10 @@
       "venue": null,
       "kickoff": "2026-08-11T21:00:00+03:00",
       "time": "21:00",
-      "homeTeam": "Jove Español",
-      "awayTeam": "Intercity",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/9694.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/8160.png",
+      "homeTeam": "Intercity",
+      "awayTeam": "Jove Español",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/8160.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/9694.png",
       "status": "SCHEDULED",
       "providerStatus": "NS",
       "minute": null,
@@ -190394,7 +190629,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190410,8 +190647,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190439,7 +190676,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190455,8 +190694,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190484,7 +190723,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190500,8 +190741,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190514,7 +190755,7 @@
       "id": "sturm-graz-fenerbahce-2026-08-11",
       "providerId": "1607174",
       "league": "UEFA Champions League",
-      "round": 400,
+      "round": null,
       "venue": "Merkur-Arena",
       "kickoff": "2026-08-11T21:30:00+03:00",
       "time": "21:30",
@@ -190529,7 +190770,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190545,8 +190788,8 @@
       "risk": null,
       "source": "api-football+thesportsdb",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190579,7 +190822,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -190595,8 +190840,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T03:51:06.795Z",
-      "staleAfter": "2026-08-10T03:56:06.795Z",
+      "fetchedAt": "2026-08-10T21:06:42.534Z",
+      "staleAfter": "2026-08-10T21:11:42.534Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
