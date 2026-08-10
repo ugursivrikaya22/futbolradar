@@ -1,9 +1,493 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-10T17:13:59.357Z",
-  "matchCount": 279,
+  "updatedAt": "2026-08-10T18:08:16.736Z",
+  "matchCount": 281,
   "records": [
+    {
+      "matchId": "alashkert-bkma-2026-08-10",
+      "fixtureId": "1581491",
+      "provider": "api-football",
+      "slug": "alashkert-bkma-2026-08-10",
+      "kickoff": "2026-08-10T16:00:00+00:00",
+      "kickoffUtc": "2026-08-10T16:00:00.000Z",
+      "kickoffLocal": "2026-08-10T19:00",
+      "date": "2026-08-10",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Premier League",
+      "competition": "Premier League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Alashkert",
+      "awayTeam": "BKMA",
+      "venue": "Alashkert Stadium",
+      "score": {
+        "home": 3,
+        "away": 0
+      },
+      "finalScore": "3-0",
+      "winner": "Alashkert",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 13
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 13,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "ed4d8a22754583f8",
+      "fingerprint": "ed4d8a22754583f8",
+      "analysisGeneratedAt": "2026-08-10T18:08:16.689Z",
+      "analysisUpdatedAt": "2026-08-10T18:08:16.689Z",
+      "generatedAt": "2026-08-10T18:08:16.689Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Alashkert 3-0 BKMA maç raporu: Premier League istatistikleri | FutbolRadar",
+        "description": "Alashkert Stadium'da oynanan Premier League maçını Alashkert 3-0 kazandı; BKMA sahadan puansız ayrıldı.",
+        "path": "mac-raporu/alashkert-bkma-2026-08-10.html",
+        "competition": "Premier League"
+      },
+      "reportUrl": "./mac-raporu/alashkert-bkma-2026-08-10.html",
+      "digest": {
+        "headline": "Alashkert, BKMA'yı 3-0 yendi",
+        "paragraph": "Alashkert Stadium'da oynanan Premier League maçını Alashkert 3-0 kazandı; BKMA sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Alashkert",
+          "loser": "BKMA",
+          "draw": false,
+          "margin": 3
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 2
+        },
+        "turningPoints": {
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "3'",
+              "team": "Alashkert",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "15'",
+              "team": "Alashkert",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "46'",
+              "team": "BKMA",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 7 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "82'",
+              "team": "BKMA",
+              "type": "subst",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "Alashkert",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "Alashkert",
+              "type": "subst",
+              "detail": "Substitution 2",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "Alashkert",
+              "type": "subst",
+              "detail": "Substitution 3",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "46' BKMA değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' BKMA değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "58' BKMA değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "74' BKMA değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "82' BKMA değişikliği (Substitution 5). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "85' Alashkert değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Alashkert, BKMA'yı 3-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Alashkert sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 50,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "panionios-olympiakos-piraeus-ii-2026-08-10",
+      "fixtureId": "1618911",
+      "provider": "api-football",
+      "slug": "panionios-olympiakos-piraeus-ii-2026-08-10",
+      "kickoff": "2026-08-10T15:30:00+00:00",
+      "kickoffUtc": "2026-08-10T15:30:00.000Z",
+      "kickoffLocal": "2026-08-10T18:30",
+      "date": "2026-08-10",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Panionios",
+      "awayTeam": "Olympiakos Piraeus II",
+      "venue": null,
+      "score": {
+        "home": 3,
+        "away": 0
+      },
+      "finalScore": "3-0",
+      "winner": "Panionios",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 3
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 3,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "6f0c8c1b4c7d9008",
+      "fingerprint": "6f0c8c1b4c7d9008",
+      "analysisGeneratedAt": "2026-08-10T18:08:16.689Z",
+      "analysisUpdatedAt": "2026-08-10T18:08:16.689Z",
+      "generatedAt": "2026-08-10T18:08:16.689Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Panionios 3-0 Olympiakos Piraeus II maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Panionios, Friendlies Clubs karşılaşmasında Olympiakos Piraeus II'yı 3-0 mağlup etti.",
+        "path": "mac-raporu/panionios-olympiakos-piraeus-ii-2026-08-10.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/panionios-olympiakos-piraeus-ii-2026-08-10.html",
+      "digest": {
+        "headline": "Panionios, Olympiakos Piraeus II'yı 3-0 yendi",
+        "paragraph": "Panionios, Friendlies Clubs karşılaşmasında Olympiakos Piraeus II'yı 3-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Panionios",
+          "loser": "Olympiakos Piraeus II",
+          "draw": false,
+          "margin": 3
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "32'",
+              "team": "Panionios",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "56'",
+              "team": "Panionios",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "59'",
+              "team": "Panionios",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay)."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Panionios, Olympiakos Piraeus II'yı 3-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Panionios sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 43,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "karpaty-lnz-cherkasy-2026-08-10",
       "fixtureId": "1565445",
@@ -87,11 +571,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "5dd10a6a09cfc8ec",
-      "fingerprint": "5dd10a6a09cfc8ec",
+      "analysisSourceHash": "133d09413ea695fa",
+      "fingerprint": "133d09413ea695fa",
       "analysisGeneratedAt": "2026-08-10T16:56:38.115Z",
-      "analysisUpdatedAt": "2026-08-10T17:13:59.316Z",
-      "generatedAt": "2026-08-10T17:13:59.316Z",
+      "analysisUpdatedAt": "2026-08-10T18:08:16.689Z",
+      "generatedAt": "2026-08-10T18:08:16.689Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -214,9 +698,9 @@
           "notes": [
             "Karpaty maça 4-3-3 dizilişiyle başladı.",
             "LNZ Cherkasy maça 4-3-3 dizilişiyle başladı.",
-            "57' LNZ Cherkasy değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "64' Karpaty değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "64' Karpaty değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "56' LNZ Cherkasy değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "63' Karpaty değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "63' Karpaty değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
             "72' LNZ Cherkasy değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
           "formations": [
