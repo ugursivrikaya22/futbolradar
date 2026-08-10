@@ -15,6 +15,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter, newsTicker } from "./lib/layout.mjs";
 import { buildTickerFeed } from "./lib/tickerFeed.mjs";
+import { buildEnTickerItems } from "./lib/enTicker.mjs";
 
 const { counterpartPath, localeOfPath } = createRequire(import.meta.url)("../services/i18n.js");
 
@@ -129,6 +130,7 @@ function baseFor(file) {
 // gerçekten taze bir öğe varsa "Son Dakika" olur.
 const tickerFeed = buildTickerFeed();
 const tickerItems = tickerFeed.items;
+const enTickerItems = buildEnTickerItems();
 const files = [...collectHtmlFiles(root), ...collectHtmlFiles(path.join(root, "public"))]
   .filter((file) => !path.relative(root, file).startsWith("node_modules"));
 
@@ -152,11 +154,12 @@ for (const file of files) {
   // götürmek dürüst davranıştır.
   const altHref = counterpartPath(sitePath, locale === "en" ? "tr" : "en");
 
-  // Bant Türkçe editoryal içerikten besleniyor; İngilizce sayfada Türkçe
-  // başlık akıtmak "İngilizce sayfada Türkçe metin bırakma" kuralını ihlal
-  // ederdi. İngilizce bant Phase 2'de kendi kaynağıyla gelecek.
+  // İngilizce bant aynı bileşenden çizilir ama Türkçe editoryal başlıklar
+  // yerine yapısal veriden üretilmiş İngilizce öğeler taşır (enTicker.mjs):
+  // Türkçe serbest metin çevrilmeden İngilizce sayfaya giremez, bandın
+  // yokluğu ise iki sürüm arasındaki tasarım eşitliğini bozuyordu.
   const ticker = locale === "en"
-    ? ""
+    ? newsTicker({ base, locale, items: rebaseItems(enTickerItems, base) })
     : newsTicker({ base, items: rebaseItems(tickerItems, base), badge: tickerFeed.badge });
   const headerBlock = ticker
     ? `${siteHeader({ base, locale, altHref })}\n      <!-- shared-layout:ticker:start -->${ticker}<!-- shared-layout:ticker:end -->`

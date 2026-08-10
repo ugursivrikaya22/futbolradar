@@ -188,20 +188,25 @@ export function siteHeader(options = {}) {
  */
 export function newsTicker(options = {}) {
   const base = normalizeBase(options.base);
+  const locale = normalizeLocale(options.locale);
   const items = Array.isArray(options.items) ? options.items.filter(Boolean) : [];
   // Rozet çağırandan gelir: "Son Dakika" bir zaman iddiasıdır ve yalnızca
   // gerçekten taze içerik varsa yazılır. Taze içerik yoksa bant kaldırılmaz,
   // rozet nötr "Gündem" olur — okuyucu gerçek ama eski başlık görür.
   const badge = typeof options.badge === "string" && options.badge.trim()
     ? options.badge.trim()
-    : "Gündem";
+    : t("ticker.agenda", locale);
+  // "Tümü" bağlantısının hedefi dile göre değişir: İngilizce tarafta Türkçe
+  // haber sayfasına göndermek dil karışması olurdu.
+  const allHref = locale === "en" ? `${base}en/index.html` : `${base}haberler.html`;
+  const liveBadge = t("ticker.breaking", locale);
 
   if (!items.length) {
     return "";
   }
 
   const renderItem = (item) => {
-    const href = item.href ? item.href : `${base}haberler.html`;
+    const href = item.href ? item.href : allHref;
     const external = /^https?:/i.test(href);
     // Banttaki dış bağlantı bir kaynak künyesidir: alıntı, tavsiye değil.
     const rel = external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : "";
@@ -232,16 +237,16 @@ export function newsTicker(options = {}) {
 
   const duration = Math.max(36, items.length * 10);
 
-  return `<div class="news-ticker" data-shared-layout="ticker" data-ticker-source="ticker-feed" aria-label="Son dakika futbol gündemi">
+  return `<div class="news-ticker" data-shared-layout="ticker" data-ticker-source="ticker-feed" aria-label="${escapeHtml(t("ticker.aria", locale))}">
       <div class="container-wide news-ticker-inner">
-        <span class="news-ticker-badge${badge === "Son Dakika" ? " is-live" : ""}">${badge === "Son Dakika" ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(badge)}</span>
+        <span class="news-ticker-badge${badge === liveBadge ? " is-live" : ""}">${badge === liveBadge ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(badge)}</span>
         <div class="news-ticker-viewport">
           <div class="news-ticker-track" style="--ticker-duration:${duration}s">
             <div class="news-ticker-group">${track}</div>
             <div class="news-ticker-group" aria-hidden="true">${track}</div>
           </div>
         </div>
-        <a class="news-ticker-all" href="${base}haberler.html">Tümü</a>
+        <a class="news-ticker-all" href="${allHref}">${escapeHtml(t("ticker.all", locale))}</a>
       </div>
     </div>`;
 }
