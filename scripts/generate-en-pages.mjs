@@ -21,6 +21,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import {
+  fixtureCard as sharedFixtureCard,
+  fixtureTeamInitials,
+  leagueMarkHtml,
+  trendCard as sharedTrendCard,
+  transferWatchShell
+} from "./lib/matchCards.mjs";
+import { transferTypeEn } from "./lib/enTicker.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -152,35 +160,60 @@ function finishedMatches(limit) {
 // ── Parçacıklar ─────────────────────────────────────────────────────────────
 
 /**
- * Maç satırı.
+ * MAÇ KARTI — TÜRKÇE SAYFALARLA AYNI BİLEŞEN.
  *
- * Skor yalnızca sağlayıcı gerçekten skor verdiyse yazılır. "Canlı" ibaresi
- * ise `liveVerdict` onaylamadan basılmaz: başlama saati geçmiş ama doğrulanmış
- * canlı verisi olmayan bir maçı canlı göstermek, sitenin en temel iddiasını
- * (skorun doğruluğu) çürütürdü.
+ * İşaretleme scripts/lib/matchCards.mjs'de, BİR KEZ. Türkçe üretici
+ * (prerender-core-pages.mjs) ile bu dosya aynı şablonu çağırır; kart
+ * tasarımı iki dilde ayrışamaz. Buradaki iş yalnızca durum etiketini
+ * İngilizce hesaplamak.
+ *
+ * Skor yalnızca sağlayıcı gerçekten skor verdiyse yazılır. "Live" ibaresi
+ * ise `liveVerdict` onaylamadan basılmaz: başlama saati geçmiş ama
+ * doğrulanmış canlı verisi olmayan bir maçı canlı göstermek, sitenin en
+ * temel iddiasını (skorun doğruluğu) çürütürdü.
  */
-function matchRow(match) {
+function fixtureCard(match) {
   const state = canonicalStatus(match.status);
   const verdict = liveVerdict(match);
-  const live = verdict && verdict.isLive;
+  const live = Boolean(verdict && verdict.isLive);
   const hasScore = match.score && match.score.home !== null && match.score.home !== undefined &&
     match.score.away !== null && match.score.away !== undefined;
-  const scoreText = hasScore ? `${match.score.home}–${match.score.away}` : "–";
-  const stateLabel = live ? label("status.LIVE") : statusLabelFor(state, LOCALE);
-  const time = formatTime(match.kickoff, LOCALE);
-  const competition = competitionLabel(match.league, LOCALE);
+  const stateLabel = live
+    ? `${label("status.LIVE")}${Number.isFinite(Number(match.minute)) ? ` ${match.minute}'` : ""}`
+    : state === "SCHEDULED"
+      ? formatTime(match.kickoff, LOCALE)
+      : state === "FINISHED"
+        ? label("card.fullTimeShort")
+        : statusLabelFor(state, LOCALE);
 
-  return `<li class="en-match-row${live ? " is-live" : ""}">
-            <span class="en-match-time"><time datetime="${escapeHtml(match.kickoff || "")}">${escapeHtml(time)}</time></span>
-            <span class="en-match-teams"><b>${escapeHtml(match.homeTeam || "")}</b> <span class="en-match-score">${escapeHtml(scoreText)}</span> <b>${escapeHtml(match.awayTeam || "")}</b></span>
-            <span class="en-match-meta">${escapeHtml(competition)}</span>
-            <span class="en-match-state">${escapeHtml(stateLabel)}</span>
-          </li>`;
+  return sharedFixtureCard({
+    locale: LOCALE,
+    league: competitionLabel(match.league, LOCALE),
+    live,
+    stateClass: live ? "is-live" : state === "FINISHED" ? "is-final" : "",
+    stateLabel,
+    homeTeam: match.homeTeam,
+    awayTeam: match.awayTeam,
+    homeScore: hasScore ? Number(match.score.home) : null,
+    awayScore: hasScore ? Number(match.score.away) : null,
+    formHtml: "",
+    actionHref: "./live-scores.html",
+    withMatchClick: false
+  });
 }
+
+const teamInitials = fixtureTeamInitials;
+const leagueMark = leagueMarkHtml;
 
 function matchList(list, emptyKey = "common.noData") {
   if (!list.length) return `<p class="muted-copy">${escapeHtml(label(emptyKey))}</p>`;
-  return `<ul class="en-match-list">${list.map(matchRow).join("")}</ul>`;
+  return `<div class="matches-grid">${list.map(fixtureCard).join("\n")}</div>`;
+}
+
+/** Bölüm başlığı — Türkçe sayfadaki .section-head düzeniyle aynı. */
+function sectionHead(kicker, titleId, title, lead, linkHref, linkText) {
+  const link = linkHref ? `<a class="section-link" href="${escapeHtml(linkHref)}">${escapeHtml(linkText || label("common.viewAll"))}</a>` : "";
+  return `<div class="section-head"><div class="section-title"><span class="section-kicker">${escapeHtml(kicker)}</span><h2 id="${escapeHtml(titleId)}">${escapeHtml(title)}</h2>${lead ? `<p>${escapeHtml(lead)}</p>` : ""}</div>${link}</div>`;
 }
 
 function formDots(team) {
@@ -252,11 +285,41 @@ function sectionLinks() {
  * canonical HER DİLİN KENDİ URL'İDİR. İngilizce sayfanın canonical'ını
  * Türkçe sayfaya vermek, İngilizce sürümü indeksten silmek demek olurdu.
  */
-function pageShell({ routeKey, trPath, enPath, heroKicker, heroTitle, heroLead, heroMeta, body, schema }) {
+function pageShell({ routeKey, trPath, enPath, heroKicker, heroTitle, heroLead, heroMeta, body, schema, bare }) {
   const meta = routeMeta(routeKey, LOCALE);
   const canonical = absoluteUrl(enPath);
   const trUrl = absoluteUrl(trPath);
   const altHref = trPath;
+
+  // `bare`: gövde kendi hero'sunu ve tam genişlik bölümlerini çiziyor
+  // (ana sayfa, Türkçe ana sayfayla aynı `.container hero` + `.container
+  // section` düzenini kullanır). Standart kabuk hero'su o durumda çizilmez
+  // ve gövde `main.container` içine hapsedilmez.
+  const main = bare
+    ? `<main class="home-main">
+${body}
+      <section class="container source-strip" aria-label="Data information">
+        <div><span>Time zone</span><b>${escapeHtml(label("common.timezoneNote"))}</b></div>
+        <div><span>Data policy</span><b>Compiled from official sources — never generated.</b></div>
+      </section>
+    </main>`
+    : `<main class="container">
+      <section class="hero">
+        <div class="hero-row">
+          <div>
+            <span class="eyebrow">${escapeHtml(heroKicker)}</span>
+            <h1>${escapeHtml(heroTitle)}</h1>
+            <p class="lead">${escapeHtml(heroLead)}</p>
+          </div>
+          ${heroMeta ? `<span class="hero-meta">${escapeHtml(heroMeta)}</span>` : ""}
+        </div>
+      </section>
+${body}
+      <section class="source-strip" aria-label="Data information">
+        <div><span>Time zone</span><b>${escapeHtml(label("common.timezoneNote"))}</b></div>
+        <div><span>Data policy</span><b>Compiled from official sources — never generated.</b></div>
+      </section>
+    </main>`;
 
   return `<!doctype html>
 <html lang="${htmlLang(LOCALE)}">
@@ -290,25 +353,9 @@ function pageShell({ routeKey, trPath, enPath, heroKicker, heroTitle, heroLead, 
     <link rel="stylesheet" href="${BASE}page.css" />
     <script type="application/ld+json">${JSON.stringify(schema)}</script>
   </head>
-  <body class="subpage">
+  <body class="${bare ? "home-page" : "subpage"}">
     ${siteHeader({ base: BASE, locale: LOCALE, altHref })}
-    <main class="container">
-      <section class="hero">
-        <div class="hero-row">
-          <div>
-            <span class="eyebrow">${escapeHtml(heroKicker)}</span>
-            <h1>${escapeHtml(heroTitle)}</h1>
-            <p class="lead">${escapeHtml(heroLead)}</p>
-          </div>
-          ${heroMeta ? `<span class="hero-meta">${escapeHtml(heroMeta)}</span>` : ""}
-        </div>
-      </section>
-${body}
-      <section class="source-strip" aria-label="Data information">
-        <div><span>Time zone</span><b>${escapeHtml(label("common.timezoneNote"))}</b></div>
-        <div><span>Data policy</span><b>Compiled from official sources — never generated.</b></div>
-      </section>
-    </main>
+    ${main}
     ${siteFooter({ base: BASE, locale: LOCALE })}
     <script src="${BASE}site.js" defer></script>
   </body>
@@ -349,23 +396,181 @@ const todaysMatches = matchesOnDay(TODAY);
 const standings = sortedStandings();
 const todayLabel = `${formatWeekday(`${TODAY}T12:00:00+03:00`, LOCALE)}, ${formatDate(`${TODAY}T12:00:00+03:00`, LOCALE)}`;
 
+// ── Ana sayfa bölümleri — Türkçe ana sayfayla AYNI SIRA, AYNI SINIFLAR ─────
+//
+// Türkçe ana sayfanın bölüm sırası (prerender-core-pages.mjs):
+//   hero → köşe yazıları → günün başlıkları → bugünün maçları → son maç
+//   raporu → son raporlar → oyuncu radarı → trend takımlar → hızlı gezinme
+//   → transfer radarı → haber akışı → arşiv → kaynak şeridi
+//
+// Köşe yazıları, günün başlıkları, haber akışı ve arşiv girişleri BİLEREK
+// çizilmiyor: dördü de Türkçe editoryal içerik taşıyor ve İngilizce sayfada
+// Türkçe paragraf gösterilmez, makine çevirisi de yapılmaz. Geri kalan her
+// bölüm aynı sınıflarla, aynı sırada, aynı veriden çiziliyor.
+
+/** Hero: Türkçe #hero-canli-skor ile aynı yapı — sol metin + öne çıkan maç. */
+function heroSection() {
+  const featured = [...todaysMatches].sort(byTurkishThenKickoff)[0] || upcomingMatches(1)[0] || null;
+  let board = "";
+  if (featured) {
+    const state = canonicalStatus(featured.status);
+    const hasScore = featured.score && featured.score.home !== null && featured.score.home !== undefined;
+    const centre = state === "SCHEDULED"
+      ? `<b>${escapeHtml(formatTime(featured.kickoff, LOCALE))}</b><span>${escapeHtml(label("common.kickoff"))}</span>`
+      : `<b>${hasScore ? `${featured.score.home} - ${featured.score.away}` : "–"}</b><span>${escapeHtml(statusLabelFor(state, LOCALE))}</span>`;
+    const competition = competitionLabel(featured.league, LOCALE);
+    board = `<div class="hero-featured" aria-label="Featured match">
+            <div class="featured-fixture">
+      <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMark(competition)}${escapeHtml(competition)}</span><span>${escapeHtml(istanbulDay(featured.kickoff) === TODAY ? "Today" : formatDate(featured.kickoff, LOCALE))}${featured.venue ? ` · ${escapeHtml(featured.venue)}` : ""}</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team"><span class="fixture-row-fallback" aria-hidden="true">${escapeHtml(teamInitials(featured.homeTeam))}</span><strong>${escapeHtml(featured.homeTeam || "")}</strong></div>
+        <div class="featured-fixture-score">${centre}</div>
+        <div class="featured-fixture-team"><span class="fixture-row-fallback" aria-hidden="true">${escapeHtml(teamInitials(featured.awayTeam))}</span><strong>${escapeHtml(featured.awayTeam || "")}</strong></div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-scores.html">${escapeHtml(t("nav.liveScores", LOCALE))}</a><a class="button secondary" href="./todays-matches.html">${escapeHtml(t("nav.todayMatches", LOCALE))}</a></div>
+    </div>
+          </div>`;
+  }
+
+  return `<section class="container hero" id="hero-canli-skor">
+          <div>
+            <span class="eyebrow"><i class="live-pulse" aria-hidden="true"></i> Live match centre</span>
+            <h1><span>Live scores.</span><span>Match centre.</span></h1>
+            <p class="hero-value-prop">Anyone can give you the score; we tell you why the match ended that way.</p>
+            <p class="hero-copy">Turkish football first: the Trendyol Süper Lig, plus Galatasaray, Fenerbahçe, Beşiktaş and Trabzonspor in Europe. Every number comes from verified data — nothing is invented.</p>
+            <div class="hero-actions">
+              <a class="button primary" href="./live-scores.html">${escapeHtml(t("nav.liveScores", LOCALE))}</a>
+              <a class="button secondary" href="./todays-matches.html">${escapeHtml(t("nav.todayMatches", LOCALE))}</a>
+            </div>
+          </div>
+          ${board}
+        </section>`;
+}
+
+/** Bugünün maçları — Türkçe #bugunun-maclari-preview ile aynı yapı. */
+function todaySection() {
+  return `<section class="container section section-matches" id="todays-matches-preview" aria-labelledby="today-title">
+          ${sectionHead("Today's fixtures", "today-title", "Matches and live scores", "Matches in play come first, followed by kick-offs still to come and finished games.", "./todays-matches.html", label("common.viewAll"))}
+          <div class="matches-grid">
+${todaysMatches.slice(0, 9).map(fixtureCard).join("\n") || `<p class="muted-copy">${escapeHtml(label("common.noMatchesToday"))}</p>`}
+          </div>
+        </section>`;
+}
+
+/** Son maç raporu — Türkçe .home-post-match ile aynı yapı; cümle skordan üretilir. */
+function postMatchSection() {
+  const last = finishedMatches(1)[0];
+  if (!last) return "";
+  const competition = competitionLabel(last.league, LOCALE);
+  const home = Number(last.score.home);
+  const away = Number(last.score.away);
+  const line = home === away
+    ? `${last.homeTeam} and ${last.awayTeam} drew ${home}–${away}.`
+    : home > away
+      ? `${last.homeTeam} beat ${last.awayTeam} ${home}–${away}.`
+      : `${last.awayTeam} beat ${last.homeTeam} ${away}–${home}.`;
+  return `<section class="container section home-post-match" aria-labelledby="home-post-match-title">
+          ${sectionHead("Latest result", "home-post-match-title", `${last.homeTeam} ${home}-${away} ${last.awayTeam}`, "", "./analysis.html", label("common.viewAll"))}
+          <div class="home-post-match-shell"><div><span>${escapeHtml(competition)}</span><strong>${escapeHtml(statusLabelFor("FINISHED", LOCALE))}</strong></div><p>${escapeHtml(line)} Played on ${escapeHtml(formatDate(last.kickoff, LOCALE))}.</p><a class="detail-link" href="./analysis.html">${escapeHtml(label("common.viewAll"))}</a></div>
+        </section>`;
+}
+
+/** Son raporlar — Türkçe .home-recent-reports ile aynı kart ızgarası. */
+function recentReportsSection() {
+  const recent = finishedMatches(4);
+  if (!recent.length) return "";
+  const cards = recent.map((match) => `<a class="home-report-card is-turkish" href="./analysis.html">
+      <span class="home-report-meta">${escapeHtml(competitionLabel(match.league, LOCALE))} · ${escapeHtml(formatDate(match.kickoff, LOCALE))}</span>
+      <strong class="home-report-score">${escapeHtml(match.homeTeam)} ${escapeHtml(match.score.home)}-${escapeHtml(match.score.away)} ${escapeHtml(match.awayTeam)}</strong>
+      <p class="home-report-line">${escapeHtml(statusLabelFor("FINISHED", LOCALE))}</p>
+    </a>`).join("");
+  return `<section class="container section home-recent-reports" aria-labelledby="home-recent-reports-title">
+          ${sectionHead("Post-match", "home-recent-reports-title", "Recently completed matches", "Verified final scores for Turkish clubs at home and in Europe.", "./analysis.html", label("common.viewAll"))}
+          <div class="home-report-grid">${cards}</div>
+        </section>`;
+}
+
+/** Trend takımlar — Türkçe .section-trend-teams ile aynı kartlar. */
+function trendTeamsSection() {
+  const trending = teams
+    .filter((team) => team.isCurrentSuperLigTeam !== false && Number.isFinite(Number(team.momentum)))
+    .sort((left, right) => Number(right.momentum || 0) - Number(left.momentum || 0))
+    .slice(0, 6);
+  if (!trending.length) return "";
+  const map = { win: "W", draw: "D", loss: "L" };
+  const cards = trending.map((team) => {
+    const form = Array.isArray(team.form) ? team.form : [];
+    const dots = form.length
+      ? `<div class="form-dots">${form.map((entry) => `<span class="form-dot ${escapeHtml(entry.result || "draw")}">${escapeHtml(map[entry.result] || "D")}</span>`).join("")}</div>`
+      : "";
+    return sharedTrendCard({
+      locale: LOCALE,
+      name: team.name,
+      leagueLabel: "Süper Lig",
+      momentum: team.momentum,
+      formDotsHtml: dots,
+      attack: team.attack,
+      defense: team.defense,
+      formScore: team.formScore,
+      actionHref: "./teams.html"
+    });
+  }).join("\n");
+  return `<section class="container section section-trend-teams" aria-labelledby="trend-teams-title">
+          ${sectionHead("Team momentum", "trend-teams-title", "Teams on the rise", "Recent form, attacking output and defensive balance.", "./teams.html", label("common.viewAll"))}
+          <div class="slider-shell"><div class="slider-rail">
+${cards}
+          </div></div>
+        </section>`;
+}
+
+/** Transfer radarı — Türkçe .home-transfer-watch ile aynı yapı; yapısal veriden. */
+function transferWatchSection() {
+  const doc = readJson("transfers.json", {});
+  const rows = (Array.isArray(doc) ? doc : (doc.transfers || []))
+    .filter((row) => String(row.status || "").toLowerCase() === "confirmed")
+    .filter((row) => row.playerName && row.toTeam)
+    .sort((left, right) => String(right.date || "").localeCompare(String(left.date || "")));
+  if (!rows.length) return "";
+  const featured = rows[0];
+  // Transfer türünün İngilizce karşılığı bant beslemesiyle AYNI eşlemeden.
+  const shell = transferWatchShell({
+    locale: LOCALE,
+    leader: { ...featured, typeLabel: transferTypeEn(featured.type) || label("transfer.fallbackType") },
+    allHref: null,
+    rows: rows.slice(1, 5).map((row) => ({ ...row, href: "./index.html" }))
+  });
+  return `<section class="container section home-transfer-watch" aria-labelledby="transfer-title">
+          ${sectionHead("Transfer Radar", "transfer-title", "Confirmed transfers", "Only moves verified through official club sources.", null, "")}
+          <div class="home-transfer-watch-shell">${shell}</div>
+        </section>`;
+}
+
+/** Hızlı gezinme — Türkçe .home-statistics-entry karşılığı; yalnızca var olan İngilizce sayfalar. */
+function quickNavSection() {
+  return `<section class="container section home-statistics-entry" aria-labelledby="stats-home-title">
+          ${sectionHead("FutbolRadar", "stats-home-title", "Find your way around.", "", null, "")}
+          <div class="trend-link-grid">
+            <a href="./todays-matches.html"><span>Fixtures</span><strong>${escapeHtml(t("nav.todayMatches", LOCALE))}</strong><p>Every match played today, in Türkiye time.</p></a>
+            <a href="./live-scores.html"><span>Live</span><strong>${escapeHtml(t("nav.liveScores", LOCALE))}</strong><p>Only shown as live once verified.</p></a>
+            <a href="./standings.html"><span>Table</span><strong>${escapeHtml(t("nav.standings", LOCALE))}</strong><p>The full Trendyol Süper Lig table.</p></a>
+            <a href="./analysis.html"><span>Results</span><strong>${escapeHtml(t("nav.analysis", LOCALE))}</strong><p>Verified results for Turkish clubs.</p></a>
+            <a href="./teams.html"><span>Clubs</span><strong>${escapeHtml(t("nav.teams", LOCALE))}</strong><p>All 18 clubs with position and form.</p></a>
+          </div>
+        </section>`;
+}
+
 function homePage() {
-  const upcoming = upcomingMatches(6);
-  const body = `      <section class="data-panel" aria-labelledby="en-today-title">
-        <h2 class="panel-title" id="en-today-title">Today's Matches — ${escapeHtml(todayLabel)}</h2>
-        ${matchList(todaysMatches.slice(0, 8), "common.noMatchesToday")}
-        <a class="detail-link" href="./todays-matches.html">${escapeHtml(label("common.viewAll"))}</a>
-      </section>
-      <section class="data-panel" aria-labelledby="en-upcoming-title">
-        <h2 class="panel-title" id="en-upcoming-title">Next up for Turkish clubs</h2>
-        ${matchList(upcoming)}
-      </section>
-      <section class="data-panel" aria-labelledby="en-standings-title">
-        <h2 class="panel-title" id="en-standings-title">Trendyol Süper Lig standings</h2>
+  const body = `      ${heroSection()}
+      ${todaySection()}
+      ${postMatchSection()}
+      ${recentReportsSection()}
+      ${trendTeamsSection()}
+      ${quickNavSection()}
+      ${transferWatchSection()}
+      <section class="container section" aria-labelledby="en-standings-title">
+        ${sectionHead("League table", "en-standings-title", "Trendyol Süper Lig standings", "", "./standings.html", label("common.viewAll"))}
         ${standingsTable(standings.slice(0, 6))}
-        <a class="detail-link" href="./standings.html">${escapeHtml(label("common.viewAll"))}</a>
-      </section>
-${sectionLinks()}`;
+      </section>`;
 
   return pageShell({
     routeKey: "home",
@@ -376,7 +581,8 @@ ${sectionLinks()}`;
     heroLead: "Live scores, fixtures, standings and verified results from the Trendyol Süper Lig and Turkish clubs in European competitions.",
     heroMeta: todayLabel,
     body,
-    schema: schemaFor("home", "en/index.html", "WebPage")
+    schema: schemaFor("home", "en/index.html", "WebPage"),
+    bare: true
   });
 }
 

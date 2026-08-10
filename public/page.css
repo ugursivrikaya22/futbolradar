@@ -8317,7 +8317,7 @@ h1 {
   white-space: nowrap;
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1365px) {
   .nav {
     grid-template-columns: 1fr auto;
     gap: 12px;
@@ -14394,7 +14394,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
    10. MOBİL
    Öncelik: taşma yok, 44px dokunma hedefi, çekmece menü sorunsuz.
    -------------------------------------------------------------------------- */
-@media (max-width: 1180px) {
+@media (max-width: 1365px) {
   .topbar-premium .nav-links a {
     padding: 0 9px;
     font-size: var(--fs-xs);
@@ -14405,7 +14405,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   }
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1365px) {
   .topbar-premium .nav {
     grid-template-columns: minmax(0, 1fr) auto auto;
     gap: var(--sp-2);
@@ -16358,7 +16358,7 @@ body,
 /* 1180-1400 arası: birincil menü açık kalır ama ikincil bağlantılar gizlenir.
    Tema düğmesi üst çubuğa eklendikten sonra bu aralıkta marka, menü, CTA ve
    arama aynı satıra sığmıyor ve öğeler üst üste biniyordu. */
-@media (min-width: 1181px) and (max-width: 1400px) {
+@media (min-width: 1366px) and (max-width: 1400px) {
   .topbar-premium .nav-links-secondary {
     display: none;
   }
@@ -16408,7 +16408,7 @@ body,
   height: 17px;
 }
 
-@media (min-width: 1181px) {
+@media (min-width: 1366px) {
   .topbar-premium .nav-search-toggle-desktop {
     display: inline-grid;
   }
@@ -16472,7 +16472,7 @@ body,
 
 /* Çekmece düzeni: mobil büyüteç görünür, masaüstü kopyası menüde gizli
    kalır (menü kapalıyken zaten görünmez, açıkken ikinci bir ikon gereksiz). */
-@media (max-width: 1180px) {
+@media (max-width: 1365px) {
   .topbar-premium .nav-search-toggle-desktop {
     display: none;
   }
@@ -17522,14 +17522,15 @@ body,
    `.nav` bir grid; yeni bir çocuğu otomatik yerleşime bırakmak onu İKİNCİ
    SATIRA düşürür ve üst çubuğun yüksekliğini büyütür. Mevcut çubuk zaten
    `.nav-toggle` ve `.nav-search-toggle` için açık yerleşim kullanıyor;
-   dil kutusu da aynı sözleşmeye uyuyor. Kırılma noktası 1180/1181 —
-   çekmece menünün açıldığı yer. */
-@media (min-width: 1181px) {
+   dil kutusu da aynı sözleşmeye uyuyor. Kırılma noktası 1365/1366 —
+   çekmece menünün açıldığı yer (1181-1365 bandında dokuz bağlantı, CTA ve
+   düğmeler ölçülebilir biçimde sığmıyordu; bkz. aşağıdaki not). */
+@media (min-width: 1366px) {
   .topbar-premium .nav {
     grid-template-columns: auto minmax(0, 1fr) auto;
-    /* Üçüncü sütun ikinci bir boşluk getiriyor; sütun aralığı 22→14 px'e
+    /* Üçüncü sütun ikinci bir boşluk getiriyor; sütun aralığı 22→8 px'e
        inerek onu geri veriyor. Satır aralığı değişmiyor. */
-    column-gap: 14px;
+    column-gap: 8px;
   }
 
   .topbar-premium .nav .brand {
@@ -17547,27 +17548,58 @@ body,
     grid-row: 1;
   }
 
-  /* YENİ ÖĞE KENDİ YERİNİ AÇAR.
-     Ölçüm: `.nav-links` masaüstünde zaten kutusunu 111 px aşıyordu (site
-     Inter'i barındırmıyor, çoğu ziyaretçide sistem yazı tipi daha geniş
-     çiziliyor). Dil kutusu bunun üstüne 25 px daha koyuyordu. Bağlantı
-     dolgusunu 12→9 px indirmek dokuz bağlantıda 54 px geri veriyor: çubuk
-     dil kutusu EKLENMEDEN ÖNCEKİ hâlinden daha az taşıyor (111 → 82 px).
-     Alt çizgi göstergesi de aynı hizada kalsın diye birlikte daralıyor. */
+  /* "ARŞİV" × "MAÇ MERKEZİ" ÇAKIŞMASININ ÇÖZÜMÜ — ÖLÇÜLEREK.
+     Dokuz bağlantı + CTA + arama + tema + dil kutusu, 1440 konteynerde
+     962 px bağlantı genişliği istiyor; site Inter'i barındırmadığı için
+     çoğu ziyaretçide sistem yazı tipi daha geniş çiziliyor ve `.nav-links`
+     kutusunu 99-111 px aşıyordu. Flex kutu taşmayı komşuların ÜSTÜNE
+     bindirerek gösteriyordu: "Puan Durumu/Arşiv" ile "Maç Merkezi" üst
+     üste okunuyordu.
+
+     Geri kazanılan yerler (1440 px'te ölçüldü, toplam ≈ eksik):
+       tema düğmesi ikon-only (etiket ≤900 px'te zaten gizliydi)  ~46 px
+       bağlantı dolgusu 12→5 px                                   ~63 px
+       bağlantı arası gap 2→0 (dolgu zaten ayırıyor)              ~16 px
+       menü içi gap 12→6, ızgara sütun aralığı 14→8               ~18 px
+     Sonuç: 1366-1920 aralığında taşma 0-3 px, üst üste binme 0.
+     Yükseklik değişmedi (64 px). */
   .topbar-premium .nav-links a {
-    padding: 0 9px;
+    padding: 0 5px;
   }
 
   .topbar-premium .nav-links a::after {
-    right: 9px;
-    left: 9px;
+    right: 5px;
+    left: 5px;
+  }
+
+  .topbar-premium .nav .nav-links {
+    gap: 0;
+  }
+
+  .topbar-premium .nav-menu {
+    gap: 6px;
+  }
+
+  .topbar-premium .nav .cta {
+    padding: 0 14px;
+  }
+
+  /* Tema düğmesi masaüstünde ikon-only: etiket dar ekranda (≤900 px)
+     zaten gizleniyordu; ikon tek başına anlaşılır ve 91 px yer açıyor.
+     aria-label duruyor, erişilebilirlik değişmiyor. */
+  .topbar-premium .theme-toggle .theme-toggle-label {
+    display: none;
+  }
+
+  .topbar-premium .theme-toggle {
+    padding: 0 10px;
   }
 }
 
 /* Çekmece düzeni: marka | büyüteç | ENG | hamburger — hepsi TEK SATIRDA.
    Kutu menünün içine alınmıyor; kullanıcı dil değiştirmek için hamburgere
    basmak zorunda kalmamalı. */
-@media (max-width: 1180px) {
+@media (max-width: 1365px) {
   .topbar-premium .nav {
     grid-template-columns: minmax(0, 1fr) auto auto auto;
   }

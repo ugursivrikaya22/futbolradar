@@ -1,8 +1,10 @@
 (function () {
-  // Üst çubuğun daraldığı genişlik. CSS'teki eşikle (1180px) aynı olmalı:
+  // Üst çubuğun daraldığı genişlik. CSS'teki eşikle (1365px) aynı olmalı:
   // ikisi ayrıştığında JS masaüstü sanırken CSS çekmece düzenini gösteriyor
-  // ve arama düğmesi hiçbir şey açmıyordu.
-  var DESKTOP_MIN_WIDTH = 1181;
+  // ve arama düğmesi hiçbir şey açmıyordu. Eşik 1180'den 1365'e taşındı:
+  // 1181-1365 bandında dokuz menü bağlantısı + düğmeler ölçülebilir biçimde
+  // sığmıyor ve "Arşiv" ile "Maç Merkezi" üst üste biniyordu.
+  var DESKTOP_MIN_WIDTH = 1366;
   var desktopQuery = window.matchMedia("(min-width: " + DESKTOP_MIN_WIDTH + "px)");
 
   function closeNav(nav, toggle) {
