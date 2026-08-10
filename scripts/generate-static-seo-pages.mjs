@@ -4,10 +4,12 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { columnCard } from "./generate-column-pages.mjs";
 import { newsSlug, readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
+import { URLSET_OPEN } from "./lib/sitemap.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { publishedColumns } = require("../services/columnService.js");
+const { ROUTES: I18N_ROUTES, absoluteUrl: i18nUrl, hreflangOf } = require("../services/i18n.js");
 const domain = "https://www.futbolradar.com";
 const today = "2026-07-22";
 
@@ -571,20 +573,39 @@ function sitemapXml(files) {
     "gunun-radar-bulteni.html",
     // Indexable and linked from four pages, but was never listed here.
     "transfer-izleme.html",
-    ...files
+    ...files,
+    // İngilizce sürüm ayrı, indekslenebilir sayfalardan oluşuyor; site
+    // haritasında görünmezlerse yalnızca dil kutusundan keşfedilirler.
+    ...I18N_ROUTES.map((route) => route.en)
   ];
   const unique = [...new Set(core)];
+
+  // Türkçe ↔ İngilizce çiftleri, site haritasında da alternate olarak
+  // bildirilir. `<head>` içindeki hreflang ile AYNI eşlemeden (services/i18n.js)
+  // üretiliyor; iki kaynak ayrışırsa Google çelişkili sinyal görür.
+  const alternatesByFile = new Map();
+  for (const route of I18N_ROUTES) {
+    const links = [
+      `    <xhtml:link rel="alternate" hreflang="${hreflangOf("tr")}" href="${i18nUrl(route.tr)}"/>`,
+      `    <xhtml:link rel="alternate" hreflang="${hreflangOf("en")}" href="${i18nUrl(route.en)}"/>`,
+      `    <xhtml:link rel="alternate" hreflang="x-default" href="${i18nUrl(route.tr)}"/>`
+    ].join("\n");
+    alternatesByFile.set(route.tr, links);
+    alternatesByFile.set(route.en, links);
+  }
+
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${URLSET_OPEN}
 ${unique.map((file) => {
-  const loc = file === "index.html" ? `${domain}/` : `${domain}/${file}`;
+  const loc = alternatesByFile.has(file) ? i18nUrl(file) : (file === "index.html" ? `${domain}/` : `${domain}/${file}`);
   const priority = file === "index.html" ? "1.0"
     : LIVE_PAGES.has(file) ? "0.9"
     : file.includes("karsilastirma/") ? "0.65"
     : file.includes("oyuncular/") ? "0.7" : "0.8";
+  const alternates = alternatesByFile.get(file);
   return `  <url>
     <loc>${loc}</loc>
-    <lastmod>${today}</lastmod>
+${alternates ? `${alternates}\n` : ""}    <lastmod>${today}</lastmod>
     <changefreq>${changeFrequency(file)}</changefreq>
     <priority>${priority}</priority>
   </url>`;

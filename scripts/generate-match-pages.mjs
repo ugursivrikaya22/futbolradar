@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -281,9 +282,12 @@ function updateSitemap(matches) {
   }
 
   const current = fs.readFileSync(sitemapPath, "utf8");
-  const retained = (current.match(/  <url>[\s\S]*?  <\/url>/g) || [])
+  const retained = (current.match(URL_ENTRY_RE) || [])
     .filter((entry) => !entry.includes(`${domain}/mac/`));
-  const content = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${retained.concat(matches.map(sitemapEntry)).join("\n")}\n</urlset>\n`;
+  // Kök etiket scripts/lib/sitemap.mjs'de: bu adım site haritasını baştan
+  // yazdığı için ad alanları burada da bildirilmek zorunda; sabit bir dize
+  // yazılsaydı iki dilli girdilerin `xhtml:` öneki tanımsız kalırdı.
+  const content = wrapUrlset(retained.concat(matches.map(sitemapEntry)));
   fs.writeFileSync(sitemapPath, content, "utf8");
   fs.writeFileSync(path.join(root, "public", "sitemap.xml"), content, "utf8");
 }
