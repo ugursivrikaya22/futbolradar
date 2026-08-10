@@ -138,6 +138,22 @@ function relatedComparison(match) {
   return `<a class="match-related-card" href="../oyuncu-karsilastir.html?players=${escapeHtml(candidate.left.id)},${escapeHtml(candidate.right.id)}"><span>Aynı rol kıyası</span><strong>${escapeHtml(candidate.left.name)} vs ${escapeHtml(candidate.right.name)}</strong><p>Maç öncesi benzer rol profillerini yan yana oku.</p></a>`;
 }
 
+/** "14 Ağustos 2026 Cuma" — TSİ. */
+function shortDateLabel(value) {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return new Intl.DateTimeFormat("tr-TR", {
+    day: "numeric", month: "long", year: "numeric", weekday: "long", timeZone: "Europe/Istanbul"
+  }).format(parsed);
+}
+
+/** "21:30" — TSİ. */
+function clockLabel(value) {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return new Intl.DateTimeFormat("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }).format(parsed);
+}
+
 function pageHtml(match) {
   const slugValue = pageSlug(match);
   const canonical = `${domain}/mac/${slugValue}.html`;
@@ -145,24 +161,58 @@ function pageHtml(match) {
   const radar = calculateMatchRadar(match, { teams, players, squadStatus });
   const homeTeam = getTeam(match.homeTeam);
   const awayTeam = getTeam(match.awayTeam);
-  const title = `${match.homeTeam} - ${match.awayTeam} Maç Önü Analizi | FutbolRadar`;
   const dateLabel = match.kickoff ? formatFreshnessDate(match.kickoff) : (match.dateRange || "Tarih ve saat bekleniyor");
-  const description = `${match.homeTeam} - ${match.awayTeam} Süper Lig maç öncesi analizi; form, radar puanı, kadro durumu ve kilit oyuncu etkisiyle FutbolRadar'da.`;
+
+  // BAŞLIK ARANAN SORUYU KARŞILAMALI.
+  //
+  // Bir maç sayfasına gelen aramanın ezici çoğunluğu "… maçı ne zaman, saat
+  // kaçta" biçiminde. Başlık yalnızca "Maç Önü Analizi" dediğinde sayfa,
+  // cevabını ZATEN TAŞIDIĞI sorunun sonuçlarında görünmüyordu. Gün ve saat
+  // yalnızca DOĞRULANMIŞSA başlığa girer; atanmamış fikstürde eski başlık
+  // korunur, çünkü olmayan bir tarihi başlıkta vaat etmek okuyucuyu boşa
+  // tıklatır.
+  const kickoffDay = match.kickoff ? shortDateLabel(match.kickoff) : "";
+  const kickoffClock = match.kickoff ? clockLabel(match.kickoff) : "";
+  const title = match.kickoff
+    ? `${match.homeTeam} - ${match.awayTeam} Maçı Ne Zaman, Saat Kaçta? ${kickoffDay} ${kickoffClock} | FutbolRadar`
+    : `${match.homeTeam} - ${match.awayTeam} Maç Önü Analizi | FutbolRadar`;
+  // Stat adına Türkçe ek EKLENMEZ: doğru ek sesli uyumuna ve son sessize
+  // göre değişiyor ("Rams Park'ta", "Tüpraş Stadyumu'nda") ve stat adları
+  // veriden geliyor. Tek bir ek kalıbı yazmak kaçınılmaz olarak yanlış
+  // Türkçe üretir; cümle eki gerektirmeyecek biçimde kuruluyor.
+  const description = match.kickoff
+    ? `${match.homeTeam} - ${match.awayTeam} maçı ${kickoffDay} saat ${kickoffClock} TSİ'de oynanacak.${match.venue ? ` Stat: ${match.venue}.` : ""} Maç öncesi form, radar puanı, kadro durumu ve kilit oyuncu etkisi FutbolRadar'da.`
+    : `${match.homeTeam} - ${match.awayTeam} Süper Lig maç öncesi analizi; form, radar puanı, kadro durumu ve kilit oyuncu etkisiyle FutbolRadar'da.`;
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
-      {
+      // SportsEvent YALNIZCA BAŞLAMA ANI BİLİNİYORSA yazılır.
+      //
+      // Buradaki düğüm `startDate` taşımıyordu — ne de `location`,
+      // `homeTeam`, `awayTeam`. `startDate` Event için zorunlu alan;
+      // onsuz düğüm zengin sonuç üretmez, yalnızca doğrulayıcıda hata
+      // olarak görünür. 306 maç sayfasının tamamı bu hâldeydi.
+      //
+      // Tarihi atanmamış fikstürde düğüm HİÇ yazılmaz. Alternatif, olmayan
+      // bir tarih uydurmak olurdu; geçersiz şema, yanlış şemadan iyidir.
+      ...(match.kickoff ? [{
         "@type": "SportsEvent",
         name: `${match.homeTeam} - ${match.awayTeam}`,
         url: canonical,
         description,
+        startDate: match.kickoff,
         eventStatus: "https://schema.org/EventScheduled",
+        eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+        homeTeam: { "@type": "SportsTeam", name: match.homeTeam },
+        awayTeam: { "@type": "SportsTeam", name: match.awayTeam },
         competitor: [
           { "@type": "SportsTeam", name: match.homeTeam },
           { "@type": "SportsTeam", name: match.awayTeam }
         ],
+        ...(match.venue ? { location: { "@type": "Place", name: match.venue } } : {}),
+        superEvent: { "@type": "SportsOrganization", name: fixtures.league || "Süper Lig" },
         sport: "Football"
-      },
+      }] : []),
       {
         "@type": "BreadcrumbList",
         itemListElement: [
