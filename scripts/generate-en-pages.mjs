@@ -24,7 +24,9 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import {
   fixtureCard as sharedFixtureCard,
   fixtureTeamInitials,
+  formDotsHtml,
   leagueMarkHtml,
+  sectionHead as sharedSectionHead,
   trendCard as sharedTrendCard,
   transferWatchShell
 } from "./lib/matchCards.mjs";
@@ -210,19 +212,13 @@ function matchList(list, emptyKey = "common.noData") {
   return `<div class="matches-grid">${list.map(fixtureCard).join("\n")}</div>`;
 }
 
-/** Bölüm başlığı — Türkçe sayfadaki .section-head düzeniyle aynı. */
+/** Ortak bileşenin ince sarmalayıcısı: pozisyonel argümanları korur. */
 function sectionHead(kicker, titleId, title, lead, linkHref, linkText) {
-  const link = linkHref ? `<a class="section-link" href="${escapeHtml(linkHref)}">${escapeHtml(linkText || label("common.viewAll"))}</a>` : "";
-  return `<div class="section-head"><div class="section-title"><span class="section-kicker">${escapeHtml(kicker)}</span><h2 id="${escapeHtml(titleId)}">${escapeHtml(title)}</h2>${lead ? `<p>${escapeHtml(lead)}</p>` : ""}</div>${link}</div>`;
+  return sharedSectionHead({ locale: LOCALE, kicker, titleId, title, lead, linkHref, linkText });
 }
 
 function formDots(team) {
-  const form = Array.isArray(team.form) ? team.form : [];
-  if (!form.length) return "";
-  const map = { win: "W", draw: "D", loss: "L" };
-  return `<span class="form-dots">${form
-    .map((entry) => `<span class="form-dot ${escapeHtml(entry.result || "draw")}">${escapeHtml(map[entry.result] || "D")}</span>`)
-    .join("")}</span>`;
+  return formDotsHtml(team.form, LOCALE);
 }
 
 function standingsTable(rows) {
@@ -497,24 +493,17 @@ function trendTeamsSection() {
     .sort((left, right) => Number(right.momentum || 0) - Number(left.momentum || 0))
     .slice(0, 6);
   if (!trending.length) return "";
-  const map = { win: "W", draw: "D", loss: "L" };
-  const cards = trending.map((team) => {
-    const form = Array.isArray(team.form) ? team.form : [];
-    const dots = form.length
-      ? `<div class="form-dots">${form.map((entry) => `<span class="form-dot ${escapeHtml(entry.result || "draw")}">${escapeHtml(map[entry.result] || "D")}</span>`).join("")}</div>`
-      : "";
-    return sharedTrendCard({
-      locale: LOCALE,
-      name: team.name,
-      leagueLabel: "Süper Lig",
-      momentum: team.momentum,
-      formDotsHtml: dots,
-      attack: team.attack,
-      defense: team.defense,
-      formScore: team.formScore,
-      actionHref: "./teams.html"
-    });
-  }).join("\n");
+  const cards = trending.map((team) => sharedTrendCard({
+    locale: LOCALE,
+    name: team.name,
+    leagueLabel: "Süper Lig",
+    momentum: team.momentum,
+    formDotsHtml: formDotsHtml(team.form, LOCALE),
+    attack: team.attack,
+    defense: team.defense,
+    formScore: team.formScore,
+    actionHref: "./teams.html"
+  })).join("\n");
   return `<section class="container section section-trend-teams" aria-labelledby="trend-teams-title">
           ${sectionHead("Team momentum", "trend-teams-title", "Teams on the rise", "Recent form, attacking output and defensive balance.", "./teams.html", label("common.viewAll"))}
           <div class="slider-shell"><div class="slider-rail">

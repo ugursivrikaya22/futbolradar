@@ -20,7 +20,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const { ROUTES, absoluteUrl, hreflangOf } = require("../services/i18n.js");
+const { ROUTES, absoluteUrl, dynamicRoutePairs, hreflangOf } = require("../services/i18n.js");
 
 const root = process.cwd();
 const CHECK_ONLY = process.argv.includes("--check");
@@ -44,33 +44,59 @@ function targetsFor(relativePath) {
     .filter((file) => fs.existsSync(file));
 }
 
+function injectInto(file, block, problems) {
+  const original = fs.readFileSync(file, "utf8");
+  const stripped = original.replace(BLOCK_RE, "");
+  if (!/<\/head>/i.test(stripped)) {
+    problems.push(`${path.relative(root, file)}: <head> kapanışı yok, hreflang yazılamadı`);
+    return { checked: true, updated: false };
+  }
+
+  const next = stripped.replace(/<\/head>/i, `${block}\n  </head>`);
+  if (next === original) return { checked: true, updated: false };
+
+  if (CHECK_ONLY) {
+    problems.push(`${path.relative(root, file)}: hreflang bloğu güncel değil`);
+    return { checked: true, updated: false };
+  }
+
+  fs.writeFileSync(file, next, "utf8");
+  return { checked: true, updated: true };
+}
+
 let updated = 0;
 let checked = 0;
 const problems = [];
 
+// Çekirdek 6 sayfa: İngilizce taraf kendi üreticisinde (generate-en-pages.mjs)
+// hreflang'ı ZATEN gövdeye gömüyor. Burada yalnızca Türkçe tarafa yazılıyor;
+// aksi hâlde aynı sayfaya iki farklı biçimde (gömülü + işaretli blok)
+// çakışan bir ikinci alternate kümesi eklenirdi.
 for (const route of ROUTES) {
   const block = alternateBlock(route);
-
   for (const file of targetsFor(route.tr)) {
-    const original = fs.readFileSync(file, "utf8");
-    checked += 1;
+    const result = injectInto(file, block, problems);
+    checked += result.checked ? 1 : 0;
+    updated += result.updated ? 1 : 0;
+  }
+}
 
-    const stripped = original.replace(BLOCK_RE, "");
-    if (!/<\/head>/i.test(stripped)) {
-      problems.push(`${path.relative(root, file)}: <head> kapanışı yok, hreflang yazılamadı`);
-      continue;
+// Dinamik çiftler (takım/maç/oyuncu): üç EN üretici de hreflang'ı gömmüyor
+// — sayfa sayısı üç haneli olduğu için tekilleştirme burada, TEK yerde.
+// Her iki taraf da (TR ve EN) bu geçişte yazılıyor.
+const dynamicRoutes = [
+  ...dynamicRoutePairs("team"),
+  ...dynamicRoutePairs("match"),
+  ...dynamicRoutePairs("player")
+];
+for (const route of dynamicRoutes) {
+  const block = alternateBlock(route);
+  for (const side of [route.tr, route.en]) {
+    for (const file of targetsFor(side)) {
+      const result = injectInto(file, block, problems);
+      checked += result.checked ? 1 : 0;
+      updated += result.updated ? 1 : 0;
     }
-
-    const next = stripped.replace(/<\/head>/i, `${block}\n  </head>`);
-    if (next === original) continue;
-
-    if (CHECK_ONLY) {
-      problems.push(`${path.relative(root, file)}: hreflang bloğu güncel değil`);
-      continue;
-    }
-
-    fs.writeFileSync(file, next, "utf8");
-    updated += 1;
   }
 }
 

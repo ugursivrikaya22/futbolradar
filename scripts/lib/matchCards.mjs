@@ -121,6 +121,29 @@ export function trendCard(options) {
  * Satır bağlantı hedefleri çağırandan gelir; Türkçe taraf transfer-radari
  * sayfasına, İngilizce taraf kaynağa ya da kendi köküne bağlar.
  */
+/**
+ * Bölüm başlığı — `.section-head` düzeni Türkçe ve İngilizce sayfalarda
+ * aynı. Üç EN üretici (ana sayfa, takım, maç/oyuncu) bunu ayrı ayrı
+ * yazıyordu; artık tek yerde.
+ */
+export function sectionHead(options) {
+  const locale = normalizeLocale(options.locale);
+  const link = options.linkHref
+    ? `<a class="section-link" href="${escapeHtml(options.linkHref)}">${escapeHtml(options.linkText || t("common.viewAll", locale))}</a>`
+    : "";
+  return `<div class="section-head"><div class="section-title"><span class="section-kicker">${escapeHtml(options.kicker)}</span><h2 id="${escapeHtml(options.titleId)}">${escapeHtml(options.title)}</h2>${options.lead ? `<p>${escapeHtml(options.lead)}</p>` : ""}</div>${link}</div>`;
+}
+
+/** Form noktaları (.form-dots). `win/draw/loss` çağırandan hazır gelir. */
+export function formDotsHtml(form, locale) {
+  const list = Array.isArray(form) ? form : [];
+  if (!list.length) return "";
+  const map = normalizeLocale(locale) === "en" ? { win: "W", draw: "D", loss: "L" } : { win: "G", draw: "B", loss: "M" };
+  return `<span class="form-dots">${list
+    .map((entry) => `<span class="form-dot ${escapeHtml(entry.result || "draw")}">${escapeHtml(map[entry.result] || map.draw)}</span>`)
+    .join("")}</span>`;
+}
+
 export function transferWatchShell(options) {
   const locale = normalizeLocale(options.locale);
   const leader = options.leader;

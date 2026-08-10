@@ -22,12 +22,58 @@
  * elle yazılmış ve futbol terminolojisi uluslararası kullanımına göre
  * seçilmiştir ("Maç Sonu" → "Full Time", "Devre Arası" → "Half Time").
  */
+const fs = require("node:fs");
+const path = require("node:path");
+
 const tr = require("../locales/tr.json");
 const en = require("../locales/en.json");
 
 const DEFAULT_LOCALE = "tr";
 const LOCALES = Object.freeze(["tr", "en"]);
 const EN_PREFIX = "en/";
+
+/**
+ * DİNAMİK ROTA EŞLEMESİ — MAÇ, TAKIM, OYUNCU SAYFALARI.
+ *
+ * `ROUTES` sabiti yalnızca 6 çekirdek sayfayı taşır. 7.900+ üretilmiş
+ * sayfanın (maç önizlemesi, takım, oyuncu) karşılığı derleme ANINDA
+ * belli olur — hangi maç onaylı, hangi oyuncu yayın kapısından geçti
+ * yalnızca o üreticiler biliyor. Bu yüzden eşleme dosyaya yazılıyor:
+ * her EN üretici (generate-en-match-pages.mjs, generate-en-team-pages.mjs,
+ * generate-en-player-pages.mjs) ürettiği sayfaları burada BİRİKTİRİYOR
+ * (data/en-route-map.json), diğerlerinin girdilerini SİLMEDEN.
+ *
+ * Neden dosya, neden bellek içi değil: dil kutusu ve hreflang enjeksiyonu
+ * AYRI script çalıştırmalarında okuyor (apply-shared-layout.mjs,
+ * inject-hreflang.mjs) — aynı süreçte değiller. Tek kaynak burada
+ * kalmazsa üç script üç farklı eşleme görebilir.
+ */
+const DYNAMIC_ROUTE_MAP_PATH = path.join(__dirname, "..", "data", "en-route-map.json");
+let dynamicRouteMapCache = null;
+
+function loadDynamicRouteMap() {
+  if (dynamicRouteMapCache) return dynamicRouteMapCache;
+  let rows = [];
+  try {
+    rows = JSON.parse(fs.readFileSync(DYNAMIC_ROUTE_MAP_PATH, "utf8"));
+  } catch {
+    rows = [];
+  }
+  const trToEn = new Map();
+  const enToTr = new Map();
+  for (const row of Array.isArray(rows) ? rows : []) {
+    if (!row || !row.tr || !row.en) continue;
+    trToEn.set(row.tr, row.en);
+    enToTr.set(row.en, row.tr);
+  }
+  dynamicRouteMapCache = { trToEn, enToTr };
+  return dynamicRouteMapCache;
+}
+
+/** Testler ve her yeni derleme koşusu önbelleği elle temizleyebilir. */
+function resetDynamicRouteMapCache() {
+  dynamicRouteMapCache = null;
+}
 const DOMAIN = "https://www.futbolradar.com";
 
 const DICTIONARIES = Object.freeze({ tr, en });
@@ -254,8 +300,51 @@ function routeFor(value) {
  */
 function counterpartPath(value, targetLocale) {
   const target = normalizeLocale(targetLocale);
+  const normalized = normalizePath(value);
   const route = routeFor(value);
-  return route ? route[target] : null;
+  if (route) return route[target];
+
+  const { trToEn, enToTr } = loadDynamicRouteMap();
+  if (target === "en") return trToEn.get(normalized) || null;
+  return enToTr.get(normalized) || null;
+}
+
+/**
+ * Bir EN üreticinin ürettiği (tr, en) çiftini kalıcı eşlemeye ekler.
+ *
+ * `merge: true` ile çağrılır: dosya baştan yazılmaz, önceki koşulardan
+ * kalan (ör. maç sayfaları) girdiler korunur, yalnızca bu üreticinin
+ * kategorisi (`kind`) güncellenir. Aksi hâlde üç üretici birbirinin
+ * yazdığı eşlemeyi ezerdi — sırayla çalıştıklarında yalnızca SONUNCUSU
+ * hayatta kalırdı.
+ */
+function writeDynamicRoutePairs(kind, pairs) {
+  let existing = [];
+  try {
+    existing = JSON.parse(fs.readFileSync(DYNAMIC_ROUTE_MAP_PATH, "utf8"));
+  } catch {
+    existing = [];
+  }
+  const kept = (Array.isArray(existing) ? existing : []).filter((row) => row && row.kind !== kind);
+  const next = kept.concat(pairs.map((pair) => ({ kind, tr: pair.tr, en: pair.en })));
+  next.sort((left, right) => (left.tr < right.tr ? -1 : left.tr > right.tr ? 1 : 0));
+  fs.mkdirSync(path.dirname(DYNAMIC_ROUTE_MAP_PATH), { recursive: true });
+  const tempPath = `${DYNAMIC_ROUTE_MAP_PATH}.tmp-${process.pid}`;
+  fs.writeFileSync(tempPath, `${JSON.stringify(next, null, 2)}\n`, "utf8");
+  fs.renameSync(tempPath, DYNAMIC_ROUTE_MAP_PATH);
+  resetDynamicRouteMapCache();
+  return next.filter((row) => row.kind === kind).length;
+}
+
+/** Tüm dinamik eşleme satırları; site haritası ve hreflang enjeksiyonu için. */
+function dynamicRoutePairs(kind) {
+  let rows = [];
+  try {
+    rows = JSON.parse(fs.readFileSync(DYNAMIC_ROUTE_MAP_PATH, "utf8"));
+  } catch {
+    rows = [];
+  }
+  return (Array.isArray(rows) ? rows : []).filter((row) => !kind || row.kind === kind);
 }
 
 function routeMeta(routeKey, locale) {
@@ -426,6 +515,7 @@ module.exports = {
   competitionLabel,
   counterpartPath,
   dictionary,
+  dynamicRoutePairs,
   formatDate,
   formatTime,
   formatWeekday,
@@ -436,8 +526,10 @@ module.exports = {
   normalizeLocale,
   normalizePath,
   ogLocale,
+  resetDynamicRouteMapCache,
   routeFor,
   routeMeta,
   statusLabelFor,
-  t
+  t,
+  writeDynamicRoutePairs
 };
