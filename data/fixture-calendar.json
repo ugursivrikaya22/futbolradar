@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-10T16:39:58.696Z",
+  "fetchedAt": "2026-08-10T19:03:11.098Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -181341,14 +181341,14 @@
       "awayTeam": "LNZ Cherkasy",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3617.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/17161.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 3,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -181366,8 +181366,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T15:01:40.090Z",
-      "staleAfter": "2026-08-10T15:06:40.090Z",
+      "fetchedAt": "2026-08-10T18:08:08.978Z",
+      "staleAfter": "2026-08-10T18:13:08.978Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -181377,11 +181377,27 @@
       "competitionId": "premier-league",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
-        "confidence": "Sınırlı",
-        "signals": [],
-        "eventCount": 0,
-        "dataPoints": 0,
+        "summary": "Son gol 89' T. Cara tarafından kaydedildi. Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti. Skor üstünlüğü Karpaty tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "89'",
+            "text": "Son gol 89' T. Cara tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "8 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "3-0",
+            "text": "Karpaty skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 17,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -181420,8 +181436,8 @@
             "last_5": {
               "played": 1,
               "form": "100%",
-              "att": "44%",
-              "def": "89%",
+              "att": "31%",
+              "def": "92%",
               "goals": {
                 "for": {
                   "total": 4,
@@ -182632,13 +182648,13 @@
             "Roman Vantukh"
           ],
           "substitutes": [
-            "Roman Mysak",
-            "Anton Zhylkin",
-            "Vitaliy Kholod",
-            "Jean Pedroso",
-            "Denis Miroshnichenko",
             "Moha Moukhliss",
             "Fellipe Vieira Cardoso",
+            "Denis Miroshnichenko",
+            "Vitaliy Kholod",
+            "Jean Pedroso",
+            "Roman Mysak",
+            "Anton Zhylkin",
             "Bruno Iglesias",
             "Shakh Artur",
             "Yaroslav Karabin",
@@ -182662,18 +182678,190 @@
             "Tedi Cara"
           ],
           "substitutes": [
+            "Talles Brener",
+            "Artur Mykytyshyn",
+            "Korede Adedoyin",
             "Dmytro Ledvii",
             "Kirill Samoilenko",
             "Vitalii Roman",
             "Andriy Kitela",
             "Jewison Bennette",
-            "Talles Brener",
             "Yehor Tverdokhlib",
             "Myroslav Donyk",
-            "Artur Mykytyshyn",
-            "Cody David",
             "Danylo Kravchuk"
           ]
+        }
+      ],
+      "events": [
+        {
+          "time": "3'",
+          "team": {
+            "name": "Karpaty"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "A. Chachua · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "24'",
+          "team": {
+            "name": "LNZ Cherkasy"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Y. Pastukh · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "48'",
+          "team": {
+            "name": "LNZ Cherkasy"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "N. Muravskyi · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "51'",
+          "team": {
+            "name": "Karpaty"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "T. Stetskov · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "56'",
+          "team": {
+            "name": "LNZ Cherkasy"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "Y. Pastukh · Asist: Talles Brener · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "62'",
+          "team": {
+            "name": "LNZ Cherkasy"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "G. Pasich · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "Karpaty"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "A. Chachua · Asist: Moha Moukhliss · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "Karpaty"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "X. Alkain · Asist: Fellipe Vieira · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Karpaty"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "V. Baboglo · Asist: Fellipe Vieira · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "LNZ Cherkasy"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "M. Assinor · Asist: C. David · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "LNZ Cherkasy"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "O. Drambayev · Asist: A. Mykytyshyn · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "74'",
+          "team": {
+            "name": "Karpaty"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "R. Vantukh · Asist: D. Miroshnichenko · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "77'",
+          "team": {
+            "name": "Karpaty"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "I. Calero · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "82'",
+          "team": {
+            "name": "Karpaty"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "M. Sapuga · Asist: Jean Pedroso · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "82'",
+          "team": {
+            "name": "Karpaty"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "I. Calero · Asist: V. Kholod · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "86'",
+          "team": {
+            "name": "Karpaty"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Fellipe Vieira · Asist: Jean Pedroso · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "89'",
+          "team": {
+            "name": "LNZ Cherkasy"
+          },
+          "type": "Goal",
+          "detail": "Missed Penalty",
+          "value": "T. Cara · Asist: T. Cara · Missed Penalty",
+          "comments": ""
         }
       ]
     },
@@ -182689,14 +182877,14 @@
       "awayTeam": "Olympiakos Piraeus II",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/622.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/18017.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 3,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -182714,8 +182902,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T15:01:40.090Z",
-      "staleAfter": "2026-08-10T15:06:40.090Z",
+      "fetchedAt": "2026-08-10T18:08:08.978Z",
+      "staleAfter": "2026-08-10T18:13:08.978Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -182725,11 +182913,17 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "summary": "Panionios skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Panionios tarafında.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "3-0",
+            "text": "Panionios skor üstünlüğünü elinde tutuyor."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -183676,7 +183870,39 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "32'",
+          "team": {
+            "name": "Panionios"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Z. Chatzistravos · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "56'",
+          "team": {
+            "name": "Panionios"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "J. Morsay · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "59'",
+          "team": {
+            "name": "Panionios"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Pavlopoulos · Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "alashkert-bkma-2026-08-10",
@@ -183690,14 +183916,14 @@
       "awayTeam": "BKMA",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/582.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/6279.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 3,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -183715,8 +183941,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T15:01:40.090Z",
-      "staleAfter": "2026-08-10T15:06:40.090Z",
+      "fetchedAt": "2026-08-10T18:08:08.978Z",
+      "staleAfter": "2026-08-10T18:13:08.978Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -183726,11 +183952,27 @@
       "competitionId": "premier-league",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
-        "confidence": "Sınırlı",
-        "signals": [],
-        "eventCount": 0,
-        "dataPoints": 0,
+        "summary": "Son gol 90+2' H. Hakobyan tarafından kaydedildi. Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti. Skor üstünlüğü Alashkert tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "90+2'",
+            "text": "Son gol 90+2' H. Hakobyan tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "3-0",
+            "text": "Alashkert skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 13,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -185097,7 +185339,139 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "3'",
+          "team": {
+            "name": "Alashkert"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "O. Farayola · Asist: E. Piloyan · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "15'",
+          "team": {
+            "name": "Alashkert"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "K. Nalbandyan · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "BKMA"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "A. Khachatryan · Asist: D. Dokhoyan · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "BKMA"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "K. Hovakimyan · Asist: S. Harutyunyan · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "58'",
+          "team": {
+            "name": "BKMA"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "S. Movsisyan · Asist: D. Davtyan · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "74'",
+          "team": {
+            "name": "BKMA"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "M. Asiryan · Asist: H. Manukyan · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "82'",
+          "team": {
+            "name": "BKMA"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "A. Sargsyan · Asist: Z. Ashikian · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "Alashkert"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "M. Toure · Asist: K. Sammani · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "Alashkert"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Rafael Jesus · Asist: H. Adebayo · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "Alashkert"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "D. J. Massoumou · Asist: J. Granado · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "90'",
+          "team": {
+            "name": "Alashkert"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "K. Nalbandyan · Asist: D. Aghbalyan · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "90+2'",
+          "team": {
+            "name": "Alashkert"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "H. Hakobyan · Asist: E. Piloyan · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "90+2'",
+          "team": {
+            "name": "Alashkert"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "O. Farayola · Asist: R. Hakobyan · Substitution 5",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "fakel-akhmat-2026-08-10",
@@ -185111,14 +185485,14 @@
       "awayTeam": "Akhmat",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/1993.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1085.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 78,
+      "elapsed": 78,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -185136,8 +185510,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-10T15:01:40.090Z",
-      "staleAfter": "2026-08-10T15:06:40.090Z",
+      "fetchedAt": "2026-08-10T18:08:08.978Z",
+      "staleAfter": "2026-08-10T18:13:08.978Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -185146,13 +185520,1382 @@
       },
       "competitionId": "premier-league",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
-        "confidence": "Sınırlı",
-        "signals": [],
-        "eventCount": 0,
-        "dataPoints": 0,
+        "title": "Canlı Radar Analizi",
+        "summary": "Fakel topa sahip olma oranında önde. Fakel daha fazla şut üretti.",
+        "confidence": "Yüksek",
+        "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "53%-47%",
+            "text": "Fakel topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "9-5",
+            "text": "Fakel daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "2-1",
+            "text": "Fakel isabetli şutlarda önde."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "5 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 5 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
+        "eventCount": 8,
+        "dataPoints": 5,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "statistics": [
+        {
+          "category": "Hücum",
+          "type": "İsabetli şut",
+          "home": 2,
+          "away": 1,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 2,
+          "away": 2
+        },
+        {
+          "category": "Hücum",
+          "type": "Toplam şut",
+          "home": 9,
+          "away": 5,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 5,
+          "away": 2
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası içinden şut",
+          "home": 3,
+          "away": 2,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası dışından şut",
+          "home": 6,
+          "away": 3
+        },
+        {
+          "category": "Disiplin",
+          "type": "Faul",
+          "home": 9,
+          "away": 12
+        },
+        {
+          "category": "Genel",
+          "type": "Korner",
+          "home": 7,
+          "away": 1
+        },
+        {
+          "category": "Genel",
+          "type": "Ofsayt",
+          "home": 0,
+          "away": 1
+        },
+        {
+          "category": "Genel",
+          "type": "Topla oynama",
+          "home": 53,
+          "away": 47,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 1,
+          "away": 1
+        },
+        {
+          "category": "Savunma",
+          "type": "Kurtarış",
+          "home": 1,
+          "away": 2
+        },
+        {
+          "category": "Pas",
+          "type": "Toplam pas",
+          "home": 367,
+          "away": 325,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "İsabetli pas",
+          "home": 271,
+          "away": 252,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "Pas isabeti",
+          "home": 74,
+          "away": 78,
+          "unit": "%",
+          "higherIsBetter": true
+        }
+      ],
+      "lineups": [
+        {
+          "team": "Fakel",
+          "formation": "5-3-2",
+          "players": [
+            "Daniil Frolkin",
+            "Darko Todorović",
+            "Albert Gabaraev",
+            "Igor Yurganov",
+            "Matvey Bardachev",
+            "Ilnur Alshin",
+            "Vyacheslav Yakimov",
+            "Alexey Sutormin",
+            "Ravil Netfullin",
+            "Maksim Turishchev",
+            "Nikolay Giorgobiani"
+          ],
+          "substitutes": [
+            "Belajdi Pusi",
+            "Vyacheslav Dorovskikh",
+            "Igor Obukhov",
+            "Houdaifa El Mahasni",
+            "Yuriy Zhuravlev",
+            "Kirill Simonov",
+            "Abdula Bagamaev",
+            "Anton Kovalev",
+            "Butta Magomedov",
+            "Aleksandr Belyaev",
+            "Merabi Uridia",
+            "Axel Gnapi"
+          ]
+        },
+        {
+          "team": "Akhmat",
+          "formation": "4-2-3-1",
+          "players": [
+            "Vadim Ulyanov",
+            "Arsen Adamov",
+            "Ousmane N’Dong",
+            "Klisman Cake",
+            "Miroslav Bogosavac",
+            "Turpal-Ali Ibishev",
+            "Júlio Romão",
+            "Maksim Samorodov",
+            "Kirill Shchetinin",
+            "Lechii Sadulaev",
+            "Georgiy Melkadze"
+          ],
+          "substitutes": [
+            "Rasul Mitsaev",
+            "Giorgi Shelia",
+            "Maksim Sidorov",
+            "Manuel Keliano",
+            "Galymzhan Kenzhebek",
+            "Ismael Silva",
+            "Aleksey Kasadzhikov",
+            "Abakar Gadzhiev",
+            "Erald Maksuti"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "time": "37'",
+          "team": {
+            "name": "Fakel"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "M. Turishchev · Asist: B. Pusi · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "52'",
+          "team": {
+            "name": "Fakel"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "A. Sutormin · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "58'",
+          "team": {
+            "name": "Fakel"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "A. Sutormin · Asist: A. Kovalev · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "58'",
+          "team": {
+            "name": "Fakel"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "N. Giorgobiani · Asist: B. Magomedov · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "59'",
+          "team": {
+            "name": "Akhmat"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "K. Shchetinin · Asist: I. Silva · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "65'",
+          "team": {
+            "name": "Akhmat"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "G. Melkadze · Asist: E. Maksuti · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "68'",
+          "team": {
+            "name": "Akhmat"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "E. Maksuti · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "Fakel"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "D. Todorovic · Yellow Card",
+          "comments": ""
+        }
+      ],
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 1993,
+            "name": "Fakel",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": null,
+          "goals": {
+            "home": "-2.5",
+            "away": "-2.5"
+          },
+          "advice": "Double chance : Fakel or draw",
+          "percent": {
+            "home": "35%",
+            "draw": "35%",
+            "away": "30%"
+          }
+        },
+        "league": {
+          "id": 235,
+          "name": "Premier League",
+          "country": "Russia",
+          "logo": "https://media.api-sports.io/football/leagues/235.png",
+          "flag": "https://media.api-sports.io/flags/ru.svg",
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 1993,
+            "name": "Fakel",
+            "logo": "https://media.api-sports.io/football/teams/1993.png",
+            "last_5": {
+              "played": 2,
+              "form": "0%",
+              "att": "25%",
+              "def": "58%",
+              "goals": {
+                "for": {
+                  "total": 3,
+                  "average": "1.5"
+                },
+                "against": {
+                  "total": 5,
+                  "average": "2.5"
+                }
+              }
+            },
+            "league": {
+              "form": "LL",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 1,
+                    "away": 2,
+                    "total": 3
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "2.0",
+                    "total": "1.5"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 2,
+                      "percentage": "50.00%"
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 2,
+                      "percentage": "50.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 2,
+                    "away": 3,
+                    "total": 5
+                  },
+                  "average": {
+                    "home": "2.0",
+                    "away": "3.0",
+                    "total": "2.5"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 2
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": "1-2",
+                  "away": "3-2"
+                },
+                "goals": {
+                  "for": {
+                    "home": 1,
+                    "away": 2
+                  },
+                  "against": {
+                    "home": 2,
+                    "away": 3
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 1,
+                  "percentage": "100.00%"
+                },
+                "total": 1
+              },
+              "lineups": [
+                {
+                  "formation": "5-3-2",
+                  "played": 2
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 1085,
+            "name": "Akhmat",
+            "logo": "https://media.api-sports.io/football/teams/1085.png",
+            "last_5": {
+              "played": 2,
+              "form": "17%",
+              "att": "17%",
+              "def": "75%",
+              "goals": {
+                "for": {
+                  "total": 2,
+                  "average": "1.0"
+                },
+                "against": {
+                  "total": 3,
+                  "average": "1.5"
+                }
+              }
+            },
+            "league": {
+              "form": "DL",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "loses": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 1,
+                    "away": 1,
+                    "total": 2
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 2,
+                    "away": 1,
+                    "total": 3
+                  },
+                  "average": {
+                    "home": "2.0",
+                    "away": "1.0",
+                    "total": "1.5"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 1,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": "1-2",
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 1,
+                    "away": 1
+                  },
+                  "against": {
+                    "home": 2,
+                    "away": 1
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 1,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 1
+              },
+              "lineups": [
+                {
+                  "formation": "4-2-3-1",
+                  "played": 1
+                },
+                {
+                  "formation": "5-4-1",
+                  "played": 1
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "att": {
+            "home": "60%",
+            "away": "40%"
+          },
+          "def": {
+            "home": "38%",
+            "away": "63%"
+          },
+          "poisson_distribution": {
+            "home": "40%",
+            "away": "60%"
+          },
+          "h2h": {
+            "home": "85%",
+            "away": "15%"
+          },
+          "goals": {
+            "home": "67%",
+            "away": "33%"
+          },
+          "total": {
+            "home": "58.0%",
+            "away": "42.2%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1213142,
+              "referee": "I. Abrosimov",
+              "timezone": "UTC",
+              "date": "2025-04-05T12:15:00+00:00",
+              "timestamp": 1743855300,
+              "periods": {
+                "first": 1743855300,
+                "second": 1743858900
+              },
+              "venue": {
+                "id": null,
+                "name": "Stadion Fakel",
+                "city": "Voronezh"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 8
+              }
+            },
+            "league": {
+              "id": 235,
+              "name": "Premier League",
+              "country": "Russia",
+              "logo": "https://media.api-sports.io/football/leagues/235.png",
+              "flag": "https://media.api-sports.io/flags/ru.svg",
+              "season": 2024,
+              "round": "Regular Season - 23",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 1993,
+                "name": "Fakel",
+                "logo": "https://media.api-sports.io/football/teams/1993.png",
+                "winner": null
+              },
+              "away": {
+                "id": 1085,
+                "name": "Akhmat",
+                "logo": "https://media.api-sports.io/football/teams/1085.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1213050,
+              "referee": "V. Bezborodov",
+              "timezone": "UTC",
+              "date": "2024-10-18T17:15:00+00:00",
+              "timestamp": 1729271700,
+              "periods": {
+                "first": 1729271700,
+                "second": 1729275300
+              },
+              "venue": {
+                "id": 1353,
+                "name": "Akhmat Arena",
+                "city": "Groznyi"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 10
+              }
+            },
+            "league": {
+              "id": 235,
+              "name": "Premier League",
+              "country": "Russia",
+              "logo": "https://media.api-sports.io/football/leagues/235.png",
+              "flag": "https://media.api-sports.io/flags/ru.svg",
+              "season": 2024,
+              "round": "Regular Season - 12",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 1085,
+                "name": "Akhmat",
+                "logo": "https://media.api-sports.io/football/teams/1085.png",
+                "winner": false
+              },
+              "away": {
+                "id": 1993,
+                "name": "Fakel",
+                "logo": "https://media.api-sports.io/football/teams/1993.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 3
+            },
+            "score": {
+              "halftime": {
+                "home": 2,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 3
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1042252,
+              "referee": "A. Chistyakov",
+              "timezone": "UTC",
+              "date": "2024-05-25T13:30:00+00:00",
+              "timestamp": 1716643800,
+              "periods": {
+                "first": 1716643800,
+                "second": 1716647400
+              },
+              "venue": {
+                "id": 1336,
+                "name": "Central'nyi Stadion Profsoyuzov",
+                "city": "Voronezh"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 235,
+              "name": "Premier League",
+              "country": "Russia",
+              "logo": "https://media.api-sports.io/football/leagues/235.png",
+              "flag": "https://media.api-sports.io/flags/ru.svg",
+              "season": 2023,
+              "round": "Regular Season - 30",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 1993,
+                "name": "Fakel Voronezh",
+                "logo": "https://media.api-sports.io/football/teams/1993.png",
+                "winner": true
+              },
+              "away": {
+                "id": 1085,
+                "name": "Akhmat Grozny",
+                "logo": "https://media.api-sports.io/football/teams/1085.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1042121,
+              "referee": "S. Cheban",
+              "timezone": "UTC",
+              "date": "2023-11-04T13:30:00+00:00",
+              "timestamp": 1699104600,
+              "periods": {
+                "first": 1699104600,
+                "second": 1699108200
+              },
+              "venue": {
+                "id": 1353,
+                "name": "Akhmat Arena",
+                "city": "Groznyi"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 235,
+              "name": "Premier League",
+              "country": "Russia",
+              "logo": "https://media.api-sports.io/football/leagues/235.png",
+              "flag": "https://media.api-sports.io/flags/ru.svg",
+              "season": 2023,
+              "round": "Regular Season - 14",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 1085,
+                "name": "Akhmat Grozny",
+                "logo": "https://media.api-sports.io/football/teams/1085.png",
+                "winner": false
+              },
+              "away": {
+                "id": 1993,
+                "name": "Fakel Voronezh",
+                "logo": "https://media.api-sports.io/football/teams/1993.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 880049,
+              "referee": "R. Galimov",
+              "timezone": "UTC",
+              "date": "2023-04-16T13:30:00+00:00",
+              "timestamp": 1681651800,
+              "periods": {
+                "first": 1681651800,
+                "second": 1681655400
+              },
+              "venue": {
+                "id": 1336,
+                "name": "Central'nyi Stadion Profsoyuzov",
+                "city": "Voronezh"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 235,
+              "name": "Premier League",
+              "country": "Russia",
+              "logo": "https://media.api-sports.io/football/leagues/235.png",
+              "flag": "https://media.api-sports.io/flags/ru.svg",
+              "season": 2022,
+              "round": "Regular Season - 23",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 1993,
+                "name": "Fakel Voronezh",
+                "logo": "https://media.api-sports.io/football/teams/1993.png",
+                "winner": null
+              },
+              "away": {
+                "id": 1085,
+                "name": "Akhmat Grozny",
+                "logo": "https://media.api-sports.io/football/teams/1085.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 879882,
+              "referee": "A. Amelin",
+              "timezone": "UTC",
+              "date": "2022-07-24T17:00:00+00:00",
+              "timestamp": 1658682000,
+              "periods": {
+                "first": 1658682000,
+                "second": 1658685600
+              },
+              "venue": {
+                "id": 1353,
+                "name": "Akhmat Arena",
+                "city": "Groznyi"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 235,
+              "name": "Premier League",
+              "country": "Russia",
+              "logo": "https://media.api-sports.io/football/leagues/235.png",
+              "flag": "https://media.api-sports.io/flags/ru.svg",
+              "season": 2022,
+              "round": "Regular Season - 2",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 1085,
+                "name": "Akhmat Grozny",
+                "logo": "https://media.api-sports.io/football/teams/1085.png",
+                "winner": true
+              },
+              "away": {
+                "id": 1993,
+                "name": "Fakel Voronezh",
+                "logo": "https://media.api-sports.io/football/teams/1993.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
       }
     },
     {
@@ -185167,14 +186910,14 @@
       "awayTeam": "Kalamata",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2110.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/5046.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 8,
+      "elapsed": 8,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -185192,15 +186935,694 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T21:35:22.167Z",
-      "staleAfter": "2026-08-09T21:40:22.167Z",
+      "fetchedAt": "2026-08-10T18:08:08.978Z",
+      "staleAfter": "2026-08-10T18:13:08.978Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1618912"
       },
-      "competitionId": "hazirlik-maci"
+      "competitionId": "hazirlik-maci",
+      "analysis": {
+        "title": "Canlı Radar Analizi",
+        "summary": "Skor dengede.",
+        "confidence": "Sınırlı",
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
+        "eventCount": 0,
+        "dataPoints": 1,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": null,
+            "name": null,
+            "comment": null
+          },
+          "win_or_draw": false,
+          "under_over": null,
+          "goals": {
+            "home": null,
+            "away": null
+          },
+          "advice": "No predictions available",
+          "percent": {
+            "home": "33%",
+            "draw": "33%",
+            "away": "33%"
+          }
+        },
+        "league": {
+          "id": 667,
+          "name": "Friendlies Clubs",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/667.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 2110,
+            "name": "Volos NFC",
+            "logo": "https://media.api-sports.io/football/teams/2110.png",
+            "last_5": {
+              "played": 3,
+              "form": "44%",
+              "att": "40%",
+              "def": "60%",
+              "goals": {
+                "for": {
+                  "total": 4,
+                  "average": "1.3"
+                },
+                "against": {
+                  "total": 4,
+                  "average": "1.3"
+                }
+              }
+            },
+            "league": {
+              "form": "DWL",
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 3,
+                  "total": 3
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 4,
+                    "total": 4
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "1.3",
+                    "total": "1.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 2,
+                      "percentage": "50.00%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 4,
+                    "total": 4
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "1.3",
+                    "total": "1.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 2,
+                      "percentage": "50.00%"
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 1,
+                  "draws": 1,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": "1-2"
+                },
+                "loses": {
+                  "home": null,
+                  "away": "3-2"
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 2
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 3
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": 2,
+                    "percentage": "40.00%"
+                  },
+                  "31-45": {
+                    "total": 2,
+                    "percentage": "40.00%"
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "20.00%"
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 5046,
+            "name": "Kalamata",
+            "logo": "https://media.api-sports.io/football/teams/5046.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "att": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "def": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "goals": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "total": {
+            "home": "0%",
+            "away": "0%"
+          }
+        },
+        "h2h": []
+      }
     },
     {
       "id": "rayo-zuliano-estudiantes-de-merida-fc-2026-08-10",
@@ -185239,15 +187661,1249 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-09T21:35:22.167Z",
-      "staleAfter": "2026-08-09T21:40:22.167Z",
+      "fetchedAt": "2026-08-10T18:08:08.978Z",
+      "staleAfter": "2026-08-10T18:13:08.978Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1612526"
       },
-      "competitionId": "la-liga"
+      "competitionId": "la-liga",
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "confidence": "Sınırlı",
+        "signals": [],
+        "eventCount": 0,
+        "dataPoints": 0,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 2818,
+            "name": "Estudiantes de Merida FC",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": null,
+          "goals": {
+            "home": "-1.5",
+            "away": "-1.5"
+          },
+          "advice": "Double chance : draw or Estudiantes de Merida FC",
+          "percent": {
+            "home": "10%",
+            "draw": "45%",
+            "away": "45%"
+          }
+        },
+        "league": {
+          "id": 299,
+          "name": "Primera División",
+          "country": "Venezuela",
+          "logo": "https://media.api-sports.io/football/leagues/299.png",
+          "flag": "https://media.api-sports.io/flags/ve.svg",
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 16847,
+            "name": "Rayo Zuliano",
+            "logo": "https://media.api-sports.io/football/teams/16847.png",
+            "last_5": {
+              "played": 5,
+              "form": "0%",
+              "att": "13%",
+              "def": "44%",
+              "goals": {
+                "for": {
+                  "total": 2,
+                  "average": "0.4"
+                },
+                "against": {
+                  "total": 9,
+                  "average": "1.8"
+                }
+              }
+            },
+            "league": {
+              "form": "LWWWLLLDDWLLLLL",
+              "fixtures": {
+                "played": {
+                  "home": 7,
+                  "away": 8,
+                  "total": 15
+                },
+                "wins": {
+                  "home": 2,
+                  "away": 2,
+                  "total": 4
+                },
+                "draws": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                },
+                "loses": {
+                  "home": 4,
+                  "away": 5,
+                  "total": 9
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 6,
+                    "away": 8,
+                    "total": 14
+                  },
+                  "average": {
+                    "home": "0.9",
+                    "away": "1.0",
+                    "total": "0.9"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 3,
+                      "percentage": "20.00%"
+                    },
+                    "16-30": {
+                      "total": 2,
+                      "percentage": "13.33%"
+                    },
+                    "31-45": {
+                      "total": 4,
+                      "percentage": "26.67%"
+                    },
+                    "46-60": {
+                      "total": 2,
+                      "percentage": "13.33%"
+                    },
+                    "61-75": {
+                      "total": 2,
+                      "percentage": "13.33%"
+                    },
+                    "76-90": {
+                      "total": 2,
+                      "percentage": "13.33%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 8,
+                      "under": 7
+                    },
+                    "1.5": {
+                      "over": 4,
+                      "under": 11
+                    },
+                    "2.5": {
+                      "over": 2,
+                      "under": 13
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 15
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 15
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 10,
+                    "away": 16,
+                    "total": 26
+                  },
+                  "average": {
+                    "home": "1.4",
+                    "away": "2.0",
+                    "total": "1.7"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 4,
+                      "percentage": "16.00%"
+                    },
+                    "31-45": {
+                      "total": 7,
+                      "percentage": "28.00%"
+                    },
+                    "46-60": {
+                      "total": 4,
+                      "percentage": "16.00%"
+                    },
+                    "61-75": {
+                      "total": 3,
+                      "percentage": "12.00%"
+                    },
+                    "76-90": {
+                      "total": 7,
+                      "percentage": "28.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 14,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 5,
+                      "under": 10
+                    },
+                    "2.5": {
+                      "over": 3,
+                      "under": 12
+                    },
+                    "3.5": {
+                      "over": 2,
+                      "under": 13
+                    },
+                    "4.5": {
+                      "over": 2,
+                      "under": 13
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 3,
+                  "draws": 2,
+                  "loses": 3
+                },
+                "wins": {
+                  "home": "3-1",
+                  "away": "1-3"
+                },
+                "loses": {
+                  "home": "1-5",
+                  "away": "5-0"
+                },
+                "goals": {
+                  "for": {
+                    "home": 3,
+                    "away": 3
+                  },
+                  "against": {
+                    "home": 5,
+                    "away": 5
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 1,
+                "away": 0,
+                "total": 1
+              },
+              "failed_to_score": {
+                "home": 4,
+                "away": 3,
+                "total": 7
+              },
+              "penalty": {
+                "scored": {
+                  "total": 1,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 1
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": 4,
+                    "percentage": "8.33%"
+                  },
+                  "16-30": {
+                    "total": 3,
+                    "percentage": "6.25%"
+                  },
+                  "31-45": {
+                    "total": 12,
+                    "percentage": "25.00%"
+                  },
+                  "46-60": {
+                    "total": 9,
+                    "percentage": "18.75%"
+                  },
+                  "61-75": {
+                    "total": 6,
+                    "percentage": "12.50%"
+                  },
+                  "76-90": {
+                    "total": 8,
+                    "percentage": "16.67%"
+                  },
+                  "91-105": {
+                    "total": 6,
+                    "percentage": "12.50%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": 1,
+                    "percentage": "25.00%"
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "25.00%"
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": 1,
+                    "percentage": "25.00%"
+                  },
+                  "91-105": {
+                    "total": 1,
+                    "percentage": "25.00%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 2818,
+            "name": "Estudiantes de Merida FC",
+            "logo": "https://media.api-sports.io/football/teams/2818.png",
+            "last_5": {
+              "played": 5,
+              "form": "27%",
+              "att": "19%",
+              "def": "63%",
+              "goals": {
+                "for": {
+                  "total": 3,
+                  "average": "0.6"
+                },
+                "against": {
+                  "total": 6,
+                  "average": "1.2"
+                }
+              }
+            },
+            "league": {
+              "form": "DLLWWLDWLWWWLWLLLLLDW",
+              "fixtures": {
+                "played": {
+                  "home": 10,
+                  "away": 11,
+                  "total": 21
+                },
+                "wins": {
+                  "home": 5,
+                  "away": 3,
+                  "total": 8
+                },
+                "draws": {
+                  "home": 1,
+                  "away": 2,
+                  "total": 3
+                },
+                "loses": {
+                  "home": 4,
+                  "away": 6,
+                  "total": 10
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 14,
+                    "away": 12,
+                    "total": 26
+                  },
+                  "average": {
+                    "home": "1.4",
+                    "away": "1.1",
+                    "total": "1.2"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 4,
+                      "percentage": "14.81%"
+                    },
+                    "16-30": {
+                      "total": 4,
+                      "percentage": "14.81%"
+                    },
+                    "31-45": {
+                      "total": 7,
+                      "percentage": "25.93%"
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "3.70%"
+                    },
+                    "61-75": {
+                      "total": 4,
+                      "percentage": "14.81%"
+                    },
+                    "76-90": {
+                      "total": 7,
+                      "percentage": "25.93%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 13,
+                      "under": 8
+                    },
+                    "1.5": {
+                      "over": 10,
+                      "under": 11
+                    },
+                    "2.5": {
+                      "over": 3,
+                      "under": 18
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 21
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 21
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 14,
+                    "away": 14,
+                    "total": 28
+                  },
+                  "average": {
+                    "home": "1.4",
+                    "away": "1.3",
+                    "total": "1.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 2,
+                      "percentage": "7.41%"
+                    },
+                    "16-30": {
+                      "total": 3,
+                      "percentage": "11.11%"
+                    },
+                    "31-45": {
+                      "total": 6,
+                      "percentage": "22.22%"
+                    },
+                    "46-60": {
+                      "total": 3,
+                      "percentage": "11.11%"
+                    },
+                    "61-75": {
+                      "total": 5,
+                      "percentage": "18.52%"
+                    },
+                    "76-90": {
+                      "total": 8,
+                      "percentage": "29.63%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 18,
+                      "under": 3
+                    },
+                    "1.5": {
+                      "over": 9,
+                      "under": 12
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 20
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 21
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 21
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 3,
+                  "draws": 1,
+                  "loses": 5
+                },
+                "wins": {
+                  "home": "3-2",
+                  "away": "0-3"
+                },
+                "loses": {
+                  "home": "0-2",
+                  "away": "2-0"
+                },
+                "goals": {
+                  "for": {
+                    "home": 3,
+                    "away": 3
+                  },
+                  "against": {
+                    "home": 2,
+                    "away": 3
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 1,
+                "away": 2,
+                "total": 3
+              },
+              "failed_to_score": {
+                "home": 3,
+                "away": 5,
+                "total": 8
+              },
+              "penalty": {
+                "scored": {
+                  "total": 5,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 5
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": 2,
+                    "percentage": "3.23%"
+                  },
+                  "16-30": {
+                    "total": 4,
+                    "percentage": "6.45%"
+                  },
+                  "31-45": {
+                    "total": 9,
+                    "percentage": "14.52%"
+                  },
+                  "46-60": {
+                    "total": 15,
+                    "percentage": "24.19%"
+                  },
+                  "61-75": {
+                    "total": 12,
+                    "percentage": "19.35%"
+                  },
+                  "76-90": {
+                    "total": 10,
+                    "percentage": "16.13%"
+                  },
+                  "91-105": {
+                    "total": 10,
+                    "percentage": "16.13%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": 1,
+                    "percentage": "16.67%"
+                  },
+                  "46-60": {
+                    "total": 2,
+                    "percentage": "33.33%"
+                  },
+                  "61-75": {
+                    "total": 1,
+                    "percentage": "16.67%"
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": 2,
+                    "percentage": "33.33%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "att": {
+            "home": "40%",
+            "away": "60%"
+          },
+          "def": {
+            "home": "40%",
+            "away": "60%"
+          },
+          "poisson_distribution": {
+            "home": "36%",
+            "away": "64%"
+          },
+          "h2h": {
+            "home": "60%",
+            "away": "40%"
+          },
+          "goals": {
+            "home": "46%",
+            "away": "54%"
+          },
+          "total": {
+            "home": "44.4%",
+            "away": "55.6%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1504366,
+              "referee": "R. Cueva",
+              "timezone": "UTC",
+              "date": "2026-02-13T21:00:00+00:00",
+              "timestamp": 1771016400,
+              "periods": {
+                "first": 1771016400,
+                "second": 1771020000
+              },
+              "venue": {
+                "id": null,
+                "name": "Estadio Metropolitano de Merida",
+                "city": "Mérida"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 8
+              }
+            },
+            "league": {
+              "id": 299,
+              "name": "Primera División",
+              "country": "Venezuela",
+              "logo": "https://media.api-sports.io/football/leagues/299.png",
+              "flag": "https://media.api-sports.io/flags/ve.svg",
+              "season": 2026,
+              "round": "Apertura - 3",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 2818,
+                "name": "Estudiantes de Merida FC",
+                "logo": "https://media.api-sports.io/football/teams/2818.png",
+                "winner": false
+              },
+              "away": {
+                "id": 16847,
+                "name": "Rayo Zuliano",
+                "logo": "https://media.api-sports.io/football/teams/16847.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1403912,
+              "referee": "Alejandro Velasquez",
+              "timezone": "UTC",
+              "date": "2025-08-02T19:30:00+00:00",
+              "timestamp": 1754163000,
+              "periods": {
+                "first": 1754163000,
+                "second": 1754166600
+              },
+              "venue": {
+                "id": 1665,
+                "name": "Estadio Olímpico José Encarnación Pachencho Romero",
+                "city": "Maracaibo"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 8
+              }
+            },
+            "league": {
+              "id": 299,
+              "name": "Primera División",
+              "country": "Venezuela",
+              "logo": "https://media.api-sports.io/football/leagues/299.png",
+              "flag": "https://media.api-sports.io/flags/ve.svg",
+              "season": 2025,
+              "round": "Clausura - 5",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 16847,
+                "name": "Rayo Zuliano",
+                "logo": "https://media.api-sports.io/football/teams/16847.png",
+                "winner": true
+              },
+              "away": {
+                "id": 2818,
+                "name": "Estudiantes de Merida FC",
+                "logo": "https://media.api-sports.io/football/teams/2818.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1336463,
+              "referee": "L. Caripa",
+              "timezone": "UTC",
+              "date": "2025-02-21T21:30:00+00:00",
+              "timestamp": 1740173400,
+              "periods": {
+                "first": 1740173400,
+                "second": 1740177000
+              },
+              "venue": {
+                "id": 1657,
+                "name": "Estadio Olímpico Metropolitano de Mérida",
+                "city": "Mérida"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 7
+              }
+            },
+            "league": {
+              "id": 299,
+              "name": "Primera División",
+              "country": "Venezuela",
+              "logo": "https://media.api-sports.io/football/leagues/299.png",
+              "flag": "https://media.api-sports.io/flags/ve.svg",
+              "season": 2025,
+              "round": "Apertura - 5",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 2818,
+                "name": "Estudiantes de Merida FC",
+                "logo": "https://media.api-sports.io/football/teams/2818.png",
+                "winner": true
+              },
+              "away": {
+                "id": 16847,
+                "name": "Rayo Zuliano",
+                "logo": "https://media.api-sports.io/football/teams/16847.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1336797,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2025-01-15T22:30:00+00:00",
+              "timestamp": 1736980200,
+              "periods": {
+                "first": 1736980200,
+                "second": 1736983800
+              },
+              "venue": {
+                "id": null,
+                "name": null,
+                "city": null
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 667,
+              "name": "Friendlies Clubs",
+              "country": "World",
+              "logo": "https://media.api-sports.io/football/leagues/667.png",
+              "flag": null,
+              "season": 2025,
+              "round": "Club Friendlies 4",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 2818,
+                "name": "Estudiantes de Merida FC",
+                "logo": "https://media.api-sports.io/football/teams/2818.png",
+                "winner": true
+              },
+              "away": {
+                "id": 16847,
+                "name": "Rayo Zuliano",
+                "logo": "https://media.api-sports.io/football/teams/16847.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1234136,
+              "referee": "L. Caripa",
+              "timezone": "UTC",
+              "date": "2024-10-19T20:00:00+00:00",
+              "timestamp": 1729368000,
+              "periods": {
+                "first": 1729368000,
+                "second": 1729371600
+              },
+              "venue": {
+                "id": 1665,
+                "name": "Estadio Olímpico José Encarnación Pachencho Romero",
+                "city": "Maracaibo"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 7
+              }
+            },
+            "league": {
+              "id": 299,
+              "name": "Primera División",
+              "country": "Venezuela",
+              "logo": "https://media.api-sports.io/football/leagues/299.png",
+              "flag": "https://media.api-sports.io/flags/ve.svg",
+              "season": 2024,
+              "round": "Clausura - 13",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 16847,
+                "name": "Rayo Zuliano",
+                "logo": "https://media.api-sports.io/football/teams/16847.png",
+                "winner": true
+              },
+              "away": {
+                "id": 2818,
+                "name": "Estudiantes de Merida FC",
+                "logo": "https://media.api-sports.io/football/teams/2818.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1172354,
+              "referee": "J. Sánchez",
+              "timezone": "UTC",
+              "date": "2024-04-18T22:00:00+00:00",
+              "timestamp": 1713477600,
+              "periods": {
+                "first": 1713477600,
+                "second": 1713481200
+              },
+              "venue": {
+                "id": 1657,
+                "name": "Estadio Olímpico Metropolitano de Mérida",
+                "city": "Mérida"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 299,
+              "name": "Primera División",
+              "country": "Venezuela",
+              "logo": "https://media.api-sports.io/football/leagues/299.png",
+              "flag": "https://media.api-sports.io/flags/ve.svg",
+              "season": 2024,
+              "round": "Apertura - 13",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 2818,
+                "name": "Estudiantes de Merida FC",
+                "logo": "https://media.api-sports.io/football/teams/2818.png",
+                "winner": true
+              },
+              "away": {
+                "id": 16847,
+                "name": "Rayo Zuliano",
+                "logo": "https://media.api-sports.io/football/teams/16847.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 998217,
+              "referee": "Á. Arteaga",
+              "timezone": "UTC",
+              "date": "2023-08-27T19:30:00+00:00",
+              "timestamp": 1693164600,
+              "periods": {
+                "first": 1693164600,
+                "second": 1693168200
+              },
+              "venue": {
+                "id": 1665,
+                "name": "Estadio Olímpico José Encarnación Pachencho Romero",
+                "city": "Maracaibo"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 299,
+              "name": "Primera División",
+              "country": "Venezuela",
+              "logo": "https://media.api-sports.io/football/leagues/299.png",
+              "flag": "https://media.api-sports.io/flags/ve.svg",
+              "season": 2023,
+              "round": "Regular Season - 25",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 16847,
+                "name": "Rayo Zuliano",
+                "logo": "https://media.api-sports.io/football/teams/16847.png",
+                "winner": true
+              },
+              "away": {
+                "id": 2818,
+                "name": "Estudiantes de Merida FC",
+                "logo": "https://media.api-sports.io/football/teams/2818.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 998084,
+              "referee": "J. Montoya",
+              "timezone": "UTC",
+              "date": "2023-03-11T19:00:00+00:00",
+              "timestamp": 1678561200,
+              "periods": {
+                "first": 1678561200,
+                "second": 1678564800
+              },
+              "venue": {
+                "id": 1657,
+                "name": "Estadio Olímpico Metropolitano de Mérida",
+                "city": "Mérida"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 299,
+              "name": "Primera División",
+              "country": "Venezuela",
+              "logo": "https://media.api-sports.io/football/leagues/299.png",
+              "flag": "https://media.api-sports.io/flags/ve.svg",
+              "season": 2023,
+              "round": "Regular Season - 6",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 2818,
+                "name": "Estudiantes de Merida FC",
+                "logo": "https://media.api-sports.io/football/teams/2818.png",
+                "winner": false
+              },
+              "away": {
+                "id": 16847,
+                "name": "Rayo Zuliano",
+                "logo": "https://media.api-sports.io/football/teams/16847.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "deportivo-maldonado-racing-montevideo-2026-08-10",
