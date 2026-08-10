@@ -1,9 +1,278 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-10T08:41:13.203Z",
-  "matchCount": 277,
+  "updatedAt": "2026-08-10T15:01:47.096Z",
+  "matchCount": 278,
   "records": [
+    {
+      "matchId": "polessya-fc-kharkiv-2026-08-10",
+      "fixtureId": "1565447",
+      "provider": "api-football",
+      "slug": "polessya-fc-kharkiv-2026-08-10",
+      "kickoff": "2026-08-10T12:30:00+00:00",
+      "kickoffUtc": "2026-08-10T12:30:00.000Z",
+      "kickoffLocal": "2026-08-10T15:30",
+      "date": "2026-08-10",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Premier League",
+      "competition": "Premier League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Polessya",
+      "awayTeam": "FC Kharkiv",
+      "venue": "Tsentralnyi Stadion",
+      "score": {
+        "home": 3,
+        "away": 1
+      },
+      "finalScore": "3-1",
+      "winner": "Polessya",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 60,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 17
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 17,
+        "statistics": 0,
+        "lineups": 2,
+        "players": 0
+      },
+      "dataCompleteness": 0.6,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "554fb6da122788ec",
+      "fingerprint": "554fb6da122788ec",
+      "analysisGeneratedAt": "2026-08-10T15:01:47.039Z",
+      "analysisUpdatedAt": "2026-08-10T15:01:47.039Z",
+      "generatedAt": "2026-08-10T15:01:47.039Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Polessya 3-1 FC Kharkiv maç raporu: Premier League istatistikleri | FutbolRadar",
+        "description": "Tsentralnyi Stadion'da oynanan Premier League maçını Polessya 3-1 kazandı; FC Kharkiv sahadan puansız ayrıldı.",
+        "path": "mac-raporu/polessya-fc-kharkiv-2026-08-10.html",
+        "competition": "Premier League"
+      },
+      "reportUrl": "./mac-raporu/polessya-fc-kharkiv-2026-08-10.html",
+      "digest": {
+        "headline": "Polessya, FC Kharkiv'i 3-1 yendi",
+        "paragraph": "Tsentralnyi Stadion'da oynanan Premier League maçını Polessya 3-1 kazandı; FC Kharkiv sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Polessya",
+          "loser": "FC Kharkiv",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 1
+        },
+        "turningPoints": {
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "28'",
+              "team": "Polessya",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "30'",
+              "team": "Polessya",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "49'",
+              "team": "FC Kharkiv",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "79'",
+              "team": "FC Kharkiv",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "FC Kharkiv",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "decisive": false
+            },
+            {
+              "minute": "86'",
+              "team": "Polessya",
+              "type": "subst",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "90+2'",
+              "team": "Polessya",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "Polessya sahaya 4-1-4-1 dizilişiyle çıktı.",
+            "FC Kharkiv sahaya 4-1-4-1 dizilişiyle çıktı."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (15 olay).",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Polessya maça 4-1-4-1 dizilişiyle başladı.",
+            "FC Kharkiv maça 4-1-4-1 dizilişiyle başladı.",
+            "53' FC Kharkiv değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "54' FC Kharkiv değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "58' Polessya değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "58' Polessya değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Polessya",
+              "formation": "4-1-4-1"
+            },
+            {
+              "team": "FC Kharkiv",
+              "formation": "4-1-4-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Polessya, FC Kharkiv'i 3-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Polessya sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 50,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "matagalpa-managua-2026-08-10",
       "fixtureId": "1586099",
