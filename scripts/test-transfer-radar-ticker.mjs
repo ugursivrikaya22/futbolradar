@@ -27,7 +27,32 @@ assert.match(app, /dateTimestamp\(right\) - dateTimestamp\(left\)/, "newest tran
 assert.match(app, /clubPriority\(left\) - clubPriority\(right\)/, "club priority must break date ties");
 assert.match(app, /render\(target, \[\], "empty"\)/, "empty API data must render the visible message");
 assert.match(app, /Transfer güncellemeleri hazırlanıyor\./);
-assert.match(app, /render\(target, SAFE_FALLBACK, "fallback"\)/, "network failures must render safe fallback data");
+
+// YEDEK ARTIK GERÇEK VERİ DOSYASI.
+//
+// Önceki sözleşme "ağ hatasında SAFE_FALLBACK bas" idi ve SAFE_FALLBACK
+// app.js içine gömülmüş dört transferden oluşan SABİT bir diziydi. İki
+// sorunu vardı: doğrulanmış veri dosyası elimizdeyken kullanılmıyordu ve
+// sabit olduğu için zamanla her koşulda bayatlıyordu — API her düştüğünde
+// okuyucu aylar öncesinin transferlerini güncel sanıyordu. Yedek artık
+// sitenin geri kalanının kullandığı yol: /data/transfers.json.
+assert.ok(
+  !app.includes("SAFE_FALLBACK"),
+  "bant sabit kodlanmış transfer verisi taşımamalı; yedek /data/transfers.json olmalı"
+);
+assert.match(app, /var staticSource = DATA_ROOT \+ "transfers\.json"/, "API düşerse depodaki gerçek veriye düşülmeli");
+assert.match(app, /paint\(result, "static"\)/, "statik yedek de bant üzerinde işlenmeli");
+
+// Üç günden eski hareket "son dakika" rozeti taşımamalı.
+assert.match(app, /BREAKING_WINDOW_MS = 3 \* 24 \* 60 \* 60 \* 1000/, "son dakika penceresi üç gün olmalı");
+assert.match(app, /isBreaking: Number\.isFinite\(parsed\)/, "rozet karar alanı kayıtta taşınmalı");
+assert.match(app, /item\.isBreaking \? "SON DAKİKA"/, "eski kayıt SON DAKİKA rozeti almamalı");
+assert.match(css, /\.transfer-radar-ticker__breaking\.is-dated/, "tarihli rozetin ayrı bir görünümü olmalı");
+
+// Okuyucuya görünen metin Türkçe olmalı: CSS'teki uppercase, Türkçe yerelde
+// "Official" kelimesini "OFFİCİAL" yapıyordu.
+assert.match(app, /Official: "Resmî"/, "durum etiketleri Türkçe gösterilmeli");
+assert.ok(!/>From: /.test(app), "bantta İngilizce 'From:' etiketi kalmamalı");
 for (const club of ["Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor", "Başakşehir", "Eyüpspor", "Samsunspor", "Göztepe"]) {
   assert.ok(app.includes(`"${club}"`), `${club} must be in the priority list`);
 }

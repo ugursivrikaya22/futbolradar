@@ -1337,8 +1337,76 @@ function checkStandingsIntegrity() {
   expect(seasons.size <= 1, `puan tablosunda birden fazla sezon etiketi: ${[...seasons].join(", ")}`);
 }
 
+/**
+ * ÇEKİRDEK SAYFALARIN YAPISAL VERİSİ.
+ *
+ * Puan durumu, bugünün maçları, takımlar, Süper Lig fikstürü gibi en çok
+ * arama trafiği beklenen sayfalarda hiç JSON-LD yoktu; Google için ne
+ * oldukları yalnızca `<title>`dan anlaşılıyordu. Şema
+ * `scripts/inject-core-page-schema.mjs` ile basılıyor, kapı burada:
+ * blok düşerse ya da bayatlarsa QA kırmızı yanar.
+ */
+function checkCorePageSchema() {
+  const required = [
+    "puan-durumu.html",
+    "bugunun-maclari.html",
+    "takimlar.html",
+    "super-lig-fikstur.html",
+    "analizler.html",
+    "mac-merkezi.html"
+  ];
+
+  for (const page of required) {
+    const file = path.join(root, page);
+    if (!fs.existsSync(file)) continue;
+    const html = fs.readFileSync(file, "utf8");
+
+    expect(html.includes("<!-- core-page-schema:start -->"), `${page}: çekirdek sayfa şeması bloğu yok`);
+
+    const match = html.match(/<!-- core-page-schema:start -->\s*<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+    expect(Boolean(match), `${page}: şema bloğu okunamadı`);
+    if (!match) continue;
+
+    let parsed = null;
+    try {
+      parsed = JSON.parse(match[1]);
+    } catch (error) {
+      expect(false, `${page}: şema geçersiz JSON (${error.message})`);
+      continue;
+    }
+
+    const graph = Array.isArray(parsed["@graph"]) ? parsed["@graph"] : [];
+    const types = graph.map((node) => node["@type"]);
+    expect(types.includes("BreadcrumbList"), `${page}: BreadcrumbList şeması yok`);
+    expect(types.some((type) => type === "WebPage" || type === "CollectionPage"), `${page}: WebPage/CollectionPage şeması yok`);
+
+    // Şemadaki canonical, sayfanın kendi canonical'ıyla ÇELİŞMEMELİ.
+    const canonical = (html.match(/<link rel="canonical" href="([^"]*)"/) || [])[1];
+    const page1 = graph.find((node) => node["@type"] === "WebPage" || node["@type"] === "CollectionPage");
+    if (canonical && page1) {
+      expect(page1.url === canonical, `${page}: şema url'i canonical ile çelişiyor (${page1.url} != ${canonical})`);
+    }
+
+    // SportsEvent yazıldıysa BAŞLAMA ANI olmak ZORUNDA: tarihsiz maç
+    // şemaya uydurma bir tarihle girmemeli.
+    for (const node of graph) {
+      if (node["@type"] !== "ItemList") continue;
+      for (const entry of node.itemListElement || []) {
+        const item = entry.item || {};
+        if (item["@type"] !== "SportsEvent") continue;
+        expect(Boolean(item.startDate), `${page}: startDate taşımayan SportsEvent şemaya yazılmış (${item.name})`);
+        expect(
+          /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+03:00$/.test(String(item.startDate)),
+          `${page}: SportsEvent startDate TSİ ofsetiyle yazılmalı (${item.name}: ${item.startDate})`
+        );
+      }
+    }
+  }
+}
+
 checkDataJsonSyntax();
 checkStandingsIntegrity();
+checkCorePageSchema();
 checkProviderSecretNaming();
 checkWorkflowYaml();
 checkEmptyHideSections();

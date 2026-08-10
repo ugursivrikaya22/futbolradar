@@ -170,10 +170,35 @@ function sourcesSection(page) {
   return `<section class="article-sources" aria-labelledby="sources-title"><h2 id="sources-title">Kaynaklar</h2><ul>${sources.map((source) => `<li><a href="${escapeHtml(source.url)}"${sourceAnchorAttrs(source.url)}>${escapeHtml(source.name)}</a></li>`).join("")}</ul></section>`;
 }
 
+/**
+ * "İlgili" bağlantıları elle yazılmış hedef listesinden geliyor ve hiçbir
+ * yerde ÜRETİLMİŞ SAYFAYA karşı doğrulanmıyordu. Bir haber arşivlendiğinde
+ * (ör. transfer resmîleşince iddia yazısı arşive kalkar) sayfası üretilmeyi
+ * bırakıyor ama bağlantı yerinde kalıyor: okuyucu 404 görüyor, Google da
+ * ölü bir iç bağlantı tarıyor.
+ *
+ * Bağlantı artık basılmadan önce diskte aranır. Çözülmeyen hedef sessizce
+ * ATILMAZ — konsola yazılır ki kaynağı düzeltilebilsin.
+ */
+function resolvableLink(link) {
+  const href = String((link && link.href) || "").split("#")[0].split("?")[0];
+  if (!href) return false;
+  if (/^https?:\/\//i.test(href)) return true;
+  return fs.existsSync(path.join(root, href));
+}
+
 function relatedLinks(page) {
   const links = Array.isArray(page.internalLinks) ? page.internalLinks : [];
   if (!links.length) return "";
-  return `<section class="source-strip" aria-label="İlgili sayfalar">${links.slice(0, 6).map((link) => `<div><span>İlgili</span><b><a href="./${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></b></div>`).join("")}</section>`;
+
+  const usable = links.filter((link) => {
+    if (resolvableLink(link)) return true;
+    console.warn(`[search-demand] ${page.slug}: üretilmemiş hedefe bağlantı atlandı -> ${link && link.href}`);
+    return false;
+  });
+
+  if (!usable.length) return "";
+  return `<section class="source-strip" aria-label="İlgili sayfalar">${usable.slice(0, 6).map((link) => `<div><span>İlgili</span><b><a href="./${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></b></div>`).join("")}</section>`;
 }
 
 function contentPageHtml(page) {

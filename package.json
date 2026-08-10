@@ -40,7 +40,7 @@
     "refetch:finished": "node scripts/refetch-finished-matches.mjs",
     "prune:analyses": "node scripts/prune-stale-match-analyses.mjs",
     "backfill:provider-ids": "node scripts/backfill-provider-ids.mjs",
-    "postprocess": "node scripts/refresh-news-ticker.mjs --apply && node scripts/apply-shared-layout.mjs && node scripts/inject-theme-boot.mjs && node scripts/inject-ga4.mjs && node scripts/inject-site-verification.mjs",
+    "postprocess": "node scripts/refresh-news-ticker.mjs --apply && node scripts/apply-shared-layout.mjs && node scripts/inject-theme-boot.mjs && node scripts/inject-ga4.mjs && node scripts/inject-site-verification.mjs && node scripts/inject-core-page-schema.mjs",
     "ticker:refresh": "node scripts/refresh-news-ticker.mjs",
     "archive:sync": "node scripts/archive-season-data.mjs --apply && node scripts/generate-archive-pages.mjs",
     "audit:players": "node scripts/audit-player-surfaces.mjs",

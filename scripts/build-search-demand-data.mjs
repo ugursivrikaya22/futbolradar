@@ -125,7 +125,7 @@ const items = [
     player: "Mohamed Salah",
     transferStatus: "rumour",
     publishWindow: "2026-08-03 (gündem sıcak)",
-    linkTargets: ["haber/trabzonspor-salah-transfer-iddiasi-son-durum.html", "trabzonspor-form-durumu.html", "transfer-radari.html", "haber/trabzonspor-ertugrul-dogan-salah-transfer-aciklamasi.html"],
+    linkTargets: ["haber/mohamed-salah-trabzonspor-transferi-resmen-aciklandi.html", "trabzonspor-form-durumu.html", "transfer-radari.html", "haber/trabzonspor-ertugrul-dogan-salah-transfer-aciklamasi.html"],
     evidence: [
       SERP("https://www.hurriyet.com.tr/sporarena/ertugrul-dogandan-salah-aciklamasi-su-anda-bir-anlasma-yok-43259784", "Hürriyet, Fanatik, A Haber, Sözcü ve beIN aynı dosyayı art arda işledi — ulusal gündemin en görünür transfer sorgusu."),
       NEWS("trabzonspor-salah-transfer-iddiasi-son-durum", "Sitede iddia + yalanlama haberleri yayında; tek merkez sayfa eksik."),
@@ -556,7 +556,7 @@ const items = [
     player: "Mohamed Salah",
     transferStatus: "rumour",
     publishWindow: "merkez sayfada bölüm",
-    linkTargets: ["haber/trabzonspor-salah-transfer-iddiasi-son-durum.html", "transfer-radari.html", "trabzonspor-form-durumu.html"],
+    linkTargets: ["haber/mohamed-salah-trabzonspor-transferi-resmen-aciklandi.html", "transfer-radari.html", "trabzonspor-form-durumu.html"],
     evidence: [
       SERP("https://www.hurriyet.com.tr/sporarena/ertugrul-dogandan-salah-aciklamasi-su-anda-bir-anlasma-yok-43259784", "Maaş rakamı iddiası (17M€) tüm büyük yayınlarda dolaşıyor; kaynağı ve doğrulanmadığı merkez sayfada açıklanır.")
     ],
