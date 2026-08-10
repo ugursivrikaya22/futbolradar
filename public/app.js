@@ -2608,6 +2608,7 @@
     "turkish-in-progress": "Oynanmakta olan Türk takımı maçı",
     "turkish-upcoming": "Bugünün en yakın Türk takımı maçı",
     "turkish-played": "Bugün oynanan son Türk takımı maçı",
+    "turkish-next": "Bugün Türk takımı maçı yok; sıradaki karşılaşma",
     "major-live": "Büyük kulübün canlı maçı",
     live: "Canlı maç",
     "in-progress": "Oynanmakta olan maç",
@@ -2747,7 +2748,7 @@
     });
 
     if (ordered.length) {
-      return ordered.slice(0, limit).map(function (match) {
+      var cards = ordered.slice(0, limit).map(function (match) {
         return describeFeaturedSelection(
           match,
           featuredReasonFor(match, nowMs),
@@ -2757,6 +2758,28 @@
           turkishCount
         );
       });
+
+      // Bugün Türk maçı yoksa hero yabancı maça bırakılmaz; en yakın Türk
+      // karşılaşması ilk karta geçer. Kural services/featuredMatchSelector.js
+      // ile aynı — ayrışırsa scripts/test-featured-turkish-match.mjs kırılır.
+      if (!turkishCount) {
+        var nextTurkish = list.filter(function (match) {
+          return isTurkishMatch(match) &&
+            matchDateValue(match) > today &&
+            !isUnplayedMatch(match);
+        }).sort(function (left, right) {
+          return featuredKickoffTime(left).value - featuredKickoffTime(right).value;
+        })[0];
+
+        if (nextTurkish) {
+          cards.unshift(describeFeaturedSelection(
+            nextTurkish, "turkish-next", "upcoming", featuredTierOf(nextTurkish, nowMs), pool.length, turkishCount
+          ));
+          cards.length = Math.min(cards.length, limit);
+        }
+      }
+
+      return cards;
     }
 
     // Bugün maç yoksa karusel boş kalmasın: takvimdeki sıradaki karşılaşmalar.

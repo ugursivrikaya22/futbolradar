@@ -218,6 +218,41 @@ const turkishBeatsMajor = selectFeaturedMatches([realMadridLive, trabzonspor], {
 assert.equal(turkishBeatsMajor[0].match.id, "trabzonspor-al-sadd", "Bugünün Türk maçı büyük kulübün canlı maçını geçer");
 assert.equal(turkishBeatsMajor[1].match.id, "real-madrid-osijek", "Büyük kulüp maçı karuselde ikinci kart");
 
+// ── Bugün hiç Türk maçı yoksa hero yabancı maça bırakılmaz ────────────────
+//
+// Kademe sırası bugün bir Türk maçı VARSA doğru çalışıyordu. Hiç yoksa havuz
+// yabancı maçlarla dolu olduğu için "bugün maç yok" yedeği hiç devreye
+// girmiyordu ve ana sayfanın en büyük kartı Fakel-Akhmat gibi bir maç
+// oluyordu — Türkiye'den gelen okuyucu ilk ekranda Türk futboluna dair
+// hiçbir şey görmüyordu. En yakın Türk karşılaşması artık ilk karta geçer.
+const nextTurkishFixture = {
+  id: "sturm-graz-fenerbahce",
+  kickoff: "2026-07-31T21:30:00+03:00",
+  homeTeam: "Sturm Graz",
+  awayTeam: "Fenerbahçe",
+  league: "Şampiyonlar Ligi",
+  status: "SCHEDULED"
+};
+
+const noTurkishToday = selectFeaturedMatches(
+  [foreignFriendly, foreignLive, nextTurkishFixture],
+  { now, today }
+);
+assert.equal(noTurkishToday[0].match.id, "sturm-graz-fenerbahce", "Bugün Türk maçı yoksa sıradaki Türk maçı ilk kart olmalı");
+assert.equal(noTurkishToday[0].reason, "turkish-next", "Sebep turkish-next olmalı");
+assert.equal(noTurkishToday[0].turkish, true, "Öne alınan kart Türk maçı işaretlenmeli");
+assert.match(noTurkishToday[0].reasonLabel, /sıradaki/i, "Kart bugün oynanıyormuş gibi etiketlenmemeli");
+// Günün maçları karuselden DÜŞMEZ, yalnızca bir sıra geri kayar.
+assert.ok(
+  noTurkishToday.some((entry) => entry.match.id === "rennes-venezia"),
+  "bugünün maçları karuselde kalmalı"
+);
+
+// Bugün Türk maçı VARSA sıradaki maç öne alınmaz: bugünkü maç her zaman önde.
+const turkishTodayWins = selectFeaturedMatches([foreignLive, nextTurkishFixture, trabzonspor], { now, today });
+assert.equal(turkishTodayWins[0].match.id, "trabzonspor-al-sadd", "Bugünkü Türk maçı sıradakinin önünde olmalı");
+assert.notEqual(turkishTodayWins[0].reason, "turkish-next", "Bugünkü maç turkish-next olarak etiketlenmemeli");
+
 assert.equal(tierOf({ ...trabzonspor, status: "LIVE" }, noon), 0, "Canlı Türk maçı kademe 0");
 assert.equal(tierOf(trabzonspor, noon), 1, "Bugünün Türk maçı kademe 1");
 assert.equal(tierOf(realMadridLive, noon), 2, "Büyük kulübün canlı maçı kademe 2");
