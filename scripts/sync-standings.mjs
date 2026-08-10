@@ -8,6 +8,7 @@ const require = createRequire(import.meta.url);
 const apiFootballProvider = require("../services/providers/apiFootballProvider.js");
 const { resolveSuperLigLeagueId } = require("../services/leagueResolver.js");
 const { normalizeText } = require("../services/matchRadarService.js");
+const { checkStandings } = require("../services/standingsIntegrity.js");
 
 const root = process.cwd();
 const TEAMS_PATH = path.join(root, "data", "teams.json");
@@ -95,6 +96,25 @@ export async function synchronizeStandings(options = {}) {
     nowIso: (options.now || new Date()).toISOString(),
     season: seasonLabel(config.season)
   });
+
+  // ARİTMETİK KAPISI YAZMADAN ÖNCE.
+  //
+  // Satır sayısı koruması kısmi cevabı tamamen elemiyor: 18 takımlık ligde
+  // eşik 12, yani sağlayıcı 12-17 satır döndürdüğünde birleştirme yapılıyor
+  // ve KAPSANMAYAN takımlar eski sıralarında kalıyor. Sonuç, aynı sıra
+  // numarasının iki takımda birden göründüğü çelişkili bir tablo — okuyucuya
+  // "1. Galatasaray" ve "1. Amed" aynı anda gösterilebilirdi.
+  //
+  // Tablo bir bütün olarak doğru ya da yanlıştır; yarısı doğru bir puan
+  // tablosu yayımlanmaz. Kural services/standingsIntegrity.js'de, QA da
+  // aynı kuralı kullanıyor.
+  const violations = checkStandings(merged.teams);
+  if (violations.length) {
+    throw new Error(
+      `Standings integrity check rejected the merged table (${violations.length} violation): ${violations.slice(0, 3).join(" | ")}`
+    );
+  }
+
   return { ...merged, checked: standings.length, leagueId: resolution.leagueId };
 }
 
