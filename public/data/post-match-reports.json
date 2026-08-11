@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-11T17:00:05.662Z",
+  "updatedAt": "2026-08-11T17:18:02.064Z",
   "matchCount": 292,
   "records": [
     {
@@ -32,10 +32,10 @@
       "winner": "Levski Sofia",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 60,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -43,14 +43,14 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 16
         },
         "statistics": {
           "present": true,
           "source": "curated",
-          "count": 11
+          "count": 15
         },
         "lineups": {
           "present": true,
@@ -58,40 +58,31 @@
           "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 45
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 11,
+        "events": 16,
+        "statistics": 15,
         "lineups": 2,
-        "players": 0
+        "players": 45
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "9251a96bc6b9d54c",
-      "fingerprint": "9251a96bc6b9d54c",
+      "analysisSourceHash": "47be33b725abf781",
+      "fingerprint": "47be33b725abf781",
       "analysisGeneratedAt": "2026-08-11T17:00:05.606Z",
-      "analysisUpdatedAt": "2026-08-11T17:00:05.606Z",
-      "generatedAt": "2026-08-11T17:00:05.606Z",
+      "analysisUpdatedAt": "2026-08-11T17:18:02.013Z",
+      "generatedAt": "2026-08-11T17:18:02.013Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -116,46 +107,108 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 2
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "7'",
+              "team": "Levski Sofia",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "13'",
+              "team": "Levski Sofia",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "45+6'",
+              "team": "Kairat Almaty",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 9 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "79'",
+              "team": "Levski Sofia",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Levski Sofia",
+              "type": "subst",
+              "detail": "Substitution 2",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Levski Sofia",
+              "type": "subst",
+              "detail": "Substitution 3",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Levski Sofia",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
           "players": []
         },
         "tactical": {
-          "status": "ready",
+          "status": "partial",
           "notes": [
             "Kairat Almaty sahaya 4-2-3-1 dizilişiyle çıktı.",
-            "Levski Sofia sahaya 4-2-3-1 dizilişiyle çıktı.",
-            "Levski Sofia topu elinde tutarken Kairat Almaty derin blokta savunma yapmayı tercih etti."
+            "Levski Sofia sahaya 4-2-3-1 dizilişiyle çıktı."
           ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Kairat Almaty maça 4-2-3-1 dizilişiyle başladı.",
-            "Levski Sofia maça 4-2-3-1 dizilişiyle başladı."
+            "Levski Sofia maça 4-2-3-1 dizilişiyle başladı.",
+            "46' Kairat Almaty değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "64' Kairat Almaty değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "79' Levski Sofia değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "79' Levski Sofia değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
           "formations": [
             {
@@ -167,30 +220,32 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
             "Levski Sofia, Kairat Almaty'yı 0-1 yendi.",
-            "İsabetli şutta geride kalmasına rağmen kazandı (0-0); eldeki veri sonucun verimlilikle geldiğini gösteriyor."
+            "İsabetli şutta geride kalmasına rağmen kazandı (2-6); eldeki veri sonucun verimlilikle geldiğini gösteriyor."
           ],
           "strengths": [
-            "Levski Sofia topa daha çok sahip oldu (%100).",
-            "Levski Sofia daha çok şut denedi (0-0)."
+            "Kairat Almaty topa daha çok sahip oldu (%56).",
+            "Kairat Almaty daha çok şut denedi (20-9)."
           ],
-          "improvements": [],
+          "improvements": [
+            "Levski Sofia şut isabetinde geride kaldı (%22); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Levski Sofia sahadan 1 farkla ayrıldı.",
           "basis": "statistics+events"
         },
         "aiRating": {
           "home": {
             "team": "Kairat Almaty",
-            "score": 11
+            "score": 69
           },
           "away": {
             "team": "Levski Sofia",
-            "score": 48
+            "score": 56
           },
           "confidence": 80
         },
@@ -198,7 +253,9 @@
           {
             "id": "hucum",
             "title": "Hücum analizi",
-            "readings": [],
+            "readings": [
+              "Şut isabeti Kairat Almaty %30, Levski Sofia %22.2."
+            ],
             "confidence": {
               "level": "sınırlı",
               "ratio": 0.4
@@ -211,6 +268,26 @@
             "confidence": {
               "level": "orta",
               "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Kairat Almaty 24.5, Levski Sofia 45.7 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
             }
           },
           {
@@ -227,16 +304,14 @@
             "title": "Taktik özet",
             "readings": [],
             "confidence": {
-              "level": "sınırlı",
-              "ratio": 0.3333333333333333
+              "level": "orta",
+              "ratio": 0.6666666666666666
             }
           }
         ],
         "analysisOmitted": [
           "savunma",
           "pres",
-          "kurulus",
-          "durantop",
           "performans",
           "sonuc",
           "gecis-oyunu",
@@ -246,16 +321,19 @@
       },
       "readySections": [
         "summary",
+        "momentum",
         "signals",
         "statistics",
-        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 50,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 40,
+      "coverage": 71,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -345,11 +423,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "aef3b9b3ca89e092",
-      "fingerprint": "aef3b9b3ca89e092",
+      "analysisSourceHash": "355c5429fc93b9f6",
+      "fingerprint": "355c5429fc93b9f6",
       "analysisGeneratedAt": "2026-08-11T17:00:05.606Z",
-      "analysisUpdatedAt": "2026-08-11T17:00:05.606Z",
-      "generatedAt": "2026-08-11T17:00:05.606Z",
+      "analysisUpdatedAt": "2026-08-11T17:18:02.013Z",
+      "generatedAt": "2026-08-11T17:18:02.013Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -561,11 +639,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "9ee11ae80b4c56ed",
-      "fingerprint": "9ee11ae80b4c56ed",
+      "analysisSourceHash": "ee86a835ad6414d2",
+      "fingerprint": "ee86a835ad6414d2",
       "analysisGeneratedAt": "2026-08-11T17:00:05.606Z",
-      "analysisUpdatedAt": "2026-08-11T17:00:05.606Z",
-      "generatedAt": "2026-08-11T17:00:05.606Z",
+      "analysisUpdatedAt": "2026-08-11T17:18:02.013Z",
+      "generatedAt": "2026-08-11T17:18:02.013Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
