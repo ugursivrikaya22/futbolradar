@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-11T11:10:09.603Z",
+  "fetchedAt": "2026-08-11T12:02:12.935Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -190873,13 +190873,13 @@
       "awayTeam": "Palermo",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/496.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/522.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
+        "home": 2,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -190898,8 +190898,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-11T11:10:10.409Z",
-      "staleAfter": "2026-08-11T11:15:10.409Z",
+      "fetchedAt": "2026-08-11T12:02:13.652Z",
+      "staleAfter": "2026-08-11T12:07:13.652Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -190908,23 +190908,28 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 44' K. Yildiz tarafından kaydedildi. Juventus skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Juventus tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 87' A. Milik tarafından kaydedildi. Kulübeler oyuna müdahale etti; 20 oyuncu değişikliği kayda geçti. Skor üstünlüğü Juventus tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "44'",
-            "text": "Son gol 44' K. Yildiz tarafından kaydedildi."
+            "value": "87'",
+            "text": "Son gol 87' A. Milik tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "20 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 20 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "1-0",
+            "value": "2-0",
             "text": "Juventus skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 2,
-        "dataPoints": 2,
+        "eventCount": 23,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -192311,6 +192316,216 @@
           "type": "Goal",
           "detail": "Normal Goal",
           "value": "K. Yildiz · Asist: Z. Celik · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Juventus"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "F. Conceicao · Asist: E. Zhegrova · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Juventus"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Douglas Luiz · Asist: M. Locatelli · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Juventus"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "F. Gatti · Asist: D. Rugani · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Palermo"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "P. Ceccaroni · Asist: F. Barba · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Palermo"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Hernani · Asist: A. Palumbo · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Palermo"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "J. Pohjanpalo · Asist: J. Le Douaron · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Palermo"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "D. Johnsen · Asist: D. Vavassori · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Palermo"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "G. Magnani · Asist: P. Peda · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Juventus"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "R. Kolo Muani · Asist: A. Milik · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Juventus"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "K. Yildiz · Asist: J. Boga · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Juventus"
+          },
+          "type": "subst",
+          "detail": "Substitution 6",
+          "value": "K. Alajbegovic · Asist: F. Miretti · Substitution 6",
+          "comments": ""
+        },
+        {
+          "time": "62'",
+          "team": {
+            "name": "Juventus"
+          },
+          "type": "subst",
+          "detail": "Substitution 7",
+          "value": "W. McKennie · Asist: A. Cambiaso · Substitution 7",
+          "comments": ""
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "Juventus"
+          },
+          "type": "subst",
+          "detail": "Substitution 8",
+          "value": "T. Koopmeiners · Asist: Arthur Melo · Substitution 8",
+          "comments": ""
+        },
+        {
+          "time": "77'",
+          "team": {
+            "name": "Palermo"
+          },
+          "type": "subst",
+          "detail": "Substitution 6",
+          "value": "J. Joronen · Asist: M. Fortin · Substitution 6",
+          "comments": ""
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Palermo"
+          },
+          "type": "subst",
+          "detail": "Substitution 7",
+          "value": "T. Cassandro · Asist: N. Pierozzi · Substitution 7",
+          "comments": ""
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Palermo"
+          },
+          "type": "subst",
+          "detail": "Substitution 8",
+          "value": "T. Augello · Asist: A. Bozzolan · Substitution 8",
+          "comments": ""
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Palermo"
+          },
+          "type": "subst",
+          "detail": "Substitution 9",
+          "value": "J. Segre · Asist: N. Estevez · Substitution 9",
+          "comments": ""
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Palermo"
+          },
+          "type": "subst",
+          "detail": "Substitution 10",
+          "value": "E. Gyasi · Asist: G. Strefezza · Substitution 10",
+          "comments": ""
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Palermo"
+          },
+          "type": "subst",
+          "detail": "Substitution 11",
+          "value": "F. Ranocchia · Asist: C. Gomes · Substitution 11",
+          "comments": ""
+        },
+        {
+          "time": "80'",
+          "team": {
+            "name": "Juventus"
+          },
+          "type": "subst",
+          "detail": "Substitution 9",
+          "value": "Z. Celik · Asist: L. Kelly · Substitution 9",
+          "comments": ""
+        },
+        {
+          "time": "87'",
+          "team": {
+            "name": "Juventus"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Milik · Asist: M. Locatelli · Normal Goal",
           "comments": ""
         }
       ]
