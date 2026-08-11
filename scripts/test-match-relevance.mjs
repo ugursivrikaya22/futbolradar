@@ -205,3 +205,59 @@ const match = (fields) => ({
 }
 
 console.log("Maç ilgi puanı testleri geçti (kademe sırası, durum kademeyi ezmiyor, veri kaybı yok).");
+
+// ── 9. ÇOK ANLAMLI LİG ADI YANLIŞ YARIŞMAYA BAĞLANMAMALI ──────────────────
+//
+// Depoda görülen somut hata: sağlayıcıdan "Primera División" adıyla gelen 53
+// maç `competitionId: "la-liga"` damgasıyla kaydedilmiş. Bolivya'daki
+// "ABB - Guabirá" karşılaşması sistemde İspanya La Liga'sı sayılıyordu —
+// yani Avrupa'nın en üst kademesinde. Kayıt kendi içinde çelişiyor: kimlik
+// La Liga diyor, ad "Primera División" diyor.
+
+{
+  const { classifyFixtureCompetition, resolveCompetitionId } = require("../services/competitionCatalog.js");
+
+  const bolivian = match({
+    homeTeam: "ABB", awayTeam: "Guabirá",
+    league: "Primera División", competitionId: "la-liga"
+  });
+
+  assert.equal(resolveCompetitionId(bolivian), "", "çelişkili kayıtta kimlik reddedilmeli");
+  assert.notEqual(
+    tierOf(bolivian),
+    TIER.TOP_EUROPEAN_LEAGUE,
+    "Bolivya maçı Avrupa'nın en üst kademesine yerleştirilmemeli"
+  );
+  assert.equal(
+    classifyFixtureCompetition(bolivian).includeInLeagueForm,
+    false,
+    "tanınmayan yarışma bir ligin formuna sayılmamalı"
+  );
+
+  // GERÇEK La Liga zarar görmemeli.
+  const realLaLiga = match({
+    homeTeam: "Real Madrid", awayTeam: "FC Barcelona",
+    league: "La Liga", competitionId: "la-liga"
+  });
+  assert.equal(resolveCompetitionId(realLaLiga), "la-liga", "gerçek La Liga tanınmalı");
+  assert.equal(tierOf(realLaLiga), TIER.TOP_EUROPEAN_LEAGUE, "gerçek La Liga üst kademede kalmalı");
+  assert.equal(classifyFixtureCompetition(realLaLiga).includeInLeagueForm, true, "gerçek La Liga forma sayılmalı");
+
+  // MEŞRU TAKMA AD zarar görmemeli: "Trendyol Süper Lig" ile "Süper Lig"
+  // aynı yarışmadır; bu bir çelişki değil.
+  const sponsored = match({
+    homeTeam: "Göztepe", awayTeam: "Kasımpaşa",
+    league: "Trendyol Süper Lig", competitionId: "super-lig"
+  });
+  assert.equal(resolveCompetitionId(sponsored), "super-lig", "sponsorlu ad meşru takma addır");
+  assert.equal(tierOf(sponsored), TIER.SUPER_LIG, "Süper Lig kademesi korunmalı");
+
+  // Kimliği hiç olmayan çok anlamlı ad da çözülmemeli.
+  assert.equal(
+    resolveCompetitionId(match({ league: "Primera División" })),
+    "",
+    "kimliksiz çok anlamlı ad çözülmemeli"
+  );
+}
+
+console.log("Yarışma kimliği doğrulama testleri geçti (çok anlamlı ad yanlış lige bağlanmıyor).");

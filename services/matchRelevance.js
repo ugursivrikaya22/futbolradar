@@ -33,7 +33,7 @@
  * her yüzey buradan okur, kendi if bloklarını kurmaz.
  */
 
-const { classifyFixtureCompetition, findCompetition, normalizeKey } = require("./competitionCatalog");
+const { classifyFixtureCompetition, normalizeKey, resolveCompetitionId } = require("./competitionCatalog");
 const { isTurkishMatch, turkishSideOf } = require("./turkishTeams");
 const { isMajorClubMatch } = require("./majorClubs");
 
@@ -129,43 +129,14 @@ function stateOf(match, nowMs) {
 }
 
 /**
- * ÇOK ANLAMLI YARIŞMA ADLARI.
- *
- * "Primera División" katalogda La Liga'nın takma adı — ve doğru: İspanya
- * ligi resmen öyle anılıyor. Ama aynı ad Uruguay, Venezuela, Şili ve daha
- * birçok ülkenin birinci ligi için de kullanılıyor. Takvimde bu adı taşıyan
- * 53 maç var ve hiçbiri İspanya'da oynanmıyor.
- *
- * Ada bakıp La Liga demek, bu maçları Avrupa'nın en üst kademesine
- * yerleştirir ve ana sayfanın en görünür yerini onlara verirdi — düzeltmeye
- * çalıştığımız sorunun ta kendisi.
- *
- * Bu yüzden çok anlamlı ad TEK BAŞINA yeterli sayılmaz: kaydın kendi
- * `competitionId` alanı doğrulamıyorsa yarışma "tanınmadı" kabul edilir.
- * Yanlış yerde yüksek puan vermektense puansız bırakmak doğrudur.
- */
-const AMBIGUOUS_COMPETITION_NAMES = new Set([
-  "Primera División",
-  "Primera Division",
-  "Premier Division",
-  "Primera A",
-  "Liga Profesional"
-].map(normalizeKey));
-
-/**
- * Maçın yarışma kimliği (katalogdan); bulunamazsa ya da ad çok anlamlıysa
- * boş dize.
+ * Maçın DOĞRULANMIŞ yarışma kimliği. Kural katalogda
+ * (services/competitionCatalog.js `resolveCompetitionId`): çok anlamlı bir
+ * ad — "Primera División" gibi, hem İspanya hem Uruguay, Venezuela, Şili ve
+ * Bolivya için kullanılan — tek başına yarışmayı belirlemez. Boş dize
+ * "tanımıyorum" demektir ve maç, tanınan yarışmaların altına düşer.
  */
 function competitionIdOf(match) {
-  const direct = normalizeKey(match && match.competitionId);
-  if (direct) return direct;
-
-  const leagueName = normalizeKey(match && match.league);
-  // Kaydın kendi kimliği yokken çok anlamlı ada güvenilmez.
-  if (AMBIGUOUS_COMPETITION_NAMES.has(leagueName)) return "";
-
-  const found = findCompetition(match && (match.competitionId || match.league));
-  return found ? normalizeKey(found.id) : "";
+  return resolveCompetitionId(match);
 }
 
 /** Dört büyükten hangisi oynuyor? Yoksa -1. */

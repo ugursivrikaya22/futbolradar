@@ -74,20 +74,82 @@ function providerLeagueValue(value, providerName) {
 const FRIENDLY_COMPETITION_IDS = new Set(["hazirlik-maci"]);
 
 /**
+ * ÇOK ANLAMLI YARIŞMA ADLARI — TAKMA AD EŞLEŞTİRMESİNİN KÖR NOKTASI.
+ *
+ * "Primera División" bu katalogda La Liga'nın takma adı ve bu DOĞRU: İspanya
+ * ligi resmen öyle anılıyor. Ama aynı ad Uruguay, Venezuela, Şili, Bolivya
+ * ve daha birçok ülkenin birinci ligi için de kullanılıyor.
+ *
+ * Sonuç depoda görünür oldu: sağlayıcıdan "Primera División" adıyla gelen
+ * 53 maç `competitionId: "la-liga"` damgasıyla kaydedildi. Bolivya'daki
+ * "ABB - Guabirá" karşılaşması sistemde İspanya La Liga'sı sayılıyor —
+ * lig etiketi yanlış, lig formu yanlış, ana sayfadaki önceliği yanlış.
+ *
+ * Kural: çok anlamlı ad TEK BAŞINA yarışmayı belirlemez. Kaydın kimliği
+ * ancak kanonik adla ÖRTÜŞÜYORSA kabul edilir. Takma ad kullanmak sorun
+ * değil — "Trendyol Süper Lig" ile "Süper Lig" aynı yarışmadır; sorun,
+ * hangi ülkenin ligi olduğunu ayırt edemediğimiz addır.
+ *
+ * Belirsizken yanlış yarışmayı seçmektense "tanımıyorum" demek doğrudur.
+ */
+const AMBIGUOUS_COMPETITION_NAMES = new Set([
+  "Primera División",
+  "Primera Division",
+  "Premier Division",
+  "Primera A",
+  "Liga Profesional"
+].map(normalizeKey));
+
+/** Ad, ülkeyi ayırt etmeye yetmeyen türden mi? */
+function isAmbiguousCompetitionName(value) {
+  return AMBIGUOUS_COMPETITION_NAMES.has(normalizeKey(value));
+}
+
+/**
+ * DOĞRULANMIŞ YARIŞMA KİMLİĞİ.
+ *
+ * Kaydın `competitionId` alanı varsa kullanılır — ama `league` metni çok
+ * anlamlı bir adsa ve kanonik adla örtüşmüyorsa kayıt kendi içinde
+ * çelişiyor demektir ve kimlik reddedilir. Kimlik yoksa ad üzerinden
+ * çözülür; ad çok anlamlıysa çözülmez.
+ *
+ * Boş dize "bu yarışmayı tanımıyorum" demektir, "yarışma yok" değil.
+ */
+function resolveCompetitionId(match) {
+  const leagueName = normalizeKey(match && match.league);
+  const ambiguous = AMBIGUOUS_COMPETITION_NAMES.has(leagueName);
+
+  const declared = normalizeKey(match && match.competitionId);
+  if (declared) {
+    if (!ambiguous) return declared;
+    const canonical = findCompetition(declared);
+    const canonicalName = normalizeKey(canonical && canonical.name);
+    return canonicalName && canonicalName === leagueName ? declared : "";
+  }
+
+  if (ambiguous) return "";
+  const found = findCompetition(match && match.league);
+  return found ? normalizeKey(found.id) : "";
+}
+
+/**
  * Single shared classifier so a friendly never gets counted as league form
  * and a European/cup result never gets the full weight of a league result
  * — used by both the match-analysis generator (fixture normalization) and
  * matchContextService (form weighting) so the two can never disagree.
  */
 function classifyFixtureCompetition(match) {
-  const raw = match && (match.competitionId || match.league);
   const normalizedId = normalizeKey(match && match.competitionId);
 
   if (FRIENDLY_COMPETITION_IDS.has(normalizedId) || normalizeKey(match && match.league).includes("hazirlik")) {
     return { competitionType: "friendly", isOfficialCompetition: false, includeInLeagueForm: false };
   }
 
-  const competition = findCompetition(raw);
+  // Kimlik DOĞRULANARAK çözülür: çok anlamlı bir ad yüzünden yanlış ligin
+  // formuna yazılan maç, o ligin tablosunu sessizce bozar. Bolivya'daki bir
+  // karşılaşma La Liga formuna sayılmamalı.
+  const resolvedId = resolveCompetitionId(match);
+  const competition = resolvedId ? findCompetition(resolvedId) : null;
   if (!competition) {
     return { competitionType: "cup", isOfficialCompetition: true, includeInLeagueForm: false };
   }
@@ -109,5 +171,7 @@ module.exports = {
   matchesCompetition,
   normalizeKey,
   providerLeagueValue,
-  classifyFixtureCompetition
+  classifyFixtureCompetition,
+  isAmbiguousCompetitionName,
+  resolveCompetitionId
 };
