@@ -17594,6 +17594,66 @@ body,
   .topbar-premium .theme-toggle {
     padding: 0 10px;
   }
+
+  /* ÇAKIŞMANIN ASIL SEBEBİ: ÖLÇÜ DEĞİL, TAŞMA BİÇİMİ.
+     Yukarıdaki yer kazanımları payı 1366'da 3 px'e kadar indiriyordu; yani
+     hesap doğru ama TOLERANSSIZ. Yazı tipi bir tık genişlediğinde (Inter
+     barındırılmıyor, ziyaretçilerin çoğu system-ui/Segoe UI görüyor)
+     `.nav-links` kutusu yeniden aşılıyor ve `overflow: visible` olduğu için
+     taşan "Arşiv" komşusunun ÜSTÜNE biniyordu — ölçülen: 1366'da 18 px,
+     1440-1920'de 9 px bindirme.
+
+     İki katmanlı çözüm:
+     1) GERÇEK PAY. Küçük punto (--fs-xs) 1400 px sınırında bırakılmıştı;
+        tüm masaüstü bandına yayılıyor ve ~56 px kazandırıyor. Böylece
+        normal koşulda kaydırılacak bir şey kalmıyor.
+     2) SERT GARANTİ. Kutu artık taşmayı komşusuna yaymıyor: kendi içinde
+        kaydırılabilir. Yazı tipi ne kadar genişlerse genişlesin bindirme
+        MATEMATİKSEL OLARAK imkânsız; en kötü durumda son bağlantı kutunun
+        içinde kayar, üst üste binmez. `safe center` taşma varsa hizalamayı
+        başa çeker, yoksa ortalama korunur. */
+  .topbar-premium .nav-links a {
+    font-size: var(--fs-xs);
+  }
+
+  .topbar-premium .nav .nav-links {
+    /* Odak halkası dikeyde kırpılmasın diye kutu bağlantıdan biraz yüksek. */
+    padding-block: 3px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    justify-content: center;
+    justify-content: safe center;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior-x: contain;
+  }
+
+  .topbar-premium .nav .nav-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Menü ile CTA arasında gözle görülür bir ayrım kalsın: 6 px'te iki öğe
+     bitişik okunuyordu, çakışma olmasa bile "birbirine girmiş" görünüyordu. */
+  .topbar-premium .nav-menu {
+    gap: 10px;
+  }
+}
+
+/* En dar masaüstü bandı (1366-1439). Kaydırma çakışmayı engelliyor ama
+   burada kaydırılacak bir şey de KALMAMALI: bu genişlikte dokuz bağlantı
+   18 px taşıyordu, yani "Arşiv" kutunun kenarında yarım kalıyordu ve
+   kaydırma çubuğu gizli olduğu için taşındığı belli olmuyordu. Bağlantı
+   dolgusu 5→3 px inince 36 px açılıyor; dokuz bağlantı da tam görünüyor.
+   Dokunma hedefi etkilenmez: yükseklik 38 px sabit. */
+@media (min-width: 1366px) and (max-width: 1439px) {
+  .topbar-premium .nav-links a {
+    padding: 0 3px;
+  }
+
+  .topbar-premium .nav-links a::after {
+    right: 3px;
+    left: 3px;
+  }
 }
 
 /* Çekmece düzeni: marka | büyüteç | ENG | hamburger — hepsi TEK SATIRDA.

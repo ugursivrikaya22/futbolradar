@@ -386,6 +386,154 @@
     });
   }
 
+  /**
+   * ÖNE ÇIKAN MAÇ KARUSELİ — YALNIZCA app.js YÜKLENMEYEN SAYFALARDA.
+   *
+   * Türkçe ana sayfada karuseli `app.js` çeviriyor; o dosya İngilizce
+   * sayfalara yüklenmiyor (bütün etiketleri Türkçe basardı). İngilizce ana
+   * sayfa aynı işaretlemeyi taşıdığı için, app.js yokken kart dönmüyor ve
+   * oklar ölü kalıyordu. Bu yüzden burada aynı davranışın bağımsız ve
+   * küçük bir kopyası duruyor; `data-featured-bound` bayrağı app.js'inkiyle
+   * AYNI, yani iki denetleyici asla aynı karusele bağlanamaz.
+   */
+  function setupFeaturedCarousel() {
+    // app.js sayfadaysa karusel ONUN işi: orada seçim günlüğü ve içerik
+    // yenilendikçe yeniden bağlanma gibi ek davranışlar var.
+    if (document.querySelector('script[src*="app.js"]')) {
+      return;
+    }
+
+    var root = document.querySelector("[data-featured-carousel]");
+    if (!root || root.dataset.featuredBound === "true") {
+      return;
+    }
+
+    var slides = Array.prototype.slice.call(root.querySelectorAll("[data-featured-slide]"));
+    if (!slides.length) {
+      return;
+    }
+
+    var dots = Array.prototype.slice.call(root.querySelectorAll("[data-featured-go]"));
+    var interval = Number(root.dataset.featuredInterval) > 0 ? Number(root.dataset.featuredInterval) : 10000;
+    var index = Math.max(0, slides.findIndex(function (slide) {
+      return slide.classList.contains("is-active");
+    }));
+    var timer = null;
+
+    function show(next) {
+      index = (next + slides.length) % slides.length;
+      slides.forEach(function (slide, position) {
+        var active = position === index;
+        slide.classList.toggle("is-active", active);
+        slide.hidden = !active;
+      });
+      dots.forEach(function (dot, position) {
+        var active = position === index;
+        dot.classList.toggle("is-active", active);
+        dot.setAttribute("aria-selected", active ? "true" : "false");
+      });
+    }
+
+    root.dataset.featuredBound = "true";
+    show(index);
+
+    if (slides.length < 2) {
+      return;
+    }
+
+    root.addEventListener("click", function (event) {
+      var target = event.target && event.target.closest
+        ? event.target.closest("[data-featured-go], [data-featured-prev], [data-featured-next]")
+        : null;
+      if (!target) {
+        return;
+      }
+      event.preventDefault();
+      if (target.hasAttribute("data-featured-prev")) {
+        show(index - 1);
+      } else if (target.hasAttribute("data-featured-next")) {
+        show(index + 1);
+      } else {
+        show(Number(target.getAttribute("data-featured-go")) || 0);
+      }
+      restart();
+    });
+
+    function stop() {
+      if (timer) {
+        window.clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    function restart() {
+      stop();
+      // Hareketi azaltmak isteyen kullanıcı için kendiliğinden dönme yok;
+      // oklar ve noktalar çalışmaya devam eder.
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        return;
+      }
+      timer = window.setInterval(function () {
+        show(index + 1);
+      }, interval);
+    }
+
+    root.addEventListener("mouseenter", stop);
+    root.addEventListener("focusin", stop);
+    root.addEventListener("mouseleave", restart);
+    root.addEventListener("focusout", restart);
+    restart();
+  }
+
+  /**
+   * "DAHA FAZLA GÖSTER" — YALNIZCA app.js YÜKLENMEYEN SAYFALARDA.
+   *
+   * Türkçe tarafta maç listesi penceresini `app.js` çiziyor ve düğmeyi o
+   * çeviriyor. İngilizce sayfada pencere derleme sırasında kuruluyor
+   * (fazlalık kartlar `data-match-overflow` + `hidden`), ama düğmeyi
+   * çevirecek kimse yoktu. Buradaki kopya app.js'inkiyle AYNI sözleşmeyi
+   * kullanıyor: aynı öznitelikler, aynı etiket değişimi, aynı kapsam.
+   */
+  function setupMatchListToggles() {
+    // app.js sayfadaysa düğme ONUN işi; iki dinleyici durumu ters çevirir.
+    if (document.querySelector('script[src*="app.js"]')) {
+      return;
+    }
+
+    document.addEventListener("click", function (event) {
+      var button = event.target && event.target.closest
+        ? event.target.closest("[data-match-more]")
+        : null;
+      if (!button) {
+        return;
+      }
+
+      event.preventDefault();
+      var expanded = button.getAttribute("aria-expanded") !== "true";
+      // Kapsam: aynı sayfada birden çok liste olabilir, bu yüzden document
+      // geneline değil düğmenin kendi listesine bakılır.
+      var scope = (button.closest && button.closest("[data-match-list]")) || document;
+
+      scope.querySelectorAll("[data-match-overflow]").forEach(function (card) {
+        if (expanded) {
+          card.removeAttribute("hidden");
+        } else {
+          card.setAttribute("hidden", "");
+        }
+      });
+
+      button.setAttribute("aria-expanded", expanded ? "true" : "false");
+      button.querySelectorAll("[data-match-more-label]").forEach(function (label) {
+        var isExpandedLabel = label.getAttribute("data-match-more-label") === "expanded";
+        if (isExpandedLabel === expanded) {
+          label.removeAttribute("hidden");
+        } else {
+          label.setAttribute("hidden", "");
+        }
+      });
+    });
+  }
+
   function setupSharePopups() {
     document.addEventListener("click", function (event) {
       var link = event.target.closest ? event.target.closest("[data-share-popup]") : null;
@@ -554,6 +702,8 @@
   markCurrentPage();
   setupStickyHeader();
   setupSliders();
+  setupFeaturedCarousel();
+  setupMatchListToggles();
   setupSharePopups();
 
   // app.js istemci tarafında şerit bastığında yeniden bağlanır.
