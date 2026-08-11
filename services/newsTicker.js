@@ -58,32 +58,44 @@ const { normalizeText } = require("../api/_utils");
  * `rumourOnly`: bu kategori doğası gereği kesinleşmemiştir; `confirmed`
  * güveniyle birlikte kullanılamaz.
  *
- * `maxAgeHours`: RAF ÖMRÜ KATEGORİYE GÖRE DEĞİŞİR, çünkü haber değeri
- * kategoriye göre farklı hızda tükenir:
+ * `maxAgeHours`: RAF ÖMRÜ. VARSAYILAN ÜÇ GÜNDÜR.
  *
- *   • Maç sonu tepkisi dört gün sonra haber değil, arşivdir.
- *   • Bayat bir transfer İDDİASI faydasızdan da kötüdür: çoktan çürütülmüş
- *     olabilir ve bant onu hâlâ gündem gibi taşır.
- *   • Resmî açıklama ise transfer penceresi boyunca geçerliliğini korur —
- *     bu, bu depoda doğrulanmış transferler için zaten uygulanan 21 günlük
- *     pencerenin (scripts/lib/tickerFeed.mjs) aynı gerekçesi.
- *   • Maç programı duyurusu maç oynanana kadar geçerlidir; oradaki asıl
- *     sınır raf ömrü değil `expiresAt` alanıdır.
+ * Bant "gündem" iddiasında bulunur. Üç günden eski bir öğe gündem değil,
+ * arşivdir — ve bant onu hâlâ akan bir şerit içinde taşıdığında okuyucuya
+ * olmadığı bir tazeliği ima eder.
+ *
+ * Bu sınır gevşekti ve sonucu depoda görülüyordu: banttaki 20 öğenin altısı
+ * üç günden eskiydi, en eskisi 201 SAATLİK (8,4 gün) bir kulüp duyurusuydu.
+ * Sebep `official` kategorisine tanınan 21 günlük penceredeydi. O pencere
+ * doğrulanmış TRANSFER kayıtları için düşünülmüştü (transfer penceresi
+ * boyunca geçerli kalırlar); ama kategori transferle sınırlı değil, kulübün
+ * her duyurusunu kapsıyor — antrenman raporu, bilet satışı, tesis haberi.
+ *
+ * Artık her kategori varsayılanı paylaşıyor. TEK İSTİSNA `fixture`:
+ * gelecekteki bir maçın duyurusu maç oynanana kadar DOĞRU kalır, ama bunu
+ * hak etmesi için kendi bitiş tarihini taşıması gerekir. `expiresAt` yoksa
+ * o da varsayılana tabidir — "ileride bir maç var" demek, süresiz asılı
+ * kalmak için yeterli bir gerekçe değil.
  *
  * Bu, tazelik iddiasını gevşetmez: "Son Dakika" rozeti hâlâ banttaki EN TAZE
  * öğeye göre verilir, eski bir resmî açıklama tek başına o rozeti üretemez.
  */
+const DEFAULT_MAX_AGE_HOURS = 72;
+
+/** `expiresAt` taşıyan maç programı duyurusunun tanınan üst sınırı. */
+const DATED_FIXTURE_MAX_AGE_HOURS = 24 * 14;
+
 const CATEGORIES = Object.freeze({
-  "official": { label: "Resmî açıklama", rumourOnly: false, priority: 0, maxAgeHours: 24 * 21 },
-  "post-match": { label: "Maç sonu", rumourOnly: false, priority: 1, maxAgeHours: 24 * 4 },
-  "fixture": { label: "Maç programı", rumourOnly: false, priority: 2, maxAgeHours: 24 * 14 },
-  "squad-update": { label: "Kadro & sakatlık", rumourOnly: false, priority: 3, maxAgeHours: 24 * 10 },
-  "manager-quote": { label: "Teknik direktör", rumourOnly: false, priority: 4, maxAgeHours: 24 * 7 },
-  "player-quote": { label: "Oyuncu açıklaması", rumourOnly: false, priority: 5, maxAgeHours: 24 * 7 },
+  "official": { label: "Resmî açıklama", rumourOnly: false, priority: 0, maxAgeHours: DEFAULT_MAX_AGE_HOURS },
+  "post-match": { label: "Maç sonu", rumourOnly: false, priority: 1, maxAgeHours: DEFAULT_MAX_AGE_HOURS },
+  "fixture": { label: "Maç programı", rumourOnly: false, priority: 2, maxAgeHours: DEFAULT_MAX_AGE_HOURS },
+  "squad-update": { label: "Kadro & sakatlık", rumourOnly: false, priority: 3, maxAgeHours: DEFAULT_MAX_AGE_HOURS },
+  "manager-quote": { label: "Teknik direktör", rumourOnly: false, priority: 4, maxAgeHours: DEFAULT_MAX_AGE_HOURS },
+  "player-quote": { label: "Oyuncu açıklaması", rumourOnly: false, priority: 5, maxAgeHours: DEFAULT_MAX_AGE_HOURS },
   // Kulüp gündemi: kulübü ilgilendiren ama maç ya da transfer olmayan
-  // gelişme (kongre, ceza, tesis, yönetim). Dört günde tazeliğini yitirir.
-  "club-agenda": { label: "Kulüp gündemi", rumourOnly: false, priority: 6, maxAgeHours: 24 * 4 },
-  "transfer-rumour": { label: "Transfer iddiası", rumourOnly: true, priority: 7, maxAgeHours: 24 * 7 }
+  // gelişme (kongre, ceza, tesis, yönetim).
+  "club-agenda": { label: "Kulüp gündemi", rumourOnly: false, priority: 6, maxAgeHours: DEFAULT_MAX_AGE_HOURS },
+  "transfer-rumour": { label: "Transfer iddiası", rumourOnly: true, priority: 7, maxAgeHours: DEFAULT_MAX_AGE_HOURS }
 });
 
 /**
@@ -487,9 +499,16 @@ function shelfLifeVerdict(entry, now, overrideMaxAgeHours = null) {
     return { drop: `geçerlilik tarihi doldu (${text(entry.expiresAt)})`, breaking: false };
   }
 
+  // Maç programı duyurusu varsayılanı ancak KENDİ BİTİŞ TARİHİNİ taşıyorsa
+  // aşabilir: o zaman süresiz asılı kalmaz, maç gelince kendiliğinden düşer.
+  const category = text(entry.category);
+  const categoryMaxAge = category === "fixture" && expiresMs !== null
+    ? DATED_FIXTURE_MAX_AGE_HOURS
+    : CATEGORIES[category].maxAgeHours;
+
   const shelfLife = Number.isFinite(overrideMaxAgeHours) && overrideMaxAgeHours !== null
     ? overrideMaxAgeHours
-    : CATEGORIES[text(entry.category)].maxAgeHours;
+    : categoryMaxAge;
 
   if (ageHours > shelfLife) {
     return {
@@ -727,6 +746,8 @@ module.exports = {
   BIG_FOUR,
   BREAKING_WINDOW_HOURS,
   CATEGORIES,
+  DATED_FIXTURE_MAX_AGE_HOURS,
+  DEFAULT_MAX_AGE_HOURS,
   CONFIDENCE,
   CONFIRMATION_VERBS,
   DUPLICATE_CONTAINMENT,

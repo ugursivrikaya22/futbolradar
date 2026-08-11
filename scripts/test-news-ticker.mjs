@@ -146,12 +146,41 @@ function item(overrides = {}) {
   const rumour = normalizeTickerItems({
     items: [item({ id: "eski-iddia", category: "transfer-rumour", confidence: "rumour", text: "Eski iddia", timestamp: old })]
   }, { now });
-  assert.equal(rumour.items.length, 0, "12 günlük iddia banda girmemeli (raf ömrü 7 gün)");
+  assert.equal(rumour.items.length, 0, "12 günlük iddia banda girmemeli");
 
+  // VARSAYILAN RAF ÖMRÜ ÜÇ GÜN — resmî açıklama da bundan muaf değil.
+  //
+  // `official` kategorisine tanınan 21 günlük pencere doğrulanmış TRANSFER
+  // kayıtları için düşünülmüştü, ama kategori kulübün her duyurusunu
+  // kapsıyor: antrenman raporu, bilet satışı, tesis haberi. Depoda sonucu
+  // görülüyordu — banttaki 20 öğenin altısı üç günden eskiydi, en eskisi
+  // 201 saatlik bir kulüp duyurusuydu.
   const official = normalizeTickerItems({
     items: [item({ id: "eski-resmi", category: "official", confidence: "confirmed", text: "Eski resmî açıklama", timestamp: old })]
   }, { now });
-  assert.equal(official.items.length, 1, "12 günlük resmî açıklama geçerli kalmalı (raf ömrü 21 gün)");
+  assert.equal(official.items.length, 0, "12 günlük resmî açıklama da banda girmemeli");
+
+  // Üç günün içindeki resmî açıklama elbette kalır.
+  const fresh = normalizeTickerItems({
+    items: [item({ id: "taze-resmi", category: "official", confidence: "confirmed", text: "Taze resmî açıklama", timestamp: "2026-08-01T12:00:00+03:00" })]
+  }, { now });
+  assert.equal(fresh.items.length, 1, "üç günden yeni resmî açıklama kalmalı");
+
+  // TEK İSTİSNA: maç programı duyurusu, KENDİ BİTİŞ TARİHİNİ taşıyorsa
+  // varsayılanı aşabilir — süresiz asılı kalmaz, maç gelince kendiliğinden
+  // düşer. `expiresAt` yoksa o da varsayılana tabidir.
+  const datedFixture = normalizeTickerItems({
+    items: [item({
+      id: "tarihli-fikstur", category: "fixture", confidence: "confirmed",
+      text: "14 Ağustos'ta oynanacak", timestamp: old, expiresAt: "2026-08-20T12:00:00+03:00"
+    })]
+  }, { now });
+  assert.equal(datedFixture.items.length, 1, "bitiş tarihi taşıyan maç programı duyurusu kalabilir");
+
+  const undatedFixture = normalizeTickerItems({
+    items: [item({ id: "tarihsiz-fikstur", category: "fixture", confidence: "confirmed", text: "Program açıklandı", timestamp: old })]
+  }, { now });
+  assert.equal(undatedFixture.items.length, 0, "bitiş tarihi olmayan maç programı duyurusu varsayılana tabidir");
 }
 
 // ── 7. Geleceğe tarihli kayıt reddedilir ───────────────────────────────────
@@ -300,15 +329,17 @@ function item(overrides = {}) {
   );
   assert.equal(fresh.breaking, true, "6 saatlik son dakika hâlâ son dakika olmalı");
 
+  // Kurgu 72 saatlik raf ömrünün İÇİNDE ama 24 saatlik son dakika
+  // penceresinin dışında: sınanan şey raf ömrü değil, rozetin sönmesi.
   const old = shelfLifeVerdict(
-    item({ breaking: true, timestamp: "2026-07-29T06:00:00+03:00" }),
+    item({ breaking: true, timestamp: "2026-07-30T12:00:00+03:00" }),
     now
   );
   assert.equal(old.drop, null, "penceresi dolan öğe banttan DÜŞMEZ, yalnızca rütbe iner");
   assert.equal(old.breaking, false, `${BREAKING_WINDOW_HOURS} saat sonra son dakika iddiası sürdürülemez`);
 
   const developing = shelfLifeVerdict(
-    item({ breaking: true, developing: true, timestamp: "2026-07-29T06:00:00+03:00" }),
+    item({ breaking: true, developing: true, timestamp: "2026-07-30T12:00:00+03:00" }),
     now
   );
   assert.equal(developing.breaking, true, "gelişme sürüyorsa pencere uzar");
