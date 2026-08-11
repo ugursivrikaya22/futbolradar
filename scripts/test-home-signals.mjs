@@ -198,6 +198,68 @@ const upcomingTurkish = {
   // metinlerinde sık geçiyor.
   const sentence = firstSentence("Fenerbahçe 1.54 xG üretti. İkinci cümle.");
   assert.equal(sentence, "Fenerbahçe 1.54 xG üretti.", "cümle ilk noktalamada bitmeli");
+
+  // Kısaltılmış takım adındaki nokta cümleyi bölmemeli: "A. Italiano",
+  // "B. Dortmund" gibi adlar maç metinlerinde sık geçiyor.
+  assert.equal(
+    firstSentence("Estadio Bicentenario'da oynanan maçta A. Italiano 2-2 bitirdi. İkinci cümle."),
+    "Estadio Bicentenario'da oynanan maçta A. Italiano 2-2 bitirdi.",
+    "baş harf noktası cümle sonu sayılmamalı"
+  );
+  assert.equal(
+    firstSentence("B. Dortmund deplasmanda kazandı. İkinci cümle."),
+    "B. Dortmund deplasmanda kazandı.",
+    "cümle başındaki baş harf de cümleyi bölmemeli"
+  );
+}
+
+{
+  // REGRESYON: kanca alanına nesne geldiğinde "[object Object]" basılmamalı.
+  //
+  // Ana sayfadaki üç başlık tam olarak böyle bozulmuştu: `report.digest` bir
+  // nesne (`{ headline, paragraph, ... }`) ama cümle gibi kullanılıyordu ve
+  // `String()` onu sessizce `"[object Object]"` yapıyordu. O dize boş
+  // değildir, bu yüzden "kancası olmayan aday düşer" kuralına takılmadan
+  // ekrana kadar gidiyordu.
+  for (const value of [{ paragraph: "x" }, ["a", "b"], () => "x", Symbol("x")]) {
+    assert.equal(firstSentence(value), "", `metin olmayan değer boş dönmeli: ${String(typeof value)}`);
+  }
+
+  // Nesne kanca üretemediğine göre aday da düşmeli.
+  const objectDigestOnly = {
+    id: "digest-object-only",
+    homeTeam: "A. Italiano",
+    awayTeam: "Nublense",
+    status: "FINISHED",
+    kickoff: `${today}T18:00:00Z`,
+    score: { home: 2, away: 2 }
+  };
+  assert.deepEqual(
+    buildDailyHeadlines([objectDigestOnly], {
+      today,
+      reports: [{ matchId: objectDigestOnly.id, digest: { result: { draw: true } } }]
+    }),
+    [],
+    "digest yalnızca nesne alanlar taşıyorsa başlık çizilmemeli"
+  );
+
+  // Anlatan alan varsa kanca ONDAN gelmeli, nesnenin kendisinden değil.
+  const withParagraph = buildDailyHeadlines([objectDigestOnly], {
+    today,
+    reports: [{
+      matchId: objectDigestOnly.id,
+      digest: {
+        headline: "A. Italiano ile Nublense 2-2 berabere kaldı",
+        paragraph: "Estadio Bicentenario'da oynanan maçta iki takım da öne geçemedi. İkinci cümle."
+      }
+    }]
+  });
+  assert.equal(withParagraph.length, 1, "paragraf varsa başlık çizilmeli");
+  assert.equal(
+    withParagraph[0].hook,
+    "Estadio Bicentenario'da oynanan maçta iki takım da öne geçemedi.",
+    "kanca digest.paragraph'ın ilk cümlesi olmalı"
+  );
 }
 
 // ── 3. Paylaşım metni yalnızca doğrulanmış alanlardan ───────────────────────

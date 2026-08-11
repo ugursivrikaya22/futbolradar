@@ -3313,16 +3313,36 @@
     }).filter(function (stat) { return stat.value > 0; });
   }
 
+  // Sessiz `[object Object]` kalkanı — services/dailyHeadlines.js `text()` ile
+  // aynı kural. Nesne metin değildir; dizeye çevrilirse "[object Object]"
+  // ekrana kadar gider. Boş dönerek adayın düşmesini sağlıyoruz.
   function headlineText(value) {
-    return String(value === null || value === undefined ? "" : value).trim();
+    if (value === null || value === undefined) return "";
+    if (typeof value === "string") return value.trim();
+    if (typeof value === "number") return isFinite(value) ? String(value) : "";
+    if (typeof value === "boolean") return String(value);
+    return "";
   }
 
+  // Nokta her zaman cümle sonu değil: "1.54 xG" (ondalık) ve "A. Italiano"
+  // (baş harf). İlkini "sonrasında boşluk" kuralı, ikincisini noktadan önceki
+  // tek harf kontrolü eler. services/dailyHeadlines.js ile aynı kural.
   function headlineFirstSentence(value, limit) {
     var cap = limit || 160;
     var raw = headlineText(value);
     if (!raw) return "";
-    var match = raw.match(/^[\s\S]*?[.!?](?=\s|$)/);
-    var sentence = headlineText(match ? match[0] : raw);
+
+    var boundary = /[.!?](?=\s|$)/g;
+    var sentence = raw;
+    var hit;
+    while ((hit = boundary.exec(raw)) !== null) {
+      var before = raw.slice(0, hit.index);
+      if (hit[0] === "." && /(^|[\s(«"'])\p{L}$/u.test(before)) continue;
+      sentence = raw.slice(0, hit.index + 1);
+      break;
+    }
+
+    sentence = headlineText(sentence);
     if (sentence.length <= cap) return sentence;
     return sentence.slice(0, cap - 1).replace(/\s+$/, "") + "…";
   }
@@ -3404,10 +3424,13 @@
     var report = headlineReportFor(match, reports);
     var keyPoint = Array.isArray(analysis.keyPoints) ? headlineText(analysis.keyPoints[0]) : "";
 
+    // `digest` nesne; anlatan alan `paragraph`, yedeği `headline`.
+    var digest = (report && report.digest) || {};
     var hook = headlineFirstSentence(keyPoint)
       || headlineFirstSentence(analysis.lead)
       || headlineFirstSentence(match.summary)
-      || headlineFirstSentence(report && report.digest);
+      || headlineFirstSentence(digest.paragraph)
+      || headlineFirstSentence(digest.headline);
     if (!hook) return null;
 
     return {

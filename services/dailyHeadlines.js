@@ -51,19 +51,57 @@ const RANKS = Object.freeze({
   UPCOMING_OTHER: 5
 });
 
+/**
+ * Metin okuma — VE SESSİZ `[object Object]` KALKANI.
+ *
+ * `String(value)` bir nesneye uygulandığında `"[object Object]"` üretir ve bu
+ * dize her testten geçer: doğrudur, boş değildir, uzunluğu vardır. Ekrana
+ * kadar giden yolda onu durduran hiçbir şey yoktur. Ana sayfada üç başlığın
+ * kancası tam olarak böyle bozuldu: kanca alanına bir rapor nesnesi verildi.
+ *
+ * Bu yüzden dizeye çevirme yalnızca zaten dize/sayı olan değerler için
+ * yapılır. Nesne gelirse BOŞ dize döner — böylece "kancası olmayan aday
+ * düşer" kuralı devreye girer ve kart hiç çizilmez. Bozuk bir kanca
+ * göstermektense başlığı hiç göstermemek doğrudur.
+ */
 function text(value) {
-  return String(value === null || value === undefined ? "" : value).trim();
+  if (value === null || value === undefined) return "";
+  if (typeof value === "string") return value.trim();
+  if (typeof value === "number") return Number.isFinite(value) ? String(value) : "";
+  if (typeof value === "boolean" || typeof value === "bigint") return String(value);
+  // Nesne, dizi, fonksiyon, symbol: metin değil. Uydurma yerine boş dön.
+  return "";
 }
 
-/** Cümlenin ilk tanesi. Kanca uzun bir paragraf değil, tek nefeslik olmalı. */
+/**
+ * Cümlenin ilk tanesi. Kanca uzun bir paragraf değil, tek nefeslik olmalı.
+ *
+ * Nokta her zaman cümle sonu DEĞİLDİR. Futbol metinlerinde iki istisna sık:
+ *
+ *   ondalık ayırıcı — "1.54 xG", "0.06"
+ *   kısaltılmış ad  — "A. Italiano", "B. Dortmund", "R. Madrid"
+ *
+ * İlkini "noktadan sonra boşluk olmalı" kuralı eler. İkincisini elemek için
+ * noktadan önceki sözcüğe bakılır: tek harfse bu bir baş harftir, cümle
+ * sonu değil. Bu olmadan "…maçında A. Italiano 2-2 bitirdi." kancası
+ * "…maçında A." olarak kesiliyordu.
+ */
 function firstSentence(value, limit = 160) {
   const raw = text(value);
   if (!raw) return "";
 
-  // Ondalık ayırıcı olarak kullanılan noktalar cümleyi bölmesin: "1,54 xG"
-  // ve "0.06" gibi değerler analiz metinlerinde sık geçiyor.
-  const match = raw.match(/^[\s\S]*?[.!?](?=\s|$)/);
-  const sentence = text(match ? match[0] : raw);
+  const boundary = /[.!?](?=\s|$)/g;
+  let sentence = raw;
+  let hit;
+  while ((hit = boundary.exec(raw)) !== null) {
+    // Noktadan önceki sözcük tek harfse (baş harf), burası cümle sonu değil.
+    const before = raw.slice(0, hit.index);
+    if (hit[0] === "." && /(^|[\s(«"'])\p{L}$/u.test(before)) continue;
+    sentence = raw.slice(0, hit.index + 1);
+    break;
+  }
+
+  sentence = text(sentence);
   if (sentence.length <= limit) return sentence;
   return `${sentence.slice(0, limit - 1).trimEnd()}…`;
 }
@@ -176,12 +214,20 @@ function finishedHeadline(match, reports) {
   const title = analysisHeadline || scoreLine;
 
   // Kanca: analizin ilk maddesi → girişi → maçın özeti → raporun özeti.
+  //
+  // `digest` bir NESNEDİR (`{ headline, paragraph, result, ... }`), cümle
+  // değil. Doğrudan geçirilirse `String()` onu `"[object Object]"` yapardı;
+  // ana sayfadaki üç başlığın kancası tam olarak bu yüzden bozulmuştu.
+  // Anlatan alan `paragraph`; `headline` skor satırını tekrarladığı için
+  // yalnızca yedek.
   const report = reportFor(match, reports);
+  const digest = (report && report.digest) || {};
   const keyPoint = Array.isArray(analysis.keyPoints) ? text(analysis.keyPoints[0]) : "";
   const hook = firstSentence(keyPoint)
     || firstSentence(analysis.lead)
     || firstSentence(match.summary)
-    || firstSentence(report && report.digest);
+    || firstSentence(digest.paragraph)
+    || firstSentence(digest.headline);
 
   if (!hook) return null;
 
