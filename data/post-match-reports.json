@@ -1,9 +1,923 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-11T20:01:07.626Z",
-  "matchCount": 301,
+  "updatedAt": "2026-08-11T21:09:23.923Z",
+  "matchCount": 307,
   "records": [
+    {
+      "matchId": "lyon-sparta-praha-2026-08-11",
+      "fixtureId": "1598828",
+      "provider": "api-football",
+      "slug": "lyon-sparta-praha-2026-08-11",
+      "kickoff": "2026-08-11T22:00:00+03:00",
+      "kickoffUtc": "2026-08-11T19:00:00.000Z",
+      "kickoffLocal": "2026-08-11T22:00",
+      "date": "2026-08-11",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "UEFA Champions League",
+      "competition": "UEFA Champions League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Lyon",
+      "awayTeam": "Sparta Praha",
+      "venue": "Groupama Stadium",
+      "score": {
+        "home": 3,
+        "away": 0
+      },
+      "finalScore": "3-0",
+      "winner": "Lyon",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "388b9576b394061f",
+      "fingerprint": "388b9576b394061f",
+      "analysisGeneratedAt": "2026-08-11T21:09:23.866Z",
+      "analysisUpdatedAt": "2026-08-11T21:09:23.866Z",
+      "generatedAt": "2026-08-11T21:09:23.866Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Lyon 3-0 Sparta Praha maç raporu: UEFA Champions League istatistikleri | FutbolRadar",
+        "description": "Lyon, Groupama Stadium'da oynanan UEFA Champions League karşılaşmasında Sparta Praha'yı 3-0 mağlup etti.",
+        "path": "mac-raporu/lyon-sparta-praha-2026-08-11.html",
+        "competition": "UEFA Champions League"
+      },
+      "reportUrl": "./mac-raporu/lyon-sparta-praha-2026-08-11.html",
+      "digest": {
+        "headline": "Lyon, Sparta Praha'yı 3-0 yendi",
+        "paragraph": "Lyon, Groupama Stadium'da oynanan UEFA Champions League karşılaşmasında Sparta Praha'yı 3-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Lyon",
+          "loser": "Sparta Praha",
+          "draw": false,
+          "margin": 3
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Lyon, Sparta Praha'yı 3-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Lyon sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "sturm-graz-fenerbahce-2026-08-11",
+      "fixtureId": "1607174",
+      "provider": "api-football",
+      "slug": "sturm-graz-fenerbahce-2026-08-11",
+      "kickoff": "2026-08-11T21:30:00+03:00",
+      "kickoffUtc": "2026-08-11T18:30:00.000Z",
+      "kickoffLocal": "2026-08-11T21:30",
+      "date": "2026-08-11",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "UEFA Champions League",
+      "competition": "UEFA Champions League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Sturm Graz",
+      "awayTeam": "Fenerbahçe",
+      "venue": "Merkur Arena",
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "Fenerbahçe",
+      "turkish": true,
+      "turkishTeam": "Fenerbahçe",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 16
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 15
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 45
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 16,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 45
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "024304c097e993cd",
+      "fingerprint": "024304c097e993cd",
+      "analysisGeneratedAt": "2026-08-11T21:09:23.866Z",
+      "analysisUpdatedAt": "2026-08-11T21:09:23.866Z",
+      "generatedAt": "2026-08-11T21:09:23.866Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Sturm Graz 0-1 Fenerbahçe maç raporu: UEFA Champions League istatistikleri | FutbolRadar",
+        "description": "Merkur Arena'da oynanan UEFA Champions League maçını Fenerbahçe 1-0 kazandı; Sturm Graz sahadan puansız ayrıldı.",
+        "path": "mac-raporu/sturm-graz-fenerbahce-2026-08-11.html",
+        "competition": "UEFA Champions League"
+      },
+      "reportUrl": "./mac-raporu/sturm-graz-fenerbahce-2026-08-11.html",
+      "digest": {
+        "headline": "Fenerbahçe, Sturm Graz'ı 1-0 yendi",
+        "paragraph": "Merkur Arena'da oynanan UEFA Champions League maçını Fenerbahçe 1-0 kazandı; Sturm Graz sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Fenerbahçe",
+          "loser": "Sturm Graz",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "40'",
+              "team": "Fenerbahçe",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "45'",
+              "team": "Fenerbahçe",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "61'",
+              "team": "Sturm Graz",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "Fenerbahçe",
+              "type": "subst",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Sturm Graz",
+              "type": "subst",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Sturm Graz",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Sturm Graz",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "Sturm Graz sahaya 4-4-2 dizilişiyle çıktı.",
+            "Fenerbahçe sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Sturm Graz maça 4-4-2 dizilişiyle başladı.",
+            "Fenerbahçe maça 4-2-3-1 dizilişiyle başladı.",
+            "61' Sturm Graz değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "61' Sturm Graz değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "61' Sturm Graz değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "62' Fenerbahçe değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Sturm Graz",
+              "formation": "4-4-2"
+            },
+            {
+              "team": "Fenerbahçe",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Fenerbahçe, Sturm Graz'ı 0-1 yendi.",
+            "İsabetli şutta da öndeydi (6-2); sonuç üretilen pozisyonla uyumlu."
+          ],
+          "strengths": [
+            "Fenerbahçe topa daha çok sahip oldu (%50).",
+            "Sturm Graz daha çok şut denedi (19-11)."
+          ],
+          "improvements": [
+            "Sturm Graz şut isabetinde geride kaldı (%11); bitiricilik geliştirilmesi gereken alan."
+          ],
+          "closing": "Fenerbahçe sahadan 1 farkla ayrıldı.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "Sturm Graz",
+            "score": 55
+          },
+          "away": {
+            "team": "Fenerbahçe",
+            "score": 71
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Sturm Graz %10.5, Fenerbahçe %54.5."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Sturm Graz 20.2, Fenerbahçe 36.1 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.3333333333333333
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 71,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
+      "publishState": "page"
+    },
+    {
+      "matchId": "celje-ararat-armenia-2026-08-11",
+      "fixtureId": "1605371",
+      "provider": "api-football",
+      "slug": "celje-ararat-armenia-2026-08-11",
+      "kickoff": "2026-08-11T21:15:00+03:00",
+      "kickoffUtc": "2026-08-11T18:15:00.000Z",
+      "kickoffLocal": "2026-08-11T21:15",
+      "date": "2026-08-11",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "UEFA Champions League",
+      "competition": "UEFA Champions League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Celje",
+      "awayTeam": "Ararat-Armenia",
+      "venue": "Arena Z’dezele",
+      "score": {
+        "home": 2,
+        "away": 0
+      },
+      "finalScore": "2-0",
+      "winner": "Celje",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "f4c2f1bc55e65a9e",
+      "fingerprint": "f4c2f1bc55e65a9e",
+      "analysisGeneratedAt": "2026-08-11T21:09:23.866Z",
+      "analysisUpdatedAt": "2026-08-11T21:09:23.866Z",
+      "generatedAt": "2026-08-11T21:09:23.866Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Celje 2-0 Ararat-Armenia maç raporu: UEFA Champions League istatistikleri | FutbolRadar",
+        "description": "Celje, Arena Z’dezele'de oynanan UEFA Champions League karşılaşmasında Ararat-Armenia'yı 2-0 mağlup etti.",
+        "path": "mac-raporu/celje-ararat-armenia-2026-08-11.html",
+        "competition": "UEFA Champions League"
+      },
+      "reportUrl": "./mac-raporu/celje-ararat-armenia-2026-08-11.html",
+      "digest": {
+        "headline": "Celje, Ararat-Armenia'yı 2-0 yendi",
+        "paragraph": "Celje, Arena Z’dezele'de oynanan UEFA Champions League karşılaşmasında Ararat-Armenia'yı 2-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Celje",
+          "loser": "Ararat-Armenia",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Celje, Ararat-Armenia'yı 2-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Celje sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "slovan-bratislava-mjallby-aif-2026-08-11",
+      "fixtureId": "1607173",
+      "provider": "api-football",
+      "slug": "slovan-bratislava-mjallby-aif-2026-08-11",
+      "kickoff": "2026-08-11T21:15:00+03:00",
+      "kickoffUtc": "2026-08-11T18:15:00.000Z",
+      "kickoffLocal": "2026-08-11T21:15",
+      "date": "2026-08-11",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "UEFA Champions League",
+      "competition": "UEFA Champions League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Slovan Bratislava",
+      "awayTeam": "Mjallby AIF",
+      "venue": "Tehelne Pole Stadion",
+      "score": {
+        "home": 2,
+        "away": 0
+      },
+      "finalScore": "2-0",
+      "winner": "Slovan Bratislava",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "f8102746a3c95ce1",
+      "fingerprint": "f8102746a3c95ce1",
+      "analysisGeneratedAt": "2026-08-11T21:09:23.866Z",
+      "analysisUpdatedAt": "2026-08-11T21:09:23.866Z",
+      "generatedAt": "2026-08-11T21:09:23.866Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Slovan Bratislava 2-0 Mjallby AIF maç raporu: UEFA Champions League istatistikleri | FutbolRadar",
+        "description": "Tehelne Pole Stadion'da oynanan UEFA Champions League maçını Slovan Bratislava 2-0 kazandı; Mjallby AIF sahadan puansız ayrıldı.",
+        "path": "mac-raporu/slovan-bratislava-mjallby-aif-2026-08-11.html",
+        "competition": "UEFA Champions League"
+      },
+      "reportUrl": "./mac-raporu/slovan-bratislava-mjallby-aif-2026-08-11.html",
+      "digest": {
+        "headline": "Slovan Bratislava, Mjallby AIF'ı 2-0 yendi",
+        "paragraph": "Tehelne Pole Stadion'da oynanan UEFA Champions League maçını Slovan Bratislava 2-0 kazandı; Mjallby AIF sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Slovan Bratislava",
+          "loser": "Mjallby AIF",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Slovan Bratislava, Mjallby AIF'ı 2-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Slovan Bratislava sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "fk-crvena-zvezda-hapoel-beer-sheva-2026-08-11",
       "fixtureId": "1607169",
@@ -363,6 +1277,394 @@
           "strengths": [],
           "improvements": [],
           "closing": "Intercity sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "nec-nijmegen-olympiakos-piraeus-2026-08-11",
+      "fixtureId": "1598829",
+      "provider": "api-football",
+      "slug": "nec-nijmegen-olympiakos-piraeus-2026-08-11",
+      "kickoff": "2026-08-11T20:30:00+03:00",
+      "kickoffUtc": "2026-08-11T17:30:00.000Z",
+      "kickoffLocal": "2026-08-11T20:30",
+      "date": "2026-08-11",
+      "status": "FINISHED",
+      "providerStatus": "AET",
+      "finishType": "extra-time",
+      "finishLabel": "Uzatma devrelerinde tamamlandı",
+      "league": "UEFA Champions League",
+      "competition": "UEFA Champions League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "NEC Nijmegen",
+      "awayTeam": "Olympiakos Piraeus",
+      "venue": "Stadion de Goffert",
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "finalScore": "2-1",
+      "winner": "NEC Nijmegen",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "15b82350372b8253",
+      "fingerprint": "15b82350372b8253",
+      "analysisGeneratedAt": "2026-08-11T21:09:23.866Z",
+      "analysisUpdatedAt": "2026-08-11T21:09:23.866Z",
+      "generatedAt": "2026-08-11T21:09:23.866Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "NEC Nijmegen 2-1 Olympiakos Piraeus maç raporu: UEFA Champions League istatistikleri | FutbolRadar",
+        "description": "NEC Nijmegen, Stadion de Goffert'te oynanan UEFA Champions League karşılaşmasında Olympiakos Piraeus'u 2-1 mağlup etti.",
+        "path": "mac-raporu/nec-nijmegen-olympiakos-piraeus-2026-08-11.html",
+        "competition": "UEFA Champions League"
+      },
+      "reportUrl": "./mac-raporu/nec-nijmegen-olympiakos-piraeus-2026-08-11.html",
+      "digest": {
+        "headline": "NEC Nijmegen, Olympiakos Piraeus'u 2-1 yendi",
+        "paragraph": "NEC Nijmegen, Stadion de Goffert'te oynanan UEFA Champions League karşılaşmasında Olympiakos Piraeus'u 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "NEC Nijmegen",
+          "loser": "Olympiakos Piraeus",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "extra-time",
+          "label": "Uzatma devrelerinde tamamlandı",
+          "wentToExtraTime": true,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "NEC Nijmegen, Olympiakos Piraeus'u 2-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "NEC Nijmegen sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "cska-1948-panathinaikos-2026-08-11",
+      "fixtureId": "1607603",
+      "provider": "api-football",
+      "slug": "cska-1948-panathinaikos-2026-08-11",
+      "kickoff": "2026-08-11T20:30:00+03:00",
+      "kickoffUtc": "2026-08-11T17:30:00.000Z",
+      "kickoffLocal": "2026-08-11T20:30",
+      "date": "2026-08-11",
+      "status": "FINISHED",
+      "providerStatus": "AET",
+      "finishType": "extra-time",
+      "finishLabel": "Uzatma devrelerinde tamamlandı",
+      "league": "UEFA Europa Conference League",
+      "competition": "UEFA Europa Conference League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "CSKA 1948",
+      "awayTeam": "Panathinaikos",
+      "venue": "Vasil Levski National Sports Academy",
+      "score": {
+        "home": 1,
+        "away": 2
+      },
+      "finalScore": "1-2",
+      "winner": "Panathinaikos",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v4",
+      "modelVersion": "futbolradar-post-match-v4",
+      "analysisSourceHash": "4302da21b2149d85",
+      "fingerprint": "4302da21b2149d85",
+      "analysisGeneratedAt": "2026-08-11T21:09:23.866Z",
+      "analysisUpdatedAt": "2026-08-11T21:09:23.866Z",
+      "generatedAt": "2026-08-11T21:09:23.866Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "CSKA 1948 1-2 Panathinaikos maç raporu: UEFA Europa Conference League istatistikleri | FutbolRadar",
+        "description": "Vasil Levski National Sports Academy'de oynanan UEFA Europa Conference League maçını Panathinaikos 2-1 kazandı; CSKA 1948 sahadan puansız ayrıldı.",
+        "path": "mac-raporu/cska-1948-panathinaikos-2026-08-11.html",
+        "competition": "UEFA Europa Conference League"
+      },
+      "reportUrl": "./mac-raporu/cska-1948-panathinaikos-2026-08-11.html",
+      "digest": {
+        "headline": "Panathinaikos, CSKA 1948'ı 2-1 yendi",
+        "paragraph": "Vasil Levski National Sports Academy'de oynanan UEFA Europa Conference League maçını Panathinaikos 2-1 kazandı; CSKA 1948 sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Panathinaikos",
+          "loser": "CSKA 1948",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "extra-time",
+          "label": "Uzatma devrelerinde tamamlandı",
+          "wentToExtraTime": true,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Panathinaikos, CSKA 1948'ı 1-2 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Panathinaikos sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
         "aiRating": null,
