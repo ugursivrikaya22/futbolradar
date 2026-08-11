@@ -3,6 +3,10 @@ import path from "node:path";
 import { createRequire } from "node:module";
 // Dış kaynak künyesi `nofollow` taşır; kural services/sourceLinks.js.
 const { SOURCE_LINK_REL } = createRequire(import.meta.url)("../services/sourceLinks.js");
+// Hangi haberin kalıcı sayfası olduğu kuralı servistedir; ana sayfa kartları
+// da aynı listeden besleniyor, böylece "kart var ama sayfa yok" durumu
+// (canlıda 404 veren iki bağlantı) yapısal olarak imkânsız.
+const { publishableNews } = createRequire(import.meta.url)("../services/newsFeed.js");
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
 
 const root = process.cwd();
@@ -95,15 +99,7 @@ function formatDate(value) {
 }
 
 function publishableArticles() {
-  return asArray(news, "news", "items")
-    .filter((article) =>
-      article &&
-      articleSlug(article) &&
-      article.title &&
-      String(article.status || "").toLowerCase() === "verified" &&
-      Array.isArray(article.body) &&
-      article.body.some((paragraph) => String(paragraph || "").trim()))
-    .sort((left, right) => String(right.publishedAt || "").localeCompare(String(left.publishedAt || "")));
+  return publishableNews(news);
 }
 
 function jsonLd(article) {

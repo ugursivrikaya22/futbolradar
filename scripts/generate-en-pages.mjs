@@ -56,6 +56,7 @@ const { canonicalStatus, istanbulDay, liveVerdict } = require("../services/match
 // karar burada yeniden yazılmaz — yoksa iki dil sessizce ayrışır.
 const { selectFeaturedMatches } = require("../services/featuredMatchSelector.js");
 const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
+const { publishableNews, newsHref } = require("../services/newsFeed.js");
 const { curatedMatches: programMatches } = require("../services/providers/mockProvider.js");
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { filterPlayerCards, publicPlayerView } = require("../services/cardCredibility.js");
@@ -104,10 +105,11 @@ const columnList = (() => {
   const list = Array.isArray(doc) ? doc : (doc.columns || []);
   return list.filter((entry) => entry && entry.status !== "draft");
 })();
-const newsList = (() => {
-  const doc = readJson("news.json", []);
-  return Array.isArray(doc) ? doc : (doc.news || doc.items || []);
-})();
+// Haber akışı kuralı servistedir (services/newsFeed.js) ve Türkçe ön derleme
+// de aynı listeyi oradan alır. Süzgeç burada tekrar yazılmıyor: yazıldığı
+// için `archived` haberler bu sayfada kart olmuş, sayfaları üretilmediğinden
+// bağlantıları 404 vermişti.
+const newsList = publishableNews(readJson("news.json", []));
 const postMatchRecords = (() => {
   const doc = readJson("post-match-reports.json", {});
   return Array.isArray(doc.records) ? doc.records : [];
@@ -1121,7 +1123,8 @@ function newsSection() {
   const items = newsList.slice(0, 3);
   if (!items.length) return "";
   const cards = items.map((item) => {
-    const href = `${BASE}haber/${escapeHtml(item.slug || item.id)}`;
+    // Bağlantı da servisten: kartın gösterildiği her haberin sayfası var.
+    const href = escapeHtml(newsHref(item, BASE));
     const published = item.publishedAt || item.date || "";
     return `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}">` +
       `<div class="news-card-meta"><span class="tag green" lang="tr">${escapeHtml(item.category || "Football agenda")}</span>` +

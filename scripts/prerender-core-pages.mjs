@@ -26,15 +26,20 @@ function writeGeneratedFile(file, contents) {
 }
 // Dış bağlantı politikası tek yerde: services/sourceLinks.js.
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
+// Haber akışı kuralı da tek yerde: services/newsFeed.js. Veri okumadan önce
+// alınıyor, çünkü `news` sabiti hemen aşağıda bu süzgeci kullanıyor.
+const { publishableNews, newsHref, isExternalHref } = require("../services/newsFeed.js");
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const momentum = JSON.parse(fs.readFileSync(path.join(root, "data", "momentum.json"), "utf8"));
 const signals = JSON.parse(fs.readFileSync(path.join(root, "data", "signals.json"), "utf8"));
 const analyses = JSON.parse(fs.readFileSync(path.join(root, "data", "analyses.json"), "utf8"));
+// Haber akışı kuralı servistedir (services/newsFeed.js); İngilizce üretici de
+// aynı listeyi oradan alır. Süzgeç yalnızca `verified` demiyor: haberin
+// GÖVDESİ de olmalı, çünkü sayfa üreticisi gövdesizler için sayfa yazmıyor ve
+// o karta bağlanmak 404 demek.
 const newsPayload = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
-const news = (Array.isArray(newsPayload) ? newsPayload : newsPayload.items || newsPayload.news || [])
-  .filter((article) => article && String(article.status || "").toLowerCase() === "verified")
-  .sort((left, right) => String(right.publishedAt || "").localeCompare(String(left.publishedAt || "")));
+const news = publishableNews(newsPayload);
 const freshnessData = JSON.parse(fs.readFileSync(path.join(root, "data", "freshness.json"), "utf8"));
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
@@ -844,22 +849,12 @@ function analysisCards() {
   return analyses.map((analysis) => `<article class="article-card" data-card="analysis" id="${escapeHtml(analysis.id)}-preview"><div><h3>${escapeHtml(analysis.title)}</h3><p>${escapeHtml(analysis.summary)}</p></div><a href="${escapeHtml(analysis.url)}">Analizi aç</a></article>`).join("");
 }
 
-function newsCardHref(item) {
-  const url = String(item && item.url || "").trim();
-  const ownPrefix = "https://www.futbolradar.com/";
-  if (url.startsWith(ownPrefix)) {
-    const localPath = url.slice(ownPrefix.length);
-    return localPath.startsWith("haber/") ? `./${localPath.replace(/\.html$/, "")}` : `./${localPath}`;
-  }
-  return url;
-}
-
 function newsCardAction(item) {
-  const href = newsCardHref(item);
+  const href = newsHref(item, "./");
   if (!href) {
     return "";
   }
-  const external = /^https?:/i.test(href);
+  const external = isExternalHref(href);
   // Dışarı çıkan künye `nofollow` taşır (services/sourceLinks.js ile aynı
   // kural): alıntı bir atıftır, tavsiye değil. İç bağlantı sade açılır.
   const attrs = external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : "";
