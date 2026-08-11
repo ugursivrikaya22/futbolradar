@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-11T22:09:26.729Z",
+  "updatedAt": "2026-08-11T23:08:40.696Z",
   "matchCount": 308,
   "records": [
     {
@@ -239,7 +239,7 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 16
+          "count": 17
         },
         "statistics": {
           "present": true,
@@ -259,7 +259,7 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 16,
+        "events": 17,
         "statistics": 15,
         "lineups": 2,
         "players": 45
@@ -272,11 +272,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "024304c097e993cd",
-      "fingerprint": "024304c097e993cd",
+      "analysisSourceHash": "ab432e0cd00f7700",
+      "fingerprint": "ab432e0cd00f7700",
       "analysisGeneratedAt": "2026-08-11T21:09:23.866Z",
-      "analysisUpdatedAt": "2026-08-11T21:09:23.866Z",
-      "generatedAt": "2026-08-11T21:09:23.866Z",
+      "analysisUpdatedAt": "2026-08-11T23:08:40.628Z",
+      "generatedAt": "2026-08-11T23:08:40.628Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -301,7 +301,7 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
           "status": "partial",
@@ -332,7 +332,7 @@
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
+          "verdict": "Son bölümde 6 olay kaydedildi, gol yok.",
           "goals": {
             "home": 0,
             "away": 0
@@ -389,7 +389,7 @@
         "secondHalf": {
           "status": "ready",
           "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (15 olay).",
             "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
           ],
           "goals": 0
@@ -1528,10 +1528,10 @@
       "winner": "NEC Nijmegen",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -1539,9 +1539,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 23
         },
         "statistics": {
           "present": false,
@@ -1561,19 +1561,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 23,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -1591,11 +1587,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "15b82350372b8253",
-      "fingerprint": "15b82350372b8253",
+      "analysisSourceHash": "9f88badbbc0eaa14",
+      "fingerprint": "9f88badbbc0eaa14",
       "analysisGeneratedAt": "2026-08-11T21:09:23.866Z",
-      "analysisUpdatedAt": "2026-08-11T21:09:23.866Z",
-      "generatedAt": "2026-08-11T21:09:23.866Z",
+      "analysisUpdatedAt": "2026-08-11T23:08:40.628Z",
+      "generatedAt": "2026-08-11T23:08:40.628Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1620,18 +1616,72 @@
           "label": "Uzatma devrelerinde tamamlandı",
           "wentToExtraTime": true,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 9
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "12'",
+              "team": "Olympiakos Piraeus",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "15'",
+              "team": "Olympiakos Piraeus",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            },
+            {
+              "minute": "30'",
+              "team": "NEC Nijmegen",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 12 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "80'",
+              "team": "Olympiakos Piraeus",
+              "type": "Card",
+              "detail": "Red Card",
+              "decisive": false
+            },
+            {
+              "minute": "88'",
+              "team": "NEC Nijmegen",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "decisive": false
+            },
+            {
+              "minute": "88'",
+              "team": "NEC Nijmegen",
+              "type": "subst",
+              "detail": "Substitution 3",
+              "decisive": false
+            },
+            {
+              "minute": "90+3'",
+              "team": "NEC Nijmegen",
+              "type": "Var",
+              "detail": "Goal Disallowed - offside",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -1642,20 +1692,33 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (19 olay).",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "15' Olympiakos Piraeus değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "30' NEC Nijmegen değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "34' NEC Nijmegen değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "61' Olympiakos Piraeus değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "72' Olympiakos Piraeus değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "72' Olympiakos Piraeus değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1687,10 +1750,15 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -2453,11 +2521,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "c8678ce96c366144",
-      "fingerprint": "c8678ce96c366144",
+      "analysisSourceHash": "e9443ab818f3c50f",
+      "fingerprint": "e9443ab818f3c50f",
       "analysisGeneratedAt": "2026-08-11T20:01:07.566Z",
-      "analysisUpdatedAt": "2026-08-11T20:01:07.566Z",
-      "generatedAt": "2026-08-11T20:01:07.566Z",
+      "analysisUpdatedAt": "2026-08-11T23:08:40.628Z",
+      "generatedAt": "2026-08-11T23:08:40.628Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2667,10 +2735,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -2678,9 +2746,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 3
         },
         "statistics": {
           "present": false,
@@ -2700,19 +2768,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 3,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -2730,11 +2794,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "4b6fd98f20ec6fd7",
-      "fingerprint": "4b6fd98f20ec6fd7",
+      "analysisSourceHash": "907d44fcf4a17965",
+      "fingerprint": "907d44fcf4a17965",
       "analysisGeneratedAt": "2026-08-11T19:30:48.081Z",
-      "analysisUpdatedAt": "2026-08-11T19:30:48.081Z",
-      "generatedAt": "2026-08-11T19:30:48.081Z",
+      "analysisUpdatedAt": "2026-08-11T23:08:40.628Z",
+      "generatedAt": "2026-08-11T23:08:40.628Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2759,18 +2823,65 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Gimnástica Torrelavega",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "82'",
+              "team": "Gimnástica Torrelavega",
+              "type": "Card",
+              "detail": "Red Card",
+              "pivotal": false
+            },
+            {
+              "minute": "90+1'",
+              "team": "Sestao River",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 3 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Gimnástica Torrelavega",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Gimnástica Torrelavega",
+              "type": "Card",
+              "detail": "Red Card",
+              "decisive": false
+            },
+            {
+              "minute": "90+1'",
+              "team": "Sestao River",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -2786,8 +2897,10 @@
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı dengeli bir olay akışı üretti (3 olay)."
+          ],
           "goals": 0
         },
         "coaching": {
@@ -2826,10 +2939,13 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "secondHalf",
+        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 36,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
