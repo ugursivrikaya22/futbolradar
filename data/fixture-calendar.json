@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-11T01:56:09.479Z",
+  "fetchedAt": "2026-08-11T02:32:06.496Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -188352,8 +188352,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-11T01:56:10.098Z",
-      "staleAfter": "2026-08-11T02:01:10.098Z",
+      "fetchedAt": "2026-08-11T02:32:07.166Z",
+      "staleAfter": "2026-08-11T02:37:07.166Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -188363,17 +188363,32 @@
       "competitionId": "la-liga",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Rayo Zuliano skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Rayo Zuliano tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "İki takım kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 90+2' J. Gomez tarafından kaydedildi. Skor üstünlüğü Rayo Zuliano tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Disiplin dengesi",
+            "value": "2 kırmızı kart",
+            "text": "İki takım kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "90+2'",
+            "text": "Son gol 90+2' J. Gomez tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
+          },
           {
             "label": "Canlı skor",
             "value": "3-0",
             "text": "Rayo Zuliano skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 23,
+        "dataPoints": 4,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -189954,13 +189969,13 @@
       "awayTeam": "Nublense",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2329.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/2337.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
+      "status": "FINISHED",
+      "providerStatus": "FT",
       "minute": 90,
       "elapsed": 90,
-      "live": true,
+      "live": false,
       "score": {
-        "home": 1,
+        "home": 2,
         "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
@@ -189979,8 +189994,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-11T01:56:10.322Z",
-      "staleAfter": "2026-08-11T02:01:10.322Z",
+      "fetchedAt": "2026-08-11T02:32:07.423Z",
+      "staleAfter": "2026-08-11T02:37:07.423Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -189989,29 +190004,34 @@
       },
       "competitionId": "la-liga",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "A. Italiano topa sahip olma oranında önde. A. Italiano daha fazla şut üretti. Skor üstünlüğü Nublense tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "A. Italiano topa sahip olma oranında önde. A. Italiano daha fazla şut üretti.",
         "confidence": "Yüksek",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "56%-44%",
+            "value": "58%-42%",
             "text": "A. Italiano topa sahip olma oranında önde."
           },
           {
             "label": "Şut hacmi",
-            "value": "10-3",
+            "value": "12-3",
             "text": "A. Italiano daha fazla şut üretti."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "5-2",
+            "value": "7-2",
             "text": "A. Italiano isabetli şutlarda önde."
           },
           {
+            "label": "Disiplin dengesi",
+            "value": "1 kırmızı kart",
+            "text": "Nublense kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+          },
+          {
             "label": "Gol akışı",
-            "value": "90+2'",
-            "text": "Son gol 90+2' M. Plaza tarafından kaydedildi."
+            "value": "90+12'",
+            "text": "Son gol 90+12' C. Pinares tarafından kaydedildi."
           },
           {
             "label": "Teknik hamleler",
@@ -190020,12 +190040,12 @@
           },
           {
             "label": "Canlı skor",
-            "value": "1-2",
-            "text": "Nublense skor üstünlüğünü elinde tutuyor."
+            "value": "2-2",
+            "text": "Skor dengede."
           }
         ],
-        "eventCount": 17,
-        "dataPoints": 6,
+        "eventCount": 20,
+        "dataPoints": 7,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -191656,7 +191676,7 @@
           "type": "Card",
           "detail": "Yellow Card",
           "value": "M. Ortiz · Yellow Card",
-          "comments": "Foul"
+          "comments": "Unsportsmanlike conduct"
         },
         {
           "time": "90+2'",
@@ -191679,7 +191699,7 @@
           "comments": ""
         },
         {
-          "time": "90+5'",
+          "time": "90+4'",
           "team": {
             "name": "Nublense"
           },
@@ -191687,13 +191707,43 @@
           "detail": "Substitution 5",
           "value": "M. Rivera · Asist: D. Saavedra · Substitution 5",
           "comments": ""
+        },
+        {
+          "time": "90+5'",
+          "team": {
+            "name": "Nublense"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "D. Saavedra · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "90+12'",
+          "team": {
+            "name": "A. Italiano"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "C. Pinares · Penalty",
+          "comments": ""
+        },
+        {
+          "time": "90+13'",
+          "team": {
+            "name": "Nublense"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "J. Ribera · Red Card",
+          "comments": "Unsportsmanlike conduct"
         }
       ],
       "statistics": [
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 5,
+          "home": 7,
           "away": 2,
           "higherIsBetter": true
         },
@@ -191706,7 +191756,7 @@
         {
           "category": "Hücum",
           "type": "Toplam şut",
-          "home": 10,
+          "home": 12,
           "away": 3,
           "higherIsBetter": true
         },
@@ -191719,21 +191769,21 @@
         {
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
-          "home": 6,
+          "home": 7,
           "away": 2,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 4,
+          "home": 5,
           "away": 1
         },
         {
           "category": "Disiplin",
           "type": "Faul",
           "home": 12,
-          "away": 16
+          "away": 20
         },
         {
           "category": "Genel",
@@ -191750,8 +191800,8 @@
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 56,
-          "away": 44,
+          "home": 58,
+          "away": 42,
           "unit": "%",
           "higherIsBetter": true
         },
@@ -191759,35 +191809,622 @@
           "category": "Disiplin",
           "type": "Sarı kart",
           "home": 2,
-          "away": 2
+          "away": 3
         },
         {
           "category": "Savunma",
           "type": "Kurtarış",
           "home": 0,
-          "away": 4
+          "away": 5
         },
         {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 480,
-          "away": 376,
+          "home": 525,
+          "away": 385,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 405,
-          "away": 308,
+          "home": 440,
+          "away": 310,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
           "home": 84,
-          "away": 82,
+          "away": 81,
           "unit": "%",
           "higherIsBetter": true
+        }
+      ],
+      "players": [
+        {
+          "name": "Tomás Ahumada",
+          "team": "A. Italiano",
+          "providerPlayerId": "11495",
+          "source": "api-football",
+          "minutes": 102,
+          "position": "G",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 36,
+          "passAccuracy": 31,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Raimundo Rebolledo",
+          "team": "A. Italiano",
+          "providerPlayerId": "11356",
+          "source": "api-football",
+          "minutes": 102,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 61,
+          "passAccuracy": 52,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Enzo Ferrario",
+          "team": "A. Italiano",
+          "providerPlayerId": "11351",
+          "source": "api-football",
+          "minutes": 102,
+          "position": "D",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 82,
+          "passAccuracy": 72,
+          "duelsWon": 7,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Marcelo Ortíz",
+          "team": "A. Italiano",
+          "providerPlayerId": "6515",
+          "source": "api-football",
+          "minutes": 102,
+          "position": "D",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 68,
+          "passAccuracy": 57,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Vicente Zenteno",
+          "team": "A. Italiano",
+          "providerPlayerId": "643105",
+          "source": "api-football",
+          "minutes": 102,
+          "position": "D",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 45,
+          "passAccuracy": 35,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Bryan Soto",
+          "team": "A. Italiano",
+          "providerPlayerId": "70464",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "passes": 37,
+          "passAccuracy": 35,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Paolo Guajardo",
+          "team": "A. Italiano",
+          "providerPlayerId": "310594",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 13,
+          "passAccuracy": 9,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Federico Mateos",
+          "team": "A. Italiano",
+          "providerPlayerId": "12226",
+          "source": "api-football",
+          "minutes": 73,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 43,
+          "passAccuracy": 34,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "César Pinares",
+          "team": "A. Italiano",
+          "providerPlayerId": "11368",
+          "source": "api-football",
+          "minutes": 102,
+          "position": "M",
+          "providerRating": 8.2,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "assists": 1,
+          "shots": 2,
+          "shotsOnTarget": 2,
+          "passes": 62,
+          "passAccuracy": 51,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Franco Troyansky",
+          "team": "A. Italiano",
+          "providerPlayerId": "6131",
+          "source": "api-football",
+          "minutes": 74,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 18,
+          "passAccuracy": 15,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Michael Vadulli",
+          "team": "A. Italiano",
+          "providerPlayerId": "11713",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "F",
+          "providerRating": 7.6,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 2,
+          "shotsOnTarget": 1,
+          "passes": 20,
+          "passAccuracy": 15,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ariel Uribe",
+          "team": "A. Italiano",
+          "providerPlayerId": "35950",
+          "source": "api-football",
+          "minutes": 37,
+          "position": "M",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 11,
+          "passAccuracy": 10,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mario Sandoval",
+          "team": "A. Italiano",
+          "providerPlayerId": "485674",
+          "source": "api-football",
+          "minutes": 37,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 14,
+          "passAccuracy": 12,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Felipe Salomoni",
+          "team": "A. Italiano",
+          "providerPlayerId": "331540",
+          "source": "api-football",
+          "minutes": 29,
+          "position": "D",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 10,
+          "passAccuracy": 8,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Diego Coelho",
+          "team": "A. Italiano",
+          "providerPlayerId": "51347",
+          "source": "api-football",
+          "minutes": 28,
+          "position": "F",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "passes": 4,
+          "passAccuracy": 3,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Damián Pizarro",
+          "team": "A. Italiano",
+          "providerPlayerId": "344165",
+          "source": "api-football",
+          "minutes": 19,
+          "position": "F",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 1,
+          "passAccuracy": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Pedro Garrido",
+          "team": "A. Italiano",
+          "providerPlayerId": "307109",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Diego Monreal",
+          "team": "A. Italiano",
+          "providerPlayerId": "408960",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Marco Collao",
+          "team": "A. Italiano",
+          "providerPlayerId": "11767",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Favian Loyola",
+          "team": "A. Italiano",
+          "providerPlayerId": "362431",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nicola Pérez",
+          "team": "Nublense",
+          "providerPlayerId": "51652",
+          "source": "api-football",
+          "minutes": 102,
+          "position": "G",
+          "providerRating": 7.6,
+          "ratingSource": "api-football",
+          "saves": 5,
+          "passes": 25,
+          "passAccuracy": 18,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Pablo Calderón",
+          "team": "Nublense",
+          "providerPlayerId": "143678",
+          "source": "api-football",
+          "minutes": 67,
+          "position": "D",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 26,
+          "passAccuracy": 19,
+          "tackles": 3,
+          "duelsWon": 4,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Osvaldo Bosso",
+          "team": "Nublense",
+          "providerPlayerId": "11504",
+          "source": "api-football",
+          "minutes": 102,
+          "position": "D",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 44,
+          "passAccuracy": 40,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Sebastián Valencia",
+          "team": "Nublense",
+          "providerPlayerId": "125772",
+          "source": "api-football",
+          "minutes": 102,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 49,
+          "passAccuracy": 38,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Diego Sanhueza",
+          "team": "Nublense",
+          "providerPlayerId": "298195",
+          "source": "api-football",
+          "minutes": 102,
+          "position": "M",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "passes": 25,
+          "passAccuracy": 15,
+          "tackles": 2,
+          "duelsWon": 7,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lorenzo Reyes",
+          "team": "Nublense",
+          "providerPlayerId": "35854",
+          "source": "api-football",
+          "minutes": 102,
+          "position": "M",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "passes": 46,
+          "passAccuracy": 43,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Matías Plaza",
+          "team": "Nublense",
+          "providerPlayerId": "309987",
+          "source": "api-football",
+          "minutes": 94,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 2,
+          "shotsOnTarget": 1,
+          "passes": 37,
+          "passAccuracy": 31,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Manuel Rivera",
+          "team": "Nublense",
+          "providerPlayerId": "11930",
+          "source": "api-football",
+          "minutes": 94,
+          "position": "M",
+          "providerRating": 8.5,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 55,
+          "passAccuracy": 49,
+          "tackles": 3,
+          "duelsWon": 7,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jovany Campusano",
+          "team": "Nublense",
+          "providerPlayerId": "11999",
+          "source": "api-football",
+          "minutes": 102,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "passes": 33,
+          "passAccuracy": 26,
+          "tackles": 2,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gabriel Graciani",
+          "team": "Nublense",
+          "providerPlayerId": "5760",
+          "source": "api-football",
+          "minutes": 75,
+          "position": "F",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 20,
+          "passAccuracy": 12,
+          "tackles": 1,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lucas Molina",
+          "team": "Nublense",
+          "providerPlayerId": "381709",
+          "source": "api-football",
+          "minutes": 67,
+          "position": "F",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 14,
+          "passAccuracy": 10,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Felipe Campos",
+          "team": "Nublense",
+          "providerPlayerId": "11415",
+          "source": "api-football",
+          "minutes": 35,
+          "position": "D",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 4,
+          "passAccuracy": 4,
+          "duelsWon": 1,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Christian Mansilla",
+          "team": "Nublense",
+          "providerPlayerId": "408950",
+          "source": "api-football",
+          "minutes": 35,
+          "position": "M",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 4,
+          "passAccuracy": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Esteban Calderón",
+          "team": "Nublense",
+          "providerPlayerId": "424722",
+          "source": "api-football",
+          "minutes": 27,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 2,
+          "passAccuracy": 2,
+          "tackles": 2,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Alex Valdés",
+          "team": "Nublense",
+          "providerPlayerId": "357089",
+          "source": "api-football",
+          "minutes": 8,
+          "position": "M",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Daniel Saavedra",
+          "team": "Nublense",
+          "providerPlayerId": "458792",
+          "source": "api-football",
+          "minutes": 8,
+          "position": "M",
+          "providerRating": 5.9,
+          "ratingSource": "api-football",
+          "passes": 1,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Hernán Muñoz",
+          "team": "Nublense",
+          "providerPlayerId": "12030",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Carlos Salomón",
+          "team": "Nublense",
+          "providerPlayerId": "11357",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Vicente Guzmán",
+          "team": "Nublense",
+          "providerPlayerId": "628445",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Bastian Muñoz",
+          "team": "Nublense",
+          "providerPlayerId": "665660",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
         }
       ]
     },
