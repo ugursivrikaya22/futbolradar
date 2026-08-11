@@ -1,0 +1,164 @@
+/**
+ * TRANSFER RADARI BANDI — HANGİ KAYIT, HANGİ SIRADA, HANGİ DURUMLA.
+ *
+ * NEDEN BU DOSYA VAR. Bandın seçim kuralı ÜÇ yerde ayrı ayrı yazılmıştı:
+ * istemcide (app.js `TransferRadarTicker`), İngilizce üreticide
+ * (scripts/generate-en-pages.mjs) ve hiçbir yerde — çünkü Türkçe ana sayfa
+ * bandı hiç ön derlemiyordu.
+ *
+ * Bunun canlıda görünür bir sonucu vardı: Türkçe ana sayfanın HTML'i banda
+ * "Transfer güncellemeleri hazırlanıyor." yer tutucusuyla çıkıyor, ama aynı
+ * sayfanın alt tarafındaki Transfer Takibi bölümü dolu transfer satırları
+ * gösteriyordu. Aynı sayfa aynı anda hem "veri yok" hem "veri var" diyordu.
+ * JavaScript yüklenene kadar okuyucunun ve Googlebot'un gördüğü hâl buydu.
+ *
+ * Kural artık burada. Ön derleme bandı derleme sırasında doldurur; istemci
+ * canlı veriyle üstüne yazar. İkisi de aynı sıralamayı ve aynı durum
+ * eşlemesini kullandığı için JavaScript yüklendiğinde bant yerinden
+ * oynamaz.
+ *
+ * UYDURMA YOK. Bu modül veri OKUR, veri YARATMAZ:
+ *
+ *   • Oyuncu adı, gittiği ve geldiği takım eksikse kayıt banda GİRMEZ.
+ *     Eksik tarafı "bilinmiyor" diye doldurmak bilgi üretmek olurdu.
+ *   • Tarihi okunamayan kayıt "SON DAKİKA" SAYILMAZ. Bilinmeyen tarih,
+ *     kaydın yeni olduğuna dair bir kanıt değildir.
+ *   • Bant boşsa boş kalır; yer doldurmak için eski kayıt öne çekilmez.
+ *
+ * "SON DAKİKA" BİR ZAMAN İDDİASIDIR. Üç günden eski kayıt banttan atılmaz —
+ * transfer bilgisi eskiyince yanlış olmaz, yalnızca "son dakika" olmaktan
+ * çıkar. O kayıt kendi tarihiyle gösterilir.
+ */
+
+/** Üç gün. Bu pencerenin dışındaki kayıt tarihiyle gösterilir. */
+const BREAKING_WINDOW_MS = 3 * 24 * 60 * 60 * 1000;
+
+/** Bantta en fazla kaç kayıt? Kayan bir şerit liste değildir. */
+const MAX_ITEMS = 12;
+
+/**
+ * Türk kullanıcı için ilgi sırası. Aynı gün açıklanmış iki transferden
+ * Süper Lig kulübünü ilgilendiren önce gelir.
+ */
+const PRIORITY_CLUBS = Object.freeze([
+  "galatasaray", "fenerbahce", "besiktas", "trabzonspor",
+  "basaksehir", "eyupspor", "samsunspor", "goztepe"
+]);
+
+/** Durum anahtarları. Sınıf adı İngilizce, ekrandaki metin çağırana ait. */
+const STATUS_KEYS = Object.freeze(["Official", "Rumor", "Talks", "Loan"]);
+
+/** app.js `normalizeSearchText` ile aynı iş: aksan ve büyük harf nötr. */
+function foldText(value) {
+  return String(value === undefined || value === null ? "" : value)
+    .toLocaleLowerCase("tr")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/ı/g, "i")
+    .replace(/ş/g, "s")
+    .replace(/ğ/g, "g")
+    .replace(/ç/g, "c")
+    .replace(/ö/g, "o")
+    .replace(/ü/g, "u")
+    .trim();
+}
+
+/**
+ * DURUM. Kayıt açıkça bir durum bildiriyorsa o kullanılır; bildirmiyorsa
+ * metinden çıkarılır. Çıkarım BELİRSİZLİK YÖNÜNE düşer: hiçbir kalıp
+ * tutmazsa sonuç "Rumor"dur, "Official" değil. Kesinliği varsayılan yapmak,
+ * doğrulanmamış bir kaydı doğrulanmış göstermek olurdu.
+ */
+function transferStatusKey(record) {
+  if (record && STATUS_KEYS.includes(record.displayStatus)) return record.displayStatus;
+  const raw = foldText([
+    record && record.type,
+    record && record.status,
+    record && record.stage
+  ].filter(Boolean).join(" "));
+  if (/kiralik|loan/.test(raw)) return "Loan";
+  if (/talk|negotiat|gorus|temas/.test(raw)) return "Talks";
+  if (/rumou?r|iddia|reported|linked/.test(raw)) return "Rumor";
+  if (/confirm|official|complete|signed|resmi|kesin/.test(raw)) return "Official";
+  return "Rumor";
+}
+
+function clubRank(record) {
+  const sides = [record && record.toTeam, record && record.fromTeam]
+    .filter(Boolean)
+    .map(foldText);
+  for (let index = 0; index < PRIORITY_CLUBS.length; index += 1) {
+    if (sides.includes(PRIORITY_CLUBS[index])) return index;
+  }
+  return PRIORITY_CLUBS.length;
+}
+
+/** Kaydın zaman damgası. Okunamayan tarih 0'dır — "yeni" değil, "bilinmiyor". */
+function stampOf(record) {
+  const value = record && (record.date || record.publishedAt || record.lastVerifiedAt || record.updatedAt);
+  const parsed = value ? Date.parse(value) : NaN;
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+/** Ham `transfers.json` yükünü listeye çevirir. */
+function asList(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (payload && Array.isArray(payload.transfers)) return payload.transfers;
+  return [];
+}
+
+/**
+ * BANDA GİRECEK KAYITLAR.
+ *
+ * `now` çağırandan gelir: ön derleme derleme anını, istemci sayfa açılış
+ * anını verir. Testler sabit bir an geçirerek "son dakika" penceresini
+ * saate bağlı olmadan doğrular.
+ */
+function selectTickerRecords(payload, options = {}) {
+  const nowMs = Number.isFinite(options.now) ? options.now : Date.now();
+  const limit = Number.isFinite(options.limit) ? options.limit : MAX_ITEMS;
+  const locale = options.locale === "en" ? "en-GB" : "tr-TR";
+
+  return asList(payload)
+    .map((record) => {
+      const playerName = String((record && (record.playerName || record.name)) || "").trim();
+      const toTeam = String((record && (record.toTeam || record.newTeam)) || "").trim();
+      const fromTeam = String((record && (record.fromTeam || record.oldTeam)) || "").trim();
+      // Tarafı eksik kayıt banda girmez: boşluğu doldurmak bilgi üretmektir.
+      if (!playerName || !toTeam || !fromTeam) return null;
+
+      const stamp = stampOf(record);
+      return {
+        playerName,
+        toTeam,
+        fromTeam,
+        isBreaking: stamp > 0 && (nowMs - stamp) <= BREAKING_WINDOW_MS,
+        dateLabel: stamp > 0
+          ? new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "Europe/Istanbul" })
+            .format(new Date(stamp))
+          : "",
+        statusKey: transferStatusKey(record),
+        url: (record && (record.url || record.sourceUrl || (record.source && record.source.url))) || "",
+        stamp,
+        clubRank: clubRank(record)
+      };
+    })
+    .filter(Boolean)
+    .sort((left, right) => right.stamp - left.stamp ||
+      left.clubRank - right.clubRank ||
+      left.playerName.localeCompare(right.playerName, "tr"))
+    .slice(0, limit);
+}
+
+module.exports = {
+  BREAKING_WINDOW_MS,
+  MAX_ITEMS,
+  PRIORITY_CLUBS,
+  STATUS_KEYS,
+  asList,
+  clubRank,
+  foldText,
+  selectTickerRecords,
+  stampOf,
+  transferStatusKey
+};

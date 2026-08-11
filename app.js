@@ -11026,6 +11026,14 @@
       target.dataset.source = source || "fallback";
 
       if (!items.length) {
+        // ÖN DERLENMİŞ GERÇEK VERİ SİLİNMEZ.
+        //
+        // Bant artık derleme sırasında dolduruluyor (prerender-core-pages.mjs
+        // `transfer-radar` yuvası). Canlı istek düşerse buraya boş dizi ile
+        // gelinir; eskiden bu, ekranda duran DOĞRU transferleri silip yerine
+        // "hazırlanıyor" yazıyordu. Veri yokluğu, elimizdeki doğrulanmış
+        // veriyi çöpe atmak için bir sebep değil — bant olduğu gibi kalır.
+        if (track.querySelector(".transfer-radar-ticker__item")) return;
         track.classList.add("is-static");
         track.innerHTML = '<div class="transfer-radar-ticker__group"><span class="transfer-radar-ticker__empty">Transfer güncellemeleri hazırlanıyor.</span></div>';
         return;

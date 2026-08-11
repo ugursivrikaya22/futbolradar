@@ -57,6 +57,7 @@ const { canonicalStatus, istanbulDay, liveVerdict } = require("../services/match
 const { selectFeaturedMatches } = require("../services/featuredMatchSelector.js");
 const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
 const { publishableNews, newsHref } = require("../services/newsFeed.js");
+const { selectTickerRecords } = require("../services/transferRadarTicker.js");
 const { curatedMatches: programMatches } = require("../services/providers/mockProvider.js");
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { filterPlayerCards, publicPlayerView } = require("../services/cardCredibility.js");
@@ -503,50 +504,19 @@ function clubLabelEn(value) {
   return foldText(name) === "serbest oyuncu" ? "Free agent" : name;
 }
 
+/**
+ * Seçim, sıralama ve durum eşlemesi SERVİSTEN gelir
+ * (services/transferRadarTicker.js) — Türkçe ön derleme de aynı listeyi
+ * oradan alır. Burada yapılan tek şey İngilizce sunum: kulüp adı çevrilmez,
+ * yalnızca kulüp OLMAYAN yer tutucu ("Serbest oyuncu") çevrilir.
+ */
 function transferTickerRecords() {
-  const doc = readJson("transfers.json", {});
-  const rows = Array.isArray(doc) ? doc : (doc.transfers || []);
-  const nowMs = Date.now();
-
-  const clubRank = (record) => {
-    const sides = [record.toTeam, record.fromTeam].filter(Boolean).map(foldText);
-    for (let index = 0; index < TRANSFER_PRIORITY_CLUBS.length; index += 1) {
-      if (sides.includes(TRANSFER_PRIORITY_CLUBS[index])) return index;
-    }
-    return TRANSFER_PRIORITY_CLUBS.length;
-  };
-  const stamp = (record) => {
-    const parsed = Date.parse(record.date || record.publishedAt || record.lastVerifiedAt || record.updatedAt || "");
-    return Number.isNaN(parsed) ? 0 : parsed;
-  };
-
-  return rows
-    .map((record) => {
-      const playerName = String(record.playerName || record.name || "").trim();
-      const toTeam = String(record.toTeam || record.newTeam || "").trim();
-      const fromTeam = String(record.fromTeam || record.oldTeam || "").trim();
-      if (!playerName || !toTeam || !fromTeam) return null;
-      const parsed = stamp(record);
-      return {
-        playerName,
-        toTeam: clubLabelEn(toTeam),
-        fromTeam: clubLabelEn(fromTeam),
-        // Tarihi okunamayan kayıt "yeni" SAYILMAZ — Türkçe bantla aynı kural.
-        isBreaking: parsed > 0 && (nowMs - parsed) <= TRANSFER_BREAKING_WINDOW_MS,
-        dateLabel: parsed > 0
-          ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "Europe/Istanbul" }).format(new Date(parsed))
-          : "",
-        statusKey: transferStatusKey(record),
-        url: record.url || record.sourceUrl || (record.source && record.source.url) || "",
-        _stamp: parsed,
-        _club: clubRank(record)
-      };
-    })
-    .filter(Boolean)
-    .sort((left, right) => right._stamp - left._stamp ||
-      left._club - right._club ||
-      left.playerName.localeCompare(right.playerName, "en"))
-    .slice(0, 12);
+  return selectTickerRecords(readJson("transfers.json", {}), { locale: "en" })
+    .map((item) => ({
+      ...item,
+      toTeam: clubLabelEn(item.toTeam),
+      fromTeam: clubLabelEn(item.fromTeam)
+    }));
 }
 
 function transferTickerItem(item, duplicate) {

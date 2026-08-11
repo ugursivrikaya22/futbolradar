@@ -29,6 +29,9 @@ const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
 // Haber akışı kuralı da tek yerde: services/newsFeed.js. Veri okumadan önce
 // alınıyor, çünkü `news` sabiti hemen aşağıda bu süzgeci kullanıyor.
 const { publishableNews, newsHref, isExternalHref } = require("../services/newsFeed.js");
+// Transfer bandının seçim/sıralama kuralı da tek yerde; İngilizce bant da
+// aynı servisi kullanıyor.
+const { selectTickerRecords } = require("../services/transferRadarTicker.js");
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const momentum = JSON.parse(fs.readFileSync(path.join(root, "data", "momentum.json"), "utf8"));
@@ -896,6 +899,64 @@ function fixtureRounds() {
 }
 
 /**
+ * TRANSFER RADARI BANDI — ARTIK DERLEME SIRASINDA YAZILIYOR.
+ *
+ * Bant eskiden yalnızca istemcide doluyordu; `index.html` banda "Transfer
+ * güncellemeleri hazırlanıyor." yer tutucusuyla çıkıyordu. Bunun görünür bir
+ * sonucu vardı: aynı sayfanın alt tarafındaki Transfer Takibi bölümü dolu
+ * transfer satırları gösterirken bant "veri hazırlanıyor" diyordu. Sayfa
+ * aynı anda hem "veri yok" hem "veri var" diyordu — JavaScript yüklenene
+ * kadar okuyucunun ve Googlebot'un gördüğü hâl buydu.
+ *
+ * Seçim ve sıralama servistedir (services/transferRadarTicker.js); İngilizce
+ * bant da aynı listeyi oradan alır. İstemci canlı veriyle üstüne yazar ama
+ * aynı kuralı kullandığı için bant yerinden oynamaz.
+ *
+ * Kayan animasyon saf CSS; bant JavaScript olmadan da çalışır.
+ */
+function transferRadarItem(item, duplicate) {
+  const external = /^https?:/i.test(item.url);
+  const tag = item.url ? "a" : "span";
+  const attributes = item.url
+    ? ` href="${escapeHtml(item.url)}"${external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : ""}${duplicate ? ' tabindex="-1"' : ""}`
+    : "";
+  const lead = item.isBreaking ? "SON DAKİKA" : (item.dateLabel || "TRANSFER");
+  const statusLabel = { Official: "Resmî", Rumor: "İddia", Talks: "Görüşme", Loan: "Kiralık" }[item.statusKey] || item.statusKey;
+  const aria = `${lead} | ${item.playerName} → ${item.toTeam} | Nereden: ${item.fromTeam} | ${statusLabel}`;
+  return `<${tag} class="transfer-radar-ticker__item"${attributes} aria-label="${escapeHtml(aria)}">` +
+    `<span class="transfer-radar-ticker__breaking${item.isBreaking ? "" : " is-dated"}">${escapeHtml(lead)}</span>` +
+    `<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>` +
+    `<strong>${escapeHtml(item.playerName)} <span aria-hidden="true">→</span> ${escapeHtml(item.toTeam)}</strong>` +
+    `<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>` +
+    `<span>Nereden: ${escapeHtml(item.fromTeam)}</span>` +
+    `<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>` +
+    // Sınıf anahtarı İngilizce kalır (CSS onunla renklendiriyor).
+    `<span class="transfer-radar-ticker__status is-${item.statusKey.toLowerCase()}">${escapeHtml(statusLabel)}</span>` +
+    `</${tag}>`;
+}
+
+function transferRadarTrack() {
+  const items = selectTickerRecords(transfers);
+
+  // Veri yoksa yer tutucu KALIR — uydurma yapılmaz. Çelişki yalnızca veri
+  // varken yer tutucu göstermekten doğuyordu.
+  if (!items.length) {
+    return `<div class="transfer-radar-ticker__track is-static" data-transfer-radar-track>
+            <div class="transfer-radar-ticker__group"><span class="transfer-radar-ticker__empty">Transfer güncellemeleri hazırlanıyor.</span></div>
+          </div>`;
+  }
+
+  // Süre app.js ile aynı formülden: öğe başına 9 sn, 34-80 sn arasında.
+  const duration = Math.max(34, Math.min(80, items.length * 9));
+  const primary = items.map((item) => transferRadarItem(item, false)).join("");
+  const duplicate = items.map((item) => transferRadarItem(item, true)).join("");
+  return `<div class="transfer-radar-ticker__track" style="--transfer-ticker-duration:${duration}s" data-transfer-radar-track>
+            <div class="transfer-radar-ticker__group">${primary}</div>
+            <div class="transfer-radar-ticker__group" aria-hidden="true">${duplicate}</div>
+          </div>`;
+}
+
+/**
  * Transfer radarı bu sezonun hareketlerini gösteriyor; sınır app.js'teki
  * TRANSFER_RADAR_SINCE ile aynı olmalı. Statik ön render eski kayıtları
  * gösterip JS yüklendiğinde liste değişseydi, okuyucu sayfanın kendi
@@ -1069,7 +1130,8 @@ writePage("index.html", {
   "player-radar": trendPlayerSlot(3),
   "player-signals": playerSignalsSlot(),
   "news-preview": newsCards(3),
-  "analysis-preview": analysisCards()
+  "analysis-preview": analysisCards(),
+  "transfer-radar": transferRadarTrack()
 }, fixtureFreshness);
 
 writePage("analizler.html", {
