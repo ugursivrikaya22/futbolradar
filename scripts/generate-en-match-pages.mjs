@@ -23,6 +23,7 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { sectionHead } from "./lib/matchCards.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
+import { findFinalResult, resultTitle, resultDescription } from "./lib/enMatchResult.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -33,6 +34,7 @@ const {
   formatTime,
   htmlLang,
   ogLocale,
+  statusLabelFor,
   t,
   writeDynamicRoutePairs
 } = require("../services/i18n.js");
@@ -51,6 +53,8 @@ const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-f
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
+// Sağlayıcı sonuçları: maç bitince sayfayı önizlemeden sonuca çeviren kaynak.
+const calendarMatches = JSON.parse(fs.readFileSync(path.join(root, "data", "fixture-calendar.json"), "utf8")).matches || [];
 const players = getPlayers(rawPlayers);
 
 function escapeHtml(value) {
@@ -162,23 +166,41 @@ function pageHtml(match) {
 
   const kickoffDay = match.kickoff ? shortDateLabel(match.kickoff, LOCALE) : "";
   const kickoffClock = match.kickoff ? formatTime(match.kickoff, LOCALE) : "";
-  const title = match.kickoff
-    ? `${match.homeTeam} vs ${match.awayTeam} – Preview, Kick-off & Analysis | FutbolRadar`
-    : `${match.homeTeam} vs ${match.awayTeam} – Match Preview | FutbolRadar`;
-  const description = match.kickoff
-    ? `${match.homeTeam} vs ${match.awayTeam} kicks off ${kickoffDay} at ${kickoffClock} (Türkiye time).${match.venue ? ` Venue: ${match.venue}.` : ""} Pre-match form, radar score and squad news on FutbolRadar.`
-    : `${match.homeTeam} vs ${match.awayTeam} — Trendyol Süper Lig preview with team form, radar score and squad news on FutbolRadar.`;
+
+  // MAÇ SONU GÜNCELLEME ADIMI. Sağlayıcı bu eşleşme için doğrulanmış bir
+  // nihai skor yazdıysa sayfa önizleme olmaktan çıkar: başlık "X 2-1 Y –
+  // Result", açıklama sonuç cümlesi, hero skor panosu. Sonuç yoksa sayfa
+  // önizleme olarak kalır — skor uydurulmaz. Adım ayrı bir cron değil:
+  // sayfa üretimi her derlemede koştuğu için maç bittikten sonraki ilk
+  // (saatlik) derleme sayfayı kendiliğinden çevirir.
+  const finalResult = findFinalResult(match, calendarMatches, { seasonStart: fixtures.seasonStart });
+
+  const title = finalResult
+    ? resultTitle(match, finalResult)
+    : match.kickoff
+      ? `${match.homeTeam} vs ${match.awayTeam} – Preview, Kick-off & Analysis | FutbolRadar`
+      : `${match.homeTeam} vs ${match.awayTeam} – Match Preview | FutbolRadar`;
+  const description = finalResult
+    ? resultDescription(match, finalResult, LOCALE)
+    : match.kickoff
+      ? `${match.homeTeam} vs ${match.awayTeam} kicks off ${kickoffDay} at ${kickoffClock} (Türkiye time).${match.venue ? ` Venue: ${match.venue}.` : ""} Pre-match form, radar score and squad news on FutbolRadar.`
+      : `${match.homeTeam} vs ${match.awayTeam} — Trendyol Süper Lig preview with team form, radar score and squad news on FutbolRadar.`;
 
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
-      ...(match.kickoff ? [{
+      ...((match.kickoff || (finalResult && finalResult.kickoff)) ? [{
         "@type": "SportsEvent",
-        name: `${match.homeTeam} vs ${match.awayTeam}`,
+        name: finalResult
+          ? `${match.homeTeam} ${finalResult.home}-${finalResult.away} ${match.awayTeam}`
+          : `${match.homeTeam} vs ${match.awayTeam}`,
         url: canonical,
         description,
-        startDate: match.kickoff,
-        eventStatus: "https://schema.org/EventScheduled",
+        startDate: match.kickoff || finalResult.kickoff,
+        // schema.org'da "tamamlandı" değeri yok (EventScheduled/Postponed/
+        // Cancelled/MovedOnline). Bitmiş maçta yanlış bir durum İDDİA
+        // ETMEMEK için alan yalnızca gelecekteki maçlarda yazılır.
+        ...(finalResult ? {} : { eventStatus: "https://schema.org/EventScheduled" }),
         eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
         homeTeam: { "@type": "SportsTeam", name: match.homeTeam },
         awayTeam: { "@type": "SportsTeam", name: match.awayTeam },
@@ -202,8 +224,31 @@ function pageHtml(match) {
     ]
   };
 
-  const body = `      <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(label("match.previewKicker"))} · ${escapeHtml(match.roundLabel || competition)}</span><h1>${escapeHtml(match.homeTeam)} vs ${escapeHtml(match.awayTeam)}</h1><p class="lead">${escapeHtml(competition)}</p></div><span class="hero-meta">${escapeHtml(match.kickoff ? `${kickoffDay} · ${kickoffClock}` : (match.dateRange || label("status.SCHEDULED")))}</span></div></section>
-      <section class="match-radar-board" aria-label="${escapeHtml(label("radar.title"))}">${radarCardEn(match.homeTeam, radar.home)}${radarCardEn(match.awayTeam, radar.away)}</section>
+  // Hero: sonuçlanmış maçta skor panosu, gelecekteki maçta başlama bilgisi.
+  const heroKicker = finalResult ? statusLabelFor("FINISHED", LOCALE) : label("match.previewKicker");
+  const heroTitle = finalResult
+    ? `${match.homeTeam} ${finalResult.home}-${finalResult.away} ${match.awayTeam}`
+    : `${match.homeTeam} vs ${match.awayTeam}`;
+  const heroMeta = finalResult
+    ? `${finalResult.kickoff ? `${shortDateLabel(finalResult.kickoff, LOCALE)} · ` : ""}${label(`finish.${finalResult.finishKey || "regular"}`)}`
+    : match.kickoff ? `${kickoffDay} · ${kickoffClock}` : (match.dateRange || label("status.SCHEDULED"));
+
+  const resultPanel = finalResult
+    ? `      <section class="container section" aria-labelledby="en-result-title">
+        ${sectionHead({ locale: LOCALE, kicker: statusLabelFor("FINISHED", LOCALE), titleId: "en-result-title", title: "Final score" })}
+        <div class="metric-grid">
+          <span>${escapeHtml(label("common.score"))} <b>${escapeHtml(finalResult.home)}-${escapeHtml(finalResult.away)}</b></span>
+          ${finalResult.halftimeHome !== null && finalResult.halftimeAway !== null ? `<span>Half-time <b>${escapeHtml(finalResult.halftimeHome)}-${escapeHtml(finalResult.halftimeAway)}</b></span>` : ""}
+          ${finalResult.finishKey && finalResult.finishKey !== "regular" ? `<span>Finish <b>${escapeHtml(label(`finish.${finalResult.finishKey}`))}</b></span>` : ""}
+          ${finalResult.kickoff ? `<span>${escapeHtml(label("common.date"))} <b>${escapeHtml(shortDateLabel(finalResult.kickoff, LOCALE))}</b></span>` : ""}
+          ${match.venue ? `<span>${escapeHtml(label("common.venue"))} <b>${escapeHtml(match.venue)}</b></span>` : ""}
+        </div>
+      </section>
+`
+    : "";
+
+  const body = `      <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(heroKicker)} · ${escapeHtml(match.roundLabel || competition)}</span><h1>${escapeHtml(heroTitle)}</h1><p class="lead">${escapeHtml(competition)}</p></div><span class="hero-meta">${escapeHtml(heroMeta)}</span></div></section>
+${resultPanel}      <section class="match-radar-board" aria-label="${escapeHtml(label("radar.title"))}">${radarCardEn(match.homeTeam, radar.home)}${radarCardEn(match.awayTeam, radar.away)}</section>
       <section class="match-context-grid" aria-label="Match context">
         <article class="card"><span class="card-kicker">${teamLink(match.homeTeam)}</span><h2>${escapeHtml(label("match.form"))} &amp; ${escapeHtml(label("match.squad"))}</h2>${squadNoteHtml(match.homeTeam)}${keyPlayersHtml(match.homeTeam)}</article>
         <article class="card"><span class="card-kicker">${teamLink(match.awayTeam)}</span><h2>${escapeHtml(label("match.form"))} &amp; ${escapeHtml(label("match.squad"))}</h2>${squadNoteHtml(match.awayTeam)}${keyPlayersHtml(match.awayTeam)}</article>
