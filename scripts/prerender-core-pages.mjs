@@ -925,7 +925,7 @@ function transferRadarItem(item, duplicate) {
     ? ` href="${escapeHtml(item.url)}"${external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : ""}${duplicate ? ' tabindex="-1"' : ""}`
     : "";
   const lead = item.isBreaking ? "SON DAKİKA" : (item.dateLabel || "TRANSFER");
-  const statusLabel = { Official: "Resmî", Rumor: "İddia", Talks: "Görüşme", Loan: "Kiralık" }[item.statusKey] || item.statusKey;
+  const statusLabel = { Official: "Resmî", AgreementReported: "Anlaşma iddiası", Rumor: "İddia", Talks: "Görüşme", Loan: "Kiralık" }[item.statusKey] || item.statusKey;
   const aria = `${lead} | ${item.playerName} → ${item.toTeam} | Nereden: ${item.fromTeam} | ${statusLabel}`;
   return `<${tag} class="transfer-radar-ticker__item"${attributes} aria-label="${escapeHtml(aria)}">` +
     `<span class="transfer-radar-ticker__breaking${item.isBreaking ? "" : " is-dated"}">${escapeHtml(lead)}</span>` +

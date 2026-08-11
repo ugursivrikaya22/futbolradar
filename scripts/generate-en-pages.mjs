@@ -492,7 +492,7 @@ function transferStatusKey(record) {
 }
 
 function transferStatusLabelEn(key) {
-  return { Official: "Official", Rumor: "Reported", Talks: "In talks", Loan: "Loan" }[key] || key;
+  return { Official: "Official", AgreementReported: "Agreement reported", Rumor: "Reported", Talks: "In talks", Loan: "Loan" }[key] || key;
 }
 
 /**

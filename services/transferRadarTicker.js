@@ -30,6 +30,9 @@
  * çıkar. O kayıt kendi tarihiyle gösterilir.
  */
 
+// "Resmî" rozeti kaynak gerektirir; kural services/sourceTrust.js.
+const { hasOfficialSource } = require("./sourceTrust");
+
 /** Üç gün. Bu pencerenin dışındaki kayıt tarihiyle gösterilir. */
 const BREAKING_WINDOW_MS = 3 * 24 * 60 * 60 * 1000;
 
@@ -45,8 +48,14 @@ const PRIORITY_CLUBS = Object.freeze([
   "basaksehir", "eyupspor", "samsunspor", "goztepe"
 ]);
 
-/** Durum anahtarları. Sınıf adı İngilizce, ekrandaki metin çağırana ait. */
-const STATUS_KEYS = Object.freeze(["Official", "Rumor", "Talks", "Loan"]);
+/**
+ * Durum anahtarları. Sınıf adı İngilizce, ekrandaki metin çağırana ait.
+ *
+ * `AgreementReported` çıkarımla ATANMAZ, yalnızca resmî kaynağı olmayan bir
+ * "Resmî" iddiasının indirildiği yerdir: kaynak kulüp değilse anlaşma
+ * "duyuruldu" değil "aktarıldı"dır.
+ */
+const STATUS_KEYS = Object.freeze(["Official", "AgreementReported", "Rumor", "Talks", "Loan"]);
 
 /** app.js `normalizeSearchText` ile aynı iş: aksan ve büyük harf nötr. */
 function foldText(value) {
@@ -70,7 +79,27 @@ function foldText(value) {
  * doğrulanmamış bir kaydı doğrulanmış göstermek olurdu.
  */
 function transferStatusKey(record) {
-  if (record && STATUS_KEYS.includes(record.displayStatus)) return record.displayStatus;
+  const declared = record && STATUS_KEYS.includes(record.displayStatus)
+    ? record.displayStatus
+    : inferStatusFromText(record);
+
+  // "RESMÎ" ROZETİ KAYNAK GEREKTİRİR.
+  //
+  // Durum şimdiye kadar yalnızca METİNDEN çıkarılıyordu: kayıtta "resmi",
+  // "kesin", "signed" gibi bir kelime geçiyorsa transfer "Resmî" sayılıyordu.
+  // Kaynağın kim olduğuna hiç bakılmıyordu ve depoda sonucu görülüyordu:
+  // "Resmî" gösterilen 20 transferin beşinin arkasında kulüp değil bir haber
+  // kuruluşu vardı (TRT Spor, Anadolu Ajansı, Sporx). Hepsi saygın yayın
+  // organı — ama bir gazetenin "imzalandı" yazması, kulübün imzayı
+  // duyurması değildir. Rozet okuyucuya kulübün konuştuğunu söyler.
+  //
+  // Resmî ağız yoksa iddia "Anlaşma iddiası"na iner: bilgi SİLİNMEZ,
+  // yalnızca hak etmediği kesinlik rozetini taşımaz.
+  if (declared === "Official" && !hasOfficialSource(record)) return "AgreementReported";
+  return declared;
+}
+
+function inferStatusFromText(record) {
   const raw = foldText([
     record && record.type,
     record && record.status,
@@ -150,8 +179,24 @@ function selectTickerRecords(payload, options = {}) {
     .slice(0, limit);
 }
 
+/**
+ * Durumu kayda damgala. Kaynak alan adları ve "resmî" koşulu sunucuda
+ * kalır; istemciye yalnızca çözülmüş anahtar gider ve bant yeniden
+ * çizildiğinde ön derlenmiş rozetten farklı bir şey göstermez.
+ *
+ * Kayıt değiştirilmez, kopyalanır.
+ */
+function withDisplayStatus(records) {
+  if (!Array.isArray(records)) return [];
+  return records.map((record) => {
+    if (!record || typeof record !== "object") return record;
+    return { ...record, displayStatus: transferStatusKey(record) };
+  });
+}
+
 module.exports = {
   BREAKING_WINDOW_MS,
+  withDisplayStatus,
   MAX_ITEMS,
   PRIORITY_CLUBS,
   STATUS_KEYS,

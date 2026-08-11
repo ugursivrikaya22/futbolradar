@@ -76,8 +76,23 @@ const old = new Date(NOW - 30 * 24 * 60 * 60 * 1000).toISOString();
 // ── 3. Durum çıkarımı BELİRSİZLİK yönüne düşer ─────────────────────────────
 
 {
-  assert.equal(transferStatusKey({ displayStatus: "Official" }), "Official", "açık durum korunmalı");
-  assert.equal(transferStatusKey({ status: "resmi açıklandı" }), "Official", "resmî ifadesi tanınmalı");
+  const officialSource = { sourceUrl: "https://www.galatasaray.org/haber/x" };
+  assert.equal(
+    transferStatusKey({ displayStatus: "Official", ...officialSource }),
+    "Official",
+    "açık durum korunmalı"
+  );
+  assert.equal(
+    transferStatusKey({ status: "resmi açıklandı", ...officialSource }),
+    "Official",
+    "resmî ifadesi tanınmalı"
+  );
+  // Elle "Official" yazılmış olması bile kaynak koşulunu kaldırmaz.
+  assert.equal(
+    transferStatusKey({ displayStatus: "Official" }),
+    "AgreementReported",
+    "kaynaksız elle atanmış resmî durum da indirilmeli"
+  );
   assert.equal(transferStatusKey({ status: "kiralık" }), "Loan", "kiralık tanınmalı");
   assert.equal(transferStatusKey({ status: "görüşmeler sürüyor" }), "Talks", "görüşme tanınmalı");
   assert.equal(transferStatusKey({ status: "iddia" }), "Rumor", "iddia tanınmalı");
@@ -192,3 +207,85 @@ console.log(
   `Transfer bandı testleri geçti (${selectTickerRecords(JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"))).length} kayıt seçildi, ` +
   "çelişkili boş-state yok, TR/EN aynı sırada)."
 );
+
+// ── 9. "RESMÎ" ROZETİ KAYNAK GEREKTİRİR ────────────────────────────────────
+//
+// Depoda görülen durum: "Resmî" gösterilen 20 transferin beşinin arkasında
+// kulüp değil bir haber kuruluşu vardı (TRT Spor, Anadolu Ajansı, Sporx).
+// Hepsi saygın yayın organı — ama bir gazetenin "imzalandı" yazması,
+// kulübün imzayı duyurması değildir.
+
+{
+  const { TRUST_TIER, hasOfficialSource, trustTierOf } = require("../services/sourceTrust.js");
+  const { withDisplayStatus } = require("../services/transferRadarTicker.js");
+
+  // Kademe eşlemesi
+  assert.equal(trustTierOf("https://www.galatasaray.org/haber/x"), TRUST_TIER.OFFICIAL, "kulüp sitesi resmîdir");
+  assert.equal(trustTierOf("https://media.fenerbahce.org/x"), TRUST_TIER.OFFICIAL, "kulübün alt alanı da kulübündür");
+  assert.equal(trustTierOf("https://www.tff.org/x"), TRUST_TIER.OFFICIAL, "federasyon resmîdir");
+  assert.equal(trustTierOf("https://www.aa.com.tr/x"), TRUST_TIER.HIGH, "ulusal ajans yüksek güvendir, resmî değil");
+  assert.equal(trustTierOf("https://www.trtspor.com.tr/x"), TRUST_TIER.HIGH, "kamu yayıncısı yüksek güvendir, resmî değil");
+
+  // TANINMAYAN KAYNAK KADEME 4'TÜR — varsayılan iyimser olmamalı.
+  assert.equal(trustTierOf("https://bilinmeyen-site.example/x"), TRUST_TIER.LOW, "tanınmayan kaynak düşük güvendir");
+  assert.equal(trustTierOf(""), TRUST_TIER.LOW, "kaynaksızlık güvenilirlik değildir");
+  assert.equal(trustTierOf("javascript:alert(1)"), TRUST_TIER.LOW, "http(s) olmayan adres güvenilmez");
+
+  // Sonek benzerliği yetmemeli.
+  assert.equal(
+    trustTierOf("https://notgalatasaray.org/x"),
+    TRUST_TIER.LOW,
+    "benzer yazılmış alan adı kulüp sayılmamalı"
+  );
+
+  assert.equal(hasOfficialSource({ sourceUrl: "https://www.bjk.com.tr/x" }), true, "kulüp kaynağı resmî sayılmalı");
+  assert.equal(hasOfficialSource({ sourceUrl: "https://www.sporx.com/x" }), false, "haber sitesi resmî sayılmamalı");
+
+  // Durum indirmesi
+  const clubAnnounced = { playerName: "A", toTeam: "Galatasaray", fromTeam: "X", status: "resmi", sourceUrl: "https://www.galatasaray.org/x" };
+  const pressReported = { playerName: "B", toTeam: "Fenerbahçe", fromTeam: "Y", status: "resmi", sourceUrl: "https://www.aa.com.tr/x" };
+
+  assert.equal(transferStatusKey(clubAnnounced), "Official", "kulüp duyurduysa resmîdir");
+  assert.equal(
+    transferStatusKey(pressReported),
+    "AgreementReported",
+    "resmî ağız yoksa 'Resmî' rozeti verilmemeli"
+  );
+
+  // BİLGİ SİLİNMEZ: kayıt bantta kalır, yalnızca rozeti değişir.
+  const items = selectTickerRecords([clubAnnounced, pressReported], { now: NOW });
+  assert.equal(items.length, 2, "indirilen kayıt banttan atılmamalı");
+
+  // Kaynaksız bir kayıt asla resmî olamaz.
+  assert.equal(
+    transferStatusKey({ playerName: "C", toTeam: "X", fromTeam: "Y", status: "official" }),
+    "AgreementReported",
+    "kaynağı olmayan iddia resmî sayılamaz"
+  );
+
+  // Damgalama kaynağı bozmamalı.
+  const source = [clubAnnounced];
+  const stamped = withDisplayStatus(source);
+  assert.equal(stamped[0].displayStatus, "Official", "durum kayda yazılmalı");
+  assert.equal(source[0].displayStatus, undefined, "kaynak kayıt değiştirilmemeli");
+}
+
+// ── 10. GERÇEK DEPO: resmî rozetin arkasında resmî kaynak olmalı ───────────
+
+{
+  const { hasOfficialSource } = require("../services/sourceTrust.js");
+  const payload = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
+  const rows = Array.isArray(payload) ? payload : (payload.transfers || []);
+
+  const wrong = rows
+    .filter((row) => transferStatusKey(row) === "Official" && !hasOfficialSource(row))
+    .map((row) => `${row.playerName} (${row.sourceUrl})`);
+
+  assert.deepEqual(
+    wrong,
+    [],
+    `"Resmî" gösterilen her transferin arkasında resmî kaynak olmalı; aykırı: ${wrong.join(", ")}`
+  );
+}
+
+console.log("Kaynak güven testleri geçti (resmî rozet yalnızca resmî kaynakla).");

@@ -10962,6 +10962,7 @@
     function statusLabelTr(status) {
       return {
         Official: "Resmî",
+        AgreementReported: "Anlaşma iddiası",
         Rumor: "İddia",
         Talks: "Görüşme",
         Loan: "Kiralık"
