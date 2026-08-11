@@ -32,6 +32,8 @@ const { publishableNews, newsHref, isExternalHref } = require("../services/newsF
 // Transfer bandının seçim/sıralama kuralı da tek yerde; İngilizce bant da
 // aynı servisi kullanıyor.
 const { selectTickerRecords } = require("../services/transferRadarTicker.js");
+// Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
+const { withRelevance } = require("../services/matchRelevance.js");
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const momentum = JSON.parse(fs.readFileSync(path.join(root, "data", "momentum.json"), "utf8"));
@@ -453,7 +455,9 @@ function staticFeaturedFixture() {
  */
 function dailyHeadlineCards() {
   const today = istanbulToday();
-  const headlines = buildDailyHeadlines(curatedMatches(), {
+  // İlgi puanı burada damgalanır; API de aynı servisi kullanıyor, böylece
+  // ön derlenmiş sıra ile JavaScript yüklendikten sonraki sıra aynı olur.
+  const headlines = buildDailyHeadlines(withRelevance(curatedMatches()), {
     today,
     reports: postMatchStore()
   });

@@ -309,13 +309,21 @@ function buildDailyHeadlines(matches, options = {}) {
 
   const candidates = [];
 
+  // İlgi puanı maç kaydında taşınır; başlığa olduğu gibi kopyalanır.
+  const withRelevance = (headline, match) => {
+    if (!headline) return headline;
+    const score = match && match.relevance;
+    if (Number.isFinite(score)) headline.relevance = score;
+    return headline;
+  };
+
   for (const match of list) {
     if (!match || typeof match !== "object") continue;
 
     // Canlı maç güne bakılmaksızın alınır: gece yarısını geçen bir maç hâlâ
     // sahadadır ve "bugün" filtresi onu haksız yere elerdi.
     if (isLiveStatus(match)) {
-      const headline = liveHeadline(match, reports);
+      const headline = withRelevance(liveHeadline(match, reports), match);
       if (headline) candidates.push(headline);
       continue;
     }
@@ -323,20 +331,39 @@ function buildDailyHeadlines(matches, options = {}) {
     if (isFinishedStatus(match)) {
       // Biten maç için pencere bugün: dünkü sonuçlar "günün başlığı" değil.
       if (!isOnDay(match, day)) continue;
-      const headline = finishedHeadline(match, reports);
+      const headline = withRelevance(finishedHeadline(match, reports), match);
       if (headline) candidates.push(headline);
       continue;
     }
 
     if (!isOnDay(match, day)) continue;
-    const headline = upcomingHeadline(match, reports);
+    const headline = withRelevance(upcomingHeadline(match, reports), match);
     if (headline) candidates.push(headline);
   }
 
-  // Aynı maç iki kez başlık olamaz.
+  // SIRA: önce İLGİ, sonra durum.
+  //
+  // `rank` yalnızca durumu biliyor (canlı > biten > başlayacak) ve maçın
+  // KİMİ ilgilendirdiğini hiç bilmiyor. Sonuç ana sayfada görünür oldu:
+  // biten üç Güney Amerika maçı `FINISHED_OTHER` ile `UPCOMING_TURKISH`in
+  // önüne geçtiği için günün üç başlığını doldurdu ve Fenerbahçe'nin aynı
+  // gün oynanacak Şampiyonlar Ligi maçı listeye hiç giremedi.
+  //
+  // İlgi puanı maç kaydına damgalanır (services/matchRelevance.js; API ve
+  // ön derleme aynı sayıyı yazar) — bu modül onu yalnızca OKUR. Böylece
+  // yarışma kataloğu istemciye inmeden istemci ve servis aynı sırayı üretir.
+  // Puan yoksa eski davranış aynen sürer: kayıt eksikse sıra bozulmaz.
+  const relevanceOf = (headline) =>
+    (Number.isFinite(headline.relevance) ? headline.relevance : Number.NEGATIVE_INFINITY);
+
   const seen = new Set();
   const unique = [];
-  for (const headline of candidates.sort((left, right) => left.rank - right.rank)) {
+  const ordered = candidates.sort((left, right) => {
+    const gap = relevanceOf(right) - relevanceOf(left);
+    if (gap !== 0 && Number.isFinite(gap)) return gap;
+    return left.rank - right.rank;
+  });
+  for (const headline of ordered) {
     const id = headline.matchId || headline.key;
     if (seen.has(id)) continue;
     seen.add(id);

@@ -58,6 +58,7 @@ const { selectFeaturedMatches } = require("../services/featuredMatchSelector.js"
 const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
 const { publishableNews, newsHref } = require("../services/newsFeed.js");
 const { selectTickerRecords } = require("../services/transferRadarTicker.js");
+const { withRelevance } = require("../services/matchRelevance.js");
 const { curatedMatches: programMatches } = require("../services/providers/mockProvider.js");
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { filterPlayerCards, publicPlayerView } = require("../services/cardCredibility.js");
@@ -779,7 +780,8 @@ function columnsSection() {
 function dailyHeadlinesSection() {
   const pool = programMatches();
   const byId = new Map(pool.map((match) => [String(match.id || ""), match]));
-  const ordered = buildDailyHeadlines(pool, { today: TODAY, reports: postMatchRecords });
+  // Sıra Türkçe tarafla aynı serviste hesaplanır; ilgi puanı da aynı yerden.
+  const ordered = buildDailyHeadlines(withRelevance(pool), { today: TODAY, reports: postMatchRecords });
 
   const cards = ordered.map((headline) => {
     const match = byId.get(String(headline.matchId || ""));

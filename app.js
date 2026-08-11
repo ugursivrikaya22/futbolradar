@@ -3316,6 +3316,14 @@
   // Sessiz `[object Object]` kalkanı — services/dailyHeadlines.js `text()` ile
   // aynı kural. Nesne metin değildir; dizeye çevrilirse "[object Object]"
   // ekrana kadar gider. Boş dönerek adayın düşmesini sağlıyoruz.
+  // İlgi puanı maç kaydında gelir; başlığa olduğu gibi kopyalanır.
+  function withHeadlineRelevance(headline, match) {
+    if (!headline) return headline;
+    var score = match && match.relevance;
+    if (isFinite(score) && typeof score === "number") headline.relevance = score;
+    return headline;
+  }
+
   function headlineText(value) {
     if (value === null || value === undefined) return "";
     if (typeof value === "string") return value.trim();
@@ -3495,24 +3503,34 @@
       if (!match || typeof match !== "object") return;
 
       if (isLiveMatch(match)) {
-        var live = liveHeadlineOf(match, reports);
+        var live = withHeadlineRelevance(liveHeadlineOf(match, reports), match);
         if (live) candidates.push(live);
         return;
       }
 
       if (isFinishedMatch(match)) {
         if (!headlineIsOnDay(match, day)) return;
-        var finished = finishedHeadlineOf(match, reports);
+        var finished = withHeadlineRelevance(finishedHeadlineOf(match, reports), match);
         if (finished) candidates.push(finished);
         return;
       }
 
       if (!headlineIsOnDay(match, day)) return;
-      var upcoming = upcomingHeadlineOf(match, reports);
+      var upcoming = withHeadlineRelevance(upcomingHeadlineOf(match, reports), match);
       if (upcoming) candidates.push(upcoming);
     });
 
-    candidates.sort(function (left, right) { return left.rank - right.rank; });
+    // SIRA: önce İLGİ, sonra durum — services/dailyHeadlines.js ile aynı.
+    // İlgi puanı maç kaydına sunucuda damgalanır (services/matchRelevance.js);
+    // istemci onu yalnızca okur, yarışma kataloğunu indirmez.
+    candidates.sort(function (left, right) {
+      var leftScore = isFinite(left.relevance) ? left.relevance : -Infinity;
+      var rightScore = isFinite(right.relevance) ? right.relevance : -Infinity;
+      if (leftScore !== rightScore && isFinite(rightScore - leftScore)) {
+        return rightScore - leftScore;
+      }
+      return left.rank - right.rank;
+    });
 
     var seen = {};
     var unique = [];

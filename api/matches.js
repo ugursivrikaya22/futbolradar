@@ -1,4 +1,5 @@
 const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
+const { withRelevance } = require("../services/matchRelevance");
 const {
   enforceRateLimit,
   getQuery,
@@ -52,10 +53,18 @@ module.exports = async function handler(req, res) {
     );
   }
 
-  const data = Array.isArray(result.data) ? result.data : [];
-  if (!validateOrSend(res, data, validateMatches)) {
+  const rawData = Array.isArray(result.data) ? result.data : [];
+  if (!validateOrSend(res, rawData, validateMatches)) {
     return;
   }
+
+  // İLGİ PUANI BURADA DAMGALANIR — sağlayıcıdan bağımsız tek nokta.
+  //
+  // Sıralama kuralı istemcide DEĞİL, serviste duruyor: yarışma kataloğu ve
+  // kulüp listeleri tarayıcıya inmeden istemci de sunucu da aynı sırayı
+  // üretebilsin diye puan kaydın kendisine yazılıyor. Hiçbir maç elenmez;
+  // yalnızca ne kadar öne çıkacağı belirlenir.
+  const data = withRelevance(rawData);
 
   return sendSuccess(res, data, result.provider.source, undefined, providerMeta(result));
 };
