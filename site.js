@@ -485,6 +485,55 @@
     restart();
   }
 
+  /**
+   * "DAHA FAZLA GÖSTER" — YALNIZCA app.js YÜKLENMEYEN SAYFALARDA.
+   *
+   * Türkçe tarafta maç listesi penceresini `app.js` çiziyor ve düğmeyi o
+   * çeviriyor. İngilizce sayfada pencere derleme sırasında kuruluyor
+   * (fazlalık kartlar `data-match-overflow` + `hidden`), ama düğmeyi
+   * çevirecek kimse yoktu. Buradaki kopya app.js'inkiyle AYNI sözleşmeyi
+   * kullanıyor: aynı öznitelikler, aynı etiket değişimi, aynı kapsam.
+   */
+  function setupMatchListToggles() {
+    // app.js sayfadaysa düğme ONUN işi; iki dinleyici durumu ters çevirir.
+    if (document.querySelector('script[src*="app.js"]')) {
+      return;
+    }
+
+    document.addEventListener("click", function (event) {
+      var button = event.target && event.target.closest
+        ? event.target.closest("[data-match-more]")
+        : null;
+      if (!button) {
+        return;
+      }
+
+      event.preventDefault();
+      var expanded = button.getAttribute("aria-expanded") !== "true";
+      // Kapsam: aynı sayfada birden çok liste olabilir, bu yüzden document
+      // geneline değil düğmenin kendi listesine bakılır.
+      var scope = (button.closest && button.closest("[data-match-list]")) || document;
+
+      scope.querySelectorAll("[data-match-overflow]").forEach(function (card) {
+        if (expanded) {
+          card.removeAttribute("hidden");
+        } else {
+          card.setAttribute("hidden", "");
+        }
+      });
+
+      button.setAttribute("aria-expanded", expanded ? "true" : "false");
+      button.querySelectorAll("[data-match-more-label]").forEach(function (label) {
+        var isExpandedLabel = label.getAttribute("data-match-more-label") === "expanded";
+        if (isExpandedLabel === expanded) {
+          label.removeAttribute("hidden");
+        } else {
+          label.setAttribute("hidden", "");
+        }
+      });
+    });
+  }
+
   function setupSharePopups() {
     document.addEventListener("click", function (event) {
       var link = event.target.closest ? event.target.closest("[data-share-popup]") : null;
@@ -654,6 +703,7 @@
   setupStickyHeader();
   setupSliders();
   setupFeaturedCarousel();
+  setupMatchListToggles();
   setupSharePopups();
 
   // app.js istemci tarafında şerit bastığında yeniden bağlanır.

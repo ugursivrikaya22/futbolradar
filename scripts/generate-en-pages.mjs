@@ -60,6 +60,9 @@ const { curatedMatches: programMatches } = require("../services/providers/mockPr
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { filterPlayerCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
+// "Başlangıçta kaç kart görünür?" sayısı TEK yerde durur; Türkçe ön derleme,
+// istemci ve bu üretici aynı sabiti okur (bkz. services/matchListWindow.js).
+const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
 
 const root = process.cwd();
 const OUT_DIR = path.join(root, "en");
@@ -859,12 +862,44 @@ function dailyHeadlinesSection() {
         </section>`;
 }
 
-/** Bugünün maçları — Türkçe #bugunun-maclari-preview ile aynı yapı, aynı sayı. */
+/**
+ * BUGÜNÜN MAÇLARI — Türkçe #bugunun-maclari-preview ile aynı pencere.
+ *
+ * Türkçe tarafta ilk `MATCH_LIST_INITIAL` kart görünür, gerisi
+ * `data-match-overflow` ile gizlenir ve altındaki düğme açar. Pencereyi
+ * `app.js` çiziyor; o dosya İngilizce sayfalara yüklenmediği için burası
+ * yalnızca ilk 12 kartı basıyordu — açılışta görünen sayı doğruydu ama
+ * "Daha Fazla Göster" karşılığı hiç yoktu ve günün kalan maçları İngilizce
+ * ana sayfada bulunamıyordu. Artık pencere derleme sırasında kuruluyor;
+ * düğmeyi `site.js` çeviriyor (app.js yoksa).
+ */
 function todaySection() {
+  const list = todaysMatches;
+  const body = list.length
+    ? list.map((match, index) => {
+      const card = fixtureCard(match);
+      // Fazlalık kartın damgası app.js'teki `markMatchOverflow` ile aynı:
+      // aynı öznitelik, aynı `hidden`, aynı kapsam kuralı.
+      return index < MATCH_LIST_INITIAL
+        ? card
+        : card.replace(/^(\s*)<article /, `$1<article data-match-overflow hidden `);
+    }).join("\n")
+    : `<p class="muted-copy">${escapeHtml(label("common.noMatchesToday"))}</p>`;
+
+  const hiddenCount = Math.max(0, list.length - MATCH_LIST_INITIAL);
+  // Ölü düğme yok: gizlenecek kart yoksa düğme hiç çizilmez.
+  const moreRow = hiddenCount
+    ? `<div class="match-more-row"><button class="match-more" type="button" data-match-more="today-matches" aria-expanded="false">` +
+      `<span class="match-more-label" data-match-more-label="collapsed">Show more (+${hiddenCount} matches)</span>` +
+      `<span class="match-more-label" data-match-more-label="expanded" hidden>Show less</span>` +
+      `</button></div>`
+    : "";
+
   return `<section class="container section section-matches" id="todays-matches-preview" aria-labelledby="today-title">
           ${sectionHead("Today's fixtures", "today-title", "Matches and live scores", "Matches in play come first, followed by kick-offs still to come and finished games.", "./todays-matches.html", label("common.viewAll"))}
-          <div class="matches-grid">
-${todaysMatches.slice(0, 12).map(fixtureCard).join("\n") || `<p class="muted-copy">${escapeHtml(label("common.noMatchesToday"))}</p>`}
+          <div class="matches-grid" data-match-list="today-matches">
+${body}
+          ${moreRow}
           </div>
         </section>`;
 }
@@ -964,10 +999,19 @@ function playerRadarSection() {
         </section>`;
 }
 
-/** Trend takımlar — Türkçe .section-trend-teams ile aynı kartlar, aynı sayı. */
+/**
+ * Trend takımlar — Türkçe .section-trend-teams ile aynı kartlar, aynı sayı.
+ *
+ * SÜZGEÇ YOK: seçim Türkçe taraftaki `trendTeamCards()` ile birebir aynı
+ * olmalı. Buradaki eski `Number.isFinite(momentum)` koşulu, momentum alanı
+ * henüz yazılmamış kulüpleri (Başakşehir, Konyaspor, Göztepe) eliyordu ve
+ * İngilizce ana sayfa sekiz yerine beş kart gösteriyordu. Kartın momentum
+ * değeri yoksa ortak bileşen zaten "–" basıyor; kaydı tümden düşürmek
+ * "aynı bölüm, aynı sıra" sözünü bozuyordu.
+ */
 function trendTeamsSection() {
   const trending = teams
-    .filter((team) => team.isCurrentSuperLigTeam !== false && Number.isFinite(Number(team.momentum)))
+    .slice()
     .sort((left, right) => Number(right.momentum || 0) - Number(left.momentum || 0))
     .slice(0, 8);
   if (!trending.length) return "";
@@ -975,7 +1019,7 @@ function trendTeamsSection() {
     locale: LOCALE,
     id: team.id,
     name: team.name,
-    leagueLabel: "Süper Lig",
+    leagueLabel: team.league,
     momentum: team.momentum,
     formDotsHtml: formDotsHtml(team.form, LOCALE),
     attack: team.attack,
@@ -1029,16 +1073,39 @@ function transferWatchSection() {
         </section>`;
 }
 
-/** Hızlı gezinme — Türkçe .home-statistics-entry karşılığı; yalnızca var olan İngilizce sayfalar. */
+/**
+ * HIZLI GEZİNME — Türkçe .home-statistics-entry ile aynı ızgara, aynı sekiz kutu.
+ *
+ * Önceki sürüm `.trend-link-grid` kullanıyordu (üç sütun yerine farklı bir
+ * düzen, kutu başına fazladan açıklama paragrafı) ve yalnızca beş kutu
+ * çiziyordu; iki ana sayfa yan yana konduğunda bu bölüm gözle görülür
+ * biçimde ayrışıyordu. Artık işaretleme `.stats-route-grid`, sıra Türkçe
+ * taraftaki sıra.
+ *
+ * Sekiz hedefin üçünün İngilizce karşılığı var; kalan beşi yalnızca Türkçe
+ * yayımlanıyor. Kutuyu hiç çizmemek yerine Türkçe sayfaya `hreflang="tr"`
+ * ile bağlanıyoruz — bu sayfalar tablo ve sayı ağırlıklı, İngilizce okuyucu
+ * için de kullanılabilir, ve etiket nereye gittiğini önceden söylüyor.
+ */
 function quickNavSection() {
+  const routes = [
+    { kicker: "League", label: t("nav.standings", LOCALE), href: "./standings.html", tr: false },
+    { kicker: "Form", label: "Momentum table", href: `${BASE}momentum.html`, tr: true },
+    { kicker: "Clubs", label: t("nav.teams", LOCALE), href: "./teams.html", tr: false },
+    { kicker: "Stats", label: "Stats hub", href: `${BASE}istatistik-merkezi.html`, tr: true },
+    { kicker: "Goals", label: "Top scorers", href: `${BASE}gol-kralligi.html`, tr: true },
+    { kicker: "Compare", label: "Player comparisons", href: `${BASE}oyuncu-karsilastirmalari.html`, tr: true },
+    { kicker: "Fixtures", label: "Süper Lig fixtures", href: `${BASE}super-lig-fikstur.html`, tr: true },
+    { kicker: "Analysis", label: t("nav.analysis", LOCALE), href: "./analysis.html", tr: false }
+  ];
+  const tiles = routes.map((route) =>
+    `<a href="${escapeHtml(route.href)}"${route.tr ? ' hreflang="tr"' : ""}>` +
+    `<span>${escapeHtml(route.kicker)}</span><strong>${escapeHtml(route.label)}${route.tr ? " (TR)" : ""}</strong></a>`).join("\n            ");
+
   return `<section class="container section home-statistics-entry" aria-labelledby="stats-home-title">
-          ${sectionHead("FutbolRadar", "stats-home-title", "Find your way around.", "", null, "")}
-          <div class="trend-link-grid">
-            <a href="./todays-matches.html"><span>Fixtures</span><strong>${escapeHtml(t("nav.todayMatches", LOCALE))}</strong><p>Every match played today, in Türkiye time.</p></a>
-            <a href="./live-scores.html"><span>Live</span><strong>${escapeHtml(t("nav.liveScores", LOCALE))}</strong><p>Only shown as live once verified.</p></a>
-            <a href="./standings.html"><span>Table</span><strong>${escapeHtml(t("nav.standings", LOCALE))}</strong><p>The full Trendyol Süper Lig table.</p></a>
-            <a href="./analysis.html"><span>Results</span><strong>${escapeHtml(t("nav.analysis", LOCALE))}</strong><p>Verified results for Turkish clubs.</p></a>
-            <a href="./teams.html"><span>Clubs</span><strong>${escapeHtml(t("nav.teams", LOCALE))}</strong><p>All 18 clubs with position and form.</p></a>
+          ${sectionHead("Explore", "stats-home-title", "Find your way around FutbolRadar.", "Reach the most searched screens in one click.", null, "")}
+          <div class="stats-route-grid">
+            ${tiles}
           </div>
         </section>`;
 }
