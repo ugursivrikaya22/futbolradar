@@ -18,7 +18,28 @@ assert.equal(first.score, second.score, "Aynı veri aynı radar puanını üretm
 assert.equal(first.confidence, second.confidence, "Güven seviyesi deterministik olmalı");
 assert.ok(first.score >= 0 && first.score <= 100, "Radar puanı 0-100 aralığında olmalı");
 assert.ok(first.components.some((item) => item.key === "form" && item.value !== null), "Form bileşeni kullanılmalı");
-assert.ok(first.components.some((item) => item.key === "availability" && item.value === null), "Eksik kadro verisi uydurulmamalı");
+// EKSİK KADRO VERİSİ UYDURULMAZ.
+//
+// Bu test önce Galatasaray üzerinden yazılmıştı ve o gün depoda takımın kadro
+// durumu YOKTU; yani kuralı değil, o günkü veriyi ölçüyordu. Kadro verisi
+// gelince test kırıldı — kural bozulduğu için değil, veri geldiği için.
+// Kural artık kaydın kendisiyle sınanıyor: kadro durumu OLMAYAN bir takımda
+// bileşen `null` kalmalı, sıfır ya da tahmini bir sayı üretilmemeli.
+{
+  const unknownTeam = { ...galatasaray, name: "Kadro Durumu Bilinmeyen SK" };
+  const unknown = calculateTeamRadar(unknownTeam, { side: "home", players, squadStatus });
+  assert.ok(
+    unknown.components.some((item) => item.key === "availability" && item.value === null),
+    "Eksik kadro verisi uydurulmamalı"
+  );
+}
+
+// Kadro durumu VARSA bileşen de dolu olmalı; aksi hâlde elde olan veri
+// kullanılmıyor demektir.
+assert.ok(
+  first.components.some((item) => item.key === "availability" && item.value !== null),
+  "Kadro durumu bilinen takımda bileşen kullanılmalı"
+);
 
 const empty = calculateTeamRadar(null, { side: "away", players: [], squadStatus });
 assert.equal(empty.score, null, "Takım verisi yokken puan üretilmemeli");

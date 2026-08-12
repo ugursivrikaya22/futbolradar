@@ -90,11 +90,17 @@ const STATE_BONUS = Object.freeze({
   "in-progress": 45,
   upcoming: 30,
   finished: 10,
+  // Oynanmayacak maç en altta. Bonusu 0 vermek yetmez, çünkü "unknown" da
+  // 0; ayrı bir ad taşıması sıralamanın NEDEN o maçı geriye attığını
+  // `explainRelevance` çıktısında okunur kılıyor.
+  off: 0,
   unknown: 0
 });
 
 const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"]);
 const FINISHED_STATUSES = new Set(["FINISHED", "FT", "AET", "PEN", "AWARDED", "WO"]);
+/** Oynanmayan maç: ertelendi ya da iptal edildi. */
+const OFF_STATUSES = new Set(["POSTPONED", "PST", "CANCELLED", "CANC", "ABANDONED", "ABD"]);
 
 /** Başlama saati geçmiş maçın "hâlâ oynanıyor" sayılacağı süre. */
 const IN_PROGRESS_WINDOW_MS = 150 * 60 * 1000;
@@ -120,6 +126,12 @@ function stateOf(match, nowMs) {
   const status = text(match.status || match.providerStatus).toUpperCase();
   if (match.live === true || LIVE_STATUSES.has(status)) return "live";
   if (FINISHED_STATUSES.has(status)) return "finished";
+  // ERTELENEN VE İPTAL EDİLEN MAÇ ZAMAN ÇİZGİSİNDEN ÇIKAR. Bu kontrol
+  // olmadan saati geçmiş bir iptal maçı aşağıdaki "oynanıyor" bandına düşüp
+  // gerçekten oynanan maçların ÜSTÜNE çıkıyordu: 12 Ağustos 2026'da iptal
+  // edilen Paris FC–Auxerre, aynı gün oynanan Newcastle–Everton'ın önünde
+  // listeleniyordu.
+  if (OFF_STATUSES.has(status)) return "off";
 
   const start = kickoffMs(match);
   if (!start) return "unknown";
@@ -195,16 +207,34 @@ function tierOf(match) {
  * İLGİ PUANI. Büyük sayı önce gelir.
  *
  * Kademe adımı 100, durum bonusu en fazla 60: durum kademeyi asla ezemez.
- * Türk kulübü ayırıcısı 1 puan — yalnızca aynı kademe ve aynı durumdaki iki
- * maç arasında karar verir (örneğin iki hazırlık maçı arasında).
+ *
+ * AYIRICILAR yalnızca aynı kademe ve aynı durumdaki iki maç arasında karar
+ * verir; toplamları en fazla 5, yani en küçük durum farkını (10) bile
+ * geçemezler.
+ *
+ *   Türk kulübü  +4
+ *   Büyük kulüp  +2   (services/majorClubs.js — editoryal, doğrulanmış liste)
+ *
+ * Büyük kulüp ayırıcısı hazırlık maçları için eklendi. Kademe hazırlık
+ * maçlarının hepsini tek torbaya koyar — doğru, çünkü bir hazırlık maçı
+ * resmî bir maçın önüne geçmemeli. Ama torbanın İÇİNDE sıra saate kalıyordu
+ * ve ölçüldü: 12 Ağustos 2026'da sayfanın ilk on ikisi 15:00–19:15 arası
+ * hazırlık maçlarıydı; aynı günün Leeds–Manchester United, Arsenal–Como ve
+ * Deportivo–Real Madrid maçları 21:00'den sonra oynandıkları için listenin
+ * dışında kalıyordu. Saat, ilginin ölçüsü değil.
  */
+const TURKISH_TIEBREAK = 4;
+const MAJOR_CLUB_TIEBREAK = 2;
+
 function relevanceScore(match, options = {}) {
   const nowMs = Number.isFinite(options.now) ? options.now : Date.now();
   const tier = tierOf(match);
   const state = stateOf(match, nowMs);
-  const turkishTiebreak = isTurkishMatch(match) ? 1 : 0;
+  const tiebreak =
+    (isTurkishMatch(match) ? TURKISH_TIEBREAK : 0) +
+    (isMajorClubMatch(match) ? MAJOR_CLUB_TIEBREAK : 0);
 
-  return (MAX_TIER - tier) * TIER_STEP + (STATE_BONUS[state] || 0) + turkishTiebreak;
+  return (MAX_TIER - tier) * TIER_STEP + (STATE_BONUS[state] || 0) + tiebreak;
 }
 
 /** Puanın nasıl oluştuğu — kayıt ve test için, sıralama için değil. */
@@ -280,8 +310,10 @@ function withRelevance(matches, options = {}) {
 module.exports = {
   BIG_FOUR,
   withRelevance,
+  MAJOR_CLUB_TIEBREAK,
   MAX_TIER,
   STATE_BONUS,
+  TURKISH_TIEBREAK,
   TIER,
   TIER_STEP,
   bigFourIndexOf,
