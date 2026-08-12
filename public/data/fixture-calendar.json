@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-12T19:20:12.864Z",
+  "fetchedAt": "2026-08-12T20:50:13.839Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -145993,14 +145993,14 @@
       "awayTeam": "Besa Kavajë",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/577.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3322.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 4,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -146018,8 +146018,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T15:00:26.318Z",
-      "staleAfter": "2026-08-12T15:05:26.318Z",
+      "fetchedAt": "2026-08-12T20:50:14.871Z",
+      "staleAfter": "2026-08-12T20:55:14.871Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -146029,11 +146029,17 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "summary": "Besa Kavajë skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Besa Kavajë tarafında.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "1-4",
+            "text": "Besa Kavajë skor üstünlüğünü elinde tutuyor."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -147439,8 +147445,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T19:20:13.972Z",
-      "staleAfter": "2026-08-12T19:25:13.972Z",
+      "fetchedAt": "2026-08-12T20:50:14.871Z",
+      "staleAfter": "2026-08-12T20:55:14.871Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -147524,8 +147530,8 @@
             "last_5": {
               "played": 3,
               "form": "78%",
-              "att": "57%",
-              "def": "71%",
+              "att": "40%",
+              "def": "80%",
               "goals": {
                 "for": {
                   "total": 8,
@@ -147595,12 +147601,12 @@
                       "percentage": "12.50%"
                     },
                     "76-90": {
-                      "total": 1,
-                      "percentage": "12.50%"
+                      "total": 2,
+                      "percentage": "25.00%"
                     },
                     "91-105": {
-                      "total": 1,
-                      "percentage": "12.50%"
+                      "total": null,
+                      "percentage": null
                     },
                     "106-120": {
                       "total": null,
@@ -147663,12 +147669,12 @@
                       "percentage": null
                     },
                     "76-90": {
-                      "total": 1,
-                      "percentage": "25.00%"
+                      "total": 2,
+                      "percentage": "50.00%"
                     },
                     "91-105": {
-                      "total": 1,
-                      "percentage": "25.00%"
+                      "total": null,
+                      "percentage": null
                     },
                     "106-120": {
                       "total": null,
@@ -147834,8 +147840,8 @@
             "last_5": {
               "played": 3,
               "form": "44%",
-              "att": "7%",
-              "def": "79%",
+              "att": "5%",
+              "def": "85%",
               "goals": {
                 "for": {
                   "total": 1,
@@ -147973,12 +147979,12 @@
                       "percentage": null
                     },
                     "76-90": {
-                      "total": null,
-                      "percentage": null
-                    },
-                    "91-105": {
                       "total": 1,
                       "percentage": "33.33%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
                     },
                     "106-120": {
                       "total": null,
@@ -148172,7 +148178,7 @@
           {
             "fixture": {
               "id": 1607580,
-              "referee": "E. Jorgji",
+              "referee": "Enea Jorgji, Albania",
               "timezone": "UTC",
               "date": "2026-08-06T17:00:00+00:00",
               "timestamp": 1786035600,
@@ -149307,8 +149313,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T19:20:13.972Z",
-      "staleAfter": "2026-08-12T19:25:13.972Z",
+      "fetchedAt": "2026-08-12T20:50:14.871Z",
+      "staleAfter": "2026-08-12T20:55:14.871Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -149318,19 +149324,9 @@
       "competitionId": "konferans-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "GKS Katowice topa sahip olma oranında önde. GKS Katowice isabetli şutlarda önde. Skor üstünlüğü GKS Katowice tarafında.",
+        "summary": "Son gol 90' A. Jedrych tarafından kaydedildi. Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti. Skor üstünlüğü GKS Katowice tarafında.",
         "confidence": "Orta",
         "signals": [
-          {
-            "label": "Top hakimiyeti",
-            "value": "67%-33%",
-            "text": "GKS Katowice topa sahip olma oranında önde."
-          },
-          {
-            "label": "Kaleyi bulan",
-            "value": "7-3",
-            "text": "GKS Katowice isabetli şutlarda önde."
-          },
           {
             "label": "Gol akışı",
             "value": "90'",
@@ -149348,7 +149344,7 @@
           }
         ],
         "eventCount": 16,
-        "dataPoints": 5,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -150421,8 +150417,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T19:20:13.972Z",
-      "staleAfter": "2026-08-12T19:25:13.972Z",
+      "fetchedAt": "2026-08-12T20:50:14.871Z",
+      "staleAfter": "2026-08-12T20:55:14.871Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -150451,23 +150447,13 @@
             "text": "Rapid Vienna isabetli şutlarda önde."
           },
           {
-            "label": "Gol akışı",
-            "value": "82'",
-            "text": "Son gol 82' L. Schaub tarafından kaydedildi."
-          },
-          {
-            "label": "Teknik hamleler",
-            "value": "10 değişiklik",
-            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
-          },
-          {
             "label": "Canlı skor",
             "value": "2-0",
             "text": "Rapid Vienna skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 16,
-        "dataPoints": 6,
+        "eventCount": 0,
+        "dataPoints": 4,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -155895,14 +155881,14 @@
       "awayTeam": "Vilanova",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9675.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/26542.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 2,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -155920,8 +155906,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T08:20:27.176Z",
-      "staleAfter": "2026-08-12T08:25:27.176Z",
+      "fetchedAt": "2026-08-12T20:50:14.871Z",
+      "staleAfter": "2026-08-12T20:55:14.871Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -155942,14 +155928,14 @@
       "awayTeam": "Langreo",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9401.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/5265.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 6,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -155967,8 +155953,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-11T21:09:16.394Z",
-      "staleAfter": "2026-08-11T21:14:16.394Z",
+      "fetchedAt": "2026-08-12T20:50:14.871Z",
+      "staleAfter": "2026-08-12T20:55:14.871Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -155989,14 +155975,14 @@
       "awayTeam": "Albert Quévy-Mons",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/24556.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/5740.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -156014,8 +156000,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T10:09:41.610Z",
-      "staleAfter": "2026-08-12T10:14:41.610Z",
+      "fetchedAt": "2026-08-12T20:50:14.871Z",
+      "staleAfter": "2026-08-12T20:55:14.871Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -156083,11 +156069,11 @@
       "awayTeam": "Como",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/42.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/895.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "PEN",
+      "minute": 120,
+      "elapsed": 120,
+      "live": false,
       "score": {
         "home": 1,
         "away": 1,
@@ -156108,8 +156094,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T19:20:13.972Z",
-      "staleAfter": "2026-08-12T19:25:13.972Z",
+      "fetchedAt": "2026-08-12T20:50:14.871Z",
+      "staleAfter": "2026-08-12T20:55:14.871Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -156130,13 +156116,13 @@
       "awayTeam": "Bayer Leverkusen",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/65.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/168.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 34,
-      "elapsed": 34,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
+        "home": 2,
         "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
@@ -156155,8 +156141,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T19:20:13.972Z",
-      "staleAfter": "2026-08-12T19:25:13.972Z",
+      "fetchedAt": "2026-08-12T20:50:14.871Z",
+      "staleAfter": "2026-08-12T20:55:14.871Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -156178,13 +156164,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/544.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/541.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 20,
-      "elapsed": 20,
+      "providerStatus": "2H",
+      "minute": 90,
+      "elapsed": 90,
       "live": true,
       "score": {
         "home": 0,
-        "away": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -156202,8 +156188,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T19:20:13.972Z",
-      "staleAfter": "2026-08-12T19:25:13.972Z",
+      "fetchedAt": "2026-08-12T20:50:14.871Z",
+      "staleAfter": "2026-08-12T20:55:14.871Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -156225,13 +156211,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/492.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1123.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 16,
-      "elapsed": 16,
+      "providerStatus": "2H",
+      "minute": 89,
+      "elapsed": 89,
       "live": true,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 5,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -156249,8 +156235,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T19:20:13.972Z",
-      "staleAfter": "2026-08-12T19:25:13.972Z",
+      "fetchedAt": "2026-08-12T20:50:14.871Z",
+      "staleAfter": "2026-08-12T20:55:14.871Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -156272,13 +156258,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/535.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/36.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 17,
-      "elapsed": 17,
+      "providerStatus": "2H",
+      "minute": 90,
+      "elapsed": 90,
       "live": true,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 1,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -156296,8 +156282,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T19:20:13.972Z",
-      "staleAfter": "2026-08-12T19:25:13.972Z",
+      "fetchedAt": "2026-08-12T20:50:14.871Z",
+      "staleAfter": "2026-08-12T20:55:14.871Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
