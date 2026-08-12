@@ -3951,8 +3951,115 @@
     return renderMatchListWindow(ordered, renderFixtureCard, "today-matches");
   }
 
+  // match-program-order:start
+  /**
+   * MAÇ PROGRAMI SIRASI — ilgi puanı önce.
+   *
+   * Kural sunucuda: services/matchRelevance.js. Puan maç kaydına orada
+   * damgalanır (`relevance`) ve tarayıcıya yalnızca SAYI iner; yarışma
+   * kataloğu ve kulüp listeleri istemciye hiç gelmez. Buradaki kod
+   * `sortByRelevance` ile aynı eşitlik bozma sırasını uygular, çünkü statik
+   * yedek ile istemci çizimi aynı listeyi üretmek zorunda — ayrışırlarsa
+   * JavaScript yüklendiğinde kartlar yer değiştirir.
+   *
+   * PUAN YOKSA. Sağlayıcıya ulaşılamadığında liste statik JSON yedeğinden
+   * okunur ve o kayıtlarda puan yoktur. O durumda YARIŞMA sırası iddia
+   * edilmez — katalog istemcide olmadığı için edilemez de — ama ham
+   * sağlayıcı sırası da korunmaz: canlı maçlar öne, sonra başlayacaklar
+   * saatine göre, en sona oynanmışlar gelir. Bu sıralama yalnızca kaydın
+   * kendi durumundan okunur, hiçbir şey varsayılmaz.
+   *
+   * `state` zamana bağlıdır (başlamış maç sona doğru kayar); derleme anı ile
+   * görüntüleme anı farklı olduğunda sıranın değişmesi kuralın kendisidir,
+   * hata değil.
+   */
+  function matchProgramState(match, nowMs) {
+    if (!match) return "unknown";
+    if (isLiveMatch(match)) return "live";
+    var status = String(match.status || match.providerStatus || "").toUpperCase();
+    if (["FINISHED", "FT", "AET", "PEN", "AWARDED", "WO"].includes(status)) return "finished";
+    // Ertelenen/iptal edilen maç zaman çizgisinden çıkar; aşağıdaki
+    // "oynanıyor" bandına düşerse gerçekten oynanan maçların üstüne çıkar.
+    if (["POSTPONED", "PST", "CANCELLED", "CANC", "ABANDONED", "ABD"].includes(status)) return "off";
+
+    var start = Date.parse(match.kickoff || match.kickoffUtc || match.date || "");
+    if (!isFinite(start)) return "unknown";
+    if (nowMs < start) return "upcoming";
+    if (nowMs - start <= 150 * 60 * 1000) return "in-progress";
+    return "finished";
+  }
+
+  /**
+   * Puansız liste için durum sırası. Yarışma önemi HAKKINDA hiçbir şey
+   * söylemez; yalnızca "şu an oynanan maç, başlamamış maçtan önce gelir"
+   * der ve bu bilgi kaydın kendisinde vardır.
+   */
+  var STATE_ORDER = { live: 0, "in-progress": 1, upcoming: 2, finished: 3, off: 4, unknown: 5 };
+
+  function orderMatchProgramByState(matches, nowMs) {
+    return matches
+      .map(function (match, index) {
+        return { match: match, index: index, state: matchProgramState(match, nowMs), kickoff: Date.parse((match && (match.kickoff || match.kickoffUtc || match.date)) || "") || 0 };
+      })
+      .sort(function (left, right) {
+        var leftRank = STATE_ORDER[left.state];
+        var rightRank = STATE_ORDER[right.state];
+        var byState = (leftRank === undefined ? 5 : leftRank) - (rightRank === undefined ? 5 : rightRank);
+        if (byState !== 0) return byState;
+        if (left.state === "upcoming" && left.kickoff !== right.kickoff) return left.kickoff - right.kickoff;
+        if (left.kickoff !== right.kickoff) return right.kickoff - left.kickoff;
+        return left.index - right.index;
+      })
+      .map(function (entry) { return entry.match; });
+  }
+
+  function orderMatchProgram(matches, nowMs) {
+    var now = isFinite(nowMs) ? nowMs : Date.now();
+    var list = Array.isArray(matches) ? matches : [];
+
+    var hasScore = list.some(function (match) {
+      return match && typeof match.relevance === "number" && isFinite(match.relevance);
+    });
+    if (!hasScore) return orderMatchProgramByState(list, now);
+
+    var scored = list.map(function (match, index) {
+      var score = match && match.relevance;
+      var kickoff = Date.parse((match && (match.kickoff || match.kickoffUtc || match.date)) || "");
+      return {
+        match: match,
+        index: index,
+        score: typeof score === "number" && isFinite(score) ? score : -Infinity,
+        state: matchProgramState(match, now),
+        kickoff: isFinite(kickoff) ? kickoff : 0
+      };
+    });
+
+    scored.sort(function (left, right) {
+      if (right.score !== left.score) {
+        if (left.score === -Infinity) return 1;
+        if (right.score === -Infinity) return -1;
+        return right.score - left.score;
+      }
+
+      // Başlayacak maçlarda en yakın olan önce; oynanmışlarda en yeni önce.
+      if (left.state === "upcoming" && right.state === "upcoming") {
+        if (left.kickoff !== right.kickoff) return left.kickoff - right.kickoff;
+      } else if (left.kickoff !== right.kickoff) {
+        return right.kickoff - left.kickoff;
+      }
+
+      var leftName = String((left.match && left.match.homeTeam) || "").trim();
+      var rightName = String((right.match && right.match.homeTeam) || "").trim();
+      var byName = leftName.localeCompare(rightName, "tr");
+      return byName !== 0 ? byName : left.index - right.index;
+    });
+
+    return scored.map(function (entry) { return entry.match; });
+  }
+  // match-program-order:end
+
   function renderMatchesPageSection(matches, analysesIndex) {
-    var filteredMatches = Array.isArray(matches) ? filterMatchesByStatus(matches) : [];
+    var filteredMatches = Array.isArray(matches) ? orderMatchProgram(filterMatchesByStatus(matches)) : [];
     if (!filteredMatches.length) {
       var params = new URLSearchParams(window.location.search);
       var selectedDate = params.get("date") || todayInIstanbul();
