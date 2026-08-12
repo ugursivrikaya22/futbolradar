@@ -1,43 +1,24 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-12T11:49:34.216Z",
+  "updatedAt": "2026-08-12T12:58:15.695Z",
   "items": [
     {
-      "id": "auto-news-a19c675f3a93b2da078d",
+      "id": "auto-news-853585ba5e5471d436a6",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Çorum FK maçı biletleri satışta",
-      "team": "Galatasaray",
-      "timestamp": "2026-08-10T11:03:00.000Z",
+      "text": "Hradec Kralove Maçı Hazırlıkları Tamamlandı - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-08-12T10:56:33.000Z",
       "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPQWxYNWJxR1IwUkE5MFZkbmRPRExlbkpOVUlhS0R3Z3FuOFR6Nm9mS0tsZ3lzVUZxOWdXdjFaMy1wQjBLUl9mcDlBbW1IYk43WTVpTXltQTBrTXBBMG1GRXNJajdLTzFoZjBpMjc5d281SkwzamNUWktuaWtNXzZoa3g1ci16YTYzcDZXWEpIMkx2TUJGTGRsS2dGZW9RUQ?oc=5",
-        "publisher": "galatasaray.org"
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFBidGxicHlYbUZPTTQ2Z0FpelRDLWZjXzV0U0JzVWhRTmttZ2xRU211WWtVMkdxZmdYdUF6M0xoT2NFY2RncWtERXFfbEVaVmhrVVBvN3FtZUZ2S0d1U3Z3?oc=5",
+        "publisher": "bjk.com.tr"
       },
       "automation": {
         "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1
-      }
-    },
-    {
-      "id": "auto-news-03404861ec0e025a7632",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Çorum FK maçı hazırlıkları başladı",
-      "team": "Galatasaray",
-      "timestamp": "2026-08-09T11:57:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNT09GSkR0MjBMWlVld3h3Rm1iUHdHaVVfWXJPRUNnNElHWTBBbTFIcWF3SjhYeTc2cWx3b05HMTMzUVY5ZHpUS1lwOGxvLUlWeUxsQ2ZpZmxPV0tQZlBKajhnd0NBZ2prTV96M1VRNTNvcDV1N0VVZnRvd0tmZW9aSXNPdjRDbnNZ?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1
+        "feed": "besiktas",
+        "priority": 3
       }
     },
     {
@@ -57,6 +38,25 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2
+      }
+    },
+    {
+      "id": "auto-news-9ee7dc2fc708bf6ee607",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Kasımpaşa maçı hazırlıklarımız devam ediyor",
+      "team": "Trabzonspor",
+      "timestamp": "2026-08-11T17:42:48.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOeERzZzdGU0Q1bkZvbE4wQkVSakxRTU9TRWU3ZG9pTmwtZEdJNzQ4Z19BX1pnSUtsTUlGWUV3UnBnanBSdXh2MDBLTnk2WkxLaXdzM2wyX3hySlRQZkNoUTdpbFowdjluYlliNXlfQW9vNTFKUmNSWGRyZkdEX1dfVWhwdGxoSGNSWnpDVGVObUNySFVEaE93?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4
       }
     },
     {
@@ -231,22 +231,22 @@
       }
     },
     {
-      "id": "auto-news-1c31b3282a5dedc9d3d6",
-      "category": "squad-update",
+      "id": "auto-news-a19c675f3a93b2da078d",
+      "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Fenerbahçemizin, Sturm Graz maçı kamp kadrosu belli oldu",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-10T10:28:14.000Z",
+      "text": "Çorum FK maçı biletleri satışta",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-10T11:03:00.000Z",
       "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQcVRZNDRkSnlGaVBDam1CaDZ6Zm9lX1hjTkItOVdvRmFnYjBvZ294V3VSWG1reHM2TUgxb0VISUNFVUdJbWs5QjFBN3ozRHB4c1A0dmdCNHBXMUJROHFkLXNTYkIwVW5Ba3F2d2dsZmlIYmtoNGQ2TGtvQkFjdGR6VUMzZWJJSEdRQnRxUU5QUHM5dEVJUEhJSHNFZC1DMmdybDBNbUtVUkI?oc=5",
-        "publisher": "fenerbahce.org"
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPQWxYNWJxR1IwUkE5MFZkbmRPRExlbkpOVUlhS0R3Z3FuOFR6Nm9mS0tsZ3lzVUZxOWdXdjFaMy1wQjBLUl9mcDlBbW1IYk43WTVpTXltQTBrTXBBMG1GRXNJajdLTzFoZjBpMjc5d281SkwzamNUWktuaWtNXzZoa3g1ci16YTYzcDZXWEpIMkx2TUJGTGRsS2dGZW9RUQ?oc=5",
+        "publisher": "galatasaray.org"
       },
       "automation": {
         "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2
+        "feed": "galatasaray",
+        "priority": 1
       }
     },
     {
@@ -269,44 +269,6 @@
       }
     },
     {
-      "id": "auto-news-853585ba5e5471d436a6",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Hradec Kralove Maçı Hazırlıkları Tamamlandı - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-08-12T10:56:33.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFBidGxicHlYbUZPTTQ2Z0FpelRDLWZjXzV0U0JzVWhRTmttZ2xRU211WWtVMkdxZmdYdUF6M0xoT2NFY2RncWtERXFfbEVaVmhrVVBvN3FtZUZ2S0d1U3Z3?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3
-      }
-    },
-    {
-      "id": "auto-news-e79a50cbfca37780132d",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "hradec kralove - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-08-10T11:19:20.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQUjlfdDNSY2RjWDRQaXQzS0dyZW5KOHJrN2lFSm0xdDc4Sk9NdzQ2bm1tSjB4SEZKeU5ySWpwUVAtRDNDWTFUSEZ1X3BVNEhNNUhvVW9YYXhMVnlfTGxaSTV5RDhzSWU0T1d6elBiUGF4N3ExWUlSYXEzTkt2RlFPR0pkTlVZOHVEcV93?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3
-      }
-    },
-    {
       "id": "auto-news-b2be7d4873d3e777c305",
       "category": "official",
       "confidence": "confirmed",
@@ -326,22 +288,22 @@
       }
     },
     {
-      "id": "auto-news-9ee7dc2fc708bf6ee607",
-      "category": "official",
+      "id": "auto-news-1c31b3282a5dedc9d3d6",
+      "category": "squad-update",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Kasımpaşa maçı hazırlıklarımız devam ediyor",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-11T17:42:48.000Z",
+      "text": "Fenerbahçemizin, Sturm Graz maçı kamp kadrosu belli oldu",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-10T10:28:14.000Z",
       "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOeERzZzdGU0Q1bkZvbE4wQkVSakxRTU9TRWU3ZG9pTmwtZEdJNzQ4Z19BX1pnSUtsTUlGWUV3UnBnanBSdXh2MDBLTnk2WkxLaXdzM2wyX3hySlRQZkNoUTdpbFowdjluYlliNXlfQW9vNTFKUmNSWGRyZkdEX1dfVWhwdGxoSGNSWnpDVGVObUNySFVEaE93?oc=5",
-        "publisher": "trabzonspor.org.tr"
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxQcVRZNDRkSnlGaVBDam1CaDZ6Zm9lX1hjTkItOVdvRmFnYjBvZ294V3VSWG1reHM2TUgxb0VISUNFVUdJbWs5QjFBN3ozRHB4c1A0dmdCNHBXMUJROHFkLXNTYkIwVW5Ba3F2d2dsZmlIYmtoNGQ2TGtvQkFjdGR6VUMzZWJJSEdRQnRxUU5QUHM5dEVJUEhJSHNFZC1DMmdybDBNbUtVUkI?oc=5",
+        "publisher": "fenerbahce.org"
       },
       "automation": {
         "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4
+        "feed": "fenerbahce",
+        "priority": 2
       }
     },
     {
