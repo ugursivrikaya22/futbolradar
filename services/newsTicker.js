@@ -51,6 +51,8 @@
 const { isMajorClubName } = require("./majorClubs");
 const { isTurkishLeague, isTurkishTeamName } = require("./turkishTeams");
 const { normalizeText } = require("../api/_utils");
+// "official" kategorisinin resmî kaynak şartı; kaynak kademeleri tek yerde.
+const { TRUST_TIER, trustTierOf } = require("./sourceTrust");
 
 /**
  * Kategoriler. Anahtar veri dosyasında, etiket ekranda görünür.
@@ -428,6 +430,32 @@ function validateTickerItem(item) {
   if (!url) errors.push("source.url yok");
   else if (!/^https?:\/\//i.test(url)) errors.push(`source.url http(s) olmalı: ${url}`);
 
+  // "RESMÎ AÇIKLAMA" KATEGORİSİ RESMÎ AĞIZ GEREKTİRİR.
+  //
+  // Bu kategori okuyucuya kurumun KENDİSİNİN konuştuğunu söyler. Depoda
+  // dört öğe bu rozeti taşırken hangi kurumun konuştuğunu söyleyemiyordu:
+  // `source.publisher` boştu ve tıklanan bağlantı bir toplayıcıya gidiyordu.
+  //
+  // Denetim iki alana birden bakar, çünkü iki meşru biçim var:
+  //
+  //   • Toplayıcı üzerinden gelen haber — bağlantı toplayıcıya gider ama
+  //     `publisher` haberin gerçekte yayımlandığı kurumu tutar.
+  //   • Doğrudan alınan kayıt — bağlantının kendisi kurumun sitesidir.
+  //
+  // İkisi de yoksa öğe reddedilir. Kural burada duruyor ki kaydı hangi
+  // yazıcının ürettiğinden bağımsız olsun.
+  if (category === "official") {
+    const officialByPublisher = source.publisher
+      && trustTierOf(`https://${text(source.publisher).replace(/^https?:\/\//i, "")}`) === TRUST_TIER.OFFICIAL;
+    const officialByUrl = url && trustTierOf(url) === TRUST_TIER.OFFICIAL;
+    if (!officialByPublisher && !officialByUrl) {
+      errors.push(
+        "\"official\" kategorisi resmî kaynak gerektirir: " +
+        `source.publisher ya da source.url kurumun kendi alanı olmalı (publisher: ${text(source.publisher) || "yok"})`
+      );
+    }
+  }
+
   // ÇELİŞKİ 1: doğası gereği iddia olan kategori "doğrulandı" olamaz.
   if (CATEGORIES[category] && CATEGORIES[category].rumourOnly && confidence === "confirmed") {
     errors.push(
@@ -711,6 +739,10 @@ function normalizeTickerItems(payload, options = {}) {
       confidence,
       confidenceBadge: confidenceBadge(confidence),
       sourceName: text(entry.source.name),
+      // Haberin gerçekte hangi kurumda yayımlandığı. Bağlantı bir toplayıcı
+      // üzerinden gidiyor olabilir; okuyucunun gördüğü atıf bu alandan
+      // gelir, bağlantının hedefinden değil.
+      publisher: text(entry.source.publisher),
       team: text(entry.team),
       competition: text(entry.competition),
       breaking: shelf.breaking,

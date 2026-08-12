@@ -224,13 +224,23 @@ export function newsTicker(options = {}) {
       ? `<span class="news-ticker-confidence is-${escapeHtml(item.confidence || "rumour")}">${escapeHtml(item.confidenceBadge)}</span>`
       : "";
 
-    // Ekran okuyucu için kaynak ve çekince metne katılıyor; görsel rozet
-    // tek başına erişilebilir bir işaret değil.
-    const aria = item.confidenceBadge
-      ? ` aria-label="${escapeHtml(`${item.confidenceBadge}: ${item.text}${item.sourceName ? ` — kaynak: ${item.sourceName}` : ""}`)}"`
+    // KAYNAK ATFI ROZETSİZ ÖĞEDE DE GÖRÜNÜR.
+    //
+    // "Resmî açıklama" etiketi okuyucuya kurumun kendisinin konuştuğunu
+    // söyler, ama bağlantı bir toplayıcı üzerinden gidebiliyor: tıklayan
+    // kişi kulübün sitesine değil Google News'e düşüyordu ve etiketin
+    // arkasındaki kurumu hiçbir yerde göremiyordu. Yayıncı adı artık hem
+    // ekran okuyucuya hem de fareyle üzerine gelene gösteriliyor.
+    const attribution = item.publisher || item.sourceName || "";
+    const ariaText = item.confidenceBadge
+      ? `${item.confidenceBadge}: ${item.text}`
+      : item.text;
+    const aria = attribution || item.confidenceBadge
+      ? ` aria-label="${escapeHtml(`${ariaText}${attribution ? ` — kaynak: ${attribution}` : ""}`)}"`
       : "";
+    const title = attribution ? ` title="${escapeHtml(`Kaynak: ${attribution}`)}"` : "";
 
-    return `<a class="news-ticker-item" href="${escapeHtml(href)}"${rel}${aria}>${label}${confidence}<span>${escapeHtml(item.text)}</span></a>`;
+    return `<a class="news-ticker-item" href="${escapeHtml(href)}"${rel}${aria}${title}>${label}${confidence}<span>${escapeHtml(item.text)}</span></a>`;
   };
 
   const track = items.map(renderItem).join('<span class="news-ticker-sep" aria-hidden="true"></span>');

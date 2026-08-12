@@ -40,7 +40,9 @@ function item(overrides = {}) {
     confidence: "confirmed",
     text: "Örnek başlık",
     timestamp: "2026-07-30T12:00:00+03:00",
-    source: { name: "Kaynak", url: "https://example.com/haber" },
+    // Varsayılan kategori "official"; o kategori resmî ağız gerektirdiği
+    // için kurgu da kulübün kendi alanını taşır.
+    source: { name: "Kaynak", url: "https://www.galatasaray.org/haber/ornek" },
     ...overrides
   };
 }

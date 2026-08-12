@@ -35,7 +35,8 @@ function entry(overrides = {}) {
     confidence: "confirmed",
     text: "Kulüp resmî açıklama yayımladı",
     timestamp: offsetHours(-3),
-    source: { name: "Kaynak", url: "https://example.com/haber" },
+    // "official" kategorisi resmî kaynak gerektirir.
+    source: { name: "Kaynak", url: "https://www.galatasaray.org/haber/ornek" },
     ...overrides
   };
 }
