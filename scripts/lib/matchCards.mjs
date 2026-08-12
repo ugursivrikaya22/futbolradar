@@ -100,6 +100,27 @@ export function fixtureCard(options) {
 }
 
 /**
+ * LİG BLOĞU (.league-match-group).
+ *
+ * İstemci maç programı sayfasını lig bloklarına ayırıyor, statik yedek ise
+ * kartları tek uzun liste hâlinde basıyordu. İki sonucu vardı: JavaScript
+ * yüklendiğinde liste yeniden çiziliyor ve sayfa yerinden oynuyordu; ve
+ * tarayıcı yalnızca statik hâli gördüğü için hangi maçın hangi turnuvaya
+ * ait olduğu HTML'de hiç yazmıyordu.
+ *
+ * İşaretleme istemcideki `renderMatchesByLeague` ile bilerek özdeştir.
+ * Sayı etiketi ("12 maç") çağırandan gelir; dil farkı buradan doğamaz.
+ */
+export function leagueMatchGroup(options) {
+  const league = String(options.league || "");
+  return `<section class="league-match-group league-block" data-league-group="${escapeHtml(league)}">` +
+    `<div class="league-block-head"><span class="league-block-title">${escapeHtml(league)}</span>` +
+    `<b class="league-block-count">${escapeHtml(options.countLabel || "")}</b></div>` +
+    `<div class="league-match-grid">${options.cardsHtml || ""}</div>` +
+    `</section>`;
+}
+
+/**
  * Trend takım kartı (.trend-card). Form noktaları çağırandan hazır gelir:
  * Türkçe noktalar G/B/M, İngilizce W/D/L harfleriyle çizilir.
  */

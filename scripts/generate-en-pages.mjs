@@ -59,6 +59,9 @@ const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
 const { publishableNews, newsHref } = require("../services/newsFeed.js");
 const { selectTickerRecords } = require("../services/transferRadarTicker.js");
 const { withRelevance } = require("../services/matchRelevance.js");
+// Maç programı sırası ve makine okunur karşılığı — Türkçe tarafla aynı servis.
+const { orderMatchProgram } = require("../services/matchProgram.js");
+const { matchListSchema } = require("../services/matchSchema.js");
 const { curatedMatches: programMatches } = require("../services/providers/mockProvider.js");
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { filterPlayerCards, publicPlayerView } = require("../services/cardCredibility.js");
@@ -162,8 +165,18 @@ function todayInIstanbul() {
 
 const TODAY = todayInIstanbul();
 
+/**
+ * Günün maçları — SIRA TÜRKÇE TARAFLA AYNI.
+ *
+ * Eskiden yalnızca "Türk kulübü önce, sonra saat" kuralı vardı: Süper Lig ve
+ * Türk kulüpleri doğru yerdeydi ama gerisi saate göre diziliyordu, yani
+ * Şampiyonlar Ligi maçı bir alt lig hazırlık maçının arkasında kalabiliyordu.
+ * Kural artık tek yerde (services/matchProgram.js) ve iki dil de aynı
+ * listeyi aynı sırada gösteriyor.
+ */
 function matchesOnDay(day) {
-  return calendarMatches.filter((match) => istanbulDay(match.kickoff) === day).sort(byTurkishThenKickoff);
+  const list = calendarMatches.filter((match) => istanbulDay(match.kickoff) === day);
+  return orderMatchProgram(withRelevance(list));
 }
 
 function upcomingMatches(limit) {
@@ -1168,10 +1181,18 @@ function homePage() {
 }
 
 function todaysMatchesPage() {
+  // Maçların makine okunur karşılığı — Türkçe sayfayla aynı servis
+  // (services/matchSchema.js). Eksik alan uydurulmaz: stadyum adı yoksa
+  // `location` hiç yazılmaz.
+  const schemaBlock = matchListSchema(todaysMatches, { name: "Today's football matches" });
+  const schemaScript = schemaBlock
+    ? `\n<script type="application/ld+json">${JSON.stringify(schemaBlock).replace(/</g, "\\u003c")}</script>`
+    : "";
+
   const body = `      <section class="data-panel" aria-labelledby="en-fixtures-title">
         <h2 class="panel-title" id="en-fixtures-title">${escapeHtml(todayLabel)}</h2>
         ${matchList(todaysMatches, "common.noMatchesToday")}
-      </section>
+      </section>${schemaScript}
 ${sectionLinks()}`;
 
   return pageShell({
