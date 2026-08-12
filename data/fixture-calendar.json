@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-12T17:18:22.289Z",
+  "fetchedAt": "2026-08-12T18:12:51.386Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -143803,11 +143803,11 @@
       "awayTeam": "Real Ávila",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9724.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9736.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 83,
-      "elapsed": 83,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
         "away": 2,
@@ -143828,8 +143828,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T17:18:23.137Z",
-      "staleAfter": "2026-08-12T17:23:23.137Z",
+      "fetchedAt": "2026-08-12T18:12:52.396Z",
+      "staleAfter": "2026-08-12T18:17:52.396Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -143838,7 +143838,7 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "Son gol 68' Missed Penalty tarafından kaydedildi. Real Ávila skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Real Ávila tarafında.",
         "confidence": "Orta",
         "signals": [
@@ -145267,14 +145267,14 @@
       "awayTeam": "Medeama",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/4512.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/12255.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -145292,8 +145292,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T15:00:26.318Z",
-      "staleAfter": "2026-08-12T15:05:26.318Z",
+      "fetchedAt": "2026-08-12T18:12:52.396Z",
+      "staleAfter": "2026-08-12T18:17:52.396Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -145303,11 +145303,17 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "summary": "Medeama skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Medeama tarafında.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "1-2",
+            "text": "Medeama skor üstünlüğünü elinde tutuyor."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -147408,13 +147414,13 @@
       "awayTeam": "Debreceni VSC",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/400.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/2392.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 61,
-      "elapsed": 61,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 2,
+        "home": 5,
         "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
@@ -147433,8 +147439,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T17:18:23.137Z",
-      "staleAfter": "2026-08-12T17:23:23.137Z",
+      "fetchedAt": "2026-08-12T18:12:52.396Z",
+      "staleAfter": "2026-08-12T18:17:52.396Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -147443,42 +147449,42 @@
       },
       "competitionId": "konferans-ligi",
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "FC Copenhagen topa sahip olma oranında önde. FC Copenhagen daha fazla şut üretti. Skor üstünlüğü FC Copenhagen tarafında.",
         "confidence": "Yüksek",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "54%-46%",
+            "value": "57%-43%",
             "text": "FC Copenhagen topa sahip olma oranında önde."
           },
           {
             "label": "Şut hacmi",
-            "value": "10-7",
+            "value": "22-8",
             "text": "FC Copenhagen daha fazla şut üretti."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "6-2",
+            "value": "11-2",
             "text": "FC Copenhagen isabetli şutlarda önde."
           },
           {
             "label": "Gol akışı",
-            "value": "58'",
-            "text": "Son gol 58' M. Elyounoussi tarafından kaydedildi."
+            "value": "90+2'",
+            "text": "Son gol 90+2' A. Cornelius tarafından kaydedildi."
           },
           {
             "label": "Teknik hamleler",
-            "value": "4 değişiklik",
-            "text": "Kulübeler oyuna müdahale etti; 4 oyuncu değişikliği kayda geçti."
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "2-1",
+            "value": "5-1",
             "text": "FC Copenhagen skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 8,
+        "eventCount": 19,
         "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
@@ -148253,16 +148259,16 @@
             "Geovanni Vianney"
           ],
           "substitutes": [
+            "Marvin Nasnas",
+            "Thomas Delaney",
+            "Andreas Cornelius",
             "Rúnar Alex Rúnarsson",
             "Tobias Breum-Harild",
             "Felix Beijmo",
             "Munashe Garananga",
             "Kenay Myrie",
             "Mustapha Nyassi",
-            "Thomas Delaney",
-            "Marvin Nasnas",
             "Youssoufa Moukoko",
-            "Andreas Cornelius",
             "Viktor Bjarki Dadason",
             "Gunnar Orri Olsen"
           ]
@@ -148284,15 +148290,15 @@
             "Csanád Vilmos Dénes"
           ],
           "substitutes": [
+            "Adrián Guerrero",
+            "Ádám Lang",
+            "Balázs Dzsudzsák",
+            "Botond Vajda",
             "Plamen Andreev",
             "Dániel Póser",
             "Dénes Szakál",
-            "Adrián Guerrero",
-            "Ádám Lang",
             "Dávid Hermann",
             "Blaž Bošković",
-            "Balázs Dzsudzsák",
-            "Botond Vajda",
             "Máté Macsó",
             "Ákos Szendrei"
           ]
@@ -148378,107 +148384,859 @@
           "detail": "Substitution 1",
           "value": "Robert · Asist: M. Nasnas · Substitution 1",
           "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Debreceni VSC"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "S. Kaye · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Debreceni VSC"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "C. Denes · Asist: B. Vajda · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "FC Copenhagen"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "G. Vianney Ndjee · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "68'",
+          "team": {
+            "name": "FC Copenhagen"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "M. Madsen · Asist: T. Delaney · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "68'",
+          "team": {
+            "name": "FC Copenhagen"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "M. Elyounoussi · Asist: A. Cornelius · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "FC Copenhagen"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Kral · Asist: A. Cornelius · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "77'",
+          "team": {
+            "name": "FC Copenhagen"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "G. Vianney Ndjee · Asist: Y. Moukoko · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "77'",
+          "team": {
+            "name": "FC Copenhagen"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "B. Meling · Asist: F. Beijmo · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "78'",
+          "team": {
+            "name": "FC Copenhagen"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Cornelius · Asist: A. Kral · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "86'",
+          "team": {
+            "name": "Debreceni VSC"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "S. Baldoni · Asist: A. Szendrei · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "90+2'",
+          "team": {
+            "name": "FC Copenhagen"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Cornelius · Asist: M. Nasnas · Normal Goal",
+          "comments": ""
         }
       ],
       "statistics": [
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 6,
+          "home": 11,
           "away": 2,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 4,
-          "away": 2
+          "home": 9,
+          "away": 3
         },
         {
           "category": "Hücum",
           "type": "Toplam şut",
-          "home": 10,
-          "away": 7,
+          "home": 22,
+          "away": 8,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 0,
+          "home": 2,
           "away": 3
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
-          "home": 9,
-          "away": 2,
+          "home": 20,
+          "away": 3,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 1,
+          "home": 2,
           "away": 5
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 11,
-          "away": 8
+          "home": 16,
+          "away": 12
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 2,
-          "away": 2
+          "home": 6,
+          "away": 3
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
-          "home": 5,
-          "away": 1
+          "home": 6,
+          "away": 2
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 54,
-          "away": 46,
+          "home": 57,
+          "away": 43,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Disiplin",
           "type": "Sarı kart",
-          "home": 0,
-          "away": 1
+          "home": 1,
+          "away": 2
         },
         {
           "category": "Savunma",
           "type": "Kurtarış",
           "home": 1,
-          "away": 4
+          "away": 6
         },
         {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 304,
-          "away": 255,
+          "home": 461,
+          "away": 345,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 250,
-          "away": 202,
+          "home": 384,
+          "away": 269,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
-          "home": 82,
-          "away": 79,
+          "home": 83,
+          "away": 78,
           "unit": "%",
           "higherIsBetter": true
+        }
+      ],
+      "players": [
+        {
+          "name": "Dominik Kotarski",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "524",
+          "source": "api-football",
+          "minutes": 93,
+          "position": "G",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "saves": 1,
+          "passes": 31,
+          "passAccuracy": 22,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Junnosuke Suzuki",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "351014",
+          "source": "api-football",
+          "minutes": 93,
+          "position": "D",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "passes": 42,
+          "passAccuracy": 35,
+          "tackles": 2,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gabriel Pereira",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "159511",
+          "source": "api-football",
+          "minutes": 93,
+          "position": "D",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 62,
+          "passAccuracy": 55,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ákos Markgráf",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "443849",
+          "source": "api-football",
+          "minutes": 93,
+          "position": "D",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "passes": 58,
+          "passAccuracy": 52,
+          "duelsWon": 8,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Birger Meling",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "1173",
+          "source": "api-football",
+          "minutes": 77,
+          "position": "D",
+          "providerRating": 7.5,
+          "ratingSource": "api-football",
+          "passes": 35,
+          "passAccuracy": 30,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Alex Král",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "1234",
+          "source": "api-football",
+          "minutes": 93,
+          "position": "M",
+          "providerRating": 8.2,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "assists": 1,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 45,
+          "passAccuracy": 36,
+          "tackles": 2,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "William Clem",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "349212",
+          "source": "api-football",
+          "minutes": 93,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 50,
+          "passAccuracy": 46,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mohamed Elyounoussi",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "18946",
+          "source": "api-football",
+          "minutes": 68,
+          "position": "M",
+          "providerRating": 7.9,
+          "ratingSource": "api-football",
+          "goals": 2,
+          "shots": 3,
+          "shotsOnTarget": 3,
+          "passes": 26,
+          "passAccuracy": 18,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mads Emil Madsen",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "15934",
+          "source": "api-football",
+          "minutes": 68,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "shots": 3,
+          "shotsOnTarget": 2,
+          "passes": 22,
+          "passAccuracy": 17,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Robert",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "422779",
+          "source": "api-football",
+          "minutes": 60,
+          "position": "M",
+          "providerRating": 7.9,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "shots": 2,
+          "passes": 16,
+          "passAccuracy": 12,
+          "tackles": 2,
+          "duelsWon": 9,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Geovanni Vianney",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "633096",
+          "source": "api-football",
+          "minutes": 77,
+          "position": "F",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "shots": 2,
+          "shotsOnTarget": 1,
+          "passes": 15,
+          "passAccuracy": 12,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Marvin Nasnas",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "567953",
+          "source": "api-football",
+          "minutes": 33,
+          "position": "M",
+          "providerRating": 8,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "shots": 1,
+          "passes": 21,
+          "passAccuracy": 16,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Thomas Delaney",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "15",
+          "source": "api-football",
+          "minutes": 25,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 13,
+          "passAccuracy": 12,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Andreas Cornelius",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "1274",
+          "source": "api-football",
+          "minutes": 25,
+          "position": "F",
+          "providerRating": 9.3,
+          "ratingSource": "api-football",
+          "goals": 2,
+          "assists": 1,
+          "shots": 3,
+          "shotsOnTarget": 3,
+          "passes": 4,
+          "passAccuracy": 2,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Felix Beijmo",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "25312",
+          "source": "api-football",
+          "minutes": 16,
+          "position": "D",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "passes": 15,
+          "passAccuracy": 13,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Youssoufa Moukoko",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "161919",
+          "source": "api-football",
+          "minutes": 16,
+          "position": "F",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "shots": 2,
+          "passes": 6,
+          "passAccuracy": 6,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Rúnar Alex Rúnarsson",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "2784",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Tobias Breum-Harild",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "568382",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Munashe Garananga",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "354267",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Kenay Myrie",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "504208",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mustapha Nyassi",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "666429",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Viktor Bjarki Dadason",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "426288",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gunnar Orri Olsen",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "567955",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Benedek Erdélyi",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "378263",
+          "source": "api-football",
+          "minutes": 93,
+          "position": "G",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "saves": 6,
+          "passes": 42,
+          "passAccuracy": 29,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Leon Myrtaj",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "586129",
+          "source": "api-football",
+          "minutes": 93,
+          "position": "D",
+          "providerRating": 4.9,
+          "ratingSource": "api-football",
+          "passes": 25,
+          "passAccuracy": 21,
+          "tackles": 3,
+          "duelsWon": 5,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Bence Batik",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "28411",
+          "source": "api-football",
+          "minutes": 93,
+          "position": "D",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "passes": 62,
+          "passAccuracy": 56,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Josua Mejías",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "103898",
+          "source": "api-football",
+          "minutes": 45,
+          "position": "D",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 32,
+          "passAccuracy": 25,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Rotem Keller",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "263224",
+          "source": "api-football",
+          "minutes": 45,
+          "position": "D",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 17,
+          "passAccuracy": 12,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Flórián Cibla",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "436840",
+          "source": "api-football",
+          "minutes": 45,
+          "position": "M",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 16,
+          "passAccuracy": 8,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dávid Patai",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "627392",
+          "source": "api-football",
+          "minutes": 93,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 27,
+          "passAccuracy": 20,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Balázs Sain",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "608520",
+          "source": "api-football",
+          "minutes": 93,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 11,
+          "passAccuracy": 7,
+          "tackles": 4,
+          "duelsWon": 7,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Shedrach Kaye",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "480476",
+          "source": "api-football",
+          "minutes": 93,
+          "position": "F",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 12,
+          "passAccuracy": 10,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Sohan Baldoni",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "582785",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "F",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 13,
+          "passAccuracy": 8,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Csanád Vilmos Dénes",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "292366",
+          "source": "api-football",
+          "minutes": 66,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 11,
+          "passAccuracy": 9,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Adrián Guerrero",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "122804",
+          "source": "api-football",
+          "minutes": 48,
+          "position": "D",
+          "providerRating": 5.7,
+          "ratingSource": "api-football",
+          "passes": 22,
+          "passAccuracy": 19,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ádám Lang",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "42984",
+          "source": "api-football",
+          "minutes": 48,
+          "position": "D",
+          "providerRating": 5.3,
+          "ratingSource": "api-football",
+          "passes": 27,
+          "passAccuracy": 25,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Balázs Dzsudzsák",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "50600",
+          "source": "api-football",
+          "minutes": 48,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 18,
+          "passAccuracy": 12,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Botond Vajda",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "367499",
+          "source": "api-football",
+          "minutes": 27,
+          "position": "M",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 8,
+          "passAccuracy": 7,
+          "tackles": 2,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ákos Szendrei",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "150783",
+          "source": "api-football",
+          "minutes": 7,
+          "position": "F",
+          "passes": 2,
+          "passAccuracy": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Plamen Andreev",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "315880",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dániel Póser",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "28127",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dénes Szakál",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "524962",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dávid Hermann",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "670979",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Blaž Bošković",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "550610",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Máté Macsó",
+          "team": "Debreceni VSC",
+          "providerPlayerId": "551084",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
         }
       ]
     },
@@ -148494,13 +149252,13 @@
       "awayTeam": "Hapoel Tel Aviv",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3484.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/4501.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 59,
-      "elapsed": 59,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
+        "home": 2,
         "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
@@ -148519,8 +149277,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T17:18:23.137Z",
-      "staleAfter": "2026-08-12T17:23:23.137Z",
+      "fetchedAt": "2026-08-12T18:12:52.396Z",
+      "staleAfter": "2026-08-12T18:17:52.396Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -148529,33 +149287,38 @@
       },
       "competitionId": "konferans-ligi",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "GKS Katowice topa sahip olma oranında önde. Hapoel Tel Aviv isabetli şutlarda önde. Skor üstünlüğü Hapoel Tel Aviv tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "GKS Katowice topa sahip olma oranında önde. GKS Katowice isabetli şutlarda önde. Skor üstünlüğü GKS Katowice tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "62%-38%",
+            "value": "67%-33%",
             "text": "GKS Katowice topa sahip olma oranında önde."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "2-3",
-            "text": "Hapoel Tel Aviv isabetli şutlarda önde."
+            "value": "7-3",
+            "text": "GKS Katowice isabetli şutlarda önde."
           },
           {
             "label": "Gol akışı",
-            "value": "23'",
-            "text": "Son gol 23' S. Turiel tarafından kaydedildi."
+            "value": "90'",
+            "text": "Son gol 90' A. Jedrych tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "0-1",
-            "text": "Hapoel Tel Aviv skor üstünlüğünü elinde tutuyor."
+            "value": "2-1",
+            "text": "GKS Katowice skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 2,
-        "dataPoints": 4,
+        "eventCount": 16,
+        "dataPoints": 5,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -149325,11 +150088,11 @@
             "Bartosz Nowak"
           ],
           "substitutes": [
+            "Kacper Łukasiak",
             "Maciej Kikolski",
             "Marius Olsen",
             "Pau Resta",
             "Mateusz Wdowiak",
-            "Kacper Łukasiak",
             "Sebastian Milewski",
             "Szymon Bartlewicz",
             "Erik Jirka",
@@ -149373,53 +150136,53 @@
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 2,
+          "home": 7,
           "away": 3,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 2,
-          "away": 5
+          "home": 3,
+          "away": 6
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 2,
+          "home": 4,
           "away": 2
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 11,
-          "away": 10
+          "home": 18,
+          "away": 18
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 3,
+          "home": 7,
           "away": 3
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
-          "home": 2,
+          "home": 3,
           "away": 2
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 62,
-          "away": 38,
+          "home": 67,
+          "away": 33,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Disiplin",
           "type": "Sarı kart",
-          "home": 0,
-          "away": 1
+          "home": 1,
+          "away": 2
         },
         {
           "category": "Disiplin",
@@ -149448,6 +150211,146 @@
           "detail": "Yellow Card",
           "value": "M. Coco · Yellow Card",
           "comments": ""
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "GKS Katowice"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "M. Kowalczyk · Asist: K. Lukasiak · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "Hapoel Tel Aviv"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "D. Leidner · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "GKS Katowice"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "M. Wedrychowski · Asist: S. Bartlewicz · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "GKS Katowice"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "M. Wasielewski · Asist: E. Jirka · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "73'",
+          "team": {
+            "name": "Hapoel Tel Aviv"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "R. Alkoukin · Asist: A. Lemkin · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "78'",
+          "team": {
+            "name": "Hapoel Tel Aviv"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "M. Coco · Asist: S. Piven · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Hapoel Tel Aviv"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "O. Altman · Asist: X. Silva · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "GKS Katowice"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "A. Czerwinski · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "GKS Katowice"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "B. Galan · Asist: M. Wdowiak · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "GKS Katowice"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "B. Nowak · Asist: E. Markovic · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "83'",
+          "team": {
+            "name": "GKS Katowice"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "I. Shkurin · Asist: M. Wdowiak · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "88'",
+          "team": {
+            "name": "Hapoel Tel Aviv"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "E. Boateng · Asist: Y. Ferber · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "88'",
+          "team": {
+            "name": "Hapoel Tel Aviv"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "S. Turiel · Asist: M. Buskila · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "90'",
+          "team": {
+            "name": "GKS Katowice"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "A. Jedrych · Penalty",
+          "comments": ""
         }
       ]
     },
@@ -149463,13 +150366,13 @@
       "awayTeam": "Paide",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/781.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3528.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 62,
-      "elapsed": 62,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
+        "home": 2,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -149488,8 +150391,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T17:18:23.137Z",
-      "staleAfter": "2026-08-12T17:23:23.137Z",
+      "fetchedAt": "2026-08-12T18:12:52.396Z",
+      "staleAfter": "2026-08-12T18:17:52.396Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -149498,38 +150401,33 @@
       },
       "competitionId": "konferans-ligi",
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "Rapid Vienna topa sahip olma oranında önde. Rapid Vienna daha fazla şut üretti. Skor üstünlüğü Rapid Vienna tarafında.",
         "confidence": "Yüksek",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "68%-32%",
+            "value": "66%-34%",
             "text": "Rapid Vienna topa sahip olma oranında önde."
           },
           {
             "label": "Şut hacmi",
-            "value": "17-1",
+            "value": "23-2",
             "text": "Rapid Vienna daha fazla şut üretti."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "5-0",
+            "value": "7-1",
             "text": "Rapid Vienna isabetli şutlarda önde."
           },
           {
-            "label": "Gol akışı",
-            "value": "38'",
-            "text": "Son gol 38' M. Tilio tarafından kaydedildi."
-          },
-          {
             "label": "Canlı skor",
-            "value": "1-0",
+            "value": "2-0",
             "text": "Rapid Vienna skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 3,
-        "dataPoints": 5,
+        "eventCount": 0,
+        "dataPoints": 4,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -150303,16 +151201,16 @@
             "Tobias Fjeld Gulliksen"
           ],
           "substitutes": [
+            "Petter Nosakhare Dahl",
+            "Nicolas Bajlicz",
+            "Tonni Adamsen",
+            "Serge-Philippe Raux-Yao",
             "Paul Gartler",
             "Laurenz Orgler",
-            "Serge-Philippe Raux-Yao",
             "Jannes Horn",
             "Furkan Demir",
             "Bendegúz Bolla",
-            "Petter Nosakhare Dahl",
             "Matthias Seidl",
-            "Nicolas Bajlicz",
-            "Tonni Adamsen",
             "Ercan Kara",
             "Yusuf Demir"
           ]
@@ -150334,15 +151232,15 @@
             "Daniel Cabral"
           ],
           "substitutes": [
-            "Marko Meerits",
-            "Pedro Andrade Drozina",
+            "Ramon Smirnov",
             "Edgar Tur",
             "Henrik Ojamaa",
+            "Marko Meerits",
+            "Pedro Andrade Drozina",
             "Momodou Jobarteh",
             "Aleksandr Šurõgin",
             "Pa Abdou Cham",
             "Siim Luts",
-            "Ramon Smirnov",
             "Kristofer Kait",
             "Kristofer Piht",
             "Abdourahman Badamosi"
@@ -150353,99 +151251,99 @@
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 5,
-          "away": 0,
-          "higherIsBetter": true
-        },
-        {
-          "category": "Hücum",
-          "type": "İsabetsiz şut",
-          "home": 9,
-          "away": 0
-        },
-        {
-          "category": "Hücum",
-          "type": "Toplam şut",
-          "home": 17,
+          "home": 7,
           "away": 1,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 11,
+          "away": 0
+        },
+        {
+          "category": "Hücum",
+          "type": "Toplam şut",
+          "home": 23,
+          "away": 2,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 3,
+          "home": 5,
           "away": 1
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
-          "home": 11,
-          "away": 0,
+          "home": 16,
+          "away": 1,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 6,
+          "home": 7,
           "away": 1
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 7,
-          "away": 2
+          "home": 10,
+          "away": 3
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 4,
+          "home": 5,
           "away": 1
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
           "home": 4,
-          "away": 2
+          "away": 3
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 68,
-          "away": 32,
+          "home": 66,
+          "away": 34,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Disiplin",
           "type": "Sarı kart",
-          "home": 1,
-          "away": 0
+          "home": 2,
+          "away": 2
         },
         {
           "category": "Savunma",
           "type": "Kurtarış",
-          "home": 0,
-          "away": 4
+          "home": 1,
+          "away": 5
         },
         {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 506,
-          "away": 248,
+          "home": 673,
+          "away": 346,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 462,
-          "away": 203,
+          "home": 609,
+          "away": 279,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
-          "home": 91,
-          "away": 82,
+          "home": 90,
+          "away": 81,
           "unit": "%",
           "higherIsBetter": true
         }
@@ -150481,6 +151379,634 @@
           "value": "M. Miller · Asist: R. Smirnov · Substitution 1",
           "comments": ""
         }
+      ],
+      "players": [
+        {
+          "name": "Niklas Hedl",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "169346",
+          "source": "api-football",
+          "minutes": 91,
+          "position": "G",
+          "providerRating": 7.5,
+          "ratingSource": "api-football",
+          "saves": 1,
+          "passes": 31,
+          "passAccuracy": 29,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Eaden Roka",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "550776",
+          "source": "api-football",
+          "minutes": 91,
+          "position": "D",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 64,
+          "passAccuracy": 62,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nenad Cvetković",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "46160",
+          "source": "api-football",
+          "minutes": 91,
+          "position": "D",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "passes": 87,
+          "passAccuracy": 79,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jakob Schöller",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "339985",
+          "source": "api-football",
+          "minutes": 74,
+          "position": "D",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 101,
+          "passAccuracy": 95,
+          "duelsWon": 1,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Jonas Auer",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "66728",
+          "source": "api-football",
+          "minutes": 91,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 67,
+          "passAccuracy": 60,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nikolaus Wurmbrand",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "428779",
+          "source": "api-football",
+          "minutes": 91,
+          "position": "M",
+          "providerRating": 7.9,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "shots": 3,
+          "shotsOnTarget": 1,
+          "passes": 29,
+          "passAccuracy": 25,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Romeo Amane",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "350854",
+          "source": "api-football",
+          "minutes": 63,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 78,
+          "passAccuracy": 72,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Louis Schaub",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "24809",
+          "source": "api-football",
+          "minutes": 84,
+          "position": "M",
+          "providerRating": 7.6,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 3,
+          "shotsOnTarget": 2,
+          "passes": 81,
+          "passAccuracy": 71,
+          "tackles": 4,
+          "duelsWon": 6,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Moulaye Haïdara",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "528308",
+          "source": "api-football",
+          "minutes": 63,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "shots": 3,
+          "shotsOnTarget": 1,
+          "passes": 16,
+          "passAccuracy": 13,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Marco Tilio",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "68041",
+          "source": "api-football",
+          "minutes": 63,
+          "position": "F",
+          "providerRating": 7.5,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 4,
+          "shotsOnTarget": 3,
+          "passes": 29,
+          "passAccuracy": 27,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Tobias Fjeld Gulliksen",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "146053",
+          "source": "api-football",
+          "minutes": 91,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "shots": 3,
+          "passes": 32,
+          "passAccuracy": 27,
+          "tackles": 3,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Petter Nosakhare Dahl",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "352728",
+          "source": "api-football",
+          "minutes": 28,
+          "position": "F",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 7,
+          "passAccuracy": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nicolas Bajlicz",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "338189",
+          "source": "api-football",
+          "minutes": 28,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 16,
+          "passAccuracy": 15,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Tonni Adamsen",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "303386",
+          "source": "api-football",
+          "minutes": 28,
+          "position": "F",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 18,
+          "passAccuracy": 15,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Serge-Philippe Raux-Yao",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "128999",
+          "source": "api-football",
+          "minutes": 17,
+          "position": "D",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 11,
+          "passAccuracy": 10,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Matthias Seidl",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "176022",
+          "source": "api-football",
+          "minutes": 7,
+          "position": "M",
+          "passes": 6,
+          "passAccuracy": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Paul Gartler",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "1710",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Laurenz Orgler",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "302866",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jannes Horn",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "24791",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Furkan Demir",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "375316",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Bendegúz Bolla",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "27778",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ercan Kara",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "119139",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Yusuf Demir",
+          "team": "Rapid Vienna",
+          "providerPlayerId": "131294",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ebrima Jarju",
+          "team": "Paide",
+          "providerPlayerId": "352523",
+          "source": "api-football",
+          "minutes": 91,
+          "position": "G",
+          "providerRating": 7.9,
+          "ratingSource": "api-football",
+          "saves": 5,
+          "passes": 43,
+          "passAccuracy": 36,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Hindrek Ojamaa",
+          "team": "Paide",
+          "providerPlayerId": "55551",
+          "source": "api-football",
+          "minutes": 68,
+          "position": "D",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 31,
+          "passAccuracy": 25,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nikita Baranov",
+          "team": "Paide",
+          "providerPlayerId": "11048",
+          "source": "api-football",
+          "minutes": 91,
+          "position": "D",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 47,
+          "passAccuracy": 42,
+          "tackles": 2,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Victor Hugo",
+          "team": "Paide",
+          "providerPlayerId": "296062",
+          "source": "api-football",
+          "minutes": 91,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 45,
+          "passAccuracy": 37,
+          "tackles": 5,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Michael Lilander",
+          "team": "Paide",
+          "providerPlayerId": "60350",
+          "source": "api-football",
+          "minutes": 91,
+          "position": "D",
+          "providerRating": 5.6,
+          "ratingSource": "api-football",
+          "passes": 33,
+          "passAccuracy": 27,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Pa Modou Sohna",
+          "team": "Paide",
+          "providerPlayerId": "152936",
+          "source": "api-football",
+          "minutes": 68,
+          "position": "M",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 16,
+          "passAccuracy": 12,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Oskar Hoim",
+          "team": "Paide",
+          "providerPlayerId": "323886",
+          "source": "api-football",
+          "minutes": 91,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "passes": 34,
+          "passAccuracy": 25,
+          "tackles": 5,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Martin Miller",
+          "team": "Paide",
+          "providerPlayerId": "60613",
+          "source": "api-football",
+          "minutes": 45,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 17,
+          "passAccuracy": 14,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Daniel Luts",
+          "team": "Paide",
+          "providerPlayerId": "314317",
+          "source": "api-football",
+          "minutes": 84,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 24,
+          "passAccuracy": 18,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Henri Anier",
+          "team": "Paide",
+          "providerPlayerId": "34248",
+          "source": "api-football",
+          "minutes": 84,
+          "position": "F",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 7,
+          "passAccuracy": 5,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Daniel Cabral",
+          "team": "Paide",
+          "providerPlayerId": "237194",
+          "source": "api-football",
+          "minutes": 91,
+          "position": "F",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 16,
+          "passAccuracy": 14,
+          "tackles": 2,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ramon Smirnov",
+          "team": "Paide",
+          "providerPlayerId": "341109",
+          "source": "api-football",
+          "minutes": 46,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 12,
+          "passAccuracy": 9,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Edgar Tur",
+          "team": "Paide",
+          "providerPlayerId": "11168",
+          "source": "api-football",
+          "minutes": 23,
+          "position": "D",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 11,
+          "passAccuracy": 7,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Henrik Ojamaa",
+          "team": "Paide",
+          "providerPlayerId": "40268",
+          "source": "api-football",
+          "minutes": 23,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 7,
+          "passAccuracy": 5,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Pa Abdou Cham",
+          "team": "Paide",
+          "providerPlayerId": "524418",
+          "source": "api-football",
+          "minutes": 7,
+          "position": "M",
+          "passes": 2,
+          "passAccuracy": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Kristofer Piht",
+          "team": "Paide",
+          "providerPlayerId": "60651",
+          "source": "api-football",
+          "minutes": 7,
+          "position": "F",
+          "passes": 1,
+          "passAccuracy": 1,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Marko Meerits",
+          "team": "Paide",
+          "providerPlayerId": "55906",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Pedro Andrade Drozina",
+          "team": "Paide",
+          "providerPlayerId": "505990",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Momodou Jobarteh",
+          "team": "Paide",
+          "providerPlayerId": "638046",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Aleksandr Šurõgin",
+          "team": "Paide",
+          "providerPlayerId": "553769",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Siim Luts",
+          "team": "Paide",
+          "providerPlayerId": "66334",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Kristofer Kait",
+          "team": "Paide",
+          "providerPlayerId": "329290",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Abdourahman Badamosi",
+          "team": "Paide",
+          "providerPlayerId": "511219",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        }
       ]
     },
     {
@@ -150495,14 +152021,14 @@
       "awayTeam": "Anorthosis",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3401.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/2269.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 56,
-      "elapsed": 56,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
-        "away": 1,
+        "home": 2,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -150520,8 +152046,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T17:18:23.137Z",
-      "staleAfter": "2026-08-12T17:23:23.137Z",
+      "fetchedAt": "2026-08-12T18:12:52.396Z",
+      "staleAfter": "2026-08-12T18:17:52.396Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -150530,22 +152056,22 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 46' Normal Goal tarafından kaydedildi. Skor dengede.",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 59' Normal Goal tarafından kaydedildi. Skor dengede.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "46'",
-            "text": "Son gol 46' Normal Goal tarafından kaydedildi."
+            "value": "59'",
+            "text": "Son gol 59' Normal Goal tarafından kaydedildi."
           },
           {
             "label": "Canlı skor",
-            "value": "1-1",
+            "value": "2-2",
             "text": "Skor dengede."
           }
         ],
-        "eventCount": 2,
+        "eventCount": 4,
         "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
@@ -150564,6 +152090,26 @@
           "time": "46'",
           "team": {
             "name": "Anorthosis"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "57'",
+          "team": {
+            "name": "Anorthosis"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "59'",
+          "team": {
+            "name": "Nea Salamis"
           },
           "type": "Goal",
           "detail": "Normal Goal",
@@ -151949,13 +153495,13 @@
       "awayTeam": "Gozzano",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/1706.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1714.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 56,
-      "elapsed": 56,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 2,
+        "home": 3,
         "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
@@ -151974,8 +153520,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T17:18:23.137Z",
-      "staleAfter": "2026-08-12T17:23:23.137Z",
+      "fetchedAt": "2026-08-12T18:12:52.396Z",
+      "staleAfter": "2026-08-12T18:17:52.396Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -151984,22 +153530,22 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 53' Normal Goal tarafından kaydedildi. Pro Patria skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Pro Patria tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 88' Normal Goal tarafından kaydedildi. Pro Patria skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Pro Patria tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "53'",
-            "text": "Son gol 53' Normal Goal tarafından kaydedildi."
+            "value": "88'",
+            "text": "Son gol 88' Normal Goal tarafından kaydedildi."
           },
           {
             "label": "Canlı skor",
-            "value": "2-1",
+            "value": "3-1",
             "text": "Pro Patria skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 3,
+        "eventCount": 4,
         "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
@@ -152978,6 +154524,16 @@
           "detail": "Normal Goal",
           "value": "Normal Goal",
           "comments": ""
+        },
+        {
+          "time": "88'",
+          "team": {
+            "name": "Pro Patria"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
         }
       ]
     },
@@ -152993,14 +154549,14 @@
       "awayTeam": "Borussia Mönchengladbach",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/12847.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/163.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 51,
-      "elapsed": 51,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
-        "away": 2,
+        "away": 8,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -153018,8 +154574,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T17:18:23.137Z",
-      "staleAfter": "2026-08-12T17:23:23.137Z",
+      "fetchedAt": "2026-08-12T18:12:52.396Z",
+      "staleAfter": "2026-08-12T18:17:52.396Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -153047,26 +154603,271 @@
           "detail": "Normal Goal",
           "value": "R. Hack · Normal Goal",
           "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "SSVg Velbert"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "L. Plath · Asist: J. Heufken · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "SSVg Velbert"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "J. Torrens · Asist: A. Golubytskij · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "SSVg Velbert"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "T. Behle · Asist: M. Brill · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "SSVg Velbert"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "M. Wiese · Asist: I. Remmo · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "L. Ullrich · Asist: E. Fard · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "J. Leszczynski · Asist: N. Elvedi · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "P. Sander · Asist: M. Nguefack · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "D. Hashioka · Asist: J. Scally · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "J. Olschowsky · Asist: T. Sippel · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "subst",
+          "detail": "Substitution 6",
+          "value": "K. Stoger · Asist: E. Leopold · Substitution 6",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "subst",
+          "detail": "Substitution 7",
+          "value": "F. Honorat · Asist: F. Fleck · Substitution 7",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "subst",
+          "detail": "Substitution 8",
+          "value": "H. Bolin · Asist: S. Machino · Substitution 8",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "subst",
+          "detail": "Substitution 9",
+          "value": "R. Hack · Asist: W. Mohya · Substitution 9",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "subst",
+          "detail": "Substitution 10",
+          "value": "I. Lidberg · Asist: I. M. Danfa · Substitution 10",
+          "comments": ""
+        },
+        {
+          "time": "51'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "I. M. Danfa · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "51'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "subst",
+          "detail": "Substitution 11",
+          "value": "W. Mohya · Asist: F. Neuhaus · Substitution 11",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "SSVg Velbert"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "T. Bohm · Asist: I. Bouassaria · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "SSVg Velbert"
+          },
+          "type": "subst",
+          "detail": "Substitution 6",
+          "value": "B. Ametov · Asist: C. Mockschan · Substitution 6",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "F. Neuhaus · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "E. Fard · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "S. Machino · Penalty",
+          "comments": ""
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "F. Fleck · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "74'",
+          "team": {
+            "name": "SSVg Velbert"
+          },
+          "type": "subst",
+          "detail": "Substitution 7",
+          "value": "R. Hilger · Asist: E. Varol · Substitution 7",
+          "comments": ""
+        },
+        {
+          "time": "84'",
+          "team": {
+            "name": "Borussia Mönchengladbach"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "F. Neuhaus · Normal Goal",
+          "comments": ""
         }
       ],
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 34' R. Hack tarafından kaydedildi. Borussia Mönchengladbach skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Borussia Mönchengladbach tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 84' F. Neuhaus tarafından kaydedildi. Kulübeler oyuna müdahale etti; 18 oyuncu değişikliği kayda geçti. Skor üstünlüğü Borussia Mönchengladbach tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "34'",
-            "text": "Son gol 34' R. Hack tarafından kaydedildi."
+            "value": "84'",
+            "text": "Son gol 84' F. Neuhaus tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "18 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 18 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "0-2",
+            "value": "0-8",
             "text": "Borussia Mönchengladbach skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 2,
-        "dataPoints": 2,
+        "eventCount": 26,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -153793,14 +155594,14 @@
       "awayTeam": "Everton",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/34.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/45.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
-        "away": 2,
+        "home": 1,
+        "away": 3,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -153818,8 +155619,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T17:18:23.137Z",
-      "staleAfter": "2026-08-12T17:23:23.137Z",
+      "fetchedAt": "2026-08-12T18:12:52.396Z",
+      "staleAfter": "2026-08-12T18:17:52.396Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -153840,14 +155641,14 @@
       "awayTeam": "Eintracht Frankfurt",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/1332.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/169.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 83,
+      "elapsed": 83,
       "live": true,
       "score": {
-        "home": 0,
-        "away": 3,
+        "home": 1,
+        "away": 5,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -153865,8 +155666,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T17:18:23.137Z",
-      "staleAfter": "2026-08-12T17:23:23.137Z",
+      "fetchedAt": "2026-08-12T18:12:52.396Z",
+      "staleAfter": "2026-08-12T18:17:52.396Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
