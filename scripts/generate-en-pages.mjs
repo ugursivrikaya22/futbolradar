@@ -56,6 +56,9 @@ const { canonicalStatus, istanbulDay, liveVerdict } = require("../services/match
 // karar burada yeniden yazılmaz — yoksa iki dil sessizce ayrışır.
 const { selectFeaturedMatches } = require("../services/featuredMatchSelector.js");
 const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
+const { publishableNews, newsHref } = require("../services/newsFeed.js");
+const { selectTickerRecords } = require("../services/transferRadarTicker.js");
+const { withRelevance } = require("../services/matchRelevance.js");
 const { curatedMatches: programMatches } = require("../services/providers/mockProvider.js");
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { filterPlayerCards, publicPlayerView } = require("../services/cardCredibility.js");
@@ -104,10 +107,11 @@ const columnList = (() => {
   const list = Array.isArray(doc) ? doc : (doc.columns || []);
   return list.filter((entry) => entry && entry.status !== "draft");
 })();
-const newsList = (() => {
-  const doc = readJson("news.json", []);
-  return Array.isArray(doc) ? doc : (doc.news || doc.items || []);
-})();
+// Haber akışı kuralı servistedir (services/newsFeed.js) ve Türkçe ön derleme
+// de aynı listeyi oradan alır. Süzgeç burada tekrar yazılmıyor: yazıldığı
+// için `archived` haberler bu sayfada kart olmuş, sayfaları üretilmediğinden
+// bağlantıları 404 vermişti.
+const newsList = publishableNews(readJson("news.json", []));
 const postMatchRecords = (() => {
   const doc = readJson("post-match-reports.json", {});
   return Array.isArray(doc.records) ? doc.records : [];
@@ -488,7 +492,7 @@ function transferStatusKey(record) {
 }
 
 function transferStatusLabelEn(key) {
-  return { Official: "Official", Rumor: "Reported", Talks: "In talks", Loan: "Loan" }[key] || key;
+  return { Official: "Official", AgreementReported: "Agreement reported", Rumor: "Reported", Talks: "In talks", Loan: "Loan" }[key] || key;
 }
 
 /**
@@ -501,50 +505,19 @@ function clubLabelEn(value) {
   return foldText(name) === "serbest oyuncu" ? "Free agent" : name;
 }
 
+/**
+ * Seçim, sıralama ve durum eşlemesi SERVİSTEN gelir
+ * (services/transferRadarTicker.js) — Türkçe ön derleme de aynı listeyi
+ * oradan alır. Burada yapılan tek şey İngilizce sunum: kulüp adı çevrilmez,
+ * yalnızca kulüp OLMAYAN yer tutucu ("Serbest oyuncu") çevrilir.
+ */
 function transferTickerRecords() {
-  const doc = readJson("transfers.json", {});
-  const rows = Array.isArray(doc) ? doc : (doc.transfers || []);
-  const nowMs = Date.now();
-
-  const clubRank = (record) => {
-    const sides = [record.toTeam, record.fromTeam].filter(Boolean).map(foldText);
-    for (let index = 0; index < TRANSFER_PRIORITY_CLUBS.length; index += 1) {
-      if (sides.includes(TRANSFER_PRIORITY_CLUBS[index])) return index;
-    }
-    return TRANSFER_PRIORITY_CLUBS.length;
-  };
-  const stamp = (record) => {
-    const parsed = Date.parse(record.date || record.publishedAt || record.lastVerifiedAt || record.updatedAt || "");
-    return Number.isNaN(parsed) ? 0 : parsed;
-  };
-
-  return rows
-    .map((record) => {
-      const playerName = String(record.playerName || record.name || "").trim();
-      const toTeam = String(record.toTeam || record.newTeam || "").trim();
-      const fromTeam = String(record.fromTeam || record.oldTeam || "").trim();
-      if (!playerName || !toTeam || !fromTeam) return null;
-      const parsed = stamp(record);
-      return {
-        playerName,
-        toTeam: clubLabelEn(toTeam),
-        fromTeam: clubLabelEn(fromTeam),
-        // Tarihi okunamayan kayıt "yeni" SAYILMAZ — Türkçe bantla aynı kural.
-        isBreaking: parsed > 0 && (nowMs - parsed) <= TRANSFER_BREAKING_WINDOW_MS,
-        dateLabel: parsed > 0
-          ? new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "Europe/Istanbul" }).format(new Date(parsed))
-          : "",
-        statusKey: transferStatusKey(record),
-        url: record.url || record.sourceUrl || (record.source && record.source.url) || "",
-        _stamp: parsed,
-        _club: clubRank(record)
-      };
-    })
-    .filter(Boolean)
-    .sort((left, right) => right._stamp - left._stamp ||
-      left._club - right._club ||
-      left.playerName.localeCompare(right.playerName, "en"))
-    .slice(0, 12);
+  return selectTickerRecords(readJson("transfers.json", {}), { locale: "en" })
+    .map((item) => ({
+      ...item,
+      toTeam: clubLabelEn(item.toTeam),
+      fromTeam: clubLabelEn(item.fromTeam)
+    }));
 }
 
 function transferTickerItem(item, duplicate) {
@@ -807,7 +780,8 @@ function columnsSection() {
 function dailyHeadlinesSection() {
   const pool = programMatches();
   const byId = new Map(pool.map((match) => [String(match.id || ""), match]));
-  const ordered = buildDailyHeadlines(pool, { today: TODAY, reports: postMatchRecords });
+  // Sıra Türkçe tarafla aynı serviste hesaplanır; ilgi puanı da aynı yerden.
+  const ordered = buildDailyHeadlines(withRelevance(pool), { today: TODAY, reports: postMatchRecords });
 
   const cards = ordered.map((headline) => {
     const match = byId.get(String(headline.matchId || ""));
@@ -1121,7 +1095,8 @@ function newsSection() {
   const items = newsList.slice(0, 3);
   if (!items.length) return "";
   const cards = items.map((item) => {
-    const href = `${BASE}haber/${escapeHtml(item.slug || item.id)}`;
+    // Bağlantı da servisten: kartın gösterildiği her haberin sayfası var.
+    const href = escapeHtml(newsHref(item, BASE));
     const published = item.publishedAt || item.date || "";
     return `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}">` +
       `<div class="news-card-meta"><span class="tag green" lang="tr">${escapeHtml(item.category || "Football agenda")}</span>` +

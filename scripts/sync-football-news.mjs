@@ -7,6 +7,7 @@ import { pathToFileURL } from "node:url";
 
 const require = createRequire(import.meta.url);
 const { validateTickerItem } = require("../services/newsTicker.js");
+const SOURCE_TRUST = require("../services/sourceTrust.js");
 
 const root = process.cwd();
 const OUTPUT_PATH = path.join(root, "data", "news-ticker.json");
@@ -16,14 +17,13 @@ const REQUEST_RETRIES = 2;
 const MAX_AUTOMATED_ITEMS = 18;
 const MAX_AGE_MS = 96 * 60 * 60 * 1000;
 
-const OFFICIAL_DOMAINS = [
-  "galatasaray.org", "fenerbahce.org", "bjk.com.tr", "trabzonspor.org.tr",
-  "tff.org", "uefa.com", "fifa.com"
-];
-const TRUSTED_DOMAINS = [
-  ...OFFICIAL_DOMAINS, "aa.com.tr", "trtspor.com.tr", "bbc.co.uk", "bbc.com",
-  "reuters.com", "apnews.com"
-];
+// KAYNAK LİSTESİ TEK YERDE: services/sourceTrust.js.
+//
+// Bu dosya kendi kısaltılmış listesini taşıyordu (yedi alan adı) ve servis
+// büyüdükçe ikisi ayrışıyordu. Aynı kuralın iki kopyası, bu depoda daha önce
+// canlıda 404 veren haber bağlantılarını doğurmuştu; tekrarlamıyoruz.
+const OFFICIAL_DOMAINS = SOURCE_TRUST.OFFICIAL_DOMAINS;
+const TRUSTED_DOMAINS = [...SOURCE_TRUST.OFFICIAL_DOMAINS, ...SOURCE_TRUST.HIGH_TRUST_DOMAINS];
 
 function googleNewsUrl(query, language = "tr") {
   const locale = language === "en" ? { hl: "en-GB", gl: "GB", ceid: "GB:en" } : { hl: "tr", gl: "TR", ceid: "TR:tr" };
@@ -31,14 +31,14 @@ function googleNewsUrl(query, language = "tr") {
   return `https://news.google.com/rss/search?${params.toString()}`;
 }
 
-const DEFAULT_FEEDS = [
-  { id: "galatasaray", team: "Galatasaray", priority: 1, url: googleNewsUrl("Galatasaray futbol site:galatasaray.org") },
-  { id: "fenerbahce", team: "Fenerbahçe", priority: 2, url: googleNewsUrl("Fenerbahçe futbol site:fenerbahce.org") },
-  { id: "besiktas", team: "Beşiktaş", priority: 3, url: googleNewsUrl("Beşiktaş futbol site:bjk.com.tr") },
-  { id: "trabzonspor", team: "Trabzonspor", priority: 4, url: googleNewsUrl("Trabzonspor futbol site:trabzonspor.org.tr") },
-  { id: "super-lig", team: "Süper Lig", priority: 5, url: googleNewsUrl("Süper Lig futbol site:tff.org") },
-  { id: "turkish-football", team: "Türk futbolu", priority: 6, url: googleNewsUrl("Türk futbolu UEFA site:aa.com.tr") },
-  { id: "uefa", team: "Avrupa futbolu", priority: 7, url: googleNewsUrl("UEFA football site:uefa.com", "en") }
+export const DEFAULT_FEEDS = [
+  { id: "galatasaray", officialDomain: "galatasaray.org", team: "Galatasaray", priority: 1, url: googleNewsUrl("Galatasaray futbol site:galatasaray.org") },
+  { id: "fenerbahce", officialDomain: "fenerbahce.org", team: "Fenerbahçe", priority: 2, url: googleNewsUrl("Fenerbahçe futbol site:fenerbahce.org") },
+  { id: "besiktas", officialDomain: "bjk.com.tr", team: "Beşiktaş", priority: 3, url: googleNewsUrl("Beşiktaş futbol site:bjk.com.tr") },
+  { id: "trabzonspor", officialDomain: "trabzonspor.org.tr", team: "Trabzonspor", priority: 4, url: googleNewsUrl("Trabzonspor futbol site:trabzonspor.org.tr") },
+  { id: "super-lig", officialDomain: "tff.org", team: "Süper Lig", priority: 5, url: googleNewsUrl("Süper Lig futbol site:tff.org") },
+  { id: "turkish-football", officialDomain: "aa.com.tr", team: "Türk futbolu", priority: 6, url: googleNewsUrl("Türk futbolu UEFA site:aa.com.tr") },
+  { id: "uefa", officialDomain: "uefa.com", team: "Avrupa futbolu", priority: 7, url: googleNewsUrl("UEFA football site:uefa.com", "en") }
 ];
 
 function decodeXml(value) {
@@ -89,11 +89,30 @@ function hostname(value) {
 }
 
 function domainAllowed(domain, allowed) {
+  if (!domain) return false;
   return allowed.some((entry) => domain === entry || domain.endsWith(`.${entry}`));
 }
 
+/**
+ * YAYINCI — HABERİ GERÇEKTE KİM YAYIMLADI?
+ *
+ * Öncelik RSS'in kendi `<source url>` alanıdır. O okunamadığında besleme
+ * tanımındaki `officialDomain` kullanılır ve bu bir TAHMİN DEĞİLDİR:
+ * beslemeler `site:fenerbahce.org` biçiminde alan adına daraltılmış
+ * aramalardır, dolayısıyla o beslemeden gelen her öğe tanım gereği o alanda
+ * yayımlanmıştır.
+ *
+ * Bu boşluk depoda görünür haldeydi: banttaki dört Fenerbahçe öğesi
+ * `publisher: null` taşırken "Resmî açıklama" rozetiyle gösteriliyordu.
+ * Rozet okuyucuya kulübün konuştuğunu söylüyor ama kayıt hangi kurumun
+ * konuştuğunu söyleyemiyordu.
+ */
+function publisherOf(item) {
+  return hostname(item.sourceUrl) || (item.feed && item.feed.officialDomain) || "";
+}
+
 function isOfficial(item) {
-  return domainAllowed(hostname(item.sourceUrl), OFFICIAL_DOMAINS);
+  return domainAllowed(publisherOf(item), OFFICIAL_DOMAINS);
 }
 
 function isTrusted(item) {
@@ -182,7 +201,7 @@ export function toTickerItem(item) {
     // haberin gerçekte hangi kurumda yayımlandığını kayıtta tutar. İkisi
     // ayrı durur ki kaydı okuyan (ya da denetleyen) kimse bağlantının
     // hedefiyle kaynağın kimliğini birbirine karıştırmasın.
-    source: { name: item.sourceName, url: item.link, publisher: hostname(item.sourceUrl) || null },
+    source: { name: item.sourceName, url: item.link, publisher: publisherOf(item) || null },
     automation: { source: "rss", feed: item.feed.id || item.feed.url, priority: item.feed.priority || 99 }
   };
 }

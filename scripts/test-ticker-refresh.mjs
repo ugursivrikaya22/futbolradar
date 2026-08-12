@@ -35,7 +35,8 @@ function entry(overrides = {}) {
     confidence: "confirmed",
     text: "Kulüp resmî açıklama yayımladı",
     timestamp: offsetHours(-3),
-    source: { name: "Kaynak", url: "https://example.com/haber" },
+    // "official" kategorisi resmî kaynak gerektirir.
+    source: { name: "Kaynak", url: "https://www.galatasaray.org/haber/ornek" },
     ...overrides
   };
 }
@@ -106,13 +107,19 @@ const idsOf = (payload) => (payload.items || []).map((row) => row.id);
           text: "Görüşmelerin sürdüğü öne sürüldü",
           timestamp: offsetHours(-24 * 10)
         }),
-        // Resmî açıklamanın raf ömrü 21 gün: transfer penceresi boyunca geçerli.
-        entry({ id: "resmi", category: "official", timestamp: offsetHours(-24 * 10) })
+        // Varsayılan raf ömrü üç gün; resmî açıklama da bundan muaf değil.
+        entry({ id: "resmi", category: "official", timestamp: offsetHours(-24 * 10) }),
+        // Üç günün içindeki kayıt kalmalı.
+        entry({ id: "taze-resmi", category: "official", timestamp: offsetHours(-24) })
       ]
     }
   });
 
-  assert.deepEqual(idsOf(ticker), ["resmi"], "raf ömrü dolan iddia düşmeli, resmî açıklama kalmalı");
+  assert.deepEqual(
+    idsOf(ticker),
+    ["taze-resmi"],
+    "üç günden eski her kayıt düşmeli — resmî açıklama da dahil"
+  );
 }
 
 // ── 3. Son dakika işareti DOSYADAN da söner ────────────────────────────────

@@ -1,5 +1,6 @@
 const { getProvider, mockProvider } = require("../services/providers");
 const { mergeProviderTransfers } = require("../services/playerService");
+const { withDisplayStatus } = require("../services/transferRadarTicker");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -43,5 +44,11 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  return sendSuccess(res, data, source);
+  // DURUM BURADA DAMGALANIR — "Resmî" rozetinin kaynak koşulu tek yerde.
+  //
+  // Kural services/transferRadarTicker.js içinde ve kaynak alan adları
+  // services/sourceTrust.js içinde duruyor; ikisi de sunucuda kalıyor.
+  // İstemciye yalnızca SONUÇ gidiyor, böylece bant istemcide yeniden
+  // çizildiğinde ön derlenmiş rozetten farklı bir şey göstermiyor.
+  return sendSuccess(res, withDisplayStatus(data), source);
 };

@@ -26,15 +26,25 @@ function writeGeneratedFile(file, contents) {
 }
 // Dış bağlantı politikası tek yerde: services/sourceLinks.js.
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
+// Haber akışı kuralı da tek yerde: services/newsFeed.js. Veri okumadan önce
+// alınıyor, çünkü `news` sabiti hemen aşağıda bu süzgeci kullanıyor.
+const { publishableNews, newsHref, isExternalHref } = require("../services/newsFeed.js");
+// Transfer bandının seçim/sıralama kuralı da tek yerde; İngilizce bant da
+// aynı servisi kullanıyor.
+const { selectTickerRecords } = require("../services/transferRadarTicker.js");
+// Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
+const { withRelevance } = require("../services/matchRelevance.js");
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const momentum = JSON.parse(fs.readFileSync(path.join(root, "data", "momentum.json"), "utf8"));
 const signals = JSON.parse(fs.readFileSync(path.join(root, "data", "signals.json"), "utf8"));
 const analyses = JSON.parse(fs.readFileSync(path.join(root, "data", "analyses.json"), "utf8"));
+// Haber akışı kuralı servistedir (services/newsFeed.js); İngilizce üretici de
+// aynı listeyi oradan alır. Süzgeç yalnızca `verified` demiyor: haberin
+// GÖVDESİ de olmalı, çünkü sayfa üreticisi gövdesizler için sayfa yazmıyor ve
+// o karta bağlanmak 404 demek.
 const newsPayload = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
-const news = (Array.isArray(newsPayload) ? newsPayload : newsPayload.items || newsPayload.news || [])
-  .filter((article) => article && String(article.status || "").toLowerCase() === "verified")
-  .sort((left, right) => String(right.publishedAt || "").localeCompare(String(left.publishedAt || "")));
+const news = publishableNews(newsPayload);
 const freshnessData = JSON.parse(fs.readFileSync(path.join(root, "data", "freshness.json"), "utf8"));
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
@@ -445,7 +455,9 @@ function staticFeaturedFixture() {
  */
 function dailyHeadlineCards() {
   const today = istanbulToday();
-  const headlines = buildDailyHeadlines(curatedMatches(), {
+  // İlgi puanı burada damgalanır; API de aynı servisi kullanıyor, böylece
+  // ön derlenmiş sıra ile JavaScript yüklendikten sonraki sıra aynı olur.
+  const headlines = buildDailyHeadlines(withRelevance(curatedMatches()), {
     today,
     reports: postMatchStore()
   });
@@ -844,22 +856,12 @@ function analysisCards() {
   return analyses.map((analysis) => `<article class="article-card" data-card="analysis" id="${escapeHtml(analysis.id)}-preview"><div><h3>${escapeHtml(analysis.title)}</h3><p>${escapeHtml(analysis.summary)}</p></div><a href="${escapeHtml(analysis.url)}">Analizi aç</a></article>`).join("");
 }
 
-function newsCardHref(item) {
-  const url = String(item && item.url || "").trim();
-  const ownPrefix = "https://www.futbolradar.com/";
-  if (url.startsWith(ownPrefix)) {
-    const localPath = url.slice(ownPrefix.length);
-    return localPath.startsWith("haber/") ? `./${localPath.replace(/\.html$/, "")}` : `./${localPath}`;
-  }
-  return url;
-}
-
 function newsCardAction(item) {
-  const href = newsCardHref(item);
+  const href = newsHref(item, "./");
   if (!href) {
     return "";
   }
-  const external = /^https?:/i.test(href);
+  const external = isExternalHref(href);
   // Dışarı çıkan künye `nofollow` taşır (services/sourceLinks.js ile aynı
   // kural): alıntı bir atıftır, tavsiye değil. İç bağlantı sade açılır.
   const attrs = external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : "";
@@ -898,6 +900,64 @@ function displayScore(score) {
 function fixtureRounds() {
   const weeks = getFixtureWeeks(fixtures);
   return weeks.map((round) => `<section class="fixture-round-card" data-card="fixture-round"><div class="fixture-round-head"><div><span>${escapeHtml(round.dateRange || "Tarih ve saat bekleniyor")}</span><h2>${escapeHtml(round.label)}</h2></div><b>Onaylı eşleşmeler</b></div><div class="fixture-match-list">${(round.matches || []).map((match) => fixtureMatchRowHtml(match, round)).join("")}</div></section>`).join("");
+}
+
+/**
+ * TRANSFER RADARI BANDI — ARTIK DERLEME SIRASINDA YAZILIYOR.
+ *
+ * Bant eskiden yalnızca istemcide doluyordu; `index.html` banda "Transfer
+ * güncellemeleri hazırlanıyor." yer tutucusuyla çıkıyordu. Bunun görünür bir
+ * sonucu vardı: aynı sayfanın alt tarafındaki Transfer Takibi bölümü dolu
+ * transfer satırları gösterirken bant "veri hazırlanıyor" diyordu. Sayfa
+ * aynı anda hem "veri yok" hem "veri var" diyordu — JavaScript yüklenene
+ * kadar okuyucunun ve Googlebot'un gördüğü hâl buydu.
+ *
+ * Seçim ve sıralama servistedir (services/transferRadarTicker.js); İngilizce
+ * bant da aynı listeyi oradan alır. İstemci canlı veriyle üstüne yazar ama
+ * aynı kuralı kullandığı için bant yerinden oynamaz.
+ *
+ * Kayan animasyon saf CSS; bant JavaScript olmadan da çalışır.
+ */
+function transferRadarItem(item, duplicate) {
+  const external = /^https?:/i.test(item.url);
+  const tag = item.url ? "a" : "span";
+  const attributes = item.url
+    ? ` href="${escapeHtml(item.url)}"${external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : ""}${duplicate ? ' tabindex="-1"' : ""}`
+    : "";
+  const lead = item.isBreaking ? "SON DAKİKA" : (item.dateLabel || "TRANSFER");
+  const statusLabel = { Official: "Resmî", AgreementReported: "Anlaşma iddiası", Rumor: "İddia", Talks: "Görüşme", Loan: "Kiralık" }[item.statusKey] || item.statusKey;
+  const aria = `${lead} | ${item.playerName} → ${item.toTeam} | Nereden: ${item.fromTeam} | ${statusLabel}`;
+  return `<${tag} class="transfer-radar-ticker__item"${attributes} aria-label="${escapeHtml(aria)}">` +
+    `<span class="transfer-radar-ticker__breaking${item.isBreaking ? "" : " is-dated"}">${escapeHtml(lead)}</span>` +
+    `<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>` +
+    `<strong>${escapeHtml(item.playerName)} <span aria-hidden="true">→</span> ${escapeHtml(item.toTeam)}</strong>` +
+    `<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>` +
+    `<span>Nereden: ${escapeHtml(item.fromTeam)}</span>` +
+    `<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>` +
+    // Sınıf anahtarı İngilizce kalır (CSS onunla renklendiriyor).
+    `<span class="transfer-radar-ticker__status is-${item.statusKey.toLowerCase()}">${escapeHtml(statusLabel)}</span>` +
+    `</${tag}>`;
+}
+
+function transferRadarTrack() {
+  const items = selectTickerRecords(transfers);
+
+  // Veri yoksa yer tutucu KALIR — uydurma yapılmaz. Çelişki yalnızca veri
+  // varken yer tutucu göstermekten doğuyordu.
+  if (!items.length) {
+    return `<div class="transfer-radar-ticker__track is-static" data-transfer-radar-track>
+            <div class="transfer-radar-ticker__group"><span class="transfer-radar-ticker__empty">Transfer güncellemeleri hazırlanıyor.</span></div>
+          </div>`;
+  }
+
+  // Süre app.js ile aynı formülden: öğe başına 9 sn, 34-80 sn arasında.
+  const duration = Math.max(34, Math.min(80, items.length * 9));
+  const primary = items.map((item) => transferRadarItem(item, false)).join("");
+  const duplicate = items.map((item) => transferRadarItem(item, true)).join("");
+  return `<div class="transfer-radar-ticker__track" style="--transfer-ticker-duration:${duration}s" data-transfer-radar-track>
+            <div class="transfer-radar-ticker__group">${primary}</div>
+            <div class="transfer-radar-ticker__group" aria-hidden="true">${duplicate}</div>
+          </div>`;
 }
 
 /**
@@ -1074,7 +1134,8 @@ writePage("index.html", {
   "player-radar": trendPlayerSlot(3),
   "player-signals": playerSignalsSlot(),
   "news-preview": newsCards(3),
-  "analysis-preview": analysisCards()
+  "analysis-preview": analysisCards(),
+  "transfer-radar": transferRadarTrack()
 }, fixtureFreshness);
 
 writePage("analizler.html", {

@@ -171,6 +171,30 @@ function teamTableHtml(rows, season, base) {
   </table></div>`;
 }
 
+/**
+ * ARŞİVLENEN HER KADRO BAĞLANIR.
+ *
+ * Kadro sayfaları takım kadrosu veri kümesinden üretiliyor; takım bilançosu
+ * tablosu ise yalnızca o sezon KAYITLI MAÇI olan takımları listeliyor. İkisi
+ * aynı küme değil: 18 kadro sayfası üretilirken tabloda yalnızca 10 takım
+ * vardı, dolayısıyla sekiz sayfa sitemap'te indexlenebilir durumda duruyor
+ * ama siteden hiçbir yerden ulaşılamıyordu.
+ *
+ * Orphan sayfa iki şeyi birden söyler ve ikisi çelişir: Google'a "bunu
+ * indexle", siteye "bu önemsiz". Üretilen her kadro burada listelenir.
+ */
+function squadListHtml(squads, season, base) {
+  const cards = squads.map((squad) => {
+    const file = `arsiv/kadro-${season}-${slug(squad.teamName)}.html`;
+    const count = Array.isArray(squad.players) ? squad.players.length : 0;
+    return `<article class="card" data-card="archive-squad"><span class="card-kicker">Kadro</span>` +
+      `<h3>${escapeHtml(squad.teamName)}</h3>` +
+      `<p>${count ? `${count} oyuncu arşivlendi.` : "Kadro kaydı arşivlendi."}</p>` +
+      `<a class="detail-link" href="${base}${escapeHtml(file)}">Kadroyu aç</a></article>`;
+  }).join("");
+  return `<div class="grid">${cards}</div>`;
+}
+
 function managerListHtml(managers, missing, season, base) {
   const cards = managers.map((entry) => {
     const file = `arsiv/teknik-direktor-${season}-${slug(entry.manager)}.html`;
@@ -213,6 +237,11 @@ function seasonPage(entry) {
 
     section(`${label} maçları`, `${summary.matchCount} kayıtlı maç, yeniden eskiye.`,
       `<div class="archive-match-list">${matchRows(entry.matches, "../")}</div>`, "Maç arşivi"),
+
+    entry.squads.length
+      ? section("Arşivlenen kadrolar", "Sezonun kayıtlı kadroları; maç kaydı olmayan takımlar da dahil.",
+        squadListHtml(entry.squads, season, "../"), "Kadro arşivi")
+      : "",
 
     entry.managers.length
       ? section("Teknik direktörler", "Her kayıt kaynağıyla birlikte arşivlenir.",
