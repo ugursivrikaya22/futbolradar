@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-12T10:09:43.757Z",
+  "updatedAt": "2026-08-12T11:49:34.216Z",
   "items": [
     {
       "id": "auto-news-a19c675f3a93b2da078d",
@@ -269,6 +269,25 @@
       }
     },
     {
+      "id": "auto-news-853585ba5e5471d436a6",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Hradec Kralove Maçı Hazırlıkları Tamamlandı - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-08-12T10:56:33.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFBidGxicHlYbUZPTTQ2Z0FpelRDLWZjXzV0U0JzVWhRTmttZ2xRU211WWtVMkdxZmdYdUF6M0xoT2NFY2RncWtERXFfbEVaVmhrVVBvN3FtZUZ2S0d1U3Z3?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3
+      }
+    },
+    {
       "id": "auto-news-e79a50cbfca37780132d",
       "category": "official",
       "confidence": "confirmed",
@@ -317,25 +336,6 @@
       "source": {
         "name": "Trabzonspor Kulübü Resmi Web Sitesi",
         "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOeERzZzdGU0Q1bkZvbE4wQkVSakxRTU9TRWU3ZG9pTmwtZEdJNzQ4Z19BX1pnSUtsTUlGWUV3UnBnanBSdXh2MDBLTnk2WkxLaXdzM2wyX3hySlRQZkNoUTdpbFowdjluYlliNXlfQW9vNTFKUmNSWGRyZkdEX1dfVWhwdGxoSGNSWnpDVGVObUNySFVEaE93?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4
-      }
-    },
-    {
-      "id": "auto-news-44c90baf6d85d50e8b81",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Kasımpaşa maçı hazırlıklarımız başladı",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-10T18:07:04.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxPTkloN3l4WHNKZ2d3ak1VUWZnTGNmbk5CMEx4VE1lbmUxcDg2a0Q0Yld4elhnTmUyWHhEOHFZalJRd2xsN2pzc1Zqd1BNMmJ1WFVHTGtfdGNiaXMzQmRBZFRnWHZSTGVuaVZoSFZJdnlQRzYxdlY2dm9YS2JqXzJXU21BQUNKc2RjUGdBNGtKNko?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
       "automation": {
