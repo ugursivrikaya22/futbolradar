@@ -7,6 +7,8 @@ const root = process.cwd();
 const news = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
 const ticker = JSON.parse(fs.readFileSync(path.join(root, "data", "news-ticker.json"), "utf8"));
 const drafts = JSON.parse(fs.readFileSync(path.join(root, "editorial", "news-drafts.json"), "utf8"));
+const transfersDoc = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
+const transfers = Array.isArray(transfersDoc) ? transfersDoc : (transfersDoc.transfers || []);
 
 const published = news.filter((item) => String(item.status || "").toLowerCase() === "verified");
 const publishedIds = new Set(published.map((item) => item.id));
@@ -93,10 +95,32 @@ assert.ok(
   !(ticker.items || []).some((entry) => entry.id === "trabzonspor-salah-dev-paket-iddiasi"),
   "Salah rumor ticker item should not remain after official confirmation"
 );
+// BANT "GÜNDEM"DİR, ARŞİV DEĞİL.
+//
+// Resmî transfer duyurusu da 72 saatlik varsayılan raf ömrüne tabidir; bu
+// kayıt o pencereyi aştığında banttan düşer. Düşmesi bilgi kaybı değil:
+// transferin kendisi `data/transfers.json` içinde "Official" olarak duruyor
+// ve haber sayfası yayında kalıyor. Banttan çıkmak "artık gündem değil"
+// demek, "artık doğru değil" demek değil.
+//
+// Bu yüzden aşağıdaki denetimler kaydın VARLIĞINI şart koşmuyor; bantta
+// olduğu sürece DOĞRU sınıflandırıldığını şart koşuyor.
 const salahTicker = (ticker.items || []).find((entry) => entry.id === "trabzonspor-mohamed-salah-resmi-transfer-0508");
-assert.equal(salahTicker?.category, "official", "Salah ticker should use the official category");
-assert.equal(salahTicker?.confidence, "confirmed", "Salah ticker should be confirmed after official club wording");
-assert.match(salahTicker?.source?.url || "", /^https:\/\/www\.trabzonspor\.org\.tr\/news\//, "Salah ticker should link to the official club source");
+if (salahTicker) {
+  assert.equal(salahTicker.category, "official", "Salah ticker should use the official category");
+  assert.equal(salahTicker.confidence, "confirmed", "Salah ticker should be confirmed after official club wording");
+  assert.match(salahTicker.source?.url || "", /^https:\/\/www\.trabzonspor\.org\.tr\/news\//, "Salah ticker should link to the official club source");
+}
+
+// Bantta olsun olmasın, transferin kendisi doğrulanmış kayıt olarak durmalı:
+// raf ömrü bandı temizler, gerçeği değil.
+const salahTransfer = transfers.find((entry) => /salah/i.test(entry.playerName || ""));
+assert.ok(salahTransfer, "resmî transfer kaydı depoda kalmalı");
+assert.match(
+  salahTransfer.sourceUrl || "",
+  /^https:\/\/www\.trabzonspor\.org\.tr\//,
+  "resmî transfer kaydı kulübün kendi duyurusuna bağlanmalı"
+);
 // ── Bandın iki katmanı, iki ayrı bağlantı sözleşmesi ──────────────────────
 //
 // 1. KÜRATÖRLÜ kayıtlar (elle yazılan, `automation` taşımayanlar): arkasında
