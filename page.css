@@ -17810,3 +17810,35 @@ body,
 .source-strip div[data-stale="true"] b {
   opacity: 0.75;
 }
+
+/* SSS BLOĞU — kart kendi boyunda durur.
+
+   `.card` her kartı en az 168 piksel yapıyor; bir ızgara içinde komşularıyla
+   aynı yükseklikte durması gereken kartlar için doğru bir kural. Kapalı bir
+   `<details>` ise tek satır: soru yazıyor, altında 120 piksel boşluk kalıyor
+   ve okuyucu orada bir şeyin yüklenmediğini sanıyordu.
+
+   Kural yalnızca SSS bloğunu kapsar; sitedeki bütün SSS bölümleri aynı
+   işaretlemeyi (`.demand-faq` + `details.card`) kullandığı için hepsi
+   birlikte düzelir. */
+.demand-faq details.card {
+  min-height: 0;
+  padding: 14px 18px;
+}
+
+.demand-faq details.card + details.card {
+  margin-top: 10px;
+}
+
+.demand-faq summary {
+  cursor: pointer;
+  list-style-position: outside;
+}
+
+.demand-faq summary b {
+  font-size: 1rem;
+}
+
+.demand-faq details[open] > p {
+  margin-top: 10px;
+}

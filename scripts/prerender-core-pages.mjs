@@ -4,6 +4,7 @@ import { createRequire } from "node:module";
 import {
   fixtureCard as sharedFixtureCard,
   fixtureRow as sharedFixtureRow,
+  leagueMatchGroup as sharedLeagueMatchGroup,
   trendCard as sharedTrendCard,
   transferWatchShell
 } from "./lib/matchCards.mjs";
@@ -34,6 +35,15 @@ const { publishableNews, newsHref, isExternalHref } = require("../services/newsF
 const { selectTickerRecords } = require("../services/transferRadarTicker.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { withRelevance } = require("../services/matchRelevance.js");
+// "Bugünün Maçları" yüzeyinin kuralı — sıra, lig blokları, bağlantı, SSS.
+const {
+  groupMatchesByLeague,
+  matchDetailPath,
+  matchProgramFaq,
+  orderMatchProgram
+} = require("../services/matchProgram.js");
+// Maçların makine okunur karşılığı (SportsEvent / FAQPage).
+const { faqSchema, matchListSchema } = require("../services/matchSchema.js");
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const momentum = JSON.parse(fs.readFileSync(path.join(root, "data", "momentum.json"), "utf8"));
@@ -216,15 +226,34 @@ function longDateLabel(value) {
  * bile boş sayfa demekti. Artık takvimden yaklaşan maçlar kendi tarih
  * etiketleriyle basılıyor - bir gün eskise bile yanıltmayan bir içerik.
  */
-function calendarProgramCards(limit) {
+function programMatchPool() {
   const today = istanbulToday();
   // curatedMatches() merges data/matches.json with the provider calendar and
   // collapses the same fixture listed with the sides swapped. Reading the raw
   // calendar here rendered those duplicates into the static fallback, so the
   // homepage showed each neutral-venue friendly twice.
-  const upcoming = curatedMatches()
+  return curatedMatches()
     .filter((match) => istanbulDay(match.kickoff) >= today)
-    .filter((match) => String(match.status || "").toUpperCase() !== "FINISHED" || isVerifiedFinalMatch(match))
+    .filter((match) => String(match.status || "").toUpperCase() !== "FINISHED" || isVerifiedFinalMatch(match));
+}
+
+function programFixtureCard(match, today) {
+  const date = istanbulDay(match.kickoff);
+  const isToday = date === today;
+  const status = String(match.status || "SCHEDULED").toUpperCase();
+  // Biten maçta başlık saati değil skoru göstermeli; statik yedek JS
+  // çalışmadığında da günün sonucunu vermek zorunda.
+  const finalScore = isVerifiedFinalMatch(match)
+    ? `${match.score.home}-${match.score.away}`
+    : null;
+  const headlineValue = status === "FINISHED" && finalScore ? finalScore : (match.time || "");
+
+  return staticFixtureCard(match, { headlineValue, isToday, status, finalScore });
+}
+
+function calendarProgramCards(limit) {
+  const today = istanbulToday();
+  const upcoming = programMatchPool()
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
     .slice(0, limit || 6);
 
@@ -232,19 +261,101 @@ function calendarProgramCards(limit) {
     return "";
   }
 
-  return upcoming.map((match) => {
-    const date = istanbulDay(match.kickoff);
-    const isToday = date === today;
-    const status = String(match.status || "SCHEDULED").toUpperCase();
-    // Biten maçta başlık saati değil skoru göstermeli; statik yedek JS
-    // çalışmadığında da günün sonucunu vermek zorunda.
-    const finalScore = isVerifiedFinalMatch(match)
-      ? `${match.score.home}-${match.score.away}`
-      : null;
-    const headlineValue = status === "FINISHED" && finalScore ? finalScore : (match.time || "");
+  return upcoming.map((match) => programFixtureCard(match, today)).join("");
+}
 
-    return staticFixtureCard(match, { headlineValue, isToday, status, finalScore });
-  }).join("");
+/**
+ * "BUGÜNÜN MAÇLARI" SAYFASININ STATİK LİSTESİ.
+ *
+ * Ana sayfadaki önizlemeden İKİ noktada ayrılır ve ikisi de istemciyle
+ * hizalanmak için:
+ *
+ *   1. SIRA — ilgi puanı (services/matchProgram.js). Ölçüldü: 12 Ağustos
+ *      2026'da başlama saatine göre sıralanan liste, günün ilk on ikisini
+ *      15:00–19:15 arası hazırlık maçlarından seçiyordu; Konferans Ligi eleme
+ *      maçları, Leeds–Manchester United ve Deportivo–Real Madrid pencerenin
+ *      dışında kalıyordu. Sayfanın hedef sorgusu "bugünkü maçlar" ve arama
+ *      motorunun gördüğü liste günün en çok aranan maçlarını içermiyordu.
+ *
+ *   2. LİG BLOKLARI — istemci listeyi liglere ayırıyor, statik yedek tek
+ *      düz liste basıyordu. JavaScript yüklendiğinde yerleşim değişiyordu ve
+ *      HTML'de hangi maçın hangi turnuvaya ait olduğu hiç yazmıyordu.
+ *
+ * Pencere yine MATCH_LIST_INITIAL kart: sayı bloklara BÖLÜNMEDEN önce
+ * uygulanır, yani toplam görünen kart sayısı istemcininkiyle aynı kalır.
+ */
+function matchProgramPageCards() {
+  const today = istanbulToday();
+  const pool = programMatchPool();
+
+  // LİSTE TEK BİR GÜNE AİT.
+  //
+  // Havuz bugünden İTİBAREN bütün maçları taşıyor; ana sayfadaki önizleme
+  // için doğru, bu sayfa için değil. Sıra saate göreyken sorun görünmüyordu
+  // (bugünün maçları zaten önce geliyordu), ilgi puanına geçilince gelecek
+  // haftanın Süper Lig maçları bugünün Konferans Ligi maçlarının üstüne
+  // çıktı — "Bugünün Maçları" sayfasında bugün oynanmayan maçlar.
+  //
+  // Bugün maç yoksa liste maç OLAN ilk güne kayar: boş sayfa göstermek
+  // yerine hangi günü gösterdiğimizi söyleriz (SSS metinleri o günün adını
+  // taşır, "bugün" demez).
+  const days = [...new Set(pool.map((match) => istanbulDay(match.kickoff)))].sort();
+  const day = days.includes(today) ? today : days[0];
+
+  // Günün TAMAMI ile PENCERE ayrı iki liste. Kartlar pencereden basılır
+  // (istemcinin ilk görünümüyle aynı sayı), ama günü ANLATAN metin — kaç maç
+  // var, ilk ve son başlama saati — günün tamamından okunur. Pencereden
+  // sayılsaydı sayfa "günün son maçı 19:15" derdi; o saat pencerenin sonu,
+  // günün değil.
+  const dayMatches = day
+    ? orderMatchProgram(withRelevance(pool.filter((match) => istanbulDay(match.kickoff) === day)))
+    : [];
+  const ordered = dayMatches.slice(0, MATCH_LIST_INITIAL);
+
+  if (!ordered.length) {
+    return { html: "", matches: [], dayMatches: [], day: "" };
+  }
+
+  const html = groupMatchesByLeague(ordered)
+    .map((group) => sharedLeagueMatchGroup({
+      league: group.league || "Diğer karşılaşmalar",
+      countLabel: `${group.matches.length} maç`,
+      cardsHtml: group.matches.map((match) => programFixtureCard(match, today)).join("")
+    }))
+    .join("");
+
+  return { html, matches: ordered, dayMatches, day };
+}
+
+/**
+ * SSS bölümü. İşaretleme, sitede zaten yayında olan arama-talebi
+ * sayfalarınınkiyle aynı (`.demand-faq` + `details.card`) — yeni bir görsel
+ * dil ya da yeni CSS getirmiyor.
+ *
+ * Soru yoksa BÖLÜM DE YOK: başlığını yazıp altını boş bırakmak, bölümü hiç
+ * göstermemekten kötü.
+ */
+function faqSectionHtml(entries, heading) {
+  const list = Array.isArray(entries) ? entries : [];
+  if (!list.length) return "";
+
+  const items = list
+    .map((entry) => `<details class="card"><summary><b>${escapeHtml(entry.question)}</b></summary><p>${escapeHtml(entry.answer)}</p></details>`)
+    .join("\n        ");
+
+  return `      <section class="demand-faq" aria-labelledby="today-faq-title">
+        <h2 id="today-faq-title">${escapeHtml(heading || "Sık sorulanlar")}</h2>
+        ${items}
+      </section>`;
+}
+
+/**
+ * JSON-LD etiketi. `<` kaçırılır: aksi hâlde veri içindeki bir `</script>`
+ * dizgesi etiketi erken kapatır ve sayfanın geri kalanını bozar.
+ */
+function jsonLdScript(schema) {
+  const json = JSON.stringify(schema).replace(/</g, "\\u003c");
+  return `<script type="application/ld+json">${json}</script>`;
 }
 
 /**
@@ -329,7 +440,11 @@ function staticFixtureCard(match, meta) {
     homeScore,
     awayScore,
     formHtml,
-    actionHref: "./canli-skor.html",
+    // Bağlantı kuralı istemciyle AYNI (services/matchProgram.js). Eskiden her
+    // kart `./canli-skor.html`e gidiyordu: on iki kart, tek hedef ve maç
+    // başına hiçbir tarama yolu yok. JavaScript yüklendiğinde bağlantı zaten
+    // maç ayrıntısına dönüyordu, yani statik hâl istemciyle çelişiyordu.
+    actionHref: matchDetailPath(match),
     withMatchClick: true
   });
 }
@@ -1100,7 +1215,29 @@ function applyEmptyHide(html, target, content) {
   return html.replace(openTag, next);
 }
 
-function writePage(file, slots, freshness) {
+/**
+ * YALNIZCA İŞARETÇİYLE ÇALIŞAN SLOT.
+ *
+ * `replaceSlot` bir `data-api-target` bekler; çünkü doldurduğu her alanı
+ * istemci sonradan yeniden çizer. Bazı bloklar ise SADECE derlemede üretilir
+ * ve istemci onlara hiç dokunmaz — sayfanın SSS'i ve yapılandırılmış verisi
+ * gibi. Onlara sahte bir API hedefi vermek, "burayı API dolduruyor" diye
+ * yanlış bir şey söylemek olurdu.
+ *
+ * İşaretçiler sayfaya ELLE yazılır; yoksa blok sessizce atlanır (dosyaya
+ * kendiliğinden bölüm eklenmez).
+ */
+function replaceStaticSlot(html, target, content) {
+  const markerStart = `<!-- prerender:${target}:start -->`;
+  const markerEnd = `<!-- prerender:${target}:end -->`;
+  if (!html.includes(markerStart) || !html.includes(markerEnd)) return html;
+
+  const escape = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const expression = new RegExp(`${escape(markerStart)}[\\s\\S]*?${escape(markerEnd)}`);
+  return html.replace(expression, `${markerStart}\n${content}\n${markerEnd}`);
+}
+
+function writePage(file, slots, freshness, staticSlots = {}) {
   const sourcePath = path.join(root, file);
   if (!fs.existsSync(sourcePath)) {
     return;
@@ -1110,6 +1247,9 @@ function writePage(file, slots, freshness) {
   Object.entries(slots).forEach(([target, content]) => {
     html = replaceSlot(html, target, content);
     html = applyEmptyHide(html, target, content);
+  });
+  Object.entries(staticSlots).forEach(([target, content]) => {
+    html = replaceStaticSlot(html, target, content);
   });
   html = updateMetaLabels(html, freshness);
   html = updateRobotsDirective(html, file);
@@ -1150,9 +1290,40 @@ writePage("haberler.html", {
   "news-page": newsCards()
 }, fixtureFreshness);
 
+/**
+ * "Bugünün Maçları" sayfasının statik hâli: liste + SSS + yapılandırılmış
+ * veri. Üçü de AYNI maç listesinden üretilir; SSS'in cevabı ile ekrandaki
+ * liste ayrışamaz, `SportsEvent` düğümleri de basılan sırayı izler.
+ */
+const matchProgramPage = matchProgramPageCards();
+// Gün adı LİSTENİN gününden gelir, "bugün"den değil: derleme bir gün eski
+// kaldığında "bugün 25 maç var" bir yalana dönüşür, tarihli cümle ise
+// yalnızca geçmişe düşer.
+const matchProgramDateLabel = matchProgramPage.day
+  ? longDateLabel(`${matchProgramPage.day}T12:00:00+03:00`)
+  : "";
+const matchProgramFaqEntries = matchProgramFaq(matchProgramPage.dayMatches, {
+  dateLabel: matchProgramDateLabel
+});
+
 writePage("bugunun-maclari.html", {
-  "matches-page": matchProgramState("today")
-}, fixtureFreshness);
+  "matches-page": matchProgramPage.html || emptyMatchState("today")
+}, fixtureFreshness, {
+  "today-faq": faqSectionHtml(
+    matchProgramFaqEntries,
+    matchProgramDateLabel ? `${matchProgramDateLabel} maçları hakkında sık sorulanlar` : "Sık sorulanlar"
+  ),
+  "today-schema": [
+    matchListSchema(matchProgramPage.matches, {
+      name: "Bugünün futbol maçları",
+      // `url` YALNIZCA maçın kalıcı, dizine açık bir sayfası varsa yazılır.
+      // `mac-detay.html` `noindex,follow`; onu etkinliğin adresi diye vermek
+      // makineye var olmayan bir hedef göstermek olurdu.
+      urlFor: (match) => (match && match.analysisPage ? matchDetailPath(match) : "")
+    }),
+    faqSchema(matchProgramFaqEntries)
+  ].filter(Boolean).map(jsonLdScript).join("\n")
+});
 
 writePage("canli-skor.html", {
   // Canlı maç yokken de günün sonuçları görünsün: sayfa eskiden yalnızca
