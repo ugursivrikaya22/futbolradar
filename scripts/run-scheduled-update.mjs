@@ -13,6 +13,8 @@ import path from "node:path";
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
 
+import { POSTPROCESS_STEPS } from "./lib/postprocess-steps.mjs";
+
 const root = process.cwd();
 const STATUS_PATH = path.join(root, "data", "update-status.json");
 const PUBLIC_STATUS_PATH = path.join(root, "public", "data", "update-status.json");
@@ -343,13 +345,23 @@ function hourlyBuildSteps(diff) {
     nodeStep("render-update-admin", "generate-update-admin.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
     nodeStep("render-core-pages", "prerender-core-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("sync-public-assets", "sync-public-assets.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
-    nodeStep("search-index", "generate-search-index.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
-    nodeStep("shared-layout", "apply-shared-layout.mjs", [], { kind: "build", required: true, timeoutMs: 12 * 60 * 1000 }),
-    nodeStep("theme-boot", "inject-theme-boot.mjs", [], { kind: "build", required: true, timeoutMs: 5 * 60 * 1000 }),
-    nodeStep("analytics", "inject-ga4.mjs", [], { kind: "build", required: true, timeoutMs: 5 * 60 * 1000 }),
-    nodeStep("site-verification", "inject-site-verification.mjs", [], { kind: "build", required: true, timeoutMs: 5 * 60 * 1000 })
+    nodeStep("search-index", "generate-search-index.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 })
   );
+  // Üreticiler `<head>`i sıfırdan yazar; ortak yerleşim ve enjektörler onun
+  // üzerine işlenir. Bu zincir tam derlemeyle AYNI kaynaktan okunur, yoksa
+  // saatlik yol sessizce geride kalır — nitekim kalmıştı: hreflang blokları
+  // her saat siliniyordu.
+  steps.push(...postprocessSteps());
   return steps;
+}
+
+/** `npm run postprocess` ile birebir aynı zincir, aynı sırayla. */
+function postprocessSteps() {
+  return POSTPROCESS_STEPS.map((step) => nodeStep(step.id, step.script, step.args, {
+    kind: "build",
+    required: true,
+    timeoutMs: step.timeoutMinutes * 60 * 1000
+  }));
 }
 
 function githubRunUrl() {
@@ -523,4 +535,4 @@ if (isMain) {
   }
 }
 
-export { collectionSnapshot, dedupeKey, snapshotDiff };
+export { collectionSnapshot, dedupeKey, hourlyBuildSteps, snapshotDiff };

@@ -18,7 +18,32 @@ assert.equal(first.score, second.score, "Aynı veri aynı radar puanını üretm
 assert.equal(first.confidence, second.confidence, "Güven seviyesi deterministik olmalı");
 assert.ok(first.score >= 0 && first.score <= 100, "Radar puanı 0-100 aralığında olmalı");
 assert.ok(first.components.some((item) => item.key === "form" && item.value !== null), "Form bileşeni kullanılmalı");
-assert.ok(first.components.some((item) => item.key === "availability" && item.value === null), "Eksik kadro verisi uydurulmamalı");
+// KADRO BİLEŞENİ: VERİ VARSA HESAPLANIR, YOKSA BOŞ KALIR.
+//
+// Bu denetim eskiden depodaki `squad-statuses.json` üzerinden yapılıyor ve
+// "availability boş olmalı" diyordu — o dosyada Galatasaray satırı olmadığı
+// için doğruydu. Sonra satır geldi ve test, kodda hiçbir şey bozulmadığı hâlde
+// kırıldı: iddia edilen şey davranış değil, o günkü veri kapsamıydı.
+//
+// Asıl kural şu: eksik kadro verisi UYDURULMAZ. Bu yüzden ölçüm artık her iki
+// yönü de denetlenen sabit girdilerle yapılıyor; veri kapsamı büyüdükçe test
+// susmaya devam eder.
+const withoutSquadRow = calculateTeamRadar(galatasaray, { side: "home", players, squadStatus: { teams: [] } });
+assert.ok(
+  withoutSquadRow.components.some((item) => item.key === "availability" && item.value === null),
+  "Kadro satırı yokken devamlılık puanı uydurulmamalı"
+);
+
+const withSquadRow = calculateTeamRadar(galatasaray, {
+  side: "home",
+  players,
+  squadStatus: { teams: [{ team: galatasaray.name, totalAbsenceImpact: 30 }] }
+});
+assert.equal(
+  withSquadRow.components.find((item) => item.key === "availability").value,
+  70,
+  "Kadro satırı varken devamlılık puanı eksik etkisinden türetilmeli"
+);
 
 const empty = calculateTeamRadar(null, { side: "away", players: [], squadStatus });
 assert.equal(empty.score, null, "Takım verisi yokken puan üretilmemeli");

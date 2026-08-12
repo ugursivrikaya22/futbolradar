@@ -44,7 +44,23 @@ function analyticsTag() {
   return `  <script src="/analytics.js" defer ${marker} data-ga4-id="${escapeAttribute(ga4)}" data-google-ads-id="${escapeAttribute(ads)}" data-page-view-label="${escapeAttribute(pageViewLabel)}" data-match-click-label="${escapeAttribute(matchClickLabel)}"></script>`;
 }
 
+const TAG_RE = /\s*<script\b[^>]*data-futbolradar-ga4[^>]*>[\s\S]*?<\/script>/gi;
+
+/**
+ * ETİKET DOĞRUYSA YERİNDEN OYNATMA.
+ *
+ * Bu betik eskiden etiketi her koşuda söküp `</head>` hemen öncesine geri
+ * koyuyordu. `inject-hreflang.mjs` de kendi bloğunu aynı noktaya yazıyor. İki
+ * enjektör sırayla koştuğu için her derlemede birbirlerini itiyorlardı: içerik
+ * hiç değişmediği hâlde 9.000 sayfa yeniden yazılıyor, saatlik otomatik commit
+ * anlamsız bir fark yığınıyla şişiyordu.
+ *
+ * Etiket zaten olması gereken içerikteyse dosyaya dokunulmuyor; yeri neresi
+ * olursa olsun `<head>` içindedir ve tarayıcı için farkı yoktur. Yalnızca
+ * etiket eksikse veya içeriği değiştiyse söküp yeniden yazılıyor.
+ */
 let injected = 0;
+let alreadyCurrent = 0;
 for (const file of walk(root)) {
   const html = fs.readFileSync(file, "utf8");
   if (!html.includes("</head>")) {
@@ -52,14 +68,25 @@ for (const file of walk(root)) {
     continue;
   }
 
-  const withoutOldTag = html.replace(/\s*<script\b[^>]*data-futbolradar-ga4[^>]*>[\s\S]*?<\/script>/gi, "");
-  const next = withoutOldTag.replace("</head>", `${analyticsTag()}\n  </head>`);
+  const tag = analyticsTag();
+  const existing = html.match(TAG_RE) || [];
+  if (existing.length === 1 && existing[0].trim() === tag.trim()) {
+    alreadyCurrent += 1;
+    continue;
+  }
+
+  const withoutOldTag = html.replace(TAG_RE, "");
+  const next = withoutOldTag.replace("</head>", `${tag}\n  </head>`);
+  if (next === html) {
+    alreadyCurrent += 1;
+    continue;
+  }
   fs.writeFileSync(file, next, "utf8");
   injected += 1;
 }
 
 console.log(
-  `Analytics tag checked: ${injected} HTML files updated ` +
+  `Analytics tag checked: ${injected} HTML files updated, ${alreadyCurrent} already current ` +
   `(GA4 ${/^G-[A-Z0-9]+$/i.test(measurementId) ? "configured" : "not configured"}, ` +
   `Google Ads ${/^AW-\d+$/i.test(googleAdsId) ? "configured" : "not configured"})`
 );
