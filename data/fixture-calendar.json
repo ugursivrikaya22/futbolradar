@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-11T23:08:31.983Z",
+  "fetchedAt": "2026-08-12T00:03:40.747Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -202930,8 +202930,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-11T23:08:32.756Z",
-      "staleAfter": "2026-08-11T23:13:32.756Z",
+      "fetchedAt": "2026-08-12T00:03:41.471Z",
+      "staleAfter": "2026-08-12T00:08:41.471Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -202941,17 +202941,32 @@
       "competitionId": "konferans-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Brann skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Brann tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Brann kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 105' K. Eriksen tarafından kaydedildi. Skor üstünlüğü Brann tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Disiplin dengesi",
+            "value": "1 kırmızı kart",
+            "text": "Brann kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "105'",
+            "text": "Son gol 105' K. Eriksen tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "11 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 11 oyuncu değişikliği kayda geçti."
+          },
           {
             "label": "Canlı skor",
             "value": "2-4",
             "text": "Brann skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 26,
+        "dataPoints": 4,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -203870,7 +203885,7 @@
           },
           "type": "Card",
           "detail": "Yellow Card",
-          "value": "Yellow Card",
+          "value": "E. Horneland · Yellow Card",
           "comments": ""
         },
         {
@@ -203954,7 +203969,7 @@
           "comments": ""
         },
         {
-          "time": "94'",
+          "time": "95'",
           "team": {
             "name": "Brann"
           },
@@ -203980,7 +203995,7 @@
           },
           "type": "Goal",
           "detail": "Normal Goal",
-          "value": "K. Eriksen · Asist: V. Dragsnes · Normal Goal",
+          "value": "K. Eriksen · Normal Goal",
           "comments": ""
         },
         {
@@ -204830,8 +204845,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-11T23:08:32.756Z",
-      "staleAfter": "2026-08-11T23:13:32.756Z",
+      "fetchedAt": "2026-08-12T00:03:41.471Z",
+      "staleAfter": "2026-08-12T00:08:41.471Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -205073,9 +205088,24 @@
       ],
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Olympiakos Piraeus kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 95' E. Mor tarafından kaydedildi. Skor üstünlüğü NEC Nijmegen tarafında.",
-        "confidence": "Orta",
+        "summary": "NEC Nijmegen topa sahip olma oranında önde. NEC Nijmegen daha fazla şut üretti. Skor üstünlüğü NEC Nijmegen tarafında.",
+        "confidence": "Yüksek",
         "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "54%-46%",
+            "text": "NEC Nijmegen topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "16-10",
+            "text": "NEC Nijmegen daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "7-2",
+            "text": "NEC Nijmegen isabetli şutlarda önde."
+          },
           {
             "label": "Disiplin dengesi",
             "value": "1 kırmızı kart",
@@ -205098,7 +205128,7 @@
           }
         ],
         "eventCount": 23,
-        "dataPoints": 4,
+        "dataPoints": 7,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -205915,7 +205945,789 @@
             }
           }
         ]
-      }
+      },
+      "statistics": [
+        {
+          "category": "Hücum",
+          "type": "İsabetli şut",
+          "home": 7,
+          "away": 2,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 6,
+          "away": 6
+        },
+        {
+          "category": "Hücum",
+          "type": "Toplam şut",
+          "home": 16,
+          "away": 10,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 3,
+          "away": 2
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası içinden şut",
+          "home": 11,
+          "away": 6,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası dışından şut",
+          "home": 5,
+          "away": 4
+        },
+        {
+          "category": "Disiplin",
+          "type": "Faul",
+          "home": 17,
+          "away": 19
+        },
+        {
+          "category": "Genel",
+          "type": "Korner",
+          "home": 3,
+          "away": 4
+        },
+        {
+          "category": "Genel",
+          "type": "Ofsayt",
+          "home": 4,
+          "away": 2
+        },
+        {
+          "category": "Genel",
+          "type": "Topla oynama",
+          "home": 54,
+          "away": 46,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 2,
+          "away": 4
+        },
+        {
+          "category": "Disiplin",
+          "type": "Kırmızı kart",
+          "home": 0,
+          "away": 1
+        },
+        {
+          "category": "Savunma",
+          "type": "Kurtarış",
+          "home": 1,
+          "away": 5
+        },
+        {
+          "category": "Pas",
+          "type": "Toplam pas",
+          "home": 603,
+          "away": 505,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "İsabetli pas",
+          "home": 457,
+          "away": 350,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "Pas isabeti",
+          "home": 76,
+          "away": 69,
+          "unit": "%",
+          "higherIsBetter": true
+        }
+      ],
+      "players": [
+        {
+          "name": "Gonzalo Crettaz",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "129054",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "G",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "saves": 1,
+          "passes": 64,
+          "passAccuracy": 31,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Tobias Storm",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "332759",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "D",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 67,
+          "passAccuracy": 57,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Philippe Sandler",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "625",
+          "source": "api-football",
+          "minutes": 34,
+          "position": "D",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 6,
+          "passAccuracy": 6,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Deveron Fonville",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "353808",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "D",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 66,
+          "passAccuracy": 58,
+          "tackles": 1,
+          "duelsWon": 9,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Darko Nejašmić",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "14343",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 91,
+          "passAccuracy": 72,
+          "duelsWon": 8,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Sami Ouaissa",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "378864",
+          "source": "api-football",
+          "minutes": 30,
+          "position": "M",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Noe Lebreton",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "330315",
+          "source": "api-football",
+          "minutes": 105,
+          "position": "M",
+          "providerRating": 7.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 57,
+          "passAccuracy": 42,
+          "tackles": 2,
+          "duelsWon": 10,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dušan Tadić",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "554",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "M",
+          "providerRating": 7.7,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "passes": 56,
+          "passAccuracy": 38,
+          "tackles": 2,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Clement Bischoff",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "441958",
+          "source": "api-football",
+          "minutes": 88,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 46,
+          "passAccuracy": 30,
+          "tackles": 4,
+          "duelsWon": 9,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Tjaronn Chery",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "50120",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "F",
+          "providerRating": 5.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 4,
+          "shotsOnTarget": 2,
+          "passes": 33,
+          "passAccuracy": 28,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Bryan Linssen",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "37134",
+          "source": "api-football",
+          "minutes": 105,
+          "position": "F",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "assists": 0,
+          "shots": 3,
+          "shotsOnTarget": 2,
+          "passes": 11,
+          "passAccuracy": 6,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Emre Mor",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "47446",
+          "source": "api-football",
+          "minutes": 75,
+          "position": "F",
+          "providerRating": 7.9,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "assists": 0,
+          "shots": 3,
+          "shotsOnTarget": 2,
+          "passes": 23,
+          "passAccuracy": 17,
+          "tackles": 5,
+          "duelsWon": 10,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Brayann Pereira",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "274275",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 50,
+          "passAccuracy": 45,
+          "tackles": 2,
+          "duelsWon": 8,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Kaj Sierhuis",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "38132",
+          "source": "api-football",
+          "minutes": 32,
+          "position": "F",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 12,
+          "passAccuracy": 11,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Bram Nuytinck",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "30797",
+          "source": "api-football",
+          "minutes": 15,
+          "position": "D",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 5,
+          "passAccuracy": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jamiro Monteiro",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "50745",
+          "source": "api-football",
+          "minutes": 15,
+          "position": "M",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 10,
+          "passAccuracy": 9,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Kevin Kers",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "635838",
+          "source": "api-football",
+          "minutes": 15,
+          "position": "F",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 6,
+          "passAccuracy": 3,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Freek Entius",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "492120",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Joep Geneste",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "491801",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Thomas Ouwejan",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "36888",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Isak Hansen Aarøen",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "216770",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Willum Thor Willumsson",
+          "team": "NEC Nijmegen",
+          "providerPlayerId": "2320",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Balša Popović",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "66898",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "G",
+          "providerRating": 7.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "saves": 5,
+          "passes": 46,
+          "passAccuracy": 16,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Rodinei",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "10157",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "D",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 54,
+          "passAccuracy": 39,
+          "tackles": 8,
+          "duelsWon": 12,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Panagiotis Retsos",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "971",
+          "source": "api-football",
+          "minutes": 103,
+          "position": "D",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 47,
+          "passAccuracy": 35,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lorenzo Pirola",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "134431",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "D",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 67,
+          "passAccuracy": 47,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Onyemaechi Bruno",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "278196",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "D",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 48,
+          "passAccuracy": 34,
+          "tackles": 5,
+          "duelsWon": 7,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dani García",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "47281",
+          "source": "api-football",
+          "minutes": 72,
+          "position": "M",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 20,
+          "passAccuracy": 15,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Santiago Hezze",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "195929",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 52,
+          "passAccuracy": 44,
+          "tackles": 2,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gelson Martins",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "118",
+          "source": "api-football",
+          "minutes": 72,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 20,
+          "passAccuracy": 18,
+          "tackles": 3,
+          "duelsWon": 8,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gustavo Sá",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "379985",
+          "source": "api-football",
+          "minutes": 61,
+          "position": "M",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 22,
+          "passAccuracy": 13,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Jota Silva",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "141901",
+          "source": "api-football",
+          "minutes": 15,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ayoub El Kaabi",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "2722",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "F",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "assists": 0,
+          "shots": 2,
+          "shotsOnTarget": 1,
+          "passes": 34,
+          "passAccuracy": 26,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Kostas Fortounis",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "1609",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "M",
+          "providerRating": 5.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 22,
+          "passAccuracy": 10,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 1
+        },
+        {
+          "name": "Christos Mouzakitis",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "392514",
+          "source": "api-football",
+          "minutes": 42,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 15,
+          "passAccuracy": 13,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lorenzo Scipioni",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "364513",
+          "source": "api-football",
+          "minutes": 48,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 23,
+          "passAccuracy": 18,
+          "tackles": 2,
+          "duelsWon": 5,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Joel Roca",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "339105",
+          "source": "api-football",
+          "minutes": 48,
+          "position": "M",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 2,
+          "passes": 13,
+          "passAccuracy": 8,
+          "tackles": 3,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Zinedin Smajlović",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "413662",
+          "source": "api-football",
+          "minutes": 17,
+          "position": "D",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 15,
+          "passAccuracy": 9,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Chiquinho",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "41130",
+          "source": "api-football",
+          "minutes": 17,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 6,
+          "passAccuracy": 5,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Stefan Ortega",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "25004",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dimitrios Stournaras",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "595229",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "David Carmo",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "41970",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Pablo Maffeo",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "26302",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Christos Filis",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "568113",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Manolis Saliakas",
+          "team": "Olympiakos Piraeus",
+          "providerPlayerId": "27157",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        }
+      ]
     },
     {
       "id": "cska-1948-panathinaikos-2026-08-11",
@@ -205954,15 +206766,1117 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-11T21:09:16.147Z",
-      "staleAfter": "2026-08-11T21:14:16.147Z",
+      "fetchedAt": "2026-08-12T00:03:41.471Z",
+      "staleAfter": "2026-08-12T00:08:41.471Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1607603"
       },
-      "competitionId": "konferans-ligi"
+      "competitionId": "konferans-ligi",
+      "lineups": [
+        {
+          "team": "CSKA 1948",
+          "formation": "4-4-1-1",
+          "players": [
+            "Petar Marinov",
+            "Diego Medina",
+            "Andre Hoffmann",
+            "Lasha Dvali",
+            "Ognjen Gašević",
+            "Frédéric Maciel",
+            "Héctor Cuellar",
+            "Moataz Zemzemi",
+            "Jules Meyer",
+            "Georgi Rusev",
+            "Atanas Iliev"
+          ],
+          "substitutes": [
+            "Mamadou Diallo",
+            "Elias Franco",
+            "Brian Sobrero",
+            "Petar Vitanov",
+            "Florian Krebs",
+            "Dragan Grivić",
+            "Dimitar Sheytanov",
+            "Aleks Bozhev",
+            "Egor Parkhomenko",
+            "Fourat Soltani",
+            "Kaloyan Strinski",
+            "Marto Boychev"
+          ]
+        },
+        {
+          "team": "Panathinaikos",
+          "formation": "3-4-2-1",
+          "players": [
+            "Iñaki Peña",
+            "Georgios Katris",
+            "Stefan de Vrij",
+            "Rick Van Drongelen",
+            "Anass Zaroury",
+            "Pedro Chirivella",
+            "Etienne Camara",
+            "Georgios Kyriakopoulos",
+            "Levi García",
+            "Santino Andino",
+            "Elmin Rastoder"
+          ],
+          "substitutes": [
+            "Cyriel Dessers",
+            "Adriano Jagušić",
+            "Ahmed Touba",
+            "Adam Gnezda Čerin",
+            "Vicente Taborda",
+            "Sotiris Kontouris",
+            "Lucas Cháves",
+            "Konstantinos Kotsaris",
+            "Facundo Pellistri",
+            "Panagiotis Biniaris",
+            "Andreas Tetteh",
+            "Georgios Kyriopoulos"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "time": "41'",
+          "team": {
+            "name": "Panathinaikos"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "G. Katris · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "60'",
+          "team": {
+            "name": "Panathinaikos"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "L. Garcia · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Panathinaikos"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "E. Rastoder · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "65'",
+          "team": {
+            "name": "CSKA 1948"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "A. Iliev · Asist: M. Diallo · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "65'",
+          "team": {
+            "name": "Panathinaikos"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "E. Rastoder · Asist: C. Dessers · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Panathinaikos"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "L. Garcia · Asist: A. Jagusic · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "CSKA 1948"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Zemzemi · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "CSKA 1948"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "M. Zemzemi · Asist: E. Franco · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "80'",
+          "team": {
+            "name": "Panathinaikos"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "A. Zaroury · Asist: A. Touba · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "83'",
+          "team": {
+            "name": "CSKA 1948"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "J. Meyer · Asist: P. Vitanov · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "83'",
+          "team": {
+            "name": "CSKA 1948"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "G. Rusev · Asist: B. Sobrero · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "87'",
+          "team": {
+            "name": "CSKA 1948"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "L. Dvali · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "88'",
+          "team": {
+            "name": "Panathinaikos"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "P. Chirivella · Asist: A. Gnezda Cerin · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "88'",
+          "team": {
+            "name": "Panathinaikos"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "S. Andino · Asist: V. Taborda · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "94'",
+          "team": {
+            "name": "Panathinaikos"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "C. Dessers · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "101'",
+          "team": {
+            "name": "CSKA 1948"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "H. Cuellar · Asist: F. Krebs · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "105+1'",
+          "team": {
+            "name": "Panathinaikos"
+          },
+          "type": "subst",
+          "detail": "Substitution 6",
+          "value": "G. Kyriakopoulos · Asist: S. Kontouris · Substitution 6",
+          "comments": ""
+        },
+        {
+          "time": "106'",
+          "team": {
+            "name": "CSKA 1948"
+          },
+          "type": "subst",
+          "detail": "Substitution 6",
+          "value": "D. Medina · Asist: D. Grivic · Substitution 6",
+          "comments": ""
+        },
+        {
+          "time": "112'",
+          "team": {
+            "name": "CSKA 1948"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Frederic · Yellow Card",
+          "comments": "Holding"
+        }
+      ],
+      "statistics": [
+        {
+          "category": "Hücum",
+          "type": "İsabetli şut",
+          "home": 5,
+          "away": 11,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 8,
+          "away": 8
+        },
+        {
+          "category": "Hücum",
+          "type": "Toplam şut",
+          "home": 14,
+          "away": 21,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 1,
+          "away": 2
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası içinden şut",
+          "home": 9,
+          "away": 12,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası dışından şut",
+          "home": 5,
+          "away": 9
+        },
+        {
+          "category": "Disiplin",
+          "type": "Faul",
+          "home": 13,
+          "away": 13
+        },
+        {
+          "category": "Genel",
+          "type": "Korner",
+          "home": 3,
+          "away": 6
+        },
+        {
+          "category": "Genel",
+          "type": "Ofsayt",
+          "home": 1,
+          "away": 2
+        },
+        {
+          "category": "Genel",
+          "type": "Topla oynama",
+          "home": 50,
+          "away": 50,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 2,
+          "away": 2
+        },
+        {
+          "category": "Savunma",
+          "type": "Kurtarış",
+          "home": 9,
+          "away": 4
+        },
+        {
+          "category": "Pas",
+          "type": "Toplam pas",
+          "home": 638,
+          "away": 661,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "İsabetli pas",
+          "home": 553,
+          "away": 576,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "Pas isabeti",
+          "home": 87,
+          "away": 87,
+          "unit": "%",
+          "higherIsBetter": true
+        }
+      ],
+      "players": [
+        {
+          "name": "Petar Marinov",
+          "team": "CSKA 1948",
+          "providerPlayerId": "320050",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "G",
+          "providerRating": 7.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "saves": 9,
+          "passes": 41,
+          "passAccuracy": 25,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Diego Medina",
+          "team": "CSKA 1948",
+          "providerPlayerId": "307545",
+          "source": "api-football",
+          "minutes": 105,
+          "position": "D",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 54,
+          "passAccuracy": 51,
+          "tackles": 3,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Andre Hoffmann",
+          "team": "CSKA 1948",
+          "providerPlayerId": "25453",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "D",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 83,
+          "passAccuracy": 78,
+          "tackles": 4,
+          "duelsWon": 7,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lasha Dvali",
+          "team": "CSKA 1948",
+          "providerPlayerId": "28327",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "D",
+          "providerRating": 8,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "assists": 0,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 103,
+          "passAccuracy": 95,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ognjen Gašević",
+          "team": "CSKA 1948",
+          "providerPlayerId": "66839",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "D",
+          "providerRating": 5.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 45,
+          "passAccuracy": 41,
+          "tackles": 2,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Frédéric Maciel",
+          "team": "CSKA 1948",
+          "providerPlayerId": "96356",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 2,
+          "passes": 48,
+          "passAccuracy": 37,
+          "tackles": 2,
+          "duelsWon": 9,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Héctor Cuellar",
+          "team": "CSKA 1948",
+          "providerPlayerId": "354347",
+          "source": "api-football",
+          "minutes": 101,
+          "position": "M",
+          "providerRating": 7.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 66,
+          "passAccuracy": 61,
+          "tackles": 4,
+          "duelsWon": 9,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Moataz Zemzemi",
+          "team": "CSKA 1948",
+          "providerPlayerId": "22262",
+          "source": "api-football",
+          "minutes": 72,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 42,
+          "passAccuracy": 39,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Jules Meyer",
+          "team": "CSKA 1948",
+          "providerPlayerId": "191697",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 48,
+          "passAccuracy": 39,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Georgi Rusev",
+          "team": "CSKA 1948",
+          "providerPlayerId": "11317",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "F",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 26,
+          "passAccuracy": 20,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Atanas Iliev",
+          "team": "CSKA 1948",
+          "providerPlayerId": "10631",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "F",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 7,
+          "passAccuracy": 2,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mamadou Diallo",
+          "team": "CSKA 1948",
+          "providerPlayerId": "22448",
+          "source": "api-football",
+          "minutes": 55,
+          "position": "F",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 2,
+          "shotsOnTarget": 1,
+          "passes": 11,
+          "passAccuracy": 9,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Elias Franco",
+          "team": "CSKA 1948",
+          "providerPlayerId": "141636",
+          "source": "api-football",
+          "minutes": 48,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 2,
+          "passes": 2,
+          "passAccuracy": 2,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Brian Sobrero",
+          "team": "CSKA 1948",
+          "providerPlayerId": "288706",
+          "source": "api-football",
+          "minutes": 37,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 3,
+          "shotsOnTarget": 1,
+          "passes": 20,
+          "passAccuracy": 20,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Petar Vitanov",
+          "team": "CSKA 1948",
+          "providerPlayerId": "11115",
+          "source": "api-football",
+          "minutes": 37,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 13,
+          "passAccuracy": 11,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Florian Krebs",
+          "team": "CSKA 1948",
+          "providerPlayerId": "162735",
+          "source": "api-football",
+          "minutes": 19,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 19,
+          "passAccuracy": 14,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dragan Grivić",
+          "team": "CSKA 1948",
+          "providerPlayerId": "66754",
+          "source": "api-football",
+          "minutes": 15,
+          "position": "D",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 10,
+          "passAccuracy": 9,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dimitar Sheytanov",
+          "team": "CSKA 1948",
+          "providerPlayerId": "204229",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Aleks Bozhev",
+          "team": "CSKA 1948",
+          "providerPlayerId": "315739",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Egor Parkhomenko",
+          "team": "CSKA 1948",
+          "providerPlayerId": "291983",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Fourat Soltani",
+          "team": "CSKA 1948",
+          "providerPlayerId": "292069",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Kaloyan Strinski",
+          "team": "CSKA 1948",
+          "providerPlayerId": "427444",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Marto Boychev",
+          "team": "CSKA 1948",
+          "providerPlayerId": "446048",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Iñaki Peña",
+          "team": "Panathinaikos",
+          "providerPlayerId": "126",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "G",
+          "providerRating": 7.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "saves": 4,
+          "passes": 36,
+          "passAccuracy": 21,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Georgios Katris",
+          "team": "Panathinaikos",
+          "providerPlayerId": "392556",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 69,
+          "passAccuracy": 66,
+          "duelsWon": 3,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Stefan de Vrij",
+          "team": "Panathinaikos",
+          "providerPlayerId": "194",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "D",
+          "providerRating": 7.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 78,
+          "passAccuracy": 75,
+          "tackles": 1,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Rick Van Drongelen",
+          "team": "Panathinaikos",
+          "providerPlayerId": "24873",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "D",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 81,
+          "passAccuracy": 73,
+          "tackles": 3,
+          "duelsWon": 9,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Anass Zaroury",
+          "team": "Panathinaikos",
+          "providerPlayerId": "129169",
+          "source": "api-football",
+          "minutes": 80,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 3,
+          "shotsOnTarget": 2,
+          "passes": 48,
+          "passAccuracy": 41,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Pedro Chirivella",
+          "team": "Panathinaikos",
+          "providerPlayerId": "93671",
+          "source": "api-football",
+          "minutes": 88,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 57,
+          "passAccuracy": 52,
+          "tackles": 2,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Etienne Camara",
+          "team": "Panathinaikos",
+          "providerPlayerId": "297139",
+          "source": "api-football",
+          "minutes": 120,
+          "position": "M",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 64,
+          "passAccuracy": 59,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Georgios Kyriakopoulos",
+          "team": "Panathinaikos",
+          "providerPlayerId": "26828",
+          "source": "api-football",
+          "minutes": 104,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 68,
+          "passAccuracy": 56,
+          "tackles": 3,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Levi García",
+          "team": "Panathinaikos",
+          "providerPlayerId": "93059",
+          "source": "api-football",
+          "minutes": 66,
+          "position": "F",
+          "providerRating": 7.6,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "assists": 0,
+          "shots": 3,
+          "shotsOnTarget": 2,
+          "passes": 21,
+          "passAccuracy": 19,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Santino Andino",
+          "team": "Panathinaikos",
+          "providerPlayerId": "490156",
+          "source": "api-football",
+          "minutes": 88,
+          "position": "F",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 4,
+          "shotsOnTarget": 2,
+          "passes": 35,
+          "passAccuracy": 26,
+          "tackles": 5,
+          "duelsWon": 10,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Elmin Rastoder",
+          "team": "Panathinaikos",
+          "providerPlayerId": "277896",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 9,
+          "passAccuracy": 8,
+          "duelsWon": 2,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Cyriel Dessers",
+          "team": "Panathinaikos",
+          "providerPlayerId": "37186",
+          "source": "api-football",
+          "minutes": 55,
+          "position": "F",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "assists": 0,
+          "shots": 3,
+          "shotsOnTarget": 3,
+          "passes": 12,
+          "passAccuracy": 7,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Adriano Jagušić",
+          "team": "Panathinaikos",
+          "providerPlayerId": "550627",
+          "source": "api-football",
+          "minutes": 54,
+          "position": "M",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 24,
+          "passAccuracy": 20,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ahmed Touba",
+          "team": "Panathinaikos",
+          "providerPlayerId": "8777",
+          "source": "api-football",
+          "minutes": 40,
+          "position": "D",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 15,
+          "passAccuracy": 14,
+          "tackles": 2,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Adam Gnezda Čerin",
+          "team": "Panathinaikos",
+          "providerPlayerId": "56025",
+          "source": "api-football",
+          "minutes": 32,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 20,
+          "passAccuracy": 19,
+          "tackles": 2,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Vicente Taborda",
+          "team": "Panathinaikos",
+          "providerPlayerId": "323785",
+          "source": "api-football",
+          "minutes": 32,
+          "position": "F",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 20,
+          "passAccuracy": 17,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Sotiris Kontouris",
+          "team": "Panathinaikos",
+          "providerPlayerId": "449603",
+          "source": "api-football",
+          "minutes": 16,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 4,
+          "passAccuracy": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lucas Cháves",
+          "team": "Panathinaikos",
+          "providerPlayerId": "6697",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Konstantinos Kotsaris",
+          "team": "Panathinaikos",
+          "providerPlayerId": "26731",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Facundo Pellistri",
+          "team": "Panathinaikos",
+          "providerPlayerId": "70078",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Panagiotis Biniaris",
+          "team": "Panathinaikos",
+          "providerPlayerId": "650482",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Andreas Tetteh",
+          "team": "Panathinaikos",
+          "providerPlayerId": "342918",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Georgios Kyriopoulos",
+          "team": "Panathinaikos",
+          "providerPlayerId": "388842",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        }
+      ],
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "CSKA 1948 topa sahip olma oranında önde. Panathinaikos daha fazla şut üretti. Skor üstünlüğü Panathinaikos tarafında.",
+        "confidence": "Yüksek",
+        "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "50%-50%",
+            "text": "CSKA 1948 topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "14-21",
+            "text": "Panathinaikos daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "5-11",
+            "text": "Panathinaikos isabetli şutlarda önde."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "94'",
+            "text": "Son gol 94' C. Dessers tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "12 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 12 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-2",
+            "text": "Panathinaikos skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 19,
+        "dataPoints": 6,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      }
     },
     {
       "id": "unionistas-de-salamanca-cd-coria-2026-08-11",
@@ -206001,15 +207915,57 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-11T19:30:40.519Z",
-      "staleAfter": "2026-08-11T19:35:40.519Z",
+      "fetchedAt": "2026-08-12T00:03:41.471Z",
+      "staleAfter": "2026-08-12T00:08:41.471Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1618914"
       },
-      "competitionId": "hazirlik-maci"
+      "competitionId": "hazirlik-maci",
+      "events": [
+        {
+          "time": "35'",
+          "team": {
+            "name": "CD Coria"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Toper · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "CD Coria"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "P. Palacin · Normal Goal",
+          "comments": ""
+        }
+      ],
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 67' P. Palacin tarafından kaydedildi. CD Coria skor üstünlüğünü elinde tutuyor. Skor üstünlüğü CD Coria tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "67'",
+            "text": "Son gol 67' P. Palacin tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "0-2",
+            "text": "CD Coria skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 2,
+        "dataPoints": 2,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      }
     },
     {
       "id": "fk-crvena-zvezda-hapoel-beer-sheva-2026-08-11",
@@ -206048,15 +208004,1089 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-11T20:00:58.742Z",
-      "staleAfter": "2026-08-11T20:05:58.742Z",
+      "fetchedAt": "2026-08-12T00:03:41.471Z",
+      "staleAfter": "2026-08-12T00:08:41.471Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1607169"
       },
-      "competitionId": "sampiyonlar-ligi"
+      "competitionId": "sampiyonlar-ligi",
+      "lineups": [
+        {
+          "team": "FK Crvena Zvezda",
+          "formation": "4-2-3-1",
+          "players": [
+            "Matheus",
+            "Young-woo Seol",
+            "Derrick Luckassen",
+            "Strahinja Eraković",
+            "Nair Tiknizyan",
+            "Timi Max Elšnik",
+            "Rade Krunić",
+            "Osman Bukari",
+            "Vasilije Kostov",
+            "Bruno Duarte",
+            "Jay Enem"
+          ],
+          "substitutes": [
+            "Mohammad Abu Fani",
+            "Marko Arnautović",
+            "Mirko Ivanić",
+            "Muhammed-Cham Saračević",
+            "Aleksandar Katai",
+            "Ivan Guteša",
+            "Miloš Veljković",
+            "Franklin Tebo",
+            "Matej Strika",
+            "Stefan Gudelj",
+            "Kristiyan Balov",
+            "Loizos Loizou"
+          ]
+        },
+        {
+          "team": "Hapoel Beer Sheva",
+          "formation": "4-3-3",
+          "players": [
+            "Ofir Marciano",
+            "Guy Mizrahi",
+            "Miguel Vítor",
+            "Itay Rotman",
+            "Pedro Amador",
+            "Eliel Peretz",
+            "Lucas Ventura",
+            "Niv Yehoshua",
+            "Javon East",
+            "Igor Zlatanović",
+            "Zahi Ahmed"
+          ],
+          "substitutes": [
+            "Hamode Kanaan",
+            "Mohamad Abu Rumi",
+            "Djibril Diop",
+            "Ofir Davidzada",
+            "Amit Ohana",
+            "Jonathan Shani",
+            "Marco Wolff",
+            "Roy Levy",
+            "Itay Hazut",
+            "Yoni Stoyanov",
+            "Amir Chaim Ganah",
+            "Yoav Koren"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "time": "22'",
+          "team": {
+            "name": "Hapoel Beer Sheva"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "I. Rotman · Yellow Card",
+          "comments": "Holding"
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "FK Crvena Zvezda"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "J. Enem · Asist: M. Arnautovic · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "FK Crvena Zvezda"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "T. Elsnik · Asist: M. Abu Fani · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "57'",
+          "team": {
+            "name": "FK Crvena Zvezda"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "D. Stankovic · Red Card",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Hapoel Beer Sheva"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "I. Zlatanovic · Asist: J. East · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "62'",
+          "team": {
+            "name": "FK Crvena Zvezda"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "V. Kostov · Asist: M. Ivanic · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "Hapoel Beer Sheva"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Lucas Ventura · Yellow Card",
+          "comments": "Roughing"
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Hapoel Beer Sheva"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "N. Yehoshua · Asist: M. Abu Rumi · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Hapoel Beer Sheva"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "G. Mizrahi · Asist: H. Kanaan · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "73'",
+          "team": {
+            "name": "FK Crvena Zvezda"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "O. Bukari · Asist: M. Cham · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "Hapoel Beer Sheva"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "I. Zlatanovic · Asist: D. T. Diop · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Hapoel Beer Sheva"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "J. East · Asist: E. Peretz · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "80'",
+          "team": {
+            "name": "FK Crvena Zvezda"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "N. Tiknizyan · Asist: A. Katai · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "90+2'",
+          "team": {
+            "name": "Hapoel Beer Sheva"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "P. Amador · Asist: O. Davidzada · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "90+2'",
+          "team": {
+            "name": "Hapoel Beer Sheva"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "J. East · Asist: A. Ohana · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "90+2'",
+          "team": {
+            "name": "FK Crvena Zvezda"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "M. Abu Fani · Red Card",
+          "comments": "Roughing"
+        }
+      ],
+      "statistics": [
+        {
+          "category": "Hücum",
+          "type": "İsabetli şut",
+          "home": 2,
+          "away": 6,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 7,
+          "away": 2
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 2,
+          "away": 1
+        },
+        {
+          "category": "Disiplin",
+          "type": "Faul",
+          "home": 10,
+          "away": 5
+        },
+        {
+          "category": "Genel",
+          "type": "Korner",
+          "home": 3,
+          "away": 3
+        },
+        {
+          "category": "Genel",
+          "type": "Ofsayt",
+          "home": 0,
+          "away": 0
+        },
+        {
+          "category": "Genel",
+          "type": "Topla oynama",
+          "home": 4,
+          "away": 96,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 0,
+          "away": 2
+        },
+        {
+          "category": "Disiplin",
+          "type": "Kırmızı kart",
+          "home": 1,
+          "away": 0
+        }
+      ],
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Hapoel Beer Sheva topa sahip olma oranında önde. Hapoel Beer Sheva isabetli şutlarda önde. Skor üstünlüğü Hapoel Beer Sheva tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "4%-96%",
+            "text": "Hapoel Beer Sheva topa sahip olma oranında önde."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "2-6",
+            "text": "Hapoel Beer Sheva isabetli şutlarda önde."
+          },
+          {
+            "label": "Disiplin dengesi",
+            "value": "2 kırmızı kart",
+            "text": "FK Crvena Zvezda kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "79'",
+            "text": "Son gol 79' J. East tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "0-2",
+            "text": "Hapoel Beer Sheva skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 16,
+        "dataPoints": 6,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 598,
+            "name": "FK Crvena Zvezda",
+            "comment": null
+          },
+          "win_or_draw": false,
+          "under_over": null,
+          "goals": {
+            "home": "-5.5",
+            "away": "-2.5"
+          },
+          "advice": "Winner : FK Crvena Zvezda",
+          "percent": {
+            "home": "45%",
+            "draw": "45%",
+            "away": "10%"
+          }
+        },
+        "league": {
+          "id": 2,
+          "name": "UEFA Champions League",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/2.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 598,
+            "name": "FK Crvena Zvezda",
+            "logo": "https://media.api-sports.io/football/teams/598.png",
+            "last_5": {
+              "played": 3,
+              "form": "67%",
+              "att": "47%",
+              "def": "95%",
+              "goals": {
+                "for": {
+                  "total": 9,
+                  "average": "3.0"
+                },
+                "against": {
+                  "total": 1,
+                  "average": "0.3"
+                }
+              }
+            },
+            "league": {
+              "form": "WWL",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 2,
+                  "total": 3
+                },
+                "wins": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 5,
+                    "away": 4,
+                    "total": 9
+                  },
+                  "average": {
+                    "home": "5.0",
+                    "away": "2.0",
+                    "total": "3.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "11.11%"
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "11.11%"
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "11.11%"
+                    },
+                    "46-60": {
+                      "total": 3,
+                      "percentage": "33.33%"
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "11.11%"
+                    },
+                    "76-90": {
+                      "total": 2,
+                      "percentage": "22.22%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 1,
+                      "under": 2
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 1,
+                    "total": 1
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.5",
+                    "total": "0.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "100.00%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 2,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": "5-0",
+                  "away": "0-4"
+                },
+                "loses": {
+                  "home": null,
+                  "away": "1-0"
+                },
+                "goals": {
+                  "for": {
+                    "home": 5,
+                    "away": 4
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 1
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 1,
+                "away": 1,
+                "total": 2
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 1,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 1
+              },
+              "lineups": [
+                {
+                  "formation": "4-3-2-1",
+                  "played": 2
+                },
+                {
+                  "formation": "4-2-3-1",
+                  "played": 1
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": 1,
+                    "percentage": "16.67%"
+                  },
+                  "16-30": {
+                    "total": 1,
+                    "percentage": "16.67%"
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "16.67%"
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": 3,
+                    "percentage": "50.00%"
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 563,
+            "name": "Hapoel Beer Sheva",
+            "logo": "https://media.api-sports.io/football/teams/563.png",
+            "last_5": {
+              "played": 3,
+              "form": "67%",
+              "att": "21%",
+              "def": "89%",
+              "goals": {
+                "for": {
+                  "total": 4,
+                  "average": "1.3"
+                },
+                "against": {
+                  "total": 2,
+                  "average": "0.7"
+                }
+              }
+            },
+            "league": {
+              "form": "LWW",
+              "fixtures": {
+                "played": {
+                  "home": 2,
+                  "away": 1,
+                  "total": 3
+                },
+                "wins": {
+                  "home": 2,
+                  "away": 0,
+                  "total": 2
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 3,
+                    "away": 1,
+                    "total": 4
+                  },
+                  "average": {
+                    "home": "1.5",
+                    "away": "1.0",
+                    "total": "1.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 2,
+                    "total": 2
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "2.0",
+                    "total": "0.7"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 2,
+                      "percentage": "66.67%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": "2-0",
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": "2-1"
+                },
+                "goals": {
+                  "for": {
+                    "home": 2,
+                    "away": 1
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 2
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 2,
+                "away": 0,
+                "total": 2
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [
+                {
+                  "formation": "4-3-3",
+                  "played": 3
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": 1,
+                    "percentage": "10.00%"
+                  },
+                  "46-60": {
+                    "total": 4,
+                    "percentage": "40.00%"
+                  },
+                  "61-75": {
+                    "total": 3,
+                    "percentage": "30.00%"
+                  },
+                  "76-90": {
+                    "total": 1,
+                    "percentage": "10.00%"
+                  },
+                  "91-105": {
+                    "total": 1,
+                    "percentage": "10.00%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "att": {
+            "home": "69%",
+            "away": "31%"
+          },
+          "def": {
+            "home": "67%",
+            "away": "33%"
+          },
+          "poisson_distribution": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "goals": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "total": {
+            "home": "62.0%",
+            "away": "38.0%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1607166,
+              "referee": "J. Manzano",
+              "timezone": "UTC",
+              "date": "2026-08-04T17:30:00+00:00",
+              "timestamp": 1785864600,
+              "periods": {
+                "first": 1785864600,
+                "second": 1785868200
+              },
+              "venue": {
+                "id": null,
+                "name": "Haladás Sportkomplexum",
+                "city": "Szombathely"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 8
+              }
+            },
+            "league": {
+              "id": 2,
+              "name": "UEFA Champions League",
+              "country": "World",
+              "logo": "https://media.api-sports.io/football/leagues/2.png",
+              "flag": null,
+              "season": 2026,
+              "round": "3rd Qualifying Round",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 563,
+                "name": "Hapoel Beer Sheva",
+                "logo": "https://media.api-sports.io/football/teams/563.png",
+                "winner": true
+              },
+              "away": {
+                "id": 598,
+                "name": "FK Crvena Zvezda",
+                "logo": "https://media.api-sports.io/football/teams/598.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "capelle-rijnsburgse-boys-2026-08-11",
@@ -208394,8 +211424,8 @@
       "awayTeam": "Auxerre",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/114.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/108.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
+      "status": "CANCELLED",
+      "providerStatus": "CANC",
       "minute": null,
       "elapsed": null,
       "live": false,
@@ -208419,60 +211449,13 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-11T21:09:16.394Z",
-      "staleAfter": "2026-08-11T21:14:16.394Z",
+      "fetchedAt": "2026-08-12T00:03:41.802Z",
+      "staleAfter": "2026-08-12T00:08:41.802Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1589330"
-      },
-      "competitionId": "hazirlik-maci"
-    },
-    {
-      "id": "atletico-tordesillas-real-avila-2026-08-12",
-      "providerId": "1618920",
-      "league": "Friendlies Clubs",
-      "round": null,
-      "venue": null,
-      "kickoff": "2026-08-12T15:00:00+03:00",
-      "time": "15:00",
-      "homeTeam": "Atlético Tordesillas",
-      "awayTeam": "Real Ávila",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/9724.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/9736.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
-      "score": {
-        "home": null,
-        "away": null,
-        "halftimeHome": null,
-        "halftimeAway": null
-      },
-      "homeForm": null,
-      "awayForm": null,
-      "homeMomentum": null,
-      "awayMomentum": null,
-      "momentum": {
-        "side": "neutral",
-        "value": null
-      },
-      "aiPrediction": null,
-      "goalExpectation": null,
-      "goalPotential": null,
-      "risk": null,
-      "source": "api-football",
-      "providerName": "api-football",
-      "fetchedAt": "2026-08-11T21:09:16.394Z",
-      "staleAfter": "2026-08-11T21:14:16.394Z",
-      "dataStatus": "provider",
-      "needsReview": false,
-      "resource": "matches",
-      "providerIds": {
-        "apiFootball": "1618920"
       },
       "competitionId": "hazirlik-maci"
     },
@@ -208520,6 +211503,53 @@
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1618921"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "atletico-tordesillas-real-avila-2026-08-12",
+      "providerId": "1618920",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-12T18:30:00+03:00",
+      "time": "18:30",
+      "homeTeam": "Atlético Tordesillas",
+      "awayTeam": "Real Ávila",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/9724.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/9736.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-12T00:03:41.802Z",
+      "staleAfter": "2026-08-12T00:08:41.802Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1618920"
       },
       "competitionId": "hazirlik-maci"
     },
