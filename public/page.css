@@ -17794,3 +17794,19 @@ body,
   white-space: nowrap;
   border: 0;
 }
+
+/* BAYATLIK UYARISI.
+   Sağlayıcı çöktüğünde site son doğrulanmış veriyi göstermeye devam eder —
+   ama bunun eski olduğunu söylemek zorundadır. Uyarı sessiz durur: panik
+   rengi değil, okunabilir bir not. */
+.source-strip-stale {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.72rem;
+  line-height: 1.3;
+  color: var(--muted, #6b7280);
+}
+
+.source-strip div[data-stale="true"] b {
+  opacity: 0.75;
+}

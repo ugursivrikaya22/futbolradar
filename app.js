@@ -209,9 +209,22 @@
     }).format(date) + " TSİ";
   }
 
-  function updateUpdatedAtLabel(updatedAt) {
+  /**
+   * SON GÜNCELLEME ETİKETİ — VE BAYATLIK UYARISI.
+   *
+   * Sağlayıcı kotayı doldurup 429 döndürdüğünde önbellek son BAŞARILI yanıtı
+   * servis ediyor. Doğru davranış: elde geçerli veri varken sayfayı
+   * boşaltmak gereksiz. Ama o yanıtın eski olduğu okuyucuya hiç
+   * söylenmiyordu ve site, tazeleme durmuşken eski skoru canlıymış gibi
+   * gösteriyordu. Yanlış veri değil — yanlış İDDİA.
+   *
+   * Yanıt bayatsa etiket zamanı göstermeye devam eder (bilgi silinmez) ama
+   * yanına tazelemenin durduğunu yazar. Okuyucu ne gördüğünü bilir.
+   */
+  function updateUpdatedAtLabel(updatedAt, freshness) {
     var label = formatUpdatedAt(updatedAt);
-    if (!label) {
+    var stale = Boolean(freshness && freshness.stale);
+    if (!label && !stale) {
       return;
     }
 
@@ -220,7 +233,21 @@
       var value = item.querySelector("b");
 
       if (title && value && title.textContent.toLocaleLowerCase("tr-TR").indexOf("son güncelleme") !== -1) {
-        value.textContent = label;
+        if (label) value.textContent = label;
+        item.setAttribute("data-stale", stale ? "true" : "false");
+
+        var notice = item.querySelector("[data-stale-notice]");
+        if (stale) {
+          if (!notice) {
+            notice = document.createElement("small");
+            notice.setAttribute("data-stale-notice", "");
+            notice.className = "source-strip-stale";
+            item.appendChild(notice);
+          }
+          notice.textContent = "Canlı veri geçici olarak güncellenemiyor.";
+        } else if (notice) {
+          notice.remove();
+        }
       }
     });
   }
@@ -291,7 +318,9 @@
         cache[name] = fetchJson(getApiUrl(config))
           .then(function (result) {
             if (config.reportSource) {
-              updateUpdatedAtLabel(result.updatedAt);
+              // Tazelik değerlendirmesi sunucuda, verinin kendi zaman
+              // damgalarından yapılıyor (services/dataFreshness.js).
+              updateUpdatedAtLabel(result.updatedAt, result.meta && result.meta.freshness);
             }
             if (name !== "matches") {
               return result.data;

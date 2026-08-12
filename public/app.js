@@ -209,9 +209,22 @@
     }).format(date) + " TSİ";
   }
 
-  function updateUpdatedAtLabel(updatedAt) {
+  /**
+   * SON GÜNCELLEME ETİKETİ — VE BAYATLIK UYARISI.
+   *
+   * Sağlayıcı kotayı doldurup 429 döndürdüğünde önbellek son BAŞARILI yanıtı
+   * servis ediyor. Doğru davranış: elde geçerli veri varken sayfayı
+   * boşaltmak gereksiz. Ama o yanıtın eski olduğu okuyucuya hiç
+   * söylenmiyordu ve site, tazeleme durmuşken eski skoru canlıymış gibi
+   * gösteriyordu. Yanlış veri değil — yanlış İDDİA.
+   *
+   * Yanıt bayatsa etiket zamanı göstermeye devam eder (bilgi silinmez) ama
+   * yanına tazelemenin durduğunu yazar. Okuyucu ne gördüğünü bilir.
+   */
+  function updateUpdatedAtLabel(updatedAt, freshness) {
     var label = formatUpdatedAt(updatedAt);
-    if (!label) {
+    var stale = Boolean(freshness && freshness.stale);
+    if (!label && !stale) {
       return;
     }
 
@@ -220,7 +233,21 @@
       var value = item.querySelector("b");
 
       if (title && value && title.textContent.toLocaleLowerCase("tr-TR").indexOf("son güncelleme") !== -1) {
-        value.textContent = label;
+        if (label) value.textContent = label;
+        item.setAttribute("data-stale", stale ? "true" : "false");
+
+        var notice = item.querySelector("[data-stale-notice]");
+        if (stale) {
+          if (!notice) {
+            notice = document.createElement("small");
+            notice.setAttribute("data-stale-notice", "");
+            notice.className = "source-strip-stale";
+            item.appendChild(notice);
+          }
+          notice.textContent = "Canlı veri geçici olarak güncellenemiyor.";
+        } else if (notice) {
+          notice.remove();
+        }
       }
     });
   }
@@ -291,7 +318,9 @@
         cache[name] = fetchJson(getApiUrl(config))
           .then(function (result) {
             if (config.reportSource) {
-              updateUpdatedAtLabel(result.updatedAt);
+              // Tazelik değerlendirmesi sunucuda, verinin kendi zaman
+              // damgalarından yapılıyor (services/dataFreshness.js).
+              updateUpdatedAtLabel(result.updatedAt, result.meta && result.meta.freshness);
             }
             if (name !== "matches") {
               return result.data;
@@ -3313,16 +3342,44 @@
     }).filter(function (stat) { return stat.value > 0; });
   }
 
-  function headlineText(value) {
-    return String(value === null || value === undefined ? "" : value).trim();
+  // Sessiz `[object Object]` kalkanı — services/dailyHeadlines.js `text()` ile
+  // aynı kural. Nesne metin değildir; dizeye çevrilirse "[object Object]"
+  // ekrana kadar gider. Boş dönerek adayın düşmesini sağlıyoruz.
+  // İlgi puanı maç kaydında gelir; başlığa olduğu gibi kopyalanır.
+  function withHeadlineRelevance(headline, match) {
+    if (!headline) return headline;
+    var score = match && match.relevance;
+    if (isFinite(score) && typeof score === "number") headline.relevance = score;
+    return headline;
   }
 
+  function headlineText(value) {
+    if (value === null || value === undefined) return "";
+    if (typeof value === "string") return value.trim();
+    if (typeof value === "number") return isFinite(value) ? String(value) : "";
+    if (typeof value === "boolean") return String(value);
+    return "";
+  }
+
+  // Nokta her zaman cümle sonu değil: "1.54 xG" (ondalık) ve "A. Italiano"
+  // (baş harf). İlkini "sonrasında boşluk" kuralı, ikincisini noktadan önceki
+  // tek harf kontrolü eler. services/dailyHeadlines.js ile aynı kural.
   function headlineFirstSentence(value, limit) {
     var cap = limit || 160;
     var raw = headlineText(value);
     if (!raw) return "";
-    var match = raw.match(/^[\s\S]*?[.!?](?=\s|$)/);
-    var sentence = headlineText(match ? match[0] : raw);
+
+    var boundary = /[.!?](?=\s|$)/g;
+    var sentence = raw;
+    var hit;
+    while ((hit = boundary.exec(raw)) !== null) {
+      var before = raw.slice(0, hit.index);
+      if (hit[0] === "." && /(^|[\s(«"'])\p{L}$/u.test(before)) continue;
+      sentence = raw.slice(0, hit.index + 1);
+      break;
+    }
+
+    sentence = headlineText(sentence);
     if (sentence.length <= cap) return sentence;
     return sentence.slice(0, cap - 1).replace(/\s+$/, "") + "…";
   }
@@ -3404,10 +3461,13 @@
     var report = headlineReportFor(match, reports);
     var keyPoint = Array.isArray(analysis.keyPoints) ? headlineText(analysis.keyPoints[0]) : "";
 
+    // `digest` nesne; anlatan alan `paragraph`, yedeği `headline`.
+    var digest = (report && report.digest) || {};
     var hook = headlineFirstSentence(keyPoint)
       || headlineFirstSentence(analysis.lead)
       || headlineFirstSentence(match.summary)
-      || headlineFirstSentence(report && report.digest);
+      || headlineFirstSentence(digest.paragraph)
+      || headlineFirstSentence(digest.headline);
     if (!hook) return null;
 
     return {
@@ -3472,24 +3532,34 @@
       if (!match || typeof match !== "object") return;
 
       if (isLiveMatch(match)) {
-        var live = liveHeadlineOf(match, reports);
+        var live = withHeadlineRelevance(liveHeadlineOf(match, reports), match);
         if (live) candidates.push(live);
         return;
       }
 
       if (isFinishedMatch(match)) {
         if (!headlineIsOnDay(match, day)) return;
-        var finished = finishedHeadlineOf(match, reports);
+        var finished = withHeadlineRelevance(finishedHeadlineOf(match, reports), match);
         if (finished) candidates.push(finished);
         return;
       }
 
       if (!headlineIsOnDay(match, day)) return;
-      var upcoming = upcomingHeadlineOf(match, reports);
+      var upcoming = withHeadlineRelevance(upcomingHeadlineOf(match, reports), match);
       if (upcoming) candidates.push(upcoming);
     });
 
-    candidates.sort(function (left, right) { return left.rank - right.rank; });
+    // SIRA: önce İLGİ, sonra durum — services/dailyHeadlines.js ile aynı.
+    // İlgi puanı maç kaydına sunucuda damgalanır (services/matchRelevance.js);
+    // istemci onu yalnızca okur, yarışma kataloğunu indirmez.
+    candidates.sort(function (left, right) {
+      var leftScore = isFinite(left.relevance) ? left.relevance : -Infinity;
+      var rightScore = isFinite(right.relevance) ? right.relevance : -Infinity;
+      if (leftScore !== rightScore && isFinite(rightScore - leftScore)) {
+        return rightScore - leftScore;
+      }
+      return left.rank - right.rank;
+    });
 
     var seen = {};
     var unique = [];
@@ -10921,6 +10991,7 @@
     function statusLabelTr(status) {
       return {
         Official: "Resmî",
+        AgreementReported: "Anlaşma iddiası",
         Rumor: "İddia",
         Talks: "Görüşme",
         Loan: "Kiralık"
@@ -11003,6 +11074,14 @@
       target.dataset.source = source || "fallback";
 
       if (!items.length) {
+        // ÖN DERLENMİŞ GERÇEK VERİ SİLİNMEZ.
+        //
+        // Bant artık derleme sırasında dolduruluyor (prerender-core-pages.mjs
+        // `transfer-radar` yuvası). Canlı istek düşerse buraya boş dizi ile
+        // gelinir; eskiden bu, ekranda duran DOĞRU transferleri silip yerine
+        // "hazırlanıyor" yazıyordu. Veri yokluğu, elimizdeki doğrulanmış
+        // veriyi çöpe atmak için bir sebep değil — bant olduğu gibi kalır.
+        if (track.querySelector(".transfer-radar-ticker__item")) return;
         track.classList.add("is-static");
         track.innerHTML = '<div class="transfer-radar-ticker__group"><span class="transfer-radar-ticker__empty">Transfer güncellemeleri hazırlanıyor.</span></div>';
         return;

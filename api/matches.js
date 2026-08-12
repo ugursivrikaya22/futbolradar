@@ -1,5 +1,7 @@
 const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
 const { withRelevance } = require("../services/matchRelevance");
+// Yanıtın bayat olup olmadığı verinin kendisinden okunur.
+const { assessFreshness } = require("../services/dataFreshness");
 const {
   enforceRateLimit,
   getQuery,
@@ -66,5 +68,15 @@ module.exports = async function handler(req, res) {
   // yalnızca ne kadar öne çıkacağı belirlenir.
   const data = withRelevance(rawData);
 
-  return sendSuccess(res, data, result.provider.source, undefined, providerMeta(result));
+  // BAYATLIK YANITTA BİLDİRİLİR.
+  //
+  // Sağlayıcı kotayı doldurup 429 döndürdüğünde önbellek son başarılı yanıtı
+  // servis ediyor — doğru davranış. Ama o yanıtın eski olduğu istemciye hiç
+  // söylenmiyordu ve site sağlayıcı çökmüşken eski skoru CANLIYMIŞ gibi
+  // gösteriyordu. Yanlış veri değil, yanlış iddia.
+  const freshness = assessFreshness(data, {
+    resource: query.live ? "matches-live" : "matches"
+  });
+
+  return sendSuccess(res, data, result.provider.source, undefined, providerMeta(result, { freshness }));
 };
