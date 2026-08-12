@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-12T13:15:44.897Z",
+  "updatedAt": "2026-08-12T15:00:34.424Z",
   "matchCount": 311,
   "records": [
     {
@@ -32,10 +32,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -43,9 +43,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 7
         },
         "statistics": {
           "present": false,
@@ -65,19 +65,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 7,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -95,11 +91,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "24afe22c038ed055",
-      "fingerprint": "24afe22c038ed055",
+      "analysisSourceHash": "b6d5092c830be9b1",
+      "fingerprint": "b6d5092c830be9b1",
       "analysisGeneratedAt": "2026-08-12T11:49:39.172Z",
-      "analysisUpdatedAt": "2026-08-12T13:15:44.129Z",
-      "generatedAt": "2026-08-12T13:15:44.129Z",
+      "analysisUpdatedAt": "2026-08-12T15:00:34.388Z",
+      "generatedAt": "2026-08-12T15:00:34.388Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -127,15 +123,55 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "8'",
+              "team": "Real Valladolid II",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "33'",
+              "team": "Real Valladolid II",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "40'",
+              "team": "Real Valladolid II",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 2 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "Leganés II",
+              "type": "Card",
+              "detail": "Red Card",
+              "decisive": false
+            },
+            {
+              "minute": "90'",
+              "team": "Leganés II",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -146,13 +182,17 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı dengeli bir olay akışı üretti (4 olay)."
+          ],
           "goals": 0
         },
         "coaching": {
@@ -191,10 +231,14 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -513,11 +557,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "e857abe58001057f",
-      "fingerprint": "e857abe58001057f",
+      "analysisSourceHash": "f63b6b74caca3fa3",
+      "fingerprint": "f63b6b74caca3fa3",
       "analysisGeneratedAt": "2026-08-12T10:09:48.535Z",
-      "analysisUpdatedAt": "2026-08-12T13:15:44.129Z",
-      "generatedAt": "2026-08-12T13:15:44.129Z",
+      "analysisUpdatedAt": "2026-08-12T15:00:34.388Z",
+      "generatedAt": "2026-08-12T15:00:34.388Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -558,7 +602,7 @@
               "minute": "53'",
               "team": "FC Cartagena",
               "type": "Goal",
-              "detail": "Normal Goal",
+              "detail": "Penalty",
               "pivotal": false
             },
             {
