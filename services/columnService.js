@@ -42,6 +42,7 @@ const CATEGORIES = Object.freeze({
   "lig-analizi": "Lig analizi",
   "oyuncu-portresi": "Oyuncu portresi",
   "futbol-gundemi": "Futbol gündemi",
+  "besiktas": "Beşiktaş",
   "fenerbahce": "Fenerbahçe",
   "galatasaray": "Galatasaray",
   "trabzonspor": "Trabzonspor"

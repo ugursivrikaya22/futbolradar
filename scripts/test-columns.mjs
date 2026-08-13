@@ -143,7 +143,7 @@ function column(overrides = {}) {
 {
   assert.deepEqual(
     Object.keys(CATEGORIES).sort(),
-    ["fenerbahce", "futbol-gundemi", "galatasaray", "lig-analizi", "mac-yorumu", "oyuncu-portresi", "trabzonspor", "transfer-yorumu"],
+    ["besiktas", "fenerbahce", "futbol-gundemi", "galatasaray", "lig-analizi", "mac-yorumu", "oyuncu-portresi", "trabzonspor", "transfer-yorumu"],
     "kategori listesi beklenen değerleri taşımalı"
   );
 }
