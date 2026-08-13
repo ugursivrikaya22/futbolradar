@@ -141,3 +141,22 @@ console.log(
   `Varlık sürümü testleri geçti (${files.length} sayfa, ` +
   `${[...expected.entries()].map(([asset, stamp]) => `${asset}=${stamp}`).join(" ")}).`
 );
+
+// ── performance-loader damgası ─────────────────────────────────────────────
+//
+// app.js sayfalara <script> ile girmiyor; performance-loader onu dinamik
+// yüklüyor. Adres sürümsüz kalırsa /app.js'in bir yıllık immutable
+// önbelleği dönen ziyaretçiyi ebediyen eski uygulamaya kilitler — sayfa
+// damgaları bunu KURTARAMAZ. Bu denetim, yükleyicinin güncel app.js
+// karmasını taşıdığını doğrular.
+{
+  const loader = fs.readFileSync(path.join(root, "performance-loader.js"), "utf8");
+  const appStamp = crypto.createHash("sha256")
+    .update(fs.readFileSync(path.join(root, "app.js")))
+    .digest("hex").slice(0, 8);
+  assert.ok(
+    loader.includes(`/app.js?v=${appStamp}`),
+    `performance-loader güncel app.js damgasını taşımalı (beklenen v=${appStamp})`
+  );
+  console.log("performance-loader damgası dogru.");
+}

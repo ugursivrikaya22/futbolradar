@@ -4204,7 +4204,12 @@
 
   function matchCenterMetricsHtml(matches, analysesIndex) {
     var list = Array.isArray(matches) ? matches : [];
-    var live = list.filter(isLiveMatch).length;
+    // Sayaç, canlı skor panosuyla AYNI hükmü kullanır (doğrulanmış
+    // canlılık). Yalnızca isLiveMatch sayılsaydı sayaç "Canlı: 3" derken
+    // pano üçünü de reddedebilir ve sayfa kendi içinde çelişirdi.
+    var live = list.filter(function (match) {
+      return matchLiveVerdict(match).live;
+    }).length;
     var finished = list.filter(function (match) {
       return ["FINISHED", "FT", "AET", "PEN"].includes(String(match && match.status || "").toUpperCase());
     }).length;
@@ -4480,7 +4485,16 @@
    */
   function renderLiveScoreSection(matches) {
     var list = filterScoredMatches(matches);
-    var liveMatches = list.filter(isLiveMatch);
+    // "Canlı" panoya girmek için skor yetmez; canlılık DOĞRULANMIŞ olmalı.
+    // isLiveMatch yalnızca durum+skora bakar; matchLiveVerdict tazeliği de
+    // sorar (başlama saati çok geçmiş, güncellenmeyen "canlı" kayıt bayat
+    // sayılır). Hüküm sorulmadığında takvimden sızan doğrulanmamış kayıtlar
+    // panoda "Canlı veri doğrulanamadı" etiketiyle ve yer tutucu olabilecek
+    // skorlarla listeleniyordu — sayfanın "yalnızca doğrulanmış maçlar"
+    // vaadinin tam tersi.
+    var liveMatches = list.filter(function (match) {
+      return matchLiveVerdict(match).live;
+    });
 
     if (liveMatches.length) {
       return (

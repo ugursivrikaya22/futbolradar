@@ -12401,7 +12401,7 @@ a.transfer-radar-ticker__item:focus-visible {
   .transfer-radar-ticker__group { gap: 22px; padding-right: 22px; }
   .transfer-radar-ticker__item { gap: 5px; font-size: 0.7rem; }
   .transfer-radar-ticker__breaking,
-  .transfer-radar-ticker__status { min-height: 18px; padding: 2px 5px; font-size: 0.58rem; }
+  .transfer-radar-ticker__status { min-height: 18px; padding: 2px 5px; font-size: 0.63rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -12560,7 +12560,7 @@ a.besiktas-ticker__item:focus-visible {
   min-height: 20px;
   padding: 2px 7px;
   border-radius: 999px;
-  font-size: 0.62rem;
+  font-size: 0.66rem;
   font-weight: 900;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -12639,7 +12639,7 @@ a.besiktas-ticker__item:focus-visible {
   .besiktas-ticker__summary + .besiktas-ticker__separator { display: none; }
 
   .besiktas-ticker__lead,
-  .besiktas-ticker__status { min-height: 18px; padding: 2px 5px; font-size: 0.56rem; }
+  .besiktas-ticker__status { min-height: 18px; padding: 2px 5px; font-size: 0.63rem; }
   .besiktas-ticker__source { font-size: 0.64rem; }
   .besiktas-ticker__empty { font-size: 0.72rem; }
 }
@@ -13663,8 +13663,8 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 .featured-carousel-dot {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   border: 0;
   padding: 0;
   background: none;
@@ -18332,4 +18332,29 @@ body,
     grid-template-columns: 1fr;
     gap: 5px;
   }
+}
+
+/* ==========================================================================
+   YAPIŞKAN BAŞLIK — BACKDROP-FILTER YEDEĞİ
+   --------------------------------------------------------------------------
+   Üst çubuk yarı saydam (alfa 0.78-0.94) ve okunabilirliğini
+   backdrop-filter bulanıklığına emanet ediyor. Filtre desteklenmediğinde
+   (eski Firefox, kimi WebView'lar, başsız tarayıcılar) kaydırılan içerik
+   çubuğun İÇİNDEN okunuyor: bant metni menü bağlantılarının üzerine
+   biniyordu. Destek yoksa arka plan opaklaşır — bulanıklık süs, opaklık
+   zorunluluk.
+   ========================================================================== */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .topbar,
+  .topbar-premium {
+    background: var(--bg, #f6faf8);
+  }
+}
+
+/* Kompakt canlı skor panosu `section.grid` (çok sütunlu) içine basılıyor;
+   satırın tamamını kaplamazsa tek hücreye sıkışıp lig blokları sayfanın
+   üçte birinde kalıyordu. */
+.live-compact-board {
+  grid-column: 1 / -1;
+  min-width: 0;
 }

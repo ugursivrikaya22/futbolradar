@@ -46,6 +46,9 @@ export const POSTPROCESS_CHAIN = [
   { id: "core-page-schema", script: "inject-core-page-schema.mjs", args: [], timeoutMinutes: 5 },
   { id: "hreflang", script: "inject-hreflang.mjs", args: [], timeoutMinutes: 5 },
   { id: "motm-poll", script: "inject-motm-poll.mjs", args: [], timeoutMinutes: 5 },
+  // Meta uzunlukları üreticiler ne yazarsa yazsın son sözü burada bulur;
+  // damga adımından ÖNCE koşmalı (içeriği değiştirir).
+  { id: "normalize-meta", script: "normalize-meta.mjs", args: [], timeoutMinutes: 5 },
   { id: "asset-version", script: "inject-asset-version.mjs", args: [], timeoutMinutes: 5 }
 ];
 

@@ -117,6 +117,12 @@ const CASES = [
   assert.ok(!body.includes("başlayacak"), "skorsuz program listesi canlı alanda basılmamalı");
   assert.ok(!/SCHEDULED|TIMED|NOT_STARTED|\bNS\b/.test(body), "bölüm başlamamış maç durumlarını hiç anmamalı");
 
+  // Canlı listeye girmek için skor YETMEZ: canlılık hükmü (tazelik dahil)
+  // sorulmalı. Yalnızca isLiveMatch kullanılınca takvimden sızan
+  // doğrulanamayan kayıtlar panoda "Canlı veri doğrulanamadı" etiketiyle
+  // listeleniyordu.
+  assert.match(body, /matchLiveVerdict\(match\)\.live/, "canlı pano doğrulanmış canlılık istemeli");
+
   // Kompakt kart kullanılmalı; eski büyük kart tamamen silinmiş olmalı.
   assert.match(body, /renderLiveCompactCard/, "bölüm kompakt kartı kullanmalı");
   assert.ok(!appSource.includes("function renderLiveMatch("), "eski büyük canlı kart silinmiş olmalı");
@@ -272,4 +278,12 @@ const CASES = [
   }
 }
 
-console.log("live-score-filter OK (9 bölüm)");
+// ── 10. Ana sayfa "Canlı" sayacı panoyla aynı hükmü kullanmalı ─────────────
+{
+  const metrics = appSource.match(/function matchCenterMetricsHtml\([\s\S]*?\n  \}/);
+  assert.ok(metrics, "matchCenterMetricsHtml bulunmalı");
+  assert.match(metrics[0], /matchLiveVerdict\(match\)\.live/,
+    "sayaç doğrulanmamış canlıyı saymamalı — pano reddederken sayaç sayarsa sayfa çelişir");
+}
+
+console.log("live-score-filter OK (10 bölüm)");

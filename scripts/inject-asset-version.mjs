@@ -90,8 +90,40 @@ function stampReferences(html) {
   return output;
 }
 
+/**
+ * PERFORMANCE-LOADER DA DAMGALANIR — VE BU EN KRİTİK DAMGA.
+ *
+ * app.js sayfalara <script> ile girmiyor; performance-loader.js onu
+ * etkileşimde/boşta dinamik yüklüyor. Yükleyicideki adres sürümsüz
+ * kaldığında, /app.js "max-age=31536000, immutable" ile servis edildiği
+ * için dönen ziyaretçi BİR YIL eski app.js'e kilitleniyordu — sayfalardaki
+ * damga ne olursa olsun. Yükleyicinin kendisi max-age=0 ile servis
+ * edildiğinden damgayı taşıyabilir: her derlemede buradaki adres güncel
+ * app.js içeriğinin karmasıyla yeniden yazılır.
+ */
+function stampPerformanceLoader() {
+  const loaderPath = path.join(root, "performance-loader.js");
+  const appStamp = stamps.get("app.js");
+  if (!appStamp || !fs.existsSync(loaderPath)) return false;
+
+  const source = fs.readFileSync(loaderPath, "utf8");
+  const next = source.replace(
+    /script\.src = "\/app\.js(?:\?v=[a-f0-9]*)?";/,
+    `script.src = "/app.js?v=${appStamp}";`
+  );
+  if (next === source) return false;
+  if (!next.includes(`/app.js?v=${appStamp}`)) {
+    throw new Error("performance-loader.js içinde app.js adresi bulunamadı; damga basılamadı");
+  }
+  fs.writeFileSync(loaderPath, next, "utf8");
+  const publicCopy = path.join(root, "public", "performance-loader.js");
+  if (fs.existsSync(publicCopy)) fs.writeFileSync(publicCopy, next, "utf8");
+  return true;
+}
+
 const files = walk(root);
 let updated = 0;
+const loaderStamped = stampPerformanceLoader();
 
 for (const file of files) {
   const html = fs.readFileSync(file, "utf8");
@@ -103,4 +135,4 @@ for (const file of files) {
 }
 
 const summary = [...stamps.entries()].map(([asset, stamp]) => `${asset}=${stamp}`).join(" ");
-console.log(`Asset version: ${updated} sayfa damgalandı (${summary}).`);
+console.log(`Asset version: ${updated} sayfa damgalandı (${summary}); performance-loader ${loaderStamped ? "güncellendi" : "zaten güncel"}.`);
