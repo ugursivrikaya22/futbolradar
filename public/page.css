@@ -780,95 +780,6 @@ h1 {
   color: var(--green);
 }
 
-.live-score-card {
-  display: flex;
-  flex-direction: column;
-}
-
-.live-score-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  margin-bottom: 14px;
-}
-
-.live-score-league {
-  color: var(--muted);
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.live-score-time {
-  color: var(--text);
-  font-size: 0.95rem;
-  font-weight: 850;
-  letter-spacing: 0.02em;
-}
-
-.live-score-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 800;
-  border: 1px solid var(--line);
-  background: rgba(var(--surface-rgb), 0.046);
-  color: var(--muted);
-}
-
-.live-score-status .live-pulse {
-  display: none;
-}
-
-.live-score-status-live {
-  color: #ffd7d7;
-  border-color: rgba(255, 107, 107, 0.4);
-  background: rgba(255, 107, 107, 0.12);
-}
-
-.live-score-status-live .live-pulse {
-  display: inline-block;
-}
-
-.live-score-status-finished {
-  color: var(--muted);
-  border-color: var(--line);
-}
-
-.live-score-status-scheduled {
-  color: var(--cyan);
-  border-color: rgba(13, 148, 136, 0.16);
-  background: rgba(13, 148, 136, 0.04);
-}
-
-.live-score-status-muted {
-  color: var(--muted);
-  opacity: 0.8;
-}
-
-.live-score-match {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 12px;
-  margin: 8px 0 16px;
-}
-
-.live-score-team {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-.live-score-team-away {
-  flex-direction: row-reverse;
-  text-align: right;
-}
-
 .live-score-team-logo,
 .live-score-team-logo-wrap {
   flex: none;
@@ -895,21 +806,6 @@ h1 {
   font-weight: 800;
 }
 
-.live-score-team-name {
-  min-width: 0;
-  overflow-wrap: anywhere;
-  font-size: 0.95rem;
-  font-weight: 800;
-}
-
-.live-score-result {
-  text-align: center;
-  font-size: 1.6rem;
-  font-weight: 900;
-  color: var(--text);
-  white-space: nowrap;
-}
-
 /* Bu başlık dört parçadan oluşuyor: [logo][ev sahibi] [logo][deplasman].
    Sarma kuralı yokken 320px'te ikinci takım adı kartın sağ kenarından taşıp
    kesiliyordu ("Samsunspo…") ve ilk ad "Westerlo -" biçiminde ortasından
@@ -931,25 +827,14 @@ h1 {
 }
 
 @media (max-width: 480px) {
-  .live-score-match {
-    gap: 8px;
-  }
-
-  .live-score-team-logo,
+    .live-score-team-logo,
   .live-score-team-logo-wrap,
   .live-score-team-logo-fallback {
     width: 32px;
     height: 32px;
   }
 
-  .live-score-team-name {
-    font-size: 0.82rem;
-  }
-
-  .live-score-result {
-    font-size: 1.25rem;
-  }
-}
+    }
 
 .source-strip {
   display: grid;
@@ -3730,17 +3615,6 @@ h1 {
       .live-score-daily {
         grid-column: 1 / -1;
         min-width: 0;
-      }
-
-      /* Kart sayısı değişken olduğu için sabit dört sütun yerine sığdıkça
-         yerleşir; üç maçlık bir günde kartlar dörtte bire düşmez.
-
-         Taban, genel maç ızgarasıyla AYNI (228px). Bu seçici daha özgül
-         olduğu için 240px'te bırakıldığında canlı skor sayfası masaüstünde
-         dört sütunda kalıyor, diğer iki yüzey beşe çıkıyordu; aynı kart aynı
-         genişlikte iki farklı sayfada farklı diziliyordu. */
-      .live-score-daily .matches-grid {
-        grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
       }
 
       .live-score-daily-head {
@@ -14256,7 +14130,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 /* `[hidden]` tek başına yetmiyor: kartlar `display: grid` taşıyor ve bu
    tarayıcının `[hidden] { display: none }` varsayılanını geçersiz kılıyor. */
 .fixture-card[hidden],
-.live-score-card[hidden] {
+.live-compact-card[hidden] {
   display: none;
 }
 
@@ -18322,4 +18196,104 @@ body,
 
 @media (prefers-reduced-motion: reduce) {
   .motm-poll__bar-fill { transition: none; }
+}
+
+/* ==========================================================================
+   KOMPAKT CANLI SKOR PANOSU
+   --------------------------------------------------------------------------
+   Kural: bu panoya yalnızca SKORU OLAN maç girer (veri katmanı süzgeci,
+   app.js `live-score-filter` bloğu). Kart tek çizgilik bir bağlantıdır:
+   [durum][ev][skor][deplasman]. Eski kart ~300px yüksekliğindeydi ve bir
+   ekrana birkaç maç sığıyordu; bu satır ~44px — tek ekranda onlarca maç.
+   ========================================================================== */
+
+/* Lig blokları pano içinde sıkılaşır: kompakt satırların yanında geniş
+   kart boşlukları panoyu yeniden seyreltirdi. */
+.live-compact-board .league-match-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr));
+  gap: 6px;
+}
+
+.live-compact-board .league-block {
+  padding: 10px 12px;
+}
+
+.live-compact-board .league-block-head {
+  margin-bottom: 8px;
+}
+
+.live-compact-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  /* Dokunmatik alt sınır: satır sıkı ama hedef küçülmez. */
+  min-height: var(--tap, 44px);
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(var(--surface-rgb), 0.03);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.live-compact-card:hover {
+  border-color: var(--green);
+  background: rgba(11, 143, 90, 0.06);
+}
+
+.live-compact-card.is-live {
+  border-color: rgba(255, 107, 107, 0.4);
+}
+
+.live-compact-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 34px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.live-compact-status.is-live {
+  color: #ff6b6b;
+}
+
+/* TAKIM ADI TEK SATIRDA. Sığmayan ad üç noktayla kısalır; skor asla
+   kısalmaz. Ev sahibi skora doğru hizalanır, deplasman skordan dışa —
+   skor tablosu okuma düzeni. */
+.live-compact-team {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  font-weight: 750;
+}
+
+.live-compact-team.is-home {
+  text-align: right;
+}
+
+.live-compact-score {
+  font-size: 0.95rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--text);
+}
+
+.live-compact-card.is-live .live-compact-score {
+  color: #ff6b6b;
+}
+
+@media (max-width: 640px) {
+  /* Dar ekranda tek sütunlu liste: her satır 44px, bir ekrana ~14 maç. */
+  .live-compact-board .league-match-grid {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
 }
