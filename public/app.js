@@ -1854,17 +1854,46 @@
     return labels[normalized] || displayValue(status);
   }
 
+  /**
+   * SKOR OKUNABİLİR Mİ? Kural sunucuyla aynı (services/matchStatus.js:
+   * hasReadableScore). Sıfır geçerli bir skordur — maç 0-0 başlar; eksik
+   * olan `null`/`undefined`tır.
+   */
+  function isScoreValue(value) {
+    // `Number(null)` SIFIRDIR. Doğrudan Number()'a vermek eksik skoru 0-0
+    // sanmak olurdu — tam da bu kapının engellemesi gereken şey.
+    if (typeof value === "number") return isFinite(value);
+    if (typeof value === "string" && value.trim() !== "") return isFinite(Number(value));
+    return false;
+  }
+
+  function hasReadableScore(match) {
+    var score = match && match.score;
+    if (!score || typeof score !== "object") return false;
+    return isScoreValue(score.home) && isScoreValue(score.away);
+  }
+
+  /**
+   * CANLI İDDİASI, ARKASINI DOLDURAN VERİ OLMADAN YAPILMAZ.
+   *
+   * Eskiden yalnızca sağlayıcının durum koduna bakılıyordu. Sağlayıcı "LIVE"
+   * deyip skoru `null` gönderdiğinde kart ekranda "Canlı" rozetiyle
+   * "– / –" olarak duruyordu: okuyucuya "şu anda oynanıyor ve skoru
+   * biliyoruz" diyen, ikincisi doğru olmayan bir kart.
+   *
+   * Kart KAYBOLMAZ — yalnızca canlı sayılmaz; durum etiketi "Canlı veri
+   * doğrulanamadı" olur (services/matchStatus.js: UNVERIFIED_LIVE_LABEL).
+   */
   function isLiveMatch(match) {
     if (!match) {
       return false;
     }
 
-    if (match.live === true) {
-      return true;
-    }
-
     var status = String(match.status || match.providerStatus || "").toUpperCase();
-    return ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].includes(status);
+    var claimsLive = match.live === true ||
+      ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].includes(status);
+
+    return claimsLive && hasReadableScore(match);
   }
 
   function initCompetitionFilters() {
@@ -3975,8 +4004,17 @@
    */
   function matchProgramState(match, nowMs) {
     if (!match) return "unknown";
-    if (isLiveMatch(match)) return "live";
     var status = String(match.status || match.providerStatus || "").toUpperCase();
+    // SIRALAMA ile GÖSTERİM ayrı sorular. `isLiveMatch` "bu maçı CANLI diye
+    // gösterebilir miyim?" der ve skor ister. Burada sorulan ise "bu maç ne
+    // kadar öne çıksın?" — sağlayıcı canlı diyorsa maç muhtemelen oynanıyor
+    // ve skoru henüz gelmemiş olsa bile listenin üstünde durmalı. Bu yüzden
+    // burada skor kapısı YOK; kural services/matchRelevance.js `stateOf` ile
+    // aynı kalıyor, iki taraf aynı sırayı üretiyor.
+    if (match.live === true ||
+      ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].includes(status)) {
+      return "live";
+    }
     if (["FINISHED", "FT", "AET", "PEN", "AWARDED", "WO"].includes(status)) return "finished";
     // Ertelenen/iptal edilen maç zaman çizgisinden çıkar; aşağıdaki
     // "oynanıyor" bandına düşerse gerçekten oynanan maçların üstüne çıkar.
