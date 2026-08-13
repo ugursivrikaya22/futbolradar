@@ -45,6 +45,7 @@ export const POSTPROCESS_CHAIN = [
   { id: "site-verification", script: "inject-site-verification.mjs", args: [], timeoutMinutes: 5 },
   { id: "core-page-schema", script: "inject-core-page-schema.mjs", args: [], timeoutMinutes: 5 },
   { id: "hreflang", script: "inject-hreflang.mjs", args: [], timeoutMinutes: 5 },
+  { id: "motm-poll", script: "inject-motm-poll.mjs", args: [], timeoutMinutes: 5 },
   { id: "asset-version", script: "inject-asset-version.mjs", args: [], timeoutMinutes: 5 }
 ];
 

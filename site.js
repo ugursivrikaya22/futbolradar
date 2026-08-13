@@ -709,3 +709,169 @@
   // app.js istemci tarafında şerit bastığında yeniden bağlanır.
   document.addEventListener("futbolradar:rendered", setupSliders);
 })();
+
+/**
+ * MAÇIN ADAMI ANKETİ.
+ *
+ * Anket sunucusuz çalışır: oy bu tarayıcının `localStorage`ında tutulur.
+ * Bu bir eksiklik değil, AÇIKÇA SÖYLENEN bir sınır — blok, sonucun
+ * topluluk ortalaması olmadığını yazıyla belirtir (motm-poll__note).
+ * Yüzdeyi "herkesin oyu" gibi sunmak, tek kullanıcının oyunu kitlenin
+ * kararı gibi göstermek olurdu.
+ *
+ * `localStorage` erişilemeyebilir (gizli sekme, üçüncü taraf çerez
+ * engeli, kota dolu). Her erişim korumalı: depo çalışmıyorsa anket yine
+ * de oy alır ve sonucu gösterir, yalnızca oy KALICI olmaz. Bir depolama
+ * hatası yüzünden sayfanın kırılması, anketin kendisinden daha kötüdür.
+ *
+ * BLOK `hidden` DOĞAR. JavaScript çalışmıyorsa anket hiç görünmez; basınca
+ * hiçbir şey yapmayan bir "Oy Ver" düğmesi göstermektense yok olması
+ * dürüsttür. Açma işi burada, önyüklemenin ilk adımında yapılır.
+ */
+(function () {
+  var STORAGE_PREFIX = "futbolradar:motm:";
+
+  function readStore(matchId) {
+    try {
+      var raw = window.localStorage.getItem(STORAGE_PREFIX + matchId);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? parsed : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function writeStore(matchId, state) {
+    try {
+      window.localStorage.setItem(STORAGE_PREFIX + matchId, JSON.stringify(state));
+      return true;
+    } catch (error) {
+      // Depo yoksa oy oturum boyunca geçerli kalır; sayfa kırılmaz.
+      return false;
+    }
+  }
+
+  /** Sayımdan yüzde. Toplam sıfırsa yüzde YOK — 0/0 bir oran değildir. */
+  function toPercent(count, total) {
+    if (!total) return 0;
+    return Math.round((count / total) * 100);
+  }
+
+  function renderResults(poll, state) {
+    var results = poll.querySelector("[data-motm-results]");
+    var note = poll.querySelector("[data-motm-note]");
+    var form = poll.querySelector("[data-motm-form]");
+    var thanks = poll.querySelector("[data-motm-thanks]");
+    if (!results) return;
+
+    var counts = state && state.counts ? state.counts : {};
+    var total = 0;
+    var key;
+    for (key in counts) {
+      if (Object.prototype.hasOwnProperty.call(counts, key)) total += counts[key];
+    }
+
+    // Adayların görünen adı işaretlemeden okunur: istemci hiçbir oyuncu
+    // adını kendisi üretmez, sayfada zaten basılı olanı kullanır.
+    var rows = [];
+    var labels = poll.querySelectorAll(".motm-poll__option");
+    Array.prototype.forEach.call(labels, function (item) {
+      var input = item.querySelector(".motm-poll__radio");
+      var nameNode = item.querySelector(".motm-poll__name");
+      if (!input || !nameNode) return;
+      var id = input.value;
+      var count = counts[id] || 0;
+      if (!count) return;
+      rows.push({ id: id, name: nameNode.textContent, count: count, percent: toPercent(count, total) });
+    });
+
+    rows.sort(function (left, right) {
+      return right.count - left.count || left.name.localeCompare(right.name, "tr");
+    });
+
+    results.innerHTML = "";
+    rows.forEach(function (row) {
+      var line = document.createElement("div");
+      line.className = "motm-poll__result" + (state && state.choice === row.id ? " is-yours" : "");
+
+      var head = document.createElement("div");
+      head.className = "motm-poll__result-head";
+
+      var name = document.createElement("span");
+      name.className = "motm-poll__result-name";
+      name.textContent = row.name;
+      head.appendChild(name);
+
+      if (state && state.choice === row.id) {
+        var mine = document.createElement("span");
+        mine.className = "motm-poll__result-mine";
+        mine.textContent = "Senin oyun";
+        head.appendChild(mine);
+      }
+
+      var percent = document.createElement("span");
+      percent.className = "motm-poll__result-percent";
+      percent.textContent = row.percent + "%";
+      head.appendChild(percent);
+
+      var bar = document.createElement("div");
+      bar.className = "motm-poll__bar";
+      var fill = document.createElement("span");
+      fill.className = "motm-poll__bar-fill";
+      fill.style.width = row.percent + "%";
+      bar.appendChild(fill);
+
+      line.appendChild(head);
+      line.appendChild(bar);
+      results.appendChild(line);
+    });
+
+    if (form) form.hidden = true;
+    if (thanks) thanks.hidden = false;
+    results.hidden = false;
+    if (note) note.hidden = false;
+  }
+
+  function setupPoll(poll) {
+    var matchId = poll.getAttribute("data-motm-match");
+    var form = poll.querySelector("[data-motm-form]");
+    if (!matchId || !form) return;
+
+    // JavaScript çalışıyor: anket artık gösterilebilir.
+    poll.hidden = false;
+
+    var state = readStore(matchId);
+    // Daha önce oy verilmişse form yerine SONUÇ gösterilir.
+    if (state && state.choice) {
+      renderResults(poll, state);
+      return;
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      var selected = form.querySelector(".motm-poll__radio:checked");
+      if (!selected) return;
+
+      var current = readStore(matchId) || { counts: {} };
+      if (!current.counts || typeof current.counts !== "object") current.counts = {};
+      current.counts[selected.value] = (current.counts[selected.value] || 0) + 1;
+      current.choice = selected.value;
+      current.votedAt = new Date().toISOString();
+
+      writeStore(matchId, current);
+      renderResults(poll, current);
+    });
+  }
+
+  function setupMotmPolls() {
+    var polls = document.querySelectorAll("[data-motm-poll]");
+    Array.prototype.forEach.call(polls, setupPoll);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupMotmPolls);
+  } else {
+    setupMotmPolls();
+  }
+})();

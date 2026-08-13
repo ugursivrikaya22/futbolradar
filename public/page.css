@@ -18107,3 +18107,219 @@ body,
 .demand-faq details[open] > p {
   margin-top: 10px;
 }
+
+/* ==========================================================================
+   MAÇIN ADAMI ANKETİ
+   --------------------------------------------------------------------------
+   Blok DİKKAT ÇEKMEK için tasarlandı (rozet, sarı vurgu, kalın çerçeve) ama
+   sayfanın kendi içeriğini bastırmıyor: rapor sayfasında asıl metin maçın
+   anlatısı, anket ona eklenen bir etkileşim.
+
+   Blok `hidden` doğuyor ve onu istemci açıyor (scripts/lib/motmPoll.mjs);
+   JavaScript yoksa anket hiç görünmez, o yüzden burada "JS kapalı" hâli
+   için bir stil yok.
+   ========================================================================== */
+
+.motm-poll {
+  position: relative;
+  margin: 22px 0;
+  padding: 20px clamp(16px, 3vw, 26px) 22px;
+  border: 2px solid #facc15;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.14) 0, rgba(250, 204, 21, 0.04) 55%, transparent 100%);
+  box-shadow: 0 10px 30px rgba(250, 204, 21, 0.12);
+}
+
+.motm-poll[hidden] { display: none; }
+
+.motm-poll__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #facc15;
+  color: #1c1917;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.motm-poll__title {
+  margin: 0 0 6px;
+  font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+  font-weight: 900;
+}
+
+.motm-poll__subtitle {
+  margin: 0 0 16px;
+  opacity: 0.82;
+  font-size: 0.92rem;
+}
+
+.motm-poll__options {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.motm-poll__option { margin: 0; }
+
+/* Radyo görsel olarak gizli ama ERİŞİLEBİLİR kalır: klavye odağı ve ekran
+   okuyucu ona ulaşır, odak halkası etiketin üstünde gösterilir. */
+.motm-poll__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.motm-poll__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(120, 113, 108, 0.34);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  font-size: 0.88rem;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.motm-poll__label:hover { border-color: #facc15; }
+
+.motm-poll__radio:checked + .motm-poll__label {
+  border-color: #facc15;
+  background: rgba(250, 204, 21, 0.16);
+  font-weight: 700;
+}
+
+.motm-poll__radio:focus-visible + .motm-poll__label {
+  outline: 2px solid #facc15;
+  outline-offset: 2px;
+}
+
+.motm-poll__name { flex: 1 1 auto; min-width: 0; }
+
+.motm-poll__team {
+  opacity: 0.66;
+  font-size: 0.74rem;
+  white-space: nowrap;
+}
+
+/* Rol rozeti listenin KANITI: listede yalnızca oynayanlar var, bu etiket
+   her adayın maça nasıl katıldığını söylüyor. */
+.motm-poll__role {
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.motm-poll__role.is-starter {
+  background: rgba(34, 197, 94, 0.18);
+  color: #16a34a;
+}
+
+.motm-poll__role.is-substitute {
+  background: rgba(56, 189, 248, 0.18);
+  color: #0284c7;
+}
+
+.motm-poll__submit {
+  padding: 11px 26px;
+  border: 0;
+  border-radius: 999px;
+  background: #facc15;
+  color: #1c1917;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.motm-poll__submit:hover { background: #eab308; }
+
+.motm-poll__submit:focus-visible {
+  outline: 2px solid #1c1917;
+  outline-offset: 3px;
+}
+
+.motm-poll__thanks {
+  margin: 0 0 12px;
+  color: #16a34a;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.motm-poll__result { margin-bottom: 10px; }
+
+.motm-poll__result-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 0.86rem;
+}
+
+.motm-poll__result-name { flex: 1 1 auto; min-width: 0; font-weight: 700; }
+
+.motm-poll__result-mine {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(250, 204, 21, 0.24);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.motm-poll__result-percent { font-weight: 900; font-variant-numeric: tabular-nums; }
+
+.motm-poll__bar {
+  overflow: hidden;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(120, 113, 108, 0.24);
+}
+
+.motm-poll__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #facc15;
+  transition: width 0.3s ease;
+}
+
+/* Sonucun ne olduğunu SÖYLEYEN not. Sitede oyları toplayan bir sunucu yok;
+   yüzdeyi topluluk sonucu gibi sunmak uydurma olurdu. */
+.motm-poll__note {
+  margin: 12px 0 0;
+  opacity: 0.7;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .motm-poll { margin: 16px 0; padding: 16px 14px 18px; border-radius: 14px; }
+  .motm-poll__options { grid-template-columns: 1fr; gap: 6px; }
+  .motm-poll__label { padding: 9px 10px; font-size: 0.84rem; }
+  /* Dar ekranda takım adı düşer; oyuncu adı ve rolü kalır. */
+  .motm-poll__team { display: none; }
+  .motm-poll__submit { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motm-poll__bar-fill { transition: none; }
+}
