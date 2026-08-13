@@ -36,6 +36,7 @@ const { publishableNews, newsHref, isExternalHref } = require("../services/newsF
 const { selectTickerRecords } = require("../services/transferRadarTicker.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { withRelevance } = require("../services/matchRelevance.js");
+const { filterScoredMatches } = require("../services/liveScoreFilter.js");
 // "Bugünün Maçları" yüzeyinin kuralı — sıra, lig blokları, bağlantı, SSS.
 const {
   groupMatchesByLeague,
@@ -785,6 +786,54 @@ function matchProgramState(variant) {
   return cards || emptyMatchState(variant);
 }
 
+/**
+ * CANLI SKOR ALANININ STATİK YEDEĞİ.
+ *
+ * Kural veri katmanında: SKORU OLMAYAN MAÇ BU ALANA HİÇ GİRMEZ — statik
+ * yedek de dahil. Eskiden buraya `calendarProgramCards` basılıyordu, yani
+ * skorsuz program kartları "canlı skor" başlığının altında duruyordu;
+ * istemci veriyi çizemediğinde ziyaretçi skorsuz kartları skor alanında
+ * görüyordu. Artık statik içerik yalnızca günün SKORLU ve doğrulanmış
+ * sonuçları; yoksa dürüst boş durum.
+ *
+ * Derleme anında hiçbir maç "canlı" basılmaz: derleme bir andır, "45'"
+ * yazan statik kart bir dakika sonra yalan söyler. Canlıyı yalnızca
+ * istemci çizer.
+ *
+ * Kart, istemcinin kompakt satırıyla AYNI sınıf iskeletini kullanır
+ * (app.js renderLiveCompactCard); scripts/test-live-score-filter.mjs iki
+ * tarafın kancalarını karşılaştırır.
+ */
+function liveScoreProgramState() {
+  const today = istanbulToday();
+  const scored = filterScoredMatches(curatedMatches())
+    .filter((match) => istanbulDay(match.kickoff) === today)
+    .filter((match) => String(match.status || "").toUpperCase() !== "FINISHED" || isVerifiedFinalMatch(match))
+    .filter((match) => !["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"]
+      .includes(String(match.status || "").toUpperCase()));
+
+  if (!scored.length) {
+    return emptyMatchState("live");
+  }
+
+  const cards = scored
+    .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
+    .map((match) =>
+      `<a class="live-compact-card is-final" data-card="live-match" data-match="${escapeHtml(match.id)}" href="${escapeHtml(matchDetailPath(match))}">` +
+      '<span class="live-compact-status is-final">MS</span>' +
+      `<span class="live-compact-team is-home">${escapeHtml(match.homeTeam)}</span>` +
+      `<b class="live-compact-score">${escapeHtml(String(match.score.home))} - ${escapeHtml(String(match.score.away))}</b>` +
+      `<span class="live-compact-team is-away">${escapeHtml(match.awayTeam)}</span>` +
+      "</a>"
+    )
+    .join("");
+
+  return `<section class="live-score-daily" aria-label="Bugünün maç sonuçları">
+      <div class="live-score-daily-head"><strong>Şu anda oynanan maç yok. Bugünün sonuçları:</strong></div>
+      <div class="live-compact-board"><div class="league-match-grid">${cards}</div></div>
+    </section>`;
+}
+
 function emptyMatchState(variant) {
   const isFeatured = variant === "featured";
   const isLive = variant === "live";
@@ -1329,7 +1378,7 @@ writePage("bugunun-maclari.html", {
 writePage("canli-skor.html", {
   // Canlı maç yokken de günün sonuçları görünsün: sayfa eskiden yalnızca
   // "canlı maç yok" diyordu ve o günün oynanmış maçları hiç listelenmiyordu.
-  "live-score": matchProgramState("live")
+  "live-score": liveScoreProgramState()
 }, fixtureFreshness, {
   "live-schema": matchListSchemaBlock(calendarProgramMatches(MATCH_LIST_INITIAL), "Canlı ve günün maçları")
 });

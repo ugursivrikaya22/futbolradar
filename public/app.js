@@ -3729,6 +3729,12 @@
    */
   var MATCH_LIST_INITIAL = 12;
 
+  /* Kompakt canlı skor panosunun penceresi daha geniş: satırlar tek
+     çizgilik olduğu için 12 kart bir ekranı bile doldurmuyor ve "daha
+     fazla" düğmesi amaçsız yere tıklatıyordu. 36 satır, masaüstünde
+     yaklaşık iki ekran; gerisi yine düğmeyle açılır. */
+  var LIVE_BOARD_INITIAL = 36;
+
   /**
    * Hangi listeler açılmış durumda?
    *
@@ -3790,10 +3796,16 @@
    *   TÜM liste bu fonksiyona verilir (lig bloklarında olduğu gibi) ve
    *   fazlalık kartlar işaretleme üzerinden gizlenir.
    */
-  function renderMatchListWindow(matches, cardRenderer, key, groupRenderer) {
+  function renderMatchListWindow(matches, cardRenderer, key, groupRenderer, initialCount) {
     var list = Array.isArray(matches) ? matches : [];
     var expanded = expandedMatchLists[key] === true;
-    var hiddenCount = expanded ? 0 : Math.max(0, list.length - MATCH_LIST_INITIAL);
+    // Pencere boyutu karta göre değişebilir: kompakt canlı skor satırları
+    // standart karttan çok daha alçak olduğu için kendi pencerelerini
+    // geçirir. Verilmezse eski davranış (12) aynen korunur.
+    var windowSize = typeof initialCount === "number" && isFinite(initialCount) && initialCount >= 0
+      ? Math.floor(initialCount)
+      : MATCH_LIST_INITIAL;
+    var hiddenCount = expanded ? 0 : Math.max(0, list.length - windowSize);
 
     // Fazlalık kartın işaretlemesi kartı üreten fonksiyonun İÇİNDE damgalanır;
     // böylece lig bloklarında da (kart sarmalayıcının derinliğinden bağımsız)
@@ -3801,7 +3813,7 @@
     var index = 0;
     var stamped = function (match) {
       var html = cardRenderer(match);
-      if (!expanded && index >= MATCH_LIST_INITIAL) {
+      if (!expanded && index >= windowSize) {
         html = markMatchOverflow(html);
       }
       index += 1;
@@ -3920,42 +3932,79 @@
     );
   }
 
-  function renderLiveMatch(match) {
-    var hasTempo = match.tempo !== undefined && match.tempo !== null && match.tempo !== "";
+  // live-score-filter:start
+  // CANLI SKOR ALANININ VERİ KATMANI SÜZGECİ — services/liveScoreFilter.js
+  // ile birebir aynı mantık. Tarayıcı betiği modül yükleyemediği için blok
+  // burada da duruyor; scripts/test-live-score-filter.mjs iki uygulamayı
+  // aynı girdi tablosunda çalıştırıp ayrışmayı kırmızıya çevirir.
+  //
+  // Kural: SKORU OLMAYAN MAÇ CANLI SKOR ALANINA HİÇ GİRMEZ. Süzme çizimde
+  // değil veri katmanında — skoru olmayan maç diziye hiç girmez. "Skoru
+  // var" iki koşulun birlikte tutmasıdır: skor iki tarafta da SAYISAL
+  // (Number(null) sıfırdır; eksik skoru 0-0 sanmak tam da engellenen şey)
+  // ve maç skoru YAYINLAMIŞ bir durumda (oynanıyor ya da bitmiş; başlamamış
+  // kayıttaki "0-0" sonuç değil yer tutucudur).
+  var SCORE_BEARING_STATUSES = [
+    "LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P",
+    "FINISHED", "FT", "AET", "PEN"
+  ];
+
+  function hasPublishedScore(match) {
+    if (!match || typeof match !== "object") return false;
+    var score = match.score;
+    if (!score || typeof score !== "object") return false;
+    var readable = function (value) {
+      if (typeof value === "number") return isFinite(value);
+      if (typeof value === "string" && value.trim() !== "") return isFinite(Number(value));
+      return false;
+    };
+    if (!readable(score.home) || !readable(score.away)) return false;
+    var status = String(match.status || match.providerStatus || "").toUpperCase();
+    return SCORE_BEARING_STATUSES.indexOf(status) !== -1;
+  }
+
+  function filterScoredMatches(list) {
+    return (Array.isArray(list) ? list : []).filter(hasPublishedScore);
+  }
+  // live-score-filter:end
+
+  /**
+   * KOMPAKT CANLI SKOR SATIRI.
+   *
+   * Eski kart (lig satırı + logolar + özet paragrafı + tempo çubuğu +
+   * etiketler + üç bağlantı) ekranda ~300px yer kaplıyordu; bir ekrana
+   * ancak birkaç maç sığıyordu. Bu satır tek çizgidir:
+   * [durum][ev][skor][dep]. Amaç tek ekranda ÇOK daha fazla maç.
+   *
+   * Kart bir bağlantıdır ve maç detayına gider — eski karttaki üç ayrı
+   * bağlantı yerine tek dokunma hedefi. `data-match` korunur; canlı kart
+   * ayrıca `data-match-live` taşır çünkü analitik katmanı
+   * (LIVE_MATCH_FOLLOW) canlı kart tıklamasını bundan tanır.
+   *
+   * Takım adı TEK SATIRDA kalır (CSS: nowrap + ellipsis); skor sabit
+   * genişlikli rakamlarla basılır ve kısaltılamaz.
+   *
+   * Bu satıra gelen her maç veri katmanı süzgecinden skorla geçti; "skor
+   * yoksa" dalı bilerek yok — o durum burada temsil edilemez olmalı.
+   */
+  function renderLiveCompactCard(match) {
+    var meta = fixtureStatusMeta(match);
     var homeTeam = matchTeam(match, "home");
     var awayTeam = matchTeam(match, "away");
-    var statusLabel = statusTr(match.status);
-    var minuteLabel = liveMinuteLabel(match);
 
     return (
-      '<article class="card match-card live-score-card" data-card="live-match" data-match="' + escapeHtml(match.id) + '">' +
-      '<div class="live-score-meta">' +
-      '<span class="live-score-league">' + escapeHtml(displayValue(match.league)) + '</span>' +
-      '<time class="live-score-time">' + escapeHtml(matchTimeLabel(match)) + '</time>' +
-      '<span class="live-score-status live-score-status-' + statusSlug(match.status) + '">' +
-      '<i class="live-pulse" aria-hidden="true"></i>' + escapeHtml(statusLabel) + (minuteLabel ? " · " + escapeHtml(minuteLabel) : "") +
-      '</span>' +
-      '</div>' +
-      '<div class="live-score-match">' +
-      '<div class="live-score-team live-score-team-home">' +
-      teamLogoHtml(homeTeam) +
-      '<span class="live-score-team-name">' + escapeHtml(getTeamName(homeTeam)) + '</span>' +
-      '</div>' +
-      '<div class="live-score-result"><strong>' + escapeHtml(matchScoreDisplay(match)) + '</strong></div>' +
-      '<div class="live-score-team live-score-team-away">' +
-      teamLogoHtml(awayTeam) +
-      '<span class="live-score-team-name">' + escapeHtml(getTeamName(awayTeam)) + '</span>' +
-      '</div>' +
-      '</div>' +
-      "<p>" + escapeHtml(match.summary || "Maç skoru ve olay akışı canlı olarak takip ediliyor.") + "</p>" +
-      (hasTempo ? barRowHtml("Tempo", match.tempo, match.tempo) : "") +
-      tagsHtml(match.liveTags || match.tags) +
-      '<div class="player-actions match-actions">' +
-      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Maç Detayı</a>' +
-      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref(homeTeam)) + '">Ev sahibi radar</a>' +
-      '<a class="detail-link ghost" href="' + escapeHtml(teamDetailHref(awayTeam)) + '">Deplasman radar</a>' +
-      "</div>" +
-      "</article>"
+      '<a class="live-compact-card' + (meta.live ? " is-live" : "") + (meta.finished ? " is-final" : "") +
+      '" data-card="live-match" data-match="' + escapeHtml(match.id) + '"' +
+      (meta.live ? ' data-match-live="true"' : "") +
+      ' href="' + escapeHtml(matchDetailHref(match)) + '">' +
+      '<span class="live-compact-status ' + meta.className + '">' +
+      (meta.live ? '<i class="live-pulse" aria-hidden="true"></i>' : "") +
+      escapeHtml(meta.label) +
+      "</span>" +
+      '<span class="live-compact-team is-home">' + escapeHtml(getTeamName(homeTeam)) + "</span>" +
+      '<b class="live-compact-score">' + escapeHtml(matchScoreDisplay(match)) + "</b>" +
+      '<span class="live-compact-team is-away">' + escapeHtml(getTeamName(awayTeam)) + "</span>" +
+      "</a>"
     );
   }
 
@@ -4415,47 +4464,54 @@
     });
   }
 
-  // Canlı maç yokken sayfayı boş bırakmak, günün oynanmış maçlarını da
-  // gizliyordu: ziyaretçi "canlı skor" sayfasına girip bugün ne olduğunu
-  // hiç göremiyordu. Canlı maç varsa o gösterilir; yoksa günün sonuçları
-  // ve başlayacak maçlar listelenir.
+  /**
+   * CANLI SKOR BÖLÜMÜ.
+   *
+   * İlk satır veri katmanı süzgeci: SKORU OLMAYAN MAÇ DİZİYE HİÇ GİRMEZ.
+   * Aşağıdaki hiçbir dal süzülmemiş listeyi görmez; "skor boşsa ne
+   * göstereyim" sorusu bu fonksiyonda sorulamaz hâle gelir. Geç gelen skor
+   * da aynı kapıdan geçer: skor düşene kadar maç bu alanda yoktur, skor
+   * geldiğinde bir sonraki yoklamada belirir.
+   *
+   * Bu bilinçli bir davranış değişikliği: eskiden canlı maç yokken "Bugün
+   * başlayacak maçlar" listesi basılıyordu. Başlamamış maçın skoru olmadığı
+   * için o liste artık burada YOK — program bilgisi kendi sayfasında
+   * (bugunun-maclari.html) yaşıyor ve boş durumda oraya bağlantı verilir.
+   */
   function renderLiveScoreSection(matches) {
-    var list = Array.isArray(matches) ? matches : [];
+    var list = filterScoredMatches(matches);
     var liveMatches = list.filter(isLiveMatch);
 
     if (liveMatches.length) {
-      return renderMatchListWindow(liveMatches, renderLiveMatch, "live-score", renderMatchesByLeague);
+      return (
+        '<div class="live-compact-board">' +
+        renderMatchListWindow(liveMatches, renderLiveCompactCard, "live-score", renderMatchesByLeague, LIVE_BOARD_INITIAL) +
+        "</div>"
+      );
     }
 
-    if (!list.length) {
-      return "";
-    }
-
+    // Canlı yok: günün SKORLU sonuçları. Bilgilendirme iniş sayfalarında
+    // yalnızca doğrulanmış skorlar (mevcut kural korunuyor).
     var finished = list.filter(function (match) {
-      var isFinished = ["FINISHED", "FT", "AET", "PEN"].includes(String(match.status || match.providerStatus || "").toUpperCase());
+      var status = String(match.status || match.providerStatus || "").toUpperCase();
+      var isFinished = ["FINISHED", "FT", "AET", "PEN"].includes(status);
       return isFinished && (!isInformationalLanding() || matchHasVerifiedFinalScore(match));
     });
-    var upcoming = list.filter(function (match) {
-      return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(String(match.status || match.providerStatus || "").toUpperCase());
-    });
 
-    var ordered = finished.concat(upcoming);
-    if (!ordered.length) {
+    if (!finished.length) {
+      // Skorlu maç yoksa bölüm boş döner; statik yedek (o da skorsuz kart
+      // basmaz) ya da boş durum mesajı görünür. Skorsuz kart basmak yok.
       return "";
     }
-
-    var heading = finished.length
-      ? "Şu anda oynanan maç yok. Bugünün sonuçları:"
-      : "Şu anda oynanan maç yok. Bugün başlayacak maçlar:";
 
     return (
       '<section class="live-score-daily" aria-label="Bugünün maç sonuçları">' +
       '<div class="live-score-daily-head">' +
       "<span>" + escapeHtml(formatMatchDate(todayInIstanbul())) + "</span>" +
-      "<strong>" + escapeHtml(heading) + "</strong>" +
+      "<strong>Şu anda oynanan maç yok. Bugünün sonuçları:</strong>" +
       "</div>" +
-      '<div class="matches-grid">' +
-      renderMatchListWindow(ordered, renderFixtureCard, "live-score-daily") +
+      '<div class="live-compact-board">' +
+      renderMatchListWindow(finished, renderLiveCompactCard, "live-score-daily", renderMatchesByLeague, LIVE_BOARD_INITIAL) +
       "</div>" +
       '<div class="match-empty-actions">' +
       '<a class="detail-link" href="./bugunun-maclari.html">Maç merkezini aç</a>' +

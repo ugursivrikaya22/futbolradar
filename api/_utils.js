@@ -16,7 +16,11 @@ const CACHE_POLICIES = Object.freeze({
   signals: { maxAge: 120, stale: 600 },
   analyses: { maxAge: 3600, stale: 21600 },
   "match-analysis": { maxAge: 300, stale: 900 },
-  health: { noStore: true }
+  health: { noStore: true },
+  // Anket sayımı her oyla değişiyor ve yanıt seçmene özel bir alan taşıyor
+  // (`alreadyVoted`). Önbelleğe alınırsa okuyucu ya eski sonucu görür ya da
+  // BAŞKASININ oy durumunu devralır — ikincisi sessiz ve çok daha kötü.
+  "motm-vote": { noStore: true }
 });
 const QUERY_VALUE_MAX_LENGTH = 160;
 const QUERY_PARAM_MAX_COUNT = 24;

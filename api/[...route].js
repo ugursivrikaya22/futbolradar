@@ -4,6 +4,7 @@ const { enrichPlayerRating } = require("../services/ratingService");
 const { MODEL_VERSION: MATCH_PREDICTION_MODEL_VERSION } = require("../services/matchPredictionService");
 const { getFixtureWeeks, groupMatchesIntoWeeks } = require("../services/superLigFixtureService");
 const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
+const { handleMotmVote } = require("../server/motmVoteRoute");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -249,6 +250,19 @@ async function handleMatchAnalysis(req, res, query) {
 }
 
 module.exports = async function handler(req, res) {
+  // OY UÇ NOKTASI EN ÖNDE, ÇÜNKÜ ALTTAKİ KAPILAR ONA UYMUYOR.
+  //
+  // `rejectUnsupportedMethod` yalnızca okuma yöntemlerine izin veriyor ve
+  // oy vermek bir POST; buraya sonradan eklenseydi her oy 405 dönerdi.
+  // Kendi önbellek politikası (no-store) ve kendi hız sınırı da var —
+  // yazma, okumadan daha pahalı ve daha kötüye kullanılabilir.
+  //
+  // Mantık `server/motmVoteRoute.js`te: `api/` altındaki her dosya Vercel'de
+  // bir sunucusuz işlev sayılıyor ve Hobby planının 12 işlev sınırı doluydu.
+  if (routeName(req) === "motm-vote") {
+    return handleMotmVote(req, res);
+  }
+
   if (rejectUnsupportedMethod(req, res)) {
     return;
   }

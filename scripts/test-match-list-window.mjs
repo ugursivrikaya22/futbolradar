@@ -188,9 +188,10 @@ function matches(count, prefix) {
     /\.fixture-card\[hidden\][\s\S]{0,80}display:\s*none/.test(cssSource),
     "page.css gizli maç kartını display:none yapmalı"
   );
+  // Kompakt kart display:grid taşıyor; [hidden] tek başına onu yenemez.
   assert.ok(
-    /\.live-score-card\[hidden\][\s\S]{0,80}display:\s*none/.test(cssSource),
-    "page.css gizli canlı skor kartını display:none yapmalı"
+    /\.live-compact-card\[hidden\][\s\S]{0,80}display:\s*none/.test(cssSource),
+    "page.css gizli kompakt canlı skor satırını display:none yapmalı"
   );
   assert.ok(
     /\.match-more-row\s*\{[\s\S]*?grid-column:\s*1\s*\/\s*-1/.test(cssSource),
@@ -221,12 +222,13 @@ function matches(count, prefix) {
     "maç ızgarası 228px tabanına inmeli"
   );
 
-  // Canlı skor sayfasındaki günün sonuçları ızgarası daha ÖZGÜL bir seçici
-  // taşıyor; kendi tabanı güncellenmezse aynı kart iki sayfada farklı
-  // dizilir (biri dört, diğeri beş sütun).
+  // Canlı skor alanı artık kompakt panoyu kullanıyor (skoru olmayan maç
+  // alana hiç girmez, satırlar tek çizgilik). Panonun kendi sıkı ızgarası
+  // olmalı; genel maç ızgarasına geri düşerse kompakt satırlar geniş kart
+  // boşluklarıyla seyrelir.
   assert.ok(
-    /\.live-score-daily \.matches-grid\s*\{[\s\S]{0,160}?minmax\(228px/.test(cssSource),
-    "canlı skor günün sonuçları ızgarası da 228px tabanını kullanmalı"
+    /\.live-compact-board \.league-match-grid\s*\{[\s\S]{0,200}?minmax\(min\(100%, 270px\)/.test(cssSource),
+    "kompakt canlı skor panosunun sıkı ızgarası (270px taban, 6px boşluk) korunmalı"
   );
 }
 

@@ -34,6 +34,7 @@ import { transferTypeEn } from "./lib/enTicker.mjs";
 import { transferTickerBlock } from "./lib/transferTicker.mjs";
 
 const require = createRequire(import.meta.url);
+const { filterScoredMatches } = require("../services/liveScoreFilter.js");
 const {
   DOMAIN,
   ROUTES,
@@ -1165,25 +1166,28 @@ ${sectionLinks()}`;
 }
 
 function liveScoresPage() {
-  const live = todaysMatches.filter((match) => {
+  // CANLI SKOR ALANININ KURALI BURADA DA GEÇERLİ: skoru olmayan maç bu
+  // sayfaya HİÇ girmez. Süzgeç Türkçe yüzeyle aynı veri katmanından
+  // (services/liveScoreFilter.js) geliyor. Başlamamış maçların bölümü bu
+  // yüzden kaldırıldı — başlamamış maçın skoru yok, skor sayfasında yeri
+  // de yok; program bilgisi kendi sayfasında (todays-matches.html) yaşıyor
+  // ve "Full time today" altından oraya bağlantı verilir.
+  const scored = filterScoredMatches(todaysMatches);
+  const live = scored.filter((match) => {
     const verdict = liveVerdict(match);
     return verdict && verdict.isLive;
   });
-  const finished = todaysMatches.filter((match) => canonicalStatus(match.status) === "FINISHED");
-  const scheduled = todaysMatches.filter((match) => canonicalStatus(match.status) === "SCHEDULED");
+  const finished = scored.filter((match) => canonicalStatus(match.status) === "FINISHED");
 
   const body = `      <section class="data-panel" aria-labelledby="en-live-title">
         <h2 class="panel-title" id="en-live-title">Live now</h2>
         ${matchList(live, "common.noData")}
-        <p class="muted-copy">A match is only marked live when the provider confirms it. If live data cannot be verified, the match is shown with its scheduled state instead of a stale score.</p>
+        <p class="muted-copy">A match appears here only when the provider confirms it is live and a real score is available. Matches without a published score are not listed on this page.</p>
       </section>
       <section class="data-panel" aria-labelledby="en-ft-title">
         <h2 class="panel-title" id="en-ft-title">Full time today</h2>
         ${matchList(finished, "common.noData")}
-      </section>
-      <section class="data-panel" aria-labelledby="en-ns-title">
-        <h2 class="panel-title" id="en-ns-title">Still to kick off</h2>
-        ${matchList(scheduled, "common.noData")}
+        <p class="muted-copy">Looking for fixtures that have not kicked off yet? See <a href="./todays-matches.html">today's matches</a> for the full schedule.</p>
       </section>
 ${sectionLinks()}`;
 
