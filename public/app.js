@@ -4004,8 +4004,17 @@
    */
   function matchProgramState(match, nowMs) {
     if (!match) return "unknown";
-    if (isLiveMatch(match)) return "live";
     var status = String(match.status || match.providerStatus || "").toUpperCase();
+    // SIRALAMA ile GÖSTERİM ayrı sorular. `isLiveMatch` "bu maçı CANLI diye
+    // gösterebilir miyim?" der ve skor ister. Burada sorulan ise "bu maç ne
+    // kadar öne çıksın?" — sağlayıcı canlı diyorsa maç muhtemelen oynanıyor
+    // ve skoru henüz gelmemiş olsa bile listenin üstünde durmalı. Bu yüzden
+    // burada skor kapısı YOK; kural services/matchRelevance.js `stateOf` ile
+    // aynı kalıyor, iki taraf aynı sırayı üretiyor.
+    if (match.live === true ||
+      ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].includes(status)) {
+      return "live";
+    }
     if (["FINISHED", "FT", "AET", "PEN", "AWARDED", "WO"].includes(status)) return "finished";
     // Ertelenen/iptal edilen maç zaman çizgisinden çıkar; aşağıdaki
     // "oynanıyor" bandına düşerse gerçekten oynanan maçların üstüne çıkar.
