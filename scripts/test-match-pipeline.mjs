@@ -13,6 +13,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 
 const {
+  UNVERIFIED_LIVE_LABEL,
   canonicalStatus,
   displayStatusLabel,
   finishType,
@@ -94,9 +95,42 @@ assert.equal(finishType({ status: "PEN" }), "penalties", "PEN penaltılar");
 assert.equal(finishType({ status: "WO" }), "awarded", "WO hükmen");
 
 // ── 4. Canlı → bitti geçişi ─────────────────────────────────────────────────
-const liveMatch = { id: "m1", kickoff: "2026-07-30T18:00:00+03:00", status: "2H" };
+// Kayıt skor TAŞIR: canlı bir maçın skoru vardır, en kötü ihtimalle 0-0.
+// Skorsuz kayıt artık ayrı bir durumu temsil ediyor (aşağıdaki skor kapısı).
+const liveMatch = { id: "m1", kickoff: "2026-07-30T18:00:00+03:00", status: "2H", score: { home: 1, away: 0 } };
 assert.equal(liveVerdict(liveMatch, { nowMs: NOW }).live, true, "Devam eden maç canlı");
 assert.equal(isLiveStatus(liveMatch), true, "2H canlı sayılır");
+
+// ── SKOR KAPISI ────────────────────────────────────────────────────────────
+//
+// Sağlayıcı "LIVE" deyip skoru göndermediğinde maç canlı SAYILMAZ. Ekranda
+// "Canlı" rozetiyle "– / –" duran bir kart, okuyucuya "şu anda oynanıyor ve
+// skoru biliyoruz" der; ikincisi doğru değildir.
+{
+  const scoreless = { id: "m-skorsuz", kickoff: "2026-07-30T18:00:00+03:00", status: "2H" };
+  const verdictScoreless = liveVerdict(scoreless, { nowMs: NOW });
+  assert.equal(verdictScoreless.live, false, "Skorsuz maç canlı GÖSTERİLMEMELİ");
+  assert.equal(verdictScoreless.verdict, "unverified", "Skorsuz canlı 'unverified' olmalı");
+  assert.equal(verdictScoreless.reason, "live-without-score", "Sebep kayda geçmeli");
+
+  const nullScore = { ...scoreless, score: { home: null, away: null } };
+  assert.equal(liveVerdict(nullScore, { nowMs: NOW }).live, false, "null skor da eksik skordur");
+
+  const halfScore = { ...scoreless, score: { home: 1, away: null } };
+  assert.equal(liveVerdict(halfScore, { nowMs: NOW }).live, false, "Tek taraflı skor yeterli değil");
+
+  // SIFIR GEÇERLİ BİR SKORDUR. Maç 0-0 başlar; `0` ile "bilmiyorum"u aynı
+  // kefeye koyan bir kontrol, yeni başlamış maçı canlı saymazdı.
+  const kickoffScore = { ...scoreless, score: { home: 0, away: 0 } };
+  assert.equal(liveVerdict(kickoffScore, { nowMs: NOW }).live, true, "0-0 canlı maç canlıdır");
+
+  // Kart kaybolmaz, yalnızca etiketi dürüstleşir.
+  assert.equal(
+    displayStatusLabel(scoreless, { nowMs: NOW }),
+    UNVERIFIED_LIVE_LABEL,
+    "Skorsuz canlı maç 'canlı veri doğrulanamadı' etiketi almalı"
+  );
+}
 
 const finishedMatch = { ...liveMatch, status: "FT", score: { home: 2, away: 1 } };
 assert.equal(liveVerdict(finishedMatch, { nowMs: NOW }).live, false, "Biten maç canlı GÖSTERİLMEMELİ");

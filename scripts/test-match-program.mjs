@@ -256,10 +256,15 @@ function match(overrides) {
   const block = appSource.match(/\/\/ match-program-order:start([\s\S]*?)\/\/ match-program-order:end/);
   assert.ok(block, "app.js içinde match-program-order bloğu bulunmalı");
 
-  const liveBlock = appSource.match(/function isLiveMatch\(match\) \{[\s\S]*?\n  \}/);
-  assert.ok(liveBlock, "app.js isLiveMatch tanımı bulunmalı");
+  // Blok kendi kendine yeter: sıralama, gösterim kurallarına (isLiveMatch ve
+  // skor kapısı) bağlı DEĞİL. "Bu maçı canlı gösterebilir miyim?" ile "bu maç
+  // ne kadar öne çıksın?" ayrı sorular; ayrışmaları bilinçli.
+  assert.ok(
+    !/isLiveMatch\s*\(/.test(block[1]),
+    "sıralama bloğu gösterim kuralına bağlanmamalı — ikisi ayrı soru"
+  );
 
-  const clientOrder = new Function(`${liveBlock[0]}\n${block[1]}\nreturn orderMatchProgram;`)();
+  const clientOrder = new Function(`${block[1]}\nreturn orderMatchProgram;`)();
 
   const sample = [
     match({ id: "a", league: "Friendlies Clubs", homeTeam: "Leeds", awayTeam: "Manchester United", kickoff: "2026-08-12T21:30:00+03:00" }),

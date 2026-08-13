@@ -275,18 +275,46 @@ function matchDay(match) {
 }
 
 /**
+ * SKOR OKUNABİLİR Mİ?
+ *
+ * Canlı bir maçın skoru VARDIR — maç başladığı anda 0-0'dır. Sıfır geçerli
+ * bir skordur; eksik olan `null`/`undefined`tır. Bu ayrım önemli: `0` ile
+ * "bilmiyorum"u aynı kefeye koyan bir kontrol, başlamış maçı canlı
+ * saymazdı.
+ */
+function isScoreValue(value) {
+  // `Number(null)` SIFIRDIR. Doğrudan `Number()`e vermek, eksik skoru 0-0
+  // sanmak demekti — tam da bu kapının engellemesi gereken şey.
+  if (typeof value === "number") return Number.isFinite(value);
+  if (typeof value === "string" && value.trim() !== "") return Number.isFinite(Number(value));
+  return false;
+}
+
+function hasReadableScore(match) {
+  const score = match && match.score;
+  if (!score || typeof score !== "object") return false;
+  return isScoreValue(score.home) && isScoreValue(score.away);
+}
+
+/**
  * BAYAT CANLI KORUMASI.
  *
  * "Bu maç şu anda canlı gösterilmeli mi?" sorusunun tek cevabı. Üç sonuç:
  *
- *   live       — sağlayıcı canlı diyor, göster.
- *   unverified — başlama saati geçti, canlı sinyal YOK. Canlı GÖSTERME;
- *                arayüz "canlı veri doğrulanamadı" yazar. Skor ya da
- *                dakika uydurulmaz.
+ *   live       — sağlayıcı canlı diyor VE skoru okunabiliyor, göster.
+ *   unverified — canlı iddiası var ama arkasını dolduran veri yok. Canlı
+ *                GÖSTERME; arayüz "canlı veri doğrulanamadı" yazar. Skor ya
+ *                da dakika uydurulmaz.
  *   not-live   — maç ya başlamadı ya bitti ya da oynanmayacak.
  *
  * `stale` bayrağı, canlı işaretli ama uzun süredir güncellenmemiş maçları
  * ayırır: yeniden denemeye değer, ama o hâliyle canlı sayılmaz.
+ *
+ * SKOR KAPISI. Üç kapı vardı — bitmiş, oynanmamış, bayat-canlı — ama
+ * sağlayıcı "LIVE" deyip skoru `null` gönderdiğinde maç yine de canlı
+ * sayılıyordu. Ekranda "Canlı" rozetiyle "– / –" duruyordu: okuyucuya
+ * "şu anda oynanıyor ve skoru biliyoruz" diyen, ikincisi doğru olmayan bir
+ * kart. Canlı iddiası, arkasını dolduran veri olmadan yapılmaz.
  */
 function liveVerdict(match, options) {
   const settings = options || {};
@@ -309,6 +337,10 @@ function liveVerdict(match, options) {
     // muhtemelen bitmiştir ve sonucu gelmemiştir. Canlı gösterilmez.
     if (kickoff !== null && nowMs - kickoff > graceMs) {
       return { live: false, verdict: "unverified", reason: "stale-live", stale: true, state };
+    }
+    // Skorsuz canlı iddiası yapılmaz; bkz. yukarıdaki SKOR KAPISI notu.
+    if (!hasReadableScore(match)) {
+      return { live: false, verdict: "unverified", reason: "live-without-score", stale: true, state };
     }
     return { live: true, verdict: "live", reason: "provider-live", state };
   }
@@ -368,6 +400,7 @@ module.exports = {
   isUnplayedStatus,
   istanbulDay,
   kickoffMs,
+  hasReadableScore,
   liveVerdict,
   matchDay,
   matchState,
