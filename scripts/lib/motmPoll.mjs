@@ -74,7 +74,8 @@ export function motmPollBlock(poll) {
       </form>
       <p class="motm-poll__thanks" data-motm-thanks hidden>${escapeHtml(COPY.thanks)}</p>
       <div class="motm-poll__results" data-motm-results hidden></div>
-      <p class="motm-poll__note" data-motm-note hidden>${escapeHtml(COPY.localNote)}</p>
+      <p class="motm-poll__note" data-motm-note="community" hidden>${escapeHtml(COPY.communityNote)}</p>
+      <p class="motm-poll__note" data-motm-note="local" hidden>${escapeHtml(COPY.localNote)}</p>
     </section>`;
 }
 

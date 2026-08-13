@@ -61,9 +61,9 @@ hata biçimi.
 
 ## Blok `hidden` doğar
 
-Anket JavaScript olmadan çalışamaz — oy istemcide saklanıyor. JavaScript
-kapalıyken görünen bir "Oy Ver" düğmesi, basıldığında hiçbir şey yapmayan
-bir düğmedir. Blok bu yüzden `hidden` basılır ve yalnızca `site.js`
+Anket JavaScript olmadan çalışamaz: oy verme de sonucu çizme de istemcide.
+JavaScript kapalıyken görünen bir "Oy Ver" düğmesi, basıldığında hiçbir şey
+yapmayan bir düğmedir. Blok bu yüzden `hidden` basılır ve yalnızca `site.js`
 önyüklendiğinde açılır.
 
 Yan faydası SEO'da: anket sayfalar arası tekrarlanan bir metin bloğu;
@@ -72,30 +72,88 @@ JSON-LD **yok** — anket bir içerik varlığı değil, bir etkileşim.
 
 ## Oy nerede tutuluyor
 
-`localStorage`, anahtar `futbolradar:motm:<matchId>`.
+İki kip var ve **hangisinde olduğumuz kullanıcıya yazıyla söylenir.**
 
-> **Gösterilen yüzde topluluk sonucu DEĞİLDİR.**
-> Sitede oyları toplayan bir sunucu yok (`api/` salt-okunur, veritabanı
-> yok). Yüzdeyi "herkesin oyu" gibi sunmak, tek kullanıcının oyunu kitlenin
-> kararı gibi göstermek olurdu. Blok bunu **yazıyla** söyler:
-> *"Oylar şimdilik yalnızca bu cihazda saklanıyor; aşağıdaki sonuç topluluk
-> ortalaması değil, bu tarayıcıdaki oylardır."*
-> Kullanıcının kendi seçimi ayrıca "Senin oyun" rozetiyle işaretlenir.
+### Topluluk kipi (depo yapılandırılmışsa)
 
-Aynı cihazdan tekrar oy engellenir: kayıt varsa form yerine **sonuç**
-gösterilir.
+Oylar `GET/POST /api/motm-vote` üzerinden Redis'in REST arayüzünde tutulur.
+Yüzdeler gerçek toplamdan hesaplanır.
 
-`localStorage` erişilemeyebilir (gizli sekme, üçüncü taraf çerez engeli,
-kota dolu). Her erişim korumalı: depo çalışmıyorsa anket yine de oy alır ve
-sonucu gösterir, yalnızca oy kalıcı olmaz. Bir depolama hatası yüzünden
-sayfanın kırılması, anketin kendisinden daha kötüdür.
+Blok şunu gösterir: *"Sonuçlar tüm okuyucuların oylarından hesaplanıyor.
+Her tarayıcı bir kez oy verebilir."*
 
-### Topluluk sonucuna geçmek isterseniz
+### Cihaz-yerel kip (depo yoksa ya da ulaşılamıyorsa)
 
-Gerçek topluluk yüzdesi için bir yazma yolu gerekir (ör. Vercel KV +
-`api/motm-vote.js`). O geldiğinde değişmesi gereken tek yer `site.js`
-içindeki `readStore`/`writeStore` çifti ve `motm-poll__note` metnidir;
-seçim mantığı (`services/motmPoll.js`) ve işaretleme aynı kalır.
+Uç nokta `storage: "unavailable"` döner, istemci `localStorage`a düşer
+(anahtar `futbolradar:motm:<matchId>`).
+
+Blok şunu gösterir: *"Oy deposuna ulaşılamadı; aşağıdaki sonuç topluluk
+ortalaması değil, yalnızca bu tarayıcıda saklanan oylardır."*
+
+> Aynı notu iki kipte de göstermek, gerçek topluluk sonucunu "yalnızca bu
+> cihaz" diye küçültür ya da — tersi çok daha kötü — cihazdaki tek oyu
+> topluluk sonucu gibi sunardı. Sıfır oyu "%0" diye göstermek de bir
+> iddiadır; o iddia ancak gerçek bir sayım varsa yapılabilir.
+
+## Uç noktayı açmak
+
+Vercel KV (ya da herhangi bir Upstash uyumlu Redis) açıp şu ortam
+değişkenlerinden bir çifti tanımlamak yeterli — **kod değişikliği gerekmez**:
+
+| URL | Token |
+|---|---|
+| `KV_REST_API_URL` | `KV_REST_API_TOKEN` |
+| `UPSTASH_REDIS_REST_URL` | `UPSTASH_REDIS_REST_TOKEN` |
+| `MOTM_REDIS_REST_URL` | `MOTM_REDIS_REST_TOKEN` |
+
+**Bağımlılık eklenmedi.** Depo, Redis'in REST arayüzüne düz `fetch` ile
+konuşuyor; `@vercel/kv` paketine gerek yok. Depoda bugüne kadar hiç
+çalışma-zamanı bağımlılığı yoktu ve bu özellik de eklemedi.
+
+### Sunucu istemciye güvenmez
+
+İstemci "şu maçta şu oyuncuya oy" diyor; ikisi de dışarıdan gelen dize.
+Doğrulanmadan yazılsalardı depoya hiç oynamamış — hatta var olmayan — bir
+oyuncu adı girebilirdi ve o ad sonuç listesinde gerçek bir aday gibi
+görünürdü. Anketin bütün iddiası "listedeki herkes bu maçta oynadı" olduğu
+için bu, özelliğin kendisini çürütürdü.
+
+İki kapı da sunucuda, **aynı seçim mantığıyla** (`services/motmPoll.js`):
+
+1. Maç anket hak ediyor mu? (bitmiş, Türk kulüplü, kadrosu var)
+2. Seçenek **o maçın** gerçek aday listesinde mi?
+
+Geçerli seçenek kümesi işaretlemeden değil veriden türetiliyor — istemci
+HTML'i kurcalasa bile değişmiyor. Depoda kalmış ama artık geçerli olmayan
+seçenekler sonuçtan süzülür (kadro düzeltilmiş olabilir).
+
+### Tekrar oy
+
+`localStorage` yalnızca bir **nezaket katmanı**: temizlenebilir, gizli
+sekmede yoktur. Sayım sunucuda tutulduğu için tekrar kontrolü de sunucuda:
+her oy anonim bir seçmen kimliğiyle bir kümeye yazılır (`SADD` atomik
+olduğu için yarış durumu yok), küme zaten içeriyorsa oy sayılmaz.
+
+Kimlik **kişiye bağlanmaz**: rastgele 32 karakter, `HttpOnly` çerezde.
+"Kim oy verdi" sorusunu değil, "bu tarayıcı daha önce oy verdi mi"
+sorusunu yanıtlar. Giriş yok, kişisel veri yok.
+
+### Uç nokta neden `api/` altında değil
+
+Vercel Hobby planı en fazla 12 sunucusuz işlev veriyor ve `api/` altındaki
+her dosya bir işlev sayılıyor. `api/motm-vote.js` sınırı 13/12'ye çıkarıp
+dağıtımı kırıyordu — `npm run qa` bunu yakaladı. Mantık
+`server/motmVoteRoute.js`te, yönlendirme `api/[...route].js` üzerinden.
+
+Yönlendirme kontrolü **en önde**: alttaki `rejectUnsupportedMethod` yalnızca
+okuma yöntemlerine izin veriyor ve oy vermek bir POST.
+
+### Arıza anketi kırmaz
+
+Depo kapalı, ağ hatası, zaman aşımı — hepsi `storage: "unavailable"` ile
+sonuçlanır ve istemci cihaz-yerel kipe düşer. `localStorage` erişimi de
+korumalı (gizli sekme, kota). Sayfanın çalışması, sayımın çalışmasından
+önce gelir.
 
 ## Testler
 
@@ -103,5 +161,13 @@ seçim mantığı (`services/motmPoll.js`) ve işaretleme aynı kalır.
 node scripts/test-motm-poll.mjs
 ```
 
-11 bölüm. İki soruyu farklı açılardan soruyor: *listeye girmemesi gereken
-kim girebilir?* ve *anket çıkmaması gereken yerde çıkabilir mi?*
+```
+node scripts/test-motm-vote-api.mjs
+```
+
+`test-motm-poll` 11 bölüm, iki soruyu farklı açılardan soruyor: *listeye girmemesi gereken kim girebilir?* ve *anket
+çıkmaması gereken yerde çıkabilir mi?*
+
+`test-motm-vote-api` 12 bölüm, tek soru: *istemci ne gönderirse göndersin,
+sayıma geçersiz bir şey girebilir mi?* Sahte bir depoyla çalışır; gerçek
+Redis'e çıkmaz.

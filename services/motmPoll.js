@@ -55,8 +55,14 @@ const COPY = Object.freeze({
   // Sitede oyları toplayan bir sunucu yok. Yüzdeyi "topluluk sonucu" gibi
   // sunmak uydurma olurdu: gösterilen sayı okuyucunun kendi oyundan başka
   // bir şey değil. Not bunu açıkça söyler; sayı gerçek, iddiası dürüst.
-  localNote: "Oylar şimdilik yalnızca bu cihazda saklanıyor; aşağıdaki sonuç " +
-    "topluluk ortalaması değil, bu tarayıcıdaki oylardır.",
+  localNote: "Oy deposuna ulaşılamadı; aşağıdaki sonuç topluluk ortalaması " +
+    "değil, yalnızca bu tarayıcıda saklanan oylardır.",
+  // Sayım sunucudan geldiğinde iddia değişiyor ve METİN DE DEĞİŞMEK ZORUNDA.
+  // Aynı notu iki kipte de göstermek, gerçek topluluk sonucunu "yalnızca bu
+  // cihaz" diye küçültür ya da — tersi çok daha kötü — cihazdaki tek oyu
+  // topluluk sonucu gibi sunardı.
+  communityNote: "Sonuçlar tüm okuyucuların oylarından hesaplanıyor. " +
+    "Her tarayıcı bir kez oy verebilir.",
   yourVote: "Senin oyun"
 });
 

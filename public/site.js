@@ -760,7 +760,11 @@
 
   function renderResults(poll, state) {
     var results = poll.querySelector("[data-motm-results]");
-    var note = poll.querySelector("[data-motm-note]");
+    // İKİ NOT, İKİ İDDİA. Sayım sunucudan geliyorsa sonuç topluluk
+    // ortalamasıdır; gelmiyorsa yalnızca bu tarayıcının oylarıdır. Hangi
+    // cümlenin gösterildiği, gösterilen sayının ne olduğuna bağlı.
+    var noteCommunity = poll.querySelector('[data-motm-note="community"]');
+    var noteLocal = poll.querySelector('[data-motm-note="local"]');
     var form = poll.querySelector("[data-motm-form]");
     var thanks = poll.querySelector("[data-motm-thanks]");
     if (!results) return;
@@ -830,7 +834,51 @@
     if (form) form.hidden = true;
     if (thanks) thanks.hidden = false;
     results.hidden = false;
-    if (note) note.hidden = false;
+
+    var remote = Boolean(state && state.remote);
+    if (noteCommunity) noteCommunity.hidden = !remote;
+    if (noteLocal) noteLocal.hidden = remote;
+  }
+
+  /**
+   * SUNUCU SAYIMI.
+   *
+   * Uç nokta yapılandırılmış bir depo bulursa `storage: "ready"` ve gerçek
+   * toplam döner; bulamazsa `"unavailable"` der. İstemci bu iki durumu
+   * ayırır ve HANGİSİNİ gösterdiğini kullanıcıya yazıyla söyler — cihazdaki
+   * tek oyu topluluk sonucu gibi sunmak, sayının kendisinden daha kötü bir
+   * hata olurdu.
+   *
+   * Ağ hatası anketi KIRMAZ: her başarısızlık cihaz-yerel kipe düşer.
+   */
+  function requestTally(matchId, optionId) {
+    var options = { headers: { Accept: "application/json" }, credentials: "same-origin" };
+    var url = "/api/motm-vote";
+
+    if (optionId) {
+      options.method = "POST";
+      options.headers["Content-Type"] = "application/json";
+      options.body = JSON.stringify({ matchId: matchId, optionId: optionId });
+    } else {
+      url += "?matchId=" + encodeURIComponent(matchId);
+    }
+
+    if (typeof window.fetch !== "function") return Promise.resolve(null);
+
+    return window.fetch(url, options)
+      .then(function (response) { return response.ok ? response.json() : null; })
+      .then(function (payload) {
+        var data = payload && payload.data ? payload.data : null;
+        return data && data.storage === "ready" ? data : null;
+      })
+      .catch(function () { return null; });
+  }
+
+  /** Sunucu yanıtını render'ın beklediği biçime çevirir. */
+  function serverState(data, choice) {
+    var counts = {};
+    (data.results || []).forEach(function (row) { counts[row.optionId] = row.votes; });
+    return { counts: counts, choice: choice || data.choice || null, remote: true };
   }
 
   function setupPoll(poll) {
@@ -841,26 +889,43 @@
     // JavaScript çalışıyor: anket artık gösterilebilir.
     poll.hidden = false;
 
-    var state = readStore(matchId);
-    // Daha önce oy verilmişse form yerine SONUÇ gösterilir.
-    if (state && state.choice) {
-      renderResults(poll, state);
-      return;
-    }
+    var stored = readStore(matchId);
+
+    // Sunucuda sayım varsa onu göster. Yoksa cihazdaki kayda düş.
+    requestTally(matchId, null).then(function (data) {
+      if (data && (data.alreadyVoted || data.total > 0)) {
+        // Sunucu "bu tarayıcı oy verdi" diyorsa form yerine sonuç gösterilir;
+        // hangi seçeneğe oy verildiği yalnızca cihazda biliniyor (sunucu
+        // seçmeni oyuna bağlamıyor), o yüzden işaret oradan alınır.
+        if (data.alreadyVoted) {
+          renderResults(poll, serverState(data, stored && stored.choice));
+          return;
+        }
+      }
+      if (stored && stored.choice) renderResults(poll, stored);
+    });
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       var selected = form.querySelector(".motm-poll__radio:checked");
       if (!selected) return;
 
-      var current = readStore(matchId) || { counts: {} };
-      if (!current.counts || typeof current.counts !== "object") current.counts = {};
-      current.counts[selected.value] = (current.counts[selected.value] || 0) + 1;
-      current.choice = selected.value;
-      current.votedAt = new Date().toISOString();
+      var submit = form.querySelector("[data-motm-submit]");
+      if (submit) submit.disabled = true;
 
-      writeStore(matchId, current);
-      renderResults(poll, current);
+      // Oy her hâlükârda cihaza yazılır: sunucu erişilemese de kullanıcı
+      // tekrar tekrar oy vermeye çağrılmasın.
+      var local = readStore(matchId) || { counts: {} };
+      if (!local.counts || typeof local.counts !== "object") local.counts = {};
+      local.counts[selected.value] = (local.counts[selected.value] || 0) + 1;
+      local.choice = selected.value;
+      local.votedAt = new Date().toISOString();
+      writeStore(matchId, local);
+
+      requestTally(matchId, selected.value).then(function (data) {
+        if (submit) submit.disabled = false;
+        renderResults(poll, data ? serverState(data, selected.value) : local);
+      });
     });
   }
 
