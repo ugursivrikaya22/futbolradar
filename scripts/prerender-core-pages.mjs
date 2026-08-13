@@ -251,11 +251,15 @@ function programFixtureCard(match, today) {
   return staticFixtureCard(match, { headlineValue, isToday, status, finalScore });
 }
 
-function calendarProgramCards(limit) {
-  const today = istanbulToday();
-  const upcoming = programMatchPool()
+function calendarProgramMatches(limit) {
+  return programMatchPool()
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
     .slice(0, limit || 6);
+}
+
+function calendarProgramCards(limit) {
+  const today = istanbulToday();
+  const upcoming = calendarProgramMatches(limit);
 
   if (!upcoming.length) {
     return "";
@@ -736,12 +740,16 @@ function verifiedResultHref(match, reportsByMatch) {
   return `./canli-skor.html#${encodeURIComponent(match.id || "")}`;
 }
 
-function verifiedResultCards(limit = 18) {
-  const reportsByMatch = new Map(postMatchStore().map((record) => [String(record.matchId || ""), record]));
-  const matches = curatedMatches()
+function verifiedResultMatches(limit = 18) {
+  return curatedMatches()
     .filter(isVerifiedFinalMatch)
     .sort((left, right) => String(right.kickoff || "").localeCompare(String(left.kickoff || "")))
     .slice(0, limit);
+}
+
+function verifiedResultCards(limit = 18) {
+  const reportsByMatch = new Map(postMatchStore().map((record) => [String(record.matchId || ""), record]));
+  const matches = verifiedResultMatches(limit);
 
   if (!matches.length) {
     return '<article class="data-empty" data-card="empty-state"><strong>Doğrulanmış maç sonucu bulunmuyor</strong><span>Resmî veya editoryal olarak doğrulanmış sonuçlar geldiğinde bu liste güncellenir.</span></article>';
@@ -1282,9 +1290,32 @@ writePage("analizler.html", {
   "post-match-analyses": postMatchAnalysisCards(undefined, { verifiedScoresOnly: true })
 }, fixtureFreshness);
 
+/**
+ * MAÇ LİSTESİ BASAN SAYFALARIN ORTAK ŞEMASI.
+ *
+ * "Bugünün Maçları"nda kurulan kural (services/matchSchema.js) aynı kusuru
+ * taşıyan diğer sayfalara da uygulanıyor: `canli-skor.html` ve
+ * `mac-sonuclari.html` on ikişer maç kartı basıyor ama arama motoruna
+ * bunların MAÇ olduğunu söyleyen tek bir işaret yoktu.
+ *
+ * Düğümler sayfada BASILAN listeden üretilir; işaretleme ekranda olmayan
+ * bir maçı iddia edemez. Skor YAZILMAZ — schema.org SportsEvent'in skor için
+ * standart bir alanı yok ve olmayan bir alanı uydurmak zengin sonuç
+ * kazandırmaz, yalnızca doğrulanamaz veri üretir.
+ */
+function matchListSchemaBlock(matches, name) {
+  const schema = matchListSchema(matches, {
+    name,
+    urlFor: (match) => (match && match.analysisPage ? matchDetailPath(match) : "")
+  });
+  return schema ? jsonLdScript(schema) : "";
+}
+
 writePage("mac-sonuclari.html", {
   "verified-results": verifiedResultCards()
-}, fixtureFreshness);
+}, fixtureFreshness, {
+  "results-schema": matchListSchemaBlock(verifiedResultMatches(), "Doğrulanmış maç sonuçları")
+});
 
 writePage("haberler.html", {
   "news-page": newsCards()
@@ -1329,7 +1360,9 @@ writePage("canli-skor.html", {
   // Canlı maç yokken de günün sonuçları görünsün: sayfa eskiden yalnızca
   // "canlı maç yok" diyordu ve o günün oynanmış maçları hiç listelenmiyordu.
   "live-score": matchProgramState("live")
-}, fixtureFreshness);
+}, fixtureFreshness, {
+  "live-schema": matchListSchemaBlock(calendarProgramMatches(MATCH_LIST_INITIAL), "Canlı ve günün maçları")
+});
 
 writePage("puan-durumu.html", {
   standings: staticStandingRows()

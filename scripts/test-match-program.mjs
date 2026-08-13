@@ -367,4 +367,53 @@ function match(overrides) {
   }
 }
 
+// ── 12. Maç listeleyen her sayfa işaretlenmiş olmalı ──────────────────────
+//
+// "Bugünün Maçları"ndaki kusur tek sayfaya özgü değildi: `canli-skor.html`
+// ve `mac-sonuclari.html` da on ikişer maç kartı basıyor ama arama motoruna
+// bunların MAÇ olduğunu söyleyen tek bir işaret taşımıyorlardı. Bu blok,
+// kartı olan sayfanın şemasız kalmasını engelliyor.
+{
+  const PAGES = [
+    { file: "bugunun-maclari.html", slot: "today-schema", card: 'data-card="fixture"' },
+    { file: "canli-skor.html", slot: "live-schema", card: 'data-card="fixture"' },
+    { file: "mac-sonuclari.html", slot: "results-schema", card: 'data-card="verified-result"' }
+  ];
+
+  for (const page of PAGES) {
+    const html = fs.readFileSync(path.join(root, page.file), "utf8");
+    const cards = (html.match(new RegExp(page.card, "g")) || []).length;
+
+    const slot = html.match(
+      new RegExp(`<!-- prerender:${page.slot}:start -->([\\s\\S]*?)<!-- prerender:${page.slot}:end -->`)
+    );
+    assert.ok(slot, `${page.file}: ${page.slot} işaretçileri bulunmalı`);
+
+    if (!cards) continue; // Kart yoksa işaretleme de olmamalı; iddia edilecek maç yok.
+
+    const blocks = [...slot[1].matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+      .map((entry) => JSON.parse(entry[1].replace(/\\u003c/g, "<")));
+    const itemList = blocks.find((entry) => entry["@type"] === "ItemList");
+    assert.ok(itemList, `${page.file}: ${cards} maç kartı var ama SportsEvent işaretlemesi yok`);
+
+    assert.equal(
+      itemList.numberOfItems,
+      itemList.itemListElement.length,
+      `${page.file}: sayı ile içerik ayrışmamalı`
+    );
+    assert.ok(
+      itemList.numberOfItems <= cards,
+      `${page.file}: işaretleme sayfada OLMAYAN maçı iddia edemez (${itemList.numberOfItems} > ${cards})`
+    );
+
+    for (const entry of itemList.itemListElement) {
+      assert.equal(entry.item["@type"], "SportsEvent", `${page.file}: düğüm SportsEvent olmalı`);
+      assert.ok(entry.item.startDate, `${page.file}: her etkinliğin başlama zamanı olmalı`);
+      // Skor YAZILMAZ: schema.org SportsEvent'in standart bir skor alanı yok.
+      const json = JSON.stringify(entry.item);
+      assert.ok(!/"score"|"homeScore"|"awayScore"/.test(json), `${page.file}: skor işaretlemeye yazılmamalı`);
+    }
+  }
+}
+
 console.log("Maç programı testleri geçti.");
