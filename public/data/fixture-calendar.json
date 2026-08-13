@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-13T16:06:17.308Z",
+  "fetchedAt": "2026-08-13T17:17:59.688Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -85566,13 +85566,13 @@
       "awayTeam": "Syunik",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2276.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/20087.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
+        "home": 3,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -85591,8 +85591,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T16:06:18.094Z",
-      "staleAfter": "2026-08-13T16:11:18.094Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -85601,23 +85601,28 @@
       },
       "competitionId": "premier-league",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 23' M. Rajani tarafından kaydedildi. FC Urartu skor üstünlüğünü elinde tutuyor. Skor üstünlüğü FC Urartu tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 90+1' Bruno Michel tarafından kaydedildi. Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti. Skor üstünlüğü FC Urartu tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "23'",
-            "text": "Son gol 23' M. Rajani tarafından kaydedildi."
+            "value": "90+1'",
+            "text": "Son gol 90+1' Bruno Michel tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "1-0",
+            "value": "3-0",
             "text": "FC Urartu skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 2,
-        "dataPoints": 2,
+        "eventCount": 17,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -86373,7 +86378,157 @@
           },
           "type": "Card",
           "detail": "Yellow Card",
-          "value": "Yellow Card",
+          "value": "G. Arakelyan · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Syunik"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "E. Vardanyan · Asist: Kaique Santos · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "FC Urartu"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "G. Lulukyan · Asist: Bruno Michel · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "FC Urartu"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "M. Velosa · Asist: S. Mkrtchyan · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "68'",
+          "team": {
+            "name": "Syunik"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "A. Souassi · Asist: A. Karapetyan · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "69'",
+          "team": {
+            "name": "Syunik"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Joy · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "80'",
+          "team": {
+            "name": "FC Urartu"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "K. Ishibashi · Asist: M. Mirzoyan · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Syunik"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "G. Arakelyan · Asist: H. Galstyan · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Syunik"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "K. Enning · Asist: S. Arakelyan · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "84'",
+          "team": {
+            "name": "FC Urartu"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "Bruno Michel · Penalty",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "FC Urartu"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Mirzoyan · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "86'",
+          "team": {
+            "name": "Syunik"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "D. Barseghyan · Asist: R. Annor · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "90+1'",
+          "team": {
+            "name": "FC Urartu"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "Bruno Michel · Penalty",
+          "comments": ""
+        },
+        {
+          "time": "90+2'",
+          "team": {
+            "name": "FC Urartu"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "N. Aghasaryan · Asist: E. Vardanyan · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "90+2'",
+          "team": {
+            "name": "FC Urartu"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "M. Rajani · Asist: L. Bashoyan · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "90+8'",
+          "team": {
+            "name": "Syunik"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "S. Arakelyan · Yellow Card",
           "comments": ""
         }
       ]
@@ -86390,14 +86545,14 @@
       "awayTeam": "FK Partizan",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2259.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/573.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 46,
-      "elapsed": 46,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 1,
-        "away": 0,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -86415,8 +86570,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T16:06:18.094Z",
-      "staleAfter": "2026-08-13T16:11:18.094Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -86425,33 +86580,28 @@
       },
       "competitionId": "konferans-ligi",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "FK Tobol Kostanay topa sahip olma oranında önde. FK Tobol Kostanay isabetli şutlarda önde. Skor üstünlüğü FK Tobol Kostanay tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "FK Tobol Kostanay topa sahip olma oranında önde. FK Partizan isabetli şutlarda önde. Skor üstünlüğü FK Partizan tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "60%-40%",
+            "value": "55%-45%",
             "text": "FK Tobol Kostanay topa sahip olma oranında önde."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "2-1",
-            "text": "FK Tobol Kostanay isabetli şutlarda önde."
-          },
-          {
-            "label": "Gol akışı",
-            "value": "7'",
-            "text": "Son gol 7' I. Chesnokov tarafından kaydedildi."
+            "value": "4-5",
+            "text": "FK Partizan isabetli şutlarda önde."
           },
           {
             "label": "Canlı skor",
-            "value": "1-0",
-            "text": "FK Tobol Kostanay skor üstünlüğünü elinde tutuyor."
+            "value": "1-2",
+            "text": "FK Partizan skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 3,
-        "dataPoints": 4,
+        "eventCount": 0,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -87245,17 +87395,17 @@
             "Erik Kojzek"
           ],
           "substitutes": [
+            "Aleks Zeković",
+            "Ibrahim Zubairu",
+            "Jeh",
             "Marko Milošević",
             "Tarik Banjić",
             "Mateja Milovanović",
             "Stefan Petrović",
             "Nikola Simic",
             "Chaka Traorè",
-            "Aleks Zeković",
             "Samson Nwulu",
-            "Ibrahim Zubairu",
-            "Marko Lekić",
-            "Jeh"
+            "Marko Lekić"
           ]
         }
       ],
@@ -87295,53 +87445,53 @@
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 2,
-          "away": 1,
+          "home": 4,
+          "away": 5,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 2,
-          "away": 0
+          "home": 6,
+          "away": 5
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 4,
+          "home": 8,
           "away": 1
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 3,
-          "away": 4
+          "home": 12,
+          "away": 10
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 5,
-          "away": 3
+          "home": 11,
+          "away": 8
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
-          "home": 1,
-          "away": 0
+          "home": 3,
+          "away": 2
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 60,
-          "away": 40,
+          "home": 55,
+          "away": 45,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Disiplin",
           "type": "Sarı kart",
-          "home": 0,
-          "away": 2
+          "home": 1,
+          "away": 4
         },
         {
           "category": "Disiplin",
@@ -87356,7 +87506,7 @@
       "providerId": "1607613",
       "league": "UEFA Europa Conference League",
       "round": null,
-      "venue": "Tammelan Stadion",
+      "venue": "Tammela Stadium",
       "kickoff": "2026-08-13T19:00:00+03:00",
       "time": "19:00",
       "homeTeam": "Ilves",
@@ -87364,9 +87514,9 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/1163.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/561.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 6,
-      "elapsed": 6,
+      "providerStatus": "2H",
+      "minute": 62,
+      "elapsed": 62,
       "live": true,
       "score": {
         "home": 0,
@@ -87388,8 +87538,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T16:06:18.094Z",
-      "staleAfter": "2026-08-13T16:11:18.094Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -87399,18 +87549,18 @@
       "competitionId": "konferans-ligi",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "HNK Rijeka topa sahip olma oranında önde. Ilves isabetli şutlarda önde.",
+        "summary": "HNK Rijeka topa sahip olma oranında önde. HNK Rijeka isabetli şutlarda önde.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "28%-72%",
+            "value": "43%-57%",
             "text": "HNK Rijeka topa sahip olma oranında önde."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "0-0",
-            "text": "Ilves isabetli şutlarda önde."
+            "value": "0-3",
+            "text": "HNK Rijeka isabetli şutlarda önde."
           },
           {
             "label": "Canlı skor",
@@ -88184,44 +88334,44 @@
           "category": "Hücum",
           "type": "İsabetli şut",
           "home": 0,
-          "away": 0,
+          "away": 3,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 0,
-          "away": 0
+          "home": 1,
+          "away": 2
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 0,
-          "away": 0
+          "home": 1,
+          "away": 1
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 0,
-          "away": 0
+          "home": 9,
+          "away": 4
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 0,
+          "home": 1,
           "away": 0
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
           "home": 0,
-          "away": 0
+          "away": 2
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 28,
-          "away": 72,
+          "home": 43,
+          "away": 57,
           "unit": "%",
           "higherIsBetter": true
         },
@@ -88236,6 +88386,70 @@
           "type": "Kırmızı kart",
           "home": 0,
           "away": 0
+        }
+      ],
+      "lineups": [
+        {
+          "team": "Ilves",
+          "formation": "4-3-3",
+          "players": [
+            "Faris Krkalić",
+            "Oliver Pettersson",
+            "Sauli Väisänen",
+            "Ville Kumpu",
+            "Matias Rale",
+            "Oskari Multala",
+            "Anton Popovitch",
+            "Yiandro Raap",
+            "Jardell Kanga",
+            "Teemu Hytönen",
+            "Sebastian Suvanne"
+          ],
+          "substitutes": [
+            "Otso Virtanen",
+            "Tatu Miettunen",
+            "Abdoul Goudouss Bamba",
+            "Maksim Stjopin",
+            "Kalle Wallius",
+            "Lauri Ala-Myllymäki",
+            "Stanislav Baranov",
+            "Jesse Kilo",
+            "Yacouba Sacko",
+            "Hamidou Coulibaly",
+            "Roope Riski",
+            "Elias Tamminen"
+          ]
+        },
+        {
+          "team": "HNK Rijeka",
+          "formation": "4-2-3-1",
+          "players": [
+            "Aleksa Todorović",
+            "Ante Oreč",
+            "Ante Majstorović",
+            "Alfonso Barco",
+            "Mladen Devetak",
+            "Tiago Dantas",
+            "Branko Pavić",
+            "Justas Lasickas",
+            "Jakov Puljić",
+            "Niko Janković",
+            "Daniel Adu-Adjei"
+          ],
+          "substitutes": [
+            "Vito Kovač",
+            "Igor Vekič",
+            "Moreno Živković",
+            "Anel Husić",
+            "Noel Bodetić",
+            "Ivan Ćubelić",
+            "Toni Fruk",
+            "Gabriel Rukavina",
+            "Amer Gojak",
+            "Goran Grulović",
+            "Cherno Saho",
+            "Ante Matej Jurić"
+          ]
         }
       ]
     },
@@ -88252,13 +88466,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/687.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3342.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 6,
-      "elapsed": 6,
+      "providerStatus": "2H",
+      "minute": 60,
+      "elapsed": 60,
       "live": true,
       "score": {
         "home": 0,
-        "away": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -88276,8 +88490,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T16:06:18.094Z",
-      "staleAfter": "2026-08-13T16:11:18.094Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -88287,27 +88501,32 @@
       "competitionId": "konferans-ligi",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Inter Club d'Escaldes topa sahip olma oranında önde. Flora Tallinn isabetli şutlarda önde.",
+        "summary": "Flora Tallinn topa sahip olma oranında önde. Flora Tallinn isabetli şutlarda önde. Skor üstünlüğü Inter Club d'Escaldes tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "49%-51%",
-            "text": "Inter Club d'Escaldes topa sahip olma oranında önde."
+            "value": "62%-38%",
+            "text": "Flora Tallinn topa sahip olma oranında önde."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "0-0",
+            "value": "3-1",
             "text": "Flora Tallinn isabetli şutlarda önde."
           },
           {
+            "label": "Gol akışı",
+            "value": "17'",
+            "text": "Son gol 17' Modric tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "0-1",
+            "text": "Inter Club d'Escaldes skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 3,
+        "eventCount": 8,
+        "dataPoints": 4,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -89122,59 +89341,141 @@
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 0,
-          "away": 0,
+          "home": 3,
+          "away": 1,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 0,
-          "away": 1
+          "home": 2,
+          "away": 3
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 0,
-          "away": 0
+          "home": 3,
+          "away": 2
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 0,
-          "away": 0
+          "home": 8,
+          "away": 12
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 0,
-          "away": 0
+          "home": 5,
+          "away": 1
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
-          "home": 0,
-          "away": 0
+          "home": 1,
+          "away": 2
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 49,
-          "away": 51,
+          "home": 62,
+          "away": 38,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Disiplin",
           "type": "Sarı kart",
-          "home": 0,
-          "away": 0
+          "home": 3,
+          "away": 2
         },
         {
           "category": "Disiplin",
           "type": "Kırmızı kart",
           "home": 0,
           "away": 0
+        }
+      ],
+      "events": [
+        {
+          "time": "8'",
+          "team": {
+            "name": "Inter Club d'Escaldes"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "D. Berlanga · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "17'",
+          "team": {
+            "name": "Inter Club d'Escaldes"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Modric · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "20'",
+          "team": {
+            "name": "Inter Club d'Escaldes"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Pochettino · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "33'",
+          "team": {
+            "name": "Flora Tallinn"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Kolobov · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "37'",
+          "team": {
+            "name": "Flora Tallinn"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "A. Kollo · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "55'",
+          "team": {
+            "name": "Inter Club d'Escaldes"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "55'",
+          "team": {
+            "name": "Flora Tallinn"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "S. Zenjov · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "58'",
+          "team": {
+            "name": "Inter Club d'Escaldes"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "D. Berlanga · Asist: B. Arellano · Substitution 1",
+          "comments": ""
         }
       ]
     },
@@ -89183,7 +89484,7 @@
       "providerId": "1607620",
       "league": "UEFA Europa Conference League",
       "round": null,
-      "venue": "Tofiq Bahramov Stadium",
+      "venue": "Tofiq Bəhramov",
       "kickoff": "2026-08-13T19:00:00+03:00",
       "time": "19:00",
       "homeTeam": "Qarabag",
@@ -89191,12 +89492,12 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/556.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/572.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 6,
-      "elapsed": 6,
+      "providerStatus": "2H",
+      "minute": 55,
+      "elapsed": 55,
       "live": true,
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -89215,8 +89516,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T16:06:18.094Z",
-      "staleAfter": "2026-08-13T16:11:18.094Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -89226,27 +89527,32 @@
       "competitionId": "konferans-ligi",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Qarabag topa sahip olma oranında önde. Qarabag isabetli şutlarda önde.",
+        "summary": "Qarabag topa sahip olma oranında önde. Qarabag isabetli şutlarda önde. Skor üstünlüğü Qarabag tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "65%-35%",
+            "value": "74%-26%",
             "text": "Qarabag topa sahip olma oranında önde."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "0-0",
+            "value": "1-0",
             "text": "Qarabag isabetli şutlarda önde."
           },
           {
+            "label": "Gol akışı",
+            "value": "12'",
+            "text": "Son gol 12' J. Mouaddib tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "1-0",
+            "text": "Qarabag skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 3,
+        "eventCount": 3,
+        "dataPoints": 4,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -90059,14 +90365,14 @@
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 0,
+          "home": 1,
           "away": 0,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 0,
+          "home": 2,
           "away": 0
         },
         {
@@ -90078,26 +90384,26 @@
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 0,
-          "away": 1
+          "home": 1,
+          "away": 4
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 0,
+          "home": 1,
           "away": 0
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
           "home": 0,
-          "away": 0
+          "away": 1
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 65,
-          "away": 35,
+          "home": 74,
+          "away": 26,
           "unit": "%",
           "higherIsBetter": true
         },
@@ -90113,6 +90419,38 @@
           "home": 0,
           "away": 0
         }
+      ],
+      "events": [
+        {
+          "time": "12'",
+          "team": {
+            "name": "Qarabag"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "J. Mouaddib · Asist: Matheus Silva · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "29'",
+          "team": {
+            "name": "Dynamo Kyiv"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "V. Dubinchak · Yellow Card",
+          "comments": "Unsportsmanlike conduct"
+        },
+        {
+          "time": "45+4'",
+          "team": {
+            "name": "Dynamo Kyiv"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Ponomarenko · Yellow Card",
+          "comments": "Roughing"
+        }
       ]
     },
     {
@@ -90120,21 +90458,21 @@
       "providerId": "1607621",
       "league": "UEFA Europa Conference League",
       "round": null,
-      "venue": "LNK Sporta Parks",
+      "venue": "Lnk Sporta Parks",
       "kickoff": "2026-08-13T19:30:00+03:00",
       "time": "19:30",
       "homeTeam": "Rīgas FS",
       "awayTeam": "FK Jablonec",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/4160.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1122.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "HALFTIME",
+      "providerStatus": "HT",
+      "minute": 45,
+      "elapsed": 45,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -90152,8 +90490,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T15:00:40.447Z",
-      "staleAfter": "2026-08-13T15:05:40.447Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -90162,12 +90500,33 @@
       },
       "competitionId": "konferans-ligi",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
-        "confidence": "Sınırlı",
-        "signals": [],
-        "eventCount": 0,
-        "dataPoints": 0,
+        "title": "Canlı Radar Analizi",
+        "summary": "Rīgas FS topa sahip olma oranında önde. Rīgas FS isabetli şutlarda önde. Skor üstünlüğü FK Jablonec tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "57%-43%",
+            "text": "Rīgas FS topa sahip olma oranında önde."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "2-2",
+            "text": "Rīgas FS isabetli şutlarda önde."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "38'",
+            "text": "Son gol 38' Z. Lipuscek tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-2",
+            "text": "FK Jablonec skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 3,
+        "dataPoints": 4,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -90922,7 +91281,157 @@
             }
           }
         ]
-      }
+      },
+      "lineups": [
+        {
+          "team": "Rīgas FS",
+          "formation": "4-2-3-1",
+          "players": [
+            "Rihards Matrevics",
+            "Aleksandar Filipović",
+            "Herdi Prenga",
+            "Žiga Lipušček",
+            "Dmitrijs Zelenkovs",
+            "Modou Saidy",
+            "Stefan Panić",
+            "Alfa Baldé",
+            "Jānis Ikaunieks",
+            "Lasha Odisharia",
+            "Rostand Ndjiki"
+          ],
+          "substitutes": [
+            "Mareks Muizzemnieks",
+            "Roberts Veips",
+            "Niks Sliede",
+            "Mamadou Sylla",
+            "Niks Dusalijevs",
+            "Gauthier Mankenda",
+            "Strahinja Rakić",
+            "Duje Korač",
+            "Darko Lemajić"
+          ]
+        },
+        {
+          "team": "FK Jablonec",
+          "formation": "3-5-2",
+          "players": [
+            "Jan Hanuš",
+            "Martin Cedidla",
+            "Nemanja Tekijaški",
+            "Dušan Pavlović",
+            "Vakhtang Chanturishvili",
+            "Sebastian Nebyla",
+            "Richard Sedláček",
+            "Filip Zorvan",
+            "Jiří Sláma",
+            "Lamin Jawo",
+            "Matěj Polidar"
+          ],
+          "substitutes": [
+            "Klemen Mihelak",
+            "Daniel Souček",
+            "Filip Novák",
+            "Nelson Okeke",
+            "Jan Suchan",
+            "Hugo Ahl",
+            "Eduard Sobol",
+            "Antonín Růsek",
+            "Jan Chramosta",
+            "Filip Vecheta"
+          ]
+        }
+      ],
+      "events": [
+        {
+          "time": "4'",
+          "team": {
+            "name": "FK Jablonec"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "R. Sedlacek · Asist: M. Polidar · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "22'",
+          "team": {
+            "name": "FK Jablonec"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "S. Nebyla · Penalty",
+          "comments": ""
+        },
+        {
+          "time": "38'",
+          "team": {
+            "name": "Rīgas FS"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Z. Lipuscek · Asist: D. Zelenkovs · Normal Goal",
+          "comments": ""
+        }
+      ],
+      "statistics": [
+        {
+          "category": "Hücum",
+          "type": "İsabetli şut",
+          "home": 2,
+          "away": 2,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 3,
+          "away": 1
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 6,
+          "away": 0
+        },
+        {
+          "category": "Disiplin",
+          "type": "Faul",
+          "home": 7,
+          "away": 9
+        },
+        {
+          "category": "Genel",
+          "type": "Korner",
+          "home": 3,
+          "away": 1
+        },
+        {
+          "category": "Genel",
+          "type": "Ofsayt",
+          "home": 1,
+          "away": 0
+        },
+        {
+          "category": "Genel",
+          "type": "Topla oynama",
+          "home": 57,
+          "away": 43,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 0,
+          "away": 0
+        },
+        {
+          "category": "Disiplin",
+          "type": "Kırmızı kart",
+          "home": 0,
+          "away": 0
+        }
+      ]
     },
     {
       "id": "besiktas-hradec-kralove-2026-08-13",
@@ -90939,10 +91448,10 @@
       "broadcast": null,
       "homeTeam": "Beşiktaş",
       "awayTeam": "Hradec Králové",
-      "status": "SCHEDULED",
+      "status": "LIVE",
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -90954,10 +91463,10 @@
       ],
       "homeTeamLogo": "https://media.api-sports.io/football/teams/549.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3723.png",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "providerStatus": "1H",
+      "minute": 18,
+      "elapsed": 18,
+      "live": true,
       "homeForm": null,
       "awayForm": null,
       "homeMomentum": null,
@@ -90971,17 +91480,23 @@
       "goalPotential": null,
       "risk": null,
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T15:00:40.447Z",
-      "staleAfter": "2026-08-13T15:05:40.447Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "needsReview": false,
       "resource": "matches",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "title": "Canlı Radar Analizi",
+        "summary": "Skor dengede.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -91742,14 +92257,14 @@
       "awayTeam": "Real Avilés",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9409.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9632.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 16,
+      "elapsed": 16,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -91767,8 +92282,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T16:06:18.094Z",
-      "staleAfter": "2026-08-13T16:11:18.094Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -91777,12 +92292,23 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
-        "confidence": "Sınırlı",
-        "signals": [],
-        "eventCount": 0,
-        "dataPoints": 0,
+        "title": "Canlı Radar Analizi",
+        "summary": "Son gol 9' V. Esquerdo tarafından kaydedildi. Racing Ferrol skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Racing Ferrol tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "9'",
+            "text": "Son gol 9' V. Esquerdo tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-0",
+            "text": "Racing Ferrol skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 1,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -92589,7 +93115,19 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "9'",
+          "team": {
+            "name": "Racing Ferrol"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "V. Esquerdo · Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "omonia-nicosia-lincoln-red-imps-fc-2026-08-13",
@@ -92603,14 +93141,14 @@
       "awayTeam": "Lincoln Red Imps FC",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3402.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/667.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 16,
+      "elapsed": 16,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -92628,8 +93166,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -92650,14 +93188,14 @@
       "awayTeam": "KuPS",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/632.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1165.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 18,
+      "elapsed": 18,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -92675,8 +93213,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -92697,14 +93235,14 @@
       "awayTeam": "Ferencvarosi TC",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/340.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/651.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 17,
+      "elapsed": 17,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -92722,8 +93260,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -92744,14 +93282,14 @@
       "awayTeam": "Red Bull Salzburg",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3403.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/571.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 18,
+      "elapsed": 18,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -92769,8 +93307,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -92791,14 +93329,14 @@
       "awayTeam": "SC Braga",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/394.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/217.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 16,
+      "elapsed": 16,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -92816,8 +93354,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -92838,14 +93376,14 @@
       "awayTeam": "Twente",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2257.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/415.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 17,
+      "elapsed": 17,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -92863,8 +93401,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -92885,14 +93423,14 @@
       "awayTeam": "Raków Częstochowa",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/363.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3491.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 18,
+      "elapsed": 18,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -92910,8 +93448,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -92932,14 +93470,14 @@
       "awayTeam": "Bohemians",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/397.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3840.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 17,
+      "elapsed": 17,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -92957,8 +93495,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -92979,14 +93517,14 @@
       "awayTeam": "Borac Banja Luka",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/7808.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3364.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 18,
+      "elapsed": 18,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93004,8 +93542,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93026,14 +93564,14 @@
       "awayTeam": "Valur Reykjavik",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/398.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/274.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 18,
+      "elapsed": 18,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93051,8 +93589,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93073,14 +93611,14 @@
       "awayTeam": "CFR 1907 Cluj",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/325.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/2246.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 18,
+      "elapsed": 18,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93098,8 +93636,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94107,8 +94645,8 @@
       "awayTeam": "Lech Poznan",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/701.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/347.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
+      "status": "POSTPONED",
+      "providerStatus": "PST",
       "minute": null,
       "elapsed": null,
       "live": false,
@@ -94132,8 +94670,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T16:06:18.094Z",
-      "staleAfter": "2026-08-13T16:11:18.094Z",
+      "fetchedAt": "2026-08-13T17:18:00.554Z",
+      "staleAfter": "2026-08-13T17:23:00.554Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
