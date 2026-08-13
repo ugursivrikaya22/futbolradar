@@ -12,6 +12,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
+import { POSTPROCESS_CHAIN } from "./lib/postprocessChain.mjs";
 
 const root = process.cwd();
 const STATUS_PATH = path.join(root, "data", "update-status.json");
@@ -343,12 +344,23 @@ function hourlyBuildSteps(diff) {
     nodeStep("render-update-admin", "generate-update-admin.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
     nodeStep("render-core-pages", "prerender-core-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("sync-public-assets", "sync-public-assets.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
-    nodeStep("search-index", "generate-search-index.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
-    nodeStep("shared-layout", "apply-shared-layout.mjs", [], { kind: "build", required: true, timeoutMs: 12 * 60 * 1000 }),
-    nodeStep("theme-boot", "inject-theme-boot.mjs", [], { kind: "build", required: true, timeoutMs: 5 * 60 * 1000 }),
-    nodeStep("analytics", "inject-ga4.mjs", [], { kind: "build", required: true, timeoutMs: 5 * 60 * 1000 }),
-    nodeStep("site-verification", "inject-site-verification.mjs", [], { kind: "build", required: true, timeoutMs: 5 * 60 * 1000 })
+    nodeStep("search-index", "generate-search-index.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 })
   );
+
+  // Son işlem kuyruğu ELLE SAYILMAZ. Buradaki liste bir zamanlar tam
+  // derlemenin `postprocess` zincirinin elle kopyalanmış bir alt kümesiydi
+  // ve geride kaldı: `inject-hreflang` ile `inject-asset-version` hiç
+  // eklenmemişti. Saatlik koşu maç sayfalarını yeniden ürettiği için her
+  // koşu, tam derlemenin yazdığı hreflang ve varlık damgası bloklarını
+  // siliyordu. Gerekçenin tamamı: scripts/lib/postprocessChain.mjs.
+  for (const step of POSTPROCESS_CHAIN) {
+    steps.push(nodeStep(step.id, step.script, step.args, {
+      kind: "build",
+      required: true,
+      timeoutMs: step.timeoutMinutes * 60 * 1000
+    }));
+  }
+
   return steps;
 }
 
