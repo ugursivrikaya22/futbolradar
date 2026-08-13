@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { transferTickerTrack } from "./lib/transferTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
   fixtureRow as sharedFixtureRow,
@@ -1040,47 +1041,16 @@ function fixtureRounds() {
  * aynı kuralı kullandığı için bant yerinden oynamaz.
  *
  * Kayan animasyon saf CSS; bant JavaScript olmadan da çalışır.
+ *
+ * İşaretleme scripts/lib/transferTicker.mjs'te — Türkçe ön derleme,
+ * İngilizce üretici ve ana sayfa dışındaki sayfalara basılan bant aynı
+ * fonksiyondan çizilir. Burada kalan tek şey veriyi seçip şeridi istemek.
  */
-function transferRadarItem(item, duplicate) {
-  const external = /^https?:/i.test(item.url);
-  const tag = item.url ? "a" : "span";
-  const attributes = item.url
-    ? ` href="${escapeHtml(item.url)}"${external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : ""}${duplicate ? ' tabindex="-1"' : ""}`
-    : "";
-  const lead = item.isBreaking ? "SON DAKİKA" : (item.dateLabel || "TRANSFER");
-  const statusLabel = { Official: "Resmî", AgreementReported: "Anlaşma iddiası", Rumor: "İddia", Talks: "Görüşme", Loan: "Kiralık" }[item.statusKey] || item.statusKey;
-  const aria = `${lead} | ${item.playerName} → ${item.toTeam} | Nereden: ${item.fromTeam} | ${statusLabel}`;
-  return `<${tag} class="transfer-radar-ticker__item"${attributes} aria-label="${escapeHtml(aria)}">` +
-    `<span class="transfer-radar-ticker__breaking${item.isBreaking ? "" : " is-dated"}">${escapeHtml(lead)}</span>` +
-    `<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>` +
-    `<strong>${escapeHtml(item.playerName)} <span aria-hidden="true">→</span> ${escapeHtml(item.toTeam)}</strong>` +
-    `<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>` +
-    `<span>Nereden: ${escapeHtml(item.fromTeam)}</span>` +
-    `<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>` +
-    // Sınıf anahtarı İngilizce kalır (CSS onunla renklendiriyor).
-    `<span class="transfer-radar-ticker__status is-${item.statusKey.toLowerCase()}">${escapeHtml(statusLabel)}</span>` +
-    `</${tag}>`;
-}
-
 function transferRadarTrack() {
-  const items = selectTickerRecords(transfers);
-
-  // Veri yoksa yer tutucu KALIR — uydurma yapılmaz. Çelişki yalnızca veri
-  // varken yer tutucu göstermekten doğuyordu.
-  if (!items.length) {
-    return `<div class="transfer-radar-ticker__track is-static" data-transfer-radar-track>
-            <div class="transfer-radar-ticker__group"><span class="transfer-radar-ticker__empty">Transfer güncellemeleri hazırlanıyor.</span></div>
-          </div>`;
-  }
-
-  // Süre app.js ile aynı formülden: öğe başına 9 sn, 34-80 sn arasında.
-  const duration = Math.max(34, Math.min(80, items.length * 9));
-  const primary = items.map((item) => transferRadarItem(item, false)).join("");
-  const duplicate = items.map((item) => transferRadarItem(item, true)).join("");
-  return `<div class="transfer-radar-ticker__track" style="--transfer-ticker-duration:${duration}s" data-transfer-radar-track>
-            <div class="transfer-radar-ticker__group">${primary}</div>
-            <div class="transfer-radar-ticker__group" aria-hidden="true">${duplicate}</div>
-          </div>`;
+  return transferTickerTrack(selectTickerRecords(transfers), {
+    locale: "tr",
+    sourceRel: SOURCE_LINK_REL
+  });
 }
 
 /**

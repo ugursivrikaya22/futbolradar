@@ -31,6 +31,7 @@ import {
   transferWatchShell
 } from "./lib/matchCards.mjs";
 import { transferTypeEn } from "./lib/enTicker.mjs";
+import { transferTickerBlock } from "./lib/transferTicker.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -504,10 +505,6 @@ function transferStatusKey(record) {
   return "Rumor";
 }
 
-function transferStatusLabelEn(key) {
-  return { Official: "Official", AgreementReported: "Agreement reported", Rumor: "Reported", Talks: "In talks", Loan: "Loan" }[key] || key;
-}
-
 /**
  * Kulüp adı ÇEVRİLMEZ — "Fiorentina" her dilde Fiorentina'dır. Çevrilen tek
  * şey kulüp OLMAYAN yer tutucu: kadrosuz oyuncu için veri "Serbest oyuncu"
@@ -533,57 +530,16 @@ function transferTickerRecords() {
     }));
 }
 
-function transferTickerItem(item, duplicate) {
-  const external = /^https?:/i.test(item.url);
-  const tag = item.url ? "a" : "span";
-  const attributes = item.url
-    ? ` href="${escapeHtml(item.url)}"${external ? ' target="_blank" rel="nofollow noopener noreferrer"' : ""}${duplicate ? ' tabindex="-1"' : ""}`
-    : "";
-  const lead = item.isBreaking ? "BREAKING" : (item.dateLabel || "TRANSFER");
-  const statusLabel = transferStatusLabelEn(item.statusKey);
-  const aria = `${lead} | ${item.playerName} → ${item.toTeam} | From: ${item.fromTeam} | ${statusLabel}`;
-  return `<${tag} class="transfer-radar-ticker__item"${attributes} aria-label="${escapeHtml(aria)}">` +
-    `<span class="transfer-radar-ticker__breaking${item.isBreaking ? "" : " is-dated"}">${escapeHtml(lead)}</span>` +
-    `<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>` +
-    `<strong>${escapeHtml(item.playerName)} <span aria-hidden="true">→</span> ${escapeHtml(item.toTeam)}</strong>` +
-    `<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>` +
-    `<span>From: ${escapeHtml(item.fromTeam)}</span>` +
-    `<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>` +
-    // Sınıf anahtarı İngilizce kalır (CSS onunla renklendiriyor).
-    `<span class="transfer-radar-ticker__status is-${item.statusKey.toLowerCase()}">${escapeHtml(statusLabel)}</span>` +
-    `</${tag}>`;
-}
-
+/**
+ * İşaretleme scripts/lib/transferTicker.mjs'te — Türkçe ön derleme ve bu
+ * üretici aynı fonksiyondan çizer. Burada kalan tek şey İngilizce kayıtları
+ * seçip bandı istemek.
+ *
+ * `keepEmpty`: veri gelmediğinde bant kaybolmaz, yer tutucusuyla kalır. Ana
+ * sayfanın sabit bir parçası olduğu için kaybolması düzeni oynatırdı.
+ */
 function transferRadarTicker() {
-  const items = transferTickerRecords();
-  if (!items.length) {
-    return `<div class="transfer-radar-ticker" data-component="TransferRadarTicker" data-source="static" role="region" aria-label="Transfer Radar">
-      <div class="container-wide transfer-radar-ticker__inner">
-        <span class="transfer-radar-ticker__label">Transfer Radar</span>
-        <div class="transfer-radar-ticker__viewport" aria-live="polite">
-          <div class="transfer-radar-ticker__track is-static" data-transfer-radar-track>
-            <div class="transfer-radar-ticker__group"><span class="transfer-radar-ticker__empty">Transfer updates are being prepared.</span></div>
-          </div>
-        </div>
-      </div>
-    </div>`;
-  }
-
-  // Süre app.js ile aynı formülden: öğe başına 9 sn, 34-80 sn arasında.
-  const duration = Math.max(34, Math.min(80, items.length * 9));
-  const primary = items.map((item) => transferTickerItem(item, false)).join("");
-  const duplicate = items.map((item) => transferTickerItem(item, true)).join("");
-  return `<div class="transfer-radar-ticker" data-component="TransferRadarTicker" data-source="static" role="region" aria-label="Transfer Radar">
-      <div class="container-wide transfer-radar-ticker__inner">
-        <span class="transfer-radar-ticker__label">Transfer Radar</span>
-        <div class="transfer-radar-ticker__viewport" aria-live="polite">
-          <div class="transfer-radar-ticker__track" style="--transfer-ticker-duration:${duration}s" data-transfer-radar-track>
-            <div class="transfer-radar-ticker__group">${primary}</div>
-            <div class="transfer-radar-ticker__group" aria-hidden="true">${duplicate}</div>
-          </div>
-        </div>
-      </div>
-    </div>`;
+  return transferTickerBlock(transferTickerRecords(), { locale: "en", keepEmpty: true });
 }
 
 /**

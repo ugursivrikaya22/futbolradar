@@ -289,3 +289,72 @@ console.log(
 }
 
 console.log("Kaynak güven testleri geçti (resmî rozet yalnızca resmî kaynakla).");
+
+// ── 11. BANT KAPSAMI: hangi sayfalarda çıkar, hangilerinde çıkmaz ──────────
+//
+// Bant ana gezinme sayfalarında var, üretilmiş detay sayfalarında yok. Bu bir
+// tasarım kararı ve sessizce kayabilecek bir karar: listeye bir satır eklemek
+// 4.900 detay sayfasının tepesine kayan şerit koyabilir, bir satır silmek
+// bandı bir sayfadan habersizce kaldırabilir. İkisini de bekçiye bağlıyoruz.
+//
+// Liste testte KOPYALANMAZ, enjeksiyonun okuduğu yerden okunur — kopyalanmış
+// bir liste, asıl liste değişince sessizce eskir ve testi işe yaramaz kılar.
+
+{
+  const { TRANSFER_TICKER_PAGES, TRANSFER_TICKER_OWN_PAGES } =
+    await import("./lib/transferTicker.mjs");
+
+  const BAND = 'data-component="TransferRadarTicker"';
+  const hasBand = (file) => {
+    const full = path.join(root, file);
+    return fs.existsSync(full) && fs.readFileSync(full, "utf8").includes(BAND);
+  };
+
+  const expected = [...TRANSFER_TICKER_PAGES, ...TRANSFER_TICKER_OWN_PAGES];
+  const missing = expected.filter((file) => !hasBand(file));
+  assert.deepEqual(missing, [], `bant listedeki her sayfada olmalı; eksik: ${missing.join(", ")}`);
+
+  // Sızıntı kontrolü TÜM siteyi tarar: "listede olmayan hiçbir sayfada bant
+  // yok" ifadesi, örneklem üzerinden değil ancak tam tarama ile kurulabilir.
+  // Örneklem alsaydık, bandın 4.900 detay sayfasının bir kısmına sızması
+  // testten kaçabilirdi.
+  const walk = (dir) => {
+    const out = [];
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.name.startsWith(".") || entry.name === "node_modules" || entry.name === "public") {
+        continue;
+      }
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) out.push(...walk(full));
+      else if (entry.name.endsWith(".html")) out.push(path.relative(root, full).split(path.sep).join("/"));
+    }
+    return out;
+  };
+
+  const allPages = walk(root);
+  assert.ok(allPages.length > 1000, `tam tarama beklenen büyüklükte değil (${allPages.length} sayfa)`);
+
+  const known = new Set(expected);
+  const leaked = allPages.filter((file) => !known.has(file) && hasBand(file));
+  assert.deepEqual(
+    leaked.slice(0, 10),
+    [],
+    `bant yalnızca listedeki sayfalarda olmalı; sızan ${leaked.length} sayfa: ${leaked.slice(0, 10).join(", ")}`
+  );
+
+  // TR ve EN aynı sayfada aynı davranmalı — birinde bant varken diğerinde
+  // olmaması, daha önce düzeltilen tasarım eşitsizliğinin geri gelmesidir.
+  [
+    ["index.html", "en/index.html"],
+    ["canli-skor.html", "en/live-scores.html"],
+    ["bugunun-maclari.html", "en/todays-matches.html"],
+    ["puan-durumu.html", "en/standings.html"]
+  ].forEach(([tr, en]) => {
+    assert.equal(hasBand(tr), hasBand(en), `${tr} ve ${en} bant konusunda eşit olmalı`);
+  });
+
+  console.log(
+    `Bant kapsamı testleri geçti (${expected.length} sayfada var, ` +
+    `kalan ${allPages.length - expected.length} sayfada yok, 4 dil çifti eşit).`
+  );
+}
