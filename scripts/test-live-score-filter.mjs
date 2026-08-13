@@ -219,4 +219,27 @@ const CASES = [
   );
 }
 
-console.log("live-score-filter OK (7 bölüm)");
+// ── 8. İngilizce canlı skor sayfası: aynı kural, aynı süzgeç ───────────────
+//
+// en/live-scores.html statik üretiliyor ve kural orada da mutlak: skoru
+// olmayan maç sayfaya hiç girmez. Düzeltmeden önce sayfa 24 kartın 21'inde
+// başlamamış (skorsuz) maç taşıyordu — "Still to kick off" bölümü bu
+// yüzden tamamen kaldırıldı; program bilgisi todays-matches.html'de.
+{
+  const enGenerator = fs.readFileSync(path.join(root, "scripts", "generate-en-pages.mjs"), "utf8");
+  const producer = enGenerator.match(/function liveScoresPage\(\) \{[\s\S]*?\n\}/);
+  assert.ok(producer, "liveScoresPage bulunmalı");
+  assert.match(producer[0], /filterScoredMatches\(todaysMatches\)/, "EN sayfa aynı veri katmanı süzgecinden geçmeli");
+  assert.ok(!producer[0].includes('canonicalStatus(match.status) === "SCHEDULED"'),
+    "EN canlı skor sayfası başlamamış maç listesi kurmamalı");
+  assert.ok(!producer[0].includes("Still to kick off"), "skorsuz program bölümü geri gelmemeli");
+
+  const enPage = fs.readFileSync(path.join(root, "en", "live-scores.html"), "utf8");
+  const cards = enPage.match(/<article class="fixture-card[^"]*" data-card="fixture">[\s\S]*?<\/article>/g) || [];
+  for (const card of cards) {
+    assert.ok(/fixture-row-score">\d/.test(card),
+      "en/live-scores.html skorsuz kart taşıyor: " + card.slice(0, 160));
+  }
+}
+
+console.log("live-score-filter OK (8 bölüm)");
