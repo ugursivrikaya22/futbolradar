@@ -242,4 +242,34 @@ const CASES = [
   }
 }
 
-console.log("live-score-filter OK (8 bölüm)");
+// ── 9. Takım adı skor yüzeylerinde KELİME İÇİNDEN KIRILMAZ ─────────────────
+//
+// `overflow-wrap: anywhere` min-content genişliğini tek karaktere indirir;
+// dar flex/grid sütununda takım adı DİKEY, harf harf dizilir. Skor satırı
+// taşıyan ad öğelerinde bu yüzden yasak: ad ya tek satır + üç nokta, ya en
+// çok iki satır ve yalnızca kelime sınırından sarar.
+{
+  const nameSelectors = [
+    ".live-compact-team", ".fixture-row-name", ".home-score-teams strong",
+    ".fixture-match-team span", ".team-line span", ".md-side-name",
+    ".en-match-teams", ".td-fixture-teams", ".team-match-result h3",
+    ".featured-fixture-team strong"
+  ];
+  for (const selector of nameSelectors) {
+    const pattern = new RegExp(selector.replace(/[.\[\]]/g, "\\$&") + "\\s*\\{[^{}]*\\}", "g");
+    const rules = cssSource.match(pattern) || [];
+    assert.ok(rules.length > 0, `${selector} kuralı bulunmalı`);
+    // Yasak HER kuralda geçerli (medya sorguları dahil): tek bir kırılım
+    // noktasında geri gelen `anywhere` hatayı yalnızca o genişlikte yaratır.
+    for (const rule of rules) {
+      assert.ok(!/overflow-wrap:\s*anywhere|word-break:\s*break-all/.test(rule),
+        `${selector} kelime içinden kırılmamalı (dikey harf dizilimi): ${rule.slice(0, 80)}`);
+    }
+    // Ellipsis/clamp ise EN AZ BİR kuralda yeter — medya sorguları çoğu kez
+    // yalnızca yazı boyutu değiştirir, taban kural sarmayı yönetir.
+    assert.ok(rules.some((rule) => /white-space:\s*nowrap|-webkit-line-clamp/.test(rule)),
+      `${selector} tek satır+ellipsis ya da iki satır clamp taşımalı`);
+  }
+}
+
+console.log("live-score-filter OK (9 bölüm)");

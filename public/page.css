@@ -997,7 +997,9 @@ h1 {
 
   .team-line span {
     min-width: 0;
-    overflow-wrap: anywhere;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
@@ -3670,7 +3672,9 @@ h1 {
 
       .team-line strong {
         min-width: 0;
-        overflow-wrap: anywhere;
+        overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
         font-size: 1.02rem;
       }
 
@@ -5015,7 +5019,14 @@ h1 {
         gap: 8px;
         min-width: 0;
         font-weight: 800;
-        overflow-wrap: anywhere;
+      }
+
+      /* Ad tek satırda kalır; logo (flex: none) hizasını korur. */
+      .fixture-match-team span {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .fixture-match-team-away {
@@ -8456,7 +8467,9 @@ h1 {
 
 .home-score-teams strong {
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 0.96rem;
 }
 
@@ -13533,6 +13546,12 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 }
 
 .featured-fixture-team strong {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: normal;
+  word-break: normal;
   font-size: var(--fs-md);
   font-weight: 750;
   line-height: 1.2;
@@ -15057,9 +15076,14 @@ table {
 }
 
 .md-side-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: normal;
+  word-break: normal;
   font-size: var(--fs-md);
   line-height: 1.25;
-  overflow-wrap: anywhere;
 }
 
 .md-side.is-winner .md-side-name { color: var(--green); }
@@ -16207,7 +16231,9 @@ section[data-api-target="team-detail"] {
 .td-fixture-teams {
   font-size: var(--fs-sm);
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .td-fixture-score {
@@ -17465,7 +17491,9 @@ body,
 
   .home-page #hero-canli-skor .featured-fixture-team strong {
     max-width: 100%;
-    overflow-wrap: anywhere;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-size: 0.82rem;
   }
 
@@ -17589,10 +17617,16 @@ body,
 }
 
 .team-match-result h3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   margin: 0;
   font-size: var(--fs-md);
-  /* Uzun takım adları kartı taşırmasın. */
-  overflow-wrap: anywhere;
+  /* Uzun ad kartı taşırmaz ama kelime İÇİNDEN de kırılmaz: iki satırdan
+     uzunu üç noktayla biter. Harf harf dikey dizilim buradan çıkıyordu. */
+  overflow: hidden;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .team-match-result h3 b {
@@ -17852,7 +17886,9 @@ body,
 
 .en-match-teams {
   min-width: 0;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--text);
 }
 
