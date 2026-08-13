@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-13T17:17:59.688Z",
+  "fetchedAt": "2026-08-13T23:07:32.715Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -87513,14 +87513,14 @@
       "awayTeam": "HNK Rijeka",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/1163.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/561.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 62,
-      "elapsed": 62,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -87538,8 +87538,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -87548,28 +87548,38 @@
       },
       "competitionId": "konferans-ligi",
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "HNK Rijeka topa sahip olma oranında önde. HNK Rijeka isabetli şutlarda önde.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "43%-57%",
+            "value": "45%-55%",
             "text": "HNK Rijeka topa sahip olma oranında önde."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "0-3",
+            "value": "4-5",
             "text": "HNK Rijeka isabetli şutlarda önde."
           },
           {
+            "label": "Gol akışı",
+            "value": "70'",
+            "text": "Son gol 70' J. Lasickas tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "8 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
+            "value": "1-1",
             "text": "Skor dengede."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 3,
+        "eventCount": 11,
+        "dataPoints": 5,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -88333,33 +88343,33 @@
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 0,
-          "away": 3,
+          "home": 4,
+          "away": 5,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 1,
-          "away": 2
+          "home": 2,
+          "away": 6
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
           "home": 1,
-          "away": 1
+          "away": 3
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 9,
-          "away": 4
+          "home": 12,
+          "away": 8
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 1,
-          "away": 0
+          "home": 4,
+          "away": 1
         },
         {
           "category": "Genel",
@@ -88370,8 +88380,8 @@
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 43,
-          "away": 57,
+          "home": 45,
+          "away": 55,
           "unit": "%",
           "higherIsBetter": true
         },
@@ -88379,7 +88389,7 @@
           "category": "Disiplin",
           "type": "Sarı kart",
           "home": 0,
-          "away": 0
+          "away": 1
         },
         {
           "category": "Disiplin",
@@ -88406,17 +88416,17 @@
             "Sebastian Suvanne"
           ],
           "substitutes": [
+            "Stanislav Baranov",
+            "Yacouba Sacko",
+            "Abdoul Goudouss Bamba",
+            "Hamidou Coulibaly",
+            "Roope Riski",
             "Otso Virtanen",
             "Tatu Miettunen",
-            "Abdoul Goudouss Bamba",
             "Maksim Stjopin",
             "Kalle Wallius",
             "Lauri Ala-Myllymäki",
-            "Stanislav Baranov",
             "Jesse Kilo",
-            "Yacouba Sacko",
-            "Hamidou Coulibaly",
-            "Roope Riski",
             "Elias Tamminen"
           ]
         },
@@ -88437,19 +88447,131 @@
             "Daniel Adu-Adjei"
           ],
           "substitutes": [
+            "Amer Gojak",
+            "Ivan Ćubelić",
+            "Ante Matej Jurić",
             "Vito Kovač",
             "Igor Vekič",
             "Moreno Živković",
             "Anel Husić",
             "Noel Bodetić",
-            "Ivan Ćubelić",
             "Toni Fruk",
             "Gabriel Rukavina",
-            "Amer Gojak",
             "Goran Grulović",
-            "Cherno Saho",
-            "Ante Matej Jurić"
+            "Cherno Saho"
           ]
+        }
+      ],
+      "events": [
+        {
+          "time": "59'",
+          "team": {
+            "name": "Ilves"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "S. Suvanne · Asist: S. Baranov · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Ilves"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "S. Baranov · Asist: T. Hytonen · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Ilves"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Y. Raap · Asist: Y. Sacko · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "HNK Rijeka"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "J. Lasickas · Asist: A. Majstorovic · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "HNK Rijeka"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "J. Lasickas · Asist: A. Gojak · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Ilves"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "A. Popovitch · Asist: H. Coulibaly · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Ilves"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "V. Kumpu · Asist: G. Bamba · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Ilves"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "T. Hytonen · Asist: R. Riski · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "84'",
+          "team": {
+            "name": "HNK Rijeka"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "J. Puljic · Asist: I. Cubelic · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "87'",
+          "team": {
+            "name": "HNK Rijeka"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Devetak · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "90'",
+          "team": {
+            "name": "HNK Rijeka"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "D. Adu Adjei · Asist: A. Juric · Substitution 3",
+          "comments": ""
         }
       ]
     },
@@ -88465,14 +88587,14 @@
       "awayTeam": "Inter Club d'Escaldes",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/687.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3342.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 60,
-      "elapsed": 60,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
-        "away": 1,
+        "away": 4,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -88490,8 +88612,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -88500,33 +88622,38 @@
       },
       "competitionId": "konferans-ligi",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Flora Tallinn topa sahip olma oranında önde. Flora Tallinn isabetli şutlarda önde. Skor üstünlüğü Inter Club d'Escaldes tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "Flora Tallinn topa sahip olma oranında önde. Inter Club d'Escaldes isabetli şutlarda önde. Skor üstünlüğü Inter Club d'Escaldes tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "62%-38%",
+            "value": "59%-41%",
             "text": "Flora Tallinn topa sahip olma oranında önde."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "3-1",
-            "text": "Flora Tallinn isabetli şutlarda önde."
+            "value": "3-4",
+            "text": "Inter Club d'Escaldes isabetli şutlarda önde."
           },
           {
             "label": "Gol akışı",
-            "value": "17'",
-            "text": "Son gol 17' Modric tarafından kaydedildi."
+            "value": "81'",
+            "text": "Son gol 81' F. Chouaib tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "0-1",
+            "value": "0-4",
             "text": "Inter Club d'Escaldes skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 8,
-        "dataPoints": 4,
+        "eventCount": 20,
+        "dataPoints": 5,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -88565,8 +88692,8 @@
             "last_5": {
               "played": 3,
               "form": "44%",
-              "att": "10%",
-              "def": "85%",
+              "att": "12%",
+              "def": "82%",
               "goals": {
                 "for": {
                   "total": 2,
@@ -88875,7 +89002,7 @@
             "last_5": {
               "played": 1,
               "form": "100%",
-              "att": "10%",
+              "att": "12%",
               "def": "100%",
               "goals": {
                 "for": {
@@ -89209,7 +89336,7 @@
           {
             "fixture": {
               "id": 1607582,
-              "referee": "Stefan Ebner, Austria",
+              "referee": "S. Ebner",
               "timezone": "UTC",
               "date": "2026-08-06T17:00:00+00:00",
               "timestamp": 1786035600,
@@ -89296,17 +89423,17 @@
             "Sander Alamaa"
           ],
           "substitutes": [
+            "Taaniel Usta",
+            "Ilja Antonov",
+            "Maksim Kalimullin",
+            "Oscar Pihela",
+            "Tristan Toomas Teeväli",
             "Andero Tatrik",
             "Kaur Kivila",
-            "Oscar Pihela",
             "Ronald Sammul",
             "Matvei Jekimov",
-            "Tristan Toomas Teeväli",
             "Marten Kukkonen",
-            "Ilja Antonov",
-            "Remo Valdmets",
-            "Maksim Kalimullin",
-            "Taaniel Usta"
+            "Remo Valdmets"
           ]
         },
         {
@@ -89326,14 +89453,14 @@
             "Souleymane Sidibe"
           ],
           "substitutes": [
-            "Juanda Terrádez",
+            "Borja Arellano",
+            "Víctor Alonso",
+            "Lamine Diaby",
             "Adrian Da Cunha",
             "Marc Rodríguez",
+            "Juanda Terrádez",
             "Marc Jurado",
-            "Víctor Alonso",
-            "Juan Camara",
-            "Lamine Diaby",
-            "Borja Arellano"
+            "Juan Camara"
           ]
         }
       ],
@@ -89342,7 +89469,7 @@
           "category": "Hücum",
           "type": "İsabetli şut",
           "home": 3,
-          "away": 1,
+          "away": 4,
           "higherIsBetter": true
         },
         {
@@ -89354,39 +89481,39 @@
         {
           "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 3,
+          "home": 5,
           "away": 2
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 8,
-          "away": 12
+          "home": 10,
+          "away": 16
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 5,
+          "home": 7,
           "away": 1
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
-          "home": 1,
-          "away": 2
+          "home": 2,
+          "away": 3
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 62,
-          "away": 38,
+          "home": 59,
+          "away": 41,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Disiplin",
           "type": "Sarı kart",
-          "home": 3,
+          "home": 4,
           "away": 2
         },
         {
@@ -89450,16 +89577,6 @@
         {
           "time": "55'",
           "team": {
-            "name": "Inter Club d'Escaldes"
-          },
-          "type": "Card",
-          "detail": "Yellow Card",
-          "value": "Yellow Card",
-          "comments": ""
-        },
-        {
-          "time": "55'",
-          "team": {
             "name": "Flora Tallinn"
           },
           "type": "Card",
@@ -89476,6 +89593,136 @@
           "detail": "Substitution 1",
           "value": "D. Berlanga · Asist: B. Arellano · Substitution 1",
           "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Flora Tallinn"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "S. Tovstik · Asist: T. Usta · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "69'",
+          "team": {
+            "name": "Inter Club d'Escaldes"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "F. Chouaib · Asist: Soule · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "Flora Tallinn"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "S. Alamaa · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "Flora Tallinn"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "T. Varjund · Asist: M. Kalimullin · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "Flora Tallinn"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "V. Kreida · Asist: I. Antonov · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "77'",
+          "team": {
+            "name": "Inter Club d'Escaldes"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "B. Arellano · Asist: David Lopez · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Inter Club d'Escaldes"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "F. Chouaib · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Inter Club d'Escaldes"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Modric · Asist: L. Diaby · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Inter Club d'Escaldes"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "Soule · Asist: Dacu · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Inter Club d'Escaldes"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "David Lopez · Asist: V. Alonso · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Flora Tallinn"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "D. Kuraksin · Asist: O. Pihela · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Flora Tallinn"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "R. Alliku · Asist: T. Teevali · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "Inter Club d'Escaldes"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "F. Chouaib · Asist: M. Rodriguez · Substitution 5",
+          "comments": ""
         }
       ]
     },
@@ -89491,13 +89738,13 @@
       "awayTeam": "Dynamo Kyiv",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/556.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/572.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 55,
-      "elapsed": 55,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
+        "home": 2,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -89516,8 +89763,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -89526,7 +89773,7 @@
       },
       "competitionId": "konferans-ligi",
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "Qarabag topa sahip olma oranında önde. Qarabag isabetli şutlarda önde. Skor üstünlüğü Qarabag tarafında.",
         "confidence": "Orta",
         "signals": [
@@ -89542,17 +89789,22 @@
           },
           {
             "label": "Gol akışı",
-            "value": "12'",
-            "text": "Son gol 12' J. Mouaddib tarafından kaydedildi."
+            "value": "69'",
+            "text": "Son gol 69' O. Kashchuk tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "1-0",
+            "value": "2-0",
             "text": "Qarabag skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 3,
-        "dataPoints": 4,
+        "eventCount": 15,
+        "dataPoints": 5,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -89592,7 +89844,7 @@
               "played": 1,
               "form": "0%",
               "att": "0%",
-              "def": "95%",
+              "def": "94%",
               "goals": {
                 "for": {
                   "total": 0,
@@ -89897,7 +90149,7 @@
             "last_5": {
               "played": 1,
               "form": "100%",
-              "att": "5%",
+              "att": "6%",
               "def": "100%",
               "goals": {
                 "for": {
@@ -90231,7 +90483,7 @@
           {
             "fixture": {
               "id": 1607581,
-              "referee": "Morten Krogh, Denmark",
+              "referee": "M. Krogh",
               "timezone": "UTC",
               "date": "2026-08-06T17:00:00+00:00",
               "timestamp": 1786035600,
@@ -90241,7 +90493,7 @@
               },
               "venue": {
                 "id": null,
-                "name": "Arena Lublin",
+                "name": "Motor Lublin Arena",
                 "city": "Lublin"
               },
               "status": {
@@ -90318,16 +90570,16 @@
             "Abdellah Zoubir"
           ],
           "substitutes": [
+            "Bruno Langa",
+            "Musa Qurbanlı",
+            "Renaldo Cephas",
+            "Samuel Lobato",
+            "Joni Montiel",
             "Shakhrudin Magomedaliyev",
             "Mateusz Kochalski",
-            "Bruno Langa",
             "Bahlul Mustafazada",
-            "Joni Montiel",
             "Hikmat Cabrayilzada",
-            "Ali Bashirov",
-            "Samuel Lobato",
-            "Musa Qurbanlı",
-            "Renaldo Cephas"
+            "Ali Bashirov"
           ]
         },
         {
@@ -90347,15 +90599,15 @@
             "Matvii Ponomarenko"
           ],
           "substitutes": [
-            "Ilya Olkhovyi",
             "Oleksandr Tymchyk",
+            "Mykola Shaparenko",
+            "Vladyslav Kabaiev",
+            "Shola Ogundana",
+            "Vitaliy Buyalskiy",
+            "Ilya Olkhovyi",
             "Navin Malysh",
             "Aliou Thiare",
-            "Mykola Shaparenko",
             "Pavlo Liusin",
-            "Shola Ogundana",
-            "Vladyslav Kabaiev",
-            "Vitaliy Buyalskiy",
             "Mykola Mykhailenko",
             "Pierre Mounguengue"
           ]
@@ -90450,6 +90702,126 @@
           "detail": "Yellow Card",
           "value": "M. Ponomarenko · Yellow Card",
           "comments": "Roughing"
+        },
+        {
+          "time": "62'",
+          "team": {
+            "name": "Qarabag"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "B. Huseynov · Yellow Card",
+          "comments": "Roughing"
+        },
+        {
+          "time": "69'",
+          "team": {
+            "name": "Qarabag"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "O. Kashchuk · Asist: E. Cafarquliyev · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "Qarabag"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "E. Cafarquliyev · Asist: B. Langa · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "Qarabag"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "J. Mouaddib · Asist: M. Qurbanly · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "Qarabag"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "Kady Borges · Asist: R. Cephas · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "73'",
+          "team": {
+            "name": "Dynamo Kyiv"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "B. Redushko · Asist: V. Kabaev · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "73'",
+          "team": {
+            "name": "Dynamo Kyiv"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "J. Lonwijk · Asist: M. Shaparenko · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "73'",
+          "team": {
+            "name": "Dynamo Kyiv"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "E. Guerrero · Asist: O. Tymchyk · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "78'",
+          "team": {
+            "name": "Dynamo Kyiv"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "V. Dubinchak · Asist: S. Ogundana · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Qarabag"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "A. Zoubir · Asist: S. Lobato · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "83'",
+          "team": {
+            "name": "Dynamo Kyiv"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "V. Rubchynskyi · Asist: V. Buyalskyy · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "88'",
+          "team": {
+            "name": "Qarabag"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "O. Kashchuk · Asist: J. Montiel · Substitution 5",
+          "comments": ""
         }
       ]
     },
@@ -90465,11 +90837,11 @@
       "awayTeam": "FK Jablonec",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/4160.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1122.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 1,
         "away": 2,
@@ -90490,8 +90862,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -90500,19 +90872,24 @@
       },
       "competitionId": "konferans-ligi",
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "Rīgas FS topa sahip olma oranında önde. Rīgas FS isabetli şutlarda önde. Skor üstünlüğü FK Jablonec tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "57%-43%",
+            "value": "58%-42%",
             "text": "Rīgas FS topa sahip olma oranında önde."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "2-2",
+            "value": "8-2",
             "text": "Rīgas FS isabetli şutlarda önde."
+          },
+          {
+            "label": "Disiplin dengesi",
+            "value": "1 kırmızı kart",
+            "text": "Rīgas FS kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
           },
           {
             "label": "Gol akışı",
@@ -90520,13 +90897,18 @@
             "text": "Son gol 38' Z. Lipuscek tarafından kaydedildi."
           },
           {
+            "label": "Teknik hamleler",
+            "value": "8 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti."
+          },
+          {
             "label": "Canlı skor",
             "value": "1-2",
             "text": "FK Jablonec skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 3,
-        "dataPoints": 4,
+        "eventCount": 18,
+        "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -90565,8 +90947,8 @@
             "last_5": {
               "played": 5,
               "form": "67%",
-              "att": "45%",
-              "def": "75%",
+              "att": "69%",
+              "def": "62%",
               "goals": {
                 "for": {
                   "total": 9,
@@ -90871,8 +91253,8 @@
             "last_5": {
               "played": 3,
               "form": "67%",
-              "att": "30%",
-              "def": "85%",
+              "att": "46%",
+              "def": "77%",
               "goals": {
                 "for": {
                   "total": 6,
@@ -91193,8 +91575,8 @@
             "away": "63%"
           },
           "poisson_distribution": {
-            "home": "87%",
-            "away": "13%"
+            "home": "88%",
+            "away": "12%"
           },
           "h2h": {
             "home": "0%",
@@ -91205,15 +91587,15 @@
             "away": "100%"
           },
           "total": {
-            "home": "62.0%",
-            "away": "38.5%"
+            "home": "62.3%",
+            "away": "38.3%"
           }
         },
         "h2h": [
           {
             "fixture": {
               "id": 1607588,
-              "referee": "Nathan Verboomen, Belgium",
+              "referee": "N. Verboomen",
               "timezone": "UTC",
               "date": "2026-08-06T16:00:00+00:00",
               "timestamp": 1786032000,
@@ -91223,8 +91605,8 @@
               },
               "venue": {
                 "id": null,
-                "name": "Stadion Střelnice",
-                "city": "Jablonec"
+                "name": "Stadion Strelnice",
+                "city": "Jablonec nad Nisou"
               },
               "status": {
                 "long": "Match Finished",
@@ -91300,15 +91682,15 @@
             "Rostand Ndjiki"
           ],
           "substitutes": [
+            "Mamadou Sylla",
+            "Gauthier Mankenda",
+            "Darko Lemajić",
             "Mareks Muizzemnieks",
             "Roberts Veips",
             "Niks Sliede",
-            "Mamadou Sylla",
             "Niks Dusalijevs",
-            "Gauthier Mankenda",
             "Strahinja Rakić",
-            "Duje Korač",
-            "Darko Lemajić"
+            "Duje Korač"
           ]
         },
         {
@@ -91328,16 +91710,16 @@
             "Matěj Polidar"
           ],
           "substitutes": [
-            "Klemen Mihelak",
-            "Daniel Souček",
-            "Filip Novák",
-            "Nelson Okeke",
             "Jan Suchan",
+            "Antonín Růsek",
+            "Nelson Okeke",
+            "Daniel Souček",
+            "Filip Vecheta",
+            "Klemen Mihelak",
+            "Filip Novák",
             "Hugo Ahl",
             "Eduard Sobol",
-            "Antonín Růsek",
-            "Jan Chramosta",
-            "Filip Vecheta"
+            "Jan Chramosta"
           ]
         }
       ],
@@ -91371,21 +91753,171 @@
           "detail": "Normal Goal",
           "value": "Z. Lipuscek · Asist: D. Zelenkovs · Normal Goal",
           "comments": ""
+        },
+        {
+          "time": "49'",
+          "team": {
+            "name": "Rīgas FS"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "S. Panic · Yellow Card",
+          "comments": "Tripping"
+        },
+        {
+          "time": "56'",
+          "team": {
+            "name": "Rīgas FS"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Saidy · Yellow Card",
+          "comments": "Roughing"
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "FK Jablonec"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "F. Zorvan · Asist: A. Rusek · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "FK Jablonec"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "M. Polidar · Asist: J. Suchan · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "68'",
+          "team": {
+            "name": "FK Jablonec"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "R. Sedlacek · Yellow Card",
+          "comments": "Roughing"
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "Rīgas FS"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "A. Balde · Asist: M. Sylla · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "78'",
+          "team": {
+            "name": "FK Jablonec"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "L. Jawo · Asist: N. Okeke · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Rīgas FS"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "A. Filipovic · Yellow Card",
+          "comments": "Roughing"
+        },
+        {
+          "time": "83'",
+          "team": {
+            "name": "Rīgas FS"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "A. Filipovic · Yellow Card",
+          "comments": "Roughing"
+        },
+        {
+          "time": "83'",
+          "team": {
+            "name": "Rīgas FS"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "A. Filipovic · Red Card",
+          "comments": "Roughing"
+        },
+        {
+          "time": "84'",
+          "team": {
+            "name": "Rīgas FS"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "L. Odisharia · Asist: G. Mankenda · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "84'",
+          "team": {
+            "name": "Rīgas FS"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "M. Saidy · Asist: D. Lemajic · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "FK Jablonec"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "V. Chanturishvili · Asist: D. Soucek · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "FK Jablonec"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "S. Nebyla · Asist: F. Vecheta · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "88'",
+          "team": {
+            "name": "Rīgas FS"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Z. Lipuscek · Yellow Card",
+          "comments": "Unsportsmanlike conduct"
         }
       ],
       "statistics": [
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 2,
+          "home": 8,
           "away": 2,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 3,
-          "away": 1
+          "home": 8,
+          "away": 4
         },
         {
           "category": "Hücum",
@@ -91396,39 +91928,39 @@
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 7,
-          "away": 9
+          "home": 15,
+          "away": 14
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 3,
-          "away": 1
+          "home": 4,
+          "away": 5
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
-          "home": 1,
-          "away": 0
+          "home": 2,
+          "away": 1
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 57,
-          "away": 43,
+          "home": 58,
+          "away": 42,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Disiplin",
           "type": "Sarı kart",
-          "home": 0,
-          "away": 0
+          "home": 3,
+          "away": 2
         },
         {
           "category": "Disiplin",
           "type": "Kırmızı kart",
-          "home": 0,
+          "home": 1,
           "away": 0
         }
       ]
@@ -91444,13 +91976,13 @@
       "league": "UEFA Europa League",
       "kickoff": "2026-08-13T20:00:00+03:00",
       "time": "20:00",
-      "venue": "Besiktas Park",
+      "venue": "Tüpraş Stadyumu",
       "broadcast": null,
       "homeTeam": "Beşiktaş",
       "awayTeam": "Hradec Králové",
-      "status": "LIVE",
+      "status": "FINISHED",
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -91463,10 +91995,10 @@
       ],
       "homeTeamLogo": "https://media.api-sports.io/football/teams/549.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3723.png",
-      "providerStatus": "1H",
-      "minute": 18,
-      "elapsed": 18,
-      "live": true,
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "homeForm": null,
       "awayForm": null,
       "homeMomentum": null,
@@ -91480,23 +92012,33 @@
       "goalPotential": null,
       "risk": null,
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "needsReview": false,
       "resource": "matches",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 40' V. Cerny tarafından kaydedildi. Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti. Skor üstünlüğü Beşiktaş tarafında.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "40'",
+            "text": "Son gol 40' V. Cerny tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "8 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "1-0",
+            "text": "Beşiktaş skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 10,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -92243,7 +92785,109 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "40'",
+          "team": {
+            "name": "Beşiktaş"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "V. Cerny · Asist: J. Olaitan · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Hradec Králové"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "T. Sloncik · Asist: A. Umar · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Beşiktaş"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "R. Yilmaz · Asist: Y. Ozcan · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Beşiktaş"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "V. Cerny · Asist: L. Trossard · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Beşiktaş"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "J. Olaitan · Asist: W. Ndidi · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "74'",
+          "team": {
+            "name": "Hradec Králové"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "S. Dancak · Asist: D. Trubac · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "74'",
+          "team": {
+            "name": "Hradec Králové"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "M. van Buren · Asist: A. Vlkanova · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "74'",
+          "team": {
+            "name": "Beşiktaş"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "T. Djalo · Asist: E. Agbadou · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "82'",
+          "team": {
+            "name": "Beşiktaş"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "E. Topcu · Yellow Card",
+          "comments": "Roughing"
+        },
+        {
+          "time": "87'",
+          "team": {
+            "name": "Beşiktaş"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "I. Fakili · Asist: M. Rashica · Substitution 5",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "racing-ferrol-real-aviles-2026-08-13",
@@ -92257,14 +92901,14 @@
       "awayTeam": "Real Avilés",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9409.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9632.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 16,
-      "elapsed": 16,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 1,
-        "away": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -92282,8 +92926,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -92292,22 +92936,22 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 9' V. Esquerdo tarafından kaydedildi. Racing Ferrol skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Racing Ferrol tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 40' A. Santamaria tarafından kaydedildi. Skor dengede.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "9'",
-            "text": "Son gol 9' V. Esquerdo tarafından kaydedildi."
+            "value": "40'",
+            "text": "Son gol 40' A. Santamaria tarafından kaydedildi."
           },
           {
             "label": "Canlı skor",
-            "value": "1-0",
-            "text": "Racing Ferrol skor üstünlüğünü elinde tutuyor."
+            "value": "1-1",
+            "text": "Skor dengede."
           }
         ],
-        "eventCount": 1,
+        "eventCount": 2,
         "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
@@ -93118,13 +93762,23 @@
       },
       "events": [
         {
-          "time": "9'",
+          "time": "8'",
           "team": {
             "name": "Racing Ferrol"
           },
           "type": "Goal",
           "detail": "Normal Goal",
           "value": "V. Esquerdo · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "40'",
+          "team": {
+            "name": "Real Avilés"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "A. Santamaria · Penalty",
           "comments": ""
         }
       ]
@@ -93141,13 +93795,13 @@
       "awayTeam": "Lincoln Red Imps FC",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3402.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/667.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 16,
-      "elapsed": 16,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -93166,15 +93820,951 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1607182"
       },
-      "competitionId": "avrupa-ligi"
+      "competitionId": "avrupa-ligi",
+      "lineups": [
+        {
+          "team": "Omonia Nicosia",
+          "formation": null,
+          "players": [],
+          "substitutes": []
+        },
+        {
+          "team": "Lincoln Red Imps FC",
+          "formation": null,
+          "players": [],
+          "substitutes": []
+        }
+      ],
+      "events": [
+        {
+          "time": "21'",
+          "team": {
+            "name": "Omonia Nicosia"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "L. Diony · Asist: M. Tankovic · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "34'",
+          "team": {
+            "name": "Lincoln Red Imps FC"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Y. Flalhi Idrissi · Yellow Card",
+          "comments": "Roughing"
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Omonia Nicosia"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "J. Montnor · Asist: A. Chatzigiovanis · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Lincoln Red Imps FC"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "N. Pinto · Asist: A. Mula · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Lincoln Red Imps FC"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "M. Toledano · Asist: A. El Ghobashy · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "Omonia Nicosia"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "L. Diony · Asist: A. Kakoullis · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "Omonia Nicosia"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "M. Tankovic · Asist: M. Mayambela · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "Omonia Nicosia"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "L. Nego · Asist: A. Christou · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "Lincoln Red Imps FC"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "Y. Flalhi Idrissi · Asist: K. Gomez · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "84'",
+          "team": {
+            "name": "Lincoln Red Imps FC"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "F. Alvarez · Asist: E. Britto · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "84'",
+          "team": {
+            "name": "Lincoln Red Imps FC"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "Joe · Asist: L. Mason · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "84'",
+          "team": {
+            "name": "Omonia Nicosia"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "Ewandro · Asist: A. Neofytou · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "Lincoln Red Imps FC"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "E. Britto · Yellow Card",
+          "comments": "Tripping"
+        },
+        {
+          "time": "88'",
+          "team": {
+            "name": "Lincoln Red Imps FC"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "B. Lopes · Yellow Card",
+          "comments": "Roughing"
+        },
+        {
+          "time": "90+1'",
+          "team": {
+            "name": "Lincoln Red Imps FC"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "A. El Ghobashy · Yellow Card",
+          "comments": "Tripping"
+        }
+      ],
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 21' L. Diony tarafından kaydedildi. Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti. Skor üstünlüğü Omonia Nicosia tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "21'",
+            "text": "Son gol 21' L. Diony tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-0",
+            "text": "Omonia Nicosia skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 15,
+        "dataPoints": 3,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": null,
+            "name": null,
+            "comment": null
+          },
+          "win_or_draw": false,
+          "under_over": null,
+          "goals": {
+            "home": null,
+            "away": null
+          },
+          "advice": "No predictions available",
+          "percent": {
+            "home": "33%",
+            "draw": "33%",
+            "away": "33%"
+          }
+        },
+        "league": {
+          "id": 3,
+          "name": "UEFA Europa League",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/3.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 3402,
+            "name": "Omonia Nicosia",
+            "logo": "https://media.api-sports.io/football/teams/3402.png",
+            "last_5": {
+              "played": 1,
+              "form": "33%",
+              "att": "7%",
+              "def": "93%",
+              "goals": {
+                "for": {
+                  "total": 1,
+                  "average": "1.0"
+                },
+                "against": {
+                  "total": 1,
+                  "average": "1.0"
+                }
+              }
+            },
+            "league": {
+              "form": "D",
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 1,
+                    "total": 1
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "100.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 1
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 1,
+                    "total": 1
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "100.00%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 1
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 1,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 1
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 1
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [
+                {
+                  "formation": "4-3-3",
+                  "played": 1
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": 1,
+                    "percentage": "50.00%"
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": 1,
+                    "percentage": "50.00%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 667,
+            "name": "Lincoln Red Imps FC",
+            "logo": "https://media.api-sports.io/football/teams/667.png",
+            "last_5": {
+              "played": 1,
+              "form": "33%",
+              "att": "7%",
+              "def": "93%",
+              "goals": {
+                "for": {
+                  "total": 1,
+                  "average": "1.0"
+                },
+                "against": {
+                  "total": 1,
+                  "average": "1.0"
+                }
+              }
+            },
+            "league": {
+              "form": "D",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 1,
+                    "away": 0,
+                    "total": 1
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "0.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "100.00%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 1
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 1,
+                    "away": 0,
+                    "total": 1
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "0.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "100.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 1
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 1,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 1,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 1,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [
+                {
+                  "formation": "4-1-4-1",
+                  "played": 1
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": 2,
+                    "percentage": "40.00%"
+                  },
+                  "76-90": {
+                    "total": 2,
+                    "percentage": "40.00%"
+                  },
+                  "91-105": {
+                    "total": 1,
+                    "percentage": "20.00%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "att": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "def": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "goals": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "total": {
+            "home": "50.0%",
+            "away": "50.0%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1607178,
+              "referee": "Aliyar Aghayev, Azerbaijan",
+              "timezone": "UTC",
+              "date": "2026-08-06T17:00:00+00:00",
+              "timestamp": 1786035600,
+              "periods": {
+                "first": 1786035600,
+                "second": 1786039200
+              },
+              "venue": {
+                "id": null,
+                "name": "Europa Sports Park",
+                "city": "Gibraltar"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 6
+              }
+            },
+            "league": {
+              "id": 3,
+              "name": "UEFA Europa League",
+              "country": "World",
+              "logo": "https://media.api-sports.io/football/leagues/3.png",
+              "flag": null,
+              "season": 2026,
+              "round": "3rd Qualifying Round",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 667,
+                "name": "Lincoln Red Imps FC",
+                "logo": "https://media.api-sports.io/football/teams/667.png",
+                "winner": null
+              },
+              "away": {
+                "id": 3402,
+                "name": "Omonia Nicosia",
+                "logo": "https://media.api-sports.io/football/teams/3402.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "universitatea-craiova-kups-2026-08-13",
@@ -93188,13 +94778,13 @@
       "awayTeam": "KuPS",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/632.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1165.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 18,
-      "elapsed": 18,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
+        "home": 2,
         "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
@@ -93213,15 +94803,226 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1607183"
       },
-      "competitionId": "avrupa-ligi"
+      "competitionId": "avrupa-ligi",
+      "lineups": [
+        {
+          "team": "Universitatea Craiova",
+          "formation": null,
+          "players": [],
+          "substitutes": []
+        },
+        {
+          "team": "KuPS",
+          "formation": null,
+          "players": [],
+          "substitutes": []
+        }
+      ],
+      "events": [
+        {
+          "time": "4'",
+          "team": {
+            "name": "KuPS"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "V. R. Gasc · Asist: T. Jyry · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "31'",
+          "team": {
+            "name": "KuPS"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "T. Hamalainen · Yellow Card",
+          "comments": "Tripping"
+        },
+        {
+          "time": "43'",
+          "team": {
+            "name": "Universitatea Craiova"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "S. Nsimba · Penalty",
+          "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "KuPS"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "T. Hamalainen · Asist: C. Antwi · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "48'",
+          "team": {
+            "name": "KuPS"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "J. J. Moreno Ciorciari · Yellow Card",
+          "comments": "Tripping"
+        },
+        {
+          "time": "52'",
+          "team": {
+            "name": "Universitatea Craiova"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "D. Matei · Yellow Card",
+          "comments": "Holding"
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Universitatea Craiova"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "S. Nsimba · Asist: A. Al Hamlawi · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Universitatea Craiova"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "D. Matei · Asist: M. Etim · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "62'",
+          "team": {
+            "name": "Universitatea Craiova"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "C. Mora · Asist: A. Al Hamlawi · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "65'",
+          "team": {
+            "name": "KuPS"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "K. Adams · Yellow Card",
+          "comments": "Tripping"
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "KuPS"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "J. J. Moreno Ciorciari · Asist: P. Parzyszek · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "KuPS"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "V. R. Gasc · Asist: J. Luyeye-Lutumba · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "Universitatea Craiova"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "N. Bancu · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "KuPS"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "A. Puukko · Asist: S. Savolainen · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "80'",
+          "team": {
+            "name": "Universitatea Craiova"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "S. Baiaram · Asist: Heriberto Tavares · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "80'",
+          "team": {
+            "name": "Universitatea Craiova"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "A. Cicaldau · Asist: T. Baluta · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "90+1'",
+          "team": {
+            "name": "Universitatea Craiova"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "A. Mekvabishvili · Asist: Teles · Substitution 5",
+          "comments": ""
+        }
+      ],
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 62' C. Mora tarafından kaydedildi. Kulübeler oyuna müdahale etti; 9 oyuncu değişikliği kayda geçti. Skor üstünlüğü Universitatea Craiova tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "62'",
+            "text": "Son gol 62' C. Mora tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "9 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 9 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "2-1",
+            "text": "Universitatea Craiova skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 17,
+        "dataPoints": 3,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      }
     },
     {
       "id": "gornik-zabrze-ferencvarosi-tc-2026-08-13",
@@ -93235,14 +95036,14 @@
       "awayTeam": "Ferencvarosi TC",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/340.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/651.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 17,
-      "elapsed": 17,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93260,8 +95061,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93282,14 +95083,14 @@
       "awayTeam": "Red Bull Salzburg",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3403.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/571.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 18,
-      "elapsed": 18,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
-        "away": 0,
+        "home": 3,
+        "away": 3,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93307,8 +95108,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93322,18 +95123,18 @@
       "providerId": "1607605",
       "league": "UEFA Europa Conference League",
       "round": null,
-      "venue": "Stadion Beroe",
+      "venue": "Beroe Stadium",
       "kickoff": "2026-08-13T20:00:00+03:00",
       "time": "20:00",
       "homeTeam": "Dinamo Minsk",
       "awayTeam": "SC Braga",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/394.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/217.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 16,
-      "elapsed": 16,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
         "away": 0,
@@ -93354,8 +95155,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93369,21 +95170,21 @@
       "providerId": "1607606",
       "league": "UEFA Europa Conference League",
       "round": null,
-      "venue": null,
+      "venue": "MOL Arena",
       "kickoff": "2026-08-13T20:00:00+03:00",
       "time": "20:00",
       "homeTeam": "Dunajska Streda",
       "awayTeam": "Twente",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2257.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/415.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 17,
-      "elapsed": 17,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
-        "away": 1,
+        "home": 3,
+        "away": 3,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93401,8 +95202,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93423,14 +95224,14 @@
       "awayTeam": "Raków Częstochowa",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/363.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3491.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 18,
-      "elapsed": 18,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
-        "away": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93448,8 +95249,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93470,14 +95271,14 @@
       "awayTeam": "Bohemians",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/397.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3840.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 17,
-      "elapsed": 17,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 3,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93495,8 +95296,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93510,21 +95311,21 @@
       "providerId": "1607616",
       "league": "UEFA Europa Conference League",
       "round": null,
-      "venue": "Mezokovesdi Varosi Stadion",
+      "venue": "Mezőkövesdi Városi Stadion",
       "kickoff": "2026-08-13T20:00:00+03:00",
       "time": "20:00",
       "homeTeam": "ML Vitebsk",
       "awayTeam": "Borac Banja Luka",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/7808.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3364.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 18,
-      "elapsed": 18,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "PEN",
+      "minute": 120,
+      "elapsed": 120,
+      "live": false,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 2,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93542,8 +95343,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93564,13 +95365,13 @@
       "awayTeam": "Valur Reykjavik",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/398.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/274.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 18,
-      "elapsed": 18,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
+        "home": 5,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -93589,8 +95390,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93604,21 +95405,21 @@
       "providerId": "1607628",
       "league": "UEFA Europa Conference League",
       "round": null,
-      "venue": "Romssa Arena",
+      "venue": "Alfheim",
       "kickoff": "2026-08-13T20:00:00+03:00",
       "time": "20:00",
       "homeTeam": "Tromso",
       "awayTeam": "CFR 1907 Cluj",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/325.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/2246.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 18,
-      "elapsed": 18,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
-        "away": 0,
+        "home": 2,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93636,8 +95437,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93651,21 +95452,21 @@
       "providerId": "1607184",
       "league": "UEFA Europa League",
       "round": null,
-      "venue": null,
+      "venue": "Víkingsvollur Stadium",
       "kickoff": "2026-08-13T20:30:00+03:00",
       "time": "20:30",
       "homeTeam": "Vikingur Reykjavik",
       "awayTeam": "FC Thun",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/278.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1012.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 3,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93683,8 +95484,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93698,21 +95499,21 @@
       "providerId": "1607619",
       "league": "UEFA Europa Conference League",
       "round": null,
-      "venue": null,
+      "venue": "Djúpumýra",
       "kickoff": "2026-08-13T20:30:00+03:00",
       "time": "20:30",
       "homeTeam": "NSI Runavik",
       "awayTeam": "FC Lugano",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/682.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/606.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 2,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93730,8 +95531,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93752,14 +95553,14 @@
       "awayTeam": "Inter Turku",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/660.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1164.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 2,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93777,8 +95578,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93799,14 +95600,14 @@
       "awayTeam": "Huesca",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/714.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/726.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "PEN",
+      "minute": 120,
+      "elapsed": 120,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 2,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93824,8 +95625,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93846,14 +95647,14 @@
       "awayTeam": "Tre Fiori",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/14281.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/2260.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 5,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93871,8 +95672,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93886,21 +95687,21 @@
       "providerId": "1607568",
       "league": "UEFA Europa League",
       "round": null,
-      "venue": "National Stadium Vasil Levski",
+      "venue": "Vasil Levski National Stadium",
       "kickoff": "2026-08-13T21:00:00+03:00",
       "time": "21:00",
       "homeTeam": "CSKA Sofia",
       "awayTeam": "Maccabi Tel Aviv",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/853.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/604.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 3,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93918,8 +95719,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93933,21 +95734,21 @@
       "providerId": "1607623",
       "league": "UEFA Europa Conference League",
       "round": null,
-      "venue": "National Arena Toshe Proeski",
+      "venue": "Toše Proeski Arena",
       "kickoff": "2026-08-13T21:00:00+03:00",
       "time": "21:00",
       "homeTeam": "Shkendija",
       "awayTeam": "Hibernian",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/609.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/249.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93965,8 +95766,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93980,21 +95781,21 @@
       "providerId": "1607626",
       "league": "UEFA Europa Conference League",
       "round": null,
-      "venue": "Kybunpark",
+      "venue": "Sitterstadion",
       "kickoff": "2026-08-13T21:00:00+03:00",
       "time": "21:00",
       "homeTeam": "FC ST. Gallen",
       "awayTeam": "Sheriff Tiraspol",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/1011.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/568.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 5,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -94012,8 +95813,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94034,14 +95835,14 @@
       "awayTeam": "Mirandes",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9570.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/799.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -94059,8 +95860,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94074,21 +95875,21 @@
       "providerId": "1607624",
       "league": "UEFA Europa Conference League",
       "round": null,
-      "venue": "Stade de Tourbillon",
+      "venue": "Tourbillon",
       "kickoff": "2026-08-13T21:15:00+03:00",
       "time": "21:15",
       "homeTeam": "FC Sion",
       "awayTeam": "FC Noah",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/630.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3684.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 2,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -94106,8 +95907,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94121,21 +95922,21 @@
       "providerId": "1598831",
       "league": "UEFA Europa League",
       "round": null,
-      "venue": "Ibrox Stadium",
+      "venue": "Ibrox",
       "kickoff": "2026-08-13T21:30:00+03:00",
       "time": "21:30",
       "homeTeam": "Rangers",
       "awayTeam": "Jagiellonia",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/257.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/336.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -94153,8 +95954,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94175,14 +95976,14 @@
       "awayTeam": "PAOK",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/554.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/619.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 3,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -94200,8 +96001,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94222,14 +96023,14 @@
       "awayTeam": "Beitar Jerusalem",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/601.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/657.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "PEN",
+      "minute": 120,
+      "elapsed": 120,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -94247,8 +96048,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94269,14 +96070,14 @@
       "awayTeam": "IFK Goteborg",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/631.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/366.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -94294,8 +96095,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94316,14 +96117,14 @@
       "awayTeam": "Riga",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2402.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/10124.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -94341,8 +96142,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94363,14 +96164,14 @@
       "awayTeam": "HJK Helsinki",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/256.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/649.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 2,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -94388,8 +96189,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94410,14 +96211,14 @@
       "awayTeam": "Benfica",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/254.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/211.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -94435,8 +96236,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94457,14 +96258,14 @@
       "awayTeam": "Ajax",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3854.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/194.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 2,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -94482,8 +96283,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94504,14 +96305,14 @@
       "awayTeam": "Shamrock Rovers",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3327.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/652.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 5,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -94529,8 +96330,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94551,14 +96352,14 @@
       "awayTeam": "Auda",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3326.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/4135.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 4,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -94576,8 +96377,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94598,6 +96399,53 @@
       "awayTeam": "FK Zalgiris Vilnius",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/608.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/586.png",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
+      "score": {
+        "home": 4,
+        "away": 0,
+        "halftimeHome": null,
+        "halftimeAway": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1607611"
+      },
+      "competitionId": "konferans-ligi"
+    },
+    {
+      "id": "ki-klaksvik-lech-poznan-2026-08-13",
+      "providerId": "1607181",
+      "league": "UEFA Europa League",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-13T22:45:00+03:00",
+      "time": "22:45",
+      "homeTeam": "KI Klaksvik",
+      "awayTeam": "Lech Poznan",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/701.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/347.png",
       "status": "SCHEDULED",
       "providerStatus": "NS",
       "minute": null,
@@ -94623,55 +96471,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-12T21:08:44.073Z",
-      "staleAfter": "2026-08-12T21:13:44.073Z",
-      "dataStatus": "provider",
-      "needsReview": false,
-      "resource": "matches",
-      "providerIds": {
-        "apiFootball": "1607611"
-      },
-      "competitionId": "konferans-ligi"
-    },
-    {
-      "id": "ki-klaksvik-lech-poznan-2026-08-13",
-      "providerId": "1607181",
-      "league": "UEFA Europa League",
-      "round": null,
-      "venue": null,
-      "kickoff": "2026-08-13T22:45:00+03:00",
-      "time": "22:45",
-      "homeTeam": "KI Klaksvik",
-      "awayTeam": "Lech Poznan",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/701.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/347.png",
-      "status": "POSTPONED",
-      "providerStatus": "PST",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
-      "score": {
-        "home": null,
-        "away": null,
-        "halftimeHome": null,
-        "halftimeAway": null
-      },
-      "homeForm": null,
-      "awayForm": null,
-      "homeMomentum": null,
-      "awayMomentum": null,
-      "momentum": {
-        "side": "neutral",
-        "value": null
-      },
-      "aiPrediction": null,
-      "goalExpectation": null,
-      "goalPotential": null,
-      "risk": null,
-      "source": "api-football",
-      "providerName": "api-football",
-      "fetchedAt": "2026-08-13T17:18:00.554Z",
-      "staleAfter": "2026-08-13T17:23:00.554Z",
+      "fetchedAt": "2026-08-13T23:07:33.442Z",
+      "staleAfter": "2026-08-13T23:12:33.442Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94699,7 +96500,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -94715,8 +96518,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94744,7 +96547,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -94760,8 +96565,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94789,7 +96594,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -94805,8 +96612,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94834,7 +96641,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -94850,8 +96659,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94879,7 +96688,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -94895,8 +96706,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94924,7 +96735,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -94940,8 +96753,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -94951,17 +96764,17 @@
       "competitionId": "premier-league"
     },
     {
-      "id": "epitsentr-dunayivtsi-veres-rivne-2026-08-14",
-      "providerId": "1565450",
+      "id": "neftchi-abdish-ata-2026-08-14",
+      "providerId": "1623348",
       "league": "Premier League",
-      "round": 3,
-      "venue": "Tonkocheyev Stadium",
-      "kickoff": "2026-08-14T18:00:00+03:00",
-      "time": "18:00",
-      "homeTeam": "Epitsentr Dunayivtsi",
-      "awayTeam": "Veres Rivne",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/14434.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/6501.png",
+      "round": 19,
+      "venue": null,
+      "kickoff": "2026-08-14T17:30:00+03:00",
+      "time": "17:30",
+      "homeTeam": "Neftchi",
+      "awayTeam": "Abdish-Ata",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/12240.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/12234.png",
       "status": "SCHEDULED",
       "providerStatus": "NS",
       "minute": null,
@@ -94985,8 +96798,100 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1623348"
+      },
+      "competitionId": "premier-league"
+    },
+    {
+      "id": "ozgon-oshmu-aldier-2026-08-14",
+      "providerId": "1623349",
+      "league": "Premier League",
+      "round": 19,
+      "venue": null,
+      "kickoff": "2026-08-14T17:30:00+03:00",
+      "time": "17:30",
+      "homeTeam": "Ozgon",
+      "awayTeam": "OshMU Aldier",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/25767.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/21168.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1623349"
+      },
+      "competitionId": "premier-league"
+    },
+    {
+      "id": "epitsentr-dunayivtsi-veres-rivne-2026-08-14",
+      "providerId": "1565450",
+      "league": "Premier League",
+      "round": 3,
+      "venue": "Tonkocheyev Stadium",
+      "kickoff": "2026-08-14T18:00:00+03:00",
+      "time": "18:00",
+      "homeTeam": "Epitsentr Dunayivtsi",
+      "awayTeam": "Veres Rivne",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/14434.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/6501.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95014,7 +96919,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95030,8 +96937,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95059,7 +96966,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95075,8 +96984,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95104,7 +97013,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95120,8 +97031,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95149,7 +97060,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95165,8 +97078,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95194,7 +97107,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95210,8 +97125,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95239,7 +97154,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95255,8 +97172,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95284,7 +97201,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95300,8 +97219,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95329,7 +97248,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95345,8 +97266,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95374,7 +97295,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95390,8 +97313,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95471,7 +97394,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95487,8 +97412,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95516,7 +97441,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95532,8 +97459,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95561,7 +97488,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95577,8 +97506,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95606,7 +97535,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95622,8 +97553,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95651,7 +97582,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95667,8 +97600,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95696,7 +97629,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95712,8 +97647,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95741,7 +97676,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95757,8 +97694,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95786,7 +97723,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95802,8 +97741,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95831,7 +97770,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95847,8 +97788,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95876,7 +97817,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95892,8 +97835,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95921,7 +97864,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95937,8 +97882,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -95966,7 +97911,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -95982,8 +97929,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -96011,7 +97958,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -96027,8 +97976,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -96056,7 +98005,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -96072,8 +98023,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -96101,7 +98052,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -96117,8 +98070,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T04:07:31.611Z",
-      "staleAfter": "2026-08-13T04:12:31.611Z",
+      "fetchedAt": "2026-08-13T23:07:33.820Z",
+      "staleAfter": "2026-08-13T23:12:33.820Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
