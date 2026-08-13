@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-12T23:06:46.450Z",
+  "updatedAt": "2026-08-13T00:03:12.616Z",
   "matchCount": 330,
   "records": [
     {
@@ -32,10 +32,10 @@
       "winner": "Real Madrid",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -43,9 +43,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 21
         },
         "statistics": {
           "present": false,
@@ -65,19 +65,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 21,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -95,11 +91,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "7340ba99909766d1",
-      "fingerprint": "7340ba99909766d1",
+      "analysisSourceHash": "9bd5c156789dae4d",
+      "fingerprint": "9bd5c156789dae4d",
       "analysisGeneratedAt": "2026-08-12T21:08:52.746Z",
-      "analysisUpdatedAt": "2026-08-12T21:08:52.746Z",
-      "generatedAt": "2026-08-12T21:08:52.746Z",
+      "analysisUpdatedAt": "2026-08-13T00:03:12.578Z",
+      "generatedAt": "2026-08-13T00:03:12.578Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -127,15 +123,62 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "22'",
+              "team": "Deportivo La Coruna",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            },
+            {
+              "minute": "29'",
+              "team": "Real Madrid",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "45+1'",
+              "team": "Real Madrid",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 3 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "82'",
+              "team": "Real Madrid",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "decisive": false
+            },
+            {
+              "minute": "86'",
+              "team": "Real Madrid",
+              "type": "subst",
+              "detail": "Substitution 6",
+              "decisive": false
+            },
+            {
+              "minute": "90'",
+              "team": "Real Madrid",
+              "type": "subst",
+              "detail": "Substitution 7",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -146,20 +189,33 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (18 olay).",
+            "İkinci yarı içinde 16 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "22' Deportivo La Coruna değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Deportivo La Coruna değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Deportivo La Coruna değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Deportivo La Coruna değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Real Madrid değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Real Madrid değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -191,10 +247,15 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -614,10 +675,10 @@
       "winner": "Nottingham Forest",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -625,9 +686,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 24
         },
         "statistics": {
           "present": false,
@@ -647,19 +708,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 24,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -677,11 +734,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "7eb9a6fd729546a9",
-      "fingerprint": "7eb9a6fd729546a9",
+      "analysisSourceHash": "7e5537df079131f5",
+      "fingerprint": "7e5537df079131f5",
       "analysisGeneratedAt": "2026-08-12T20:50:23.040Z",
-      "analysisUpdatedAt": "2026-08-12T20:50:23.040Z",
-      "generatedAt": "2026-08-12T20:50:23.040Z",
+      "analysisUpdatedAt": "2026-08-13T00:03:12.578Z",
+      "generatedAt": "2026-08-13T00:03:12.578Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -709,15 +766,62 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "4'",
+              "team": "Nottingham Forest",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "33'",
+              "team": "Bayer Leverkusen",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "46'",
+              "team": "Nottingham Forest",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 3 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "79'",
+              "team": "Bayer Leverkusen",
+              "type": "subst",
+              "detail": "Substitution 9",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Bayer Leverkusen",
+              "type": "subst",
+              "detail": "Substitution 10",
+              "decisive": false
+            },
+            {
+              "minute": "90'",
+              "team": "Nottingham Forest",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -728,20 +832,32 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (22 olay).",
+            "İkinci yarı içinde 21 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "46' Nottingham Forest değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Nottingham Forest değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Nottingham Forest değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Nottingham Forest değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Nottingham Forest değişikliği (Substitution 5). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Nottingham Forest değişikliği (Substitution 6). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -773,10 +889,15 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -808,10 +929,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -819,9 +940,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 36
         },
         "statistics": {
           "present": false,
@@ -841,19 +962,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 36,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -871,11 +988,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "5329ee86252e72db",
-      "fingerprint": "5329ee86252e72db",
+      "analysisSourceHash": "1ba92e55e68fb0a0",
+      "fingerprint": "1ba92e55e68fb0a0",
       "analysisGeneratedAt": "2026-08-12T20:50:23.040Z",
-      "analysisUpdatedAt": "2026-08-12T20:50:23.040Z",
-      "generatedAt": "2026-08-12T20:50:23.040Z",
+      "analysisUpdatedAt": "2026-08-13T00:03:12.578Z",
+      "generatedAt": "2026-08-13T00:03:12.578Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -900,18 +1017,72 @@
           "label": "Penaltı atışlarıyla belirlendi",
           "wentToExtraTime": true,
           "decidedOnPenalties": true,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 10
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "32'",
+              "team": "Arsenal",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            },
+            {
+              "minute": "32'",
+              "team": "Arsenal",
+              "type": "subst",
+              "detail": "Substitution 2",
+              "pivotal": false
+            },
+            {
+              "minute": "33'",
+              "team": "Arsenal",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 12 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "81'",
+              "team": "Como",
+              "type": "subst",
+              "detail": "Substitution 11",
+              "decisive": false
+            },
+            {
+              "minute": "88'",
+              "team": "Arsenal",
+              "type": "subst",
+              "detail": "Substitution 13",
+              "decisive": false
+            },
+            {
+              "minute": "120+1'",
+              "team": "Como",
+              "type": "Goal",
+              "detail": "Penalty",
+              "decisive": false
+            },
+            {
+              "minute": "120+1'",
+              "team": "Arsenal",
+              "type": "Goal",
+              "detail": "Penalty",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -922,20 +1093,33 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (32 olay).",
+            "İkinci yarı içinde 22 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "32' Arsenal değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "32' Arsenal değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Como değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Arsenal değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Arsenal değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Arsenal değişikliği (Substitution 5). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -967,10 +1151,15 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -1584,10 +1773,10 @@
       "winner": "Eintracht Frankfurt",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -1595,9 +1784,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 6
         },
         "statistics": {
           "present": false,
@@ -1617,19 +1806,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 6,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -1647,11 +1832,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "71929e27583b1356",
-      "fingerprint": "71929e27583b1356",
+      "analysisSourceHash": "02f7ccb1436542eb",
+      "fingerprint": "02f7ccb1436542eb",
       "analysisGeneratedAt": "2026-08-12T19:20:22.174Z",
-      "analysisUpdatedAt": "2026-08-12T19:20:22.174Z",
-      "generatedAt": "2026-08-12T19:20:22.174Z",
+      "analysisUpdatedAt": "2026-08-13T00:03:12.578Z",
+      "generatedAt": "2026-08-13T00:03:12.578Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1679,15 +1864,48 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "21'",
+              "team": "Eintracht Frankfurt",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "23'",
+              "team": "Eintracht Frankfurt",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "33'",
+              "team": "Eintracht Frankfurt",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "Eintracht Frankfurt",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -1698,13 +1916,17 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı dengeli bir olay akışı üretti (3 olay)."
+          ],
           "goals": 0
         },
         "coaching": {
@@ -1743,10 +1965,14 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -1778,10 +2004,10 @@
       "winner": "Everton",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -1789,9 +2015,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 21
         },
         "statistics": {
           "present": false,
@@ -1811,19 +2037,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 21,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -1841,11 +2063,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "b517d4acf17b5054",
-      "fingerprint": "b517d4acf17b5054",
+      "analysisSourceHash": "021a47ae3e6f6ffe",
+      "fingerprint": "021a47ae3e6f6ffe",
       "analysisGeneratedAt": "2026-08-12T18:13:00.714Z",
-      "analysisUpdatedAt": "2026-08-12T18:13:00.714Z",
-      "generatedAt": "2026-08-12T18:13:00.714Z",
+      "analysisUpdatedAt": "2026-08-13T00:03:12.578Z",
+      "generatedAt": "2026-08-13T00:03:12.578Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1873,15 +2095,62 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "27'",
+              "team": "Everton",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "36'",
+              "team": "Everton",
+              "type": "Goal",
+              "detail": "Penalty",
+              "pivotal": false
+            },
+            {
+              "minute": "46'",
+              "team": "Newcastle",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 3 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "82'",
+              "team": "Everton",
+              "type": "subst",
+              "detail": "Substitution 6",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Everton",
+              "type": "subst",
+              "detail": "Substitution 7",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "Newcastle",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -1892,20 +2161,32 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (19 olay).",
+            "İkinci yarı içinde 16 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "46' Newcastle değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Newcastle değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Newcastle değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Newcastle değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Newcastle değişikliği (Substitution 5). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Newcastle değişikliği (Substitution 6). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1937,10 +2218,15 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
