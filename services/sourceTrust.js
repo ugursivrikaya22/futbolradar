@@ -63,6 +63,8 @@ const OFFICIAL_DOMAINS = Object.freeze([
   "gaziantepfk.com.tr",
   "corumfk.org.tr",
   "erzurumspor.org.tr",
+  "genclerbirligi.org.tr",
+  "caykurrizespor.org.tr",
 
   // Türkiye — federasyon ve lig
   "tff.org",

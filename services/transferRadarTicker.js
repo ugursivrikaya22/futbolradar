@@ -25,15 +25,15 @@
  *     kaydın yeni olduğuna dair bir kanıt değildir.
  *   • Bant boşsa boş kalır; yer doldurmak için eski kayıt öne çekilmez.
  *
- * "SON DAKİKA" BİR ZAMAN İDDİASIDIR. Üç günden eski kayıt banttan atılmaz —
- * transfer bilgisi eskiyince yanlış olmaz, yalnızca "son dakika" olmaktan
- * çıkar. O kayıt kendi tarihiyle gösterilir.
+ * "SON DAKİKA" BİR ZAMAN İDDİASIDIR. Bant yalnızca son üç günün doğrulanmış
+ * hareketlerini gösterir. Daha eski kayıt ana transfer veri tabanında kalır,
+ * fakat güncel akışa geri sokulmaz.
  */
 
 // "Resmî" rozeti kaynak gerektirir; kural services/sourceTrust.js.
 const { hasOfficialSource } = require("./sourceTrust");
 
-/** Üç gün. Bu pencerenin dışındaki kayıt tarihiyle gösterilir. */
+/** Üç gün. Bu pencerenin dışındaki kayıt güncel bantta gösterilmez. */
 const BREAKING_WINDOW_MS = 3 * 24 * 60 * 60 * 1000;
 
 /** Bantta en fazla kaç kayıt? Kayan bir şerit liste değildir. */
@@ -157,11 +157,14 @@ function selectTickerRecords(payload, options = {}) {
       if (!playerName || !toTeam || !fromTeam) return null;
 
       const stamp = stampOf(record);
+      const age = nowMs - stamp;
+      if (stamp <= 0 || age < 0 || age > BREAKING_WINDOW_MS) return null;
+
       return {
         playerName,
         toTeam,
         fromTeam,
-        isBreaking: stamp > 0 && (nowMs - stamp) <= BREAKING_WINDOW_MS,
+        isBreaking: true,
         dateLabel: stamp > 0
           ? new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "Europe/Istanbul" })
             .format(new Date(stamp))

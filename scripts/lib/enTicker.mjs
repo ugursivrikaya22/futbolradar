@@ -31,6 +31,8 @@ const TRANSFER_TYPE_EN = Object.freeze({
   "serbest transfer": "Free transfer",
   "sozlesme sonu": "End of contract",
   "sözleşme sonu": "End of contract",
+  "sozlesme feshi": "Contract termination",
+  "sözleşme feshi": "Contract termination",
   "kiralik": "Loan",
   "kiralık": "Loan",
   "bonservisli transfer": "Permanent transfer",
@@ -49,6 +51,12 @@ function readJson(file, fallback) {
 
 export function transferTypeEn(value) {
   return TRANSFER_TYPE_EN[String(value || "").trim().toLowerCase()] || null;
+}
+
+/** Kulüp adları aynen kalır; kulüp olmayan kadro durumu çevrilir. */
+export function transferTeamEn(value) {
+  const team = String(value || "").trim();
+  return team.toLocaleLowerCase("tr-TR") === "serbest oyuncu" ? "Free agent" : team;
 }
 
 function todayIstanbul() {
@@ -73,7 +81,7 @@ export function buildEnTickerItems() {
     const type = transferTypeEn(row.type);
     items.push({
       label: "Transfer",
-      text: `${row.playerName} joins ${row.toTeam}${type ? ` (${type})` : ""}`,
+      text: `${row.playerName} joins ${transferTeamEn(row.toTeam)}${type ? ` (${type})` : ""}`,
       href: row.sourceUrl || null
     });
   }

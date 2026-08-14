@@ -11165,9 +11165,8 @@
     // göre sıralanıp ilk 12'si alındığı için iki ay önce açıklanmış bir
     // transfer de ana sayfanın en üstünde "BREAKING" olarak duruyordu.
     // Eski haberi güncel gelişme gibi göstermek, bandın anlatmaya çalıştığı
-    // şeyin tam tersi. Bu eşiğin dışında kalan kayıt banttan atılmaz —
-    // tarihiyle gösterilir, çünkü transfer bilgisi eskiyince yanlış olmaz,
-    // yalnızca "son dakika" olmaktan çıkar.
+    // şeyin tam tersi. Bu eşiğin dışında kalan kayıt ana transfer veri
+    // tabanında kalır, fakat güncel ana sayfa bandında gösterilmez.
     var BREAKING_WINDOW_MS = 3 * 24 * 60 * 60 * 1000;
 
     function clubPriority(record) {
@@ -11220,6 +11219,10 @@
       if (!playerName || !toTeam || !fromTeam) return null;
       var date = record.date || record.publishedAt || record.lastVerifiedAt || record.updatedAt || "";
       var parsed = date ? Date.parse(date) : NaN;
+      var age = Date.now() - parsed;
+      // Ana sayfa Transfer Radarı yalnızca son üç günün doğrulanmış
+      // hareketlerini taşır. Eski kayıt ana veri tabanında kalır.
+      if (!Number.isFinite(parsed) || age < 0 || age > BREAKING_WINDOW_MS) return null;
       return {
         playerName: playerName,
         toTeam: toTeam,
@@ -11227,7 +11230,7 @@
         date: date,
         // Tarihi okunamayan kayıt "yeni" SAYILMAZ: bilinmeyen tarih,
         // son dakika olduğuna dair bir kanıt değil.
-        isBreaking: Number.isFinite(parsed) && (Date.now() - parsed) <= BREAKING_WINDOW_MS,
+        isBreaking: true,
         dateLabel: Number.isFinite(parsed)
           ? new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "short", timeZone: "Europe/Istanbul" }).format(new Date(parsed))
           : "",

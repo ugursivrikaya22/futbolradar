@@ -32,7 +32,7 @@ import {
   sectionHead,
   transferWatchShell
 } from "./lib/matchCards.mjs";
-import { transferTypeEn } from "./lib/enTicker.mjs";
+import { transferTeamEn, transferTypeEn } from "./lib/enTicker.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 
 const require = createRequire(import.meta.url);
@@ -263,13 +263,18 @@ function pageHtml(team, slugValue) {
           leader: {
             playerName: leader.playerName,
             date: leader.date,
-            fromTeam: leader.fromTeam,
-            toTeam: leader.toTeam,
+            fromTeam: transferTeamEn(leader.fromTeam),
+            toTeam: transferTeamEn(leader.toTeam),
             sourceUrl: leader.sourceUrl,
             typeLabel: `${incoming ? "In" : "Out"} · ${transferTypeEn(leader.type) || label("transfer.fallbackType")}`
           },
           allHref: null,
-          rows: teamMoves.slice(1).map((row) => ({ ...row, href: "../teams.html" }))
+          rows: teamMoves.slice(1).map((row) => ({
+            ...row,
+            fromTeam: transferTeamEn(row.fromTeam),
+            toTeam: transferTeamEn(row.toTeam),
+            href: "../teams.html"
+          }))
         })}</div>
       </section>`;
     })()

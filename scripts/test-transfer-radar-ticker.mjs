@@ -55,15 +55,9 @@ const old = new Date(NOW - 30 * 24 * 60 * 60 * 1000).toISOString();
 
   const byName = Object.fromEntries(items.map((item) => [item.playerName, item]));
   assert.equal(byName["Yeni"].isBreaking, true, "pencere içindeki kayıt son dakika olmalı");
-  assert.equal(byName["Eski"].isBreaking, false, "eski kayıt son dakika olmamalı");
-  assert.equal(byName["Eski"].dateLabel.length > 0, true, "eski kayıt tarihiyle gösterilmeli");
-
-  // Bilinmeyen tarih, kaydın yeni olduğuna dair bir KANIT DEĞİL.
-  assert.equal(byName["Tarihsiz"].isBreaking, false, "tarihi okunamayan kayıt son dakika sayılmamalı");
-  assert.equal(byName["Tarihsiz"].dateLabel, "", "tarihi olmayan kayda tarih uydurulmamalı");
-
-  // Eski kayıt banttan ATILMAZ: eskiyen transfer yanlış olmaz.
-  assert.equal(items.length, 3, "eski kayıt banttan atılmamalı, yalnızca rozeti değişmeli");
+  assert.equal(byName["Eski"], undefined, "üç günden eski kayıt güncel banda girmemeli");
+  assert.equal(byName["Tarihsiz"], undefined, "tarihi bilinmeyen kayıt güncel banda girmemeli");
+  assert.equal(items.length, 1, "ana sayfa bandı yalnızca son üç günü göstermeli");
 
   // Pencerenin tam sınırı da "içeride" sayılır.
   const edge = selectTickerRecords([{
@@ -242,8 +236,8 @@ console.log(
   assert.equal(hasOfficialSource({ sourceUrl: "https://www.sporx.com/x" }), false, "haber sitesi resmî sayılmamalı");
 
   // Durum indirmesi
-  const clubAnnounced = { playerName: "A", toTeam: "Galatasaray", fromTeam: "X", status: "resmi", sourceUrl: "https://www.galatasaray.org/x" };
-  const pressReported = { playerName: "B", toTeam: "Fenerbahçe", fromTeam: "Y", status: "resmi", sourceUrl: "https://www.aa.com.tr/x" };
+  const clubAnnounced = { playerName: "A", toTeam: "Galatasaray", fromTeam: "X", status: "resmi", date: recent, sourceUrl: "https://www.galatasaray.org/x" };
+  const pressReported = { playerName: "B", toTeam: "Fenerbahçe", fromTeam: "Y", status: "resmi", date: recent, sourceUrl: "https://www.aa.com.tr/x" };
 
   assert.equal(transferStatusKey(clubAnnounced), "Official", "kulüp duyurduysa resmîdir");
   assert.equal(

@@ -33,6 +33,12 @@ function normalizeText(value) {
     .trim();
 }
 
+function sameTeam(left, right) {
+  const a = normalizeText(left);
+  const b = normalizeText(right);
+  return Boolean(a && b && (a === b || a.includes(b) || b.includes(a)));
+}
+
 for (const [index, transfer] of transfers.entries()) {
   const label = transfer.id || `index:${index}`;
   for (const field of requiredText) {
@@ -57,7 +63,7 @@ for (const team of teams) {
   for (const recent of team.recentTransfers || []) {
     const matching = transfers.find((transfer) => {
       if (transfer.playerName !== recent.playerName || transfer.date !== recent.date) return false;
-      return recent.direction === "out" ? transfer.fromTeam === team.name : transfer.toTeam === team.name;
+      return recent.direction === "out" ? sameTeam(transfer.fromTeam, team.name) : sameTeam(transfer.toTeam, team.name);
     });
     if (!matching) warnings.push(`${team.name}: ${recent.playerName} son transfer kaydı ana transfer listesinde bulunamadı.`);
   }
@@ -70,7 +76,7 @@ for (const transfer of transfers) {
   ];
 
   for (const related of relatedTeams) {
-    const team = teams.find((item) => normalizeText(item.name) === normalizeText(related.name));
+    const team = teams.find((item) => sameTeam(item.name, related.name));
     if (!team) continue;
 
     const matching = (team.recentTransfers || []).find((recent) =>

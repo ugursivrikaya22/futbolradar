@@ -47,6 +47,7 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "fenermedia.com",
     "bjk.com.tr",
     "trabzonspor.org.tr",
+    "genclerbirligi.org.tr",
     "ibfk.com.tr",
     "konyaspor.org.tr",
     "caykurrizespor.org.tr",
@@ -91,6 +92,7 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
   // (yabancı oyuncunun kendi ülkesindeki gazete, Avrupa kupası özetleri)
   // birincil yayına atıf yapılabilsin diye ayrı tutuluyor.
   international: Object.freeze([
+    "reuters.com",
     "espn.com",
     "aljazeera.com",
     "vanguardngr.com"
