@@ -47,6 +47,9 @@ export const POSTPROCESS_CHAIN = [
   // Maç dosyası tanıtım kutusu da saate bağlı: penceresi kapanınca kutu
   // kendiliğinden düşsün diye her derlemede yeniden değerlendirilir.
   { id: "match-special", script: "inject-match-special.mjs", args: [], timeoutMinutes: 5 },
+  // Favicon bildirimi kök-mutlak ve tek biçimli olmalı: 16 üretici kendi
+  // göreli satırını basıyor, bu adım onları söküp tek bloğu koyuyor.
+  { id: "favicon", script: "inject-favicon.mjs", args: [], timeoutMinutes: 8 },
   { id: "theme-boot", script: "inject-theme-boot.mjs", args: [], timeoutMinutes: 5 },
   { id: "analytics", script: "inject-ga4.mjs", args: [], timeoutMinutes: 5 },
   { id: "site-verification", script: "inject-site-verification.mjs", args: [], timeoutMinutes: 5 },

@@ -226,7 +226,7 @@ export function columnPageHtml(column) {
       "@type": "Organization",
       name: "FutbolRadar",
       url: `${DOMAIN}/`,
-      logo: `${DOMAIN}/favicon.svg`
+      logo: `${DOMAIN}/favicon-512x512.png`
     },
     articleSection: column.categoryLabel,
     keywords: column.tags.join(", "),
