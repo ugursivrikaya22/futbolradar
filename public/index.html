@@ -24,7 +24,7 @@
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
-    <link rel="stylesheet" href="./page.css?v=2f03f25e" />
+    <link rel="stylesheet" href="./page.css?v=3ffe8e70" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -79,7 +79,7 @@
               <span class="theme-toggle-label">Koyu Tema</span>
             </button>
           </div>
-          <form class="site-search" role="search" method="get" action="./oyuncu-radari.html" data-search-base="./" autocomplete="off">
+          <form class="site-search" role="search" method="get" action="./oyuncu-radari.html" data-search-base="./" data-search-locale="tr" autocomplete="off">
             <span class="site-search-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></span>
             <input class="site-search-input" type="search" name="search" placeholder="Takım, oyuncu ara" aria-label="Sitede ara" aria-expanded="false" aria-controls="site-search-results" role="combobox" />
             <button class="site-search-clear" type="button" aria-label="Aramayı temizle" hidden>×</button>
@@ -230,6 +230,31 @@
     </div>
     </div><div class="quick-stats" aria-label="Bugünün maç özeti"><a class="quick-stat" href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>32</b></a><a class="quick-stat" href="./bugunun-maclari.html"><span>Toplam</span><b>32</b></a></div>
 <!-- prerender:featured-match:end -->
+          </div>
+        </section>
+
+        <!-- Tahmin anketi: soru ve seçenekler data/home-polls.json takviminden,
+             oylar Supabase'ten gelir. Blok hidden doğar; site.js /api/home-poll
+             yayında bir anket bildirirse açar. Takvimde anket yoksa hiç görünmez. -->
+        <section class="container section home-poll" id="tahmin-anketi" aria-labelledby="home-poll-title" data-home-poll data-home-poll-source="/api/home-poll" data-home-poll-locale="tr" hidden>
+          <div class="home-poll__inner">
+            <div class="home-poll__head">
+              <span class="home-poll__kicker" data-home-poll-kicker>Okuyucu Anketi</span>
+              <h2 class="home-poll__title" id="home-poll-title" data-home-poll-question></h2>
+              <p class="home-poll__subtitle" data-home-poll-subtitle></p>
+              <p class="home-poll__deadline" data-home-poll-deadline hidden></p>
+            </div>
+            <form class="home-poll__form" data-home-poll-form hidden>
+              <ul class="home-poll__options" data-home-poll-options></ul>
+              <button class="home-poll__submit" type="submit" data-home-poll-submit>Oyunu Ver</button>
+            </form>
+            <p class="home-poll__thanks" data-home-poll-thanks hidden>Teşekkürler! Güncel sonuçlar aşağıda.</p>
+            <ol class="home-poll__results" data-home-poll-results aria-live="polite" hidden></ol>
+            <p class="home-poll__total" data-home-poll-total hidden></p>
+            <p class="home-poll__note" data-home-poll-note="closed" hidden>Bu anket kapandı; sonuçlar kesinleşti.</p>
+            <p class="home-poll__note" data-home-poll-note="community" hidden>Sonuçlar tüm okuyucuların oylarından hesaplanıyor. Her tarayıcı bir kez oy verebilir.</p>
+            <p class="home-poll__note" data-home-poll-note="local" hidden>Oy deposuna ulaşılamadı; aşağıdaki sonuç topluluk ortalaması değil, yalnızca bu tarayıcıda saklanan oydur.</p>
+            <p class="home-poll__disclaimer">Bu bölüm okuyucu tahminidir; sitenin doğrulanmış maç verisinden ayrıdır.</p>
           </div>
         </section>
 
@@ -590,7 +615,7 @@
       </div>
     </footer>
     </div>
-    <script src="./site.js?v=12e56ee4" defer></script>
+    <script src="./site.js?v=5590079d" defer></script>
     <script src="./app.js?v=f1c21f24" defer></script>
     <!-- ANALYSES CARD -->  <div class="analyses-card">
       <h3>Maç Analizleri</h3>

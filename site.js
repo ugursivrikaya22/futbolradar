@@ -168,21 +168,31 @@
       .trim();
   }
 
-  function scoreEntry(entry, needle) {
+  /**
+   * Eşleşme puanı.
+   *
+   * `locale`, ARAYAN SAYFANIN dilidir. Dizin iki dilli sayfaları birlikte
+   * taşıyor; İngilizce bir sayfada arayan okuyucuya İngilizce karşılığı olan
+   * sayfa önce gösterilir. Bu bir SIRALAMA tercihi, bir süzgeç değil: Türkçe
+   * sonuçlar listeden düşmez, çünkü sitenin içeriğinin çoğu orada ve onları
+   * gizlemek aramayı işe yaramaz kılardı.
+   */
+  function scoreEntry(entry, needle, locale) {
     var name = foldTurkish(entry.title);
     var extra = foldTurkish(entry.subtitle);
+    var localeBonus = locale && entry.locale === locale ? 12 : 0;
 
     if (name.indexOf(needle) === 0) {
-      return 100 - name.length;
+      return 100 - name.length + localeBonus;
     }
     if (name.indexOf(" " + needle) > -1) {
-      return 80 - name.length;
+      return 80 - name.length + localeBonus;
     }
     if (name.indexOf(needle) > -1) {
-      return 60 - name.length;
+      return 60 - name.length + localeBonus;
     }
     if (extra.indexOf(needle) > -1) {
-      return 30;
+      return 30 + localeBonus;
     }
 
     return -1;
@@ -202,6 +212,8 @@
     var panel = form.querySelector(".site-search-panel");
     var clear = form.querySelector(".site-search-clear");
     var base = form.getAttribute("data-search-base") || "./";
+    // Arayan sayfanın dili: aynı dildeki sonuçlar öne alınır (süzgeç değil).
+    var searchLocale = form.getAttribute("data-search-locale") || "tr";
 
     if (!input || !panel) {
       return;
@@ -279,7 +291,7 @@
 
         var matches = index
           .map(function (entry) {
-            return { entry: entry, score: scoreEntry(entry, needle) };
+            return { entry: entry, score: scoreEntry(entry, needle, searchLocale) };
           })
           .filter(function (row) {
             return row.score >= 0;
@@ -1175,5 +1187,314 @@
     document.addEventListener("DOMContentLoaded", setupWeeklyWidget);
   } else {
     setupWeeklyWidget();
+  }
+})();
+
+/**
+ * ANA SAYFA TAHMİN ANKETİ.
+ *
+ * Kabuk iki dilde de aynı; soru, seçenekler ve sayım `/api/home-poll`ten
+ * gelir (`data-home-poll-locale` hangi dilde istendiğini söyler). Bölüm
+ * `hidden` doğar: takvimde yayında anket yoksa ya da uç noktaya
+ * ulaşılamıyorsa ana sayfada hiç görünmez — boş bir anket kutusu, yer
+ * tutucu uydurmanın sessiz biçimi olurdu.
+ *
+ * ÜÇ DURUM, ÜÇ GÖRÜNÜM:
+ *   • açık + oy verilmemiş → form
+ *   • açık + oy verilmiş   → canlı sonuçlar (lider vurgulu)
+ *   • kapanmış             → kilitli sonuçlar, form yok
+ *
+ * `localStorage` yalnızca NEZAKET katmanıdır: sayan katman sunucudur
+ * (çerez + IP karması + veritabanı benzersiz kısıtı). Depo erişilemezse
+ * anket salt okunur görünür; sayfa hiçbir koşulda kırılmaz.
+ */
+(function () {
+  var STORAGE_PREFIX = "futbolradar:home-poll:";
+  /** Sonuç görünümdeyken canlı tazeleme; maçın adamı bandıyla aynı ritim. */
+  var REFRESH_INTERVAL_MS = 60000;
+
+  function readStore(pollId) {
+    try {
+      var raw = window.localStorage.getItem(STORAGE_PREFIX + pollId);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function writeStore(pollId, state) {
+    try {
+      window.localStorage.setItem(STORAGE_PREFIX + pollId, JSON.stringify(state));
+    } catch (error) {
+      /* Depo yoksa oy oturum boyunca geçerli kalır; sayfa kırılmaz. */
+    }
+  }
+
+  function setText(node, value) {
+    if (node) node.textContent = value || "";
+  }
+
+  function show(node, visible) {
+    if (node) node.hidden = !visible;
+  }
+
+  /** Arma: yüklenemezse aynı boyutlu baş-harf kutusuna düşer. */
+  function crest(option) {
+    if (!option.logo) {
+      var fallback = document.createElement("span");
+      fallback.className = "home-poll__crest is-initials";
+      fallback.textContent = option.initials || "?";
+      fallback.setAttribute("aria-hidden", "true");
+      return fallback;
+    }
+    var img = document.createElement("img");
+    img.className = "home-poll__crest";
+    img.src = option.logo;
+    img.alt = "";
+    img.width = 32;
+    img.height = 32;
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.referrerPolicy = "no-referrer";
+    img.addEventListener("error", function () {
+      var span = document.createElement("span");
+      span.className = "home-poll__crest is-initials";
+      span.textContent = option.initials || "?";
+      span.setAttribute("aria-hidden", "true");
+      if (img.parentNode) img.parentNode.replaceChild(span, img);
+    });
+    return img;
+  }
+
+  function setupPoll(section) {
+    var source = section.getAttribute("data-home-poll-source") || "/api/home-poll";
+    var locale = section.getAttribute("data-home-poll-locale") === "en" ? "en" : "tr";
+    var form = section.querySelector("[data-home-poll-form]");
+    var optionList = section.querySelector("[data-home-poll-options]");
+    var resultList = section.querySelector("[data-home-poll-results]");
+    var totalNode = section.querySelector("[data-home-poll-total]");
+    var submit = section.querySelector("[data-home-poll-submit]");
+    if (!form || !optionList || !resultList || typeof window.fetch !== "function") return;
+
+    var strings = locale === "en"
+      ? { votes: "votes", total: "total votes", leader: "Leading", yours: "Your vote", ends: "Voting closes:" }
+      : { votes: "oy", total: "toplam oy", leader: "Önde", yours: "Senin oyun", ends: "Oylama bitişi:" };
+
+    var poll = null;
+    var refreshTimer = null;
+
+    function stopRefresh() {
+      if (refreshTimer) {
+        window.clearInterval(refreshTimer);
+        refreshTimer = null;
+      }
+    }
+
+    function request(optionId) {
+      var options = { headers: { Accept: "application/json" }, credentials: "same-origin" };
+      var url = source;
+      if (optionId) {
+        options.method = "POST";
+        options.headers["Content-Type"] = "application/json";
+        options.body = JSON.stringify({ optionId: optionId, locale: locale, pollId: poll && poll.id });
+      } else {
+        url += (url.indexOf("?") < 0 ? "?" : "&") + "locale=" + encodeURIComponent(locale);
+      }
+      return window.fetch(url, options)
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (payload) { return payload && payload.data ? payload.data : null; })
+        .catch(function () { return null; });
+    }
+
+    /** Seçenek listesi: kulüp arması + resmi ad; sıra sunucudan gelir. */
+    function renderOptions(options) {
+      optionList.innerHTML = "";
+      options.forEach(function (option, index) {
+        var item = document.createElement("li");
+        item.className = "home-poll__option";
+
+        var input = document.createElement("input");
+        input.className = "home-poll__radio";
+        input.type = "radio";
+        input.name = "home-poll-choice";
+        input.id = "home-poll-" + option.id;
+        input.value = option.id;
+
+        var label = document.createElement("label");
+        label.className = "home-poll__label";
+        label.htmlFor = input.id;
+        label.appendChild(crest(option));
+        var name = document.createElement("span");
+        name.className = "home-poll__option-name";
+        name.textContent = option.label;
+        label.appendChild(name);
+
+        item.appendChild(input);
+        item.appendChild(label);
+        item.style.setProperty("--home-poll-delay", Math.min(index, 12) * 25 + "ms");
+        optionList.appendChild(item);
+      });
+    }
+
+    /**
+     * SONUÇLAR: en çok oy alan üstte, lider vurgulu. Sıra ve lider işareti
+     * sunucudan gelir — beraberlikte lider işareti VERİLMEZ, çünkü eşitken
+     * birini "önde" göstermek veride olmayan bir sıra uydurmaktır.
+     */
+    function renderResults(data) {
+      var rows = data.results || [];
+      resultList.innerHTML = "";
+
+      rows.forEach(function (row, index) {
+        var item = document.createElement("li");
+        item.className = "home-poll__result" +
+          (row.isLeader ? " is-leader" : "") +
+          (data.choice && data.choice === row.optionId ? " is-yours" : "");
+        item.style.setProperty("--home-poll-delay", Math.min(index, 12) * 45 + "ms");
+
+        var head = document.createElement("div");
+        head.className = "home-poll__result-head";
+
+        var option = null;
+        for (var i = 0; poll && i < poll.options.length; i += 1) {
+          if (poll.options[i].id === row.optionId) { option = poll.options[i]; break; }
+        }
+        if (option) head.appendChild(crest(option));
+
+        var name = document.createElement("span");
+        name.className = "home-poll__result-name";
+        name.textContent = row.label;
+        head.appendChild(name);
+
+        if (row.isLeader) {
+          var leader = document.createElement("span");
+          leader.className = "home-poll__badge";
+          leader.textContent = strings.leader;
+          head.appendChild(leader);
+        }
+        if (data.choice && data.choice === row.optionId) {
+          var mine = document.createElement("span");
+          mine.className = "home-poll__badge is-yours";
+          mine.textContent = strings.yours;
+          head.appendChild(mine);
+        }
+
+        var percent = document.createElement("span");
+        percent.className = "home-poll__result-percent";
+        percent.textContent = "%" + row.percent;
+        head.appendChild(percent);
+
+        var votes = document.createElement("span");
+        votes.className = "home-poll__result-votes";
+        votes.textContent = row.votes + " " + strings.votes;
+        head.appendChild(votes);
+
+        var bar = document.createElement("div");
+        bar.className = "home-poll__bar";
+        var fill = document.createElement("span");
+        fill.className = "home-poll__bar-fill";
+        bar.appendChild(fill);
+
+        item.appendChild(head);
+        item.appendChild(bar);
+        resultList.appendChild(item);
+
+        window.requestAnimationFrame(function () {
+          window.requestAnimationFrame(function () {
+            fill.style.width = Math.max(0, Math.min(100, row.percent)) + "%";
+          });
+        });
+      });
+
+      show(resultList, rows.length > 0);
+      if (totalNode) {
+        setText(totalNode, data.total ? data.total + " " + strings.total : "");
+        show(totalNode, Boolean(data.total));
+      }
+    }
+
+    function render(data) {
+      poll = data.poll;
+      if (!poll) return;
+
+      setText(section.querySelector("[data-home-poll-question]"), poll.question);
+      var subtitle = section.querySelector("[data-home-poll-subtitle]");
+      setText(subtitle, poll.subtitle);
+      show(subtitle, Boolean(poll.subtitle));
+
+      var closed = data.status === "closed";
+      var readOnly = data.storage !== "ready";
+      var stored = readStore(poll.id);
+      // Sunucu "oy verdin" demiyorsa cihazdaki işaret yine de dikkate alınır:
+      // depo erişilemezken kullanıcıyı tekrar tekrar oya çağırmamak için.
+      var voted = Boolean(data.alreadyVoted || (stored && stored.choice));
+      if (!data.choice && stored && stored.choice) data.choice = stored.choice;
+
+      var deadline = section.querySelector("[data-home-poll-deadline]");
+      if (deadline && !closed && poll.endsAt) {
+        var ends = new Date(poll.endsAt);
+        setText(deadline, strings.ends + " " + ends.toLocaleDateString(locale === "en" ? "en-GB" : "tr-TR", {
+          day: "numeric", month: "long", year: "numeric"
+        }));
+        show(deadline, true);
+      }
+
+      // Form yalnızca anket AÇIK, depo HAZIR ve oy VERİLMEMİŞSE görünür.
+      var canVote = !closed && !readOnly && !voted;
+      if (canVote) renderOptions(poll.options);
+      show(form, canVote);
+      show(section.querySelector("[data-home-poll-thanks]"), voted && !closed);
+      show(section.querySelector('[data-home-poll-note="closed"]'), closed);
+      show(section.querySelector('[data-home-poll-note="community"]'), !readOnly && (voted || closed));
+      show(section.querySelector('[data-home-poll-note="local"]'), readOnly && voted);
+
+      renderResults(data);
+      section.hidden = false;
+      window.requestAnimationFrame(function () { section.classList.add("is-ready"); });
+
+      if (closed || readOnly || !voted) stopRefresh();
+      else startRefresh();
+    }
+
+    /** Sonuç görünümdeyken sayım tazelenir; arka plan sekmede istek atılmaz. */
+    function startRefresh() {
+      if (refreshTimer) return;
+      refreshTimer = window.setInterval(function () {
+        if (document.hidden) return;
+        request(null).then(function (data) {
+          if (data && data.poll) render(data);
+        });
+      }, REFRESH_INTERVAL_MS);
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      var selected = form.querySelector(".home-poll__radio:checked");
+      if (!selected || !poll) return;
+      if (submit) submit.disabled = true;
+
+      writeStore(poll.id, { choice: selected.value, votedAt: new Date().toISOString() });
+
+      request(selected.value).then(function (data) {
+        if (submit) submit.disabled = false;
+        if (data && data.poll) render(data);
+      });
+    });
+
+    request(null).then(function (data) {
+      // Anket yok, depo yok ya da ağ hatası: bölüm hiç açılmaz.
+      if (data && data.poll) render(data);
+    });
+  }
+
+  function setupHomePolls() {
+    var sections = document.querySelectorAll("[data-home-poll]");
+    Array.prototype.forEach.call(sections, setupPoll);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupHomePolls);
+  } else {
+    setupHomePolls();
   }
 })();

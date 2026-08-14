@@ -40,6 +40,28 @@ function asArray(payload, ...keys) {
   return [];
 }
 
+/**
+ * İNGİLİZCE SAYFALAR DA DİZİNDE.
+ *
+ * Dizin yalnızca Türkçe sayfaları taşıyordu ve İngilizce başlıkta arama
+ * kutusu bu yüzden hiç açılmıyordu. Kutu artık iki dilde de var (layout.mjs),
+ * dolayısıyla İngilizce sayfaların da aranabilir olması gerekiyor — yoksa
+ * İngilizce okuyucu kendi dilindeki sayfayı arayıp bulamazdı.
+ *
+ * Liste dar ve ELLE tutulur, çünkü İngilizce yüzey dar: üretilen İngilizce
+ * sayfaların tamamını (maç/oyuncu/takım) dizine eklemek indirilen dosyayı
+ * birkaç katına çıkarırdı ve o sayfalara zaten Türkçe karşılıklarından
+ * hreflang ile ulaşılıyor.
+ */
+const EN_PAGES = [
+  { href: "en/index.html", title: "FutbolRadar in English", subtitle: "Turkish football in English" },
+  { href: "en/todays-matches.html", title: "Today's Matches", subtitle: "Fixtures for today" },
+  { href: "en/live-scores.html", title: "Live Scores", subtitle: "Live and finished matches" },
+  { href: "en/standings.html", title: "Standings", subtitle: "Trendyol Süper Lig table" },
+  { href: "en/analysis.html", title: "Analysis", subtitle: "Match results and analysis" },
+  { href: "en/teams.html", title: "Teams", subtitle: "Süper Lig club profiles" }
+];
+
 const EXTRA_PAGES = [
   { href: "index.html", title: "Ana Sayfa", subtitle: "Canlı skor ve maç merkezi" },
   { href: "mac-sonuclari.html", title: "Maç Sonuçları", subtitle: "Doğrulanmış tamamlanan maçlar" },
@@ -72,6 +94,14 @@ for (const link of [...NAV_PRIMARY, ...NAV_SECONDARY]) {
 
 for (const page of EXTRA_PAGES) {
   push({ type: "page", badge: "SYF", href: page.href, title: page.title, subtitle: page.subtitle });
+}
+
+// İngilizce sayfalar KENDİ TİPİYLE girer ("enPage", rozet "EN"). Türkçe
+// sayfalarla aynı rozeti taşısalardı, Türkçe bir sayfada arayan okuyucu
+// tıkladığında habersizce İngilizce bir sayfaya düşerdi; rozet hedefin
+// dilini tıklamadan önce söyler.
+for (const page of EN_PAGES) {
+  push({ type: "enPage", badge: "EN", href: page.href, title: page.title, subtitle: page.subtitle, locale: "en" });
 }
 
 for (const article of asArray(readJson("news.json"), "news", "items")) {

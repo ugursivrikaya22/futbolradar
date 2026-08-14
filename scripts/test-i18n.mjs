@@ -163,15 +163,46 @@ for (const route of ROUTES) {
   }
 }
 
-// --- 6. İngilizce menü yalnızca var olan sayfalara bağlanır -----------------
+// --- 6. İngilizce menü: var olan sayfalar, işaretli Türkçe hedefler --------
+//
+// KURAL DEĞİŞTİ VE SEBEBİ ÖNEMLİ. Menü daha önce YALNIZCA İngilizce rotalara
+// bağlanabiliyordu; sonuç, İngilizce okuyucunun maç sonuçlarına, köşe
+// yazılarına, arşive ve istatistik yüzeylerine üst çubuktan HİÇ
+// ulaşamamasıydı. Bağlantıyı hiç vermemek, Türkçe hedefe götürmekten daha
+// kötü bir sonuç.
+//
+// Yeni kural iki şartlı: hedef ya İngilizce bir rotadır, YA DA `trOnly`
+// işaretlidir. İşaretli bağlantı okuyucuya hangi dile gittiğini tıklamadan
+// önce söyler (`hreflang="tr"` + etikette "(TR)"). İşaretsiz Türkçe hedef
+// hâlâ hatadır: sessizce dil değiştiren bağlantı, kırık bağlantı kadar kötü.
 {
   const enNav = [...NAV_KEYS.en.primary, ...NAV_KEYS.en.secondary];
   const broken = enNav.filter((item) => !read(item.href)).map((item) => item.href);
   check("İngilizce menüde kırık bağlantı yok", !broken.length, broken.join(", "));
 
   const enPaths = new Set(ROUTES.map((route) => route.en));
-  const outside = enNav.filter((item) => !enPaths.has(item.href)).map((item) => item.href);
-  check("İngilizce menü rota eşlemesiyle uyumlu", !outside.length, outside.join(", "));
+  const unmarked = enNav
+    .filter((item) => !enPaths.has(item.href) && !item.trOnly)
+    .map((item) => item.href);
+  check("İngilizce menüde işaretsiz Türkçe hedef yok", !unmarked.length, unmarked.join(", "));
+
+  // Ters yön de kapalı: İngilizce karşılığı OLAN bir sayfa "(TR)" diye
+  // işaretlenirse okuyucu İngilizce sürümü varken Türkçesine gönderilir.
+  const mislabelled = enNav
+    .filter((item) => item.trOnly && enPaths.has(item.href))
+    .map((item) => item.href);
+  check("İngilizce karşılığı olan sayfa (TR) diye işaretlenmemiş", !mislabelled.length, mislabelled.join(", "));
+
+  // İşaret İŞARETLEMEYE de yansımalı: dil bilgisi yalnızca veri katmanında
+  // kalırsa okuyucu ve arama motoru onu göremez.
+  const enHome = read("en/index.html");
+  if (enHome) {
+    for (const item of enNav.filter((entry) => entry.trOnly)) {
+      const pattern = new RegExp(`href="[^"]*${item.href.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}"[^>]*hreflang="tr"`);
+      check(`en/index.html: ${item.href} bağlantısı hreflang="tr" taşıyor`, pattern.test(enHome));
+    }
+    check("en/index.html: Türkçe hedefler (TR) etiketi taşıyor", enHome.includes("(TR)</a>"));
+  }
 }
 
 // --- 7. Türkçe sayfalarda dil kutusu var mı --------------------------------

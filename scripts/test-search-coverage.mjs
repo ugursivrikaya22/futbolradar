@@ -159,7 +159,9 @@ function testRequiredTeamsAreSearchable() {
 
 function testResultTypesStaySeparated() {
   const index = readIndex();
-  const badges = { team: "TKM", player: "OYN", page: "SYF", news: "HBR", column: "KÖŞE", author: "YZR" };
+  // `enPage` ayrı bir tip: rozeti hedefin DİLİNİ söyler. Türkçe sayfalarla
+  // aynı rozeti taşısaydı okuyucu tıkladığında habersizce dil değiştirirdi.
+  const badges = { team: "TKM", player: "OYN", page: "SYF", enPage: "EN", news: "HBR", column: "KÖŞE", author: "YZR" };
 
   for (const entry of index) {
     assert.ok(badges[entry.type], `bilinmeyen sonuç tipi: ${entry.type}`);

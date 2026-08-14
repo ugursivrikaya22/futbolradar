@@ -235,15 +235,39 @@ const NAV_KEYS = Object.freeze({
       { href: "haberler.html", key: "nav.news" }
     ]
   },
+  // İNGİLİZCE MENÜ TÜRKÇEYLE AYNI YÜZEYİ AÇAR.
+  //
+  // Menü daha önce beş bağlantıydı; İngilizce okuyucu maç sonuçlarına, köşe
+  // yazılarına, arşive ve maç merkezine üst çubuktan HİÇ ulaşamıyordu. O
+  // sayfaların İngilizce sürümü henüz üretilmiyor, ama bağlantıyı hiç
+  // vermemek onları erişilemez kılıyordu — Türkçe hedefe götürmekten daha
+  // kötü bir sonuç.
+  //
+  // Bu yüzden İngilizce karşılığı OLAN sayfa İngilizce sürüme, OLMAYAN
+  // sayfa Türkçe sürüme bağlanır ve ikincisi `trOnly` ile işaretlenir:
+  // bağlantı `hreflang="tr"` taşır ve etiketinde "(TR)" görünür. Okuyucu
+  // hangi dile gittiğini TIKLAMADAN ÖNCE bilir; ana sayfadaki hızlı gezinme
+  // ızgarası (generate-en-pages.mjs) zaten bu kuralı kullanıyordu.
   en: {
     primary: [
       { href: "en/todays-matches.html", key: "nav.todayMatches" },
       { href: "en/live-scores.html", key: "nav.liveScores" },
-      { href: "en/standings.html", key: "nav.standings" },
+      { href: "mac-sonuclari.html", key: "nav.results", trOnly: true },
+      { href: "super-lig-fikstur.html", key: "nav.superLig", trOnly: true },
       { href: "en/analysis.html", key: "nav.analysis" },
-      { href: "en/teams.html", key: "nav.teams" }
+      { href: "en/teams.html", key: "nav.teams" },
+      { href: "kose-yazilari.html", key: "nav.columns", trOnly: true },
+      { href: "en/standings.html", key: "nav.standings" },
+      { href: "arsiv.html", key: "nav.archive", trOnly: true }
     ],
-    secondary: []
+    secondary: [
+      { href: "oyuncu-radari.html", key: "nav.playerRadar", trOnly: true },
+      { href: "istatistik-merkezi.html", key: "nav.statsHub", trOnly: true },
+      { href: "transfer-radari.html", key: "nav.transferRadar", trOnly: true },
+      { href: "momentum.html", key: "nav.momentum", trOnly: true },
+      { href: "gol-kralligi.html", key: "nav.topScorers", trOnly: true },
+      { href: "haberler.html", key: "nav.news", trOnly: true }
+    ]
   }
 });
 

@@ -6,6 +6,7 @@ const { getFixtureWeeks, groupMatchesIntoWeeks } = require("../services/superLig
 const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
 const { handleMotmVote } = require("../server/motmVoteRoute");
 const { handleMotmWeek } = require("../server/motmWeekRoute");
+const { handleHomePoll } = require("../server/homePollRoute");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -268,6 +269,11 @@ module.exports = async function handler(req, res) {
   // hız sınırı); alttaki genel kapılara sokulmaz.
   if (routeName(req) === "motm-week") {
     return handleMotmWeek(req, res);
+  }
+
+  // Ana sayfa tahmin anketi: oy vermek POST, yanıt seçmene özel.
+  if (routeName(req) === "home-poll") {
+    return handleHomePoll(req, res);
   }
 
   if (rejectUnsupportedMethod(req, res)) {

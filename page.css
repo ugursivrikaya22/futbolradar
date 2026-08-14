@@ -17995,6 +17995,290 @@ body,
 }
 
 /* ==========================================================================
+   ANA SAYFA TAHMİN ANKETİ
+   --------------------------------------------------------------------------
+   Ana sayfanın en dikkat çeken etkileşimi: büyük başlık, kulüp armalı
+   seçenek ızgarası, canlı yüzdeler ve vurgulu lider. Bölüm `hidden` doğar
+   ve yalnızca yayında bir anket varsa açılır.
+
+   İki dilde de AYNI stil kullanılır; tek fark metin. Mobil önce: seçenekler
+   dar ekranda tek sütun, genişledikçe ızgaraya açılır.
+   ========================================================================== */
+
+.home-poll[hidden] { display: none; }
+
+.home-poll__inner {
+  position: relative;
+  padding: clamp(20px, 3.5vw, 34px) clamp(16px, 3vw, 30px);
+  border: 2px solid var(--line-strong);
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 140% at 0 0, rgba(11, 143, 90, 0.1) 0, transparent 60%),
+    var(--panel);
+  box-shadow: 0 14px 40px rgba(11, 143, 90, 0.1);
+  overflow: hidden;
+}
+
+.home-poll__head { margin-bottom: 18px; }
+
+.home-poll__kicker {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(11, 143, 90, 0.12);
+  color: var(--green);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.home-poll__title {
+  margin: 0 0 8px;
+  font-size: clamp(1.25rem, 3.2vw, 1.9rem);
+  line-height: 1.25;
+}
+
+.home-poll__subtitle {
+  margin: 0;
+  max-width: 68ch;
+  color: var(--text-soft);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.home-poll__deadline {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.home-poll__options {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin: 0 0 16px;
+  padding: 0;
+  gap: 8px;
+  list-style: none;
+}
+
+.home-poll__option { position: relative; }
+
+.home-poll__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.home-poll__label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.home-poll__label:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+
+/* Seçili seçenek RENKTEN BAŞKA bir şeyle de belli olur (kalın çerçeve):
+   rengi ayırt edemeyen okuyucu için seçim görünür kalmalı. */
+.home-poll__radio:checked + .home-poll__label {
+  border-color: var(--green);
+  box-shadow: inset 0 0 0 1px var(--green);
+  background: rgba(11, 143, 90, 0.08);
+}
+
+.home-poll__radio:focus-visible + .home-poll__label {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+.home-poll__crest {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  object-fit: contain;
+  padding: 2px;
+}
+
+.home-poll__crest.is-initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.home-poll__option-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-poll__submit {
+  width: 100%;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+
+.home-poll__submit:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+.home-poll__submit:disabled { opacity: 0.6; cursor: progress; }
+.home-poll__submit:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+
+.home-poll__thanks {
+  margin: 0 0 12px;
+  color: var(--green);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.home-poll__results {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: 8px;
+  list-style: none;
+}
+
+.home-poll__result {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.home-poll.is-ready .home-poll__result {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.4s ease var(--home-poll-delay, 0ms), transform 0.4s ease var(--home-poll-delay, 0ms);
+}
+
+/* Lider vurgusu: renk TEK sinyal değil — "Önde" rozeti de yazıyor. */
+.home-poll__result.is-leader {
+  border-color: var(--green);
+  background: rgba(11, 143, 90, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(11, 143, 90, 0.3);
+}
+
+.home-poll__result-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+  flex-wrap: wrap;
+}
+
+.home-poll__result .home-poll__crest { width: 26px; height: 26px; }
+
+.home-poll__result-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.home-poll__badge {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.home-poll__badge.is-yours { background: var(--text-soft); }
+
+.home-poll__result-percent {
+  color: var(--green);
+  font-size: 1rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-poll__result-votes {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-poll__bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.home-poll__bar-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--green);
+  transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-poll__total {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-poll__note,
+.home-poll__disclaimer {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.home-poll__disclaimer { opacity: 0.8; }
+
+@media (min-width: 640px) {
+  .home-poll__options { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+  .home-poll__submit { width: auto; min-width: 220px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-poll__result,
+  .home-poll.is-ready .home-poll__result { opacity: 1; transform: none; transition: none; }
+  .home-poll__bar-fill,
+  .home-poll__label,
+  .home-poll__submit { transition: none; }
+}
+
+/* ==========================================================================
    BU HAFTANIN EN ÇOK OY ALAN OYUNCULARI — ANA SAYFA WIDGET'I
    --------------------------------------------------------------------------
    Anketin vitrini. Bölüm `hidden` doğar; site.js yalnızca GERÇEK sayım

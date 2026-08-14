@@ -24,7 +24,10 @@ const CACHE_POLICIES = Object.freeze({
   // Haftalık liste kişiye özel alan TAŞIMAZ; kısa CDN önbelleği her ana
   // sayfa görüntülemesinin depoya inmesini engeller. 60 saniyelik gecikme
   // "canlı" iddiasını bozmaz — sayım zaten dakikada bir tazeleniyor.
-  "motm-week": { maxAge: 60, stale: 120 }
+  "motm-week": { maxAge: 60, stale: 120 },
+  // Ana sayfa anketi yanıtı seçmene özel alan taşıyor (`alreadyVoted`,
+  // `choice`); oy uç noktasıyla aynı gerekçeyle önbelleğe alınmaz.
+  "home-poll": { noStore: true }
 });
 const QUERY_VALUE_MAX_LENGTH = 160;
 const QUERY_PARAM_MAX_COUNT = 24;
@@ -484,6 +487,7 @@ module.exports = {
   enforceRateLimit,
   errorResponse,
   firstPresentEnv,
+  getClientIp,
   getQuery,
   hasProviderConfig,
   normalizeText,

@@ -64,6 +64,9 @@ const { withRelevance } = require("../services/matchRelevance.js");
 // Maç programı sırası ve makine okunur karşılığı — Türkçe tarafla aynı servis.
 const { orderMatchProgram } = require("../services/matchProgram.js");
 const { matchListSchema } = require("../services/matchSchema.js");
+// Anket metinleri TEK yerde (services/homePoll.js); Türkçe ve İngilizce
+// kabuk aynı sözlükten okunur, ikinci kez yazılmaz.
+const { COPY: homePollCopy } = require("../services/homePoll.js");
 const { curatedMatches: programMatches } = require("../services/providers/mockProvider.js");
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { filterPlayerCards, publicPlayerView } = require("../services/cardCredibility.js");
@@ -1096,15 +1099,53 @@ function archiveSection() {
         </section>`;
 }
 
+/**
+ * TAHMİN ANKETİ — TÜRKÇE ANA SAYFAYLA BİREBİR AYNI YAPI.
+ *
+ * Kabuk iki tarafta da aynı: aynı sınıflar, aynı `data-*` kancaları, aynı
+ * bölüm sırası. TEK FARK dil — ve o da işaretlemeye gömülmüyor:
+ * `data-home-poll-locale="en"` uç noktaya hangi dilde soru istediğini
+ * söylüyor, soru ve seçenek etiketleri `data/home-polls.json`daki İngilizce
+ * karşılıklarından geliyor. Metni burada ikinci kez yazmak, iki sürümün
+ * zamanla ayrışması demek olurdu.
+ *
+ * Blok `hidden` doğar: takvimde yayında anket yoksa bölüm hiç görünmez.
+ */
+function homePollSection() {
+  const copy = homePollCopy.en;
+  return `<section class="container section home-poll" id="tahmin-anketi" aria-labelledby="home-poll-title" data-home-poll data-home-poll-source="/api/home-poll" data-home-poll-locale="en" hidden>
+          <div class="home-poll__inner">
+            <div class="home-poll__head">
+              <span class="home-poll__kicker" data-home-poll-kicker>${escapeHtml(copy.kicker)}</span>
+              <h2 class="home-poll__title" id="home-poll-title" data-home-poll-question></h2>
+              <p class="home-poll__subtitle" data-home-poll-subtitle></p>
+              <p class="home-poll__deadline" data-home-poll-deadline hidden></p>
+            </div>
+            <form class="home-poll__form" data-home-poll-form hidden>
+              <ul class="home-poll__options" data-home-poll-options></ul>
+              <button class="home-poll__submit" type="submit" data-home-poll-submit>${escapeHtml(copy.button)}</button>
+            </form>
+            <p class="home-poll__thanks" data-home-poll-thanks hidden>${escapeHtml(copy.thanks)}</p>
+            <ol class="home-poll__results" data-home-poll-results aria-live="polite" hidden></ol>
+            <p class="home-poll__total" data-home-poll-total hidden></p>
+            <p class="home-poll__note" data-home-poll-note="closed" hidden>${escapeHtml(copy.closed)}</p>
+            <p class="home-poll__note" data-home-poll-note="community" hidden>${escapeHtml(copy.communityNote)}</p>
+            <p class="home-poll__note" data-home-poll-note="local" hidden>${escapeHtml(copy.localNote)}</p>
+            <p class="home-poll__disclaimer">${escapeHtml(copy.disclaimer)}</p>
+          </div>
+        </section>`;
+}
+
 function homePage() {
   // BÖLÜM SIRASI TÜRKÇE ANA SAYFANIN AYNISI (prerender-core-pages.mjs):
-  //   hero → köşe yazıları → günün başlıkları → bugünün maçları → günün
-  //   radar maçı → son maç raporu → son raporlar → oyuncu radarı → trend
-  //   takımlar → hızlı gezinme → transfer radarı → haber akışı → arşiv
-  //   → kaynak şeridi
+  //   hero → tahmin anketi → köşe yazıları → günün başlıkları → bugünün
+  //   maçları → günün radar maçı → son maç raporu → son raporlar → oyuncu
+  //   radarı → trend takımlar → hızlı gezinme → transfer radarı → haber
+  //   akışı → arşiv → kaynak şeridi
   // Puan tablosu özeti Türkçe ana sayfada yok; İngilizce tarafta VAR olan
   // tek tablo girişi olduğu için kaldırılmadı, arşivin ardına alındı.
   const body = `      ${heroSection()}
+      ${homePollSection()}
       ${columnsSection()}
       ${dailyHeadlinesSection()}
       ${todaySection()}
