@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v4",
-  "updatedAt": "2026-08-14T00:03:31.362Z",
+  "updatedAt": "2026-08-14T02:09:21.413Z",
   "matchCount": 372,
   "records": [
     {
@@ -614,10 +614,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -625,9 +625,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 14
         },
         "statistics": {
           "present": false,
@@ -647,19 +647,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 14,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -677,11 +673,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "222aace8e207674a",
-      "fingerprint": "222aace8e207674a",
+      "analysisSourceHash": "b83b395f1ec7bcc4",
+      "fingerprint": "b83b395f1ec7bcc4",
       "analysisGeneratedAt": "2026-08-13T23:07:41.217Z",
-      "analysisUpdatedAt": "2026-08-13T23:07:41.217Z",
-      "generatedAt": "2026-08-13T23:07:41.217Z",
+      "analysisUpdatedAt": "2026-08-14T02:09:21.355Z",
+      "generatedAt": "2026-08-14T02:09:21.355Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -709,15 +705,69 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "34'",
+              "team": "Heart Of Midlothian",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "46'",
+              "team": "Benfica",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            },
+            {
+              "minute": "54'",
+              "team": "Heart Of Midlothian",
+              "type": "Var",
+              "detail": "Goal Disallowed - offside",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 8 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "Heart Of Midlothian",
+              "type": "subst",
+              "detail": "Substitution 2",
+              "decisive": false
+            },
+            {
+              "minute": "75'",
+              "team": "Heart Of Midlothian",
+              "type": "subst",
+              "detail": "Substitution 3",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "Heart Of Midlothian",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            },
+            {
+              "minute": "77'",
+              "team": "Heart Of Midlothian",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -728,20 +778,32 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "46' Benfica değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "64' Benfica değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "64' Benfica değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "64' Heart Of Midlothian değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "75' Heart Of Midlothian değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "75' Heart Of Midlothian değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -773,10 +835,15 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -1002,10 +1069,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -1013,9 +1080,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 16
         },
         "statistics": {
           "present": false,
@@ -1035,19 +1102,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 16,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -1065,11 +1128,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "758aed18f74f4140",
-      "fingerprint": "758aed18f74f4140",
+      "analysisSourceHash": "90761cae7caa0b94",
+      "fingerprint": "90761cae7caa0b94",
       "analysisGeneratedAt": "2026-08-13T23:07:41.217Z",
-      "analysisUpdatedAt": "2026-08-13T23:07:41.217Z",
-      "generatedAt": "2026-08-13T23:07:41.217Z",
+      "analysisUpdatedAt": "2026-08-14T02:09:21.355Z",
+      "generatedAt": "2026-08-14T02:09:21.355Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1094,18 +1157,72 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "19'",
+              "team": "Rangers",
+              "type": "Goal",
+              "detail": "Penalty",
+              "pivotal": false
+            },
+            {
+              "minute": "46'",
+              "team": "Rangers",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            },
+            {
+              "minute": "46'",
+              "team": "Jagiellonia",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 6 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "Rangers",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            },
+            {
+              "minute": "75'",
+              "team": "Rangers",
+              "type": "subst",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Jagiellonia",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Jagiellonia",
+              "type": "subst",
+              "detail": "Substitution 2",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -1116,20 +1233,32 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (15 olay).",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "46' Rangers değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' Rangers değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' Rangers değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "75' Rangers değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "75' Rangers değişikliği (Substitution 5). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "79' Jagiellonia değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1161,10 +1290,15 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -1196,10 +1330,10 @@
       "winner": "Anderlecht",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 60,
       "dataSources": {
         "score": {
           "present": true,
@@ -1207,9 +1341,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 23
         },
         "statistics": {
           "present": false,
@@ -1217,9 +1351,9 @@
           "count": 0
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": false,
@@ -1229,26 +1363,18 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 23,
         "statistics": 0,
-        "lineups": 0,
+        "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
           "field": "statistics",
           "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
         },
         {
           "field": "players",
@@ -1259,11 +1385,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "b787f1b9de1b137d",
-      "fingerprint": "b787f1b9de1b137d",
+      "analysisSourceHash": "2f40877d6a389129",
+      "fingerprint": "2f40877d6a389129",
       "analysisGeneratedAt": "2026-08-13T23:07:41.217Z",
-      "analysisUpdatedAt": "2026-08-13T23:07:41.217Z",
-      "generatedAt": "2026-08-13T23:07:41.217Z",
+      "analysisUpdatedAt": "2026-08-14T02:09:21.355Z",
+      "generatedAt": "2026-08-14T02:09:21.355Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1288,18 +1414,72 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 3
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "19'",
+              "team": "Anderlecht",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "34'",
+              "team": "PAOK",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "43'",
+              "team": "PAOK",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 13 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Anderlecht",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Anderlecht",
+              "type": "subst",
+              "detail": "Substitution 2",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Anderlecht",
+              "type": "subst",
+              "detail": "Substitution 3",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Anderlecht",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
@@ -1310,20 +1490,32 @@
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (20 olay).",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "46' PAOK değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' PAOK değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "67' PAOK değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "67' PAOK değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "78' Anderlecht değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "78' Anderlecht değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1355,10 +1547,15 @@
       },
       "readySections": [
         "summary",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -1390,10 +1587,10 @@
       "winner": "Beitar Jerusalem",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -1401,63 +1598,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 23
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 44
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 23,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 44
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "37c113c9be277292",
-      "fingerprint": "37c113c9be277292",
+      "analysisSourceHash": "eab31cff8e3b2300",
+      "fingerprint": "eab31cff8e3b2300",
       "analysisGeneratedAt": "2026-08-13T23:07:41.217Z",
-      "analysisUpdatedAt": "2026-08-13T23:07:41.217Z",
-      "generatedAt": "2026-08-13T23:07:41.217Z",
+      "analysisUpdatedAt": "2026-08-14T02:09:21.355Z",
+      "generatedAt": "2026-08-14T02:09:21.355Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1482,65 +1662,213 @@
           "label": "Penaltı atışlarıyla belirlendi",
           "wentToExtraTime": true,
           "decidedOnPenalties": true,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 8
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "25'",
+              "team": "Beitar Jerusalem",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "32'",
+              "team": "Beitar Jerusalem",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "56'",
+              "team": "Beitar Jerusalem",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 10 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Beitar Jerusalem",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Austria Vienna",
+              "type": "subst",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "92'",
+              "team": "Austria Vienna",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "decisive": false
+            },
+            {
+              "minute": "99'",
+              "team": "Beitar Jerusalem",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
           "players": []
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "Austria Vienna sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Beitar Jerusalem sahaya 4-3-3 dizilişiyle çıktı.",
+            "Beitar Jerusalem topu elinde tutarken Austria Vienna derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (21 olay).",
+            "İkinci yarı içinde 12 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Austria Vienna maça 4-2-3-1 dizilişiyle başladı.",
+            "Beitar Jerusalem maça 4-3-3 dizilişiyle başladı.",
+            "59' Austria Vienna değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "59' Austria Vienna değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "59' Austria Vienna değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "65' Beitar Jerusalem değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Austria Vienna",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Beitar Jerusalem",
+              "formation": "4-3-3"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Beitar Jerusalem, Austria Vienna'yı 1-2 yendi."
+            "Beitar Jerusalem, Austria Vienna'yı 1-2 yendi.",
+            "İsabetli şutta da öndeydi (9-4); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Beitar Jerusalem topa daha çok sahip oldu (%66).",
+            "Beitar Jerusalem daha çok şut denedi (8-20)."
+          ],
+          "improvements": [
+            "Beitar Jerusalem şut isabetinde geride kaldı (%45); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Beitar Jerusalem sahadan 1 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Austria Vienna",
+            "score": 46
+          },
+          "away": {
+            "team": "Beitar Jerusalem",
+            "score": 86
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Austria Vienna %50, Beitar Jerusalem %45."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Austria Vienna 47.5, Beitar Jerusalem 38.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -1549,11 +1877,20 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 79,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -1584,10 +1921,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 90,
       "dataSources": {
         "score": {
           "present": true,
@@ -1595,19 +1932,19 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 13
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 9
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": false,
@@ -1617,27 +1954,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
+        "events": 13,
+        "statistics": 9,
+        "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
         {
           "field": "players",
           "label": "Oyuncu istatistikleri"
@@ -1647,11 +1972,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "3bb8055370bd9e01",
-      "fingerprint": "3bb8055370bd9e01",
+      "analysisSourceHash": "99c810dbfff2283b",
+      "fingerprint": "99c810dbfff2283b",
       "analysisGeneratedAt": "2026-08-13T23:07:41.217Z",
-      "analysisUpdatedAt": "2026-08-13T23:07:41.217Z",
-      "generatedAt": "2026-08-13T23:07:41.217Z",
+      "analysisUpdatedAt": "2026-08-14T02:09:21.355Z",
+      "generatedAt": "2026-08-14T02:09:21.355Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1676,65 +2001,181 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "27'",
+              "team": "Gent",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "36'",
+              "team": "IFK Goteborg",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "41'",
+              "team": "IFK Goteborg",
+              "type": "subst",
+              "detail": "Substitution 1",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 6 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Gent",
+              "type": "subst",
+              "detail": "Substitution 3",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "IFK Goteborg",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "IFK Goteborg",
+              "type": "subst",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "IFK Goteborg",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
           "players": []
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Gent sahaya 4-3-3 dizilişiyle çıktı.",
+            "IFK Goteborg sahaya 4-3-3 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (10 olay).",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Gent maça 4-3-3 dizilişiyle başladı.",
+            "IFK Goteborg maça 4-3-3 dizilişiyle başladı.",
+            "41' IFK Goteborg değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' IFK Goteborg değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "60' IFK Goteborg değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "65' Gent değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Gent",
+              "formation": "4-3-3"
+            },
+            {
+              "team": "IFK Goteborg",
+              "formation": "4-3-3"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
             "Maç 1-1 berabere bitti."
           ],
-          "strengths": [],
+          "strengths": [
+            "Gent topa daha çok sahip oldu (%51)."
+          ],
           "improvements": [],
           "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Gent",
+            "score": 55
+          },
+          "away": {
+            "team": "IFK Goteborg",
+            "score": 46
+          },
+          "confidence": 40
+        },
+        "analysis": [
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.3333333333333333
+            }
+          }
+        ],
         "analysisOmitted": [
           "hucum",
           "savunma",
-          "sahiplik",
           "pres",
           "kurulus",
-          "durantop",
           "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -1743,11 +2184,19 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 71,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 30,
       "publishState": "page"
     },
     {
@@ -1778,10 +2227,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -1794,58 +2243,46 @@
           "count": 0
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 44
         }
       },
       "apiKeyPresent": true,
       "availability": {
         "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "statistics": 15,
+        "lineups": 2,
+        "players": 44
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "events",
           "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "e6d9bce7ad91a06c",
-      "fingerprint": "e6d9bce7ad91a06c",
+      "analysisSourceHash": "83201cd3862d115b",
+      "fingerprint": "83201cd3862d115b",
       "analysisGeneratedAt": "2026-08-13T23:07:41.217Z",
-      "analysisUpdatedAt": "2026-08-13T23:07:41.217Z",
-      "generatedAt": "2026-08-13T23:07:41.217Z",
+      "analysisUpdatedAt": "2026-08-14T02:09:21.355Z",
+      "generatedAt": "2026-08-14T02:09:21.355Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1888,8 +2325,12 @@
           "players": []
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "Gyori ETO FC sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Riga sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Riga topu elinde tutarken Gyori ETO FC derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
           "status": "unavailable",
@@ -1902,33 +2343,113 @@
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Gyori ETO FC maça 4-2-3-1 dizilişiyle başladı.",
+            "Riga maça 4-2-3-1 dizilişiyle başladı."
+          ],
+          "formations": [
+            {
+              "team": "Gyori ETO FC",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Riga",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
             "Maç 1-1 berabere bitti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Riga topa daha çok sahip oldu (%63).",
+            "Riga daha çok şut denedi (10-21)."
+          ],
+          "improvements": [
+            "Riga şut isabetinde geride kaldı (%33); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Gyori ETO FC",
+            "score": 56
+          },
+          "away": {
+            "team": "Riga",
+            "score": 79
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Gyori ETO FC %40, Riga %33.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Gyori ETO FC 30.3, Riga 25.5 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -1937,11 +2458,16 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "signals",
+        "statistics",
+        "tactical",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 50,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -1972,10 +2498,10 @@
       "winner": "Motherwell",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 90,
       "dataSources": {
         "score": {
           "present": true,
@@ -1983,19 +2509,19 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 14
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 9
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": false,
@@ -2005,27 +2531,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
+        "events": 14,
+        "statistics": 9,
+        "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
         {
           "field": "players",
           "label": "Oyuncu istatistikleri"
@@ -2035,11 +2549,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "6bc71bc0d7656381",
-      "fingerprint": "6bc71bc0d7656381",
+      "analysisSourceHash": "77201963984c85e3",
+      "fingerprint": "77201963984c85e3",
       "analysisGeneratedAt": "2026-08-13T23:07:41.217Z",
-      "analysisUpdatedAt": "2026-08-13T23:07:41.217Z",
-      "generatedAt": "2026-08-13T23:07:41.217Z",
+      "analysisUpdatedAt": "2026-08-14T02:09:21.355Z",
+      "generatedAt": "2026-08-14T02:09:21.355Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2067,59 +2581,167 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "43'",
+              "team": "HJK Helsinki",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "47'",
+              "team": "Motherwell",
+              "type": "Goal",
+              "detail": "Normal Goal",
+              "pivotal": false
+            },
+            {
+              "minute": "57'",
+              "team": "HJK Helsinki",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "HJK Helsinki",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Motherwell",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Motherwell",
+              "type": "subst",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "HJK Helsinki",
+              "type": "subst",
+              "detail": "Substitution 5",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
           "players": []
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Motherwell sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "HJK Helsinki sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Motherwell maça 4-2-3-1 dizilişiyle başladı.",
+            "HJK Helsinki maça 4-2-3-1 dizilişiyle başladı.",
+            "59' Motherwell değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "65' Motherwell değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "65' Motherwell değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "68' HJK Helsinki değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Motherwell",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "HJK Helsinki",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Motherwell, HJK Helsinki'yi 2-0 yendi."
+            "Motherwell, HJK Helsinki'yi 2-0 yendi.",
+            "İsabetli şutta da öndeydi (4-1); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
+          "strengths": [
+            "HJK Helsinki topa daha çok sahip oldu (%50)."
+          ],
           "improvements": [],
           "closing": "Motherwell sahadan 2 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Motherwell",
+            "score": 71
+          },
+          "away": {
+            "team": "HJK Helsinki",
+            "score": 25
+          },
+          "confidence": 40
+        },
+        "analysis": [
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          }
+        ],
         "analysisOmitted": [
           "hucum",
           "savunma",
-          "sahiplik",
           "pres",
           "kurulus",
-          "durantop",
           "sutkalitesi",
           "performans",
           "taktik",
@@ -2131,11 +2753,19 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 71,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 20,
       "publishState": "page"
     },
     {
@@ -2166,10 +2796,10 @@
       "winner": "FC Sion",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -2177,63 +2807,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 45
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 15,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 45
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "9202bca180fd6a25",
-      "fingerprint": "9202bca180fd6a25",
+      "analysisSourceHash": "66c5d0f62f569a95",
+      "fingerprint": "66c5d0f62f569a95",
       "analysisGeneratedAt": "2026-08-13T23:07:41.217Z",
-      "analysisUpdatedAt": "2026-08-13T23:07:41.217Z",
-      "generatedAt": "2026-08-13T23:07:41.217Z",
+      "analysisUpdatedAt": "2026-08-14T02:09:21.355Z",
+      "generatedAt": "2026-08-14T02:09:21.355Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2261,62 +2874,209 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "25'",
+              "team": "FC Noah",
+              "type": "Goal",
+              "detail": "Penalty",
+              "pivotal": false
+            },
+            {
+              "minute": "27'",
+              "team": "FC Sion",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            },
+            {
+              "minute": "47'",
+              "team": "FC Noah",
+              "type": "Card",
+              "detail": "Yellow Card",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "FC Sion",
+              "type": "subst",
+              "detail": "Substitution 2",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "FC Noah",
+              "type": "subst",
+              "detail": "Substitution 4",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "FC Noah",
+              "type": "subst",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "FC Sion",
+              "type": "subst",
+              "detail": "Substitution 3",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "unavailable",
           "players": []
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "FC Sion sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "FC Noah sahaya 4-1-4-1 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "FC Sion maça 4-2-3-1 dizilişiyle başladı.",
+            "FC Noah maça 4-1-4-1 dizilişiyle başladı.",
+            "56' FC Noah değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "56' FC Noah değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "64' FC Noah değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "70' FC Sion değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "FC Sion",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "FC Noah",
+              "formation": "4-1-4-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "FC Sion, FC Noah'ı 2-1 yendi."
+            "FC Sion, FC Noah'ı 2-1 yendi.",
+            "İsabetli şutta da öndeydi (5-3); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "FC Sion topa daha çok sahip oldu (%53).",
+            "FC Sion daha çok şut denedi (17-8)."
+          ],
+          "improvements": [
+            "FC Sion şut isabetinde geride kaldı (%29); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "FC Sion sahadan 1 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "FC Sion",
+            "score": 77
+          },
+          "away": {
+            "team": "FC Noah",
+            "score": 47
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti FC Sion %29.4, FC Noah %37.5."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için FC Sion 27.6, FC Noah 53.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -2325,11 +3085,19 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 71,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -6405,10 +7173,10 @@
       "awayTeam": "Borac Banja Luka",
       "venue": "Mezőkövesdi Városi Stadion",
       "score": {
-        "home": 2,
-        "away": 1
+        "home": 1,
+        "away": 0
       },
-      "finalScore": "2-1",
+      "finalScore": "1-0",
       "winner": "ML Vitebsk",
       "turkish": false,
       "turkishTeam": "",
@@ -6475,23 +7243,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v4",
       "modelVersion": "futbolradar-post-match-v4",
-      "analysisSourceHash": "49d2a4a98df05bd3",
-      "fingerprint": "49d2a4a98df05bd3",
+      "analysisSourceHash": "d445b24fa7d362d8",
+      "fingerprint": "d445b24fa7d362d8",
       "analysisGeneratedAt": "2026-08-13T23:07:41.217Z",
-      "analysisUpdatedAt": "2026-08-13T23:07:41.217Z",
-      "generatedAt": "2026-08-13T23:07:41.217Z",
+      "analysisUpdatedAt": "2026-08-14T02:09:21.355Z",
+      "generatedAt": "2026-08-14T02:09:21.355Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
-        "title": "ML Vitebsk 2-1 Borac Banja Luka maç raporu: UEFA Europa Conference League istatistikleri | FutbolRadar",
-        "description": "ML Vitebsk, Mezőkövesdi Városi Stadion'da oynanan UEFA Europa Conference League karşılaşmasında Borac Banja Luka'yı 2-1 mağlup etti.",
+        "title": "ML Vitebsk 1-0 Borac Banja Luka maç raporu: UEFA Europa Conference League istatistikleri | FutbolRadar",
+        "description": "ML Vitebsk, Mezőkövesdi Városi Stadion'da oynanan UEFA Europa Conference League karşılaşmasında Borac Banja Luka'yı 1-0 mağlup etti.",
         "path": "mac-raporu/ml-vitebsk-borac-banja-luka-2026-08-13.html",
         "competition": "UEFA Europa Conference League"
       },
       "reportUrl": "./mac-raporu/ml-vitebsk-borac-banja-luka-2026-08-13.html",
       "digest": {
-        "headline": "ML Vitebsk, Borac Banja Luka'yı 2-1 yendi",
-        "paragraph": "ML Vitebsk, Mezőkövesdi Városi Stadion'da oynanan UEFA Europa Conference League karşılaşmasında Borac Banja Luka'yı 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "headline": "ML Vitebsk, Borac Banja Luka'yı 1-0 yendi",
+        "paragraph": "ML Vitebsk, Mezőkövesdi Városi Stadion'da oynanan UEFA Europa Conference League karşılaşmasında Borac Banja Luka'yı 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
         "result": {
           "winner": "ML Vitebsk",
           "loser": "Borac Banja Luka",
@@ -6544,7 +7312,7 @@
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "ML Vitebsk, Borac Banja Luka'yı 2-1 yendi."
+            "ML Vitebsk, Borac Banja Luka'yı 1-0 yendi."
           ],
           "strengths": [],
           "improvements": [],
