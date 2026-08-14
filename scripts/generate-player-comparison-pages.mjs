@@ -3,6 +3,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
+import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -489,14 +490,24 @@ const indexHtml = comparisonIndexHtml(pairs);
 writeGeneratedFile(path.join(root, "oyuncu-karsilastirmalari.html"), indexHtml);
 writeGeneratedFile(path.join(root, "public", "oyuncu-karsilastirmalari.html"), indexHtml);
 
+const freshness = createFreshnessTracker(root);
+
 for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
   if (!fs.existsSync(sitemapPath)) continue;
   const current = fs.readFileSync(sitemapPath, "utf8");
   const retained = (current.match(URL_ENTRY_RE) || [])
     .filter((entry) => !entry.includes(`${domain}/karsilastirma/`));
-  const entries = pairs.map((pair) => `  <url>\n    <loc>${domain}/karsilastirma/${pair.slug}.html</loc>\n    <lastmod>2026-07-13</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.65</priority>\n  </url>`);
+  // Tarih sabit yazılıyordu (2026-07-13) ve karşılaştırma sayfaları
+  // güncellenmesine rağmen hiç ilerlemiyordu; gerekçe lib/sitemapFreshness.mjs.
+  const entries = pairs.map((pair) => {
+    const file = `karsilastirma/${pair.slug}.html`;
+    const lastmod = freshness.lastmodForFile(file, path.join(root, file));
+    return `  <url>\n    <loc>${domain}/${file}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.65</priority>\n  </url>`;
+  });
   const content = wrapUrlset(retained.concat(entries));
   writeGeneratedFile(sitemapPath, content);
 }
+
+freshness.save();
 
 console.log(`Generated ${pairs.length} static player comparison pages and index`);

@@ -10,6 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -824,19 +825,34 @@ function addReportIndex(entries) {
   );
 }
 
+/**
+ * Rapor sayfalarını site haritasına yaz.
+ *
+ * GİRDİ VARSA DA YENİDEN YAZILIR. Eskiden mevcut kayıt atlanıyordu
+ * (`if (xml.includes(loc)) continue`) ve bunun sessiz bir bedeli vardı:
+ * girdiler `<lastmod>` olmadan basılmıştı, bir kez yazıldıktan sonra da bir
+ * daha dokunulmuyordu. 101 rapor sayfası site haritasında tazelik sinyali
+ * olmadan duruyordu — tarayıcıya sayfa hakkında hiçbir zaman bilgisi
+ * vermeyen bir kayıt. Girdi artık her koşuda yeniden kuruluyor.
+ */
 function upsertSitemap(paths) {
   const sitemapPath = path.join(root, "sitemap.xml");
   if (!fs.existsSync(sitemapPath)) return;
   let xml = fs.readFileSync(sitemapPath, "utf8");
+  const freshness = createFreshnessTracker(root);
+
   for (const relative of paths) {
     const loc = `${domain}/${relative}`;
-    if (xml.includes(`<loc>${loc}</loc>`)) continue;
+    const lastmod = freshness.lastmodForFile(relative, path.join(root, relative));
     // Çok satırlı biçim zorunlu: generate-player-comparison-pages.mjs sitemap'i
     // yeniden yazarken yalnızca "  <url> ... \n  </url>" kalıbına uyan
     // girdileri koruyor, tek satırlık girdiler sessizce düşüyor.
-    const entry = `  <url>\n    <loc>${loc}</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
-    xml = xml.replace("</urlset>", `${entry}\n</urlset>`);
+    const entry = `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
+    const existing = new RegExp(`  <url>\\n    <loc>${loc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</loc>[\\s\\S]*?  </url>\\n`);
+    xml = existing.test(xml) ? xml.replace(existing, `${entry}\n`) : xml.replace("</urlset>", `${entry}\n</urlset>`);
   }
+
+  freshness.save();
   fs.writeFileSync(sitemapPath, xml, "utf8");
   fs.writeFileSync(path.join(root, "public", "sitemap.xml"), xml, "utf8");
 }
