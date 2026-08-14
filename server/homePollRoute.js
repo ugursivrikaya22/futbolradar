@@ -45,9 +45,34 @@ const VOTER_COOKIE = "fr_poll_voter";
 const VOTER_COOKIE_MAX_AGE = 400 * 24 * 60 * 60;
 const SOURCE = "home-poll";
 
-function loadJson(relative) {
+/**
+ * VERİ DOSYALARI SABİT DİZEYLE İSTENİR — VE BU BİR ZORUNLULUK.
+ *
+ * Burada önce `require(değişken)` alan genel bir yükleyici vardı. Yerelde
+ * çalıştı, testler yeşildi, CANLIDA SESSİZCE BOŞ DÖNDÜ: Vercel sunucusuz
+ * işlevin bağımlılıklarını STATİK olarak çözümlüyor ve değişkenle çağrılan
+ * bir `require`ı göremiyor. Sonuç, veri dosyalarının fonksiyon paketine hiç
+ * konmaması oldu — uç nokta "yayında anket yok" dedi, çünkü takvimi
+ * gerçekten okuyamıyordu.
+ *
+ * Hata sınıfı en kötüsü: kod doğru, test yeşil, canlı yanlış. Bu yüzden her
+ * dosya adı SABİT dize olarak yazılıyor; çözümleyici bağımlılığı ancak
+ * böyle görüyor. (`api/[...route].js` ve `motmVoteRoute.js` zaten bu biçimi
+ * kullanıyordu; genel yükleyici o kuralı farkında olmadan bozmuştu.)
+ *
+ * `scripts/test-home-poll.mjs` 14. bölüm bu biçimi denetliyor.
+ */
+function loadPolls() {
   try {
-    return require(relative);
+    return require("../data/home-polls.json");
+  } catch (error) {
+    return null;
+  }
+}
+
+function loadTeams() {
+  try {
+    return require("../data/teams.json");
   } catch (error) {
     return null;
   }
@@ -162,8 +187,8 @@ async function handleHomePoll(req, res) {
   const body = method === "POST" ? await readJsonBody(req) : null;
   const locale = String((body && body.locale) || query.locale || "tr");
   const sources = {
-    polls: loadJson("../data/home-polls.json") || {},
-    teams: loadJson("../data/teams.json") || []
+    polls: loadPolls() || {},
+    teams: loadTeams() || []
   };
 
   // ANKET SAYFASI KİPİ: takvimin TAMAMI, durumlarıyla.
