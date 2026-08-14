@@ -27,7 +27,13 @@ const CACHE_POLICIES = Object.freeze({
   "motm-week": { maxAge: 60, stale: 120 },
   // Ana sayfa anketi yanıtı seçmene özel alan taşıyor (`alreadyVoted`,
   // `choice`); oy uç noktasıyla aynı gerekçeyle önbelleğe alınmaz.
-  "home-poll": { noStore: true }
+  "home-poll": { noStore: true },
+  // Maç dosyası ilk 11'i: kadro açıklandığı an sayfada görünmeli, o yüzden
+  // kısa önbellek. Yanıt kişiye özel alan taşımadığı için CDN'de paylaşılır —
+  // aynı maçı açan bin okuyucu tek sağlayıcı isteğine düşer.
+  "match-lineup": { maxAge: 45, stale: 120 },
+  // Maç bitti ve iki kadro da onaylandı: yanıt bir daha değişmez.
+  "match-lineup-final": { maxAge: 1800, stale: 7200 }
 });
 const QUERY_VALUE_MAX_LENGTH = 160;
 const QUERY_PARAM_MAX_COUNT = 24;

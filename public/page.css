@@ -18860,3 +18860,481 @@ a.motm-week__card:focus-visible {
 }
 @media (max-width: 360px) { .super-lig-launch-card { padding-inline: 10px; } .super-lig-launch-team strong { font-size: .7rem; } }
 @media (prefers-reduced-motion: reduce) { .super-lig-launch-card, .super-lig-launch-card.is-live .super-lig-launch-status i { animation: none; transition: none; } }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MAÇ DOSYASI
+
+   Üç yüzey var ve üçü de aynı görsel dili paylaşıyor: ana sayfadaki tanıtım
+   kutusu, dosya hub'ı ve modül sayfaları.
+
+   İLK 11 BÖLÜMÜ BOŞ DOĞAR: kadro açıklanana kadar ekranda yalnızca durum
+   satırı ve açıklama var, ızgara `hidden`. Yer tutucu oyuncu kutuları
+   çizmek — gri satırlar, "?" isimler — açıklanmamış bir kadroyu açıklanmış
+   gibi göstermenin görsel biçimi olurdu. Kadro geldiğinde `.is-announced`
+   sınıfı açılır ve rozet belirir.
+   ═════════════════════════════════════════════════════════════════════════ */
+
+/* ── Ana sayfa tanıtım kutusu ─────────────────────────────────────────── */
+
+.match-special-promo { display: grid; gap: 14px; }
+
+.match-special-promo__hero {
+  display: grid;
+  gap: 10px;
+  padding: clamp(18px, 3.2vw, 30px) clamp(15px, 3vw, 28px);
+  border: 2px solid var(--line-strong);
+  border-radius: 20px;
+  background:
+    radial-gradient(130% 150% at 100% 0, rgba(11, 143, 90, 0.13) 0, transparent 62%),
+    var(--panel);
+  box-shadow: 0 14px 40px rgba(11, 143, 90, 0.1);
+  color: inherit;
+  text-decoration: none;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.match-special-promo__hero:hover,
+.match-special-promo__hero:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: 0 18px 46px rgba(11, 143, 90, 0.18);
+}
+
+.match-special-promo__kicker {
+  justify-self: start;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(11, 143, 90, 0.14);
+  color: var(--accent);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.match-special-promo__teams {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.match-special-promo__teams img { width: 44px; height: 44px; object-fit: contain; }
+
+.match-special-promo__teams strong {
+  font-size: clamp(1.15rem, 3.4vw, 1.8rem);
+  line-height: 1.15;
+}
+
+.match-special-promo__meta,
+.match-special-promo__note { color: var(--muted); font-size: .82rem; }
+
+.match-special-promo__lead {
+  color: var(--muted);
+  font-size: .92rem;
+  line-height: 1.5;
+  /* Uzun spot kutuyu ele geçirmesin; tam metin dosyanın kendisinde. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.match-special-promo__cta {
+  justify-self: start;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.match-special-promo__modules-title {
+  margin: 0 0 8px;
+  font-size: .78rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.match-special-promo__modules {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.match-special-promo__module {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-raised);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color .18s ease, transform .18s ease;
+}
+
+.match-special-promo__module:hover,
+.match-special-promo__module:focus-visible { border-color: var(--accent); transform: translateY(-2px); }
+
+.match-special-promo__module-kicker {
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.match-special-promo__module strong { font-size: .92rem; line-height: 1.3; }
+
+/* ── Hub künyesi ──────────────────────────────────────────────────────── */
+
+.match-special__board {
+  margin: 18px 0;
+  padding: clamp(16px, 3vw, 26px);
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  background: var(--panel);
+}
+
+.match-special__teams {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.match-special__team strong { font-size: clamp(1rem, 3vw, 1.4rem); }
+.match-special__vs { color: var(--muted); font-size: 1.2rem; }
+
+.match-special__meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 16px 0 0;
+}
+
+.match-special__meta dt {
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.match-special__meta dd { margin: 2px 0 0; font-weight: 700; }
+
+.match-special__countdown,
+.match-special__score {
+  margin: 12px 0 0;
+  font-weight: 800;
+}
+
+.match-special__score { font-size: clamp(1.3rem, 4vw, 2rem); letter-spacing: .04em; }
+
+.match-special__countdown[hidden],
+.match-special__score[hidden],
+.match-special__flag[hidden] { display: none; }
+
+/* İlk 11 rozeti: yalnızca kadro GERÇEKTEN açıklandığında görünür. */
+.match-special__flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(11, 143, 90, 0.14);
+  color: var(--accent);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+
+.match-special__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+/* ── Modül kartları ───────────────────────────────────────────────────── */
+
+.match-special__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.match-special__card {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface-raised);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+.match-special__card:hover,
+.match-special__card:focus-visible {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(11, 143, 90, 0.12);
+}
+
+.match-special__card-kicker {
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.match-special__card strong { font-size: 1.02rem; line-height: 1.3; }
+.match-special__card p { margin: 0; color: var(--muted); font-size: .86rem; line-height: 1.45; }
+.match-special__card-cta { font-weight: 800; color: var(--accent); font-size: .84rem; }
+
+.match-special__card-flag {
+  justify-self: start;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(11, 143, 90, 0.14);
+  color: var(--accent);
+  font-size: .64rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+.match-special__card-flag[hidden] { display: none; }
+.match-special__card.is-announced { border-color: var(--accent); }
+
+/* ── Modül sayfası gövdesi ────────────────────────────────────────────── */
+
+.match-special__section { margin: 0 0 22px; }
+.match-special__section h2 { margin: 0 0 10px; font-size: clamp(1.05rem, 3vw, 1.35rem); }
+.match-special__section p,
+.match-special__matchup p { margin: 0 0 12px; line-height: 1.7; }
+
+.match-special__matchup {
+  margin: 0 0 18px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface-raised);
+}
+
+.match-special__matchup h3 { margin: 0 0 8px; font-size: 1.02rem; }
+
+.match-special__note {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border-left: 3px solid var(--line-strong);
+  color: var(--muted);
+  font-size: .86rem;
+  line-height: 1.55;
+}
+
+/* Editoryal yorum, doğrulanmış veriden GÖRSEL olarak da ayrılır. */
+.match-special__note.is-editorial { border-left-color: var(--accent-2); }
+
+/* ── Kilit oyuncular ──────────────────────────────────────────────────── */
+
+.match-special__players { margin: 0 0 24px; }
+.match-special__players h3 { margin: 0 0 10px; }
+
+.match-special__player-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.match-special__player {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface-raised);
+}
+
+.match-special__player h4 { margin: 0 0 3px; font-size: .95rem; }
+.match-special__player p { margin: 0; color: var(--muted); font-size: .78rem; }
+
+/* ── Form ─────────────────────────────────────────────────────────────── */
+
+.match-special__form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.match-special__form {
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface-raised);
+}
+
+.match-special__form h3 { margin: 0 0 6px; font-size: 1.02rem; }
+
+/* Kaynak etiketi: doğrulanmış veri ile editoryal kayıt aynı görünmez. */
+.match-special__source {
+  margin: 0 0 12px;
+  font-size: .74rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.match-special__source.is-verified { color: var(--accent); }
+.match-special__source.is-editorial { color: var(--muted); }
+
+.match-special__form-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+
+.match-special__form-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: rgba(var(--surface-rgb), 0.045);
+  font-size: .84rem;
+}
+
+.match-special__form-row time { color: var(--muted); font-size: .74rem; }
+
+.match-special__form-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  font-size: .72rem;
+  font-weight: 800;
+  color: #fff;
+  background: var(--muted);
+}
+
+.match-special__form-row.is-win .match-special__form-badge { background: #0b8f5a; }
+.match-special__form-row.is-draw .match-special__form-badge { background: #8a8f8c; }
+.match-special__form-row.is-loss .match-special__form-badge { background: #c0392b; }
+
+.match-special__form-totals {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.match-special__form-totals dt { font-size: .64rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.match-special__form-totals dd { margin: 2px 0 0; font-weight: 800; }
+
+/* ── İlk 11 ───────────────────────────────────────────────────────────── */
+
+.match-special__lineup-status {
+  margin: 0 0 4px;
+  font-weight: 800;
+  font-size: 1.02rem;
+}
+
+/* Açıklandı: durum satırı da rozet rengine döner. */
+.match-special__lineup-status.is-announced { color: var(--accent); }
+
+.match-special__lineup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.match-special__lineup-grid[hidden] { display: none; }
+
+.match-special__lineup-side {
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface-raised);
+}
+
+.match-special__lineup-side header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.match-special__lineup-side header img { width: 28px; height: 28px; object-fit: contain; }
+.match-special__lineup-side h3 { margin: 0; font-size: 1rem; }
+
+.match-special__lineup-formation {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(var(--surface-rgb), 0.06);
+  color: var(--muted);
+  font-size: .7rem;
+  font-weight: 700;
+}
+
+.match-special__lineup-side h4 {
+  margin: 12px 0 6px;
+  font-size: .7rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.match-special__lineup-side ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+
+.match-special__lineup-player {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 9px;
+  background: rgba(var(--surface-rgb), 0.045);
+  font-size: .86rem;
+}
+
+.match-special__lineup-number {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: rgba(11, 143, 90, 0.14);
+  color: var(--accent);
+  font-size: .72rem;
+  font-weight: 800;
+}
+
+.match-special__lineup-position { color: var(--muted); font-size: .7rem; }
+.match-special__lineup-subs .match-special__lineup-player { background: transparent; }
+
+/* Açıklanmayan taraf: liste değil, neden boş olduğunu söyleyen bir satır. */
+.match-special__lineup-empty { margin: 0; color: var(--muted); font-size: .86rem; }
+
+.match-special__back { margin: 26px 0 0; }
+
+@media (max-width: 720px) {
+  .match-special__meta { grid-template-columns: repeat(2, 1fr); }
+  .match-special__teams { grid-template-columns: 1fr; gap: 4px; }
+  .match-special__vs { display: none; }
+  .match-special-promo__modules { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 420px) {
+  .match-special-promo__modules { grid-template-columns: 1fr; }
+  .match-special__form-totals { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .match-special-promo__hero,
+  .match-special-promo__module,
+  .match-special__card { transition: none; }
+  .match-special-promo__hero:hover,
+  .match-special-promo__module:hover,
+  .match-special__card:hover { transform: none; }
+}

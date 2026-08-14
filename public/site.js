@@ -1923,3 +1923,371 @@
     setupHomePolls();
   }
 })();
+
+/**
+ * MAÇ DOSYASI — RESMÎ İLK 11 VE CANLI DURUM.
+ *
+ * Sayfa BOŞ DOĞAR: derleme anında hiçbir kadro basılmıyor. Buradaki iş,
+ * `/api/match-lineup`ın gerçekten kadro döndürdüğü anda bölümü doldurmak.
+ *
+ * ── TAHMİNİ KADRO YOK ────────────────────────────────────────────────────
+ * Sağlayıcı kadroyu yayımlayana kadar ekranda "İlk 11'ler henüz açıklanmadı"
+ * yazar ve orada kalır. Kendi tahminimizi "muhtemel 11" diye göstermek
+ * teknik olarak kolay ama okuyucunun onu resmî sanma ihtimali yüksek;
+ * o risk tahminin değerinden büyük. Kadro geldiğinde başlık kendiliğinden
+ * "Resmî İlk 11" olur ve "İLK 11'LER AÇIKLANDI" rozeti açılır.
+ *
+ * ── ONAY TAKIM BAŞINA ────────────────────────────────────────────────────
+ * Sağlayıcı bazen bir takımın kadrosunu diğerinden önce yayımlıyor. Açıklanan
+ * taraf tam liste, açıklanmayan taraf kendi "henüz açıklanmadı" satırıyla
+ * çizilir — tek bayrakla modellemek, yayımlanmamış tarafı da açıklanmış
+ * göstermek olurdu.
+ *
+ * ── TEK İSTEK, KENDİNİ DURDURAN YOKLAMA ──────────────────────────────────
+ * Aynı yanıt hem kadroyu hem skoru taşıyor: sayfa başına tek istek. Yoklama
+ * maçın evresine göre hızlanır (maç öncesi 60 sn, oynanırken 45 sn), maç
+ * bitip iki kadro da onaylandığında TAMAMEN durur ve sekme arka plandayken
+ * hiç atılmaz. Günlerce açık kalan bir sekmenin sağlayıcı kotasını yemesi,
+ * özelliğin kendisinden daha pahalıya patlardı.
+ */
+(function () {
+  var ENDPOINT = "/api/match-lineup";
+  var PRE_MATCH_MS = 60000;
+  var IN_PLAY_MS = 45000;
+  var IDLE_MAX_MS = 1800000;
+  var MAX_FAILURES = 3;
+
+  function stringsFor(locale) {
+    return locale === "en"
+      ? {
+        pending: "Line-ups have not been announced yet",
+        partial: "One side's line-up has been announced",
+        confirmed: "Official XI",
+        badge: "LINE-UPS ANNOUNCED",
+        heading: "Official XI",
+        sidePending: "This side's line-up has not been announced yet",
+        starting: "Starting XI",
+        substitutes: "Substitutes",
+        formation: "Formation",
+        live: "Live",
+        finished: "Full time",
+        statusScheduled: "Not started",
+        countdown: "Kicks off in",
+        day: "d", hour: "h", minute: "m",
+        confirmedNote: "Official line-ups as published by the data provider."
+      }
+      : {
+        pending: "İlk 11'ler henüz açıklanmadı",
+        partial: "Bir takımın ilk 11'i açıklandı",
+        confirmed: "Resmî İlk 11",
+        badge: "İLK 11'LER AÇIKLANDI",
+        heading: "Resmî İlk 11",
+        sidePending: "Bu takımın kadrosu henüz açıklanmadı",
+        starting: "İlk 11",
+        substitutes: "Yedekler",
+        formation: "Diziliş",
+        live: "Canlı",
+        finished: "Tamamlandı",
+        statusScheduled: "Başlamadı",
+        countdown: "Maça kalan",
+        day: "g", hour: "sa", minute: "dk",
+        confirmedNote: "Kadrolar veri sağlayıcısının yayımladığı resmî listelerdir."
+      };
+  }
+
+  function setText(node, value) {
+    if (node) node.textContent = value;
+  }
+
+  function show(node, visible) {
+    if (node) node.hidden = !visible;
+  }
+
+  /** "2 gün 3 sa" / "58 dk" — sıfır birim yazılmaz. */
+  function countdownText(ms, strings) {
+    var total = Math.max(0, Math.floor(ms / 60000));
+    var days = Math.floor(total / 1440);
+    var hours = Math.floor((total % 1440) / 60);
+    var minutes = total % 60;
+    if (days > 0) return days + " " + strings.day + " " + hours + " " + strings.hour;
+    if (hours > 0) return hours + " " + strings.hour + " " + minutes + " " + strings.minute;
+    return minutes + " " + strings.minute;
+  }
+
+  function playerRow(player) {
+    var item = document.createElement("li");
+    item.className = "match-special__lineup-player";
+    if (player.number != null && player.number !== "") {
+      var number = document.createElement("span");
+      number.className = "match-special__lineup-number";
+      number.textContent = String(player.number);
+      item.appendChild(number);
+    }
+    var name = document.createElement("span");
+    name.className = "match-special__lineup-name";
+    name.textContent = player.name;
+    item.appendChild(name);
+    if (player.position) {
+      var position = document.createElement("span");
+      position.className = "match-special__lineup-position";
+      position.textContent = player.position;
+      item.appendChild(position);
+    }
+    return item;
+  }
+
+  function playerList(players, label, className) {
+    var wrap = document.createElement("div");
+    wrap.className = className;
+    var heading = document.createElement("h4");
+    heading.textContent = label;
+    wrap.appendChild(heading);
+    var list = document.createElement("ul");
+    players.forEach(function (player) {
+      list.appendChild(playerRow(player));
+    });
+    wrap.appendChild(list);
+    return wrap;
+  }
+
+  /** Bir takımın sütunu. Kadro açıklanmadıysa liste değil, açıklama yazar. */
+  function sideColumn(side, strings) {
+    var column = document.createElement("article");
+    column.className = "match-special__lineup-side";
+
+    var head = document.createElement("header");
+    if (side.logo) {
+      var logo = document.createElement("img");
+      logo.src = side.logo;
+      logo.alt = "";
+      logo.width = 28;
+      logo.height = 28;
+      logo.loading = "lazy";
+      logo.decoding = "async";
+      logo.referrerPolicy = "no-referrer";
+      logo.addEventListener("error", function () {
+        if (logo.parentNode) logo.parentNode.removeChild(logo);
+      });
+      head.appendChild(logo);
+    }
+    var name = document.createElement("h3");
+    name.textContent = side.team || "";
+    head.appendChild(name);
+    if (side.formation) {
+      var formation = document.createElement("span");
+      formation.className = "match-special__lineup-formation";
+      formation.textContent = strings.formation + " " + side.formation;
+      head.appendChild(formation);
+    }
+    column.appendChild(head);
+
+    var starters = side.startingXI || [];
+    if (!starters.length) {
+      var note = document.createElement("p");
+      note.className = "match-special__lineup-empty";
+      note.textContent = strings.sidePending;
+      column.appendChild(note);
+      return column;
+    }
+
+    column.appendChild(playerList(starters, strings.starting, "match-special__lineup-list"));
+    if ((side.substitutes || []).length) {
+      column.appendChild(playerList(side.substitutes, strings.substitutes, "match-special__lineup-subs"));
+    }
+    return column;
+  }
+
+  function renderLineups(data, strings) {
+    var grid = document.querySelector("[data-lineup-grid]");
+    if (!grid) return;
+    // Hiçbir taraf açıklanmadıysa ızgara açılmaz: boş iki sütun,
+    // "açıklandı" izlenimi verirdi.
+    if (data.status !== "confirmed" && data.status !== "partial") {
+      show(grid, false);
+      return;
+    }
+
+    grid.innerHTML = "";
+    grid.appendChild(sideColumn(data.home, strings));
+    grid.appendChild(sideColumn(data.away, strings));
+    show(grid, true);
+
+    var note = document.querySelector("[data-lineup-note]");
+    if (note && data.status === "confirmed") setText(note, strings.confirmedNote);
+  }
+
+  function renderScoreboard(data, strings) {
+    var scoreNode = document.querySelector("[data-match-special-score]");
+    var statusNode = document.querySelector("[data-match-special-status]");
+    var board = data.scoreboard || {};
+    var hasScore = board.home != null && board.away != null;
+
+    if (statusNode) {
+      if (board.live) {
+        setText(statusNode, board.minute ? strings.live + " · " + board.minute + "'" : strings.live);
+      } else if (board.finished) {
+        setText(statusNode, strings.finished);
+      } else {
+        setText(statusNode, strings.statusScheduled);
+      }
+    }
+
+    // Skor YALNIZCA sağlayıcı gerçek bir skor verdiğinde yazılır; maç
+    // başlamadan "0 - 0" göstermek, oynanmamış bir maçın sonucunu
+    // uydurmak olurdu.
+    if (scoreNode) {
+      if (hasScore && (board.live || board.finished)) {
+        setText(scoreNode, board.home + " - " + board.away);
+        show(scoreNode, true);
+      } else {
+        show(scoreNode, false);
+      }
+    }
+  }
+
+  function renderBadges(data, strings) {
+    var announced = data.status === "confirmed";
+    var badges = document.querySelectorAll("[data-lineup-badge]");
+    Array.prototype.forEach.call(badges, function (badge) {
+      setText(badge, strings.badge);
+      show(badge, announced);
+    });
+
+    var cards = document.querySelectorAll("[data-lineup-card]");
+    Array.prototype.forEach.call(cards, function (card) {
+      card.classList.toggle("is-announced", announced);
+    });
+
+    if (announced) {
+      var headings = document.querySelectorAll("[data-lineup-heading]");
+      Array.prototype.forEach.call(headings, function (heading) {
+        setText(heading, strings.heading);
+      });
+      // Sekme başlığı YALNIZCA ilk 11 modül sayfasında değişir; hub
+      // başlığı maçın tamamını anlatıyor ve "Resmî İlk 11" olmamalı.
+      if (document.querySelector("h1[data-lineup-heading]")) {
+        document.title = document.title.replace(/^[^|]+/, strings.heading + " ");
+      }
+    }
+
+    var statusNode = document.querySelector("[data-lineup-status]");
+    if (statusNode) {
+      setText(statusNode, announced ? strings.confirmed : (data.status === "partial" ? strings.partial : strings.pending));
+      statusNode.classList.toggle("is-announced", announced);
+    }
+  }
+
+  /** Bir sonraki yoklamaya kadar geçecek süre; null ise yoklama biter. */
+  function nextDelay(data) {
+    var board = data.scoreboard || {};
+    if (board.finished && data.status === "confirmed") return null;
+    if (data.phase === "final") return null;
+    if (data.phase === "in-play") return IN_PLAY_MS;
+    if (data.phase === "pre-match") return PRE_MATCH_MS;
+    if (data.phase === "unknown") return null;
+
+    // Henüz erken: pencere açılana kadar bekle, ama açık duran sekme
+    // yarım saatte birden sık uyanmasın.
+    var kickoff = data.kickoff ? Date.parse(data.kickoff) : NaN;
+    if (!isFinite(kickoff)) return null;
+    var untilWindow = kickoff - Date.now() - (180 * 60000);
+    return Math.max(PRE_MATCH_MS, Math.min(untilWindow, IDLE_MAX_MS));
+  }
+
+  function setupMatchSpecial() {
+    var lineupSection = document.querySelector("[data-match-lineups]");
+    var board = document.querySelector("[data-match-special-board]");
+    var host = lineupSection || board;
+    if (!host || typeof window.fetch !== "function" || window.location.protocol === "file:") return;
+
+    var matchId = host.getAttribute("data-match-id");
+    if (!matchId) return;
+
+    var declared = lineupSection ? lineupSection.getAttribute("data-lineup-locale") : null;
+    var locale = (declared || document.documentElement.lang) === "en" ? "en" : "tr";
+    var strings = stringsFor(locale);
+    var countdownNode = board ? board.querySelector("[data-match-special-countdown]") : null;
+    var kickoffAttr = board ? board.getAttribute("data-kickoff") : null;
+    var kickoffMs = kickoffAttr ? Date.parse(kickoffAttr) : NaN;
+    var failures = 0;
+    var timer = null;
+    var countdownTimer = null;
+    var stopped = false;
+
+    function tickCountdown() {
+      if (!countdownNode || !isFinite(kickoffMs)) return;
+      var remaining = kickoffMs - Date.now();
+      if (remaining <= 0) {
+        show(countdownNode, false);
+        if (countdownTimer) window.clearInterval(countdownTimer);
+        countdownTimer = null;
+        return;
+      }
+      setText(countdownNode, strings.countdown + ": " + countdownText(remaining, strings));
+      show(countdownNode, true);
+    }
+
+    function schedule(delay) {
+      if (stopped || delay == null) return;
+      if (timer) window.clearTimeout(timer);
+      timer = window.setTimeout(poll, delay);
+    }
+
+    function poll() {
+      // Arka plandaki sekme sağlayıcıya gitmez; öne geldiğinde tazelenir.
+      if (document.hidden) {
+        schedule(PRE_MATCH_MS);
+        return;
+      }
+
+      window.fetch(ENDPOINT + "?matchId=" + encodeURIComponent(matchId), {
+        headers: { Accept: "application/json" }
+      })
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (payload) {
+          var data = payload && payload.ok && payload.data ? payload.data : null;
+          if (!data) {
+            // Yanıt okunamadı: ekranda ne varsa kalır, uydurma yapılmaz.
+            failures += 1;
+            if (failures < MAX_FAILURES) schedule(PRE_MATCH_MS);
+            else stopped = true;
+            return;
+          }
+          failures = 0;
+          if (!isFinite(kickoffMs) && data.kickoff) kickoffMs = Date.parse(data.kickoff);
+          renderBadges(data, strings);
+          renderLineups(data, strings);
+          renderScoreboard(data, strings);
+          tickCountdown();
+          var delay = nextDelay(data);
+          if (delay == null) stopped = true;
+          else schedule(delay);
+        })
+        .catch(function () {
+          failures += 1;
+          if (failures < MAX_FAILURES) schedule(PRE_MATCH_MS);
+          else stopped = true;
+        });
+    }
+
+    tickCountdown();
+    if (isFinite(kickoffMs) && kickoffMs > Date.now()) {
+      countdownTimer = window.setInterval(tickCountdown, 30000);
+    }
+
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden && !stopped) {
+        if (timer) window.clearTimeout(timer);
+        timer = window.setTimeout(poll, 1000);
+      }
+    });
+
+    poll();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupMatchSpecial);
+  } else {
+    setupMatchSpecial();
+  }
+})();

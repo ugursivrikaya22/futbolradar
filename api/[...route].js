@@ -7,6 +7,7 @@ const { providerMeta, resolveFromProviders } = require("../services/liveDataServ
 const { handleMotmVote } = require("../server/motmVoteRoute");
 const { handleMotmWeek } = require("../server/motmWeekRoute");
 const { handleHomePoll } = require("../server/homePollRoute");
+const { handleMatchLineup } = require("../server/matchLineupRoute");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -274,6 +275,13 @@ module.exports = async function handler(req, res) {
   // Ana sayfa tahmin anketi: oy vermek POST, yanıt seçmene özel.
   if (routeName(req) === "home-poll") {
     return handleHomePoll(req, res);
+  }
+
+  // Maç dosyası ilk 11 + canlı skor: kendi önbellek politikasını maçın
+  // durumuna göre seçiyor (onaylanmış + bitmiş kadro uzun süre önbelleklenir),
+  // bu yüzden alttaki tek politikalı kapıya sokulmuyor.
+  if (routeName(req) === "match-lineup") {
+    return handleMatchLineup(req, res);
   }
 
   if (rejectUnsupportedMethod(req, res)) {

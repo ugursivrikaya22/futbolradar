@@ -1,0 +1,519 @@
+{
+  "_comment": "MAÇ DOSYALARI — ELLE DÜZENLENEN EDİTORYAL İÇERİK. Kural ve üretim: scripts/generate-match-special.mjs, belge: docs/match-special.md. Her kayıt bir maç kimliğine bağlıdır (data/fixture-calendar.json içindeki id) ve o maç için hub + modül sayfaları üretir. BURADA YAZILAN HER ŞEY YORUMDUR: skor, kadro, hakem, sakatlık gibi OLGU iddiaları buraya yazılmaz — onlar veri katmanından (fikstür, kadro, form) gelir ve doğrulanmamışsa hiç gösterilmez. Modül metinleri iki dilde birlikte verilir; biri eksikse kayıt elenir ve nedeni derleme günlüğüne yazılır.",
+  "updatedAt": "2026-08-14T00:00:00+03:00",
+  "specials": [
+    {
+      "matchId": "galatasaray-corum-fk-2026-08-14",
+      "slug": "galatasaray-corum-fk-mac-dosyasi",
+      "enSlug": "galatasaray-corum-fk-match-special",
+      "kicker": {
+        "tr": "Dev Maç Dosyası",
+        "en": "Match Special"
+      },
+      "title": {
+        "tr": "Galatasaray – Çorum FK | Dev Maç Dosyası",
+        "en": "Galatasaray vs Çorum FK | Match Special"
+      },
+      "lead": {
+        "tr": "Taktik analiz, muhtemel 11'ler, kilit eşleşmeler ve maç tahmini. Süper Lig 2026/27 sezonunun açılış haftasında Galatasaray, Rams Park'ta Çorum FK'yı ağırlıyor.",
+        "en": "Tactical analysis, probable line-ups, key matchups and a match prediction. Galatasaray host Çorum FK at Rams Park on the opening weekend of the 2026/27 Süper Lig season."
+      },
+      "modules": [
+        {
+          "id": "taktik-analiz",
+          "slug": {
+            "tr": "taktik-analiz",
+            "en": "tactical-analysis"
+          },
+          "kicker": {
+            "tr": "Taktik",
+            "en": "Tactics"
+          },
+          "title": {
+            "tr": "Taktik Analiz",
+            "en": "Tactical Analysis"
+          },
+          "summary": {
+            "tr": "Kurulum şekilleri, pres yapısı, geçiş anları ve sahanın hangi bölgelerinin maçı belirleyeceği.",
+            "en": "Build-up shapes, pressing structure, transition moments and which zones will decide the match."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Beklenen kurulumlar",
+                "en": "Expected shapes"
+              },
+              "body": {
+                "tr": "Galatasaray'ın son sezonlardaki temel yapısı, topa sahip olurken çift pivotun önünde geniş bir hücum hattı kuran bir düzen. Kurulumun ilk aşamasında stoperler açılıyor, defansif orta sahalardan biri araya inerek üçlü bir çıkış hattı oluşturuyor; bu, rakip ilk pres hattını sayısal olarak aşmanın en hızlı yolu. Bek oyuncularının yüksek konumlanması kanat oyuncularını içeri, yarı alanlara çekiyor ve ceza sahası çevresinde ek gövde yaratıyor.\n\nÇorum FK'nın deplasmanda kalabalık bir orta saha ve dar bir savunma bloğuyla çıkması beklenebilir. Kritik soru, bloğun ne kadar geride kurulacağı: çok geri bir blok ceza sahası önünü kalabalıklaştırır ama topu kazandıktan sonra çıkış mesafesini uzatır. Orta yükseklikte bir blok ise geçişte daha üretken olur, buna karşılık arkada bırakılan alan büyür.",
+                "en": "Galatasaray's core structure in recent seasons builds a wide attacking line ahead of a double pivot. In the first phase the centre-backs split and one of the defensive midfielders drops in to form a three-man outlet — the quickest way to beat a first pressing line numerically. High full-backs pull the wingers inside into the half-spaces, adding bodies around the box.\n\nÇorum FK can be expected to travel with a crowded midfield and a narrow defensive block. The key question is how deep that block sits: a very deep block congests the edge of the box but lengthens the distance to travel after a turnover. A mid block is more productive in transition but leaves more space behind."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Pres ve top kaybı sonrası",
+                "en": "Pressing and the moment after losing the ball"
+              },
+              "body": {
+                "tr": "Bu maçın en belirleyici anı, topa sahip olma yüzdesi değil, top kaybı sonrasındaki ilk beş saniye olacak. Galatasaray yüksek bek konumlanmasıyla oynadığında geride kalan denge (rest defence) üç oyuncuya inebiliyor. Çorum'un tek gerçekçi üretim yolu tam olarak burası: kaybedilen topu hızla dikey bir pasa çevirip stoperlerin arkasındaki alana koşu yapmak.\n\nGalatasaray tarafında Torreira'nın rolü bu yüzden kritik. Onun görevi yalnızca top kazanmak değil, ikinci topları toplamak ve karşı atağın ilk pasını geciktirmek. İlk pas geciktirilebilirse savunma yeniden dizilecek zamanı buluyor; geciktirilemezse Çorum'un kanat oyuncuları tek hamlede son üçte bire ulaşıyor.",
+                "en": "The decisive moment here will not be possession share but the first five seconds after a turnover. When Galatasaray play with high full-backs, the rest defence can drop to three players. That is precisely Çorum's most realistic route to creating: turn the ball over, play forward quickly and run into the space behind the centre-backs.\n\nFor Galatasaray this is what makes Torreira's role critical. His job is not only to win the ball but to collect second balls and delay the first pass of the counter. If that first pass is delayed the defence has time to reset; if it is not, Çorum's wide players reach the final third in a single move."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Hangi bölgeler maçı belirler",
+                "en": "Which zones decide the match"
+              },
+              "body": {
+                "tr": "Üç bölge öne çıkıyor. Birincisi, ceza sahasının hemen önü: Çorum bloğu dar kurarsa Galatasaray'ın orta alandan geçmesi zorlaşır ve şut mesafesi ile kenar ortası kalitesi önem kazanır. İkincisi, yarı alanlar: bek yükseldiğinde kanat oyuncusunun içeri kayması, stoper ile bek arasındaki boşluğu zorlayan tek pratik yol. Üçüncüsü, Çorum'un sol ve sağ bek arkası: Galatasaray topu hızlı çevirebilirse savunma bloğu yana kaymakta gecikir ve o boşluk açılır.\n\nÇorum açısından belirleyici bölge kendi orta sahasının önü. Topu kazandıktan sonraki ilk pasın oraya değil, ileriye gitmesi gerekiyor; aksi hâlde Galatasaray'ın karşı presi devreye giriyor ve top hızla geri dönüyor.",
+                "en": "Three zones stand out. First, the space just outside the box: if Çorum stay narrow, going through the middle becomes hard and shooting distance plus crossing quality gain weight. Second, the half-spaces: with the full-back high, the winger tucking inside is the only practical way to stress the gap between centre-back and full-back. Third, the area behind Çorum's full-backs: if Galatasaray switch quickly, the block is late to shift and that gap opens.\n\nFor Çorum the decisive zone is in front of their own midfield. After winning the ball the first pass has to go forward rather than sideways; otherwise Galatasaray's counter-press engages and the ball comes straight back."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Duran toplar",
+                "en": "Set pieces"
+              },
+              "body": {
+                "tr": "Bloğunu geriye çeken ve kanatlara yönelen bir maçta duran top sayısı artar. Çorum için bu, akıştan gol bulmanın zor olduğu bir maçta en gerçekçi ikinci yol. Galatasaray açısından ise mesele savunma tarafında: gereksiz faul vermemek ve ikinci topu kazanmak, korner sonrası hızlı çıkışlara karşı en basit koruma.",
+                "en": "In a match where one side sits deep and play goes wide, the number of set pieces rises. For Çorum that is the most realistic second route to a goal in a game where scoring from open play is hard. For Galatasaray the issue is defensive: avoiding needless fouls and winning the second ball is the simplest protection against quick breaks after corners."
+              }
+            }
+          ]
+        },
+        {
+          "id": "galatasaray-plan",
+          "slug": {
+            "tr": "galatasaray-mac-plani",
+            "en": "galatasaray-game-plan"
+          },
+          "kicker": {
+            "tr": "Ev sahibi",
+            "en": "Home side"
+          },
+          "title": {
+            "tr": "Galatasaray'ın Maç Planı",
+            "en": "Galatasaray's Game Plan"
+          },
+          "summary": {
+            "tr": "Kurulum, genişlik, Osimhen'e servis yolları ve kompakt bir bloğu açmanın yolları.",
+            "en": "Build-up, width, the supply routes to Osimhen and how to open a compact block."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Topa sahip olma ve ilk kurulum",
+                "en": "Possession and first-phase build-up"
+              },
+              "body": {
+                "tr": "Rams Park'ta, açılış haftasında ve Süper Lig'e yeni dönen bir rakibe karşı Galatasaray'ın topa sahip olma üstünlüğü kurması beklenen senaryo. Ama bu üstünlük tek başına bir avantaj değil: kompakt bir bloğa karşı topa sahip olmak, çoğu zaman sabırla alan aramak anlamına geliyor.\n\nİlk kurulumda kritik ayrıntı, defansif orta sahaların konumu. İkisi de aynı hatta durursa rakip orta saha onları tek bir gölgeyle kapatabiliyor; biri araya inip diğeri yukarıda kalırsa pas açıları çoğalıyor ve rakibin baskı yönü belirsizleşiyor. Gabriel Sara'nın hatlar arasında bulunması bu noktada ayrı bir değer: savunma ile orta saha arasındaki dar alanda top alabilen bir oyuncu, geriye dönük pas zincirini ileriye çeviren düğme.",
+                "en": "At Rams Park, on the opening weekend, against a side newly back in the Süper Lig, Galatasaray dominating the ball is the expected scenario. But possession alone is not an advantage: against a compact block it usually means patiently looking for space.\n\nThe critical detail in the first phase is where the defensive midfielders stand. If both sit on the same line, one opposition midfielder can cover them with a single cover shadow; if one drops and the other stays high, passing angles multiply and the direction of pressure becomes unclear. Gabriel Sara operating between the lines matters here: a player who can receive in the tight space between defence and midfield is the switch that turns a sideways passing chain forward."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Genişlik, yarı alanlar ve Osimhen'e servis",
+                "en": "Width, half-spaces and supplying Osimhen"
+              },
+              "body": {
+                "tr": "Kompakt bir bloğu açmanın iki yolu var: genişlik ve derinlik. Genişlik, topu bir kanattan diğerine hızla çevirip savunmanın yana kayma gecikmesinden yararlanmak. Derinlik ise savunma hattının arkasına yapılan koşularla bloğu geriye itmek.\n\nVictor Osimhen'e servis bu iki yolun kesiştiği yerde. Osimhen'in en verimli olduğu top, ceza sahası içine gelen erken ve düz orta ya da savunmanın arkasına atılan diyagonal top. Onu ayağına, sırtı dönük ve üç savunmacı arasında aramak, en zor seçeneği tercih etmek olur. Kanatlarda Leroy Sané ve Yunus Akgün gibi içeri kesip şut açısı arayabilen oyuncuların bulunması, savunmayı bir seçime zorluyor: kanadı kapatırsan ceza sahası ortası boşalıyor, ortayı kapatırsan kenar ortası serbest kalıyor.\n\nBarış Alper Yılmaz'ın derinliğe koşu yapabilen profili, blok geriye çekildiğinde farklı bir işlev üstlenebilir: rakip stoperleri geriye sabitleyerek Osimhen'in önünde alan açmak. Burada önemli olan tek bir isim değil, Osimhen'in etrafındaki koşuların ÇEŞİTLİLİĞİ — hepsi aynı anda ceza sahasına giriyorsa savunma tek bloğu kapatarak hepsini birden karşılıyor.",
+                "en": "There are two ways to open a compact block: width and depth. Width means switching quickly from one flank to the other and exploiting the defence's delay in shifting. Depth means pushing the block back with runs in behind.\n\nSupplying Victor Osimhen sits where those two meet. The ball he is most effective with is an early flat cross into the box or a diagonal in behind. Looking for him to feet, back to goal, between three defenders is choosing the hardest option. Having players on the flanks who can cut inside and look for a shooting angle — Leroy Sané and Yunus Akgün among them — forces the defence into a choice: close the flank and the centre of the box opens; close the middle and the cross is free.\n\nBarış Alper Yılmaz's ability to run in behind can serve a different function when the block drops: pinning the centre-backs deep to open space in front of Osimhen. What matters is not one name but the variety of runs around Osimhen — if they all arrive in the box at once, a single defensive block meets all of them together."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Bekler ve karşı pres",
+                "en": "Full-backs and the counter-press"
+              },
+              "body": {
+                "tr": "Bek oyuncularının katkısı bu maçta iki yönlü. Hücumda genişliği sağlayarak kanat oyuncusunu içeri serbest bırakıyorlar; savunmada ise yüksek konumları rest defence'i inceltiyor. Wilfried Singo gibi fiziksel olarak güçlü ve geri dönüş hızı yüksek bir bek, bu dengeyi tek başına taşıyabilen profil — ama tek bir oyuncunun geri dönüşüne güvenmek, sistemik bir çözüm değil.\n\nTop kaybedildiği anda uygulanacak baskı, bu yüzden planın ayrılmaz parçası. Amaç topu hemen geri kazanmak değil yalnızca; rakibin ilk pasını yana ya da geriye zorlamak da yeterli. Lesley Ugochukwu gibi alan kapatabilen bir orta saha, o ilk saniyede rakibin dikey pas seçeneğini kapatarak savunmanın yeniden dizilmesine zaman kazandırıyor.",
+                "en": "The full-backs' contribution is two-sided here. In attack they provide the width that frees the winger to come inside; defensively their high positions thin out the rest defence. A physically strong full-back with real recovery pace — Wilfried Singo among them — can carry that balance alone, but relying on one player's recovery is not a systemic solution.\n\nThat makes the pressure applied the instant the ball is lost part of the plan rather than an extra. The aim is not only to win it straight back; forcing the opponent's first pass sideways or backwards is enough. A midfielder who covers ground, such as Lesley Ugochukwu, closes the vertical option in that first second and buys the defence time to reset."
+              }
+            }
+          ]
+        },
+        {
+          "id": "galatasaray-riskler",
+          "slug": {
+            "tr": "galatasaray-riskleri",
+            "en": "galatasaray-risks"
+          },
+          "kicker": {
+            "tr": "Risk",
+            "en": "Risk"
+          },
+          "title": {
+            "tr": "Galatasaray'ın Riskleri",
+            "en": "Galatasaray's Risks"
+          },
+          "summary": {
+            "tr": "Savunma geçişi, arkada bırakılan alan ve hazırlık maçlarından ne çıkarılabilir, ne çıkarılamaz.",
+            "en": "Defensive transition, the space left behind, and what preseason results can and cannot tell us."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Hazırlık maçları ne söyler, ne söylemez",
+                "en": "What preseason does and does not say"
+              },
+              "body": {
+                "tr": "Galatasaray'ın son beş maçı şu şekilde: Villarreal'e 2-1 yenilgi, Rennes ile 3-3, Venezia'ya 3-0 ve Monza'ya 2-0 yenilgi, Ümraniyespor deplasmanında 5-1 galibiyet.\n\nBu sonuçların büyük bölümü HAZIRLIK MAÇI ve rekabetçi lig maçlarıyla aynı ölçekte okunamaz. Hazırlık döneminde kadro sürekli değişir, yüklenme programı oyuncuların bacağını ağırlaştırır, taktik kalıplar bilinçli olarak test edilir ve sonuç hiçbir tarafın önceliği değildir. Dolayısıyla \"Galatasaray dört maçta üç yenilgi aldı\" cümlesi tek başına bir form yargısı değildir.\n\nYine de bu maçlardan taktik SİNYAL okunabilir — sonuç değil, tekrar eden desen aranarak.",
+                "en": "Galatasaray's last five: a 2-1 defeat to Villarreal, 3-3 with Rennes, 3-0 and 2-0 defeats to Venezia and Monza, and a 5-1 win away at Ümraniyespor.\n\nMost of these are friendlies and cannot be read on the same scale as competitive league matches. In preseason the XI changes constantly, training load leaves legs heavy, patterns are deliberately tested and the result is nobody's priority. So \"Galatasaray lost three of four\" is not, by itself, a verdict on form.\n\nTactical signals can still be read from them — not from the results, but by looking for repeated patterns."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Arkada kalan alan ve savunma mesafeleri",
+                "en": "Space in behind and defensive distances"
+              },
+              "body": {
+                "tr": "Yüksek savunma hattıyla oynayan ve bekleri ileri gönderen bir takımın yapısal bedeli, stoperlerin arkasında kalan alandır. Bu bedel yönetilebilir: hattın ofsayt disiplini, kalecinin süpürücü rolü ve orta sahanın geri dönüş hızı bu alanı küçültür. Yönetilemediğinde ise tek bir dikey pas savunmayı devre dışı bırakır.\n\nİkinci risk, savunma mesafeleri. Orta saha ile savunma hattı arasındaki boşluk büyüdüğünde, hatlar arasında top alan bir rakip oyuncu savunmayı geriye çekilmek zorunda bırakır ve blok kendi ceza sahasına yapışır. Bu, gol yememek için değil, gol yemenin yolunu açmak için bir konumdur.\n\nÜçüncüsü, merkezde top kaybetmek. Kanatta kaybedilen top savunma için yönetilebilir bir olaydır; merkezde, orta sahanın önünde kaybedilen top ise rakibe iki yöne birden açılan bir koridor verir.",
+                "en": "The structural cost of a high line with advanced full-backs is the space behind the centre-backs. That cost is manageable: offside discipline, a sweeping goalkeeper and midfield recovery pace all shrink it. When it is not managed, a single vertical pass takes the defence out of the game.\n\nThe second risk is defensive distances. When the gap between midfield and defence grows, an opponent receiving between the lines forces the defence to drop and the block ends up pinned to its own box. That is a position that invites goals rather than prevents them.\n\nThird, losing the ball centrally. A turnover on the flank is a manageable event for a defence; one in the middle, in front of the midfield, hands the opponent a corridor that opens in two directions at once."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Sonucu abartmadan",
+                "en": "Without overstating it"
+              },
+              "body": {
+                "tr": "Bu bölümün bir uyarı olarak okunması gerekiyor, bir kehanet olarak değil. Hazırlık maçlarındaki gol yeme sayısı, lig maçındaki savunma performansını doğrudan tahmin etmez. Buradaki analiz \"Galatasaray savunmada zayıf\" demiyor; \"bu kurulumun bilinen yapısal maliyeti şudur ve rakip tam olarak oraya oynayacaktır\" diyor. Fark önemli.",
+                "en": "This section should be read as a caution, not a prophecy. Goals conceded in friendlies do not directly predict defensive performance in a league match. The analysis here does not say \"Galatasaray are weak defensively\"; it says \"this is the known structural cost of this setup, and the opponent will aim exactly there\". That distinction matters."
+              }
+            }
+          ]
+        },
+        {
+          "id": "corum-plan",
+          "slug": {
+            "tr": "corum-fk-mac-plani",
+            "en": "corum-fk-game-plan"
+          },
+          "kicker": {
+            "tr": "Konuk",
+            "en": "Away side"
+          },
+          "title": {
+            "tr": "Çorum FK Maça Nasıl Yaklaşabilir?",
+            "en": "How Çorum FK Can Approach the Match"
+          },
+          "summary": {
+            "tr": "Kompakt blok, geçiş anları, duran toplar ve Galatasaray'ın ritmini bozmanın yolları.",
+            "en": "A compact block, transitions, set pieces and ways to break Galatasaray's rhythm."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Formun söyledikleri",
+                "en": "What the form says"
+              },
+              "body": {
+                "tr": "Çorum FK'nın son beş maçı: Gençlerbirliği ile 0-0, Iğdır FK'ya 3-1 yenilgi, Bandırmaspor deplasmanında 0-0, Esenler Erokspor karşısında 2-0 galibiyet, Bodrum FK karşısında 2-0 galibiyet.\n\nBu seride dikkat çeken şey gol sayısı değil, iki gol yemeden biten maç ve iki 2-0 galibiyet. Örüntü, savunma organizasyonunun takımın en tutarlı yanı olduğunu düşündürüyor. Rams Park'ta bu, sahip olunan en kullanışlı özellik.",
+                "en": "Çorum FK's last five: 0-0 with Gençlerbirliği, a 3-1 defeat to Iğdır FK, 0-0 away at Bandırmaspor, a 2-0 win over Esenler Erokspor and a 2-0 win over Bodrum FK.\n\nWhat stands out is not the goal tally but two clean sheets and two 2-0 wins. The pattern suggests defensive organisation is the most consistent part of this side. At Rams Park that is the most useful quality to own."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Blok, merkez ve ceza sahasının korunması",
+                "en": "The block, the centre and protecting the box"
+              },
+              "body": {
+                "tr": "Çorum'un en gerçekçi planı, merkezi kapatıp Galatasaray'ı kanada yönlendirmek. Bunun mantığı basit: kanattan gelen top, merkezden gelen topa göre daha tahmin edilebilir ve savunmaya hazırlanma zamanı verir. Ceza sahası içinde sayısal üstünlük korunabilirse, kenar ortası tek başına düzenli gol üretmez.\n\nBloğun yüksekliği maç içinde değişebilir ve değişmelidir. Maçın ilk 15-20 dakikası daha temkinli, sonrasında skor korunuyorsa kademeli olarak biraz daha yukarıda — çünkü tamamen geriye gömülen bir takım, topu kazandığında rakip kaleye 70 metre uzaktadır ve o mesafeyi kat edecek gücü 90 dakika boyunca bulamaz.",
+                "en": "Çorum's most realistic plan is to close the middle and steer Galatasaray wide. The logic is simple: a ball from the flank is more predictable than one through the middle and gives the defence time to set. If numerical superiority inside the box is maintained, crossing alone does not produce goals regularly.\n\nThe height of the block can and should change during the match. More cautious in the first 15-20 minutes, then gradually a little higher if the scoreline holds — because a team that sits entirely deep is 70 metres from goal when it wins the ball, and will not find the legs to cover that distance for 90 minutes."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Geçiş, ikinci toplar ve duran toplar",
+                "en": "Transitions, second balls and set pieces"
+              },
+              "body": {
+                "tr": "Çorum'un gol üretme ihtimali en çok üç durumda yükseliyor. Birincisi, Galatasaray'ın bekleri yukarıdayken kazanılan top ve hemen ardından kanat boşluğuna yapılan dikey koşu. İkincisi, ceza sahası çevresinde kazanılan ikinci toplar: uzun toplar sonrası düşen ikinci topu toplamak, hem baskıyı hafifletir hem de organize olmamış bir savunmaya karşı ilerleme fırsatı verir. Üçüncüsü duran toplar — akıştan az pozisyon bulan bir takım için en verimli yol.\n\nKadro derinliği açısından Çorum'un mevcut kadrosu üç kaleci, sekiz savunmacı, dokuz orta saha ve altı forvetten oluşuyor; orta saha yoğunluğu, kalabalık bir merkez kurma planıyla tutarlı.",
+                "en": "Çorum's chances of scoring rise most in three situations. First, winning the ball while Galatasaray's full-backs are high and immediately running into the vacated flank. Second, second balls around the box: collecting the drop after a long ball both relieves pressure and offers progress against a defence that has not yet organised. Third, set pieces — the most productive route for a side that will see few open-play chances.\n\nOn squad shape, Çorum's current squad is three goalkeepers, eight defenders, nine midfielders and six forwards; that midfield density is consistent with a plan built on crowding the centre."
+              }
+            }
+          ]
+        },
+        {
+          "id": "galatasaray-nasil-kazanir",
+          "slug": {
+            "tr": "galatasaray-nasil-kazanir",
+            "en": "how-galatasaray-win"
+          },
+          "kicker": {
+            "tr": "Yol haritası",
+            "en": "Roadmap"
+          },
+          "title": {
+            "tr": "Galatasaray Nasıl Kazanır?",
+            "en": "How Galatasaray Win"
+          },
+          "summary": {
+            "tr": "Erken gol, hızlı yön değiştirme, ceza sahası çevresinde üstünlük ve ucuz geçiş vermemek.",
+            "en": "An early goal, quick switches, overloads around the box and giving away no cheap transitions."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "1. Erken gol bul, bloğun yerleşmesine izin verme",
+                "en": "1. Score early, do not let the block settle"
+              },
+              "body": {
+                "tr": "Kompakt savunma yapan bir takıma karşı en değerli şey erken goldür — sayı üstünlüğü değil, PLAN üstünlüğü kazandırır. Skor geriye düştüğünde Çorum'un savunma planı geçerliliğini yitirir; blok yukarı çıkmak zorunda kalır ve Galatasaray'ın aradığı alan kendiliğinden açılır. Erken gol gelmezse maç, dar alanda sabır sınavına döner.",
+                "en": "Against a side defending compactly, the most valuable thing is an early goal — it wins not a numerical advantage but a plan advantage. Once behind, Çorum's defensive plan loses its validity; the block has to come out and the space Galatasaray want opens by itself. Without an early goal the match becomes a test of patience in tight areas."
+              }
+            },
+            {
+              "heading": {
+                "tr": "2. Topu hızlı çevir, 3. ceza sahası çevresinde üstünlük kur",
+                "en": "2. Switch quickly, 3. create overloads around the box"
+              },
+              "body": {
+                "tr": "Dar bir bloğu yormanın en ekonomik yolu, topu bir kanattan diğerine hızla taşımak. Buradaki anahtar kelime hız: yavaş bir yön değiştirme savunmaya kayma zamanı verir ve hiçbir şey kazandırmaz. İki-üç dokunuşta karşı kanada ulaşan bir top ise savunmanın en zayıf anını yakalar.\n\nCeza sahası çevresinde sayısal üstünlük ise ikinci adım. Kenar ortası öncesinde ceza sahasına giren oyuncu sayısı, ortanın kalitesinden daha belirleyici olabilir; üç farklı yükseklikte (ön direk, penaltı noktası, arka direk) koşu yapan üç oyuncu, savunmayı üç ayrı karara zorlar.",
+                "en": "The most economical way to tire a narrow block is to move the ball quickly from one flank to the other. The key word is quickly: a slow switch gives the defence time to shift and gains nothing. A ball that reaches the far side in two or three touches catches the defence at its weakest moment.\n\nOverloading around the box is the second step. The number of players arriving in the area before a cross can matter more than the quality of the cross itself; three runners at three different heights — near post, penalty spot, far post — force three separate decisions."
+              }
+            },
+            {
+              "heading": {
+                "tr": "4. Osimhen'i besle ama tahmin edilebilir olma",
+                "en": "4. Feed Osimhen without becoming predictable"
+              },
+              "body": {
+                "tr": "Bir santrforu beslemenin tuzağı, servisin tek kalıba dönüşmesi. Her hücum aynı yükseklikten, aynı hızda ve aynı bölgeye orta ile bitiyorsa savunma üçüncü tekrardan sonra o topu okuyor. Çeşitlilik şart: bazen erken orta, bazen yerden ceza sahası içine pas, bazen savunma arkasına diyagonal, bazen de Osimhen'i geri çekip arkasından koşan oyuncuya alan açmak.",
+                "en": "The trap in feeding a centre-forward is letting the supply become a single pattern. If every attack ends with a cross from the same height, at the same speed, into the same zone, the defence reads it by the third repetition. Variety is essential: sometimes an early cross, sometimes a cut-back along the ground, sometimes a diagonal in behind, and sometimes dropping Osimhen to open space for a runner beyond him."
+              }
+            },
+            {
+              "heading": {
+                "tr": "5-6. İkinci toplar ve rest defence",
+                "en": "5-6. Second balls and rest defence"
+              },
+              "body": {
+                "tr": "Ceza sahası çevresinde düşen ikinci toplar, kompakt savunmaya karşı en çok gol üreten kaynaklardan biri. Bu topları toplamak için orta sahanın ceza sahasına yakın konumlanması gerekiyor — ama tam da bu, geride kalan dengeyi inceltiyor.\n\nÇözüm, ikisini aynı anda yapmak: bir defansif orta sahanın kesinlikle geride kalması ve stoperlerden birinin merkez korumasını sürdürmesi. Rest defence üç oyuncunun altına indiğinde, tek bir top kaybı doğrudan pozisyona dönüşüyor.",
+                "en": "Second balls dropping around the box are one of the most productive sources against a compact defence. Collecting them requires the midfield to sit close to the area — which is exactly what thins the rest defence.\n\nThe answer is to do both at once: one defensive midfielder stays back without exception, and one centre-back holds the central cover. Once the rest defence drops below three players, a single turnover turns straight into a chance."
+              }
+            },
+            {
+              "heading": {
+                "tr": "7-8. Ucuz geçiş verme, gereksiz faul yapma",
+                "en": "7-8. No cheap transitions, no needless fouls"
+              },
+              "body": {
+                "tr": "Bu maçta Galatasaray'ın kaybedebileceği tek yol, kendi hatalarını rakibe hediye etmek. Merkezde yapılan riskli pas, geç dönen bek, kaybedilen ikinci top — üçü de Çorum'un planına doğrudan hizmet ediyor.\n\nGereksiz faul de aynı kategoride. Kendi yarı sahasında verilen serbest vuruş, akıştan pozisyon bulamayan bir rakibe ceza sahasına top gönderme fırsatı veriyor. Duran top, gücü kadro değerine bağlı olmayan tek oyun durumu.",
+                "en": "The only way Galatasaray can lose this match is by gifting their own mistakes. A risky pass in the centre, a full-back late to recover, a second ball lost — all three serve Çorum's plan directly.\n\nNeedless fouls fall in the same category. A free-kick conceded in your own half hands a side that cannot create from open play a delivery into the box. Set pieces are the one game state where strength does not track squad value."
+              }
+            }
+          ]
+        },
+        {
+          "id": "corum-surpriz",
+          "slug": {
+            "tr": "corum-fk-surpriz-plani",
+            "en": "corum-fk-upset-plan"
+          },
+          "kicker": {
+            "tr": "Sürpriz",
+            "en": "Upset"
+          },
+          "title": {
+            "tr": "Çorum FK Sürprizi Nasıl Arar?",
+            "en": "How Çorum FK Look for an Upset"
+          },
+          "summary": {
+            "tr": "Açılışı atlatmak, kompakt kalmak, geçişte hızlanmak ve maçı uzun süre berabere tutmak.",
+            "en": "Surviving the opening, staying compact, accelerating in transition and keeping the game level."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Açılış fazını atlatmak",
+                "en": "Surviving the opening phase"
+              },
+              "body": {
+                "tr": "Rams Park'ta sezonun ilk maçında ev sahibinin ilk 15-20 dakikada yüksek tempoyla başlaması beklenir. Çorum için bu dönem, gol aramanın değil, gol yememenin dönemi. Bu fazı skor değişmeden atlatmak iki şey kazandırır: tribün baskısı ev sahibinin üzerine döner ve Galatasaray aceleci seçimler yapmaya başlar.",
+                "en": "In the season's first match at Rams Park, the home side can be expected to start at a high tempo for the first 15-20 minutes. For Çorum this period is not about looking for a goal but about not conceding one. Coming through it level gains two things: the crowd's pressure turns onto the home side, and Galatasaray start making hurried choices."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Kompaktlık ve Galatasaray'ı kanada itmek",
+                "en": "Compactness and forcing Galatasaray wide"
+              },
+              "body": {
+                "tr": "Kompaktlık, hatlar arası mesafeyi küçük tutmak demek — savunma ile orta saha arasında 10-12 metreden fazla boşluk kalmaması. Bu mesafe korunduğunda hatlar arasında top alan bir oyuncu dönemez, dönse bile şut açısı bulamaz.\n\nGalatasaray'ı kanada itmek ise bilinçli bir yönlendirme. Merkez kapalıysa top zorunlu olarak kanada gider ve orada savunmanın işi görece kolaydır: kenar çizgisi fazladan bir savunmacı gibi çalışır.",
+                "en": "Compactness means keeping the distance between lines small — no more than 10-12 metres between defence and midfield. Hold that and a player receiving between the lines cannot turn, and cannot find a shooting angle even if he does.\n\nForcing Galatasaray wide is deliberate steering. With the middle closed the ball has to go wide, and defending there is comparatively simple: the touchline works as an extra defender."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Geçişte hızlanmak ve duran toplar",
+                "en": "Accelerating in transition and set pieces"
+              },
+              "body": {
+                "tr": "Topu kazandıktan sonraki üç saniye, Çorum'un maçtaki en değerli üç saniyesi. Bu sürede yapılan ilk pas ileriye gitmiyorsa fırsat kapanıyor. Kanat boşluğuna yapılan diyagonal koşular ve stoperler arasına atılan düz toplar, Galatasaray'ın yüksek hattına karşı en gerçekçi iki kalıp.\n\nDuran toplar ise skoru değiştirebilecek en yoğunlaşmış an. Kazanılan her serbest vuruş ve korner, akıştan bulunamayan pozisyonun yerine geçebilir.",
+                "en": "The three seconds after winning the ball are Çorum's most valuable three seconds in the match. If the first pass in that window does not go forward, the opportunity closes. Diagonal runs into the vacated flank and flat balls between the centre-backs are the two most realistic patterns against a high line.\n\nSet pieces are the most concentrated moment capable of changing the score. Every free-kick and corner won can stand in for the chance open play does not provide."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Skoru uzun süre korumanın psikolojik değeri",
+                "en": "The psychological value of keeping it level"
+              },
+              "body": {
+                "tr": "Maç 60. dakikaya 0-0 gelirse denklem değişir. Ev sahibi risk almak zorunda kalır, bekler daha da yukarı çıkar, orta saha incelir — yani Çorum'un beklediği alan tam olarak o zaman açılır. Bu yüzden Çorum için \"maçı berabere tutmak\" pasif bir hedef değil, aktif bir plan.",
+                "en": "If the match reaches the 60th minute at 0-0 the equation changes. The home side has to take risks, the full-backs push higher still, the midfield thins — which is exactly when the space Çorum are waiting for appears. For Çorum, keeping the game level is not a passive aim but an active plan."
+              }
+            }
+          ]
+        },
+        {
+          "id": "mac-tahmini",
+          "slug": {
+            "tr": "mac-tahmini",
+            "en": "match-prediction"
+          },
+          "kicker": {
+            "tr": "Tahmin",
+            "en": "Prediction"
+          },
+          "title": {
+            "tr": "FutbolRadar Maç Tahmini",
+            "en": "FutbolRadar Match Prediction"
+          },
+          "summary": {
+            "tr": "Beklenen oyun akışı, topa sahip olma dengesi, belirsizlik noktası ve skor aralığı.",
+            "en": "Expected game flow, possession balance, the key uncertainty and a score range."
+          },
+          "editorial": true,
+          "sections": [
+            {
+              "heading": {
+                "tr": "Beklenen akış",
+                "en": "Expected flow"
+              },
+              "body": {
+                "tr": "Galatasaray'ın topa sahip olma üstünlüğü kurduğu, Çorum'un kendi yarı sahasında kalabalık savunduğu ve maçın büyük bölümünün Çorum ceza sahası çevresinde geçtiği bir oyun bekleniyor. Galatasaray'ın pozisyon sayısı yüksek, pozisyon kalitesi ise bloğun ne kadar iyi organize olduğuna bağlı olacak.",
+                "en": "Expect a game where Galatasaray dominate the ball, Çorum defend in numbers in their own half, and most of the match is played around the Çorum box. Galatasaray's chance count should be high; the quality of those chances will depend on how well the block is organised."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Belirsizlik nerede",
+                "en": "Where the uncertainty is"
+              },
+              "body": {
+                "tr": "İki belirsizlik var. Birincisi zamanlama: Galatasaray erken gol bulursa maç tek yönlü bir hâl alabilir, bulamazsa dar alanda sıkışan bir maç ihtimali artar. İkincisi, sezonun ilk maçı olması — hazırlık dönemi sonrası ilk resmî maçlarda ritim tutarsızlığı sık görülür ve bu, her iki takım için de geçerli.\n\nAyrıca ilk 11'ler açıklanmadan önce her tahmin eksik bilgiyle yapılıyor; kadro belli olduğunda bu sayfadaki analiz güncellenecek.",
+                "en": "There are two uncertainties. First, timing: an early Galatasaray goal could make this one-way, while no early goal raises the chance of a congested match. Second, it is the season's opener — inconsistent rhythm is common in the first competitive match after preseason, and that applies to both sides.\n\nBeyond that, any prediction made before the line-ups are announced is made with incomplete information; the analysis on this page will be updated once the XIs are confirmed."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Skor tahmini",
+                "en": "Score prediction"
+              },
+              "body": {
+                "tr": "Olası skor aralığı 1-0 ile 3-0 arasında yoğunlaşıyor; Çorum'un duran toptan ya da geçişten gol bulduğu 2-1 senaryosu da makul bir ihtimal.\n\nFutbolRadar tahmini: Galatasaray 2-0 Çorum FK.\n\nBu bir editoryal görüştür; sitenin doğrulanmış maç verisinden ayrıdır ve bahis tavsiyesi değildir.",
+                "en": "The likely score range clusters between 1-0 and 3-0, with a 2-1 scenario — Çorum scoring from a set piece or a transition — also a reasonable possibility.\n\nFutbolRadar prediction: Galatasaray 2-0 Çorum FK.\n\nThis is an editorial opinion, separate from the site's verified match data, and is not betting advice."
+              }
+            }
+          ]
+        }
+      ],
+      "editorialForm": {
+        "_comment": "Veri katmanında kaydı OLMAYAN takımın son maçları. Doğrulanmış arşivden gelmediği için çıktıda 'editoryal' etiketiyle gösterilir; arşivde kaydı olan takım için bu alan KULLANILMAZ.",
+        "Çorum FK": [
+          {
+            "label": "Çorum FK 0-0 Gençlerbirliği",
+            "result": "draw"
+          },
+          {
+            "label": "Çorum FK 1-3 Iğdır FK",
+            "result": "loss"
+          },
+          {
+            "label": "Bandırmaspor 0-0 Çorum FK",
+            "result": "draw"
+          },
+          {
+            "label": "Esenler Erokspor 0-2 Çorum FK",
+            "result": "win"
+          },
+          {
+            "label": "Çorum FK 2-0 Bodrum FK",
+            "result": "win"
+          }
+        ]
+      },
+      "keyPlayers": {
+        "Galatasaray": [
+          "Victor Osimhen",
+          "Leroy Sané",
+          "Yunus Akgün",
+          "Barış Alper Yılmaz",
+          "Gabriel Sara",
+          "Lucas Torreira",
+          "Lesley Ugochukwu",
+          "Wilfried Singo",
+          "Abdülkerim Bardakcı",
+          "Uğurcan Çakır"
+        ]
+      },
+      "matchups": [
+        {
+          "id": "osimhen-stoperler",
+          "title": {
+            "tr": "Galatasaray santrforu – Çorum stoper ikilisi",
+            "en": "Galatasaray centre-forward vs Çorum centre-backs"
+          },
+          "body": {
+            "tr": "Maçın en yoğun ikili mücadelesi ceza sahası içinde yaşanacak. Çorum stoperlerinin görevi yalnızca hava topu kazanmak değil; santrforun sırtı dönük top alıp dönmesini engellemek ve arkaya yapılan koşuda ofsayt hattını doğru zamanda ayarlamak. Stoperlerden biri öne çıkıp topu keserse arkasında kalan alan doğrudan pozisyona dönüşebilir; ikisi de geride kalırsa bu kez ceza sahası önü boşalır ve şut alanı açılır. Çorum için doğru cevap muhtemelen ikisinin arasında: biri baskıya çıkarken diğerinin derinliği koruması.",
+            "en": "The most intense duel will be inside the box. The Çorum centre-backs' job is not only to win headers but to stop the forward turning with his back to goal and to time the offside line on runs in behind. If one steps out to intercept, the space behind him turns straight into a chance; if both sit deep, the edge of the box opens and shooting space appears. The right answer for Çorum is likely in between: one steps, the other holds the depth."
+          }
+        },
+        {
+          "id": "kanat-bek",
+          "title": {
+            "tr": "Galatasaray kanadı – Çorum beki",
+            "en": "Galatasaray winger vs Çorum full-back"
+          },
+          "body": {
+            "tr": "Kanat oyuncusu içeri kesip şut açısı ararsa Çorum beki tek başına kalmaz; orta saha desteği gerekir. Ama o destek geldiğinde merkez incelir ve Galatasaray'ın yarı alan pası açılır. Bu, Çorum'un maç boyunca vereceği en sık kararlardan biri: kanadı ikili kapatıp merkezi mi riske atmak, yoksa beki yalnız bırakıp merkezi mi korumak.",
+            "en": "If the winger cuts inside looking for a shooting angle, the Çorum full-back cannot be left alone; midfield support is needed. But when that support arrives the centre thins and Galatasaray's half-space pass opens. This is one of the most frequent decisions Çorum will face: double up wide and risk the middle, or leave the full-back alone and protect the centre."
+          }
+        },
+        {
+          "id": "orta-saha-baskisi",
+          "title": {
+            "tr": "Galatasaray orta saha baskısı – Çorum'un ilk pas çıkışı",
+            "en": "Galatasaray's midfield press vs Çorum's first pass"
+          },
+          "body": {
+            "tr": "Çorum topu kazandığında ilk pasın nereye gittiği maçın yönünü belirliyor. Galatasaray'ın karşı presi bu ilk pası yana ya da geriye zorlayabilirse Çorum'un geçiş fırsatı kapanıyor ve top hızla geri dönüyor. Çorum açısından çözüm, kazanılan topu tek dokunuşla ileri taşıyabilecek bir çıkış noktası bulmak — genellikle kanat oyuncusuna atılan uzun bir top ya da orta sahanın önüne düşen ikinci top.",
+            "en": "When Çorum win the ball, where the first pass goes sets the direction of the match. If Galatasaray's counter-press forces it sideways or backwards, the transition window closes and the ball comes straight back. Çorum's answer is an outlet that can move the ball forward in one touch — usually a long ball to a wide player or a second ball dropping in front of the midfield."
+          }
+        },
+        {
+          "id": "kontra-rest-defence",
+          "title": {
+            "tr": "Çorum kontratakçıları – Galatasaray'ın geride kalan dengesi",
+            "en": "Çorum's counter-attackers vs Galatasaray's rest defence"
+          },
+          "body": {
+            "tr": "Galatasaray bekleri yukarıdayken geride kalan denge üç oyuncuya kadar inebiliyor. Çorum'un hızlı kanat oyuncuları bu anı yakalarsa, sayısal olarak dengeli hatta üstün bir kontratak kurulabilir. Belirleyici olan, Galatasaray'ın defansif orta sahasının o anda nerede durduğu: ceza sahası çevresinde ikinci top toplamak için ileride kaldıysa arkasındaki koridor açık kalıyor.",
+            "en": "With Galatasaray's full-backs high, the rest defence can drop to three. If Çorum's quicker wide players catch that moment, a numerically even or even favourable counter becomes possible. The decisive factor is where Galatasaray's defensive midfielder is standing: if he has stayed high to collect second balls around the box, the corridor behind him is open."
+          }
+        },
+        {
+          "id": "duran-top",
+          "title": {
+            "tr": "Duran top eşleşmesi",
+            "en": "Set-piece matchup"
+          },
+          "body": {
+            "tr": "Akıştan az pozisyon bulacak bir takım için duran toplar en yoğunlaşmış fırsat anı. Çorum'un kazandığı her korner ve ceza sahasına yakın serbest vuruş, oyunun geri kalanındaki dezavantajı kısmen dengeliyor. Galatasaray tarafında mesele savunma organizasyonu ve ikinci top: korner sonrası düşen topu kazanmak, hem ikinci dalgayı engelliyor hem de hızlı çıkış imkânı veriyor.",
+            "en": "For a side that will see few chances from open play, set pieces are the most concentrated opportunity. Every corner and free-kick near the box that Çorum win partly offsets their disadvantage elsewhere. For Galatasaray it is about organisation and the second ball: winning the drop after a corner both stops the second wave and opens a quick break."
+          }
+        }
+      ]
+    }
+  ]
+}
