@@ -53,7 +53,11 @@ const { isTurkishMatch, turkishSideOf } = require("./turkishTeams");
  * yapıldığında ARTIRILMALI; yoksa parmak izi eşleşmeye devam eder ve eski
  * raporlar yeniden üretilmez.
  */
-const MODEL_VERSION = "futbolradar-post-match-v4";
+// v5: olay okuma iki biçimi de tanıyor. Sağlayıcı kayıtlarında golcü adı
+// `value` alanında; v4 yalnızca `detail`e baktığı için golcü "Normal Goal"
+// diye yazılıyor ve sağlayıcıdan gelen kırmızı kartlar kırılma anlarına
+// hiç girmiyordu (167 yayınlanmış sayfa etkilendi).
+const MODEL_VERSION = "futbolradar-post-match-v5";
 
 /**
  * ANALİZ YAŞAM DÖNGÜSÜ.

@@ -21,6 +21,8 @@ import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 
 const root = process.cwd();
 const today = new Date().toISOString().slice(0, 10);
+/** Saat dilimi payı: üreticiler yerel saatle, denetim UTC ile çalışıyor. */
+const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
 
 console.log("sitemap-freshness");
 
@@ -159,7 +161,13 @@ console.log("sitemap-freshness");
     assert.match(lastmod, /^\d{4}-\d{2}-\d{2}$/, `geçersiz lastmod: ${lastmod}`);
     // GELECEĞE TARİH ATILMAZ: "yarın güncellendi" diyen bir sayfa,
     // sinyalin tamamını şüpheli hâle getirir.
-    assert.ok(lastmod <= today, `lastmod gelecekte: ${lastmod}`);
+    //
+    // Bir günlük tolerans SAAT DİLİMİ İÇİN: bazı üreticiler tarihi
+    // Türkiye saatiyle, bu denetim UTC ile yazıyor. TRT gece yarısı ile
+    // UTC gece yarısı arasındaki üç saatte iki tarih ayrışıyor ve o
+    // aralıkta koşan derleme, gerçekte doğru olan bir tarihe "gelecek"
+    // damgası yiyordu. Haftalarca ileri bir tarih ise hâlâ hata.
+    assert.ok(lastmod <= tomorrow, `lastmod gelecekte: ${lastmod}`);
   }
 
   // Ana sayfa her derlemede değişiyor; tarihi taş gibi durmamalı.
