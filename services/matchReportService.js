@@ -154,9 +154,60 @@ function eventTeamName(event) {
   return typeof event.team === "string" ? event.team : event.team.name || "";
 }
 
+/**
+ * OLAY SÖZLÜĞÜ — iki kaynak, iki dil.
+ *
+ * Kürasyonlu kayıtlar olay türünü Türkçe yazıyor ("Gol", "Kırmızı kart");
+ * sağlayıcı İngilizce veriyor ("Goal", "Card" + detail "Red Card"). Ağırlık
+ * ve katkı hesabı yalnızca Türkçe terimlere baktığı için sağlayıcıdan gelen
+ * KIRMIZI KARTLAR HİÇ SAYILMIYORDU: kırılma anları listesinde 10 puanlık bir
+ * olay 1 puana düşüp eleniyordu. "Gol" ise "goal" içinde geçtiği için
+ * tesadüfen çalışıyordu — sözleşme değil, şans.
+ *
+ * Tür ve detay birlikte taranıyor: sağlayıcı kart olaylarında rengi `type`
+ * değil `detail` alanında bildiriyor.
+ */
+const EVENT_SYNONYMS = {
+  "gol": ["goal"],
+  "kırmızı": ["red card"],
+  "sarı": ["yellow card"],
+  "penaltı": ["penalty"],
+  "direk": ["woodwork", "hit the post"],
+  "kurtarış": ["saved", "goalkeeper save"],
+  "asist": ["assist"],
+  "iptal": ["cancelled", "disallowed", "var"]
+};
+
 function isType(event, ...needles) {
-  const type = normalizeText(event && event.type);
-  return needles.some((needle) => type.includes(normalizeText(needle)));
+  const haystack = `${normalizeText(event && event.type)} ${normalizeText(event && event.detail)}`;
+  return needles.some((needle) => {
+    const key = normalizeText(needle);
+    if (haystack.includes(key)) return true;
+    const synonyms = EVENT_SYNONYMS[needle] || EVENT_SYNONYMS[key] || [];
+    return synonyms.some((synonym) => haystack.includes(normalizeText(synonym)));
+  });
+}
+
+/** Kırılma anları listesinde gösterilecek Türkçe etiket. */
+const EVENT_LABELS = [
+  [["red card"], "Kırmızı kart"],
+  [["yellow card", "second yellow"], "Sarı kart"],
+  [["penalty missed", "missed penalty"], "Kaçan penaltı"],
+  [["penalty"], "Penaltı"],
+  [["own goal"], "Kendi kalesine gol"],
+  [["normal goal", "goal"], "Gol"],
+  [["substitution", "subst"], "Oyuncu değişikliği"],
+  [["var"], "VAR incelemesi"]
+];
+
+function eventLabel(event) {
+  const haystack = `${normalizeText(event && event.detail)} ${normalizeText(event && event.type)}`;
+  for (const [keys, label] of EVENT_LABELS) {
+    if (keys.some((key) => haystack.includes(normalizeText(key)))) return label;
+  }
+  // Tanınmayan tür OLDUĞU GİBİ gösterilir; uydurma bir etiket koymaktansa
+  // sağlayıcının yazdığı kalsın.
+  return (event && event.type) || "Olay";
 }
 
 function goalEvents(match) {
@@ -171,6 +222,57 @@ function goalEvents(match) {
  */
 function stripTurkishSuffix(token) {
   return token.replace(/['’](?=\p{Ll})\p{Ll}+$/u, "");
+}
+
+/**
+ * Olaydaki OYUNCU ADI — sağlayıcı biçimi ile kürasyonlu biçim aynı alanı
+ * kullanmıyor ve fark sessizce yanlış isim bastırıyordu.
+ *
+ *   • Kürasyonlu kayıt: `detail` bir Türkçe cümle —
+ *     "Anderson Talisca serbest vuruştan skoru 1-0 yaptı."
+ *   • Sağlayıcı kaydı: `detail` olayın TÜRÜ — "Normal Goal", "Red Card" —
+ *     oyuncu ise `value` alanında: "V. Osimhen · Asist: L. Torreira · Normal Goal".
+ *
+ * Yalnızca `detail` okunduğu için sağlayıcıdan gelen her maçta golcü adı
+ * "Normal Goal" çıkıyordu; 167 rapor sayfasında "2' Goal · Takım Normal Goal"
+ * yazıyordu. Ad UYDURULMUŞ değildi ama olmayan bir oyuncuyu varmış gibi
+ * göstermek de aynı kapıya çıkıyor.
+ *
+ * Bu yüzden önce `value`nun ilk parçası denenir (ayraç " · "), sonra
+ * `detail` cümlesine düşülür. Hiçbiri ad vermiyorsa null döner ve arayüz
+ * oyuncusuz cümleyi kurar — tahmin edilmez.
+ */
+function playerFromEvent(event) {
+  if (!event) return null;
+  const value = String(event.value || "").split("·")[0].trim();
+  const fromValue = playerFromDetail(value);
+  if (fromValue) return fromValue;
+
+  // `detail` GERİ DÖNÜŞÜ YALNIZCA CÜMLE İSE GEÇERLİ. Sağlayıcı kaydında
+  // detay olayın türüdür ("Normal Goal", "Red Card") ve iki büyük harfle
+  // başlayan iki kelime olduğu için ad çıkarıcı onu memnuniyetle kabul
+  // ediyor. Tanınan bir olay etiketi asla oyuncu adı sayılmaz.
+  if (isKnownEventLabel(event.detail)) return null;
+  return playerFromDetail(event.detail);
+}
+
+/**
+ * Satırda gösterilecek detay: önce oyuncu adı, yoksa sağlayıcının serbest
+ * metni. Detay tanınan bir olay ETİKETİ ise boş bırakılır — `type` alanı
+ * zaten Türkçe etiketi taşıyor ve "Gol — Normal Goal" demek kendini
+ * tekrarlayan, üstelik çevrilmemiş bir satır olurdu.
+ */
+function eventDetailText(event) {
+  const player = playerFromEvent(event);
+  if (player) return player;
+  return isKnownEventLabel(event && event.detail) ? "" : (event && event.detail) || "";
+}
+
+/** Metin, olay türü sözlüğündeki bir etiketin kendisi mi? */
+function isKnownEventLabel(text) {
+  const value = normalizeText(text);
+  if (!value) return false;
+  return EVENT_LABELS.some(([keys]) => keys.some((key) => value === normalizeText(key)));
 }
 
 function playerFromDetail(detail) {
@@ -266,7 +368,7 @@ function buildSummary(match, seed) {
     const scorers = goals
       .map((event) => {
         const minute = minuteOf(event);
-        const player = playerFromDetail(event.detail);
+        const player = playerFromEvent(event);
         const team = eventTeamName(event);
         // Kendi kalesine gollerde olay metninde golu atan rakip oyuncu yer
         // almaz; "52. dakikada Hull City" demek golu onlarin bir oyuncusunun
@@ -323,7 +425,7 @@ function buildStandoutPlayers(match) {
 
   for (const event of match.events || []) {
     const team = eventTeamName(event);
-    const player = playerFromDetail(event.detail);
+    const player = playerFromEvent(event);
     const minute = minuteOf(event);
     const stamp = minute ? `${minute}'` : "";
 
@@ -696,8 +798,10 @@ function buildTurningPoints(match) {
     moments: chosen.map((row) => ({
       minute: row.minute === null ? "-" : `${row.minute}'`,
       team: eventTeamName(row.event),
-      type: row.event.type || "Olay",
-      detail: row.event.detail || "",
+      type: eventLabel(row.event),
+      // Okuyucunun aradığı şey olayın türü değil, KİM: detay alanına önce
+      // oyuncu adı yazılır, ad çıkarılamıyorsa sağlayıcının metni kalır.
+      detail: eventDetailText(row.event),
       pivotal: row.weight >= 7
     }))
   };
@@ -786,8 +890,10 @@ function buildHalfAnalysis(match, half) {
   if (rhythm) notes.push(rhythm);
 
   for (const goal of goals) {
-    const scorer = playerFromDetail(goal.detail);
-    notes.push(`${minuteOf(goal)}' ${eventTeamName(goal)}${scorer ? ` — ${scorer}` : ""}: ${goal.detail || "gol"}`);
+    const scorer = playerFromEvent(goal);
+    // Etiket Türkçeleştirilir: sağlayıcı kaydında `detail` "Normal Goal"
+    // olduğu için satır sonunda ham İngilizce metin kalıyordu.
+    notes.push(`${minuteOf(goal)}' ${eventTeamName(goal)}${scorer ? ` — ${scorer}` : ""}: ${eventLabel(goal).toLocaleLowerCase("tr-TR")}`);
   }
 
   for (const card of cards) {
@@ -1031,14 +1137,15 @@ function buildLateGame(match) {
     .map((event) => ({
       minute: `${minuteOf(event)}'`,
       team: eventTeamName(event),
-      type: event.type || "Olay",
-      detail: event.detail || "",
+      // Kırılma anlarıyla aynı sözleşme: Türkçe etiket + oyuncu adı.
+      type: eventLabel(event),
+      detail: eventDetailText(event),
       decisive: isType(event, "gol", "kırmızı", "penaltı")
     }));
 
   const parts = [];
   if (lateGoals.length) {
-    const scorers = lateGoals.map((event) => playerFromDetail(event.detail)).filter(Boolean);
+    const scorers = lateGoals.map((event) => playerFromEvent(event)).filter(Boolean);
     parts.push(`Son bölümde ${lateGoals.length} gol kaydedildi`);
     if (scorers.length) parts.push(`(${[...new Set(scorers)].join(", ")})`);
   }
@@ -1279,7 +1386,7 @@ function buildSeo(match, summary) {
     const parts = [`${strip} maç raporu`];
 
     const goals = goalEvents(match)
-      .map((event) => playerFromDetail(event.detail))
+      .map((event) => playerFromEvent(event))
       .filter(Boolean);
     if (goals.length) parts.push(`goller: ${[...new Set(goals)].join(", ")}`);
     if ((match.statistics || []).length) parts.push("xG, şut ve pas istatistikleri");

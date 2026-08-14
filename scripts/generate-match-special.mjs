@@ -86,7 +86,7 @@ const STRINGS = {
     editorialNote: "Bu bölüm editoryal yorumdur; sitenin doğrulanmış maç verisinden ayrıdır.",
     squadNote: "Oyuncu listesi güncel kadro verisinden alınır; kadroda olmayan isim gösterilmez.",
     lineupPending: "İlk 11'ler henüz açıklanmadı",
-    lineupPendingBody: "Resmî kadrolar sağlayıcı tarafından yayımlandığı anda bu bölüm kendiliğinden güncellenir; oyuncular, forma numaraları, yedekler ve diziliş API verisiyle değiştirilir.",
+    lineupPendingBody: "Resmî kadrolar açıklandığı anda bu bölüm kendiliğinden güncellenir; oyuncular, forma numaraları, yedekler ve diziliş resmî listeyle değiştirilir.",
     liveEntry: "Canlı skor merkezi", matchCentre: "Maç merkezi",
     live: "Canlı", finished: "Tamamlandı"
   },
@@ -103,7 +103,7 @@ const STRINGS = {
     editorialNote: "This section is editorial opinion, separate from the site's verified match data.",
     squadNote: "Player lists come from current squad data; a name not in the squad is not shown.",
     lineupPending: "Line-ups have not been announced yet",
-    lineupPendingBody: "This section updates itself when the provider publishes the official line-ups; players, shirt numbers, substitutes and formation are replaced with API data.",
+    lineupPendingBody: "This section updates itself when the official line-ups are announced; players, shirt numbers, substitutes and formation are replaced with the official list.",
     liveEntry: "Live scores", matchCentre: "Match centre",
     live: "Live", finished: "Full time"
   }

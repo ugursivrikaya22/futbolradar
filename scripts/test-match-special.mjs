@@ -127,10 +127,27 @@ console.log("match-special");
     assert.ok(Number.isFinite(row.scored) && Number.isFinite(row.conceded));
   }
 
-  // Çorum FK'nın maçı arşivde YOK → editoryal ve öyle işaretli.
-  assert.equal(special.teams.away.form.source, "editorial",
-    "arşivde kaydı olmayan takımın formu editoryal işaretlenmeli");
+  // KONUK TAKIMIN KAYNAĞI VERİYE GÖRE DEĞİŞİR, ETİKET HER ZAMAN DOĞRUDUR.
+  //
+  // Bu satır bir zamanlar "editorial" bekliyordu: Çorum FK'nın arşivde maçı
+  // yoktu. Maç oynanıp arşive girince etiket haklı olarak "verified" oldu ve
+  // test kırıldı — çünkü kuralı değil, verinin O ANKİ HÂLİNİ sabitlemişti.
+  // Denetim artık kuralı sınıyor: etiket geçerli olmalı ve doğrulanmış
+  // denen her satır gerçek sayı taşımalı.
+  assert.ok(["verified", "editorial"].includes(special.teams.away.form.source),
+    `beklenmeyen form kaynağı: ${special.teams.away.form.source}`);
   assert.ok(special.teams.away.form.matches.length > 0);
+  if (special.teams.away.form.source === "verified") {
+    for (const row of special.teams.away.form.matches) {
+      assert.ok(Number.isFinite(row.scored) && Number.isFinite(row.conceded),
+        "doğrulanmış form satırı gerçek skor taşımalı");
+    }
+  }
+
+  // Arşivde HİÇ kaydı olmayan takım editoryal işaretlenir — kuralın kendisi.
+  const editorialOnly = formFor({ seasons: {} }, { "Yeni Takım": [{ label: "Yeni Takım 1-0 X", result: "win" }] }, "Yeni Takım", 5);
+  assert.equal(editorialOnly.source, "editorial",
+    "arşivde kaydı olmayan ama editoryal girdisi olan takım editoryal işaretlenmeli");
 
   // Ne arşiv ne editoryal girdi varsa form BOŞ döner, uydurulmaz.
   const empty = formFor({ seasons: {} }, {}, "Bilinmeyen Takım", 5);
