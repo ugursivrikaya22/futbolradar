@@ -27,7 +27,7 @@
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="../site.webmanifest" />
-    <link rel="stylesheet" href="../page.css?v=28cccb11" />
+    <link rel="stylesheet" href="../page.css?v=e5eaf91e" />
     <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","@id":"https://www.futbolradar.com/en/polls.html","url":"https://www.futbolradar.com/en/polls.html","name":"Turkish Football Reader Polls | FutbolRadar","description":"Open votes, final results from closed polls and upcoming questions — every FutbolRadar reader poll in one place.","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"FutbolRadar","url":"https://www.futbolradar.com/"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.futbolradar.com/en"},{"@type":"ListItem","position":2,"name":"Turkish Football Reader Polls","item":"https://www.futbolradar.com/en/polls.html"}]}]}</script>
     <script data-futbolradar-theme>
     (function () {
@@ -41,8 +41,8 @@
       }
     })();
   </script>
-    <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
     <script src="/analytics.js" defer data-futbolradar-ga4 data-ga4-id="" data-google-ads-id="" data-page-view-label="" data-match-click-label=""></script>
+    <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   </head>
   <body class="subpage">
     <header class="topbar topbar-premium" data-shared-layout="header">
@@ -110,10 +110,15 @@
         <p>Every poll stays open for at least two weeks, then closes and its results become final. A closed poll does not disappear; it stays on this page with its results.</p>
       </section>
 
-      <section class="data-panel" aria-labelledby="poll-motm-title">
-        <h2 class="panel-title" id="poll-motm-title">Man of the Match polls</h2>
-        <p>The polls on this page ask about the season as a whole. The per-match <strong>Man of the Match</strong> vote lives on each match page and closes 24 hours after the final whistle.</p>
-        <p><a class="detail-link" href="./results.html">Go to match results</a></p>
+      <section class="poll-archive poll-archive--motm" data-motm-archive data-motm-archive-source="/api/motm-week" data-motm-archive-locale="en" aria-labelledby="poll-motm-title">
+        <div class="poll-archive__intro">
+          <h2 id="poll-motm-title">Man of the Match polls</h2>
+          <p>Each match carries its own vote on the match page, and it <strong>closes 24 hours after the final whistle</strong>. Once closed the result is final and stays on the match page.</p>
+          <p class="poll-archive__note">Match reports are published in Turkish; the links below say so before you click.</p>
+        </div>
+        <p class="poll-archive__status" data-motm-archive-status>Loading match polls…</p>
+        <div class="poll-archive__list" data-motm-archive-list></div>
+        <p class="poll-archive__note"><a class="detail-link" href="./results.html">All match results</a></p>
       </section>
       <section class="source-strip" aria-label="Data information">
         <div><span>Time zone</span><b>All times are shown in Türkiye time (UTC+3).</b></div>
@@ -145,6 +150,6 @@
         
       </div>
     </footer>
-    <script src="../site.js?v=213d2ae4" defer></script>
+    <script src="../site.js?v=e16f9561" defer></script>
   </body>
 </html>

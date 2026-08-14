@@ -187,6 +187,29 @@ yüzey aynı doğrulama ve sunum kodunu paylaşıyor. **Liste kipi POST kabul
 etmez**; oy vermek her zaman tekil anket yolundan geçer, çünkü pencere
 kapısı orada.
 
+### Maçın Adamı anketleri de aynı sayfada
+
+Sayfanın ikinci listesi maç anketleridir (`GET /api/motm-week?scope=matches`).
+Her satır maçı, oylamanın açık olup olmadığını ve — gerçek sayım varsa —
+önde gideni gösterir; **oy burada verilmez**, bağlantı maç sayfasına gider
+çünkü 24 saatlik pencere kapısı orada.
+
+Kapsam haftalık **değil**: ana sayfa widget'ı "bu hafta kim öne çıktı"
+sorusunu sorar, anket sayfası ise bir arşivdir ve oylaması kapanmış bir maç
+anketi de oraya aittir. Haftalık pencereyi buraya da uygulamak sayfayı çoğu
+hafta boş bırakırdı.
+
+**Bağlantı tahmin edilmez.** Anketin hangi sayfada olduğunu enjektör
+(`scripts/inject-motm-poll.mjs`) `data/motm-poll-pages.json` dosyasına yazar
+ve uç nokta onu okur. Eşlemede olmayan maç listeye **girmez**: tıklandığında
+404 veren bir "oy ver" bağlantısı, bağlantı olmamasından kötüdür. Dosya
+üretilendir — elle düzenlenmez; `test-motm-week` iki yönü de doğrular
+(eşlemedeki her sayfa gerçekten anketi taşıyor mu, anketi olan her sayfa
+eşlemede mi).
+
+Beraberlikte önde giden **bildirilmez**: eşitken birini öne koymak, veride
+olmayan bir sıra uydurmaktır.
+
 ## İki sürüm birebir aynı
 
 Kabuk iki tarafta da aynı sınıfları ve aynı `data-*` kancalarını taşır;

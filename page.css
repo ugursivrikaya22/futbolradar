@@ -18390,6 +18390,60 @@ body,
 .poll-archive__card .home-poll__results { margin-top: 4px; }
 .poll-archive__card .home-poll__form { margin-top: 4px; }
 
+/* Maçın adamı listesi: kart daha küçük, çünkü burada oy verilmiyor —
+   satırın işi "hangi maçta anket var, açık mı, kim önde" demek. */
+.poll-archive--motm { margin-top: 28px; }
+
+.poll-archive__intro h2 {
+  margin: 0 0 6px;
+  font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+}
+
+.poll-archive__intro p {
+  margin: 0 0 6px;
+  max-width: 68ch;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.poll-archive--motm .poll-archive__list {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  margin-top: 14px;
+  gap: 10px;
+}
+
+.motm-archive__card {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.motm-archive__card.is-open { border-color: var(--line-strong); }
+
+.motm-archive__match {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.motm-archive__meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.poll-archive__note {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .poll-archive__card { transition: none; }
 }

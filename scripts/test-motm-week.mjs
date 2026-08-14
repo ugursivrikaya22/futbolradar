@@ -337,4 +337,169 @@ console.log("motm-week");
     "animasyonlar reduced-motion'a uymalı");
 }
 
-console.log("motm-week OK (9 bölüm)");
+// ── 10. ANKET SAYFASI KİPİ: scope=matches ─────────────────────────────────
+//
+// Anket sayfası maç anketlerini de listeliyor. Buradaki tek soru:
+// TIKLANDIĞINDA 404 VEREN BİR BAĞLANTI ÜRETİLEBİLİR Mİ?
+//
+// Bağlantı tahmin edilmiyor: `data/motm-poll-pages.json` enjektör
+// tarafından yazılıyor ve gerçekten anket basılmış sayfayı taşıyor.
+// Eşlemede olmayan maç listeye girmemeli.
+{
+  const STORE_PATH = path.join(root, "services", "motmVoteStore.js");
+  const WEEK_ROUTE_PATH = path.join(root, "server", "motmWeekRoute.js");
+  const VOTE_ROUTE_PATH = path.join(root, "server", "motmVoteRoute.js");
+  const API_PATH = path.join(root, "api", "[...route].js");
+  const MATCHES_PATH = path.join(root, "data", "matches.json");
+  const PAGES_PATH = path.join(root, "data", "motm-poll-pages.json");
+
+  const originalMatches = require.cache[MATCHES_PATH];
+  const originalPages = require.cache[PAGES_PATH];
+
+  // İki anket hak eden maç: biri eşlemede VAR, biri YOK.
+  const linkedMatch = match("baglantili-mac", 30);
+  const orphanMatch = match("eslemede-olmayan-mac", 40);
+
+  function installHandler(options = {}) {
+    require.cache[MATCHES_PATH] = {
+      id: MATCHES_PATH, filename: MATCHES_PATH, loaded: true,
+      exports: [linkedMatch, orphanMatch]
+    };
+    require.cache[PAGES_PATH] = {
+      id: PAGES_PATH, filename: PAGES_PATH, loaded: true,
+      exports: { pages: { "baglantili-mac": "mac-raporu/baglantili-mac.html" } }
+    };
+    const fake = {
+      ...require(STORE_PATH),
+      isConfigured: () => options.configured !== false,
+      readTally: async () => {
+        if (options.throws) throw new Error("store-down");
+        return options.counts || {};
+      }
+    };
+    require.cache[STORE_PATH] = { id: STORE_PATH, filename: STORE_PATH, loaded: true, exports: fake };
+    delete require.cache[WEEK_ROUTE_PATH];
+    delete require.cache[VOTE_ROUTE_PATH];
+    delete require.cache[API_PATH];
+    return require(API_PATH);
+  }
+
+  function invoke(handler, url = "/api/motm-week?scope=matches") {
+    const req = { method: "GET", url, headers: {} };
+    const res = {
+      statusCode: 200,
+      headers: {},
+      setHeader(name, value) { this.headers[name.toLowerCase()] = value; },
+      end(payload) { this.body = payload; return this; }
+    };
+    return Promise.resolve(handler(req, res)).then(() => ({
+      status: res.statusCode,
+      headers: res.headers,
+      payload: res.body ? JSON.parse(res.body) : null
+    }));
+  }
+
+  // EŞLEMEDE OLMAYAN MAÇ LİSTEYE GİRMEZ.
+  {
+    const response = await invoke(installHandler({ counts: { [ID.dogan]: 7, [ID.ridvan]: 3 } }));
+    assert.equal(response.status, 200);
+    assert.equal(response.payload.data.matches.length, 1, "yalnızca eşlemedeki maç listelenmeli");
+
+    const row = response.payload.data.matches[0];
+    assert.equal(row.matchId, "baglantili-mac");
+    assert.equal(row.href, "/mac-raporu/baglantili-mac.html", "bağlantı eşlemeden gelmeli");
+    assert.equal(row.matchLabel, "Beşiktaş 2-1 FC Midtjylland");
+    assert.equal(row.total, 10);
+    assert.equal(row.leader.name, "Doğan Alemdar");
+    assert.equal(row.leader.percent, 70);
+  }
+
+  // BERABERLİKTE LİDER YOK: eşitken birini öne koymak veride olmayan bir
+  // sıra uydurmaktır (ana sayfa anketindeki kuralın aynısı).
+  {
+    const response = await invoke(installHandler({ counts: { [ID.dogan]: 4, [ID.ridvan]: 4 } }));
+    const row = response.payload.data.matches[0];
+    assert.equal(row.total, 8);
+    assert.equal(row.leader, null, "beraberlikte lider bildirilmemeli");
+  }
+
+  // Sayımda kalmış geçersiz kimlik toplama girmez.
+  {
+    const response = await invoke(installHandler({ counts: { [ID.dogan]: 5, "uydurma-oyuncu": 99 } }));
+    assert.equal(response.payload.data.matches[0].total, 5, "aday olmayan kimlik toplama girmiş");
+  }
+
+  // DEPO KAPALIYKEN ANKETLERİN VARLIĞI YİNE BİLDİRİLİR: okuyucu maç
+  // sayfasına gidip oy verebilir. Yalnızca sayım gösterilmez.
+  {
+    const response = await invoke(installHandler({ configured: false }));
+    assert.equal(response.payload.data.storage, "unavailable");
+    assert.equal(response.payload.data.matches.length, 1, "depo kapalıyken de anket listelenmeli");
+    assert.equal(response.payload.data.matches[0].total, 0);
+    assert.equal(response.payload.data.matches[0].leader, null, "sayım yokken lider uydurulmamalı");
+  }
+
+  // Depo arızası sayfayı kırmaz.
+  {
+    const response = await invoke(installHandler({ throws: true }));
+    assert.equal(response.status, 200);
+    assert.equal(response.payload.data.storage, "unavailable");
+    assert.equal(response.payload.data.matches.length, 1);
+  }
+
+  // Varsayılan kip (oyuncu sıralaması) depo kapalıyken HİÇ liste vermez:
+  // sıralama gerçek sayım olmadan anlamsız.
+  {
+    const response = await invoke(installHandler({ configured: false }), "/api/motm-week");
+    assert.equal(response.payload.data.storage, "unavailable");
+    assert.deepEqual(response.payload.data.players, []);
+  }
+
+  if (originalMatches) require.cache[MATCHES_PATH] = originalMatches;
+  else delete require.cache[MATCHES_PATH];
+  if (originalPages) require.cache[PAGES_PATH] = originalPages;
+  else delete require.cache[PAGES_PATH];
+  delete require.cache[STORE_PATH];
+  delete require.cache[WEEK_ROUTE_PATH];
+  delete require.cache[VOTE_ROUTE_PATH];
+  delete require.cache[API_PATH];
+}
+
+// ── 11. Eşleme dosyası enjektörle tutarlı ─────────────────────────────────
+//
+// `data/motm-poll-pages.json` üretilen bir dosya; elle düzenlenirse ya da
+// enjektörle ayrışırsa anket sayfası var olmayan sayfalara bağlanır.
+{
+  const payload = JSON.parse(fs.readFileSync(path.join(root, "data", "motm-poll-pages.json"), "utf8"));
+  const pages = payload.pages || {};
+  const ids = Object.keys(pages);
+  assert.ok(ids.length > 0, "eşlemede en az bir anket sayfası olmalı");
+
+  for (const [matchId, page] of Object.entries(pages)) {
+    // Hedef sayfa GERÇEKTEN var mı ve anketi taşıyor mu?
+    const file = path.join(root, page);
+    assert.ok(fs.existsSync(file), `${page}: eşlemedeki sayfa yok`);
+    const html = fs.readFileSync(file, "utf8");
+    assert.ok(html.includes("data-motm-poll"), `${page}: eşlemede ama ankete sahip değil`);
+    assert.ok(html.includes(`data-motm-match="${matchId}"`), `${page}: başka maçın anketini taşıyor`);
+  }
+
+  // Ters yön: anketi olan her sayfa eşlemede mi?
+  const withPoll = [];
+  for (const dir of ["mac", "mac-raporu", "analiz"]) {
+    const absolute = path.join(root, dir);
+    if (!fs.existsSync(absolute)) continue;
+    for (const name of fs.readdirSync(absolute)) {
+      if (!name.endsWith(".html")) continue;
+      if (fs.readFileSync(path.join(absolute, name), "utf8").includes("data-motm-poll")) {
+        withPoll.push(name.replace(/\.html$/, ""));
+      }
+    }
+  }
+  for (const matchId of withPoll) {
+    assert.ok(pages[matchId], `${matchId}: anketi var ama eşlemede yok`);
+  }
+  assert.equal(ids.length, withPoll.length, "eşleme ile basılı anket sayısı tutmalı");
+}
+
+console.log("motm-week OK (11 bölüm)");

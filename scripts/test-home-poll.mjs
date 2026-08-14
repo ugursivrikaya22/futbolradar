@@ -690,13 +690,19 @@ console.log("home-poll");
 
 // ── 13. ANKET SAYFASI: iki dilde aynı kabuk ───────────────────────────────
 {
-  const HOOKS = ["data-poll-archive", "data-poll-archive-source", "data-poll-archive-list", "data-poll-archive-status"];
+  // Sayfa İKİ liste taşır: kampanya anketleri ve maç anketleri. "Tüm
+  // anketler bir arada" iddiası ancak ikisi de varsa doğru.
+  const HOOKS = [
+    "data-poll-archive", "data-poll-archive-source", "data-poll-archive-list", "data-poll-archive-status",
+    "data-motm-archive", "data-motm-archive-source", "data-motm-archive-list", "data-motm-archive-status"
+  ];
   for (const page of [{ file: "anketler.html", locale: "tr" }, { file: path.join("en", "polls.html"), locale: "en" }]) {
     const html = fs.readFileSync(path.join(root, page.file), "utf8");
     for (const hook of HOOKS) {
       assert.ok(html.includes(hook), `${page.file}: "${hook}" kancası eksik`);
     }
     assert.ok(html.includes(`data-poll-archive-locale="${page.locale}"`), `${page.file}: dil kancası yanlış`);
+    assert.ok(html.includes(`data-motm-archive-locale="${page.locale}"`), `${page.file}: maç anketi dil kancası yanlış`);
     // Sayfa ortak yerleşimi almış olmalı (menü, arama, dil kutusu).
     assert.ok(html.includes('data-shared-layout="header"'), `${page.file}: ortak başlık uygulanmamış`);
     assert.ok(html.includes("lang-switch"), `${page.file}: dil kutusu yok`);
@@ -709,7 +715,8 @@ console.log("home-poll");
 
   // İstemci sözleşmesi.
   const client = fs.readFileSync(path.join(root, "site.js"), "utf8");
-  for (const hook of ["data-poll-archive-list", "scope=all", "poll-archive__card"]) {
+  for (const hook of ["data-poll-archive-list", "scope=all", "poll-archive__card",
+    "data-motm-archive-list", "scope=matches", "motm-archive__card"]) {
     assert.ok(client.includes(hook), `site.js "${hook}" kancasını kaybetmiş`);
   }
   const css = fs.readFileSync(path.join(root, "page.css"), "utf8");

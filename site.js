@@ -1771,11 +1771,119 @@
     render();
   }
 
+  /* ────────────────────────────────────────────────────────────────────────
+     MAÇIN ADAMI ANKETLERİ — ANKET SAYFASINDAKİ İKİNCİ LİSTE.
+     Oy BURADA VERİLMEZ: her maçın oylaması kendi sayfasında yaşıyor ve
+     pencere kapısı orada. Bu liste yalnızca "hangi maçta anket var, açık mı,
+     kim önde" sorusunu yanıtlar ve maç sayfasına götürür.
+     ──────────────────────────────────────────────────────────────────────── */
+
+  function motmStrings(locale) {
+    return locale === "en"
+      ? {
+        open: "Voting open", closed: "Closed", votes: "votes", leading: "Leading",
+        closesPrefix: "Closes", vote: "Vote on the match page", view: "See the result",
+        noVotes: "No votes yet", noStore: "Counts unavailable",
+        empty: "No match polls yet.", failed: "Match polls could not be loaded.",
+        trNote: " (TR)"
+      }
+      : {
+        open: "Oylama açık", closed: "Kapandı", votes: "oy", leading: "Önde",
+        closesPrefix: "Kapanış", vote: "Maç sayfasında oy ver", view: "Sonucu gör",
+        noVotes: "Henüz oy yok", noStore: "Sayım gösterilemiyor",
+        empty: "Henüz maç anketi yok.", failed: "Maç anketleri yüklenemedi.",
+        trNote: ""
+      };
+  }
+
+  function motmCard(row, strings, locale) {
+    var card = document.createElement("article");
+    card.className = "motm-archive__card" + (row.votingOpen ? " is-open" : " is-closed");
+
+    var head = document.createElement("div");
+    head.className = "poll-archive__head";
+
+    var badge = document.createElement("span");
+    badge.className = "poll-archive__badge is-" + (row.votingOpen ? "open" : "closed");
+    badge.textContent = row.votingOpen ? strings.open : strings.closed;
+    head.appendChild(badge);
+
+    if (row.votingOpen && row.closesAt) {
+      var when = document.createElement("span");
+      when.className = "poll-archive__when";
+      when.textContent = strings.closesPrefix + ": " + formatPollDate(row.closesAt, locale);
+      head.appendChild(when);
+    }
+    card.appendChild(head);
+
+    var title = document.createElement("h3");
+    title.className = "motm-archive__match";
+    title.textContent = row.matchLabel;
+    card.appendChild(title);
+
+    var meta = document.createElement("p");
+    meta.className = "motm-archive__meta";
+    if (row.leader) {
+      // Lider yalnızca GERÇEK sayım varsa ve beraberlik yoksa gelir;
+      // sunucu eşitlikte lider bildirmiyor.
+      meta.textContent = strings.leading + ": " + row.leader.name +
+        " · %" + row.leader.percent + " (" + row.leader.votes + " " + strings.votes + ")";
+    } else if (row.total) {
+      meta.textContent = row.total + " " + strings.votes;
+    } else {
+      meta.textContent = row.storage === "ready" ? strings.noVotes : strings.noStore;
+    }
+    card.appendChild(meta);
+
+    // Maç raporu Türkçe yayımlanıyor; İngilizce sayfada bağlantı bunu söyler.
+    var link = document.createElement("a");
+    link.className = "detail-link";
+    link.href = row.href;
+    link.textContent = (row.votingOpen ? strings.vote : strings.view) + strings.trNote;
+    if (locale === "en") {
+      link.setAttribute("hreflang", "tr");
+      link.setAttribute("lang", "tr");
+    }
+    card.appendChild(link);
+
+    return card;
+  }
+
+  function setupMotmArchive(section) {
+    var list = section.querySelector("[data-motm-archive-list]");
+    var status = section.querySelector("[data-motm-archive-status]");
+    var source = section.getAttribute("data-motm-archive-source") || "/api/motm-week";
+    var locale = section.getAttribute("data-motm-archive-locale") === "en" ? "en" : "tr";
+    var strings = motmStrings(locale);
+    if (!list || typeof window.fetch !== "function") return;
+
+    window.fetch(source + "?scope=matches", { headers: { Accept: "application/json" } })
+      .then(function (response) { return response.ok ? response.json() : null; })
+      .then(function (payload) { return payload && payload.data ? payload.data : null; })
+      .catch(function () { return null; })
+      .then(function (data) {
+        var rows = data && Array.isArray(data.matches) ? data.matches : [];
+        if (!rows.length) {
+          if (status) status.textContent = data ? strings.empty : strings.failed;
+          return;
+        }
+        if (status) status.hidden = true;
+        list.innerHTML = "";
+        rows.forEach(function (row) {
+          row.storage = data.storage;
+          list.appendChild(motmCard(row, strings, locale));
+        });
+        section.classList.add("is-ready");
+      });
+  }
+
   function setupHomePolls() {
     var sections = document.querySelectorAll("[data-home-poll]");
     Array.prototype.forEach.call(sections, setupPoll);
     var archives = document.querySelectorAll("[data-poll-archive]");
     Array.prototype.forEach.call(archives, setupPollArchive);
+    var motmArchives = document.querySelectorAll("[data-motm-archive]");
+    Array.prototype.forEach.call(motmArchives, setupMotmArchive);
   }
 
   if (document.readyState === "loading") {

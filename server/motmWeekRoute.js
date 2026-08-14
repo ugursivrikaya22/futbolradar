@@ -6,7 +6,8 @@ const {
   setCachePolicy
 } = require("../api/_utils");
 const { isConfigured, readTally } = require("../services/motmVoteStore");
-const { selectWeeklyTopPlayers, weeklyPollMatches } = require("../services/motmWeekly");
+const { matchLabelFor, selectWeeklyTopPlayers, weeklyPollMatches } = require("../services/motmWeekly");
+const { buildMotmPoll, indexMatchesById } = require("../services/motmPoll");
 
 /**
  * BU HAFTANIN EN ÇOK OY ALANLARI UÇ NOKTASI.
@@ -35,6 +36,10 @@ const { selectWeeklyTopPlayers, weeklyPollMatches } = require("../services/motmW
 
 const SOURCE = "motm-week";
 
+/** Anket sayfasındaki maç anketi listesi için üst sınır: sayfa bir arşiv
+ * ama sonsuz bir liste değil ve her satır bir depo okuması demek. */
+const MAX_MATCH_POLLS = 20;
+
 function loadJson(relative) {
   try {
     return require(relative);
@@ -62,12 +67,104 @@ async function handleMotmWeek(req, res) {
   const unavailable = (note) =>
     sendSuccess(res, { storage: "unavailable", players: [], matchCount: 0, totalVotes: 0 }, SOURCE, null, { note });
 
+  const matches = loadJson("../data/matches.json");
+  const candidates = weeklyPollMatches(matches || {});
+
+  // NOT: depo kapalıysa haftalık OYUNCU sıralaması hiç gösterilmez (aşağıda),
+  // ama maç anketlerinin VARLIĞI sayımdan bağımsızdır — o kip kendi kapısını
+  // taşıyor ve depo kapalıyken de anketleri listeliyor.
+
+  /**
+   * ANKET SAYFASI KİPİ: MAÇ ANKETLERİ, oyuncu sıralaması değil.
+   *
+   * Anket sayfası "tüm anketler bir arada" diyor; maç anketleri de oraya
+   * girmeli. Ayrı bir uç nokta açmak yerine aynı yola bir kip eklendi
+   * (`?scope=matches`) — home-poll'deki `scope=all` ile aynı gerekçe:
+   * Vercel'deki işlev sayısı sabit kalıyor.
+   *
+   * KAPSAM HAFTALIK DEĞİL, MEVCUT OLANLARIN TAMAMI. Haftalık pencere
+   * ana sayfa widget'ının kuralı: orada soru "bu hafta kim öne çıktı".
+   * Anket sayfası bir ARŞİV; oylaması kapanmış bir maç anketi de oraya
+   * aittir. Pencereyi buraya da uygulamak, sayfayı çoğu hafta boş
+   * bırakırdı — "tüm anketler" diyen bir sayfada bu yanlış olurdu.
+   *
+   * Anketin HANGİ SAYFADA olduğu tahmin edilmez: `data/motm-poll-pages.json`
+   * enjektör tarafından yazılır ve gerçekten anket basılmış sayfayı taşır.
+   * Eşlemede olmayan maç listeye GİRMEZ — tıklandığında 404 veren bir
+   * "oy ver" bağlantısı, bağlantı olmamasından kötüdür.
+   */
+  if (String(getQuery(req).scope || "") === "matches") {
+    const pageMap = (loadJson("../data/motm-poll-pages.json") || {}).pages || {};
+    const index = indexMatchesById(matches || {});
+
+    const linked = Object.keys(pageMap)
+      .map((matchId) => {
+        const match = index.get(matchId);
+        if (!match) return null;
+        const { poll } = buildMotmPoll(match);
+        return poll ? { match, poll } : null;
+      })
+      .filter(Boolean)
+      // En yeni maç üstte; anket sayfasında da açık olanlar en yenilerdir.
+      .sort((left, right) => Date.parse(right.match.kickoff || 0) - Date.parse(left.match.kickoff || 0))
+      .slice(0, MAX_MATCH_POLLS);
+
+    const buildRow = ({ match, poll }, tally) => ({
+      matchId: poll.matchId,
+      matchLabel: matchLabelFor(match),
+      kickoff: match.kickoff || null,
+      href: `/${String(pageMap[poll.matchId]).replace(/^\/+/, "")}`,
+      votingOpen: poll.votingOpen,
+      closesAt: poll.closesAt,
+      optionCount: poll.options.length,
+      total: tally ? tally.total : 0,
+      leader: tally ? tally.leader : null
+    });
+
+    if (!isConfigured()) {
+      // Depo kapalı: anketlerin VARLIĞI yine bildirilir (okuyucu maç
+      // sayfasına gidip oy verebilir), yalnızca sayım gösterilmez.
+      return sendSuccess(res, {
+        storage: "unavailable",
+        matches: linked.map((entry) => buildRow(entry, null))
+      }, SOURCE, null, { note: "Oy deposu yapilandirilmamis; sayimlar gosterilemiyor." });
+    }
+
+    try {
+      const rows = await Promise.all(linked.map(async (entry) => {
+        const counts = await readTally(entry.poll.matchId);
+        const valid = new Map(entry.poll.options.map((option) => [option.id, option]));
+        let total = 0;
+        let leader = null;
+        for (const [optionId, rawCount] of Object.entries(counts || {})) {
+          const option = valid.get(optionId);
+          const count = Number(rawCount);
+          if (!option || !Number.isFinite(count) || count <= 0) continue;
+          total += count;
+          if (!leader || count > leader.votes) leader = { name: option.name, team: option.team, votes: count };
+        }
+        // BERABERLİKTE LİDER YOK: eşitken birini öne koymak, veride olmayan
+        // bir sıra uydurmaktır (home-poll'deki kuralın aynısı).
+        const tied = leader && Object.values(counts || {})
+          .filter((value) => Number(value) === leader.votes).length > 1;
+        if (leader) leader.percent = total ? Math.round((leader.votes / total) * 100) : 0;
+        return buildRow(entry, { total, leader: tied ? null : leader });
+      }));
+
+      return sendSuccess(res, { storage: "ready", matches: rows }, SOURCE, new Date().toISOString());
+    } catch (error) {
+      return sendSuccess(res, {
+        storage: "unavailable",
+        matches: linked.map((entry) => buildRow(entry, null))
+      }, SOURCE, null, { note: "Oy deposuna ulasilamadi; sayimlar gosterilemiyor." });
+    }
+  }
+
+  // Haftalık OYUNCU sıralaması gerçek sayım olmadan anlamsızdır: depo
+  // kapalıysa liste hiç gösterilmez, uydurulmaz.
   if (!isConfigured()) {
     return unavailable("Oy deposu yapilandirilmamis; haftalik liste kapali.");
   }
-
-  const matches = loadJson("../data/matches.json");
-  const candidates = weeklyPollMatches(matches || {});
 
   try {
     // Maç başına tek okuma, hepsi paralel; liste zaten sınırlı.

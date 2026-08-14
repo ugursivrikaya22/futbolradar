@@ -1810,10 +1810,15 @@ function pollsPage() {
         <p>Every poll stays open for at least two weeks, then closes and its results become final. A closed poll does not disappear; it stays on this page with its results.</p>
       </section>
 
-      <section class="data-panel" aria-labelledby="poll-motm-title">
-        <h2 class="panel-title" id="poll-motm-title">Man of the Match polls</h2>
-        <p>The polls on this page ask about the season as a whole. The per-match <strong>Man of the Match</strong> vote lives on each match page and closes 24 hours after the final whistle.</p>
-        <p><a class="detail-link" href="./results.html">Go to match results</a></p>
+      <section class="poll-archive poll-archive--motm" data-motm-archive data-motm-archive-source="/api/motm-week" data-motm-archive-locale="en" aria-labelledby="poll-motm-title">
+        <div class="poll-archive__intro">
+          <h2 id="poll-motm-title">Man of the Match polls</h2>
+          <p>Each match carries its own vote on the match page, and it <strong>closes 24 hours after the final whistle</strong>. Once closed the result is final and stays on the match page.</p>
+          <p class="poll-archive__note">Match reports are published in Turkish; the links below say so before you click.</p>
+        </div>
+        <p class="poll-archive__status" data-motm-archive-status>Loading match polls…</p>
+        <div class="poll-archive__list" data-motm-archive-list></div>
+        <p class="poll-archive__note"><a class="detail-link" href="./results.html">All match results</a></p>
       </section>`;
 
   return pageShell({
