@@ -18007,6 +18007,28 @@ body,
 
 .home-poll[hidden] { display: none; }
 
+/**
+ * MOBİLDE ANKET İLK EKRANDA.
+ *
+ * İşaretlemede anket hero'nun ARDINDA duruyor — masaüstünde doğru sıra bu:
+ * sitenin işi önce canlı skor, sonra anket. Ama mobilde hero (başlık +
+ * öne çıkan maç karuseli) tek başına ekranı doldurduğu için anket katlamanın
+ * çok altında kalıyordu.
+ *
+ * Sıra CSS ile değiştiriliyor, işaretleme bozulmadan: ekran okuyucu ve
+ * arama motoru için belge sırası aynı kalır, dar ekranda anket öne alınır.
+ */
+@media (max-width: 720px) {
+  .home-main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .home-poll { order: -1; }
+  /* Hero hemen ardından gelir; kalan bölümler kendi sıralarını korur. */
+  .home-main > .hero { order: 0; }
+}
+
 .home-poll__inner {
   position: relative;
   padding: clamp(20px, 3.5vw, 34px) clamp(16px, 3vw, 30px);

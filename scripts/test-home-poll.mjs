@@ -214,8 +214,10 @@ console.log("home-poll");
   const champion = polls.find((entry) => entry.type === "champion");
   assert.ok(champion, "şampiyonluk anketi takvimde olmalı");
   assert.ok(champion.options.length >= 18, "tüm Süper Lig kulüpleri seçenek olmalı");
-  assert.ok(localizePoll(champion, "tr").question.includes("Şampiyonu"),
-    "Türkçe soru gereksinimdeki başlığı taşımalı");
+  // BAŞLIK GEREKSİNİMDE BİREBİR VERİLDİ; serbest bir yeniden yazım değil.
+  assert.equal(localizePoll(champion, "tr").question,
+    "Bu sezon Trendyol Süper Lig şampiyonu sence kim olacak?",
+    "Türkçe başlık gereksinimde verilen cümlenin birebir aynısı olmalı");
   assert.ok(localizePoll(champion, "en").question.length > 0, "İngilizce soru zorunlu");
 }
 
@@ -484,9 +486,29 @@ console.log("home-poll");
     { file: path.join("en", "index.html"), locale: "en" }
   ];
 
+  // Yayındaki anket: basılı işaretleme bununla karşılaştırılır.
+  const live = selectHomePoll({ polls: JSON.parse(fs.readFileSync(path.join(root, "data", "home-polls.json"), "utf8")), teams });
+
   for (const page of pages) {
     const html = fs.readFileSync(path.join(root, page.file), "utf8");
-    assert.match(html, /<section[^>]*data-home-poll[^>]*hidden>/, `${page.file}: anket hidden doğmalı`);
+
+    // BLOK DOLU DOĞAR — mobilde ilk ekranda JavaScript beklemeden
+    // görünmesi gerekiyor. Boş kabuk basmak o gereksinimi karşılamıyordu.
+    assert.ok(!/<section[^>]*data-home-poll[^>]*\shidden>/.test(html),
+      `${page.file}: anket artık hidden doğmamalı (ilk ekranda görünmeli)`);
+
+    const expected = localizePoll(live.poll, page.locale);
+    assert.ok(html.includes(`>${expected.question}</h2>`),
+      `${page.file}: soru işaretlemede basılı olmalı`);
+    // 18 kulübün TAMAMI tıklanabilir seçenek olarak basılı olmalı.
+    const printed = (html.match(/class="home-poll__option"/g) || []).length;
+    assert.equal(printed, expected.options.length,
+      `${page.file}: ${expected.options.length} seçenek beklenir, ${printed} basılı`);
+    assert.equal((html.match(/class="home-poll__radio"/g) || []).length, expected.options.length,
+      `${page.file}: her seçenek tıklanabilir bir radyo taşımalı`);
+    // Gönder düğmesi KAPALI doğar; istemci depoyu hazır bulunca açar.
+    assert.match(html, /class="home-poll__submit"[^>]*disabled/,
+      `${page.file}: gönder düğmesi kapalı doğmalı`);
     for (const hook of HOOKS) {
       assert.ok(html.includes(hook), `${page.file}: "${hook}" kancası eksik`);
     }

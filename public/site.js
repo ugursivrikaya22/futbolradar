@@ -1439,12 +1439,29 @@
         show(deadline, true);
       }
 
-      // Form yalnızca anket AÇIK, depo HAZIR ve oy VERİLMEMİŞSE görünür.
+      // SEÇENEKLER ZATEN BASILI — YENİDEN ÇİZİLMEZ.
+      //
+      // İşaretleme derleme anında dolu doğuyor (scripts/lib/homePoll.mjs),
+      // yani kullanıcı bu noktada seçeneklerden birini çoktan işaretlemiş
+      // olabilir. Listeyi yeniden kurmak o seçimi silerdi. Yalnızca sunucu
+      // BAŞKA bir anket bildirirse liste yeniden kurulur (takvim kayması).
+      var printedId = section.getAttribute("data-home-poll-id");
+      if (printedId !== poll.id) {
+        renderOptions(poll.options);
+        section.setAttribute("data-home-poll-id", poll.id);
+      }
+
+      // Form yalnızca anket AÇIK, depo HAZIR ve oy VERİLMEMİŞSE oy alabilir.
       var canVote = !closed && !readOnly && !voted;
-      if (canVote) renderOptions(poll.options);
       show(form, canVote);
+      // GÖNDER DÜĞMESİ KAPALI DOĞAR ve ancak depo hazırsa açılır: açık bir
+      // düğme basıp oyu sessizce kaybetmek, kapalı düğmeden kötüdür.
+      if (submit) submit.disabled = !canVote;
       show(section.querySelector("[data-home-poll-thanks]"), voted && !closed);
       show(section.querySelector('[data-home-poll-note="closed"]'), closed);
+      // Depo kapalıyken ve henüz oy verilmemişken kutunun NEDEN oy almadığı
+      // yazılır; sessizce çalışmayan bir form açıklanmamış bir arıza olurdu.
+      show(section.querySelector('[data-home-poll-note="offline"]'), readOnly && !voted && !closed);
       show(section.querySelector('[data-home-poll-note="community"]'), !readOnly && (voted || closed));
       show(section.querySelector('[data-home-poll-note="local"]'), readOnly && voted);
 
@@ -1482,8 +1499,22 @@
     });
 
     request(null).then(function (data) {
-      // Anket yok, depo yok ya da ağ hatası: bölüm hiç açılmaz.
-      if (data && data.poll) render(data);
+      if (data && data.poll) {
+        render(data);
+        return;
+      }
+      // SUNUCU "ANKET YOK" DİYORSA BASILI BLOK GİZLENİR.
+      //
+      // İşaretleme derleme anında basıldığı için takvim kayması mümkün:
+      // blok basıldıktan sonra anket kapanmış ve sırada başlayan olmayabilir
+      // (site saatte bir derleniyor). Sunucunun sözü SON SÖZDÜR.
+      if (data && !data.poll) {
+        section.hidden = true;
+        return;
+      }
+      // Ağ hatası BAŞKA BİR ŞEY: basılı içerik derlemeden geliyor ve
+      // büyük olasılıkla doğru. Geçici bir hata yüzünden geçerli bir anketi
+      // gizlemek, göstermekten kötü olurdu — kutu kalır, düğme kapalı.
     });
   }
 
