@@ -19,6 +19,13 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const root = process.cwd();
 
+/** Üreticinin kaçışıyla aynı: aranan metin sayfada kaçırılmış hâliyle duruyor. */
+function escapeForHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
 const {
   MIN_MODULES,
   formFor,
@@ -49,9 +56,18 @@ console.log("match-special");
   assert.ok(special, "yayındaki dosya üretilebilmeli");
 
   // FİKSTÜR VERİDEN GELİR, dosyadan değil: saat ve stat elle yazılmaz.
+  //
+  // Stat adı SABİT YAZILMAZ, takvim kaydıyla karşılaştırılır. Sağlayıcı aynı
+  // stadı zaman içinde farklı yazabiliyor ("Rams Park" → "Rams Park
+  // Stadyumu") ve beklenen değeri teste gömmek, kuralı değil o günkü yazımı
+  // ölçmek olurdu — sınanmak istenen şey stadın adı değil, stat bilgisinin
+  // maç dosyasına ELLE değil VERİDEN gelmesi.
+  const calendarMatch = (sources.fixtures.matches || []).find((row) => row.id === MATCH_ID);
+  assert.ok(calendarMatch, "takvim kaydı bulunmalı");
   assert.equal(special.fixture.homeTeam, "Galatasaray");
   assert.equal(special.fixture.awayTeam, "Çorum FK");
-  assert.equal(special.fixture.venue, "Rams Park");
+  assert.equal(special.fixture.venue, calendarMatch.venue);
+  assert.ok(special.fixture.venue, "stat bilgisi boş kalmamalı");
   assert.equal(special.fixture.round, 1);
   assert.match(special.fixture.kickoff, /^2026-08-14T21:30/);
   assert.ok(special.modules.length >= MIN_MODULES);
@@ -314,11 +330,22 @@ console.log("match-special");
 // ── 12. KAYNAKLI MUHTEMEL 11, RESMÎ KADRODAN AYRI ───────────────────────
 {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "data", "match-special-pages.json"), "utf8"));
-  const special = sources.specials.specials.find((row) => row.matchId === "galatasaray-corum-fk-2026-08-14");
-  const probable = special && special.probableLineup;
-  assert.equal(probable.players.length, 11, "muhtemel kadro tam 11 oyuncu olmalı");
+
+  // Denetim HER dosyanın KENDİ kadrolarına bakar. Önceden tek maç dosyası
+  // vardı ve test, Galatasaray – Çorum kadrosunu bütün kayıtlarda arıyordu;
+  // ikinci dosya eklenir eklenmez kırıldı — kural bozulduğu için değil,
+  // denetim tek kayda göre yazıldığı için.
+  let checkedLineups = 0;
+  let checkedUnconfirmed = 0;
 
   for (const entry of manifest) {
+    const record = sources.specials.specials.find((row) => row.matchId === entry.matchId);
+    assert.ok(record, `${entry.matchId}: kayıt bulunmalı`);
+    const lineups = Array.isArray(record.probableLineups)
+      ? record.probableLineups
+      : (record.probableLineup ? [record.probableLineup] : []);
+    assert.ok(lineups.length, `${entry.matchId}: en az bir muhtemel kadro paneli olmalı`);
+
     for (const locale of ["tr", "en"]) {
       const module = entry.locales[locale].modules.find((row) => row.id === "ilk-11");
       assert.ok(module, `${locale}: ilk 11 modülü olmalı`);
@@ -327,41 +354,106 @@ console.log("match-special");
       assert.match(html, /data-match-lineups/, "istemci kancası olmalı");
       assert.match(html, /data-lineup-grid[^>]*hidden/, "ızgara kapalı doğmalı");
       assert.match(html, /data-probable-lineup/, `${locale}: muhtemel kadro katmanı olmalı`);
-      assert.ok(html.includes(locale === "tr" ? "MUHTEMEL 11 — RESMÎ DEĞİL" : "PROBABLE XI — NOT OFFICIAL"));
-      assert.ok(html.includes(locale === "tr" ? "A Spor&#039;un maç öncesi canlı yayınında aktardığı muhtemel 11" : "A Spor&#039;s live pre-match broadcast"));
-      for (const player of probable.players) {
-        assert.ok(html.includes(player.name), `${locale}: ${player.name} görünmeli`);
-        const profile = player.profile[locale] || player.profile.tr;
-        assert.ok(fs.existsSync(path.join(root, profile)), `${locale}: ${player.name} profil hedefi yok (${profile})`);
+
+      // Her panel KENDİ takımını ilan etmeli: istemci, resmî kadro gelince
+      // hangi paneli kaldıracağını buradan biliyor.
+      const panels = html.match(/data-lineup-team="[^"]*"/g) || [];
+      assert.equal(panels.length, lineups.length,
+        `${entry.matchId} ${locale}: panel sayısı kadro sayısıyla eşleşmeli`);
+
+      for (const probable of lineups) {
+        if (probable.status === "unconfirmed") {
+          checkedUnconfirmed += 1;
+          // EN KRİTİK KURAL: doğrulanmamış panelde oyuncu adı GEÇMEZ.
+          assert.ok(!Array.isArray(probable.players) || !probable.players.length,
+            `${entry.matchId}: doğrulanmamış kadroda oyuncu listelenmiş`);
+          assert.ok(html.includes(locale === "tr" ? "HENÜZ DOĞRULANMADI" : "NOT YET CONFIRMED"),
+            `${entry.matchId} ${locale}: doğrulanmamış kadro rozeti yok`);
+          assert.match(html, /match-special__probable-pending/,
+            `${entry.matchId} ${locale}: doğrulanmamış kadro paneli yok`);
+          // Diziliş de bir iddia: kadro yokken diziliş yazılmaz.
+          assert.ok(!probable.formation, `${entry.matchId}: doğrulanmamış kadroda diziliş yazılmış`);
+          continue;
+        }
+
+        checkedLineups += 1;
+        assert.equal(probable.players.length, 11, `${entry.matchId}: muhtemel kadro tam 11 oyuncu olmalı`);
+        assert.ok(html.includes(locale === "tr" ? "MUHTEMEL 11 — RESMÎ DEĞİL" : "PROBABLE XI — NOT OFFICIAL"));
+        const sourceLabel = probable.sourceLabel[locale] || probable.sourceLabel.tr;
+        assert.ok(html.includes(escapeForHtml(sourceLabel)),
+          `${entry.matchId} ${locale}: kadronun kaynağı sayfada görünmeli`);
+        for (const player of probable.players) {
+          assert.ok(html.includes(escapeForHtml(player.name)), `${locale}: ${player.name} görünmeli`);
+          const profile = player.profile[locale] || player.profile.tr;
+          assert.ok(fs.existsSync(path.join(root, profile)), `${locale}: ${player.name} profil hedefi yok (${profile})`);
+        }
+        assert.match(html, /match-special__pitch-row is-4/, `${locale}: dörtlü savunma satırı yok`);
+        assert.match(html, /match-special__probable-analysis/, `${locale}: taktik analiz yok`);
       }
-      assert.match(html, /match-special__pitch-row is-4/, `${locale}: dörtlü savunma satırı yok`);
-      assert.match(html, /match-special__probable-analysis/, `${locale}: taktik analiz yok`);
     }
   }
 
+  assert.ok(checkedLineups > 0, "en az bir kaynaklı muhtemel kadro denetlenmeli");
+  assert.ok(checkedUnconfirmed > 0, "en az bir doğrulanmamış kadro paneli denetlenmeli");
+  console.log(`  ok  ${checkedLineups} kaynaklı kadro, ${checkedUnconfirmed} doğrulanmamış panel`);
+
   const client = fs.readFileSync(path.join(root, "site.js"), "utf8");
   assert.match(client, /data\.confirmed && data\.confirmed\.home/, "resmî ev sahibi kadrosu kontrol edilmeli");
-  assert.match(client, /show\(section, !homeOfficial\)/, "resmî kadro gelince muhtemel katman gizlenmeli");
+  // Panel artık KENDİ takımının resmî kadrosuna bakıyor: iki panelli sayfada
+  // ev sahibi açıklandığında deplasmanın hâlâ geçerli muhtemel 11'i silinmemeli.
+  assert.match(client, /data-lineup-team/, "panel kendi takımını bildirmeli");
+  assert.match(client, /show\(section, team \? !mine : !homeOfficial\)/,
+    "panel önce kendi takımına, ad yoksa ev sahibine bakmalı");
 }
 
 // ── 13. ANA SAYFA KUTUSU: PENCERE VE BAĞLANTILAR ─────────────────────────
 {
-  const { PROMO_CLOSES_AFTER_MS, PROMO_MODULE_LIMIT, PROMO_OPENS_BEFORE_MS, matchSpecialPromoBlock, selectPromo } =
-    await import("./lib/matchSpecialPromo.mjs");
+  const {
+    PROMO_CLOSES_AFTER_MS, PROMO_MAX_CARDS, PROMO_MODULE_LIMIT, PROMO_OPENS_BEFORE_MS,
+    matchSpecialPromoBlock, selectPromo, selectPromos
+  } = await import("./lib/matchSpecialPromo.mjs");
 
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "data", "match-special-pages.json"), "utf8"));
-  const entry = manifest[0];
+  const entry = manifest.find((row) => row.homepagePromo !== false);
+  assert.ok(entry, "ana sayfada gösterilebilir en az bir dosya olmalı");
   const kickoff = Date.parse(entry.kickoff);
 
-  assert.ok(selectPromo(manifest, kickoff - 60 * 60 * 1000), "maçtan bir saat önce kutu açık olmalı");
-  assert.ok(selectPromo(manifest, kickoff + 60 * 60 * 1000), "maç sırasında kutu açık olmalı");
+  // PENCERE TEK KAYIT ÜZERİNDE ÖLÇÜLÜR. Manifesto birden çok dosya taşıyor
+  // ve biri kapanırken diğeri hâlâ açık olabiliyor; pencere kuralını tüm
+  // liste üzerinden sınamak, aslında "hiç açık dosya kalmadı mı" sorusunu
+  // sorardı — sınanmak istenen kural bu değil.
+  const single = [entry];
+  assert.ok(selectPromo(single, kickoff - 60 * 60 * 1000), "maçtan bir saat önce kutu açık olmalı");
+  assert.ok(selectPromo(single, kickoff + 60 * 60 * 1000), "maç sırasında kutu açık olmalı");
 
   // MAÇ BİTTİKTEN SONRA KUTU DÜŞER: bayat içeriği ana sayfada güncel gibi
   // göstermek, yer tutucu uydurmanın uzun ömürlü biçimi olurdu.
-  assert.equal(selectPromo(manifest, kickoff + PROMO_CLOSES_AFTER_MS + 60000), null,
+  assert.equal(selectPromo(single, kickoff + PROMO_CLOSES_AFTER_MS + 60000), null,
     "pencere kapandıktan sonra kutu basılmamalı");
-  assert.equal(selectPromo(manifest, kickoff - PROMO_OPENS_BEFORE_MS - 60000), null,
+  assert.equal(selectPromo(single, kickoff - PROMO_OPENS_BEFORE_MS - 60000), null,
     "pencere açılmadan kutu basılmamalı");
+
+  // ── ÇOKLU KART: SAYI SINIRI, ÖNCELİK VE EDİTORYAL KAPATMA ──────────────
+  {
+    const now = Date.parse("2026-08-15T12:00:00+03:00");
+    const open = selectPromos(manifest, now);
+    assert.ok(open.length <= PROMO_MAX_CARDS, `ana sayfada en çok ${PROMO_MAX_CARDS} kart olmalı`);
+    assert.ok(open.every((row) => row.homepagePromo !== false),
+      "editoryal olarak kapatılmış dosya ana sayfaya basılmamalı");
+
+    // Öncelik saatten önce gelir: 21:30'daki Fenerbahçe maçı, 19:00'daki
+    // maçın önünde durmalı. Sıralama yalnızca saate bakarsa büyük maç
+    // ikinci sıraya düşüyordu.
+    const fener = open.findIndex((row) => /Fenerbahçe/.test(`${row.homeTeam} ${row.awayTeam}`));
+    if (fener >= 0) assert.equal(fener, 0, "öncelikli takımın dosyası ilk kartta olmalı");
+
+    // Kapatılmış dosyanın SAYFALARI yayında kalır; kapanan yalnızca kutu.
+    const closed = manifest.find((row) => row.homepagePromo === false);
+    if (closed) {
+      assert.ok(fs.existsSync(path.join(root, closed.locales.tr.hub)),
+        "kutusu kapatılan dosyanın sayfası silinmemeli");
+    }
+  }
 
   for (const locale of ["tr", "en"]) {
     const block = matchSpecialPromoBlock(entry, { locale });

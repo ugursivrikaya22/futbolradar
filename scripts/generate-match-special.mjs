@@ -35,6 +35,7 @@ const {
   selectMatchSpecial
 } = require("../services/matchSpecial.js");
 const { formatDate, formatTime, formatWeekday, absoluteUrl, hreflangOf } = require("../services/i18n.js");
+const { confirmedHomeVenue } = require("../services/superLigTeams.js");
 
 const root = process.cwd();
 const TR_DIR = "mac-dosyasi";
@@ -216,40 +217,65 @@ function keyPlayerBlock(team, copy) {
         </section>`;
 }
 
-function probableLineupBlock(special, locale) {
-  const probable = special.probableLineup;
+/**
+ * TEK TAKIMIN MUHTEMEL 11 PANELİ.
+ *
+ * İki durumu var ve ikisi de görsel olarak AYRIŞIR: kaynağı olan bir kadro
+ * saha diyagramı basar; açıklanmamış kadro ise diyagram yerine neden
+ * bilinmediğini söyleyen bir panel basar. Aynı görünümde sunmak, olmayan
+ * bir doğrulama iddiası olurdu — bu dosyanın en baştan beri kuralı.
+ */
+function lineupPanel(probable, locale, index) {
   if (!probable) return "";
   const base = baseFor(locale === "en" ? EN_DIR : TR_DIR);
-  const rows = [0, 1, 2, 3, 4].map((rowIndex) => {
-    const players = (probable.players || [])
-      .filter((player) => player.row === rowIndex)
-      .sort((left, right) => (left.order || 0) - (right.order || 0));
-    return `<div class="match-special__pitch-row is-${players.length}">
-              ${players.map((player) => {
-                const profile = player.profile && (player.profile[locale] || player.profile.tr);
-                return `<a class="match-special__pitch-player" href="${escapeHtml(`${base}${profile}`)}">${escapeHtml(player.name)}</a>`;
-              }).join("\n              ")}
-            </div>`;
-  }).join("\n            ");
+  const unconfirmed = probable.status === "unconfirmed";
+  const anchor = index === 0 ? "probable-xi" : `probable-xi-${index + 1}`;
+
   const analysis = (probable.analysis || []).map((section) => `<article class="match-special__probable-analysis-card">
               <h3>${escapeHtml(section.heading)}</h3>
               <p>${escapeHtml(section.body)}</p>
             </article>`).join("\n            ");
 
-  return `<section class="match-special__probable" id="probable-xi" data-probable-lineup>
+  const body = unconfirmed
+    ? `<p class="match-special__probable-pending">${escapeHtml(locale === "en"
+        ? "No probable XI has been published for this side by a source we can verify. Rather than present a guessed line-up as information, this panel stays empty until the official XI is announced — at which point it fills in automatically."
+        : "Bu takım için doğrulayabildiğimiz bir kaynakta muhtemel 11 yayımlanmadı. Tahmini bir kadroyu bilgi gibi sunmaktansa panel boş kalıyor; resmî 11 açıklandığında kendiliğinden dolacak.")}</p>`
+    : `<div class="match-special__pitch" role="group" aria-label="${escapeHtml(`${probable.team} ${probable.formation}`)}">
+            ${[0, 1, 2, 3, 4].map((rowIndex) => {
+              const players = (probable.players || [])
+                .filter((player) => player.row === rowIndex)
+                .sort((left, right) => (left.order || 0) - (right.order || 0));
+              if (!players.length) return "";
+              return `<div class="match-special__pitch-row is-${players.length}">
+              ${players.map((player) => {
+                const profile = player.profile && (player.profile[locale] || player.profile.tr);
+                return `<a class="match-special__pitch-player" href="${escapeHtml(`${base}${profile}`)}">${escapeHtml(player.name)}</a>`;
+              }).join("\n              ")}
+            </div>`;
+            }).filter(Boolean).join("\n            ")}
+          </div>`;
+
+  return `<section class="match-special__probable${unconfirmed ? " is-unconfirmed" : ""}" id="${escapeHtml(anchor)}" data-probable-lineup data-lineup-team="${escapeHtml(probable.team || "")}">
           <header class="match-special__probable-head">
             <span class="match-special__probable-badge">${escapeHtml(probable.badge)}</span>
             <h2>${escapeHtml(probable.title)}</h2>
             <p>${escapeHtml(probable.sourceLabel)}</p>
-            <strong>${escapeHtml(locale === "en" ? "Formation" : "Diziliş")} ${escapeHtml(probable.formation)}</strong>
+            ${unconfirmed ? "" : `<strong>${escapeHtml(locale === "en" ? "Formation" : "Diziliş")} ${escapeHtml(probable.formation)}</strong>`}
           </header>
-          <div class="match-special__pitch" role="group" aria-label="${escapeHtml(`${probable.team} ${probable.formation}`)}">
-            ${rows}
-          </div>
+          ${body}${analysis ? `
           <div class="match-special__probable-analysis">
             ${analysis}
-          </div>
+          </div>` : ""}
         </section>`;
+}
+
+/** İki takımın panelleri alt alta; ev sahibi önce. */
+function probableLineupBlock(special, locale) {
+  const lineups = special.probableLineups && special.probableLineups.length
+    ? special.probableLineups
+    : (special.probableLineup ? [special.probableLineup] : []);
+  if (!lineups.length) return "";
+  return lineups.map((entry, index) => lineupPanel(entry, locale, index)).join("\n        ");
 }
 
 /**
@@ -447,16 +473,46 @@ function modulePage(special, module, locale) {
   return pageShell({
     locale, base, canonical, body,
     title: `${module.title} | ${fixture.homeTeam} – ${fixture.awayTeam} | FutbolRadar`,
-    description: module.summary || special.lead,
+    // AÇIKLAMA MAÇI ADIYLA ANMALI.
+    //
+    // Modül özetleri maçtan bağımsız yazılıyor ("İki takımın son maçları,
+    // kaynağıyla birlikte") ve tek başına açıklama olarak kullanıldığında
+    // aynı modülün her maçtaki sayfası AYNI açıklamayı taşıyordu. İkinci
+    // maç dosyası eklenince `test-seo-integrity` bunu yakaladı: arama
+    // motoru için bu sayfalar birbirinin kopyası görünüyordu.
+    description: `${fixture.homeTeam} – ${fixture.awayTeam}: ${module.summary || special.lead}`,
     schema: null
   });
 }
 
 // ── Üretim ──────────────────────────────────────────────────────────────────
 
+/**
+ * SAĞLAYICI TAKVİMİ BAZI LİG MAÇLARINI SAHASIZ GÖNDERİYOR.
+ *
+ * `services/matchSpecial.js` bilerek bağımlılıksız: bütün veriyi `sources`
+ * üzerinden alıyor ve hiçbir dosyayı kendi okumuyor. Bu yüzden saha onarımı
+ * verinin YÜKLENDİĞİ yerde yapılıyor, servisin içinde değil.
+ *
+ * Kural `services/providers/mockProvider.js` ile aynı ve aynı gerekçeyle
+ * yalnızca lige uygulanıyor: lig maçında ev sahibi kendi stadında oynar,
+ * hazırlık maçında oynamayabilir. Stat adı fikstür dosyasında "confirmed";
+ * uydurulmuyor, doğrulanmış kayıttan okunuyor.
+ */
+function withVenues(payload) {
+  const matches = Array.isArray(payload) ? payload : (payload && payload.matches);
+  if (!Array.isArray(matches)) return payload;
+  const patched = matches.map((match) => {
+    if (!match || match.league !== "Süper Lig" || (match.venue && String(match.venue).trim())) return match;
+    const venue = confirmedHomeVenue(match.homeTeam);
+    return venue ? { ...match, venue, venueSource: "club-home-ground" } : match;
+  });
+  return Array.isArray(payload) ? patched : { ...payload, matches: patched };
+}
+
 const sources = {
   specials: readJson("data/match-specials.json") || {},
-  fixtures: readJson("data/fixture-calendar.json") || {},
+  fixtures: withVenues(readJson("data/fixture-calendar.json") || {}),
   squads: readJson("data/super-lig-squads.json") || {},
   archive: readJson("data/season-archive.json") || {}
 };
@@ -542,6 +598,10 @@ for (const record of records) {
   manifest.push({
     matchId: special.fixture.id,
     kickoff: special.fixture.kickoff,
+    // Ana sayfa kutusundan EDİTORYAL olarak çıkarılmış dosya. Sayfalar
+    // yayında kalır — kutuyu kapatmak için sayfayı silmek, biriken bağlantıyı
+    // ve arama görünürlüğünü çöpe atmak olurdu.
+    homepagePromo: record.homepagePromo !== false,
     homeTeam: special.fixture.homeTeam,
     awayTeam: special.fixture.awayTeam,
     homeTeamLogo: special.fixture.homeTeamLogo || null,

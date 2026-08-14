@@ -25,18 +25,20 @@ export const PROMO_MODULE_LIMIT = 6;
 
 const STRINGS = {
   tr: {
-    kicker: "Dev Maç Dosyası",
-    cta: "Maç dosyasını aç",
+    kicker: "Detaylı Maç Analizi",
+    lineupChip: "Muhtemel 11",
+    cta: "Detaylı analizi aç",
     modulesTitle: "Dosyadan bölümler",
     live: "Canlı skor ve resmî 11'ler bu sayfada",
-    aria: "Öne çıkan maç dosyası"
+    aria: "Öne çıkan maç analizi"
   },
   en: {
-    kicker: "Match Special",
-    cta: "Open the match special",
-    modulesTitle: "Inside the special",
+    kicker: "In-Depth Match Analysis",
+    lineupChip: "Probable XI",
+    cta: "Open the full analysis",
+    modulesTitle: "Inside the analysis",
     live: "Live score and official XIs land on this page",
-    aria: "Featured match special"
+    aria: "Featured match analysis"
   }
 };
 
@@ -51,19 +53,50 @@ function hrefFor(target, locale) {
   return locale === "en" ? `../${target}` : `./${target}`;
 }
 
+/** Ana sayfada aynı anda en çok bu kadar dosya kutusu görünür. */
+export const PROMO_MAX_CARDS = 2;
+
 /**
- * Yayına uygun tek dosya. Birden fazlası penceredeyse başlama saati en yakın
- * olan seçilir: ana sayfada iki "dev maç dosyası" kutusu olmaz.
+ * ÖNCELİK: BÜYÜK MAÇ ÖNDE.
+ *
+ * Aynı gün iki dosya yayındaysa sıralamayı yalnızca saat belirlerse, 19:00'daki
+ * maç 21:30'dakinin önüne geçiyor — oysa okuyucunun aradığı büyük maç
+ * çoğunlukla ikincisi. Öncelik açıkça yazılır; listede olmayan takım 0 alır ve
+ * sıralama saate düşer. Liste editoryal bir tercih, gizli bir kural değil.
  */
-export function selectPromo(entries, nowMs) {
+const TEAM_PRIORITY = [
+  { match: /fenerbah/i, weight: 3 },
+  { match: /galatasaray/i, weight: 3 },
+  { match: /beşiktaş|besiktas/i, weight: 3 },
+  { match: /trabzonspor/i, weight: 2 }
+];
+
+function priorityOf(entry) {
+  const teams = `${(entry && entry.homeTeam) || ""} ${(entry && entry.awayTeam) || ""}`;
+  return TEAM_PRIORITY.reduce((best, rule) => (rule.match.test(teams) ? Math.max(best, rule.weight) : best), 0);
+}
+
+/**
+ * Yayına uygun dosyalar, öncelik sırasıyla. Pencere kuralı değişmedi: maçtan
+ * 10 gün önce açılır, bitiminden 24 saat sonra kapanır.
+ */
+export function selectPromos(entries, nowMs) {
   const now = Number.isFinite(nowMs) ? nowMs : Date.now();
-  const open = (Array.isArray(entries) ? entries : [])
-    .map((entry) => ({ entry, kickoff: Date.parse(entry && entry.kickoff) }))
+  return (Array.isArray(entries) ? entries : [])
+    .filter((entry) => entry && entry.homepagePromo !== false)
+    .map((entry) => ({ entry, kickoff: Date.parse(entry && entry.kickoff), priority: priorityOf(entry) }))
     .filter((row) => Number.isFinite(row.kickoff))
     .filter((row) => now >= row.kickoff - PROMO_OPENS_BEFORE_MS && now <= row.kickoff + PROMO_CLOSES_AFTER_MS)
-    .sort((left, right) => Math.abs(left.kickoff - now) - Math.abs(right.kickoff - now));
+    .sort((left, right) => (right.priority - left.priority)
+      || (Math.abs(left.kickoff - now) - Math.abs(right.kickoff - now)))
+    .slice(0, PROMO_MAX_CARDS)
+    .map((row) => row.entry);
+}
 
-  return open.length ? open[0].entry : null;
+/** Tek dosya bekleyen çağıranlar için; en öncelikli kayıt. */
+export function selectPromo(entries, nowMs) {
+  const open = selectPromos(entries, nowMs);
+  return open.length ? open[0] : null;
 }
 
 /**
@@ -73,6 +106,9 @@ export function selectPromo(entries, nowMs) {
 export function matchSpecialPromoBlock(entry, options) {
   const locale = options && options.locale === "en" ? "en" : "tr";
   const copy = STRINGS[locale];
+  // İkinci kart biraz daha sakin: aynı ağırlıkta iki kutu yan yana durunca
+  // hangisinin öne çıktığı okunmuyor ve ikisi de kayboluyor.
+  const secondary = Boolean(options && options.index);
   const localized = entry && entry.locales && entry.locales[locale];
   if (!localized || !localized.hub) return "";
 
@@ -89,8 +125,18 @@ export function matchSpecialPromoBlock(entry, options) {
     ? `<img src="${escapeHtml(url)}" alt="" width="44" height="44" loading="lazy" decoding="async" referrerpolicy="no-referrer" />`
     : "");
 
-  const meta = [entry.league, entry.round ? `${locale === "en" ? "Week" : "Hafta"} ${entry.round}` : "", entry.venue]
-    .filter(Boolean).join(" · ");
+  // Başlama saati kartın kendisinde. Okuyucunun kartta aradığı ilk bilgi
+  // "ne zaman"; bunun için sayfayı açmak zorunda kalmamalı. Saat, kayıttaki
+  // ISO damgasının kendi saat diliminden okunuyor (…T19:00:00+03:00), yeniden
+  // hesaplanmıyor — hesaplamak derleme makinesinin saat dilimine bağlı
+  // olurdu ve Vercel'de UTC'ye kayardı.
+  const kickoffTime = /T(\d{2}:\d{2})/.exec(String(entry.kickoff || ""));
+  const meta = [
+    entry.league,
+    entry.round ? `${locale === "en" ? "Week" : "Hafta"} ${entry.round}` : "",
+    kickoffTime ? kickoffTime[1] : "",
+    entry.venue
+  ].filter(Boolean).join(" · ");
 
   const probable = localized.probableLineup;
   const probableCard = probable && probable.href ? `<a class="match-special-promo__breaking" href="${escapeHtml(hrefFor(probable.href, locale))}" data-lineup-promo data-match-id="${escapeHtml(entry.matchId)}">
@@ -99,17 +145,27 @@ export function matchSpecialPromoBlock(entry, options) {
             <span data-lineup-promo-spot>${escapeHtml(probable.spot)}</span>
           </a>` : "";
 
+  // Başlık kimliği sayfada BENZERSİZ olmalı: iki kart aynı id'yi taşıyınca
+  // aria-labelledby ikisini de ilkine bağlıyor ve ekran okuyucu iki kartı
+  // aynı maç sanıyor.
+  const suffix = secondary ? `-${options.index + 1}` : "";
+  const titleId = `match-special-promo-title${suffix}`;
+
   return `
-<section class="container section match-special-promo" id="mac-dosyasi" aria-labelledby="match-special-promo-title" role="region" aria-label="${escapeHtml(copy.aria)}">
+<section class="container section match-special-promo${secondary ? " is-secondary" : ""}" id="mac-dosyasi${suffix}" aria-labelledby="${titleId}" role="region" aria-label="${escapeHtml(copy.aria)}">
           ${probableCard}
           <a class="match-special-promo__hero" href="${escapeHtml(hrefFor(localized.hub, locale))}">
             <span class="match-special-promo__kicker">${escapeHtml(copy.kicker)}</span>
             <span class="match-special-promo__teams">
               ${logo(entry.homeTeamLogo, entry.homeTeam)}
-              <strong id="match-special-promo-title">${escapeHtml(entry.homeTeam)} – ${escapeHtml(entry.awayTeam)}</strong>
+              <strong id="${titleId}">${escapeHtml(entry.homeTeam)} – ${escapeHtml(entry.awayTeam)}</strong>
               ${logo(entry.awayTeamLogo, entry.awayTeam)}
             </span>
             ${meta ? `<span class="match-special-promo__meta">${escapeHtml(meta)}</span>` : ""}
+            <span class="match-special-promo__chips">
+              <span class="match-special-promo__chip">${escapeHtml(copy.kicker)}</span>
+              <span class="match-special-promo__chip is-lineup">${escapeHtml(copy.lineupChip)}</span>
+            </span>
             <span class="match-special-promo__lead">${escapeHtml(localized.lead || "")}</span>
             <span class="match-special-promo__cta">${escapeHtml(copy.cta)} →</span>
           </a>

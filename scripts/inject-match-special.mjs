@@ -14,7 +14,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
-import { matchSpecialPromoBlock, selectPromo } from "./lib/matchSpecialPromo.mjs";
+import { matchSpecialPromoBlock, selectPromos } from "./lib/matchSpecialPromo.mjs";
 
 const root = process.cwd();
 const CHECK_ONLY = process.argv.includes("--check");
@@ -50,13 +50,22 @@ function targetsFor(relativePath) {
 }
 
 const entries = readJson("data/match-special-pages.json") || [];
-const promo = selectPromo(entries, Date.now());
+const promos = selectPromos(entries, Date.now());
 
 const problems = [];
 let updated = 0;
 
 for (const page of PAGES) {
-  const block = promo ? matchSpecialPromoBlock(promo, { locale: page.locale }) : "";
+  // Aynı gün iki dosya yayındaysa ikisi de basılır, öncelik sırasıyla.
+  // Kutular tek sarmalayıcı içinde: iki ayrı `<section>` yan yana durunca
+  // aradaki boşluk bölüm arası boşluğu kadar açılıyor ve ikisi ilgisiz iki
+  // blok gibi okunuyordu.
+  const blocks = promos
+    .map((promo, index) => matchSpecialPromoBlock(promo, { locale: page.locale, index }))
+    .filter(Boolean);
+  const block = blocks.length > 1
+    ? `\n<div class="match-special-promo-group">${blocks.join("")}</div>\n`
+    : (blocks[0] || "");
 
   for (const file of targetsFor(page.file)) {
     const original = fs.readFileSync(file, "utf8");
@@ -89,8 +98,8 @@ if (problems.length) {
   console.log("match-special: ana sayfa kutusu güncel.");
 } else {
   console.log(
-    promo
-      ? `match-special: "${promo.homeTeam} – ${promo.awayTeam}" kutusu — ${updated} dosya güncellendi.`
+    promos.length
+      ? `match-special: ${promos.map((promo) => `"${promo.homeTeam} – ${promo.awayTeam}"`).join(", ")} kutusu — ${updated} dosya güncellendi.`
       : `match-special: penceresi açık dosya yok, kutu basılmadı (${updated} dosya güncellendi).`
   );
 }

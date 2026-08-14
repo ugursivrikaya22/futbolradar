@@ -2212,6 +2212,38 @@
     }
   }
 
+  /**
+   * İki kaynak aynı kulübü farklı yazabiliyor ("Gençlerbirliği" /
+   * "Gençlerbirliği S.K."). Sunucu tarafındaki `sameClub` ile aynı kural:
+   * normalleştirilmiş adlardan biri diğerini kelime sınırında içeriyorsa
+   * aynı kulüptür.
+   */
+  function normalizeTeamName(value) {
+    return String(value || "")
+      .toLocaleLowerCase("tr")
+      .replace(/[çğıöşü]/g, function (letter) {
+        return { "ç": "c", "ğ": "g", "ı": "i", "ö": "o", "ş": "s", "ü": "u" }[letter] || letter;
+      })
+      .replace(/[^a-z0-9]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function sameTeamName(candidate, names) {
+    var left = normalizeTeamName(candidate);
+    if (!left) return false;
+    for (var index = 0; index < names.length; index += 1) {
+      var right = normalizeTeamName(names[index]);
+      if (!right) continue;
+      if (left === right) return true;
+      var shorter = left.length <= right.length ? left : right;
+      var longer = left.length <= right.length ? right : left;
+      if (shorter.length < 4) continue;
+      if (new RegExp("(^| )" + shorter.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "( |$)").test(longer)) return true;
+    }
+    return false;
+  }
+
   function renderBadges(data, strings) {
     var announced = data.status === "confirmed";
     var homeOfficial = Boolean(data.confirmed && data.confirmed.home);
@@ -2226,9 +2258,23 @@
       card.classList.toggle("is-announced", announced || homeOfficial);
     });
 
+    // MUHTEMEL 11 PANELİ, O TAKIMIN RESMÎ KADROSU GELİNCE KALKAR.
+    //
+    // Sayfada iki panel olabiliyor (ev sahibi + deplasman). Eskiden hepsi
+    // ev sahibinin kadrosuna bakıp birlikte gizleniyordu; iki panelli
+    // sayfada bu, ev sahibi açıklandığı anda deplasmanın HÂLÂ GEÇERLİ
+    // muhtemel 11'ini de silmek demekti — okuyucu bilgi kazanmak yerine
+    // kaybediyordu. Panel artık kendi takımının adına bakıyor; ad
+    // eşleşmezse eski davranışa düşülür.
+    var confirmedTeams = [];
+    if (data.confirmed && data.confirmed.home && data.home && data.home.team) confirmedTeams.push(data.home.team);
+    if (data.confirmed && data.confirmed.away && data.away && data.away.team) confirmedTeams.push(data.away.team);
+
     var probableSections = document.querySelectorAll("[data-probable-lineup]");
     Array.prototype.forEach.call(probableSections, function (section) {
-      show(section, !homeOfficial);
+      var team = section.getAttribute("data-lineup-team") || "";
+      var mine = team ? sameTeamName(team, confirmedTeams) : false;
+      show(section, team ? !mine : !homeOfficial);
     });
 
     if (announced || homeOfficial) {

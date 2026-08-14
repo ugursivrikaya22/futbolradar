@@ -118,11 +118,34 @@ function isFixtureOnly(team) {
   return Boolean(team && team.coverage === "fixture-only");
 }
 
+/**
+ * Kulübün DOĞRULANMIŞ iç saha stadı.
+ *
+ * Kaynak, fikstür dosyasının elle doğrulanmış takım listesidir; yalnızca
+ * `status: "confirmed"` kayıtları okunur. Bu bir tahmin değil, editoryal
+ * olarak onaylanmış bir alan — dosyada yoksa `null` döner ve arayüz sahayı
+ * hiç göstermez. Uydurulmuş bir stat adı, boş bir alandan çok daha kötüdür.
+ *
+ * Neden gerekli: sağlayıcı takvimi bazı lig maçlarında `venue: null`
+ * gönderiyor (ör. Kasımpaşa - Trabzonspor, 15.08.2026). Saha bilgisi aslında
+ * biliniyor — ev sahibinin kendi stadı — ama maç kaydında yok.
+ */
+function confirmedHomeVenue(teamName) {
+  for (const team of fixtures.teams || []) {
+    if (!team || team.status !== "confirmed") continue;
+    if (!sameClub(team.name, teamName)) continue;
+    const venue = String(team.venue || "").trim();
+    return venue || null;
+  }
+  return null;
+}
+
 module.exports = {
   fixtureTeamNames,
   sameClub,
   fixtureOnlyTeam,
   mergeSuperLigTeams,
   isFixtureOnly,
+  confirmedHomeVenue,
   slug
 };

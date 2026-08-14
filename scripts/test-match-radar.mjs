@@ -36,10 +36,26 @@ assert.ok(first.components.some((item) => item.key === "form" && item.value !== 
 
 // Kadro durumu VARSA bileşen de dolu olmalı; aksi hâlde elde olan veri
 // kullanılmıyor demektir.
-assert.ok(
-  first.components.some((item) => item.key === "availability" && item.value !== null),
-  "Kadro durumu bilinen takımda bileşen kullanılmalı"
-);
+//
+// TAKIM VERİDEN SEÇİLİR, ADI YAZILMAZ. Yukarıdaki notun anlattığı hata bir
+// kez daha, bu kez öbür yönden yaşandı: olumsuz durum sentetik bir takımla
+// sınanacak biçimde düzeltilmişti ama OLUMLU durum hâlâ Galatasaray'a
+// bağlıydı. Kadro durumu akışı yaklaşan maçları kapsıyor; Galatasaray'ın
+// maçı başlayınca takım akıştan düştü ve test yine kırıldı — kural
+// bozulduğu için değil, o günkü veri değiştiği için.
+//
+// Kural artık şu: kadro durumu OLAN herhangi bir takımda bileşen dolu olmalı.
+{
+  const statusTeams = (squadStatus && squadStatus.teams) || [];
+  const known = teams.find((team) => statusTeams.some((row) => row && row.team === team.name));
+  assert.ok(known, "kadro durumu bilinen en az bir takım olmalı");
+
+  const radar = calculateTeamRadar(known, { side: "home", players, squadStatus });
+  assert.ok(
+    radar.components.some((item) => item.key === "availability" && item.value !== null),
+    `Kadro durumu bilinen takımda bileşen kullanılmalı (${known.name})`
+  );
+}
 
 const empty = calculateTeamRadar(null, { side: "away", players: [], squadStatus });
 assert.equal(empty.score, null, "Takım verisi yokken puan üretilmemeli");

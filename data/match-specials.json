@@ -1,6 +1,6 @@
 {
   "_comment": "MAÇ DOSYALARI — ELLE DÜZENLENEN EDİTORYAL İÇERİK. Kural ve üretim: scripts/generate-match-special.mjs, belge: docs/match-special.md. Her kayıt bir maç kimliğine bağlıdır (data/fixture-calendar.json içindeki id) ve o maç için hub + modül sayfaları üretir. BURADA YAZILAN HER ŞEY YORUMDUR: skor, kadro, hakem, sakatlık gibi OLGU iddiaları buraya yazılmaz — onlar veri katmanından (fikstür, kadro, form) gelir ve doğrulanmamışsa hiç gösterilmez. Modül metinleri iki dilde birlikte verilir; biri eksikse kayıt elenir ve nedeni derleme günlüğüne yazılır.",
-  "updatedAt": "2026-08-14T00:00:00+03:00",
+  "updatedAt": "2026-08-14T23:30:00+03:00",
   "specials": [
     {
       "matchId": "galatasaray-corum-fk-2026-08-14",
@@ -50,42 +50,142 @@
           "en": "According to A Spor's latest report, the XI Okan Buruk is planning to field against Çorum FK has taken shape. Osimhen leads the line, with Sané, Yunus and Barış Alper behind him."
         },
         "players": [
-          { "name": "Victor Osimhen", "row": 0, "order": 0, "profile": { "tr": "oyuncular/victor-osimhen.html", "en": "en/player/v-osimhen-galatasaray.html" } },
-          { "name": "Barış Alper Yılmaz", "row": 1, "order": 0, "profile": { "tr": "oyuncular/baris-alper-yilmaz.html", "en": "en/player/b-yilmaz-galatasaray.html" } },
-          { "name": "Yunus Akgün", "row": 1, "order": 1, "profile": { "tr": "oyuncular/yunus-akgun.html", "en": "en/player/y-akgun-galatasaray.html" } },
-          { "name": "Leroy Sané", "row": 1, "order": 2, "profile": { "tr": "oyuncular/leroy-sane.html", "en": "en/player/l-sane-galatasaray.html" } },
-          { "name": "Gabriel Sara", "row": 2, "order": 0, "profile": { "tr": "oyuncular/gabriel-sara.html", "en": "oyuncular/gabriel-sara.html" } },
-          { "name": "Lucas Torreira", "row": 2, "order": 1, "profile": { "tr": "oyuncular/lucas-torreira.html", "en": "en/player/l-torreira-galatasaray.html" } },
-          { "name": "Ismail Jakobs", "row": 3, "order": 0, "profile": { "tr": "oyuncular/ismail-jakobs.html", "en": "en/player/i-jakobs-galatasaray.html" } },
-          { "name": "Abdülkerim Bardakcı", "row": 3, "order": 1, "profile": { "tr": "oyuncular/abdulkerim-bardakci.html", "en": "en/player/a-bardakci-galatasaray.html" } },
-          { "name": "Mario Lemina", "row": 3, "order": 2, "profile": { "tr": "oyuncular/mario-lemina.html", "en": "oyuncular/mario-lemina.html" } },
-          { "name": "Roland Sallai", "row": 3, "order": 3, "profile": { "tr": "oyuncular/roland-sallai.html", "en": "en/player/r-sallai-galatasaray.html" } },
-          { "name": "Uğurcan Çakır", "row": 4, "order": 0, "profile": { "tr": "oyuncular/ugurcan-cakir.html", "en": "en/player/u-cakir-galatasaray.html" } }
+          {
+            "name": "Victor Osimhen",
+            "row": 0,
+            "order": 0,
+            "profile": {
+              "tr": "oyuncular/victor-osimhen.html",
+              "en": "en/player/v-osimhen-galatasaray.html"
+            }
+          },
+          {
+            "name": "Barış Alper Yılmaz",
+            "row": 1,
+            "order": 0,
+            "profile": {
+              "tr": "oyuncular/baris-alper-yilmaz.html",
+              "en": "en/player/b-yilmaz-galatasaray.html"
+            }
+          },
+          {
+            "name": "Yunus Akgün",
+            "row": 1,
+            "order": 1,
+            "profile": {
+              "tr": "oyuncular/yunus-akgun.html",
+              "en": "en/player/y-akgun-galatasaray.html"
+            }
+          },
+          {
+            "name": "Leroy Sané",
+            "row": 1,
+            "order": 2,
+            "profile": {
+              "tr": "oyuncular/leroy-sane.html",
+              "en": "en/player/l-sane-galatasaray.html"
+            }
+          },
+          {
+            "name": "Gabriel Sara",
+            "row": 2,
+            "order": 0,
+            "profile": {
+              "tr": "oyuncular/gabriel-sara.html",
+              "en": "oyuncular/gabriel-sara.html"
+            }
+          },
+          {
+            "name": "Lucas Torreira",
+            "row": 2,
+            "order": 1,
+            "profile": {
+              "tr": "oyuncular/lucas-torreira.html",
+              "en": "en/player/l-torreira-galatasaray.html"
+            }
+          },
+          {
+            "name": "Ismail Jakobs",
+            "row": 3,
+            "order": 0,
+            "profile": {
+              "tr": "oyuncular/ismail-jakobs.html",
+              "en": "en/player/i-jakobs-galatasaray.html"
+            }
+          },
+          {
+            "name": "Abdülkerim Bardakcı",
+            "row": 3,
+            "order": 1,
+            "profile": {
+              "tr": "oyuncular/abdulkerim-bardakci.html",
+              "en": "en/player/a-bardakci-galatasaray.html"
+            }
+          },
+          {
+            "name": "Mario Lemina",
+            "row": 3,
+            "order": 2,
+            "profile": {
+              "tr": "oyuncular/mario-lemina.html",
+              "en": "oyuncular/mario-lemina.html"
+            }
+          },
+          {
+            "name": "Roland Sallai",
+            "row": 3,
+            "order": 3,
+            "profile": {
+              "tr": "oyuncular/roland-sallai.html",
+              "en": "en/player/r-sallai-galatasaray.html"
+            }
+          },
+          {
+            "name": "Uğurcan Çakır",
+            "row": 4,
+            "order": 0,
+            "profile": {
+              "tr": "oyuncular/ugurcan-cakir.html",
+              "en": "en/player/u-cakir-galatasaray.html"
+            }
+          }
         ],
         "analysis": [
           {
-            "heading": { "tr": "Osimhen merkezde", "en": "Osimhen through the middle" },
+            "heading": {
+              "tr": "Osimhen merkezde",
+              "en": "Osimhen through the middle"
+            },
             "body": {
               "tr": "Victor Osimhen'in ceza sahası koşuları ve savunma arkasına tehdidi Galatasaray'ın hücum planının merkezinde olacak.",
               "en": "Victor Osimhen's runs into the box and threat in behind could be central to Galatasaray's attacking plan."
             }
           },
           {
-            "heading": { "tr": "Sané – Yunus – Barış Alper", "en": "Sané – Yunus – Barış Alper" },
+            "heading": {
+              "tr": "Sané – Yunus – Barış Alper",
+              "en": "Sané – Yunus – Barış Alper"
+            },
             "body": {
               "tr": "Sané'nin sağdan içe kat etmesi, Yunus'un merkezde hatlar arasında bağlantı kurması ve Barış Alper'in sol taraftan fiziksel koşuları Galatasaray'a çok yönlü bir hücum hattı sağlayabilir.",
               "en": "Sané cutting inside from the right, Yunus linking play between the lines and Barış Alper's powerful runs from the left could give Galatasaray a versatile attack."
             }
           },
           {
-            "heading": { "tr": "Sara – Torreira dengesi", "en": "The Sara – Torreira balance" },
+            "heading": {
+              "tr": "Sara – Torreira dengesi",
+              "en": "The Sara – Torreira balance"
+            },
             "body": {
               "tr": "Gabriel Sara'nın pas bağlantıları ve ileri çıkışları ile Torreira'nın top kazanma ve geçiş savunması rolü orta sahanın temel dengesi olacak.",
               "en": "Gabriel Sara's passing links and forward movement, balanced by Torreira's ball-winning and transition-defence role, could define the midfield."
             }
           },
           {
-            "heading": { "tr": "Lemina stoperde", "en": "Lemina at centre-back" },
+            "heading": {
+              "tr": "Lemina stoperde",
+              "en": "Lemina at centre-back"
+            },
             "body": {
               "tr": "A Spor'un aktardığı bu muhtemel düzende Mario Lemina'nın Abdülkerim Bardakcı'nın yanında stoper olarak kullanılması dikkat çeken en önemli taktik tercihlerden biri.",
               "en": "In this probable shape reported by A Spor, Mario Lemina being used alongside Abdülkerim Bardakcı at centre-back is one of the most notable tactical calls."
@@ -586,6 +686,1315 @@
           "body": {
             "tr": "Akıştan az pozisyon bulacak bir takım için duran toplar en yoğunlaşmış fırsat anı. Çorum'un kazandığı her korner ve ceza sahasına yakın serbest vuruş, oyunun geri kalanındaki dezavantajı kısmen dengeliyor. Galatasaray tarafında mesele savunma organizasyonu ve ikinci top: korner sonrası düşen topu kazanmak, hem ikinci dalgayı engelliyor hem de hızlı çıkış imkânı veriyor.",
             "en": "For a side that will see few chances from open play, set pieces are the most concentrated opportunity. Every corner and free-kick near the box that Çorum win partly offsets their disadvantage elsewhere. For Galatasaray it is about organisation and the second ball: winning the drop after a corner both stops the second wave and opens a quick break."
+          }
+        }
+      ],
+      "homepagePromo": false
+    },
+    {
+      "matchId": "kasimpasa-trabzonspor-2026-08-15",
+      "slug": "kasimpasa-trabzonspor-mac-analizi",
+      "enSlug": "kasimpasa-trabzonspor-match-analysis",
+      "kicker": {
+        "tr": "Detaylı Maç Analizi",
+        "en": "In-Depth Match Analysis"
+      },
+      "title": {
+        "tr": "Kasımpaşa – Trabzonspor | Detaylı Maç Analizi",
+        "en": "Kasımpaşa vs Trabzonspor | In-Depth Match Analysis"
+      },
+      "lead": {
+        "tr": "Muhtemel 11'ler, taktik savaşlar, eksikler ve skor beklentisi. Süper Lig 2026/27 sezonunun açılış haftasında Trabzonspor, Recep Tayyip Erdoğan Stadyumu'nda Kasımpaşa'ya konuk oluyor.",
+        "en": "Probable line-ups, tactical battles, team news and a score expectation. Trabzonspor visit Kasımpaşa at the Recep Tayyip Erdoğan Stadium on the opening weekend of the 2026/27 Süper Lig season."
+      },
+      "probableLineups": [
+        {
+          "team": "Kasımpaşa",
+          "status": "unconfirmed",
+          "source": {
+            "name": "Doğrulanmış kaynak yok"
+          },
+          "title": {
+            "tr": "Kasımpaşa'nın muhtemel 11'i henüz açıklanmadı",
+            "en": "Kasımpaşa's probable XI has not been published"
+          },
+          "badge": {
+            "tr": "MUHTEMEL 11 — HENÜZ DOĞRULANMADI",
+            "en": "PROBABLE XI — NOT YET CONFIRMED"
+          },
+          "sourceLabel": {
+            "tr": "Maç öncesinde bu takım için doğrulayabildiğimiz bir kaynakta muhtemel 11 yayımlanmadı.",
+            "en": "No source we can verify had published a probable XI for this side before the match."
+          }
+        },
+        {
+          "team": "Trabzonspor",
+          "formation": "4-3-3",
+          "status": "reported",
+          "publishedAt": "2026-08-14T20:00:00+03:00",
+          "source": {
+            "name": "Takvim / Fanatik maç önü aktarımı"
+          },
+          "players": [
+            {
+              "name": "Paul Onuachu",
+              "row": 0,
+              "order": 0,
+              "profile": {
+                "tr": "oyuncular/paul-onuachu.html",
+                "en": "en/player/p-onuachu-trabzonspor.html"
+              }
+            },
+            {
+              "name": "Noah Saviolo",
+              "row": 1,
+              "order": 0,
+              "profile": {
+                "tr": "oyuncular/n-saviolo-trabzonspor.html",
+                "en": "en/player/n-saviolo-trabzonspor.html"
+              }
+            },
+            {
+              "name": "Aral Şimşir",
+              "row": 1,
+              "order": 1,
+              "profile": {
+                "tr": "oyuncular/a-simsir-trabzonspor.html",
+                "en": "en/player/a-simsir-trabzonspor.html"
+              }
+            },
+            {
+              "name": "Ruslan Malinovskyi",
+              "row": 2,
+              "order": 0,
+              "profile": {
+                "tr": "oyuncular/ruslan-malinovskyi.html",
+                "en": "en/player/r-malinovskyi-trabzonspor.html"
+              }
+            },
+            {
+              "name": "Benjamin Bouchouari",
+              "row": 2,
+              "order": 1,
+              "profile": {
+                "tr": "oyuncular/benjamin-bouchouari.html",
+                "en": "en/player/b-bouchouari-trabzonspor.html"
+              }
+            },
+            {
+              "name": "Ozan Tufan",
+              "row": 2,
+              "order": 2,
+              "profile": {
+                "tr": "oyuncular/ozan-tufan.html",
+                "en": "en/player/o-tufan-trabzonspor.html"
+              }
+            },
+            {
+              "name": "Sidny Lopes Cabral",
+              "row": 3,
+              "order": 0,
+              "profile": {
+                "tr": "oyuncular/s-lopes-cabral-trabzonspor.html",
+                "en": "en/player/s-lopes-cabral-trabzonspor.html"
+              }
+            },
+            {
+              "name": "Stefan Savić",
+              "row": 3,
+              "order": 1,
+              "profile": {
+                "tr": "oyuncular/stefan-savic.html",
+                "en": "en/player/s-savic-trabzonspor.html"
+              }
+            },
+            {
+              "name": "Chibuike Nwaiwu",
+              "row": 3,
+              "order": 2,
+              "profile": {
+                "tr": "oyuncular/chibuike-nwaiwu.html",
+                "en": "en/player/c-nwaiwu-trabzonspor.html"
+              }
+            },
+            {
+              "name": "Wagner Pina",
+              "row": 3,
+              "order": 3,
+              "profile": {
+                "tr": "oyuncular/wagner-pina.html",
+                "en": "oyuncular/wagner-pina.html"
+              }
+            },
+            {
+              "name": "André Onana",
+              "row": 4,
+              "order": 0,
+              "profile": {
+                "tr": "oyuncular/andre-onana.html",
+                "en": "en/player/a-onana-trabzonspor.html"
+              }
+            }
+          ],
+          "title": {
+            "tr": "Trabzonspor'un Muhtemel 11'i",
+            "en": "Trabzonspor's Probable XI"
+          },
+          "badge": {
+            "tr": "MUHTEMEL 11 — RESMÎ DEĞİL",
+            "en": "PROBABLE XI — NOT OFFICIAL"
+          },
+          "sourceLabel": {
+            "tr": "Maç önü aktarımlarında Fatih Tekke'nin kurması beklenen 11. On bir ismin tamamı kulübün güncel kadrosunda yer alıyor; kadro resmî olarak açıklanana kadar bu bir tahmindir.",
+            "en": "The XI Fatih Tekke is expected to field according to pre-match coverage. All eleven names are in the club's current squad, but until the teamsheet is official this remains a projection."
+          },
+          "moduleKicker": {
+            "tr": "MUHTEMEL 11 | KASIMPAŞA – TRABZONSPOR",
+            "en": "PROBABLE XI | KASIMPAŞA – TRABZONSPOR"
+          },
+          "promoTitle": {
+            "tr": "Trabzonspor'un Kasımpaşa Maçı Muhtemel 11'i",
+            "en": "Trabzonspor's Probable XI vs Kasımpaşa"
+          },
+          "promoSpot": {
+            "tr": "Fatih Tekke'nin 4-3-3 düzeninde Onana kalede, Onuachu en uçta. Yeni transfer Muhammed Salah kafilede — ilk 11'de değil, yedek kulübesinde başlaması bekleniyor.",
+            "en": "In Fatih Tekke's 4-3-3, Onana starts in goal and Onuachu leads the line. New signing Mohamed Salah travelled with the squad but is expected to begin on the bench rather than in the XI."
+          },
+          "analysis": [
+            {
+              "heading": {
+                "tr": "Salah kafilede, ilk 11'de beklenmiyor",
+                "en": "Salah travels, but is not expected to start"
+              },
+              "body": {
+                "tr": "Trabzonspor'un yeni transferi Muhammed Salah, Kasımpaşa maçı için İstanbul'a giden kafileye dahil edildi. Maç önü aktarımlarında öne çıkan beklenti, Salah'ın ilk 11'de değil yedek kulübesinde başlaması ve maçın ilerleyen bölümünde süre alması yönünde.\n\nBu bir kulüp açıklaması değil, aktarılan bir beklenti. Kadro açıklandığında kesinleşecek — ve açıklandığı anda bu sayfadaki panel yerini resmî ilk 11'e bırakacak.",
+                "en": "Trabzonspor's new signing Mohamed Salah was included in the squad that travelled to Istanbul for the Kasımpaşa match. Pre-match coverage expects him to start on the bench rather than in the XI, with minutes later in the game.\n\nThis is a reported expectation rather than a club statement. It will be settled when the teamsheet lands — and at that moment this panel gives way to the official line-up."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Orta sahada eksiklerin şekillendirdiği üçlü",
+                "en": "A midfield three shaped by absentees"
+              },
+              "body": {
+                "tr": "Okay Yokuşlu ve Tim Jabol-Folcarelli'nin ikisi de bu maçta yok. Bu, orta saha üçlüsünün tercih değil zorunluluk sonucu şekillendiği anlamına geliyor: Ozan Tufan, Bouchouari ve Malinovskyi.\n\nÜçlünün dengesi dikkat çekici. Malinovskyi ileri, Bouchouari bağlantı, Ozan Tufan ise hem top kazanma hem ceza sahasına geç giriş yapabilen bir profil. Ancak klasik bir ön libero yokluğunda geçiş savunmasının kime emanet edileceği açık bir soru.",
+                "en": "Both Okay Yokuşlu and Tim Jabol-Folcarelli are out. That means the midfield three is shaped by necessity rather than preference: Ozan Tufan, Bouchouari and Malinovskyi.\n\nThe balance is notable. Malinovskyi pushes on, Bouchouari links, and Ozan Tufan can both win the ball and arrive late in the box. But without a natural holding midfielder, who takes charge of transition defence is an open question."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Onuachu'ya servis",
+                "en": "Service to Onuachu"
+              },
+              "body": {
+                "tr": "Paul Onuachu'nun boyu ve ceza sahası içindeki varlığı, Trabzonspor'un hücum planında doğal bir referans noktası. Kanatlardan gelen ortaların ve ikinci topların onun etrafında toplanması beklenir.\n\nBu aynı zamanda bir risk: hücum tek bir referans etrafında kurulursa rakip savunma için tahmin edilebilir hâle gelir. Saviolo ve Aral Şimşir'in kanatlardan derinlik araması, bu tahmin edilebilirliği kırmanın yolu.",
+                "en": "Paul Onuachu's height and presence in the box give Trabzonspor a natural reference point in attack. Crosses from wide and second balls can be expected to gather around him.\n\nThat is also a risk: an attack built around a single reference becomes predictable for a defence. Saviolo and Aral Şimşir looking for depth from wide areas is the way to break that predictability."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Muçi ve Batagov da yok",
+                "en": "Muçi and Batagov are also missing"
+              },
+              "body": {
+                "tr": "Ernest Muçi ve Arseniy Batagov, Okay Yokuşlu ve Jabol-Folcarelli ile birlikte bu maçta forma giyemeyecek. Dört eksik, hem hücum hattında hem savunmada seçenekleri daraltıyor.\n\nStoperde Savić ve Nwaiwu ikilisi bekleniyor; Batagov'un yokluğu, sezonun ilk maçında bu ikilinin uyumunu doğrudan sınava sokuyor.",
+                "en": "Ernest Muçi and Arseniy Batagov are unavailable alongside Okay Yokuşlu and Jabol-Folcarelli. Four absentees narrow the options in attack and defence alike.\n\nSavić and Nwaiwu are expected at centre-back; with Batagov out, the understanding of that pairing is tested straight away on the opening weekend."
+              }
+            }
+          ]
+        }
+      ],
+      "modules": [
+        {
+          "id": "taktik-analiz",
+          "slug": {
+            "tr": "taktik-analiz",
+            "en": "tactical-analysis"
+          },
+          "kicker": {
+            "tr": "Taktik",
+            "en": "Tactics"
+          },
+          "title": {
+            "tr": "Taktik Analiz",
+            "en": "Tactical Analysis"
+          },
+          "summary": {
+            "tr": "Beklenen kurulumlar, orta saha dengesi, geçiş anları ve duran toplar.",
+            "en": "Expected shapes, midfield balance, transition moments and set pieces."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Beklenen kurulumlar",
+                "en": "Expected shapes"
+              },
+              "body": {
+                "tr": "Trabzonspor'un 4-3-3 düzeniyle çıkması bekleniyor: Onana kalede; Pina, Nwaiwu, Savić ve Lopes Cabral savunmada; Ozan Tufan, Bouchouari ve Malinovskyi orta sahada; Saviolo, Onuachu ve Aral Şimşir ileride.\n\nKasımpaşa'nın kurulumu için doğrulanmış bir bilgi yok — muhtemel 11 yayımlanmadı. Emre Belözoğlu yönetiminde ev sahibi olarak oynayacak bir takımdan kompakt bir düzen beklenebilir, ancak bu bir çıkarım; kadro açıklanana kadar kesin konuşmak mümkün değil.\n\nBelirleyici olacak nokta, Trabzonspor'un klasik ön libero olmadan kurduğu orta saha üçlüsünün geçişte nasıl davranacağı.",
+                "en": "Trabzonspor are expected in a 4-3-3: Onana in goal; Pina, Nwaiwu, Savić and Lopes Cabral across the back; Ozan Tufan, Bouchouari and Malinovskyi in midfield; Saviolo, Onuachu and Aral Şimşir ahead of them.\n\nThere is no verified information on Kasımpaşa's shape — no probable XI was published. A compact setup would be a reasonable expectation from a home side under Emre Belözoğlu, but that is an inference; nothing can be stated firmly until the teamsheet lands.\n\nThe decisive point will be how Trabzonspor's midfield three, built without a natural holder, behaves in transition."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Orta sahanın dengesi",
+                "en": "The balance of the midfield"
+              },
+              "body": {
+                "tr": "Okay Yokuşlu'nun yokluğu bu maçın en somut taktik sonucu. Bir ön liberonun görevi yalnızca top kazanmak değil; karşı atağın ilk pasını geciktirmek, ikinci topları toplamak ve stoperlerin önündeki alanı kapatmak.\n\nBu görevin Ozan Tufan ile Bouchouari arasında paylaşılması bekleniyor. Paylaşılmış sorumluluk, iyi işlediğinde esneklik sağlar; işlemediğinde sorumluluk boşlukta kalır ve tam da stoperlerin önündeki bölge açılır.\n\nKasımpaşa'nın ev sahibi olarak en gerçekçi üretim yolu bu bölgeyi hedeflemek olabilir.",
+                "en": "Okay Yokuşlu's absence is the most concrete tactical consequence here. A holding midfielder's job is not only to win the ball but to delay the first pass of a counter, collect second balls and screen the space in front of the centre-backs.\n\nThat job is likely to be shared between Ozan Tufan and Bouchouari. Shared responsibility gives flexibility when it works; when it does not, the responsibility falls between them and the very zone in front of the centre-backs opens up.\n\nTargeting that zone may be Kasımpaşa's most realistic route to creating at home."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Geçiş anları",
+                "en": "Transitions"
+              },
+              "body": {
+                "tr": "Trabzonspor'un kanat oyuncularıyla derinlik araması, beklerin de yükselmesini gerektiriyor. Top kaybedildiğinde arkada kalan denge, Savić ve Nwaiwu ikilisiyle bir orta saha oyuncusuna iniyor.\n\nKasımpaşa açısından burada bir fırsat var: kazanılan topu bekletmeden kanatlara açıp Trabzonspor'un dönüş mesafesini uzatmak. Ancak bu, ileride hızlı ve derinlik arayan oyuncular gerektiriyor — ev sahibinin bu maça hangi hücum hattıyla çıkacağı açıklanmadı.\n\nTers yönde, Trabzonspor'un karşı atakta Onuachu'ya ulaşma hızı maçın en verimli silahı olabilir.",
+                "en": "Trabzonspor looking for depth through their wide players requires the full-backs to push on too. When the ball is lost, the rest defence comes down to Savić, Nwaiwu and one midfielder.\n\nThere is an opportunity for Kasımpaşa there: win the ball, release it wide immediately and lengthen the distance Trabzonspor have to recover. That requires pace and runners in the final third — and the home side's forward line for this match has not been announced.\n\nIn the other direction, how quickly Trabzonspor can reach Onuachu on the counter may be their most productive weapon."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Duran toplar",
+                "en": "Set pieces"
+              },
+              "body": {
+                "tr": "Onuachu'nun ceza sahasındaki varlığı, Trabzonspor'un duran toplarını doğal bir tehdide dönüştürüyor. Kornerlerde ve yan taraftan gelen serbest vuruşlarda ev sahibinin ilk direk savunmasını nasıl kuracağı belirleyici olabilir.\n\nMalinovskyi'nin duran top kullanımı bu tabloda ayrı bir başlık; ancak bu maça dair doğrulanmış bir duran top istatistiği elimizde yok ve sezonun ilk haftasında böyle bir örneklem zaten bulunmuyor.\n\nKasımpaşa tarafında duran toplar, açık oyunda kurulamayacak bir dengeyi kurmanın yolu olabilir — bu, konuk takımın savunma organizasyonunu sınayacak en somut araç.",
+                "en": "Onuachu's presence in the box makes Trabzonspor's set pieces a natural threat. How the hosts organise their near-post defending at corners and wide free kicks may be decisive.\n\nMalinovskyi's set-piece delivery is a separate heading in that picture; but we have no verified set-piece statistics for this fixture, and on the opening weekend of a season no such sample exists.\n\nFor Kasımpaşa, set plays may be the way to find a balance they cannot build in open play — the most concrete tool for testing the visitors' defensive organisation."
+              }
+            }
+          ]
+        },
+        {
+          "id": "trabzonspor-plan",
+          "slug": {
+            "tr": "trabzonspor-mac-plani",
+            "en": "trabzonspor-game-plan"
+          },
+          "kicker": {
+            "tr": "Plan",
+            "en": "Game plan"
+          },
+          "title": {
+            "tr": "Trabzonspor'un Maç Planı",
+            "en": "Trabzonspor's Game Plan"
+          },
+          "summary": {
+            "tr": "Dört eksikle kurulan düzen, Onuachu'ya servis ve Salah'ın ne zaman gireceği sorusu.",
+            "en": "A shape built around four absentees, service to Onuachu and the question of when Salah appears."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Hazırlık dönemi ne söylüyor, ne söylemiyor",
+                "en": "What pre-season says and does not say"
+              },
+              "body": {
+                "tr": "Trabzonspor sezon öncesinde Avusturya kampında hazırlık maçları oynadı; aktarılan tabloya göre dört hazırlık maçında bir galibiyet alındı. 2 Ağustos'ta Udinese 1-0 yenildi, 8 Ağustos'ta Göztepe'ye 2-1 kaybedildi.\n\nHazırlık maçı sonuçları lig formunun göstergesi değildir: kadro rotasyonu, yüklenme dönemi ve maçın amacı sonuçtan bağımsızdır. Bu yüzden burada bir form yargısı kurulmuyor.\n\nSöylediği tek şey şu olabilir: takım sezona en akıcı hâliyle girmiyor ve ilk hafta bunun sahada nasıl göründüğünü gösterecek ilk gerçek örneklem.",
+                "en": "Trabzonspor played their pre-season friendlies at a camp in Austria; by the reported record they won one of four. They beat Udinese 1-0 on 2 August and lost 2-1 to Göztepe on 8 August.\n\nFriendly results are not an indicator of league form: rotation, training load and the purpose of the match all sit outside the scoreline. No judgement about form is built on them here.\n\nWhat they may indicate is simply this: the team does not enter the season at its most fluent, and the opening weekend is the first real sample of how that looks on the pitch."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Onuachu etrafında kurulan hücum",
+                "en": "An attack built around Onuachu"
+              },
+              "body": {
+                "tr": "Trabzonspor'un ileri hattında Onuachu bir referans noktası. Kanatlardan gelen ortalar, ikinci toplar ve ceza sahası içindeki hava mücadeleleri doğal olarak onun etrafında yoğunlaşıyor.\n\nBunun verimli olması, kanat oyuncularının yalnızca orta açması değil, derinlik de araması gerektiği anlamına geliyor. Saviolo ve Aral Şimşir arkaya koşu yaptığında rakip savunma hattı geriye çekiliyor ve Onuachu'nun önündeki alan genişliyor.\n\nMalinovskyi'nin bu iki hareket arasındaki pas seçimi, hücumun tahmin edilebilir olup olmamasını belirleyecek.",
+                "en": "Onuachu is the reference point in Trabzonspor's front line. Crosses from wide, second balls and aerial duels in the box naturally gather around him.\n\nFor that to be productive, the wide players must look for depth as well as delivery. When Saviolo and Aral Şimşir run in behind, the opposing line drops and the space in front of Onuachu grows.\n\nMalinovskyi's choice of pass between those two movements will decide whether the attack becomes predictable."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Salah'ın girişi bir plan meselesi",
+                "en": "Salah's introduction is a plan in itself"
+              },
+              "body": {
+                "tr": "Muhammed Salah'ın kafilede olması, maçın ikinci yarısına dair ayrı bir başlık açıyor. Yedek kulübesinde başlaması bekleniyorsa, ne zaman gireceği skora bağlı bir karar hâline geliyor.\n\nTrabzonspor öndeyse giriş bir yönetme hamlesi, geride ya da berabereyse bir açılma hamlesi olur. İkisi de aynı oyuncuyu farklı bir göreve sokar.\n\nBu bölümdeki her şey aktarılan beklentiye dayanıyor; kulüp tarafından açıklanmış bir oyun planı değil.",
+                "en": "Mohamed Salah being in the squad opens a separate heading for the second half. If he is expected to start on the bench, when he comes on becomes a decision tied to the scoreline.\n\nWith Trabzonspor ahead, his introduction is a game-management move; level or behind, it is an attempt to open the match up. The same player, two different jobs.\n\nEverything in this section rests on reported expectation, not on a game plan announced by the club."
+              }
+            }
+          ]
+        },
+        {
+          "id": "kasimpasa-plan",
+          "slug": {
+            "tr": "kasimpasa-mac-plani",
+            "en": "kasimpasa-game-plan"
+          },
+          "kicker": {
+            "tr": "Plan",
+            "en": "Game plan"
+          },
+          "title": {
+            "tr": "Kasımpaşa'nın Maç Planı",
+            "en": "Kasımpaşa's Game Plan"
+          },
+          "summary": {
+            "tr": "Belözoğlu'nun yenilenen kadrosu, iç saha avantajı ve 23. Süper Lig sezonu.",
+            "en": "Belözoğlu's rebuilt squad, home advantage and a 23rd Süper Lig season."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Büyük ölçüde yenilenen bir kadro",
+                "en": "A squad substantially rebuilt"
+              },
+              "body": {
+                "tr": "Kasımpaşa yaz döneminde dokuz yeni oyuncu kadroya kattı: Güven Yalçın, Thiemoko Diarra, Ayberk Karapo, Marcus Rafferty, Elson Mendes, Matei Ilie, Jakob Jessen, Kenan Kurtovic ve Stann Elysee Dalo. Geçen sezonu kiralık geçiren Adrian Benedyczak'ın da bonservisi alındı.\n\nBu ölçekte bir yenilenme, sezonun ilk haftasında hem fırsat hem risk. Yeni bir kadronun uyumu genellikle ilk haftalarda değil, ilk aylarda oturuyor.\n\nEmre Belözoğlu yönetimindeki takımın bu maça hangi 11'le çıkacağı açıklanmadı; bu nedenle burada bir kurulum tahmini yapılmıyor.",
+                "en": "Kasımpaşa added nine players in the summer: Güven Yalçın, Thiemoko Diarra, Ayberk Karapo, Marcus Rafferty, Elson Mendes, Matei Ilie, Jakob Jessen, Kenan Kurtovic and Stann Elysee Dalo. They also made Adrian Benedyczak's loan from last season permanent.\n\nA rebuild of that scale is both an opportunity and a risk on the opening weekend. New squads usually settle over the first months rather than the first weeks.\n\nThe XI Emre Belözoğlu will field has not been announced, so no projected shape is offered here."
+              }
+            },
+            {
+              "heading": {
+                "tr": "İç sahada 23. sezon",
+                "en": "A 23rd season at home"
+              },
+              "body": {
+                "tr": "Kasımpaşa, bu maçla Süper Lig'deki 23. sezonuna başlıyor. Kulübün ligdeki toplam bilançosu 786 maçta 240 galibiyet, 214 beraberlik ve 332 mağlubiyet.\n\nBu rakamlar bir kulübün ligdeki yerini tarif ediyor, bu maçın sonucunu değil. Sezonun ilk haftasında iç sahada alınacak üç puanın değeri, tablo oturmadan önce elde edilmesinde.\n\nRecep Tayyip Erdoğan Stadyumu'nun görece dar yapısı, kompakt bir savunma düzeni kuran ev sahibi için yardımcı bir unsur olabilir.",
+                "en": "This match begins Kasımpaşa's 23rd Süper Lig season. Across those campaigns the club's league record stands at 240 wins, 214 draws and 332 defeats in 786 matches.\n\nThose figures describe a club's standing in the division, not the outcome of this match. The value of three home points on the opening weekend lies in banking them before the table settles.\n\nThe relatively tight dimensions of the Recep Tayyip Erdoğan Stadium can help a home side that sets up compactly."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Trabzonspor'un orta sahasını hedeflemek",
+                "en": "Targeting Trabzonspor's midfield"
+              },
+              "body": {
+                "tr": "Trabzonspor'un klasik bir ön libero olmadan sahaya çıkması bekleniyorsa, ev sahibi için en somut hedef bölge stoperlerin önündeki alan.\n\nBu bölgeyi hedeflemenin yolu, topu kazandıktan sonra dikey oynamak ve orta sahanın geri dönüş mesafesini uzatmak. Bunun için bekleyen değil, koşan bir hücum hattı gerekiyor.\n\nKasımpaşa'nın bu maçta bu tercihi yapıp yapmayacağı bilinmiyor; kadro ve diziliş açıklanmadı.",
+                "en": "If Trabzonspor start without a natural holding midfielder, the most concrete target zone for the hosts is the space in front of the centre-backs.\n\nThe way to attack it is to play forward immediately after winning possession and lengthen the recovery distance for the midfield. That requires a forward line that runs rather than waits.\n\nWhether Kasımpaşa make that choice is unknown; neither their squad nor their shape has been announced."
+              }
+            }
+          ]
+        },
+        {
+          "id": "eksikler",
+          "slug": {
+            "tr": "eksikler-ve-kadro-durumu",
+            "en": "team-news-and-availability"
+          },
+          "kicker": {
+            "tr": "Kadro",
+            "en": "Team news"
+          },
+          "title": {
+            "tr": "Eksikler ve Kadro Durumu",
+            "en": "Absentees and Squad Status"
+          },
+          "summary": {
+            "tr": "Sakat, cezalı, şüpheli, yeni transfer ve dönen oyuncular ayrı ayrı.",
+            "en": "Injured, suspended, doubtful, newly signed and returning players, each listed separately."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Trabzonspor: kesin eksikler",
+                "en": "Trabzonspor: confirmed absentees"
+              },
+              "body": {
+                "tr": "Bu maçta forma giyemeyecek isimler şöyle aktarıldı:\n\n• Okay Yokuşlu — SAKAT (uzun süreli).\n• Arseniy Batagov — SAKAT (uzun süreli).\n• Tim Jabol-Folcarelli — kadroda değil.\n• Ernest Muçi — kadroda değil.\n\nDört eksiğin ikisi orta sahanın merkezinde. Bu, üçlü orta sahanın tercih değil zorunluluk sonucu şekillendiği anlamına geliyor ve maçın taktik okumasını doğrudan etkiliyor.",
+                "en": "The players reported as unavailable for this match:\n\n• Okay Yokuşlu — INJURED (long-term).\n• Arseniy Batagov — INJURED (long-term).\n• Tim Jabol-Folcarelli — not in the squad.\n• Ernest Muçi — not in the squad.\n\nTwo of the four are central midfielders. That means the midfield three is shaped by necessity rather than preference, and it bears directly on how the match is read."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Trabzonspor: yeni transfer ve dönen oyuncu",
+                "en": "Trabzonspor: a new signing and a returning player"
+              },
+              "body": {
+                "tr": "YENİ TRANSFER: Muhammed Salah, Kasımpaşa maçı için İstanbul'a giden kafileye dahil edildi. Görev alması hâlinde bordo-mavili formayla Süper Lig'deki ilk maçına çıkacak. Aktarılan beklenti, ilk 11'de değil yedek kulübesinde başlaması yönünde.\n\nDÖNEN OYUNCU: Paul Onuachu, Afrika Uluslar Kupası'nın ardından takımla çalışmalara döndü ve maçta oynaması bekleniyor.\n\nSalah'ın Süper Lig'de henüz bir maçı olmadığı için bu sayfada ona dair bir lig istatistiği verilmiyor — olmayan bir örneklemden rakam üretmek analiz değil, süs olurdu.",
+                "en": "NEW SIGNING: Mohamed Salah was included in the squad that travelled to Istanbul for the Kasımpaşa match. If used, he will make his first Süper Lig appearance for the club. The reported expectation is that he begins on the bench rather than in the XI.\n\nRETURNING: Paul Onuachu is back in training after the Africa Cup of Nations and is expected to feature.\n\nBecause Salah has yet to play a Süper Lig match, no league statistic for him appears on this page — producing a figure from a sample that does not exist would be decoration, not analysis."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Kasımpaşa: kadro durumu",
+                "en": "Kasımpaşa: squad status"
+              },
+              "body": {
+                "tr": "SAKAT: Kamil Ahmet Çörekçi'nin sakatlığı nedeniyle maçta forma giymesi beklenmiyor.\n\nYENİ TRANSFERLER: Güven Yalçın, Thiemoko Diarra, Ayberk Karapo, Marcus Rafferty, Elson Mendes, Matei Ilie, Jakob Jessen, Kenan Kurtovic ve Stann Elysee Dalo yaz döneminde kadroya katıldı. Adrian Benedyczak'ın bonservisi alındı.\n\nBunun dışında Kasımpaşa için bu maça özel, doğrulanmış bir eksik listesi ya da kamp kadrosu açıklaması bulamadık. Cezalı ya da şüpheli oyuncu bilgisi de doğrulanamadı.\n\nAynı nedenle bu takım için muhtemel 11 yayımlamıyoruz. Tahmini bir on biri bilgi gibi göstermek okuyucuya yanlış olur; resmî kadro açıklandığında sayfa kendiliğinden güncellenecek.",
+                "en": "INJURED: Kamil Ahmet Çörekçi is not expected to feature because of injury.\n\nNEW SIGNINGS: Güven Yalçın, Thiemoko Diarra, Ayberk Karapo, Marcus Rafferty, Elson Mendes, Matei Ilie, Jakob Jessen, Kenan Kurtovic and Stann Elysee Dalo joined in the summer, and Adrian Benedyczak's move was made permanent.\n\nBeyond that we could not find a verified match-specific absentee list or travelling-squad announcement for Kasımpaşa. No suspension or doubtful-player information could be confirmed either.\n\nFor the same reason we publish no probable XI for this side. Presenting a guess as information would mislead the reader; the page will update itself once the official teamsheet is released."
+              }
+            }
+          ]
+        },
+        {
+          "id": "nasil-oynanabilir",
+          "slug": {
+            "tr": "mac-nasil-oynanabilir",
+            "en": "how-the-match-may-unfold"
+          },
+          "kicker": {
+            "tr": "Senaryo",
+            "en": "Scenario"
+          },
+          "title": {
+            "tr": "Maç Nasıl Oynanabilir?",
+            "en": "How the Match May Be Played"
+          },
+          "summary": {
+            "tr": "Üç akış senaryosu ve her birinin sahada hangi işaretle tanınacağı.",
+            "en": "Three scenarios for the flow of the game and the signal that identifies each."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Senaryo 1: Trabzonspor kontrolü erken alır",
+                "en": "Scenario 1: Trabzonspor take control early"
+              },
+              "body": {
+                "tr": "Trabzonspor topa sahip olup Onuachu'ya düzenli servis kurabilirse maç konuk takımın istediği ritme oturur. Bu tabloda Kasımpaşa'nın bloğu geriler ve ceza sahası çevresindeki mücadele yoğunlaşır.\n\nTanınacak işaret: Trabzonspor beklerinin sürekli olarak orta saha çizgisinin üzerinde konumlanması ve kornerlerin sıklaşması.\n\nBu senaryoda Salah'ın oyuna girişi, maçı yönetmeye dönük bir hamle olur.",
+                "en": "If Trabzonspor hold the ball and establish steady service to Onuachu, the match settles into the visitors' rhythm. Kasımpaşa's block drops and the contest concentrates around the box.\n\nThe signal to watch: Trabzonspor's full-backs sitting permanently above the halfway line, and corners becoming more frequent.\n\nIn this scenario Salah's introduction becomes a game-management move."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Senaryo 2: Orta sahada boşluk açılır",
+                "en": "Scenario 2: a gap opens in midfield"
+              },
+              "body": {
+                "tr": "Klasik bir ön libero olmadan kurulan üçlü, geçiş anlarında sorumluluğu paylaşmak zorunda. Bu paylaşım aksarsa stoperlerin önündeki bölge açılır ve Kasımpaşa'nın en gerçekçi üretim yolu doğar.\n\nTanınacak işaret: Kasımpaşa'nın kazandığı topları geriye değil ileriye oynaması ve Trabzonspor stoperlerinin sık sık ceza sahası dışında birebir mücadeleye girmesi.\n\nBu senaryo, maçın açık bir karşılıklı mücadeleye dönüşme ihtimalini en çok artıran tablo.",
+                "en": "A midfield three without a natural holder has to share the responsibility in transition. If that sharing slips, the zone in front of the centre-backs opens and Kasımpaşa's most realistic route to creating appears.\n\nThe signal to watch: Kasımpaşa playing forward rather than backwards after regaining possession, and Trabzonspor's centre-backs repeatedly having to defend one-against-one outside the box.\n\nThis is the scenario most likely to turn the match into an open, end-to-end contest."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Senaryo 3: Kapalı ve düşük skorlu bir maç",
+                "en": "Scenario 3: a tight, low-scoring match"
+              },
+              "body": {
+                "tr": "Kasımpaşa kompakt kalabilir ve ceza sahası önünü kalabalık tutabilirse, sezonun ilk haftasında iki takımın da temkinli oynadığı düşük skorlu bir maç ortaya çıkabilir.\n\nTanınacak işaret: ceza sahası dışından şut denemelerinin artması ve her iki takımın da kanat değiştirme paslarına sık başvurması.\n\nBu tabloda duran toplar ve bireysel bir hamle, doksan dakikanın tek belirleyicisi hâline gelebilir.",
+                "en": "If Kasımpaşa stay compact and keep the edge of the box crowded, the opening weekend could produce a cautious, low-scoring match.\n\nThe signal to watch: more shots from outside the box and both sides switching play frequently.\n\nIn that picture a set piece or an individual moment can become the only thing that decides the ninety minutes."
+              }
+            }
+          ]
+        },
+        {
+          "id": "guclu-zayif",
+          "slug": {
+            "tr": "guclu-ve-zayif-yonler",
+            "en": "strengths-and-weaknesses"
+          },
+          "kicker": {
+            "tr": "Değerlendirme",
+            "en": "Assessment"
+          },
+          "title": {
+            "tr": "Güçlü ve Zayıf Yönler",
+            "en": "Strengths and Weaknesses"
+          },
+          "summary": {
+            "tr": "İki takım için de dörder güçlü, dörder zayıf yön — doğrulanmış kadro durumuna dayanarak.",
+            "en": "Four strengths and four weaknesses for each side, grounded in the verified squad situation."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Trabzonspor — güçlü yönler",
+                "en": "Trabzonspor — strengths"
+              },
+              "body": {
+                "tr": "• Ceza sahasında fiziksel üstünlük: Onuachu, hem açık oyunda hem duran toplarda sürekli bir tehdit.\n• Kalede tecrübe: André Onana, üst düzey maç tecrübesi olan bir kaleci.\n• Orta sahada yaratıcılık: Malinovskyi'nin son pas ve duran top kalitesi, kapalı bir maçta fark yaratabilecek bir araç.\n• Kadro derinliğinde yeni bir seçenek: Muhammed Salah'ın kulübede olması, ikinci yarı için ayrı bir plan imkânı sunuyor.",
+                "en": "• Physical superiority in the box: Onuachu is a constant threat in open play and at set pieces.\n• Experience in goal: André Onana has played at the highest level.\n• Creativity in midfield: Malinovskyi's final ball and set-piece delivery can be the difference in a tight match.\n• A new option in reserve: Salah on the bench offers a distinct plan for the second half."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Trabzonspor — zayıf yönler",
+                "en": "Trabzonspor — weaknesses"
+              },
+              "body": {
+                "tr": "• Orta sahada dört eksiğin ikisi: Okay Yokuşlu ve Jabol-Folcarelli'nin yokluğu, klasik bir ön libero olmadan oynamayı gerektiriyor.\n• Stoperde uyum sınavı: Batagov'un yokluğunda Savić – Nwaiwu ikilisi sezonun ilk maçında doğrudan test ediliyor.\n• Hazırlık dönemi verimi: dört hazırlık maçında bir galibiyet, sezona en akıcı hâlde girilmediğini gösteriyor.\n• Hücumun tahmin edilebilirliği: oyun tek bir referans noktası etrafında kurulursa rakip savunma için okunması kolaylaşıyor.",
+                "en": "• Two of four absentees are central midfielders: without Okay Yokuşlu and Jabol-Folcarelli, they must play without a natural holder.\n• A partnership under examination: with Batagov out, Savić and Nwaiwu are tested immediately on the opening weekend.\n• Pre-season return: one win in four friendlies suggests they do not enter the season at their most fluent.\n• Predictability in attack: built around a single reference point, the attack becomes easier for a defence to read."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Kasımpaşa — güçlü yönler",
+                "en": "Kasımpaşa — strengths"
+              },
+              "body": {
+                "tr": "• İç saha avantajı: sezonun ilk maçını kendi sahasında oynamak, düzen kurmayı kolaylaştırıyor.\n• Rakibin orta saha eksikleri: Trabzonspor'un merkezdeki iki eksiği, ev sahibine somut bir hedef bölge bırakıyor.\n• Yenilenen kadro: dokuz yeni transfer, geçen sezonun sınırlarını aşmak için doğrudan bir müdahale.\n• Beklenti yükünün olmaması: favori olmamak, oyun planını sadeleştiriyor.",
+                "en": "• Home advantage: opening the season at their own ground makes it easier to impose a structure.\n• The opponent's midfield absences: Trabzonspor's two missing central midfielders leave the hosts a concrete target zone.\n• A refreshed squad: nine new signings are a direct attempt to move beyond last season's limits.\n• No weight of expectation: not being favourites simplifies the game plan."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Kasımpaşa — zayıf yönler",
+                "en": "Kasımpaşa — weaknesses"
+              },
+              "body": {
+                "tr": "• Uyum süresi: dokuz yeni oyuncunun katıldığı bir kadro, sezonun ilk haftasında henüz oturmamış olabilir.\n• Savunmada bir eksik: Kamil Ahmet Çörekçi'nin sakatlığı savunma seçeneklerini daraltıyor.\n• Ceza sahasında fiziksel dezavantaj riski: Onuachu'ya karşı hava mücadelesi, savunmanın en zorlanacağı başlık olabilir.\n• Ligdeki tarihsel bilanço: 786 maçta 240 galibiyet, kulübün ligde çoğunlukla alt-orta sıralarda yer aldığını gösteriyor.",
+                "en": "• Time to settle: a squad that added nine players may not yet be a unit on the opening weekend.\n• One defensive absentee: Kamil Ahmet Çörekçi's injury narrows the options at the back.\n• A potential physical mismatch in the box: aerial duels against Onuachu may be where the defence is stretched most.\n• The historical record: 240 wins in 786 league matches reflects a club that has spent most of its top-flight seasons in the lower half."
+              }
+            }
+          ]
+        },
+        {
+          "id": "futbolradar-yorumu",
+          "slug": {
+            "tr": "futbolradar-yorumu",
+            "en": "futbolradar-verdict"
+          },
+          "kicker": {
+            "tr": "Yorum",
+            "en": "Verdict"
+          },
+          "title": {
+            "tr": "FutbolRadar Yorumu",
+            "en": "The FutbolRadar Verdict"
+          },
+          "summary": {
+            "tr": "Editoryal değerlendirme ve skor beklentisi — ikisi de görüştür, veri değil.",
+            "en": "An editorial assessment and a score expectation — both opinion, not data."
+          },
+          "editorial": true,
+          "sections": [
+            {
+              "heading": {
+                "tr": "Maça dair değerlendirmemiz",
+                "en": "Our reading of the match"
+              },
+              "body": {
+                "tr": "Bu maçın cazibesi, iki takımın da sezona soru işaretleriyle başlaması. Trabzonspor kadro kalitesi bakımından önde ama orta sahasının merkezini iki eksikle kuruyor ve hazırlık döneminden akıcı bir görüntüyle çıkmadı.\n\nKasımpaşa ise dokuz yeni oyuncuyla neredeyse yeniden kurulmuş bir kadroyla sahaya çıkıyor. Böyle bir takımın ilk haftada nasıl görüneceğini tahmin etmek, elimizde muhtemel 11 bile yokken fazlasıyla iddialı olurdu.\n\nBizce maçın düğümü Trabzonspor'un orta sahasında. Ozan Tufan ve Bouchouari geçiş savunmasını paylaşabilirse konuk takım kontrolü elinde tutar; paylaşamazsa Kasımpaşa'nın aradığı alan kendiliğinden açılır.",
+                "en": "What makes this match interesting is that both sides begin the season with questions. Trabzonspor are stronger on squad quality but build the centre of midfield around two absentees, and they did not come out of pre-season looking fluent.\n\nKasımpaşa arrive with a squad rebuilt almost from scratch, nine new players included. Predicting how such a team looks on the opening weekend — without even a probable XI to work from — would be over-reaching.\n\nWe think the match turns on Trabzonspor's midfield. If Ozan Tufan and Bouchouari can share the transition-defence load, the visitors keep control; if they cannot, the space Kasımpaşa want opens by itself."
+              }
+            },
+            {
+              "heading": {
+                "tr": "FutbolRadar Skor Beklentisi",
+                "en": "FutbolRadar Score Expectation"
+              },
+              "body": {
+                "tr": "BEKLENTİMİZ: Kasımpaşa 1 – 2 Trabzonspor.\n\nBU BİR TAHMİNDİR, BİLGİ DEĞİLDİR. Hiçbir veri kaynağına, oran hesabına ya da modele dayanmıyor; yukarıdaki taktik okumanın doğal sonucu olarak yazılmış editoryal bir görüştür.\n\nGerekçemiz kısa: Trabzonspor'un ceza sahasındaki fiziksel üstünlüğü ve bireysel kalite farkı doksan dakikada karşılığını bulabilir, ancak orta sahadaki eksikler ev sahibine en az bir gerçek fırsat bırakabilir. Maç bittiğinde sonucu bu sayfada, tahminimizle birlikte göreceksiniz.",
+                "en": "OUR EXPECTATION: Kasımpaşa 1 – 2 Trabzonspor.\n\nTHIS IS A PREDICTION, NOT INFORMATION. It rests on no data feed, odds calculation or model; it is an editorial opinion written as the natural conclusion of the tactical reading above.\n\nThe reasoning is short: Trabzonspor's physical advantage in the box and the individual quality gap may tell over ninety minutes, while the midfield absences could leave the hosts at least one genuine opening. When the match ends you will find the result on this page, alongside what we expected."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Neyi bilmiyoruz",
+                "en": "What we do not know"
+              },
+              "body": {
+                "tr": "Bu sayfadaki belirsizlikleri açıkça yazmak, analiz kadar önemli:\n\n• Kasımpaşa'nın ilk 11'i ve dizilişi bilinmiyor.\n• Kasımpaşa'nın cezalı ya da şüpheli oyuncusu olup olmadığı doğrulanamadı.\n• Muhammed Salah'ın oyuna girip girmeyeceği ve ne zaman gireceği kesin değil; kafilede olduğu doğrulandı, ilk 11'de olmaması ise yalnızca bir beklenti.\n• Trabzonspor'un hazırlık maçı dökümünde kaynaklar arasında küçük farklar var; bu sayfada yalnızca birden çok kaynakta ortak geçen sonuçlar kullanıldı.\n\nBu maddelerin hiçbiri tahminle doldurulmadı. Resmî kadrolar açıklandığında sayfa kendiliğinden güncellenecek ve muhtemel 11 panelleri yerini resmî ilk 11'e bırakacak.",
+                "en": "Stating the uncertainties plainly matters as much as the analysis:\n\n• Kasımpaşa's XI and formation are unknown.\n• Whether Kasımpaşa have any suspended or doubtful players could not be verified.\n• Whether and when Mohamed Salah appears is not settled; his inclusion in the squad is confirmed, his absence from the XI is only an expectation.\n• Sources differ slightly on Trabzonspor's pre-season record; only results common to more than one source are used on this page.\n\nNone of these has been filled in with a guess. Once the official teamsheets are released the page updates itself and the probable XI panels give way to the official line-ups."
+              }
+            }
+          ]
+        }
+      ],
+      "keyPlayers": {
+        "Trabzonspor": [
+          "Paul Onuachu",
+          "Ruslan Malinovskyi",
+          "André Onana",
+          "Ozan Tufan",
+          "Benjamin Bouchouari",
+          "Stefan Savić",
+          "Chibuike Nwaiwu",
+          "Wagner Pina",
+          "Noah Saviolo",
+          "Mohamed Salah"
+        ]
+      },
+      "matchups": [
+        {
+          "id": "onuachu-stoperler",
+          "title": {
+            "tr": "Onuachu – Kasımpaşa stoper ikilisi",
+            "en": "Onuachu vs Kasımpaşa's centre-backs"
+          },
+          "body": {
+            "tr": "Maçın en yoğun ikili mücadelesi ceza sahası içinde yaşanacak. Onuachu'nun boyu ve gövde kullanımı, hava toplarında savunmaya sürekli bir yük bindiriyor.\n\nStoperlerin görevi yalnızca hava topu kazanmak değil; sırtı dönük top alan bir santrforun dönmesini engellemek ve ikinci topların düştüğü bölgeyi önceden kapatmak. İkinci top, bu tür mücadelelerde çoğu zaman ilk toptan daha belirleyici.\n\nKasımpaşa'nın bu maçta hangi stoper ikilisiyle çıkacağı açıklanmadı; Kamil Ahmet Çörekçi'nin sakatlığı savunmadaki seçenekleri daraltıyor.",
+            "en": "The most intense duel of the match will be inside the box. Onuachu's height and use of his body place a constant burden on defenders in the air.\n\nThe centre-backs' job is not only to win headers but to stop a striker turning with his back to goal, and to occupy the area where second balls drop. In contests like this the second ball is often more decisive than the first.\n\nWhich pairing Kasımpaşa field has not been announced; Kamil Ahmet Çörekçi's injury narrows the options at the back."
+          }
+        },
+        {
+          "id": "orta-saha-bolgesi",
+          "title": {
+            "tr": "Kasımpaşa hücumu – Trabzonspor'un stoper önü bölgesi",
+            "en": "Kasımpaşa's attack vs the space in front of Trabzonspor's defence"
+          },
+          "body": {
+            "tr": "Bu, bir oyuncuyla değil bir bölgeyle ilgili mücadele — ve maçın en belirleyici olanı olabilir. Trabzonspor'un klasik ön libero olmadan kurduğu orta saha, geçiş anlarında sorumluluğu paylaşmak zorunda.\n\nKasımpaşa bu bölgeye topu düzenli olarak sokabilirse Trabzonspor stoperleri ceza sahası dışında birebir mücadeleye zorlanır. Savić ve Nwaiwu'nun sezonun ilk maçında bu tür bir sınavdan geçmesi, ikilinin uyumu hakkında hızlı bir cevap verecek.\n\nEv sahibinin bu bölgeyi hedefleyecek oyuncu profillerine sahip olup olmadığı, kadro açıklanmadığı için bilinmiyor.",
+            "en": "This duel is about a zone rather than a player — and it may be the most decisive of the match. Trabzonspor's midfield, built without a natural holder, must share responsibility in transition.\n\nIf Kasımpaşa can get the ball into that zone regularly, Trabzonspor's centre-backs are pulled into one-against-one duels outside the box. Savić and Nwaiwu facing that test on the opening weekend will answer quickly how settled the pairing is.\n\nWhether the hosts have the player profiles to attack that zone is unknown, since their squad has not been announced."
+          }
+        },
+        {
+          "id": "malinovskyi-duran-top",
+          "title": {
+            "tr": "Malinovskyi'nin duran topları – Kasımpaşa'nın ceza sahası savunması",
+            "en": "Malinovskyi's set pieces vs Kasımpaşa's box defending"
+          },
+          "body": {
+            "tr": "Kapalı geçen bir maçta duran toplar tek belirleyici olabilir. Malinovskyi'nin ortalarıyla Onuachu'nun ceza sahasındaki varlığı, Trabzonspor için doğrudan bir gol yolu.\n\nEv sahibinin buna cevabı, ilk direk savunmasını doğru kurmak ve ceza sahası içindeki bölge markajını hava üstünlüğüne göre ayarlamak olacak. Bu, organizasyon meselesi — bireysel kalite farkının en az konuştuğu alan.\n\nBu sayfada iki takımın duran top verimine dair sayı verilmiyor: sezonun ilk haftasında böyle bir örneklem yok.",
+            "en": "In a tight match, set pieces can be the only thing that decides it. Malinovskyi's delivery combined with Onuachu's presence in the box is a direct route to goal for Trabzonspor.\n\nThe hosts' answer will be organising the near post correctly and setting their zonal assignments according to who can win the ball in the air. That is a question of organisation — the area where individual quality matters least.\n\nNo set-piece numbers are quoted on this page: on the opening weekend of a season, no such sample exists."
+          }
+        },
+        {
+          "id": "salah-girisi",
+          "title": {
+            "tr": "Salah'ın olası girişi – Kasımpaşa'nın yorulan savunması",
+            "en": "Salah's possible introduction vs a tiring Kasımpaşa defence"
+          },
+          "body": {
+            "tr": "Muhammed Salah'ın kafilede olması, maçın son yarım saati için ayrı bir başlık açıyor. Yedek kulübesinden giren bir hücum oyuncusu, doksan dakika koşmuş bir savunma karşısında farklı bir eşikle karşılaşır.\n\nBu mücadelenin ne zaman ve nasıl yaşanacağı skora bağlı. Trabzonspor öndeyse giriş maçı yönetme, geride ya da berabereyse açma amaçlı olur.\n\nBu bölümün tamamı aktarılan beklentiye dayanıyor: Salah'ın kafilede olduğu doğrulandı, oynayıp oynamayacağı ise doğrulanmadı.",
+            "en": "Salah being in the squad opens a separate heading for the final half hour. An attacker introduced from the bench meets a defence that has already run for ninety minutes, and the threshold is different.\n\nWhen and how that duel happens depends on the scoreline. With Trabzonspor ahead, his introduction manages the game; level or behind, it tries to open it.\n\nThis entire section rests on reported expectation: his inclusion in the squad is confirmed, whether he plays is not."
+          }
+        }
+      ]
+    },
+    {
+      "matchId": "genclerbirligi-fenerbahce-2026-08-15",
+      "slug": "genclerbirligi-fenerbahce-mac-analizi",
+      "enSlug": "genclerbirligi-fenerbahce-match-analysis",
+      "kicker": {
+        "tr": "Detaylı Maç Analizi",
+        "en": "In-Depth Match Analysis"
+      },
+      "title": {
+        "tr": "Gençlerbirliği – Fenerbahçe | Detaylı Maç Analizi",
+        "en": "Gençlerbirliği vs Fenerbahçe | In-Depth Match Analysis"
+      },
+      "lead": {
+        "tr": "Muhtemel 11'ler, taktik savaşlar, eksikler ve skor beklentisi. Süper Lig 2026/27 sezonunun açılış haftasında Fenerbahçe, Eryaman Stadyumu'nda Gençlerbirliği'ne konuk oluyor.",
+        "en": "Probable line-ups, tactical battles, team news and a score expectation. Fenerbahçe visit Gençlerbirliği at Eryaman Stadium on the opening weekend of the 2026/27 Süper Lig season."
+      },
+      "probableLineups": [
+        {
+          "team": "Gençlerbirliği",
+          "status": "unconfirmed",
+          "source": {
+            "name": "Doğrulanmış kaynak yok"
+          },
+          "title": {
+            "tr": "Gençlerbirliği'nin muhtemel 11'i henüz açıklanmadı",
+            "en": "Gençlerbirliği's probable XI has not been published"
+          },
+          "badge": {
+            "tr": "MUHTEMEL 11 — HENÜZ DOĞRULANMADI",
+            "en": "PROBABLE XI — NOT YET CONFIRMED"
+          },
+          "sourceLabel": {
+            "tr": "Maç öncesinde bu takım için doğrulayabildiğimiz bir kaynakta muhtemel 11 yayımlanmadı.",
+            "en": "No source we can verify had published a probable XI for this side before the match."
+          }
+        },
+        {
+          "team": "Fenerbahçe",
+          "formation": "4-2-3-1",
+          "status": "reported",
+          "publishedAt": "2026-08-14T21:00:00+03:00",
+          "source": {
+            "name": "Takvim maç önü aktarımı + kulübün açıkladığı kamp kadrosu"
+          },
+          "players": [
+            {
+              "name": "Talisca",
+              "row": 0,
+              "order": 0,
+              "profile": {
+                "tr": "oyuncular/talisca.html",
+                "en": "oyuncular/talisca.html"
+              }
+            },
+            {
+              "name": "Kerem Aktürkoğlu",
+              "row": 1,
+              "order": 0,
+              "profile": {
+                "tr": "oyuncular/kerem-akturkoglu.html",
+                "en": "en/player/k-akturkoglu-fenerbahce.html"
+              }
+            },
+            {
+              "name": "Marco Asensio",
+              "row": 1,
+              "order": 1,
+              "profile": {
+                "tr": "oyuncular/marco-asensio.html",
+                "en": "oyuncular/marco-asensio.html"
+              }
+            },
+            {
+              "name": "Mason Greenwood",
+              "row": 1,
+              "order": 2,
+              "profile": {
+                "tr": "oyuncular/mason-greenwood.html",
+                "en": "en/player/m-greenwood-fenerbahce.html"
+              }
+            },
+            {
+              "name": "Mattéo Guendouzi",
+              "row": 2,
+              "order": 0,
+              "profile": {
+                "tr": "oyuncular/matteo-guendouzi.html",
+                "en": "en/player/m-guendouzi-fenerbahce.html"
+              }
+            },
+            {
+              "name": "İsmail Yüksek",
+              "row": 2,
+              "order": 1,
+              "profile": {
+                "tr": "oyuncular/ismail-yuksek.html",
+                "en": "en/player/i-yuksek-fenerbahce.html"
+              }
+            },
+            {
+              "name": "Levent Mercan",
+              "row": 3,
+              "order": 0,
+              "profile": {
+                "tr": "oyuncular/l-mercan-fenerbahce.html",
+                "en": "en/player/l-mercan-fenerbahce.html"
+              }
+            },
+            {
+              "name": "Nathan Aké",
+              "row": 3,
+              "order": 1,
+              "profile": {
+                "tr": "oyuncular/nathan-ake.html",
+                "en": "en/player/n-ake-fenerbahce.html"
+              }
+            },
+            {
+              "name": "Milan Škriniar",
+              "row": 3,
+              "order": 2,
+              "profile": {
+                "tr": "oyuncular/milan-skriniar.html",
+                "en": "en/player/m-skriniar-fenerbahce.html"
+              }
+            },
+            {
+              "name": "Mert Müldür",
+              "row": 3,
+              "order": 3,
+              "profile": {
+                "tr": "oyuncular/mert-muldur.html",
+                "en": "en/player/m-muldur-fenerbahce.html"
+              }
+            },
+            {
+              "name": "Tarık Çetin",
+              "row": 4,
+              "order": 0,
+              "profile": {
+                "tr": "oyuncular/t-cetin-fenerbahce.html",
+                "en": "en/player/t-cetin-fenerbahce.html"
+              }
+            }
+          ],
+          "title": {
+            "tr": "Fenerbahçe'nin Muhtemel 11'i",
+            "en": "Fenerbahçe's Probable XI"
+          },
+          "badge": {
+            "tr": "MUHTEMEL 11 — RESMÎ DEĞİL",
+            "en": "PROBABLE XI — NOT OFFICIAL"
+          },
+          "sourceLabel": {
+            "tr": "Maç önü aktarımlarında öne çıkan 11. On bir ismin tamamı kulübün açıkladığı 21 kişilik kamp kadrosunda yer alıyor; yine de kadro resmî olarak açıklanana kadar bu bir tahmindir.",
+            "en": "The XI reported in pre-match coverage. All eleven names appear in the 21-man squad the club announced, but until the teamsheet is official this remains a projection."
+          },
+          "moduleKicker": {
+            "tr": "MUHTEMEL 11 | GENÇLERBİRLİĞİ – FENERBAHÇE",
+            "en": "PROBABLE XI | GENÇLERBİRLİĞİ – FENERBAHÇE"
+          },
+          "promoTitle": {
+            "tr": "Fenerbahçe'nin Gençlerbirliği Maçı Muhtemel 11'i",
+            "en": "Fenerbahçe's Probable XI vs Gençlerbirliği"
+          },
+          "promoSpot": {
+            "tr": "Ederson cezalı, Mert Günok sakat: kaleyi Tarık Çetin koruyor. Oosterwolde'nin yokluğunda sol bek Levent Mercan, Talisca ise tek forvet olarak öne çıkıyor.",
+            "en": "Ederson is suspended and Mert Günok injured, so Tarık Çetin takes the gloves. With Oosterwolde out, Levent Mercan fills in at left-back and Talisca leads the line."
+          },
+          "analysis": [
+            {
+              "heading": {
+                "tr": "Kalede zorunlu tercih",
+                "en": "A forced choice in goal"
+              },
+              "body": {
+                "tr": "Fenerbahçe bu maça iki numaralı kalecisiyle çıkıyor: Ederson cezalı, Mert Günok sakatlığı nedeniyle kadroya alınmadı. Kamp kadrosunda yalnızca iki kaleci var ve ilk 11'de Tarık Çetin bekleniyor. Bu, sezonun ilk lig maçında savunma hattının önündeki iletişimin alışıldık olmayacağı anlamına geliyor — özellikle duran toplarda ve ceza sahası çıkışlarında.",
+                "en": "Fenerbahçe start this match with their second-choice goalkeeper: Ederson is suspended and Mert Günok was left out injured. Only two keepers travelled, and Tarık Çetin is expected to start. That means the communication in front of the defence will be less familiar than usual on the opening weekend — particularly at set pieces and when claiming crosses."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Sol bekte Levent Mercan",
+                "en": "Levent Mercan at left-back"
+              },
+              "body": {
+                "tr": "Jayden Oosterwolde'nin sakatlığı sol bekte bir boşluk bırakıyor. Kamp kadrosunda Archie Brown da var; maç önü aktarımlarında öne çıkan isim ise Levent Mercan. İki oyuncunun profili farklı ve bu, Fenerbahçe'nin sol tarafta ne kadar yükseleceğini doğrudan etkiliyor. Kim çıkarsa çıksın, Kerem Aktürkoğlu'nun önünde bıraktığı alanın nasıl doldurulacağı maçın taktik sorularından biri.",
+                "en": "Jayden Oosterwolde's injury leaves a gap at left-back. Archie Brown is in the squad; the name highlighted in pre-match coverage is Levent Mercan. The two have different profiles, and that directly affects how high Fenerbahçe push on the left. Whoever starts, how the space ahead of Kerem Aktürkoğlu is covered is one of the tactical questions of the night."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Talisca en uçta, Muriqi yedekte",
+                "en": "Talisca through the middle, Muriqi on the bench"
+              },
+              "body": {
+                "tr": "Romelu Lukaku yeni transfer olarak kadroda yok, Vedat Muriqi ise kamp kadrosunda. Aktarılan 11'de en uçtaki isim Talisca. Talisca'nın ceza sahasına giriş biçimi klasik bir santrforunkinden farklı: topu ayağına isteyerek hatlar arasına düşüyor ve şut mesafesini kendisi yaratıyor. Bu tercih, Gençlerbirliği stoperlerinin markaj referansını belirsizleştirebilir.",
+                "en": "Romelu Lukaku is not registered yet and Vedat Muriqi is on the bench. The reported XI puts Talisca at the tip. Talisca attacks the box differently from an orthodox number nine: he drops between the lines to receive and creates his own shooting distance. That choice can blur the reference point for Gençlerbirliği's centre-backs."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Üç gün sonra Lyon var",
+                "en": "Lyon is three days away"
+              },
+              "body": {
+                "tr": "Fenerbahçe 18 Ağustos'ta Şampiyonlar Ligi play-off turunda Lyon'u ağırlıyor. Bu, ilk 11 kadar oyuncu değişikliklerini de belirleyebilecek bir gerçek: skor erken netleşirse dinlendirme ihtimali artar, maç dengede kalırsa aynı 11 sahada daha uzun kalır. Kadro yönetimi bu maçın en görünür yan başlığı olabilir.",
+                "en": "Fenerbahçe host Lyon in the Champions League play-off on 18 August. That is a fact likely to shape the substitutions as much as the starting XI: if the scoreline settles early the case for resting players grows; if the match stays tight the same eleven stay on longer. Squad management may be the most visible subplot of the night."
+              }
+            }
+          ]
+        }
+      ],
+      "modules": [
+        {
+          "id": "taktik-analiz",
+          "slug": {
+            "tr": "taktik-analiz",
+            "en": "tactical-analysis"
+          },
+          "kicker": {
+            "tr": "Taktik",
+            "en": "Tactics"
+          },
+          "title": {
+            "tr": "Taktik Analiz",
+            "en": "Tactical Analysis"
+          },
+          "summary": {
+            "tr": "Beklenen kurulumlar, pres yapısı, geçiş anları, sahanın belirleyici bölgeleri ve duran toplar.",
+            "en": "Expected shapes, pressing structure, transition moments, the decisive zones and set pieces."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Beklenen kurulumlar",
+                "en": "Expected shapes"
+              },
+              "body": {
+                "tr": "Aktarılan Fenerbahçe 11'i çift pivotlu bir düzene işaret ediyor: Guendouzi ve İsmail Yüksek arkada, önlerinde Kerem – Asensio – Greenwood üçlüsü ve en uçta Talisca. Bu yapının temel özelliği, top ilerledikçe kanat oyuncularının içeri kapanıp yarı alanları doldurması ve genişliğin beklere devredilmesi.\n\nGençlerbirliği'nin kurulumu için doğrulanmış bir bilgi yok — muhtemel 11 yayımlanmadı. Sezon öncesi tablosuna ve ev sahibi olmasına bakılırsa kompakt bir orta blok ve dört kişilik savunma hattı beklenebilir, ancak bu bir çıkarım; kadro açıklanana kadar kesin konuşmak mümkün değil.\n\nMaçın ilk on beş dakikası bu belirsizliği çözecek: Gençlerbirliği'nin pres hattı nerede kuruluyorsa Fenerbahçe'nin kurulum sorunu da orada başlıyor.",
+                "en": "The reported Fenerbahçe XI points to a double pivot: Guendouzi and İsmail Yüksek behind Kerem, Asensio and Greenwood, with Talisca at the tip. The defining feature of that shape is that the wide players tuck into the half-spaces as the ball advances, handing width to the full-backs.\n\nThere is no verified information on Gençlerbirliği's shape — no probable XI was published. Given their pre-season and home advantage, a compact mid block and a back four are reasonable expectations, but that is an inference; nothing can be stated firmly until the teamsheet lands.\n\nThe first fifteen minutes will resolve the uncertainty: wherever Gençlerbirliği set their first pressing line is where Fenerbahçe's build-up problem begins."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Pres ve top kaybı sonrası",
+                "en": "Pressing and the moment after losing the ball"
+              },
+              "body": {
+                "tr": "Fenerbahçe'nin kanat oyuncularını içeri alan yapısı, beklerini yüksek konumlanmaya zorluyor. Bunun bedeli, top kaybedildiğinde arkada kalan denge: iki stoper ve bir pivot. Gençlerbirliği'nin ev sahibi olarak en gerçekçi üretim yolu tam olarak burası — kazanılan topu bekletmeden dikey oynayıp stoperlerin arkasındaki alana koşmak.\n\nFenerbahçe tarafında İsmail Yüksek'in görevi bu yüzden yalnızca top kazanmak değil. Karşı atağın ilk pasını geciktirebilirse savunma yeniden dizilecek zamanı buluyor; geciktiremezse Gençlerbirliği tek hamlede son üçte bire ulaşıyor.\n\nSol tarafta Oosterwolde'nin yokluğu bu dengeyi ayrıca önemli kılıyor: alışılmış bir ikili yerine yeni bir bek–kanat ilişkisi kurulacak ve karşı atakta ilk saniyeler o tarafın uyumunu sınayacak.",
+                "en": "Fenerbahçe's habit of tucking the wingers inside pushes the full-backs high. The cost is the rest defence: two centre-backs and a pivot. For Gençlerbirliği at home that is the most realistic route to creating — win the ball, play forward immediately and run into the space behind the centre-backs.\n\nThat is why İsmail Yüksek's job is not only to win the ball. If he can delay the first pass of the counter, the defence has time to reset; if he cannot, Gençlerbirliği reach the final third in a single move.\n\nOosterwolde's absence makes this balance matter even more on the left: a new full-back and winger relationship has to be built, and the opening seconds of each counter will test how well it holds."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Hangi bölgeler maçı belirler",
+                "en": "Which zones decide the match"
+              },
+              "body": {
+                "tr": "Belirleyici bölge, Gençlerbirliği'nin savunma hattı ile orta sahası arasındaki bant. Asensio ve Talisca'nın ikisi de bu bandı arayan oyuncular; biri topu alıp dönebilirse Fenerbahçe savunmayı geriye yürütür ve ceza sahasının kenarında şut mesafesi açılır.\n\nİkinci bölge kanat çizgisiyle ceza sahası arasındaki dar koridor. Greenwood sağdan içe kat ettiğinde Mert Müldür'ün dışarıdan geçmesi Gençlerbirliği sol bekini ikili bir soruyla baş başa bırakıyor: dışarıyı kapatırsa içeri açılıyor, içeri kapanırsa arkası boşalıyor.\n\nÜçüncüsü kendi ceza sahasının önü. Fenerbahçe topa uzun süre sahip olacaksa Gençlerbirliği'nin ikinci topları toplaması, sadece savunma değil, nefes alma meselesi.",
+                "en": "The decisive zone is the band between Gençlerbirliği's defensive line and their midfield. Both Asensio and Talisca look to receive there; if either can turn, Fenerbahçe force the defence backwards and the shooting distance at the edge of the box opens up.\n\nThe second zone is the narrow corridor between the touchline and the box. When Greenwood cuts inside from the right and Mert Müldür overlaps, Gençlerbirliği's left-back faces a two-part question: close the outside and the inside opens, tuck in and the space behind appears.\n\nThe third is the area in front of their own box. If Fenerbahçe hold the ball for long spells, Gençlerbirliği winning second balls is not only a defensive task but a way to breathe."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Duran toplar",
+                "en": "Set pieces"
+              },
+              "body": {
+                "tr": "Duran toplar bu eşleşmede oransız bir öneme sahip olabilir. Fenerbahçe ceza sahasına Škriniar ve Aké gibi hava hâkimiyeti yüksek stoperler taşıyor; Gençlerbirliği için savunma duran topları, açık oyunda kuramayacağı bir dengeyi kurmanın yolu.\n\nTers taraftan bakınca da aynı şey geçerli: ev sahibinin en somut gol şansı, oyunun akışından çok bir korner ya da ceza sahası yakınında kazanılan faul olabilir. Fenerbahçe'nin alışılmadık kaleci tercihi bu tabloya ayrıca bir belirsizlik ekliyor.\n\nİki takımın duran top verimine dair doğrulanmış bir istatistik bu sayfada verilmiyor; sezonun ilk haftasında böyle bir örneklem yok ve olmayan bir sayıyı yazmak analiz değil süs olurdu.",
+                "en": "Set pieces may carry outsized weight here. Fenerbahçe bring aerially dominant centre-backs in Škriniar and Aké; for Gençlerbirliği, defending set plays is a way to find a balance they may not reach in open play.\n\nThe reverse is equally true: the home side's clearest chance may come from a corner or a foul won near the box rather than from open play. Fenerbahçe's unfamiliar goalkeeping situation adds another unknown to that picture.\n\nNo verified set-piece statistics are quoted on this page: on the opening weekend of a season no such sample exists, and printing a number that does not exist would be decoration, not analysis."
+              }
+            }
+          ]
+        },
+        {
+          "id": "fenerbahce-plan",
+          "slug": {
+            "tr": "fenerbahce-mac-plani",
+            "en": "fenerbahce-game-plan"
+          },
+          "kicker": {
+            "tr": "Plan",
+            "en": "Game plan"
+          },
+          "title": {
+            "tr": "Fenerbahçe'nin Maç Planı",
+            "en": "Fenerbahçe's Game Plan"
+          },
+          "summary": {
+            "tr": "Topa sahip olma, hatlar arasına servis ve üç gün sonraki Lyon maçının gölgesi.",
+            "en": "Possession, service between the lines and the shadow of the Lyon tie three days later."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Topa sahip olmak amaç değil araç",
+                "en": "Possession as a means, not an end"
+              },
+              "body": {
+                "tr": "Fenerbahçe'nin bu maçta topa daha çok sahip olması beklenir; asıl soru bunu neye çevireceği. Deplasmanda kompakt bir bloğa karşı yatay paslarla dolaşmak, blokta boşluk açmadığı sürece istatistiği güzelleştirir ama pozisyon üretmez.\n\nBlokta boşluk açan hamleler belli: pivotlardan birinin stoperler arasına inip rakip ilk pres hattını sayısal olarak aşması, kanat oyuncusunun içeri kapanıp beki dışarıdan koşturması ve üçüncü adam paslarıyla ceza sahası kenarına ulaşmak.\n\nErken gol, bu maçın Fenerbahçe açısından tüm dengesini değiştirir: blok açılmak zorunda kalır ve hız avantajı ziyaretçiye geçer.",
+                "en": "Fenerbahçe are likely to see more of the ball; the question is what they turn it into. Circulating sideways against a compact block away from home flatters the statistics but does not create chances unless it moves the block.\n\nThe moves that do move a block are familiar: a pivot dropping between the centre-backs to beat the first pressing line numerically, a winger tucking in so the full-back can overlap, and third-man combinations to reach the edge of the box.\n\nAn early goal would change the entire balance for Fenerbahçe: the block would have to open, and the advantage in transition would swing to the visitors."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Greenwood, Kerem ve genişlik",
+                "en": "Greenwood, Kerem and width"
+              },
+              "body": {
+                "tr": "Aktarılan 11'de kanatlarda Greenwood ve Kerem Aktürkoğlu var; ikisi de ters ayaklı kullanıldığında içe kat etmeyi seven profiller. Bu, genişliği beklere bırakır ve ceza sahası çevresinde gövde sayısını artırır.\n\nBunun bedeli yine arkada: iki bek de yükselirse geçiş savunması üç oyuncuya iner. Sol tarafta Oosterwolde yerine gelecek isim için bu, maçın en çok test edilecek sorumluluğu olabilir.\n\nAsensio'nun hatlar arasındaki konumlanması bu denklemi kolaylaştırabilir: topu ayağına aldığında rakip orta sahayı kendine çekiyor ve kanatlardaki ikili mücadeleleri birebire indiriyor.",
+                "en": "The reported XI has Greenwood and Kerem Aktürkoğlu wide, both inverted and both happy to cut inside. That hands width to the full-backs and adds bodies around the box.\n\nThe cost is again at the back: with both full-backs high, the rest defence drops to three. For whoever replaces Oosterwolde on the left, that may be the most tested responsibility of the night.\n\nAsensio's positioning between the lines can ease the equation: when he receives, he draws the opposition midfield towards him and reduces the wide duels to one-against-one."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Rotasyon sorusu",
+                "en": "The rotation question"
+              },
+              "body": {
+                "tr": "18 Ağustos'taki Lyon maçı bu kadronun yönetimini doğrudan etkiliyor. Fenerbahçe sezona Şampiyonlar Ligi elemeleriyle erken başladı ve bu maç, dört resmî maçın ardından gelen beşinci sınav.\n\nHangi oyuncunun dinlendirileceğine dair doğrulanmış bir bilgi yok. Kesin olan tek şey, kamp kadrosunun kimleri içerdiği — ve dışarıda kalan isimlerin sayısı, ilk 11 kadar bilgi veriyor.\n\nSkor 60. dakikada Fenerbahçe lehine netleşirse değişikliklerin erken gelmesi şaşırtıcı olmaz; dengede kalırsa kadro yönetimi ikinci plana düşer.",
+                "en": "The Lyon tie on 18 August bears directly on how this squad is handled. Fenerbahçe began the season early in Champions League qualifying, and this is a fifth competitive fixture after four.\n\nThere is no verified information on who will be rested. The only certainty is who made the travelling squad — and the number of names left out tells you as much as the starting eleven.\n\nIf the scoreline settles in Fenerbahçe's favour by the hour mark, early changes would be no surprise; if it stays tight, squad management drops down the list of priorities."
+              }
+            }
+          ]
+        },
+        {
+          "id": "genclerbirligi-plan",
+          "slug": {
+            "tr": "genclerbirligi-mac-plani",
+            "en": "genclerbirligi-game-plan"
+          },
+          "kicker": {
+            "tr": "Plan",
+            "en": "Game plan"
+          },
+          "title": {
+            "tr": "Gençlerbirliği'nin Maç Planı",
+            "en": "Gençlerbirliği's Game Plan"
+          },
+          "summary": {
+            "tr": "Metin Diyadin'in düzeni, Eryaman'ın etkisi ve on bir yıllık bir seri.",
+            "en": "Metin Diyadin's setup, the Eryaman factor and an eleven-year run."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Diyadin'le gelen istikrar arayışı",
+                "en": "The search for stability under Diyadin"
+              },
+              "body": {
+                "tr": "Gençlerbirliği geçen sezonu 14. sırada, küme düşme hattının hemen üstünde tamamladı ve sezon boyunca beş teknik direktör değişikliği yaşadı. Metin Diyadin'in dönüşüyle alınan iki galibiyet ligde kalmayı getirdi.\n\nBu geçmiş, bu maçın hedefini de belirliyor: sezonun ilk haftasında Fenerbahçe karşısında öncelik puan kaybetmemek değil, oyunun kontrolünü erken kaybetmemek. Bir kulüp için bu ikisi aynı şey değil.\n\nTakım sezon öncesi hazırlıklarını Kayseri, Düzce ve Ankara'da yaptı. Hazırlık maçı sonuçlarına dair doğrulanmış ayrıntılı bir döküm elimizde yok; bu yüzden burada skor tablosu verilmiyor.",
+                "en": "Gençlerbirliği finished last season 14th, just above the relegation line, having changed manager five times. Two wins after Metin Diyadin's return kept them up.\n\nThat history frames the aim here: on the opening weekend against Fenerbahçe the priority is not avoiding a defeat so much as not losing control of the game early. For a club in this position those are not the same thing.\n\nThe squad prepared in Kayseri, Düzce and Ankara. We do not have a verified breakdown of their friendly results, so no scoreline table is printed here."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Blok, kompaktlık ve ceza sahasının korunması",
+                "en": "Block, compactness and protecting the box"
+              },
+              "body": {
+                "tr": "Fenerbahçe gibi hatlar arasını arayan bir rakibe karşı en kritik ölçü, savunma hattı ile orta saha arasındaki mesafe. O bant on metrenin üzerine çıktığında Asensio ve Talisca'nın aradığı alan kendiliğinden açılıyor.\n\nBloğun yüksekliği ise bir tercih meselesi: çok geri bir blok ceza sahası önünü kalabalıklaştırır ama topu kazandıktan sonra çıkış mesafesini uzatır. Orta yükseklikte bir blok geçişte daha üretkendir, karşılığında arkada bırakılan alan büyür.\n\nGençlerbirliği'nin bu maçta hangisini seçeceği açıklanmadı. Seçim, maçın karakterini ilk yarım saatte belli edecek.",
+                "en": "Against an opponent who looks between the lines, the critical measurement is the distance between the defensive line and the midfield. Once that band stretches beyond ten metres, the space Asensio and Talisca want opens by itself.\n\nHow high to set the block is a choice: very deep congests the edge of the box but lengthens the distance to travel after a turnover; a mid block is more productive in transition but leaves more space behind.\n\nWhich one Gençlerbirliği pick has not been announced. The choice will define the character of the match inside the first half hour."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Eryaman ve on bir yıllık seri",
+                "en": "Eryaman and an eleven-year run"
+              },
+              "body": {
+                "tr": "Gençlerbirliği evinde Fenerbahçe'yi on bir yıldır yenemiyor; iki takımın geçen sezonki karşılaşması 3-1 Fenerbahçe lehine sonuçlandı. Bu seri bir kehanet değil, bir bağlam: sahada oynanacak doksan dakikayı belirlemez ama ev sahibinin karşısındaki eşiği tarif eder.\n\nEryaman Stadyumu'nun kapalı ve yüksek tribün yapısı, özellikle maçın erken evresinde ev sahibi lehine bir baskı unsuru olabilir. Ancak taraftar etkisi, skor erken açıldığında en hızlı sönen değişkendir.\n\nGençlerbirliği için en değerli senaryo, ilk yarıyı gol yemeden kapatmak. Bu gerçekleşirse Fenerbahçe'nin Lyon maçı öncesi risk alma iştahı test edilir.",
+                "en": "Gençlerbirliği have not beaten Fenerbahçe at home in eleven years; last season's meeting ended 3-1 to Fenerbahçe. The run is context rather than prophecy: it does not decide the ninety minutes, but it describes the threshold the home side face.\n\nThe enclosed, steep stands at Eryaman can be a genuine factor early on. Crowd influence, though, is the variable that fades fastest once the scoreline opens up.\n\nThe most valuable scenario for Gençlerbirliği is reaching half-time level. If they do, Fenerbahçe's appetite for risk before the Lyon tie starts to be tested."
+              }
+            }
+          ]
+        },
+        {
+          "id": "eksikler",
+          "slug": {
+            "tr": "eksikler-ve-kadro-durumu",
+            "en": "team-news-and-availability"
+          },
+          "kicker": {
+            "tr": "Kadro",
+            "en": "Team news"
+          },
+          "title": {
+            "tr": "Eksikler ve Kadro Durumu",
+            "en": "Absentees and Squad Status"
+          },
+          "summary": {
+            "tr": "Sakat, cezalı, şüpheli ve yeni transfer ayrımıyla; her biri kaynağıyla.",
+            "en": "Injured, suspended, doubtful and newly signed — each distinguished, each sourced."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Fenerbahçe: kesin eksikler",
+                "en": "Fenerbahçe: confirmed absentees"
+              },
+              "body": {
+                "tr": "Kulübün açıkladığı 21 kişilik kamp kadrosunda yer almayan isimler ve nedenleri şöyle aktarıldı:\n\n• Ederson — CEZALI. Kadroda değil.\n• Mert Günok — SAKAT. Kadroda değil.\n• Jayden Oosterwolde — SAKAT. Kadroda değil.\n• Çağlar Söyüncü — AĞRILARI VAR, kadroya alınmadı.\n• Cengiz Ünder — AĞRILARI VAR, kadroya alınmadı.\n• Romelu Lukaku — YENİ TRANSFER, bu maçın kadrosunda yok.\n• Anthony Musaba ve Sidiki Cherif — kadroda değil; gerekçe ayrıca belirtilmedi.\n\nİki kalecinin birden yokluğu bu listenin en somut sonucu: kadroda yalnızca iki kaleci var ve ilk 11'de Tarık Çetin bekleniyor.",
+                "en": "The names missing from the 21-man squad announced by the club, with the reasons as reported:\n\n• Ederson — SUSPENDED. Not in the squad.\n• Mert Günok — INJURED. Not in the squad.\n• Jayden Oosterwolde — INJURED. Not in the squad.\n• Çağlar Söyüncü — CARRYING A KNOCK, left out.\n• Cengiz Ünder — CARRYING A KNOCK, left out.\n• Romelu Lukaku — NEW SIGNING, not in this squad.\n• Anthony Musaba and Sidiki Cherif — not in the squad; no reason was specified.\n\nThe most concrete consequence is the absence of both senior goalkeepers: only two keepers travelled, and Tarık Çetin is expected to start."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Fenerbahçe: kadroda olan yeni isimler",
+                "en": "Fenerbahçe: new names in the squad"
+              },
+              "body": {
+                "tr": "Nathan Aké ve Mason Greenwood, Avrupa maçlarının ardından Süper Lig'deki ilk karşılaşmalarına çıkmaya hazırlanıyor. Vedat Muriqi de kamp kadrosunda yer alıyor.\n\nBu üç ismin ligdeki ilk maçları olması, sayfada istatistik verilmemesinin de nedeni: Süper Lig'de henüz bir örneklemleri yok ve Avrupa maçlarından çıkarılacak bir rakamı lig performansı gibi sunmak yanıltıcı olurdu.\n\nİlk 11 beklentisi Aké ve Greenwood'un başlaması yönünde; Muriqi için aynı beklenti aktarılmadı.",
+                "en": "Nathan Aké and Mason Greenwood are set for their first Süper Lig appearance after featuring in Europe. Vedat Muriqi is also in the squad.\n\nThat these are their first league matches is exactly why no statistics appear on this page: they have no Süper Lig sample yet, and presenting a European figure as league form would mislead.\n\nAké and Greenwood are expected to start; no such expectation was reported for Muriqi."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Gençlerbirliği: kadro durumu",
+                "en": "Gençlerbirliği: squad status"
+              },
+              "body": {
+                "tr": "Gençlerbirliği için bu maça özel, kulüp tarafından açıklanmış bir kamp kadrosu ya da resmî eksik listesi doğrulayamadık.\n\nYaz döneminde kadroya katılan isimler olarak Kevin Rodrigues, Muhammet Ensar Çavuşoğlu, Zafer Göktüş Erdem ve kaleci İrfan Can Eğribayat aktarıldı; Salih Uçan'la da iki yıllık anlaşma bildirildi. Ayrılanlar arasında Henry Onyekuru, M'Baye Niang ve kiralık oynayan kaleci Ricardo Velho sayılıyor.\n\nBazı kaynaklarda Peter Etebo ve Moussa Kyabou'nun sakatlıkları nedeniyle oynayamayacağı bildirildi; bu bilgiyi maça özel resmî bir kadro açıklamasıyla DOĞRULAYAMADIK ve burada kesin bilgi olarak sunmuyoruz.\n\nAynı nedenle bu takım için muhtemel 11 yayımlamıyoruz: elimizde doğrulanmış bir kadro yok ve tahmini bir on biri bilgi gibi göstermek okuyucuya yanlış olurdu. Resmî kadro açıklandığında bu sayfa kendiliğinden güncellenecek.",
+                "en": "We could not verify a club-issued travelling squad or official absentee list specific to this match for Gençlerbirliği.\n\nKevin Rodrigues, Muhammet Ensar Çavuşoğlu, Zafer Göktüş Erdem and goalkeeper İrfan Can Eğribayat were reported as summer additions, along with a two-year agreement with Salih Uçan. Henry Onyekuru, M'Baye Niang and loanee goalkeeper Ricardo Velho are among the departures.\n\nSome outlets reported that Peter Etebo and Moussa Kyabou are unavailable through injury; we could NOT confirm this against a match-specific official squad announcement and do not present it here as established fact.\n\nFor the same reason we publish no probable XI for this side: we have no verified line-up, and presenting a guess as information would mislead. This page will update itself once the official teamsheet is released."
+              }
+            }
+          ]
+        },
+        {
+          "id": "nasil-oynanabilir",
+          "slug": {
+            "tr": "mac-nasil-oynanabilir",
+            "en": "how-the-match-may-unfold"
+          },
+          "kicker": {
+            "tr": "Senaryo",
+            "en": "Scenario"
+          },
+          "title": {
+            "tr": "Maç Nasıl Oynanabilir?",
+            "en": "How the Match May Be Played"
+          },
+          "summary": {
+            "tr": "Üç akış senaryosu ve her birinin hangi işaretle tanınacağı.",
+            "en": "Three scenarios for the flow of the game and the signal that identifies each."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Senaryo 1: Fenerbahçe erken açar",
+                "en": "Scenario 1: Fenerbahçe break through early"
+              },
+              "body": {
+                "tr": "İlk yarım saatte gelen bir gol, Gençlerbirliği'ni kurmayı planladığı bloğu terk etmeye zorlar. Blok açıldığında Fenerbahçe'nin hatlar arası oyunu için gereken alan kendiliğinden doğar ve maç ziyaretçinin istediği ritme oturur.\n\nTanınacak işaret: Gençlerbirliği'nin savunma hattının kendi ceza sahasından uzaklaşması ve orta sahanın topa çıkma sıklığının artması.\n\nBu senaryoda Fenerbahçe'nin Lyon maçı öncesi erken oyuncu değişikliği yapma ihtimali de artar.",
+                "en": "A goal inside the first half hour would force Gençlerbirliği out of the block they planned to hold. Once the block opens, the space Fenerbahçe need between the lines appears on its own and the game settles into the visitors' rhythm.\n\nThe signal to watch: Gençlerbirliği's defensive line moving away from their own box and their midfield stepping out to press more often.\n\nIn this scenario the likelihood of early substitutions before the Lyon tie also rises."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Senaryo 2: Skor uzun süre 0-0 kalır",
+                "en": "Scenario 2: it stays goalless for a long time"
+              },
+              "body": {
+                "tr": "Gençlerbirliği bloğu koruyabilir ve ceza sahası önünü kalabalık tutabilirse maç, Fenerbahçe'nin sabrını sınayan bir hâl alır. Bu tabloda topa sahip olma yüzdesi ziyaretçide yüksek olur ama üretim düşer.\n\nTanınacak işaret: Fenerbahçe'nin ceza sahası dışından şut denemelerinin artması ve kanat değiştirme paslarının sıklaşması — ikisi de blokta boşluk bulunamadığının işareti.\n\nDakika ilerledikçe ev sahibi için duran toplar ve tek bir karşı atak, maçın tüm dengesini değiştirebilecek araçlara dönüşür.",
+                "en": "If Gençlerbirliği hold their block and keep the edge of the box crowded, the match becomes a test of Fenerbahçe's patience. Possession would sit heavily with the visitors while chance creation falls.\n\nThe signal to watch: more shots from outside the box and more switches of play from Fenerbahçe — both signs that no gap has been found in the block.\n\nAs the clock runs, set pieces and a single counter-attack become tools capable of changing the whole balance for the home side."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Senaryo 3: Gençlerbirliği önce bulur",
+                "en": "Scenario 3: Gençlerbirliği score first"
+              },
+              "body": {
+                "tr": "Ev sahibi öne geçerse maçın karakteri tamamen değişir: Gençlerbirliği bloğunu daha da geri çeker, Fenerbahçe ise bek ve stoperleriyle risk almak zorunda kalır.\n\nTanınacak işaret: Fenerbahçe'nin stoperlerinden birinin orta saha hizasına kadar çıkması ve ceza sahasındaki gövde sayısının artması.\n\nBu senaryo, Fenerbahçe'nin kadro derinliğinin en görünür olacağı andır — yedek kulübesindeki isimlerin oyuna girme zamanlaması, üç gün sonraki Lyon maçıyla birlikte düşünülmek zorunda kalır.",
+                "en": "If the home side lead, the character of the match changes entirely: Gençlerbirliği drop deeper still, while Fenerbahçe are forced into risk with their full-backs and centre-backs.\n\nThe signal to watch: one of Fenerbahçe's centre-backs stepping up to the halfway line and the number of bodies in the box rising.\n\nThis is the scenario in which Fenerbahçe's squad depth becomes most visible — and the timing of the substitutions has to be weighed against the Lyon tie three days later."
+              }
+            }
+          ]
+        },
+        {
+          "id": "guclu-zayif",
+          "slug": {
+            "tr": "guclu-ve-zayif-yonler",
+            "en": "strengths-and-weaknesses"
+          },
+          "kicker": {
+            "tr": "Değerlendirme",
+            "en": "Assessment"
+          },
+          "title": {
+            "tr": "Güçlü ve Zayıf Yönler",
+            "en": "Strengths and Weaknesses"
+          },
+          "summary": {
+            "tr": "İki takım için de dörder güçlü, dörder zayıf yön — hepsi doğrulanmış kadro durumuna dayanıyor.",
+            "en": "Four strengths and four weaknesses for each side, all grounded in the verified squad situation."
+          },
+          "sections": [
+            {
+              "heading": {
+                "tr": "Fenerbahçe — güçlü yönler",
+                "en": "Fenerbahçe — strengths"
+              },
+              "body": {
+                "tr": "• Hücumda çok yönlülük: Kerem, Asensio, Greenwood ve Talisca'nın dördü de farklı bölgelerden pozisyon üretebiliyor; savunmanın markaj referansı sabit kalmıyor.\n• Stoper ikilisinde hava hâkimiyeti: Škriniar ve Aké, hem açık oyunda hem duran toplarda ceza sahasını koruyabilecek profiller.\n• Orta sahada denge: Guendouzi ve İsmail Yüksek ikilisi, top kazanma ile ileri oyun arasında geçiş kurabiliyor.\n• Maç ritmi: Şampiyonlar Ligi elemelerinde dört resmî maç oynayarak sezona erken giren bir takım, lige hazırlıksız çıkmıyor.",
+                "en": "• Variety in attack: Kerem, Asensio, Greenwood and Talisca each threaten from different areas, so a defence never gets a fixed reference point.\n• Aerial command at centre-back: Škriniar and Aké can protect the box in open play and at set pieces alike.\n• Midfield balance: the Guendouzi–İsmail Yüksek pairing links ball-winning to forward play.\n• Match rhythm: a side that has already played four competitive fixtures in Champions League qualifying does not enter the league cold."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Fenerbahçe — zayıf yönler",
+                "en": "Fenerbahçe — weaknesses"
+              },
+              "body": {
+                "tr": "• Kalede alışılmadık durum: Ederson cezalı, Günok sakat. Sezonun ilk lig maçında savunmanın önündeki iletişim rutin dışı.\n• Sol bekte belirsizlik: Oosterwolde'nin yokluğu, hem savunma dengesini hem sol kanat ilişkisini yeniden kurmayı gerektiriyor.\n• Yüksek bek konumlanmasının bedeli: iki bek de yükseldiğinde geçiş savunması üç oyuncuya iniyor.\n• Takvim baskısı: Lyon play-off maçı üç gün sonra. Kadro yönetimi, oyunun kendi mantığının önüne geçebilir.",
+                "en": "• An unfamiliar goalkeeping situation: Ederson suspended, Günok injured. On the opening league weekend, the communication in front of the defence is not routine.\n• Uncertainty at left-back: Oosterwolde's absence means rebuilding both the defensive balance and the left-sided relationship.\n• The price of high full-backs: with both pushed on, the rest defence drops to three.\n• Fixture pressure: the Lyon play-off is three days away, and squad management can override the logic of the game itself."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Gençlerbirliği — güçlü yönler",
+                "en": "Gençlerbirliği — strengths"
+              },
+              "body": {
+                "tr": "• İç saha: Eryaman'ın atmosferi, özellikle maçın ilk evresinde somut bir etken.\n• Teknik direktör sürekliliği: Metin Diyadin'le geçen sezon sonunda yakalanan istikrar, beş teknik direktör değiştiren bir kulüp için değerli bir başlangıç noktası.\n• Beklenti yükünün olmaması: sezonun ilk haftasında Fenerbahçe karşısında favori olmamak, oyun planını sadeleştirir.\n• Yaz transferleriyle tazelenen kadro: dört yeni isim ve Salih Uçan'la yapılan anlaşma, geçen sezonun kadrosuna doğrudan eklemeler.",
+                "en": "• Home advantage: the atmosphere at Eryaman is a real factor, especially early on.\n• Managerial continuity: the stability found under Metin Diyadin at the end of last season is a valuable starting point for a club that changed manager five times.\n• No weight of expectation: not being favourites against Fenerbahçe on the opening weekend simplifies the game plan.\n• A squad refreshed in the summer: four new names plus the agreement with Salih Uçan are direct additions to last season's group."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Gençlerbirliği — zayıf yönler",
+                "en": "Gençlerbirliği — weaknesses"
+              },
+              "body": {
+                "tr": "• Geçen sezonun tablosu: 14. sıra ve küme hattının hemen üstünde tamamlanan bir sezon, savunma istikrarının kırılgan olduğunu gösteriyor.\n• Bu eşleşmedeki geçmiş: evinde Fenerbahçe'yi on bir yıldır yenemiyor; son karşılaşma 3-1 kaybedildi.\n• Kadro belirsizliği: bu maça özel doğrulanmış bir kadro bilgisi yok; bazı kaynaklarda bildirilen sakatlıklar teyit edilemedi.\n• Hücumda kaybedilen isimler: Onyekuru ve Niang'ın ayrılığı, geçen sezonun ileri hattından iki oyuncunun eksilmesi anlamına geliyor.",
+                "en": "• Last season's table: finishing 14th, just above the drop, points to fragile defensive stability.\n• The record in this fixture: no home win over Fenerbahçe in eleven years, with the last meeting lost 3-1.\n• Squad uncertainty: no verified match-specific squad information is available, and the injuries reported by some outlets could not be confirmed.\n• Attacking departures: losing Onyekuru and Niang removes two players from last season's forward line."
+              }
+            }
+          ]
+        },
+        {
+          "id": "futbolradar-yorumu",
+          "slug": {
+            "tr": "futbolradar-yorumu",
+            "en": "futbolradar-verdict"
+          },
+          "kicker": {
+            "tr": "Yorum",
+            "en": "Verdict"
+          },
+          "title": {
+            "tr": "FutbolRadar Yorumu",
+            "en": "The FutbolRadar Verdict"
+          },
+          "summary": {
+            "tr": "Editoryal değerlendirme ve skor beklentisi — ikisi de görüştür, veri değil.",
+            "en": "An editorial assessment and a score expectation — both opinion, not data."
+          },
+          "editorial": true,
+          "sections": [
+            {
+              "heading": {
+                "tr": "Maça dair değerlendirmemiz",
+                "en": "Our reading of the match"
+              },
+              "body": {
+                "tr": "Bu maçın en ilginç yanı, favorinin belirgin olmasına rağmen belirsizliğin de yüksek olması. Fenerbahçe kadro kalitesi ve maç ritmi bakımından açık favori; ancak bu maça iki numaralı kalecisiyle, sol beki değişmiş bir savunmayla ve üç gün sonraki bir Avrupa maçının gölgesinde çıkıyor.\n\nGençlerbirliği tarafında ise tam tersi bir belirsizlik var: kadro açıklanmadığı için oyun planını okumak mümkün değil. Bu, analiz açısından bir eksiklik değil, maçın gerçeği — ve bu sayfada tahminle doldurulmadı.\n\nBizce maçın düğümü ilk otuz dakikada atılacak. Gençlerbirliği bu süreyi gol yemeden geçirebilirse, Fenerbahçe'nin sabrı ve rotasyon kararları maçın asıl konusu hâline gelir.",
+                "en": "The most interesting thing about this match is that the favourite is clear while the uncertainty is high. Fenerbahçe are clear favourites on squad quality and match sharpness; yet they arrive with their second-choice goalkeeper, a reshaped left side of defence and a European tie three days away.\n\nOn the Gençlerbirliği side the uncertainty runs the other way: with no line-up published, their game plan cannot be read. That is not a gap in the analysis but a fact of the fixture — and it has not been filled in with guesswork on this page.\n\nWe think the match will be decided in the opening half hour. If Gençlerbirliği get through it level, Fenerbahçe's patience and rotation calls become the real story."
+              }
+            },
+            {
+              "heading": {
+                "tr": "FutbolRadar Skor Beklentisi",
+                "en": "FutbolRadar Score Expectation"
+              },
+              "body": {
+                "tr": "BEKLENTİMİZ: Gençlerbirliği 1 – 2 Fenerbahçe.\n\nBU BİR TAHMİNDİR, BİLGİ DEĞİLDİR. Hiçbir veri kaynağına, oran hesabına ya da modele dayanmıyor; yukarıdaki taktik okumanın doğal sonucu olarak yazılmış editoryal bir görüştür.\n\nGerekçemiz kısa: Fenerbahçe'nin hücum çeşitliliği doksan dakika boyunca kompakt kalmayı zorlaştırıyor, ancak kalede ve sol bekteki değişiklikler ev sahibine en az bir gerçek fırsat bırakabilir. Maç bittiğinde sonucu bu sayfada, tahminimizle birlikte göreceksiniz.",
+                "en": "OUR EXPECTATION: Gençlerbirliği 1 – 2 Fenerbahçe.\n\nTHIS IS A PREDICTION, NOT INFORMATION. It rests on no data feed, odds calculation or model; it is an editorial opinion written as the natural conclusion of the tactical reading above.\n\nThe reasoning is short: Fenerbahçe's attacking variety makes staying compact for ninety minutes difficult, while the changes in goal and at left-back may leave the hosts at least one genuine opening. When the match ends you will find the result on this page, alongside what we expected."
+              }
+            },
+            {
+              "heading": {
+                "tr": "Neyi bilmiyoruz",
+                "en": "What we do not know"
+              },
+              "body": {
+                "tr": "Bu sayfadaki belirsizlikleri açıkça yazmak, analiz kadar önemli:\n\n• Gençlerbirliği'nin ilk 11'i ve dizilişi bilinmiyor.\n• Gençlerbirliği'nin maça özel eksik listesi doğrulanamadı.\n• Fenerbahçe'nin sol bekte Levent Mercan mı Archie Brown mu başlayacağı kesin değil; ikisi de kadroda.\n• Fenerbahçe'nin Lyon maçı nedeniyle kimleri dinlendireceğine dair bir bilgi yok.\n\nBu maddelerin hiçbiri tahminle doldurulmadı. Resmî kadrolar açıklandığında sayfa kendiliğinden güncellenecek ve muhtemel 11 panelleri yerini resmî ilk 11'e bırakacak.",
+                "en": "Stating the uncertainties plainly matters as much as the analysis:\n\n• Gençlerbirliği's XI and formation are unknown.\n• Gençlerbirliği's match-specific absentee list could not be verified.\n• Whether Levent Mercan or Archie Brown starts at left-back for Fenerbahçe is not settled; both are in the squad.\n• There is no information on who Fenerbahçe may rest with the Lyon tie in mind.\n\nNone of these has been filled in with a guess. Once the official teamsheets are released the page updates itself and the probable XI panels give way to the official line-ups."
+              }
+            }
+          ]
+        }
+      ],
+      "keyPlayers": {
+        "Fenerbahçe": [
+          "Talisca",
+          "Marco Asensio",
+          "Mason Greenwood",
+          "Kerem Aktürkoğlu",
+          "Mattéo Guendouzi",
+          "İsmail Yüksek",
+          "Milan Škriniar",
+          "Nathan Aké",
+          "Mert Müldür",
+          "Tarık Çetin"
+        ]
+      },
+      "matchups": [
+        {
+          "id": "asensio-orta-saha",
+          "title": {
+            "tr": "Asensio – Gençlerbirliği orta saha bandı",
+            "en": "Asensio vs Gençlerbirliği's midfield band"
+          },
+          "body": {
+            "tr": "Maçın en belirleyici ikili mücadelesi bir oyuncuyla bir bölge arasında geçecek. Asensio'nun aradığı yer, savunma hattı ile orta saha arasındaki bant; oraya topu ayağına alıp dönebilirse Fenerbahçe savunmayı geriye yürütür.\n\nGençlerbirliği'nin cevabı iki türlü olabilir: ya bir orta saha oyuncusu Asensio'yu takip edip bloğun içinde bir boşluk bırakır, ya da bant kapalı tutulup Asensio'nun topu daha geriden alması sağlanır. İkincisi daha güvenli ama Fenerbahçe'ye kurulum serbestliği verir.\n\nBu tercihin sahadaki karşılığı ilk yarım saatte görülecek.",
+            "en": "The most decisive duel here is between a player and a zone. Asensio wants the band between the defensive line and the midfield; if he can receive and turn there, Fenerbahçe force the defence backwards.\n\nGençlerbirliği have two possible answers: send a midfielder to track him and leave a hole inside the block, or keep the band closed and force him to receive deeper. The second is safer but hands Fenerbahçe freedom in build-up.\n\nWhich they choose will be visible inside the opening half hour."
+          }
+        },
+        {
+          "id": "greenwood-sol-bek",
+          "title": {
+            "tr": "Greenwood – Gençlerbirliği sol beki",
+            "en": "Greenwood vs Gençlerbirliği's left-back"
+          },
+          "body": {
+            "tr": "Greenwood'un sağdan içe kat etme eğilimi, Mert Müldür'ün dışarıdan geçmesiyle birleştiğinde ev sahibinin sol beki ikili bir soruyla karşılaşıyor: dışarıyı kapatırsa Greenwood'un içeri açılıp şut alanı bulmasına izin veriyor, içeri kapanırsa arkasındaki koridor açılıyor.\n\nBu tür durumlarda çözüm genellikle bekin tek başına değil, önündeki kanat oyuncusuyla birlikte savunma yapmasından geçiyor. Gençlerbirliği'nin bu tarafta kimi görevlendireceği açıklanmadı.\n\nGreenwood'un Süper Lig'deki ilk maçı olması, rakip savunmanın hazırlık yapabileceği bir referansın da bulunmadığı anlamına geliyor.",
+            "en": "Greenwood's habit of cutting in from the right, combined with Mert Müldür overlapping outside him, poses the home left-back a two-part question: close the outside and Greenwood comes inside into shooting range; tuck in and the corridor behind opens.\n\nThe usual answer is for the full-back not to defend alone but in tandem with the winger ahead of him. Who Gençlerbirliği assign to that side has not been announced.\n\nThat this is Greenwood's first Süper Lig match also means the opposing defence has no reference point to prepare against."
+          }
+        },
+        {
+          "id": "talisca-stoperler",
+          "title": {
+            "tr": "Talisca – Gençlerbirliği stoper ikilisi",
+            "en": "Talisca vs Gençlerbirliği's centre-backs"
+          },
+          "body": {
+            "tr": "Talisca'nın en uçta oynaması, stoperlere klasik bir santrfor markajı yaptırmıyor. Topu ayağına isteyerek hatlar arasına düştüğünde stoperlerden birinin onu takip etmesi gerekiyor; takip ederse savunma hattında bir boşluk açılıyor, takip etmezse Talisca şut mesafesinde serbest kalıyor.\n\nDoğru cevap genellikle ikisinin arasında: biri kısa mesafede baskıya çıkarken diğerinin derinliği kapatması. Bunun için stoper ikilisinin birbiriyle uyumlu olması ve orta sahadan destek görmesi gerekiyor.\n\nGençlerbirliği savunmasının bu maçta hangi ikiliyle çıkacağı bilinmiyor.",
+            "en": "With Talisca at the tip, the centre-backs cannot simply mark a conventional nine. When he drops between the lines to receive, one of them has to follow; if he does, a hole opens in the line, and if he does not, Talisca is free in shooting range.\n\nThe right answer usually lies in between: one steps up to press at short range while the other covers the depth. That requires a settled partnership and support from midfield.\n\nWhich pairing Gençlerbirliği field is not known."
+          }
+        },
+        {
+          "id": "duran-top-ceza-sahasi",
+          "title": {
+            "tr": "Duran toplarda ceza sahası",
+            "en": "The box at set pieces"
+          },
+          "body": {
+            "tr": "Fenerbahçe ceza sahasına Škriniar ve Aké'yi taşıyor; ev sahibi için bu, hem savunmada hem hücumda hesaba katılması gereken bir gövde farkı.\n\nGençlerbirliği açısından duran toplar, açık oyunda kuramayacağı dengeyi kurmanın en gerçekçi yolu olabilir. Kazanılan bir korner ya da ceza sahası yakınında bir faul, doksan dakikanın akışından bağımsız bir fırsat yaratıyor.\n\nFenerbahçe'nin bu maça iki numaralı kalecisiyle çıkması, ceza sahası içindeki hava toplarının bir miktar daha açık bir mücadeleye dönüşebileceği anlamına geliyor — bu bir tahmin, ölçülmüş bir zayıflık değil.",
+            "en": "Fenerbahçe bring Škriniar and Aké into the box; for the home side that is a difference in physical presence to account for at both ends.\n\nFor Gençlerbirliği, set pieces may be the most realistic route to a balance they cannot build in open play. A corner won, or a foul near the box, creates a chance independent of the run of play.\n\nFenerbahçe starting with their second-choice goalkeeper may make aerial duels inside the box a slightly more open contest — that is a projection, not a measured weakness."
           }
         }
       ]
