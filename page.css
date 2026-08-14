@@ -18878,6 +18878,35 @@ a.motm-week__card:focus-visible {
 
 .match-special-promo { display: grid; gap: 14px; }
 
+/* ── İki analiz kartı ──────────────────────────────────────────────────────
+   Aynı gün iki maç dosyası yayındaysa kartlar TEK sarmalayıcıda toplanır:
+   iki ayrı `.section` yan yana durunca aradaki boşluk bölüm arası boşluğa
+   açılıyor ve ikisi ilgisiz iki blok gibi okunuyordu.
+
+   Kartlar yan yana DEĞİL alt alta duruyor. İki eşit sütun, mobilde zaten
+   alt alta düşüyor; masaüstünde ise her kartın içindeki modül ızgarası
+   160px'lik sütunlara sıkışıp okunmaz hâle geliyordu. Öncelik farkı
+   sütunla değil, ikinci kartın biraz sakinleşmesiyle veriliyor. */
+.match-special-promo-group { display: grid; gap: 10px; }
+.match-special-promo-group .match-special-promo { padding-top: 0; padding-bottom: 0; }
+
+.match-special-promo.is-secondary .match-special-promo__teams strong { font-size: clamp(1.05rem, 3vw, 1.5rem); }
+.match-special-promo.is-secondary .match-special-promo__teams img { width: 36px; height: 36px; }
+.match-special-promo.is-secondary .match-special-promo__hero { padding: clamp(14px, 2.6vw, 20px); }
+
+.match-special-promo__chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.match-special-promo__chip {
+  padding: 4px 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.match-special-promo__chip.is-lineup { border-color: var(--accent); color: var(--accent); }
+
 .match-special-promo__breaking {
   display: grid;
   gap: 8px;
@@ -19301,6 +19330,26 @@ a.motm-week__card:focus-visible {
   font-size: .7rem;
   font-weight: 900;
   letter-spacing: .055em;
+}
+
+/* ── Kadrosu açıklanmamış takım ────────────────────────────────────────────
+   Kırmızı "son dakika" rozeti burada YANLIŞ sinyal: ortada açıklanmış bir
+   şey yok. Panel bilerek sönük — okuyucu bir bakışta bunun bir kadro değil,
+   kadronun yokluğu olduğunu görmeli. */
+.match-special__probable.is-unconfirmed { gap: 12px; }
+.match-special__probable.is-unconfirmed .match-special__probable-badge {
+  background: var(--surface-raised);
+  color: var(--muted);
+  border: 1px dashed var(--line-strong);
+}
+.match-special__probable-pending {
+  margin: 0;
+  padding: clamp(14px, 3vw, 20px);
+  border: 1px dashed var(--line-strong);
+  border-radius: 14px;
+  background: var(--surface-raised);
+  color: var(--muted);
+  line-height: 1.6;
 }
 .match-special__pitch {
   display: grid;

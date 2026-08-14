@@ -36,6 +36,37 @@ const LOCALES = ["tr", "en"];
 /** Bir maç dosyası en az bu kadar modül taşımalı; azı "dosya" değil, sayfadır. */
 const MIN_MODULES = 4;
 
+/**
+ * MUHTEMEL 11 İKİ TAKIM İÇİN DE VERİLEBİLİR — VE BİRİ "YOK" OLABİLİR.
+ *
+ * Alan tek takım için tasarlanmıştı. Okuyucunun sorduğu soru ise iki taraflı:
+ * "kim çıkıyor" tek başına yarım cevap. Kayıt artık `probableLineups` dizisi
+ * taşıyor; eski tekil `probableLineup` de kabul ediliyor ve tek elemanlı
+ * diziye sarılıyor, böylece yayındaki dosya olduğu gibi çalışmaya devam eder.
+ *
+ * İkinci ve daha önemli değişiklik: bir takımın 11'i HENÜZ YAYIMLANMAMIŞ
+ * olabilir. 15.08.2026'da Kasımpaşa ve Gençlerbirliği için tam olarak bu
+ * durumdaydı — hiçbir kaynak muhtemel 11 vermemişti. Böyle bir durumda
+ * seçenek ikiye iniyor: ya kadro verisinden makul görünen bir 11 uydurmak,
+ * ya da bilinmediğini söylemek. Uydurulan 11 okuyucuya doğrulanmış bilgi
+ * gibi görünür ve yanlış olduğunda sitenin doğruluk iddiasını götürür.
+ * `status: "unconfirmed"` bu yüzden var: oyuncu listesi İSTENMEZ, sayfa
+ * "henüz açıklanmadı" diyen bir panel basar ve resmî kadro geldiğinde
+ * otomasyon zaten üzerine yazar.
+ */
+const LINEUP_CONFIRMED = "reported";
+const LINEUP_UNCONFIRMED = "unconfirmed";
+
+function lineupList(record) {
+  if (Array.isArray(record && record.probableLineups)) return record.probableLineups.filter(Boolean);
+  return record && record.probableLineup ? [record.probableLineup] : [];
+}
+
+/** Oyuncu listesi taşıyan ilk kadro; ana sayfa "son dakika" kartı bunu kullanır. */
+function primaryLineup(lineups) {
+  return (lineups || []).find((entry) => entry && entry.status !== LINEUP_UNCONFIRMED) || null;
+}
+
 function text(value) {
   return String(value === undefined || value === null ? "" : value).trim();
 }
@@ -274,36 +305,63 @@ function validateSpecial(record, fixture) {
     }
   }
 
-  if (record.probableLineup) {
-    const probable = record.probableLineup;
-    if (!text(probable.formation)) errors.push("probableLineup.formation zorunlu");
-    if (!text(probable.source && probable.source.name)) errors.push("probableLineup.source.name zorunlu");
-    for (const field of ["title", "badge", "sourceLabel", "moduleKicker", "promoTitle", "promoSpot"]) {
+  const lineups = lineupList(record);
+  const lineupTeams = new Set();
+  for (let index = 0; index < lineups.length; index += 1) {
+    const probable = lineups[index];
+    const id = `probableLineups[${index}]`;
+    const team = text(probable.team);
+
+    if (!team) errors.push(`${id}.team zorunlu`);
+    if (lineupTeams.has(team)) errors.push(`${id}: aynı takım için iki kadro (${team})`);
+    lineupTeams.add(team);
+
+    // Kadro AÇIKLANMADIYSA diziliş de bilinmiyor demektir; "4-2-3-1 ama
+    // oyuncular meçhul" diye bir şey yok — diziliş de bir iddia.
+    const unconfirmed = probable.status === LINEUP_UNCONFIRMED;
+    if (!unconfirmed && !text(probable.formation)) errors.push(`${id}.formation zorunlu`);
+    if (unconfirmed && text(probable.formation)) {
+      errors.push(`${id}: kadro doğrulanmadıysa diziliş de yazılmaz (${probable.formation})`);
+    }
+    if (!text(probable.source && probable.source.name)) errors.push(`${id}.source.name zorunlu`);
+
+    const required = unconfirmed
+      ? ["title", "badge", "sourceLabel"]
+      : ["title", "badge", "sourceLabel", "moduleKicker", "promoTitle", "promoSpot"];
+    for (const field of required) {
       for (const locale of LOCALES) {
-        if (!hasLocale(probable[field], locale)) errors.push(`probableLineup.${field}.${locale} zorunlu`);
+        if (!hasLocale(probable[field], locale)) errors.push(`${id}.${field}.${locale} zorunlu`);
       }
     }
+
     const players = Array.isArray(probable.players) ? probable.players : [];
-    if (players.length !== 11) errors.push(`probableLineup.players tam 11 oyuncu olmalı (${players.length})`);
-    const playerNames = new Set();
-    for (const player of players) {
-      const name = text(player && player.name);
-      if (!name) errors.push("probableLineup oyuncu adı zorunlu");
-      if (playerNames.has(name)) errors.push(`probableLineup oyuncusu yinelenmiş: ${name}`);
-      playerNames.add(name);
-      if (!Number.isInteger(player && player.row) || player.row < 0 || player.row > 4) {
-        errors.push(`probableLineup oyuncu satırı geçersiz: ${name || "(adsız)"}`);
-      }
-      if (!text(player && player.profile && player.profile.tr)) {
-        errors.push(`probableLineup oyuncu profili eksik: ${name || "(adsız)"}`);
+    if (unconfirmed) {
+      // En kritik kural: doğrulanmamış kadroya oyuncu SIZAMAZ. Bir isim
+      // girerse panel "açıklanmadı" derken altında 11 ad gösterir.
+      if (players.length) errors.push(`${id}: doğrulanmamış kadroda oyuncu listelenemez (${players.length})`);
+    } else {
+      if (players.length !== 11) errors.push(`${id}.players tam 11 oyuncu olmalı (${players.length})`);
+      const playerNames = new Set();
+      for (const player of players) {
+        const name = text(player && player.name);
+        if (!name) errors.push(`${id} oyuncu adı zorunlu`);
+        if (playerNames.has(name)) errors.push(`${id} oyuncusu yinelenmiş: ${name}`);
+        playerNames.add(name);
+        if (!Number.isInteger(player && player.row) || player.row < 0 || player.row > 4) {
+          errors.push(`${id} oyuncu satırı geçersiz: ${name || "(adsız)"}`);
+        }
+        if (!text(player && player.profile && player.profile.tr)) {
+          errors.push(`${id} oyuncu profili eksik: ${name || "(adsız)"}`);
+        }
       }
     }
+
     const analysis = Array.isArray(probable.analysis) ? probable.analysis : [];
-    if (!analysis.length) errors.push("probableLineup.analysis zorunlu");
+    if (!unconfirmed && !analysis.length) errors.push(`${id}.analysis zorunlu`);
     for (const section of analysis) {
       for (const locale of LOCALES) {
         if (!hasLocale(section.heading, locale) || !hasLocale(section.body, locale)) {
-          errors.push(`probableLineup.analysis ${locale} metni eksik`);
+          errors.push(`${id}.analysis ${locale} metni eksik`);
         }
       }
     }
@@ -346,7 +404,10 @@ function selectMatchSpecial(sources = {}, options = {}) {
       kicker: record.kicker || null,
       title: record.title,
       lead: record.lead,
-      probableLineup: record.probableLineup || null,
+      probableLineups: lineupList(record),
+      // Ana sayfa "son dakika" kartı ve modül başlığı tek kadro bekliyor:
+      // oyuncu listesi OLAN ilk kadro. Hiçbiri açıklanmadıysa kart basılmaz.
+      probableLineup: primaryLineup(lineupList(record)),
       modules: record.modules,
       fixture: {
         id: text(fixture.id),
@@ -385,6 +446,24 @@ function selectMatchSpecial(sources = {}, options = {}) {
   };
 }
 
+/** Tek kadroyu tek dile indirger. */
+function localizeLineup(entry, lang) {
+  if (!entry) return null;
+  return {
+    ...entry,
+    title: localized(entry.title, lang),
+    badge: localized(entry.badge, lang),
+    sourceLabel: localized(entry.sourceLabel, lang),
+    moduleKicker: localized(entry.moduleKicker, lang),
+    promoTitle: localized(entry.promoTitle, lang),
+    promoSpot: localized(entry.promoSpot, lang),
+    analysis: (entry.analysis || []).map((section) => ({
+      heading: localized(section.heading, lang),
+      body: localized(section.body, lang)
+    }))
+  };
+}
+
 /** Dosyayı tek dile indirger; üreticiye giden biçim budur. */
 function localizeSpecial(special, locale) {
   if (!special) return null;
@@ -396,19 +475,8 @@ function localizeSpecial(special, locale) {
     kicker: localized(special.kicker, lang),
     title: localized(special.title, lang),
     lead: localized(special.lead, lang),
-    probableLineup: special.probableLineup ? {
-      ...special.probableLineup,
-      title: localized(special.probableLineup.title, lang),
-      badge: localized(special.probableLineup.badge, lang),
-      sourceLabel: localized(special.probableLineup.sourceLabel, lang),
-      moduleKicker: localized(special.probableLineup.moduleKicker, lang),
-      promoTitle: localized(special.probableLineup.promoTitle, lang),
-      promoSpot: localized(special.probableLineup.promoSpot, lang),
-      analysis: (special.probableLineup.analysis || []).map((section) => ({
-        heading: localized(section.heading, lang),
-        body: localized(section.body, lang)
-      }))
-    } : null,
+    probableLineups: (special.probableLineups || []).map((entry) => localizeLineup(entry, lang)),
+    probableLineup: localizeLineup(special.probableLineup, lang),
     modules: special.modules.map((module) => ({
       id: text(module.id),
       slug: localized(module.slug, lang),
