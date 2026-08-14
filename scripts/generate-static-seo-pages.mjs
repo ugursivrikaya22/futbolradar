@@ -5,13 +5,23 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { columnCard } from "./generate-column-pages.mjs";
 import { newsSlug, readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 import { URLSET_OPEN } from "./lib/sitemap.mjs";
+import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { publishedColumns } = require("../services/columnService.js");
 const { ROUTES: I18N_ROUTES, absoluteUrl: i18nUrl, hreflangOf } = require("../services/i18n.js");
 const domain = "https://www.futbolradar.com";
-const today = "2026-07-22";
+/**
+ * `lastmod` ARTIK SABİT DEĞİL.
+ *
+ * Burada bir zamanlar `const today = "2026-07-22"` yazıyordu ve site saatte
+ * bir yeniden derlenmesine rağmen ana sayfanın site haritası tarihi üç
+ * haftadır kımıldamıyordu — tarayıcıya "burada yeni bir şey yok" demenin
+ * en doğrudan yolu. Tarih artık sayfanın İÇERİĞİ değiştiğinde ilerliyor;
+ * gerekçesi ve neyin "değişim" sayılmadığı `lib/sitemapFreshness.mjs`te.
+ */
+const freshness = createFreshnessTracker(root);
 
 /**
  * TAZELİK SİNYALİ SAYFANIN RİTMİNE UYMALI.
@@ -605,7 +615,7 @@ ${unique.map((file) => {
   const alternates = alternatesByFile.get(file);
   return `  <url>
     <loc>${loc}</loc>
-${alternates ? `${alternates}\n` : ""}    <lastmod>${today}</lastmod>
+${alternates ? `${alternates}\n` : ""}    <lastmod>${freshness.lastmodForFile(file, path.join(root, file))}</lastmod>
     <changefreq>${changeFrequency(file)}</changefreq>
     <priority>${priority}</priority>
   </url>`;
@@ -619,4 +629,5 @@ pages.forEach(writePage);
 const sitemap = sitemapXml(pages.map((page) => page.file));
 fs.writeFileSync(path.join(root, "sitemap.xml"), sitemap, "utf8");
 fs.writeFileSync(path.join(root, "public", "sitemap.xml"), sitemap, "utf8");
+freshness.save();
 console.log(`Generated ${pages.length} static SEO/trust pages`);
