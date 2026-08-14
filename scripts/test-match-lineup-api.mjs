@@ -162,17 +162,38 @@ console.log("match-lineup-api");
   assert.equal(data.fixtureId, "1584370", "sağlayıcı fikstür kimliği fikstür verisinden gelmeli");
   assert.equal(data.home.team, "Galatasaray");
   assert.equal(data.away.team, "Çorum FK");
-  assert.deepEqual(data.home.startingXI, [], "kadro yayımlanmadan oyuncu listelenmemeli");
-  assert.deepEqual(data.away.startingXI, []);
-  assert.equal(data.confirmed.home, false);
-  assert.equal(data.confirmed.away, false);
-  assert.ok(["scheduled", "pending", "final"].includes(data.status), `beklenmeyen durum: ${data.status}`);
-  assert.equal(data.scoreboard.home, null, "oynanmamış maçta skor uydurulmamalı");
+  // Kadro yayımlanmadıysa liste BOŞ; yayımlandıysa tam on bir. Aradaki
+  // hiçbir sayı kabul edilmez — eksik liste "resmî" sayılamaz (1. bölüm).
+  for (const side of ["home", "away"]) {
+    const count = data[side].startingXI.length;
+    assert.ok(count === 0 || count === 11, `${side}: beklenmeyen kadro sayısı ${count}`);
+    assert.equal(data.confirmed[side], count === 11, `${side}: onay bayrağı kadroyla uyuşmalı`);
+    if (count === 0) assert.equal(data[side].formation, null, `${side}: kadro yokken diziliş de olmamalı`);
+  }
+  assert.ok(["scheduled", "pending", "partial", "confirmed", "final"].includes(data.status),
+    `beklenmeyen durum: ${data.status}`);
+
+  // SKOR KURALI FİKSTÜRÜN DURUMUNA BAĞLI. Bu bölüm yayındaki gerçek
+  // fikstürle çalışıyor ve o fikstür artık oynandı: "skor null olmalı"
+  // demek, oynanmış bir maçın sonucunu gizlemeyi şart koşmak olurdu.
+  // Kural şu: skor ANCAK maç canlı ya da bitmişken yazılır. Oynanmamış
+  // maçın uydurma 0-0 almadığı, saf birim testiyle 4. bölümde
+  // (`scoreboardFrom`) sınanıyor.
+  const board = data.scoreboard;
+  if (board.live || board.finished) {
+    assert.ok(Number.isFinite(board.home) && Number.isFinite(board.away),
+      "oynanan maçta skor gelmeli");
+  } else {
+    assert.equal(board.home, null, "oynanmamış maçta skor uydurulmamalı");
+  }
   assert.ok(payload.meta && typeof payload.meta.reason !== "undefined",
     "yanıt neden yoklamadığını söylemeli");
 
   // Kadro açıklanmadıkça yanıt önbelleklenebilir olmalı ama uzun süreli değil.
-  assert.match(String(res.headers["cdn-cache-control"] || ""), /s-maxage=45/);
+  // Onaylanmış VE bitmiş maç uzun önbellek alır; diğer her durum kısa.
+  const expectFinal = data.status === "confirmed" && board.finished;
+  assert.match(String(res.headers["cdn-cache-control"] || ""),
+    expectFinal ? /s-maxage=1800/ : /s-maxage=45/);
 }
 
 // ── 8. YAZMA YÖNTEMİ REDDEDİLİR ───────────────────────────────────────────
