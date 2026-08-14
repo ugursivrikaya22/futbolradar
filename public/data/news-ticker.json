@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-14T10:06:47.821Z",
+  "updatedAt": "2026-08-14T11:46:55.148Z",
   "items": [
     {
       "id": "auto-news-2035e3b0794564b68d39",
@@ -64,7 +64,7 @@
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "O. Lyon maçının biletleri satışa çıkıyor",
+      "text": "O. Lyon maçının biletleri satışa çıktı",
       "team": "Fenerbahçe",
       "timestamp": "2026-08-13T15:35:34.000Z",
       "source": {
@@ -133,6 +133,25 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1
+      }
+    },
+    {
+      "id": "auto-news-d2487ab4f71b3af7fb9a",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Eyüpspor Maçı Biletleri Hakkında Bilgilendirme",
+      "team": "Beşiktaş",
+      "timestamp": "2026-08-13T10:02:47.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBVQmw5ZHBqcGplMXB4VXB1T1REdm0zeFI3cktOeFdHNHlHMWNZN2RmMUV4Vnh2dTUwU29OczVMUnI4VGxpU3hoMVNyTXNNdC1mc0Jvb0x1WmwtS0k?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3
       }
     },
     {
