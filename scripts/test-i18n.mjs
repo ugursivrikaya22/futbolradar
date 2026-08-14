@@ -30,6 +30,7 @@ const {
   competitionLabel,
   counterpartPath,
   dictionary,
+  dynamicRoutePairs,
   formatDate,
   htmlLang,
   localeOfPath,
@@ -138,6 +139,43 @@ for (const route of ROUTES) {
   const canonical = (html.match(/<link rel="canonical" href="([^"]+)"/) || [])[1];
   check(`${route.tr}: canonical İngilizceyi göstermiyor`, !String(canonical || "").includes("/en/") && canonical !== `${DOMAIN}/en`,
     String(canonical));
+}
+
+// --- 4b. Dinamik çiftlerin HEPSİ hreflang alır (tür süzgeci yok) -----------
+//
+// `data/en-route-map.json` haritaya giren her TR/EN çiftini tutuyor ve
+// `inject-hreflang.mjs` bu haritayı okuyor. Enjektör bir zamanlar türleri
+// elle sayıyordu (`team`/`match`/`player`); maç dosyası sayfaları haritaya
+// `special` türüyle eklendiğinde dil değiştirme bağlantısı çalıştı ama
+// alternate etiketleri hiç basılmadı. Google tek yönlü bildirimi yok
+// sayar: 24 sayfanın İngilizce yüzeyi indekslenmeme riskindeydi.
+//
+// Bu yüzden denetim TÜRE BAKMAZ — haritadaki her tür örneklenir. Yeni bir
+// tür eklendiğinde bu test onu kendiliğinden kapsar.
+{
+  const rows = dynamicRoutePairs();
+  const byKind = new Map();
+  for (const row of rows) {
+    if (!byKind.has(row.kind)) byKind.set(row.kind, []);
+    byKind.get(row.kind).push(row);
+  }
+  check("dinamik rota haritası dolu", rows.length > 0, `${rows.length} çift`);
+
+  for (const [kind, pairs] of byKind) {
+    // Her türden ilk ve son kayıt: tam tarama 800+ dosya okumak demek.
+    for (const pair of [pairs[0], pairs[pairs.length - 1]]) {
+      for (const side of [pair.tr, pair.en]) {
+        const html = read(side);
+        if (!html) {
+          check(`${kind}: ${side} dosyası var`, false, "dosya yok");
+          continue;
+        }
+        const hasEn = html.includes(`<link rel="alternate" hreflang="en" href="${absoluteUrl(pair.en)}" />`);
+        const hasTr = html.includes(`<link rel="alternate" hreflang="tr-TR" href="${absoluteUrl(pair.tr)}" />`);
+        check(`${kind}: ${side} karşılıklı hreflang`, hasEn && hasTr, `en=${hasEn} tr=${hasTr}`);
+      }
+    }
+  }
 }
 
 // --- 5. İngilizce sayfalarda Türkçe arayüz metni kalmamalı ------------------

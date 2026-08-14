@@ -81,14 +81,17 @@ for (const route of ROUTES) {
   }
 }
 
-// Dinamik çiftler (takım/maç/oyuncu): üç EN üretici de hreflang'ı gömmüyor
-// — sayfa sayısı üç haneli olduğu için tekilleştirme burada, TEK yerde.
-// Her iki taraf da (TR ve EN) bu geçişte yazılıyor.
-const dynamicRoutes = [
-  ...dynamicRoutePairs("team"),
-  ...dynamicRoutePairs("match"),
-  ...dynamicRoutePairs("player")
-];
+// Dinamik çiftler: EN üreticilerin hiçbiri hreflang'ı gömmüyor — sayfa
+// sayısı üç haneli olduğu için tekilleştirme burada, TEK yerde. Her iki
+// taraf da (TR ve EN) bu geçişte yazılıyor.
+//
+// TÜR SÜZGECİ YOK, BİLEREK. Liste önce `team`/`match`/`player` diye elle
+// sayılıyordu; maç dosyası sayfaları haritaya `special` türüyle eklendiğinde
+// dil değiştirme bağlantısı çalıştı ama `<link rel="alternate">` etiketleri
+// hiç basılmadı — Google tek yönlü bildirimi yok sayar, yani 24 sayfanın
+// İngilizce yüzeyi indekslenmeme riskindeydi. Sessiz ve fark edilmesi zor
+// bir arıza; haritaya giren HER çift artık kendiliğinden kapsanıyor.
+const dynamicRoutes = dynamicRoutePairs();
 for (const route of dynamicRoutes) {
   const block = alternateBlock(route);
   for (const side of [route.tr, route.en]) {
