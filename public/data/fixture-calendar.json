@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-14T08:18:35.764Z",
+  "fetchedAt": "2026-08-14T10:06:37.371Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -73567,14 +73567,14 @@
       "awayTeam": "Levante II",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/8160.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9591.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 15,
-      "elapsed": 15,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
-        "away": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -73592,8 +73592,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-14T08:18:36.885Z",
-      "staleAfter": "2026-08-14T08:23:36.885Z",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -73602,18 +73602,23 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 53' Normal Goal tarafından kaydedildi. Levante II skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Levante II tarafında.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "53'",
+            "text": "Son gol 53' Normal Goal tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "0-1",
+            "text": "Levante II skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 1,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -74490,7 +74495,19 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "53'",
+          "team": {
+            "name": "Levante II"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "karlovac-1919-trnje-2026-08-14",
@@ -74504,14 +74521,14 @@
       "awayTeam": "Trnje",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/15295.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/8607.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 17,
-      "elapsed": 17,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 2,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -74529,8 +74546,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-14T08:18:36.885Z",
-      "staleAfter": "2026-08-14T08:23:36.885Z",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -74539,18 +74556,23 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 67' L. Kapulica tarafından kaydedildi. Skor dengede.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "67'",
+            "text": "Son gol 67' L. Kapulica tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
+            "value": "2-2",
             "text": "Skor dengede."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 4,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -75707,7 +75729,861 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "21'",
+          "team": {
+            "name": "Trnje"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "48'",
+          "team": {
+            "name": "Karlovac 1919"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "I. Fumic · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "56'",
+          "team": {
+            "name": "Trnje"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Karlovac 1919"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "L. Kapulica · Normal Goal",
+          "comments": ""
+        }
+      ]
+    },
+    {
+      "id": "sporting-gijon-ii-cultural-leonesa-ii-2026-08-14",
+      "providerId": "1626973",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T13:00:00+03:00",
+      "time": "13:00",
+      "homeTeam": "Sporting Gijón II",
+      "awayTeam": "Cultural Leonesa II",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/9577.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/9729.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 6,
+      "elapsed": 6,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "events": [
+        {
+          "time": "2'",
+          "team": {
+            "name": "Sporting Gijón II"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ],
+      "analysis": {
+        "title": "Canlı Radar Analizi",
+        "summary": "Son gol 2' Normal Goal tarafından kaydedildi. Sporting Gijón II skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Sporting Gijón II tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "2'",
+            "text": "Son gol 2' Normal Goal tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-0",
+            "text": "Sporting Gijón II skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 1,
+        "dataPoints": 2,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": null,
+            "name": null,
+            "comment": null
+          },
+          "win_or_draw": false,
+          "under_over": null,
+          "goals": {
+            "home": null,
+            "away": null
+          },
+          "advice": "No predictions available",
+          "percent": {
+            "home": "33%",
+            "draw": "33%",
+            "away": "33%"
+          }
+        },
+        "league": {
+          "id": 667,
+          "name": "Friendlies Clubs",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/667.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 9577,
+            "name": "Sporting Gijón II",
+            "logo": "https://media.api-sports.io/football/teams/9577.png",
+            "last_5": {
+              "played": 2,
+              "form": "67%",
+              "att": "13%",
+              "def": "93%",
+              "goals": {
+                "for": {
+                  "total": 2,
+                  "average": "1.0"
+                },
+                "against": {
+                  "total": 1,
+                  "average": "0.5"
+                }
+              }
+            },
+            "league": {
+              "form": "WD",
+              "fixtures": {
+                "played": {
+                  "home": 2,
+                  "away": 0,
+                  "total": 2
+                },
+                "wins": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                },
+                "draws": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 2,
+                    "away": 0,
+                    "total": 2
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "0.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "100.00%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 1,
+                    "away": 0,
+                    "total": 1
+                  },
+                  "average": {
+                    "home": "0.5",
+                    "away": "0.0",
+                    "total": "0.5"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "100.00%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 1,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": "1-0",
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 1,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 1,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 1,
+                "away": 0,
+                "total": 1
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 9729,
+            "name": "Cultural Leonesa II",
+            "logo": "https://media.api-sports.io/football/teams/9729.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "att": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "def": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "goals": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "total": {
+            "home": "50.0%",
+            "away": "50.0%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 778210,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2021-08-07T00:00:00+00:00",
+              "timestamp": 1628294400,
+              "periods": {
+                "first": 1628294400,
+                "second": 1628298000
+              },
+              "venue": {
+                "id": null,
+                "name": null,
+                "city": null
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 667,
+              "name": "Friendlies Clubs",
+              "country": "World",
+              "logo": "https://media.api-sports.io/football/leagues/667.png",
+              "flag": null,
+              "season": 2021,
+              "round": "Club Friendlies 4",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 9577,
+                "name": "Sporting Gijón II",
+                "logo": "https://media.api-sports.io/football/teams/9577.png",
+                "winner": null
+              },
+              "away": {
+                "id": 9729,
+                "name": "Cultural Leonesa II",
+                "logo": "https://media.api-sports.io/football/teams/9729.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": null,
+                "away": null
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      },
+      "providerIds": {
+        "apiFootball": "1626973"
+      },
+      "competitionId": "hazirlik-maci"
     },
     {
       "id": "zagorec-granicar-ur-evac-2026-08-14",
@@ -75746,15 +76622,688 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-13T23:07:33.820Z",
-      "staleAfter": "2026-08-13T23:12:33.820Z",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1607290"
       },
-      "competitionId": "hazirlik-maci"
+      "competitionId": "hazirlik-maci",
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "confidence": "Sınırlı",
+        "signals": [],
+        "eventCount": 0,
+        "dataPoints": 0,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": null,
+            "name": null,
+            "comment": null
+          },
+          "win_or_draw": false,
+          "under_over": null,
+          "goals": {
+            "home": null,
+            "away": null
+          },
+          "advice": "No predictions available",
+          "percent": {
+            "home": "33%",
+            "draw": "33%",
+            "away": "33%"
+          }
+        },
+        "league": {
+          "id": 667,
+          "name": "Friendlies Clubs",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/667.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 5732,
+            "name": "Zagorec",
+            "logo": "https://media.api-sports.io/football/teams/5732.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 8592,
+            "name": "Graničar Đurđevac",
+            "logo": "https://media.api-sports.io/football/teams/8592.png",
+            "last_5": {
+              "played": 3,
+              "form": "33%",
+              "att": "22%",
+              "def": "56%",
+              "goals": {
+                "for": {
+                  "total": 4,
+                  "average": "1.3"
+                },
+                "against": {
+                  "total": 8,
+                  "average": "2.7"
+                }
+              }
+            },
+            "league": {
+              "form": "LLW",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 2,
+                  "total": 3
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 4,
+                    "total": 4
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "2.0",
+                    "total": "1.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 2,
+                    "away": 6,
+                    "total": 8
+                  },
+                  "average": {
+                    "home": "2.0",
+                    "away": "3.0",
+                    "total": "2.7"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 2,
+                      "percentage": "25.00%"
+                    },
+                    "16-30": {
+                      "total": 3,
+                      "percentage": "37.50%"
+                    },
+                    "31-45": {
+                      "total": 2,
+                      "percentage": "25.00%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "12.50%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 1,
+                      "under": 2
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 2
+                },
+                "wins": {
+                  "home": null,
+                  "away": "0-2"
+                },
+                "loses": {
+                  "home": "0-2",
+                  "away": "6-2"
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 2
+                  },
+                  "against": {
+                    "home": 2,
+                    "away": 6
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "failed_to_score": {
+                "home": 1,
+                "away": 0,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "att": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "def": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "goals": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "total": {
+            "home": "0%",
+            "away": "0%"
+          }
+        },
+        "h2h": []
+      }
     },
     {
       "id": "arsenal-slavia-mozyr-2026-08-14",
@@ -75992,6 +77541,51 @@
       "competitionId": "premier-league"
     },
     {
+      "id": "enosis-akritas-2026-08-14",
+      "providerId": "1626974",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T18:00:00+03:00",
+      "time": "18:00",
+      "homeTeam": "Enosis",
+      "awayTeam": "Akritas",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/3399.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/3406.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626974"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
       "id": "marseille-atletico-madrid-2026-08-14",
       "providerId": "1604789",
       "league": "Friendlies Clubs",
@@ -76035,6 +77629,96 @@
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1604789"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "portugalete-barakaldo-2026-08-14",
+      "providerId": "1626975",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T18:30:00+03:00",
+      "time": "18:30",
+      "homeTeam": "Portugalete",
+      "awayTeam": "Barakaldo",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/9408.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/5251.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626975"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "segesta-sisak-dubrava-zagreb-2026-08-14",
+      "providerId": "1626976",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T18:30:00+03:00",
+      "time": "18:30",
+      "homeTeam": "Segesta Sisak",
+      "awayTeam": "Dubrava Zagreb",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/5722.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/6255.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626976"
       },
       "competitionId": "hazirlik-maci"
     },
@@ -76368,6 +78052,96 @@
       "competitionId": "hazirlik-maci"
     },
     {
+      "id": "eibar-iii-santurtzi-2026-08-14",
+      "providerId": "1626977",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T19:30:00+03:00",
+      "time": "19:30",
+      "homeTeam": "Eibar III",
+      "awayTeam": "Santurtzi",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/25023.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/9664.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626977"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "seravezza-pistoiese-2026-08-14",
+      "providerId": "1626978",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T19:30:00+03:00",
+      "time": "19:30",
+      "homeTeam": "Seravezza",
+      "awayTeam": "Pistoiese",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/9441.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/1589.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626978"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
       "id": "estac-troyes-panetolikos-2026-08-14",
       "providerId": "1604790",
       "league": "Friendlies Clubs",
@@ -76411,6 +78185,186 @@
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1604790"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "aviles-stadium-llanera-2026-08-14",
+      "providerId": "1626979",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T20:00:00+03:00",
+      "time": "20:00",
+      "homeTeam": "Avilés Stadium",
+      "awayTeam": "Llanera",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/15333.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/9627.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626979"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "bezana-gimnastica-torrelavega-2026-08-14",
+      "providerId": "1626980",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T20:00:00+03:00",
+      "time": "20:00",
+      "homeTeam": "Bezana",
+      "awayTeam": "Gimnástica Torrelavega",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/9639.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/5264.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626980"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "poblense-atletico-baleares-2026-08-14",
+      "providerId": "1626981",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T20:00:00+03:00",
+      "time": "20:00",
+      "homeTeam": "Poblense",
+      "awayTeam": "Atlético Baleares",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/5273.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/9381.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626981"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "ibiza-pena-deportiva-2026-08-14",
+      "providerId": "1626982",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T20:00:00+03:00",
+      "time": "20:00",
+      "homeTeam": "Ibiza",
+      "awayTeam": "Peña Deportiva",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/9390.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/9405.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626982"
       },
       "competitionId": "hazirlik-maci"
     },
@@ -76556,6 +78510,141 @@
       "competitionId": "hazirlik-maci"
     },
     {
+      "id": "alcoyano-hercules-2026-08-14",
+      "providerId": "1626983",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T20:30:00+03:00",
+      "time": "20:30",
+      "homeTeam": "Alcoyano",
+      "awayTeam": "Hércules",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/9686.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/4666.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626983"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "cd-coria-extremadura-1924-2026-08-14",
+      "providerId": "1626984",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T20:30:00+03:00",
+      "time": "20:30",
+      "homeTeam": "CD Coria",
+      "awayTeam": "Extremadura 1924",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/9827.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/24612.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626984"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "haro-deportivo-naxara-2026-08-14",
+      "providerId": "1626985",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T20:30:00+03:00",
+      "time": "20:30",
+      "homeTeam": "Haro Deportivo",
+      "awayTeam": "Náxara",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/9389.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/9868.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626985"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
       "id": "ki-klaksvik-lech-poznan-2026-08-13",
       "providerId": "1607181",
       "league": "UEFA Europa League",
@@ -76601,6 +78690,96 @@
         "apiFootball": "1607181"
       },
       "competitionId": "avrupa-ligi"
+    },
+    {
+      "id": "merida-ad-alcorcon-2026-08-14",
+      "providerId": "1626986",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T21:00:00+03:00",
+      "time": "21:00",
+      "homeTeam": "Mérida AD",
+      "awayTeam": "Alcorcon",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/10140.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/711.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626986"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "portuense-xerez-2026-08-14",
+      "providerId": "1626988",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T21:00:00+03:00",
+      "time": "21:00",
+      "homeTeam": "Portuense",
+      "awayTeam": "Xerez",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/28111.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/9770.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626988"
+      },
+      "competitionId": "hazirlik-maci"
     },
     {
       "id": "galatasaray-corum-fk-2026-08-14",
@@ -76745,6 +78924,96 @@
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1598608"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "illescas-cf-talavera-2026-08-14",
+      "providerId": "1626987",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T21:30:00+03:00",
+      "time": "21:30",
+      "homeTeam": "Illescas",
+      "awayTeam": "CF Talavera",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/9901.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/5253.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626987"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "san-juan-avance-ezcabarte-2026-08-14",
+      "providerId": "1626989",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-14T21:30:00+03:00",
+      "time": "21:30",
+      "homeTeam": "San Juan",
+      "awayTeam": "Avance Ezcabarte",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/9855.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/17609.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-14T10:06:38.231Z",
+      "staleAfter": "2026-08-14T10:11:38.231Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626989"
       },
       "competitionId": "hazirlik-maci"
     },
