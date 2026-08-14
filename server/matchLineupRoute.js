@@ -11,6 +11,7 @@ const {
 const apiFootballProvider = require("../services/providers/apiFootballProvider");
 const { fetchOfficialLineup, normalizeOfficialLineup, LINEUP_REFRESH_WINDOW_MINUTES } =
   require("../services/officialLineupService");
+const { findFixtureById } = require("../services/fixtureCalendar");
 
 /**
  * MAÇ DOSYASI İÇİN İLK 11 + CANLI DURUM UÇ NOKTASI.
@@ -79,10 +80,17 @@ function fixtureList(payload) {
   return [];
 }
 
+/**
+ * KAYIT ONARILARAK DÖNER.
+ *
+ * Aynı karşılaşma takvimde iki kez durabiliyor (iki sağlayıcı, iki yazım) ve
+ * her kayıt yalnızca kendi sağlayıcısının kimliğini taşıyor. Buradaki
+ * `providerFixtureId` apiFootball kimliğini arıyor; kayıt yarımsa theSportsDb
+ * kimliği API-Football'a fikstür kimliği diye gidiyor ve kadro HİÇ gelmiyor —
+ * hata da vermiyor. Gençlerbirliği – Fenerbahçe tam olarak böyleydi.
+ */
 function findFixture(matchId) {
-  const wanted = normalizeText(matchId);
-  if (!wanted) return null;
-  return fixtureList(loadFixtures()).find((match) => normalizeText(match && match.id) === wanted) || null;
+  return findFixtureById(loadFixtures(), matchId);
 }
 
 /** Sağlayıcı fikstür kimliği — yoksa sağlayıcıya hiç gidilmez. */

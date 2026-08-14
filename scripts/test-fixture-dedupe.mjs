@@ -15,6 +15,7 @@
  *     hiç çalışamıyordu.
  */
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
@@ -131,4 +132,64 @@ const matchDate = (match) => String((match && (match.kickoff || match.date)) || 
   console.log(`  ok  saha ev sahibinin stadından dolduruldu: ${kasimpasa.venue}`);
 }
 
-console.log("fixture-dedupe OK (4 bölüm)");
+// ── 5. TAKVİMİ DOĞRUDAN OKUYAN UÇ NOKTA DA ONARILMIŞ KAYIT GÖRÜR ─────────
+//
+// Bu, canlıda yakalanan gerçek hatanın testi.
+//
+// Birleştirme yalnızca sağlayıcı katmanındaydı (`curatedMatches`), oysa
+// `server/matchLineupRoute.js` takvimi DOĞRUDAN okuyor. Oradaki kayıt hâlâ
+// yarımdı ve uç nokta `providerIds.apiFootball || providerId` sırasını
+// izlediği için Gençlerbirliği – Fenerbahçe maçında theSportsDb kimliği
+// (2527728) API-Football'a fikstür kimliği diye gidiyordu.
+//
+// Sonuç sessizdi: hata yok, yalnızca resmî ilk 11 o maçta HİÇ gelmiyordu —
+// yani maç dosyasının en çok beklenen özelliği çalışmayacaktı. Testin
+// sorduğu soru bu yüzden "kimlik var mı" değil, "DOĞRU sağlayıcının kimliği
+// mi": theSportsDb kimliğini apiFootball sanmak, kimliğin hiç olmamasından
+// daha kötü, çünkü sağlayıcıya boşuna gidilir.
+{
+  const { findFixtureById } = require("../services/fixtureCalendar.js");
+  const calendar = require("../data/fixture-calendar.json");
+  const calendarRows = Array.isArray(calendar) ? calendar : (calendar.matches || []);
+
+  const upcoming = calendarRows.filter((match) =>
+    match && match.league === "Süper Lig" && matchDate(match) === "2026-08-15");
+  assert.ok(upcoming.length > 0, "15.08.2026 maçları takvimde olmalı");
+
+  for (const source of upcoming) {
+    const fixture = findFixtureById(calendar, source.id);
+    assert.ok(fixture, `${source.id}: kayıt bulunmalı`);
+
+    // Aynı maçın BAŞKA bir kaydında apiFootball kimliği varsa, bu kayıt da
+    // onu görmeli — kimlik kayıtlar arasında bölünmüş kalamaz.
+    const twin = calendarRows.find((row) => row !== source
+      && matchDate(row) === matchDate(source)
+      && ((sameClub(row.homeTeam, source.homeTeam) && sameClub(row.awayTeam, source.awayTeam))
+        || (sameClub(row.homeTeam, source.awayTeam) && sameClub(row.awayTeam, source.homeTeam))));
+    const twinApiId = twin && (twin.providerIds || {}).apiFootball;
+    if (twinApiId) {
+      assert.equal((fixture.providerIds || {}).apiFootball, twinApiId,
+        `${source.id}: eş kaydın API-Football kimliği birleştirilmemiş`);
+    }
+
+    // Uç noktanın kullandığı seçim: apiFootball || providerId. Sonuç,
+    // theSportsDb kimliği OLMAMALI.
+    const ids = fixture.providerIds || {};
+    const chosen = String(ids.apiFootball || fixture.providerId || "");
+    if (ids.theSportsDb && chosen) {
+      assert.notEqual(chosen, String(ids.theSportsDb),
+        `${source.id}: theSportsDb kimliği API-Football kimliği yerine kullanılıyor (${chosen})`);
+    }
+  }
+  console.log(`  ok  ${upcoming.length} maçta uç nokta doğru sağlayıcı kimliğini görüyor`);
+
+  // Uç nokta kaydı KENDİ başına aramamalı: ham arama, onarımı atlar ve hata
+  // sessizce geri döner. Sözleşme kaynak düzeyinde de tutuluyor.
+  const route = fs.readFileSync(new URL("../server/matchLineupRoute.js", import.meta.url), "utf8");
+  assert.match(route, /findFixtureById\(loadFixtures\(\)/,
+    "matchLineupRoute onarılmış kaydı okumalı (findFixtureById)");
+  assert.ok(!/fixtureList\(loadFixtures\(\)\)\s*\.find/.test(route),
+    "matchLineupRoute ham takvimde doğrudan arama yapmamalı");
+}
+
+console.log("fixture-dedupe OK (5 bölüm)");
