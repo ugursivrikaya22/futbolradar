@@ -8,7 +8,14 @@ const {
   setCachePolicy
 } = require("../api/_utils");
 const { listHomePolls, localizePoll, selectHomePoll } = require("../services/homePoll");
-const { findVote, isConfigured, readTally, recordVote, voterKeyFor } = require("../services/homePollVoteStore");
+const {
+  configurationHint,
+  findVote,
+  isConfigured,
+  readTally,
+  recordVote,
+  voterKeyFor
+} = require("../services/homePollVoteStore");
 
 /**
  * ANA SAYFA TAHMİN ANKETİ UÇ NOKTASI.
@@ -263,9 +270,15 @@ async function handleHomePoll(req, res) {
   if (!isConfigured()) {
     // Anket GÖSTERİLİR ama oy alınmaz: soru statik veriden geliyor, sayım
     // gerçek bir depodan gelmek zorunda.
+    // TEŞHİS YANITTA. "Yapılandırılmamış" tek başına yanlış İSMİ yanlış
+    // ANAHTAR TÜRÜNDEN ayırmıyordu; operatör hangisi olduğunu göremiyordu.
+    // Yalnızca DURUM yazılır, anahtarın kendisi hiçbir koşulda yazılmaz.
     return sendSuccess(res, {
       storage: "unavailable", status: selection.status, poll, results: [], total: 0
-    }, SOURCE, null, { note: "Oy deposu yapilandirilmamis; anket salt okunur." });
+    }, SOURCE, null, {
+      note: "Oy deposu yapilandirilmamis; anket salt okunur.",
+      configuration: configurationHint()
+    });
   }
 
   const voter = resolveVoter(req, res);

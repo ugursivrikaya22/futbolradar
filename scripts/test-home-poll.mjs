@@ -463,6 +463,42 @@ console.log("home-poll");
   assert.equal(withSalt, store.voterKeyFor("baska-cerez", "203.0.113.9"),
     "IP katmanı çerezden bağımsız olmalı");
 
+  // ANON ANAHTARI KABUL EDİLMEZ VE NEDENİ SÖYLENİR.
+  //
+  // Tabloda RLS açık, hiçbir politika yok: anon rolü ne okuyabilir ne
+  // yazabilir. Anon anahtarını kabul etmek, her oyun çalışma zamanında
+  // sessizce reddedilmesi demek olurdu — "yapılandırılmamış" demek dürüst,
+  // ama YETERSİZ: operatör yanlış İSMİ mi yoksa yanlış ANAHTAR TÜRÜNÜ mü
+  // kullandığını göremiyordu.
+  for (const name of [...store.REST_URL_ENV_NAMES, ...store.SERVICE_KEY_ENV_NAMES, ...store.ANON_KEY_ENV_NAMES]) {
+    delete process.env[name];
+  }
+
+  process.env.SUPABASE_URL = "https://ornek.supabase.co";
+  process.env.SUPABASE_ANON_KEY = "anon-anahtari";
+  assert.equal(store.isConfigured(), false, "anon anahtarı depoyu açmamalı");
+  assert.match(store.configurationHint(), /anon/i, "teşhis anon anahtarını işaret etmeli");
+  assert.match(store.configurationHint(), /SUPABASE_SERVICE_ROLE_KEY/,
+    "teşhis hangi değişkenin gerektiğini söylemeli");
+
+  // Servis DEĞİŞKENİNE anon anahtarı yapıştırılmışsa isConfigured() true
+  // döner ama her istek RLS'e takılır; teşhis bunu da yakalamalı.
+  const jwt = (role) => ["h", Buffer.from(JSON.stringify({ role })).toString("base64").replace(/=+$/, ""), "s"].join(".");
+  process.env.SUPABASE_SERVICE_ROLE_KEY = jwt("anon");
+  assert.equal(store.isConfigured(), true);
+  assert.match(store.configurationHint(), /service_role/, "servis alanındaki anon anahtarı bildirilmeli");
+  assert.equal(store.keyRole(jwt("service_role")), "service_role");
+
+  // Doğru kurulumda teşhis SESSİZ olmalı: gürültü, gerçek sorunu gizler.
+  process.env.SUPABASE_SERVICE_ROLE_KEY = jwt("service_role");
+  assert.equal(store.configurationHint(), "", "doğru kurulumda teşhis boş olmalı");
+
+  // Teşhis hiçbir koşulda ANAHTARIN KENDİSİNİ yazmamalı.
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "";
+  process.env.SUPABASE_ANON_KEY = "cok-gizli-anon-anahtari";
+  assert.ok(!store.configurationHint().includes("cok-gizli-anon-anahtari"),
+    "teşhis anahtarı sızdırmamalı");
+
   process.env = saved;
 }
 
