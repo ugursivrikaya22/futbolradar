@@ -44,6 +44,9 @@ export const POSTPROCESS_CHAIN = [
   // JavaScript beklemeden görünmesi gerekiyor. Takvim saate bağlı olduğu
   // için her derlemede yeniden değerlendirilir (gerekçe: lib/homePoll.mjs).
   { id: "home-poll", script: "inject-home-poll.mjs", args: [], timeoutMinutes: 5 },
+  // Maç dosyası tanıtım kutusu da saate bağlı: penceresi kapanınca kutu
+  // kendiliğinden düşsün diye her derlemede yeniden değerlendirilir.
+  { id: "match-special", script: "inject-match-special.mjs", args: [], timeoutMinutes: 5 },
   { id: "theme-boot", script: "inject-theme-boot.mjs", args: [], timeoutMinutes: 5 },
   { id: "analytics", script: "inject-ga4.mjs", args: [], timeoutMinutes: 5 },
   { id: "site-verification", script: "inject-site-verification.mjs", args: [], timeoutMinutes: 5 },

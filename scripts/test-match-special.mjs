@@ -227,4 +227,157 @@ console.log("match-special");
   }
 }
 
-console.log("match-special OK (9 bölüm)");
+// ── 10. ÜRETİLEN SAYFALAR: HER KART GERÇEK BİR SAYFAYA GİDER ─────────────
+//
+// Hub'daki kart listesi üretilen modül listesinden türetiliyor. Türetme
+// bozulursa boş hedefe kart basılır — okuyucuya olmayan bir söz.
+{
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, "data", "match-special-pages.json"), "utf8"));
+  assert.ok(Array.isArray(manifest) && manifest.length > 0, "sayfa listesi üretilmeli");
+
+  for (const entry of manifest) {
+    for (const locale of ["tr", "en"]) {
+      const localized = entry.locales[locale];
+      const hubPath = path.join(root, localized.hub);
+      assert.ok(fs.existsSync(hubPath), `${localized.hub}: hub sayfası yok`);
+
+      const hub = fs.readFileSync(hubPath, "utf8");
+      const hrefs = [...hub.matchAll(/class="match-special__card[^"]*" href="\.\/([^"]+)"/g)].map((row) => row[1]);
+      assert.equal(hrefs.length, localized.modules.length,
+        `${localized.hub}: kart sayısı modül sayısıyla uyuşmuyor`);
+
+      for (const href of hrefs) {
+        const target = path.join(path.dirname(hubPath), href);
+        assert.ok(fs.existsSync(target), `${localized.hub} → ${href}: hedef sayfa yok`);
+        // Boş sayfa da kırık bağlantı sayılır.
+        assert.ok(fs.readFileSync(target, "utf8").includes("<h1"), `${href}: sayfa gövdesiz`);
+      }
+
+      for (const module of localized.modules) {
+        assert.ok(fs.existsSync(path.join(root, module.href)), `${module.href}: listede var, diskte yok`);
+      }
+    }
+
+    // İki dil aynı sayıda sayfa üretir: "birebir aynı, yalnızca dil farklı".
+    assert.equal(entry.locales.tr.modules.length, entry.locales.en.modules.length);
+    assert.deepEqual(
+      entry.locales.tr.modules.map((module) => module.id),
+      entry.locales.en.modules.map((module) => module.id)
+    );
+  }
+}
+
+// ── 11. HİÇBİR SAYFADA `href="#"` VE YER TUTUCU YOK ──────────────────────
+{
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, "data", "match-special-pages.json"), "utf8"));
+  const files = [];
+  for (const entry of manifest) {
+    for (const locale of ["tr", "en"]) {
+      files.push(path.join(root, entry.locales[locale].hub));
+      entry.locales[locale].modules.forEach((module) => files.push(path.join(root, module.href)));
+    }
+  }
+
+  for (const file of files) {
+    const html = fs.readFileSync(file, "utf8");
+    const relative = path.relative(root, file);
+
+    // Denetim GÖVDEYE bakar, sayfanın tamamına değil: ortak başlık arama
+    // kutusu taşıyor ve onun `placeholder=` özniteliği "yer tutucu metin"
+    // aramasına takılıyordu — gerçek bir sorun değil, kelime çakışması.
+    const main = (html.match(/<main[\s\S]*?<\/main>/) || [""])[0];
+    assert.ok(main, `${relative}: <main> bloğu yok`);
+    assert.ok(!/href="#"/.test(main), `${relative}: href="#" var`);
+    assert.ok(!/(lorem ipsum|TODO|PLACEHOLDER|yer tutucu)/i.test(main), `${relative}: yer tutucu metin var`);
+    assert.match(html, /<link rel="canonical"/, `${relative}: canonical yok`);
+    assert.match(html, /<meta name="description"/, `${relative}: açıklama yok`);
+  }
+}
+
+// ── 12. İLK 11 SAYFASI TAHMİNİ KADRO BASMAZ ──────────────────────────────
+//
+// Bu sayfanın tek işi: kadro açıklanana kadar hiçbir oyuncu adı vermemek.
+// Derleme anında bir "muhtemel 11" basılırsa okuyucu onu resmî sanar.
+{
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, "data", "match-special-pages.json"), "utf8"));
+  const squads = Array.isArray(sources.squads) ? sources.squads : Object.values(sources.squads);
+  const names = squads
+    .filter((team) => sameTeam(team.teamName, "Galatasaray") || sameTeam(team.teamName, "Çorum FK"))
+    .flatMap((team) => (team.players || []).map((player) => player.name));
+  assert.ok(names.length > 20, "kadro verisi okunmalı");
+
+  for (const entry of manifest) {
+    for (const locale of ["tr", "en"]) {
+      const module = entry.locales[locale].modules.find((row) => row.id === "ilk-11");
+      assert.ok(module, `${locale}: ilk 11 modülü olmalı`);
+      const html = fs.readFileSync(path.join(root, module.href), "utf8");
+
+      assert.match(html, /data-match-lineups/, "istemci kancası olmalı");
+      assert.match(html, /data-lineup-grid[^>]*hidden/, "ızgara kapalı doğmalı");
+      for (const name of names) {
+        assert.ok(!html.includes(name), `ilk 11 sayfası derleme anında "${name}" adını basmamalı`);
+      }
+    }
+  }
+}
+
+// ── 13. ANA SAYFA KUTUSU: PENCERE VE BAĞLANTILAR ─────────────────────────
+{
+  const { PROMO_CLOSES_AFTER_MS, PROMO_MODULE_LIMIT, PROMO_OPENS_BEFORE_MS, matchSpecialPromoBlock, selectPromo } =
+    await import("./lib/matchSpecialPromo.mjs");
+
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, "data", "match-special-pages.json"), "utf8"));
+  const entry = manifest[0];
+  const kickoff = Date.parse(entry.kickoff);
+
+  assert.ok(selectPromo(manifest, kickoff - 60 * 60 * 1000), "maçtan bir saat önce kutu açık olmalı");
+  assert.ok(selectPromo(manifest, kickoff + 60 * 60 * 1000), "maç sırasında kutu açık olmalı");
+
+  // MAÇ BİTTİKTEN SONRA KUTU DÜŞER: bayat içeriği ana sayfada güncel gibi
+  // göstermek, yer tutucu uydurmanın uzun ömürlü biçimi olurdu.
+  assert.equal(selectPromo(manifest, kickoff + PROMO_CLOSES_AFTER_MS + 60000), null,
+    "pencere kapandıktan sonra kutu basılmamalı");
+  assert.equal(selectPromo(manifest, kickoff - PROMO_OPENS_BEFORE_MS - 60000), null,
+    "pencere açılmadan kutu basılmamalı");
+
+  for (const locale of ["tr", "en"]) {
+    const block = matchSpecialPromoBlock(entry, { locale });
+    assert.ok(block.includes(entry.homeTeam) && block.includes(entry.awayTeam));
+
+    const hrefs = [...block.matchAll(/href="([^"]+)"/g)].map((row) => row[1]);
+    assert.ok(hrefs.length > 1, `${locale}: kutuda bağlantı yok`);
+    assert.ok(hrefs.length <= PROMO_MODULE_LIMIT + 1, `${locale}: kutuda modül sınırı aşıldı`);
+
+    // Ana sayfaya göre çözülen her adres diskte GERÇEKTEN var olmalı.
+    const homeDir = locale === "en" ? path.join(root, "en") : root;
+    for (const href of hrefs) {
+      assert.ok(fs.existsSync(path.resolve(homeDir, href)), `${locale}: ${href} hedefi yok`);
+    }
+  }
+
+  // Kayıt olmadığında kutu boş dize döner (blok hiç basılmaz).
+  assert.equal(matchSpecialPromoBlock(null, { locale: "tr" }), "");
+  assert.equal(matchSpecialPromoBlock({ locales: {} }, { locale: "tr" }), "");
+}
+
+// ── 14. KUTU İKİ ANA SAYFADA DA VAR VE AYNI ───────────────────────────────
+{
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, "data", "match-special-pages.json"), "utf8"));
+  const open = manifest.some((entry) => {
+    const kickoff = Date.parse(entry.kickoff);
+    return Date.now() >= kickoff - 10 * 24 * 60 * 60 * 1000 && Date.now() <= kickoff + 24 * 60 * 60 * 1000;
+  });
+
+  if (open) {
+    for (const page of ["index.html", path.join("en", "index.html")]) {
+      const html = fs.readFileSync(path.join(root, page), "utf8");
+      assert.match(html, /<!-- match-special:start -->/, `${page}: maç dosyası kutusu yok`);
+      assert.match(html, /match-special-promo__module/, `${page}: modül kartları yok`);
+    }
+    console.log("  ok  ana sayfa kutusu iki dilde de basılı");
+  } else {
+    console.log("  ok  penceresi açık dosya yok, ana sayfa kutusu beklenmiyor");
+  }
+}
+
+console.log("match-special OK (14 bölüm)");
