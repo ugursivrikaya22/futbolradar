@@ -493,6 +493,22 @@ console.log("home-poll");
   process.env.SUPABASE_SERVICE_ROLE_KEY = jwt("service_role");
   assert.equal(store.configurationHint(), "", "doğru kurulumda teşhis boş olmalı");
 
+  // HİÇBİR DEĞİŞKEN YOKKEN iki sebep ayırt edilmeli: değişkenler bu
+  // projeye/ortama hiç ulaşmamış mı, yoksa tanınmayan bir adla mı var.
+  for (const name of Object.keys(process.env).filter((key) => /supabase|home_poll/i.test(key))) {
+    delete process.env[name];
+  }
+  assert.match(store.configurationHint(), /hicbir degisken yok/,
+    "hiç değişken yokken bu açıkça söylenmeli");
+
+  process.env.SUPABASE_URL_YANLIS_AD = "x";
+  assert.match(store.configurationHint(), /1 degisken var/,
+    "tanınmayan adla var olan değişken sayılmalı");
+  // SAYI yazılır, AD yazılmaz: ad da bir sızıntıdır.
+  assert.ok(!store.configurationHint().includes("SUPABASE_URL_YANLIS_AD"),
+    "teşhis değişken adını sızdırmamalı");
+  delete process.env.SUPABASE_URL_YANLIS_AD;
+
   // Teşhis hiçbir koşulda ANAHTARIN KENDİSİNİ yazmamalı.
   process.env.SUPABASE_SERVICE_ROLE_KEY = "";
   process.env.SUPABASE_ANON_KEY = "cok-gizli-anon-anahtari";
