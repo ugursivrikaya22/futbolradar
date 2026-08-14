@@ -13,7 +13,8 @@
  * veri sanması demek olurdu. Sitenin geri kalanı doğrulanmış veri iddia
  * ediyor; bu sayfa bir bölümünde etmiyor ve bunu yazıyor.
  *
- * KADRO VERİDEN GELİR, ELLE YAZILMAZ. Kilit oyuncu kartları
+ * KADRO VERİDEN GELİR; kaynak gösterilmiş MUHTEMEL 11 ise ayrı bir
+ * editoryal katmanda tutulur ve hiçbir zaman resmî diye etiketlenmez. Kilit oyuncu kartları
  * `data/super-lig-squads.json` ile KESİŞTİRİLİR: kadroda olmayan oyuncu
  * karta girmez. Bir sezon önce ayrılmış bir futbolcuyu "kilit oyuncu" diye
  * göstermek, okuyucuya yanlış kadro bilgisi vermenin en görünür biçimi.
@@ -24,9 +25,10 @@
  * görünür — iki kaynağı aynı görünümde sunmak, olmayan bir doğrulama
  * iddiası olurdu.
  *
- * İLK 11 BU MODÜLÜN İŞİ DEĞİL. Resmî kadro `services/officialLineupService.js`
- * üzerinden sağlayıcıdan gelir; burada yalnızca "kadro açıklandı mı"
- * sorusunun sayfada nasıl temsil edileceği tanımlanır.
+ * RESMÎ İLK 11 BU MODÜLÜN İŞİ DEĞİL. Resmî kadro
+ * `services/officialLineupService.js` üzerinden sağlayıcıdan gelir. Buradaki
+ * `probableLineup`, adı ve kaynağı görünür bir editoryal ön izleme olarak
+ * kalır; sağlayıcı onayı olmadan resmî statü kazanamaz.
  */
 
 const LOCALES = ["tr", "en"];
@@ -272,6 +274,41 @@ function validateSpecial(record, fixture) {
     }
   }
 
+  if (record.probableLineup) {
+    const probable = record.probableLineup;
+    if (!text(probable.formation)) errors.push("probableLineup.formation zorunlu");
+    if (!text(probable.source && probable.source.name)) errors.push("probableLineup.source.name zorunlu");
+    for (const field of ["title", "badge", "sourceLabel", "moduleKicker", "promoTitle", "promoSpot"]) {
+      for (const locale of LOCALES) {
+        if (!hasLocale(probable[field], locale)) errors.push(`probableLineup.${field}.${locale} zorunlu`);
+      }
+    }
+    const players = Array.isArray(probable.players) ? probable.players : [];
+    if (players.length !== 11) errors.push(`probableLineup.players tam 11 oyuncu olmalı (${players.length})`);
+    const playerNames = new Set();
+    for (const player of players) {
+      const name = text(player && player.name);
+      if (!name) errors.push("probableLineup oyuncu adı zorunlu");
+      if (playerNames.has(name)) errors.push(`probableLineup oyuncusu yinelenmiş: ${name}`);
+      playerNames.add(name);
+      if (!Number.isInteger(player && player.row) || player.row < 0 || player.row > 4) {
+        errors.push(`probableLineup oyuncu satırı geçersiz: ${name || "(adsız)"}`);
+      }
+      if (!text(player && player.profile && player.profile.tr)) {
+        errors.push(`probableLineup oyuncu profili eksik: ${name || "(adsız)"}`);
+      }
+    }
+    const analysis = Array.isArray(probable.analysis) ? probable.analysis : [];
+    if (!analysis.length) errors.push("probableLineup.analysis zorunlu");
+    for (const section of analysis) {
+      for (const locale of LOCALES) {
+        if (!hasLocale(section.heading, locale) || !hasLocale(section.body, locale)) {
+          errors.push(`probableLineup.analysis ${locale} metni eksik`);
+        }
+      }
+    }
+  }
+
   return { valid: errors.length === 0, errors };
 }
 
@@ -309,6 +346,7 @@ function selectMatchSpecial(sources = {}, options = {}) {
       kicker: record.kicker || null,
       title: record.title,
       lead: record.lead,
+      probableLineup: record.probableLineup || null,
       modules: record.modules,
       fixture: {
         id: text(fixture.id),
@@ -318,6 +356,8 @@ function selectMatchSpecial(sources = {}, options = {}) {
         venue: text(fixture.venue),
         league: text(fixture.league),
         round: fixture.round ?? null,
+        homeTeamLogo: text(fixture.homeTeamLogo),
+        awayTeamLogo: text(fixture.awayTeamLogo),
         status: text(fixture.status) || "SCHEDULED"
       },
       teams: {
@@ -356,6 +396,19 @@ function localizeSpecial(special, locale) {
     kicker: localized(special.kicker, lang),
     title: localized(special.title, lang),
     lead: localized(special.lead, lang),
+    probableLineup: special.probableLineup ? {
+      ...special.probableLineup,
+      title: localized(special.probableLineup.title, lang),
+      badge: localized(special.probableLineup.badge, lang),
+      sourceLabel: localized(special.probableLineup.sourceLabel, lang),
+      moduleKicker: localized(special.probableLineup.moduleKicker, lang),
+      promoTitle: localized(special.probableLineup.promoTitle, lang),
+      promoSpot: localized(special.probableLineup.promoSpot, lang),
+      analysis: (special.probableLineup.analysis || []).map((section) => ({
+        heading: localized(section.heading, lang),
+        body: localized(section.body, lang)
+      }))
+    } : null,
     modules: special.modules.map((module) => ({
       id: text(module.id),
       slug: localized(module.slug, lang),

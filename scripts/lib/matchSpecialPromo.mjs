@@ -92,8 +92,16 @@ export function matchSpecialPromoBlock(entry, options) {
   const meta = [entry.league, entry.round ? `${locale === "en" ? "Week" : "Hafta"} ${entry.round}` : "", entry.venue]
     .filter(Boolean).join(" · ");
 
+  const probable = localized.probableLineup;
+  const probableCard = probable && probable.href ? `<a class="match-special-promo__breaking" href="${escapeHtml(hrefFor(probable.href, locale))}" data-lineup-promo data-match-id="${escapeHtml(entry.matchId)}">
+            <span class="match-special-promo__breaking-badge" data-lineup-promo-badge>${escapeHtml(probable.badge)}</span>
+            <strong data-lineup-promo-title>${escapeHtml(probable.title)}</strong>
+            <span data-lineup-promo-spot>${escapeHtml(probable.spot)}</span>
+          </a>` : "";
+
   return `
 <section class="container section match-special-promo" id="mac-dosyasi" aria-labelledby="match-special-promo-title" role="region" aria-label="${escapeHtml(copy.aria)}">
+          ${probableCard}
           <a class="match-special-promo__hero" href="${escapeHtml(hrefFor(localized.hub, locale))}">
             <span class="match-special-promo__kicker">${escapeHtml(copy.kicker)}</span>
             <span class="match-special-promo__teams">

@@ -14,11 +14,10 @@
  *   • VERİ modülleri — kilit oyuncular, kilit eşleşmeler, form, ilk 11.
  *     İçerik veri katmanından gelir; burada yalnızca çizilir.
  *
- * İLK 11 SAYFASI BOŞ DOĞAR VE İSTEMCİ DOLDURUR. Resmî kadro sağlayıcıdan
- * gelir (`/api/match-lineup`); derleme anında "muhtemel" bir kadro
- * BASILMAZ. Muhtemel 11 uydurmak, sayfanın en kolay yalanı olurdu: okuyucu
- * onu resmî sanır. Sayfa, kadro açıklanana kadar ne bilindiğini ve neyin
- * beklendiğini yazar.
+ * Kaynak gösterilmiş MUHTEMEL 11 editoryal veri olarak çizilebilir; görünür
+ * rozet ve açıklama bunun resmî olmadığını söyler. Resmî kadro yalnızca
+ * `/api/match-lineup` sağlayıcısından gelir ve geldiğinde istemci muhtemel
+ * katmanı kaldırıp gerçek oyuncu, forma numarası, yedek ve dizilişi çizer.
  *
  * ADRESLER: Türkçe `mac-dosyasi/<slug>.html`, İngilizce
  * `en/match-special/<slug>.html`. hreflang çifti `data/en-route-map.json`e
@@ -87,7 +86,7 @@ const STRINGS = {
     editorialNote: "Bu bölüm editoryal yorumdur; sitenin doğrulanmış maç verisinden ayrıdır.",
     squadNote: "Oyuncu listesi güncel kadro verisinden alınır; kadroda olmayan isim gösterilmez.",
     lineupPending: "İlk 11'ler henüz açıklanmadı",
-    lineupPendingBody: "Resmî kadrolar sağlayıcı tarafından yayımlandığı anda bu bölüm kendiliğinden güncellenir ve başlık \"Resmî İlk 11\" olur. Kadro açıklanmadan tahmini bir on bir yayımlanmıyor: okuyucunun onu resmî sanma ihtimali, tahminin değerinden yüksek.",
+    lineupPendingBody: "Resmî kadrolar sağlayıcı tarafından yayımlandığı anda bu bölüm kendiliğinden güncellenir; oyuncular, forma numaraları, yedekler ve diziliş API verisiyle değiştirilir.",
     liveEntry: "Canlı skor merkezi", matchCentre: "Maç merkezi",
     live: "Canlı", finished: "Tamamlandı"
   },
@@ -104,7 +103,7 @@ const STRINGS = {
     editorialNote: "This section is editorial opinion, separate from the site's verified match data.",
     squadNote: "Player lists come from current squad data; a name not in the squad is not shown.",
     lineupPending: "Line-ups have not been announced yet",
-    lineupPendingBody: "This section updates itself the moment the provider publishes the official line-ups, and the heading becomes \"Official XI\". No predicted XI is published beforehand: the chance a reader mistakes it for the official one outweighs its value.",
+    lineupPendingBody: "This section updates itself when the provider publishes the official line-ups; players, shirt numbers, substitutes and formation are replaced with API data.",
     liveEntry: "Live scores", matchCentre: "Match centre",
     live: "Live", finished: "Full time"
   }
@@ -217,6 +216,42 @@ function keyPlayerBlock(team, copy) {
         </section>`;
 }
 
+function probableLineupBlock(special, locale) {
+  const probable = special.probableLineup;
+  if (!probable) return "";
+  const base = baseFor(locale === "en" ? EN_DIR : TR_DIR);
+  const rows = [0, 1, 2, 3, 4].map((rowIndex) => {
+    const players = (probable.players || [])
+      .filter((player) => player.row === rowIndex)
+      .sort((left, right) => (left.order || 0) - (right.order || 0));
+    return `<div class="match-special__pitch-row is-${players.length}">
+              ${players.map((player) => {
+                const profile = player.profile && (player.profile[locale] || player.profile.tr);
+                return `<a class="match-special__pitch-player" href="${escapeHtml(`${base}${profile}`)}">${escapeHtml(player.name)}</a>`;
+              }).join("\n              ")}
+            </div>`;
+  }).join("\n            ");
+  const analysis = (probable.analysis || []).map((section) => `<article class="match-special__probable-analysis-card">
+              <h3>${escapeHtml(section.heading)}</h3>
+              <p>${escapeHtml(section.body)}</p>
+            </article>`).join("\n            ");
+
+  return `<section class="match-special__probable" id="probable-xi" data-probable-lineup>
+          <header class="match-special__probable-head">
+            <span class="match-special__probable-badge">${escapeHtml(probable.badge)}</span>
+            <h2>${escapeHtml(probable.title)}</h2>
+            <p>${escapeHtml(probable.sourceLabel)}</p>
+            <strong>${escapeHtml(locale === "en" ? "Formation" : "Diziliş")} ${escapeHtml(probable.formation)}</strong>
+          </header>
+          <div class="match-special__pitch" role="group" aria-label="${escapeHtml(`${probable.team} ${probable.formation}`)}">
+            ${rows}
+          </div>
+          <div class="match-special__probable-analysis">
+            ${analysis}
+          </div>
+        </section>`;
+}
+
 /**
  * VERİ MODÜLLERİ. Yazılı modüllerle aynı kart yapısını kullanırlar ki
  * hub'daki liste tek biçimli kalsın.
@@ -262,16 +297,16 @@ function dataModules(special, copy, locale) {
     {
       id: "ilk-11",
       slug: locale === "en" ? "line-ups" : "ilk-11",
-      kicker: locale === "en" ? "Line-ups" : "Kadro",
-      title: copy.lineups,
-      summary: locale === "en"
+      kicker: special.probableLineup ? special.probableLineup.moduleKicker : (locale === "en" ? "Line-ups" : "Kadro"),
+      title: special.probableLineup ? special.probableLineup.title : copy.lineups,
+      summary: special.probableLineup ? special.probableLineup.sourceLabel : (locale === "en"
         ? "Updates automatically when the provider publishes the official XIs."
-        : "Resmî kadrolar yayımlandığı anda kendiliğinden güncellenir.",
+        : "Resmî kadrolar yayımlandığı anda kendiliğinden güncellenir."),
       // Başlık kadro açıklandığında "Resmî İlk 11"e döner; kanca burada.
       headingHook: true,
       lineupCard: true,
-      // BOŞ DOĞAR VE İSTEMCİ DOLDURUR — muhtemel on bir basılmaz.
       html: `<section class="match-special__lineups" data-match-lineups data-match-id="${escapeHtml(special.fixture.id)}" data-lineup-locale="${locale}">
+          ${probableLineupBlock(special, locale)}
           <p class="match-special__flag" data-lineup-badge hidden></p>
           <p class="match-special__lineup-status" data-lineup-status>${escapeHtml(copy.lineupPending)}</p>
           <p class="match-special__note" data-lineup-note>${escapeHtml(copy.lineupPendingBody)}</p>
@@ -279,6 +314,13 @@ function dataModules(special, copy, locale) {
         </section>`
     }
   ];
+}
+
+function allModules(special, copy, locale) {
+  const generated = dataModules(special, copy, locale);
+  if (!special.probableLineup) return [...special.modules, ...generated];
+  const lineup = generated.find((module) => module.id === "ilk-11");
+  return [lineup, ...special.modules, ...generated.filter((module) => module.id !== "ilk-11")];
 }
 
 /** Modül kartı — hub'daki tıklanabilir giriş. */
@@ -451,7 +493,7 @@ for (const record of records) {
     }));
 
     const dir = locale === "en" ? EN_DIR : TR_DIR;
-    const modules = [...localized.modules, ...dataModules(localized, STRINGS[locale], locale)];
+    const modules = allModules(localized, STRINGS[locale], locale);
 
     fs.mkdirSync(path.join(root, dir), { recursive: true });
     const targets = [path.join(root, dir)];
@@ -485,8 +527,8 @@ for (const record of records) {
   // inject-hreflang.mjs'te, tek yerde.
   const trLocalized = localizeSpecial(special, "tr");
   const enLocalized = localizeSpecial(special, "en");
-  const trModules = [...trLocalized.modules, ...dataModules(trLocalized, STRINGS.tr, "tr")];
-  const enModules = [...enLocalized.modules, ...dataModules(enLocalized, STRINGS.en, "en")];
+  const trModules = allModules(trLocalized, STRINGS.tr, "tr");
+  const enModules = allModules(enLocalized, STRINGS.en, "en");
 
   pairs.push({ kind: "special", tr: `${TR_DIR}/${trLocalized.slug}.html`, en: `${EN_DIR}/${enLocalized.slug}.html` });
   for (let index = 0; index < trModules.length; index += 1) {
@@ -512,6 +554,12 @@ for (const record of records) {
         title: trLocalized.title,
         lead: trLocalized.lead,
         hub: `${TR_DIR}/${trLocalized.slug}.html`,
+        probableLineup: trLocalized.probableLineup ? {
+          title: trLocalized.probableLineup.promoTitle,
+          spot: trLocalized.probableLineup.promoSpot,
+          badge: trLocalized.probableLineup.badge,
+          href: `${TR_DIR}/${trLocalized.slug}-${trModules.find((module) => module.id === "ilk-11").slug}.html#probable-xi`
+        } : null,
         modules: trModules.map((module) => ({
           id: module.id,
           title: module.title,
@@ -523,6 +571,12 @@ for (const record of records) {
         title: enLocalized.title,
         lead: enLocalized.lead,
         hub: `${EN_DIR}/${enLocalized.slug}.html`,
+        probableLineup: enLocalized.probableLineup ? {
+          title: enLocalized.probableLineup.promoTitle,
+          spot: enLocalized.probableLineup.promoSpot,
+          badge: enLocalized.probableLineup.badge,
+          href: `${EN_DIR}/${enLocalized.slug}-${enModules.find((module) => module.id === "ilk-11").slug}.html#probable-xi`
+        } : null,
         modules: enModules.map((module) => ({
           id: module.id,
           title: module.title,

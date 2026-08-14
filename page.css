@@ -18878,6 +18878,43 @@ a.motm-week__card:focus-visible {
 
 .match-special-promo { display: grid; gap: 14px; }
 
+.match-special-promo__breaking {
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+  height: auto;
+  padding: clamp(16px, 3vw, 24px);
+  overflow: visible;
+  border: 2px solid rgba(222, 34, 34, .72);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(222, 34, 34, .13), rgba(11, 143, 90, .08)), var(--panel);
+  color: inherit;
+  text-decoration: none;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.match-special-promo__breaking:hover,
+.match-special-promo__breaking:focus-visible {
+  transform: translateY(-2px);
+  border-color: #de2222;
+  box-shadow: 0 16px 40px rgba(222, 34, 34, .14);
+}
+
+.match-special-promo__breaking.is-official { border-color: var(--accent); }
+.match-special-promo__breaking-badge {
+  justify-self: start;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #de2222;
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+.match-special-promo__breaking.is-official .match-special-promo__breaking-badge { background: var(--accent); }
+.match-special-promo__breaking strong { font-size: clamp(1.05rem, 2.8vw, 1.55rem); line-height: 1.22; }
+.match-special-promo__breaking > span:last-child { color: var(--muted); font-size: .9rem; line-height: 1.55; }
+
 .match-special-promo__hero {
   display: grid;
   gap: 10px;
@@ -19241,6 +19278,90 @@ a.motm-week__card:focus-visible {
 /* Açıklandı: durum satırı da rozet rengine döner. */
 .match-special__lineup-status.is-announced { color: var(--accent); }
 
+.match-special__probable[hidden] { display: none; }
+.match-special__probable {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  margin-bottom: 20px;
+  overflow: visible;
+}
+.match-special__probable-head { display: grid; gap: 8px; }
+.match-special__probable-head h2 { margin: 0; font-size: clamp(1.15rem, 3vw, 1.65rem); }
+.match-special__probable-head p { margin: 0; color: var(--muted); line-height: 1.5; }
+.match-special__probable-head > strong { color: var(--accent); font-size: .84rem; }
+.match-special__probable-badge {
+  justify-self: start;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: #de2222;
+  color: #fff;
+  font-size: .7rem;
+  font-weight: 900;
+  letter-spacing: .055em;
+}
+.match-special__pitch {
+  display: grid;
+  gap: clamp(15px, 3.6vw, 28px);
+  min-width: 0;
+  min-height: 440px;
+  height: auto;
+  padding: clamp(20px, 4vw, 38px) clamp(10px, 3vw, 28px);
+  overflow: visible;
+  border: 2px solid rgba(255, 255, 255, .52);
+  border-radius: 18px;
+  background: linear-gradient(90deg, transparent 49.7%, rgba(255,255,255,.46) 49.7%, rgba(255,255,255,.46) 50.3%, transparent 50.3%), repeating-linear-gradient(0deg, #137d4c 0, #137d4c 64px, #0f7043 64px, #0f7043 128px);
+  box-shadow: inset 0 0 0 8px rgba(255,255,255,.08);
+}
+.match-special__pitch-row {
+  display: grid;
+  grid-template-columns: repeat(var(--pitch-count, 1), minmax(0, 1fr));
+  align-items: center;
+  gap: clamp(5px, 1.5vw, 14px);
+  min-width: 0;
+}
+.match-special__pitch-row.is-1 { --pitch-count: 1; }
+.match-special__pitch-row.is-2 { --pitch-count: 2; }
+.match-special__pitch-row.is-3 { --pitch-count: 3; }
+.match-special__pitch-row.is-4 { --pitch-count: 4; }
+.match-special__pitch-player {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 40px;
+  padding: 7px 6px;
+  border: 1px solid rgba(255,255,255,.72);
+  border-radius: 12px;
+  background: rgba(9, 34, 24, .88);
+  color: #fff;
+  font-size: clamp(.66rem, 1.8vw, .86rem);
+  font-weight: 800;
+  line-height: 1.15;
+  text-align: center;
+  text-decoration: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.match-special__pitch-player:hover,
+.match-special__pitch-player:focus-visible { background: #fff; color: #0b4d31; }
+.match-special__probable-analysis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.match-special__probable-analysis-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+}
+.match-special__probable-analysis-card h3 { margin: 0 0 7px; font-size: 1rem; }
+.match-special__probable-analysis-card p { margin: 0; color: var(--muted); line-height: 1.55; }
+
 .match-special__lineup-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -19323,6 +19444,10 @@ a.motm-week__card:focus-visible {
   .match-special__teams { grid-template-columns: 1fr; gap: 4px; }
   .match-special__vs { display: none; }
   .match-special-promo__modules { grid-template-columns: 1fr 1fr; }
+  .match-special__probable-analysis { grid-template-columns: 1fr; }
+  .match-special__pitch { min-height: 420px; padding-inline: 6px; gap: 13px; }
+  .match-special__pitch-row { gap: 4px; }
+  .match-special__pitch-player { min-height: 38px; padding-inline: 3px; font-size: clamp(.59rem, 2.65vw, .74rem); }
 }
 
 @media (max-width: 420px) {

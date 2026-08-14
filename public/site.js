@@ -1964,7 +1964,10 @@
         partial: "One side's line-up has been announced",
         confirmed: "Official XI",
         badge: "LINE-UPS ANNOUNCED",
+        homeBadge: "OFFICIAL XI",
         heading: "Official XI",
+        officialPromoTitle: "Galatasaray's Official XI vs Çorum FK Announced",
+        officialPromoSpot: "The probable selection has been replaced with the official line-up published by the data provider. Open the match hub for shirt numbers, formation and substitutes.",
         sidePending: "This side's line-up has not been announced yet",
         starting: "Starting XI",
         substitutes: "Substitutes",
@@ -1981,7 +1984,10 @@
         partial: "Bir takımın ilk 11'i açıklandı",
         confirmed: "Resmî İlk 11",
         badge: "İLK 11'LER AÇIKLANDI",
+        homeBadge: "RESMÎ İLK 11",
         heading: "Resmî İlk 11",
+        officialPromoTitle: "Galatasaray'ın Çorum FK Maçı Resmî İlk 11'i Açıklandı",
+        officialPromoSpot: "Muhtemel kadro kaldırıldı ve veri sağlayıcısının yayımladığı resmî kadroyla değiştirildi. Forma numaraları, diziliş ve yedekler maç merkezinde.",
         sidePending: "Bu takımın kadrosu henüz açıklanmadı",
         starting: "İlk 11",
         substitutes: "Yedekler",
@@ -2147,6 +2153,7 @@
 
   function renderBadges(data, strings) {
     var announced = data.status === "confirmed";
+    var homeOfficial = Boolean(data.confirmed && data.confirmed.home);
     var badges = document.querySelectorAll("[data-lineup-badge]");
     Array.prototype.forEach.call(badges, function (badge) {
       setText(badge, strings.badge);
@@ -2155,10 +2162,15 @@
 
     var cards = document.querySelectorAll("[data-lineup-card]");
     Array.prototype.forEach.call(cards, function (card) {
-      card.classList.toggle("is-announced", announced);
+      card.classList.toggle("is-announced", announced || homeOfficial);
     });
 
-    if (announced) {
+    var probableSections = document.querySelectorAll("[data-probable-lineup]");
+    Array.prototype.forEach.call(probableSections, function (section) {
+      show(section, !homeOfficial);
+    });
+
+    if (announced || homeOfficial) {
       var headings = document.querySelectorAll("[data-lineup-heading]");
       Array.prototype.forEach.call(headings, function (heading) {
         setText(heading, strings.heading);
@@ -2168,6 +2180,14 @@
       if (document.querySelector("h1[data-lineup-heading]")) {
         document.title = document.title.replace(/^[^|]+/, strings.heading + " ");
       }
+    }
+
+    var promo = document.querySelector("[data-lineup-promo]");
+    if (promo && homeOfficial) {
+      promo.classList.add("is-official");
+      setText(promo.querySelector("[data-lineup-promo-badge]"), announced ? strings.badge : strings.homeBadge);
+      setText(promo.querySelector("[data-lineup-promo-title]"), strings.officialPromoTitle);
+      setText(promo.querySelector("[data-lineup-promo-spot]"), strings.officialPromoSpot);
     }
 
     var statusNode = document.querySelector("[data-lineup-status]");
@@ -2196,8 +2216,9 @@
 
   function setupMatchSpecial() {
     var lineupSection = document.querySelector("[data-match-lineups]");
+    var promo = document.querySelector("[data-lineup-promo]");
     var board = document.querySelector("[data-match-special-board]");
-    var host = lineupSection || board;
+    var host = lineupSection || promo || board;
     if (!host || typeof window.fetch !== "function" || window.location.protocol === "file:") return;
 
     var matchId = host.getAttribute("data-match-id");

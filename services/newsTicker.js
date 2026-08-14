@@ -181,7 +181,8 @@ const HEDGE_MARKERS = [
   "değerlendiriliyor",
   "beklendiği",
   "olabileceği",
-  "dönebileceği"
+  "dönebileceği",
+  "muhtemel"
 ];
 
 /**
@@ -429,6 +430,10 @@ function validateTickerItem(item) {
   const url = text(source.url);
   if (!url) errors.push("source.url yok");
   else if (!/^https?:\/\//i.test(url)) errors.push(`source.url http(s) olmalı: ${url}`);
+  const destinationUrl = text(item.destinationUrl);
+  if (destinationUrl && !/^https?:\/\//i.test(destinationUrl)) {
+    errors.push(`destinationUrl http(s) olmalı: ${destinationUrl}`);
+  }
 
   // "RESMÎ AÇIKLAMA" KATEGORİSİ RESMÎ AĞIZ GEREKTİRİR.
   //
@@ -731,7 +736,7 @@ function normalizeTickerItems(payload, options = {}) {
       id: text(entry.id),
       label: categoryLabel(category),
       text: text(entry.text),
-      href: text(entry.source.url),
+      href: text(entry.destinationUrl) || text(entry.source.url),
       at: text(entry.timestamp),
       updatedAt: text(entry.updatedAt) || text(entry.timestamp),
       expiresAt: text(entry.expiresAt) || null,

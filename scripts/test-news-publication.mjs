@@ -149,6 +149,20 @@ for (const entry of ticker.items || []) {
     continue;
   }
 
+  if (entry.destinationUrl) {
+    assert.match(entry.source?.url || "", /^https:\/\//, `${entry.id}: editoryal kaynağın https bağlantısı olmalı`);
+    assert.match(
+      entry.destinationUrl,
+      /^https:\/\/www\.futbolradar\.com\/(mac-dosyasi|en\/match-special)\//,
+      `${entry.id}: özel bant hedefi maç dosyası olmalı`
+    );
+    const relative = entry.destinationUrl
+      .replace(/^https:\/\/www\.futbolradar\.com\//, "")
+      .split("#")[0];
+    assert.ok(fs.existsSync(path.join(root, relative)), `${entry.id}: bant hedefi diskte yok (${relative})`);
+    continue;
+  }
+
   if (OFFICIAL_SOURCE_TICKER_IDS.has(entry.id)) continue;
   assert.match(entry.source.url, /^https:\/\/www\.futbolradar\.com\/haber\//, `${entry.id}: bant ogesi ic haber sayfasina baglanmali`);
 }

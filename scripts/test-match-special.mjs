@@ -294,17 +294,12 @@ console.log("match-special");
   }
 }
 
-// ── 12. İLK 11 SAYFASI TAHMİNİ KADRO BASMAZ ──────────────────────────────
-//
-// Bu sayfanın tek işi: kadro açıklanana kadar hiçbir oyuncu adı vermemek.
-// Derleme anında bir "muhtemel 11" basılırsa okuyucu onu resmî sanar.
+// ── 12. KAYNAKLI MUHTEMEL 11, RESMÎ KADRODAN AYRI ───────────────────────
 {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "data", "match-special-pages.json"), "utf8"));
-  const squads = Array.isArray(sources.squads) ? sources.squads : Object.values(sources.squads);
-  const names = squads
-    .filter((team) => sameTeam(team.teamName, "Galatasaray") || sameTeam(team.teamName, "Çorum FK"))
-    .flatMap((team) => (team.players || []).map((player) => player.name));
-  assert.ok(names.length > 20, "kadro verisi okunmalı");
+  const special = sources.specials.specials.find((row) => row.matchId === "galatasaray-corum-fk-2026-08-14");
+  const probable = special && special.probableLineup;
+  assert.equal(probable.players.length, 11, "muhtemel kadro tam 11 oyuncu olmalı");
 
   for (const entry of manifest) {
     for (const locale of ["tr", "en"]) {
@@ -314,11 +309,22 @@ console.log("match-special");
 
       assert.match(html, /data-match-lineups/, "istemci kancası olmalı");
       assert.match(html, /data-lineup-grid[^>]*hidden/, "ızgara kapalı doğmalı");
-      for (const name of names) {
-        assert.ok(!html.includes(name), `ilk 11 sayfası derleme anında "${name}" adını basmamalı`);
+      assert.match(html, /data-probable-lineup/, `${locale}: muhtemel kadro katmanı olmalı`);
+      assert.ok(html.includes(locale === "tr" ? "MUHTEMEL 11 — RESMÎ DEĞİL" : "PROBABLE XI — NOT OFFICIAL"));
+      assert.ok(html.includes(locale === "tr" ? "A Spor&#039;un maç öncesi canlı yayınında aktardığı muhtemel 11" : "A Spor&#039;s live pre-match broadcast"));
+      for (const player of probable.players) {
+        assert.ok(html.includes(player.name), `${locale}: ${player.name} görünmeli`);
+        const profile = player.profile[locale] || player.profile.tr;
+        assert.ok(fs.existsSync(path.join(root, profile)), `${locale}: ${player.name} profil hedefi yok (${profile})`);
       }
+      assert.match(html, /match-special__pitch-row is-4/, `${locale}: dörtlü savunma satırı yok`);
+      assert.match(html, /match-special__probable-analysis/, `${locale}: taktik analiz yok`);
     }
   }
+
+  const client = fs.readFileSync(path.join(root, "site.js"), "utf8");
+  assert.match(client, /data\.confirmed && data\.confirmed\.home/, "resmî ev sahibi kadrosu kontrol edilmeli");
+  assert.match(client, /show\(section, !homeOfficial\)/, "resmî kadro gelince muhtemel katman gizlenmeli");
 }
 
 // ── 13. ANA SAYFA KUTUSU: PENCERE VE BAĞLANTILAR ─────────────────────────
@@ -346,12 +352,14 @@ console.log("match-special");
 
     const hrefs = [...block.matchAll(/href="([^"]+)"/g)].map((row) => row[1]);
     assert.ok(hrefs.length > 1, `${locale}: kutuda bağlantı yok`);
-    assert.ok(hrefs.length <= PROMO_MODULE_LIMIT + 1, `${locale}: kutuda modül sınırı aşıldı`);
+    assert.ok(hrefs.length <= PROMO_MODULE_LIMIT + 2, `${locale}: kutuda modül sınırı aşıldı`);
+    assert.match(block, /match-special-promo__breaking/, `${locale}: ana sayfa muhtemel 11 kartı yok`);
+    assert.match(block, /data-lineup-promo/, `${locale}: ana sayfa kartı API kancasını taşımıyor`);
 
     // Ana sayfaya göre çözülen her adres diskte GERÇEKTEN var olmalı.
     const homeDir = locale === "en" ? path.join(root, "en") : root;
     for (const href of hrefs) {
-      assert.ok(fs.existsSync(path.resolve(homeDir, href)), `${locale}: ${href} hedefi yok`);
+      assert.ok(fs.existsSync(path.resolve(homeDir, href.split("#")[0])), `${locale}: ${href} hedefi yok`);
     }
   }
 
