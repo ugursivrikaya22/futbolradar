@@ -61,6 +61,20 @@ const SERVICE_KEY_ENV_NAMES = [
 /** IP karması için gizli tuz. Yoksa IP katmanı çalışmaz (gerekçe yukarıda). */
 const IP_SALT_ENV_NAMES = ["HOME_POLL_IP_SALT", "SUPABASE_IP_SALT"];
 
+/**
+ * ANON ANAHTARI KABUL EDİLMEZ — VE BU BİR TERCİH DEĞİL, ŞEMANIN SONUCU.
+ *
+ * Tabloda RLS açık ve hiçbir politika tanımlı değil; `anon` rolü ne okuyabilir
+ * ne yazabilir (yerel Postgres'te doğrulandı: okuma 0 satır, yazma "new row
+ * violates row-level security policy"). Anon anahtarını kabul etmek, her oyun
+ * çalışma zamanında sessizce reddedilmesi demek olurdu.
+ *
+ * Bu adlar yine de TANINIYOR — kabul etmek için değil, TEŞHİS için: yalnızca
+ * anon anahtarı tanımlanmışsa uç nokta "yapılandırılmamış" demek yerine
+ * sorunun ne olduğunu söyleyebiliyor.
+ */
+const ANON_KEY_ENV_NAMES = ["SUPABASE_ANON_KEY", "NEXT_PUBLIC_SUPABASE_ANON_KEY"];
+
 const TABLE = "home_poll_votes";
 
 /** Tek istek için üst sınır; ağ takılırsa uç nokta asılı kalmasın. */
@@ -86,9 +100,53 @@ function ipSalt() {
   return firstEnv(IP_SALT_ENV_NAMES);
 }
 
+/**
+ * Supabase anahtarları JWT'dir ve yük kısmında bir `role` iddiası taşır
+ * ("anon" ya da "service_role"). Yalnızca BU iddia okunur — imza
+ * doğrulanmaz, çünkü amaç güvenlik kararı vermek değil, operatöre yanlış
+ * anahtarı yapıştırdığını söylemek.
+ */
+function keyRole(token) {
+  const parts = String(token || "").split(".");
+  if (parts.length !== 3) return "";
+  try {
+    const payload = JSON.parse(Buffer.from(parts[1], "base64").toString("utf8"));
+    return String(payload && payload.role ? payload.role : "").trim();
+  } catch (error) {
+    return "";
+  }
+}
+
 /** Depo yapılandırılmış mı? Değilse özellik kapalıdır. */
 function isConfigured() {
   return Boolean(restUrl() && serviceKey());
+}
+
+/**
+ * NEDEN YAPILANDIRILMAMIŞ? — operatöre dönen teşhis.
+ *
+ * Genel bir "yapılandırılmamış" mesajı, yanlış İSİM ile yanlış ANAHTAR
+ * TÜRÜNÜ ayırt etmiyordu ve ikisi de aynı sessiz boşluğa çıkıyordu. Dönen
+ * dize yalnızca DURUMU anlatır; anahtarın kendisi hiçbir koşulda yazılmaz.
+ */
+function configurationHint() {
+  const url = restUrl();
+  const key = serviceKey();
+  const anon = firstEnv(ANON_KEY_ENV_NAMES);
+
+  if (url && key) {
+    // Servis değişkenine ANON anahtarı yapıştırılmış olabilir: bu durumda
+    // isConfigured() true döner ama her istek RLS'e takılır.
+    return keyRole(key) === "anon"
+      ? "servis anahtari yerine anon anahtari tanimli; RLS anon rolune izin vermiyor, service_role gerekiyor"
+      : "";
+  }
+  if (!url && !key && !anon) return "SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY tanimli degil";
+  if (!url) return "SUPABASE_URL tanimli degil";
+  if (anon && !key) {
+    return "yalnizca SUPABASE_ANON_KEY tanimli; RLS anon rolune izin vermiyor, SUPABASE_SERVICE_ROLE_KEY gerekiyor";
+  }
+  return "SUPABASE_SERVICE_ROLE_KEY tanimli degil";
 }
 
 /**
@@ -190,12 +248,15 @@ async function findVote(pollId, voterKey) {
 }
 
 module.exports = {
+  ANON_KEY_ENV_NAMES,
   IP_SALT_ENV_NAMES,
   REST_URL_ENV_NAMES,
   SERVICE_KEY_ENV_NAMES,
   TABLE,
+  configurationHint,
   findVote,
   isConfigured,
+  keyRole,
   readTally,
   recordVote,
   voterKeyFor

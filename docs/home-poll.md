@@ -140,6 +140,33 @@ Ortam değişkenleri:
 | `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Servis anahtarı (yalnızca sunucuda) |
 | `HOME_POLL_IP_SALT` | ➖ | IP karması için gizli tuz; yoksa IP katmanı kapalı |
 
+### `anon` anahtarı çalışmaz — ve bu şemanın sonucu
+
+Tabloda RLS açık ve **hiçbir politika tanımlı değil**, dolayısıyla `anon`
+rolü ne okuyabilir ne yazabilir. `SUPABASE_ANON_KEY` tanımlamak özelliği
+açmaz: her sayım okuması 0 satır döner, her oy `new row violates row-level
+security policy` ile reddedilirdi.
+
+Uç nokta bunu **açıkça söyler**. `/api/home-poll` yanıtındaki
+`meta.configuration` alanı kurulum sorununu adlandırır:
+
+| Durum | `meta.configuration` |
+|---|---|
+| Hiçbiri yok | `SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY tanimli degil` |
+| Yalnızca anon anahtarı | `yalnizca SUPABASE_ANON_KEY tanimli; RLS anon rolune izin vermiyor, SUPABASE_SERVICE_ROLE_KEY gerekiyor` |
+| Servis alanına anon anahtarı yapıştırılmış | `servis anahtari yerine anon anahtari tanimli; …` |
+| Doğru kurulum | *(boş)* |
+
+Son satır önemli: anon anahtarı **servis değişkenine** yapıştırılırsa
+`isConfigured()` true döner ve hata çalışma zamanına kayar. Teşhis anahtarın
+JWT `role` iddiasını okuyarak bunu da yakalar — imza doğrulanmaz, amaç
+güvenlik kararı değil operatöre doğru anahtarı göstermek. Anahtarın kendisi
+hiçbir koşulda yanıta yazılmaz.
+
+`service_role` anahtarı Supabase panelinde **Project Settings → API →
+Service Role / `service_role` secret** altındadır ve yalnızca sunucuda
+durmalıdır.
+
 Depo yapılandırılmamışsa anket **görünür ama oy alınmaz** (`storage:
 "unavailable"`): soru statik veriden geliyor, sayım ise gerçek bir depodan
 gelmek zorunda. Sıfır oyu "%0" diye göstermek de bir iddiadır.
