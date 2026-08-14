@@ -19,6 +19,7 @@ const require = createRequire(import.meta.url);
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { mergeSuperLigTeams } = require("../services/superLigTeams.js");
 const { publishedColumns } = require("../services/columnService.js");
+const { ROUTES: I18N_ROUTES, routeMeta } = require("../services/i18n.js");
 
 function readJson(file) {
   try {
@@ -41,26 +42,31 @@ function asArray(payload, ...keys) {
 }
 
 /**
- * İNGİLİZCE SAYFALAR DA DİZİNDE.
+ * İNGİLİZCE SAYFALAR DA DİZİNDE — LİSTE ROTA EŞLEMESİNDEN TÜRER.
  *
  * Dizin yalnızca Türkçe sayfaları taşıyordu ve İngilizce başlıkta arama
  * kutusu bu yüzden hiç açılmıyordu. Kutu artık iki dilde de var (layout.mjs),
  * dolayısıyla İngilizce sayfaların da aranabilir olması gerekiyor — yoksa
  * İngilizce okuyucu kendi dilindeki sayfayı arayıp bulamazdı.
  *
- * Liste dar ve ELLE tutulur, çünkü İngilizce yüzey dar: üretilen İngilizce
- * sayfaların tamamını (maç/oyuncu/takım) dizine eklemek indirilen dosyayı
- * birkaç katına çıkarırdı ve o sayfalara zaten Türkçe karşılıklarından
- * hreflang ile ulaşılıyor.
+ * Liste ELLE TUTULMUYOR: `services/i18n.js` içindeki rota eşlemesinden
+ * okunuyor. Elle tutulan bir kopya, ileride eklenen her İngilizce rotanın
+ * aranamaz kalması demekti — nitekim rota sayısı 6'dan 17'ye çıktığında
+ * kopya bir anda eskimişti.
+ *
+ * Üretilen İngilizce alt sayfalar (maç/oyuncu/takım detayları) dizine
+ * girmez: dosyayı birkaç katına çıkarırlardı ve o sayfalara zaten Türkçe
+ * karşılıklarından hreflang ile ulaşılıyor.
  */
-const EN_PAGES = [
-  { href: "en/index.html", title: "FutbolRadar in English", subtitle: "Turkish football in English" },
-  { href: "en/todays-matches.html", title: "Today's Matches", subtitle: "Fixtures for today" },
-  { href: "en/live-scores.html", title: "Live Scores", subtitle: "Live and finished matches" },
-  { href: "en/standings.html", title: "Standings", subtitle: "Trendyol Süper Lig table" },
-  { href: "en/analysis.html", title: "Analysis", subtitle: "Match results and analysis" },
-  { href: "en/teams.html", title: "Teams", subtitle: "Süper Lig club profiles" }
-];
+const EN_PAGES = I18N_ROUTES.map((route) => {
+  const meta = routeMeta(route.key, "en");
+  return {
+    href: route.en,
+    // Başlıktaki " | FutbolRadar" kuyruğu sonuç satırında gereksiz gürültü.
+    title: String(meta.title || "").split(" | ")[0],
+    subtitle: String(meta.description || "").split(". ")[0]
+  };
+});
 
 const EXTRA_PAGES = [
   { href: "index.html", title: "Ana Sayfa", subtitle: "Canlı skor ve maç merkezi" },

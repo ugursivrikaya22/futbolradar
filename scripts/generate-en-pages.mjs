@@ -74,6 +74,9 @@ const { fixtureTeamNames } = require("../services/superLigTeams.js");
 // "Başlangıçta kaç kart görünür?" sayısı TEK yerde durur; Türkçe ön derleme,
 // istemci ve bu üretici aynı sabiti okur (bkz. services/matchListWindow.js).
 const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
+// Fikstür haftaları Türkçe yüzeyle AYNI servisten gelir: hafta sınırlarını
+// burada yeniden hesaplamak, iki dilde farklı bir fikstür göstermek olurdu.
+const { getFixtureWeeks } = require("../services/superLigFixtureService.js");
 
 const root = process.cwd();
 const OUT_DIR = path.join(root, "en");
@@ -1313,13 +1316,497 @@ ${sectionLinks()}`;
   });
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   MENÜDEKİ HER TÜRKÇE YÜZEYİN İNGİLİZCE KARŞILIĞI
+   ──────────────────────────────────────────────────────────────────────────
+   İngilizce menü bir aşama önce eksik sayfalara Türkçe hedefle bağlanıyordu.
+   Aşağıdaki üreticiler o boşluğu kapatır.
+
+   İKİ TÜR SAYFA VAR VE AYRIMI ÖNEMLİ:
+
+     • VERİ SAYFALARI (sonuçlar, fikstür, momentum, gol krallığı, oyuncu
+       radarı, transfer radarı, arşiv) — içeriği sayı ve yapısal alan.
+       Bunlar tam anlamıyla İngilizce üretilir; çeviri sorunu yoktur.
+
+     • METİN SAYFALARI (köşe yazıları, haberler) — içeriği Türkçe SERBEST
+       METİN. Başlıklar ÇEVRİLMEZ: makine çevirisi yapmıyoruz ve bir yazarın
+       cümlesini uydurma bir İngilizceyle sunmak, yazıyı yanlış aktarmak
+       olurdu. Bunun yerine sayfanın ÇERÇEVESİ İngilizce, yazının kendi
+       başlığı `lang="tr"` ile kaynak dilinde ve bağlantı Türkçe metne
+       `hreflang="tr"` ile gider. Kural yeni değil: ana sayfadaki köşe yazısı
+       ve haber bölümleri (columnsSection/newsSection) zaten böyle çalışıyor.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/** Türkçe yüzeye giden bağlantı: hedefin dili okuyucuya söylenir. */
+function trLink(href, text) {
+  return `<a class="detail-link" href="${escapeHtml(`${BASE}${href}`)}" hreflang="tr" lang="tr">${escapeHtml(text)} (TR)</a>`;
+}
+
+function resultsPage() {
+  // Sonuç listesi maç analiziyle aynı kaynaktan ama daha uzun: bu sayfanın
+  // KONUSU sonuçlar, analiz sayfasının konusu ise dökümler.
+  const results = finishedMatches(40);
+  const body = `      <section class="data-panel" aria-labelledby="en-results-title">
+        <h2 class="panel-title" id="en-results-title">Verified final scores</h2>
+        ${matchList(results, "common.noData")}
+        <p class="muted-copy">A match appears here only once its final score is confirmed by the data provider. Nothing is shown as finished on an estimate.</p>
+      </section>
+${sectionLinks()}`;
+
+  return pageShell({
+    routeKey: "results",
+    trPath: "mac-sonuclari.html",
+    enPath: "en/results.html",
+    heroKicker: "Results",
+    heroTitle: "Turkish Football Results",
+    heroLead: "Confirmed final scores from the Trendyol Süper Lig and Turkish clubs in European competitions.",
+    heroMeta: `${results.length} matches`,
+    body,
+    schema: schemaFor("results", "en/results.html", "CollectionPage")
+  });
+}
+
+function fixturesPage() {
+  const weeks = getFixtureWeeks(readJson("super-lig-fixtures.json", {}));
+  // Hafta etiketi Türkçe veride "1. Hafta" biçiminde; İngilizce sayfada
+  // hafta NUMARASINDAN kurulur, Türkçe etiket basılmaz.
+  const blocks = weeks.map((week) => {
+    const rows = (week.matches || []).map((match) => `<tr>
+              <th scope="row">${escapeHtml(match.homeTeam || "")} – ${escapeHtml(match.awayTeam || "")}</th>
+              <td>${escapeHtml(match.kickoff ? formatDate(match.kickoff, LOCALE) : "—")}</td>
+              <td>${escapeHtml(match.kickoff ? formatTime(match.kickoff, LOCALE) : "—")}</td>
+            </tr>`).join("");
+    if (!rows) return "";
+    return `<section class="data-panel" aria-labelledby="week-${week.round}-title">
+        <h2 class="panel-title" id="week-${week.round}-title">Week ${escapeHtml(week.round)}</h2>
+        <div class="standings-table-wrap"><table class="en-table">
+          <thead><tr><th scope="col">Match</th><th scope="col">Date</th><th scope="col">Kick-off</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>
+      </section>`;
+  }).filter(Boolean).join("\n");
+
+  const body = `${blocks || `      <section class="data-panel"><p class="muted-copy">${escapeHtml(label("common.noData"))}</p></section>`}
+${sectionLinks()}`;
+
+  return pageShell({
+    routeKey: "fixtures",
+    trPath: "super-lig-fikstur.html",
+    enPath: "en/fixtures.html",
+    heroKicker: "Fixtures",
+    heroTitle: "Turkish Süper Lig Fixtures",
+    heroLead: "The full Trendyol Süper Lig fixture list, week by week, with kick-off times in Türkiye time.",
+    heroMeta: `${weeks.length} weeks`,
+    body,
+    schema: schemaFor("fixtures", "en/fixtures.html", "CollectionPage")
+  });
+}
+
+function matchCentrePage() {
+  const screens = [
+    { href: "./todays-matches.html", kicker: "Fixtures", title: "Today's Matches", copy: "Every match scheduled for today with kick-off times." },
+    { href: "./live-scores.html", kicker: "Live", title: "Live Scores", copy: "Scores and match states, never shown as live without verification." },
+    { href: "./results.html", kicker: "Results", title: "Match Results", copy: "Confirmed final scores from Turkish football." },
+    { href: "./analysis.html", kicker: "Analysis", title: "Match Analysis", copy: "Statistical breakdowns of played matches." },
+    { href: "./fixtures.html", kicker: "Season", title: "Süper Lig Fixtures", copy: "The full league fixture list, week by week." },
+    { href: "./standings.html", kicker: "Table", title: "Standings", copy: "The full Trendyol Süper Lig table." }
+  ];
+  const cards = screens.map((screen) => `<article class="card">
+            <span class="card-kicker">${escapeHtml(screen.kicker)}</span>
+            <h3>${escapeHtml(screen.title)}</h3>
+            <p>${escapeHtml(screen.copy)}</p>
+            <a class="detail-link" href="${escapeHtml(screen.href)}">Open</a>
+          </article>`).join("");
+
+  const body = `      <section class="data-panel" aria-labelledby="en-centre-title">
+        <h2 class="panel-title" id="en-centre-title">Every match screen</h2>
+        <div class="grid">${cards}</div>
+      </section>
+      <section class="data-panel" aria-labelledby="en-centre-today-title">
+        <h2 class="panel-title" id="en-centre-today-title">${escapeHtml(todayLabel)}</h2>
+        ${matchList(todaysMatches.slice(0, MATCH_LIST_INITIAL), "common.noMatchesToday")}
+      </section>`;
+
+  return pageShell({
+    routeKey: "matchCentre",
+    trPath: "mac-merkezi.html",
+    enPath: "en/match-centre.html",
+    heroKicker: "Match Centre",
+    heroTitle: "Turkish Football Match Centre",
+    heroLead: "Live scores, today's fixtures, verified results and analysis — every match screen in one place.",
+    heroMeta: todayLabel,
+    body,
+    schema: schemaFor("matchCentre", "en/match-centre.html", "CollectionPage")
+  });
+}
+
+/**
+ * Oyuncu kartları için ortak süzgeç — TÜRKÇE YÜZEYLE AYNI SERVİS.
+ *
+ * `filterPlayerCards` yayımlanamaz kayıtları eler, `publicPlayerView` ise
+ * hangi ALANIN yayımlanabileceğine karar verir. İkisini atlayıp ham kayıttan
+ * okumak, Türkçe tarafta gizlenen bir metriği İngilizce tarafta doğrulanmış
+ * gibi göstermek olurdu.
+ *
+ * Dönen satırlar yalnızca `view.fields` taşır: kasıtlı gizlenmiş bir alan
+ * burada YOKTUR ve çağıran ona "—" basar, sıfır basmaz.
+ */
+function verifiedPlayerCards() {
+  const { kept } = filterPlayerCards(players, { leagueTeams: fixtureTeamNames() });
+  return kept.map((player) => {
+    const view = publicPlayerView(player);
+    const fields = view.fields || {};
+    return {
+      name: fields.name || fields.fullName || "",
+      team: fields.currentTeam || fields.team || "",
+      position: fields.position || "",
+      rating: fields.overallRating ?? fields.aiRating ?? fields.rating,
+      goals: fields.goals,
+      assists: fields.assists,
+      marketValueEur: fields.marketValueEur,
+      verified: view.verified
+    };
+  }).filter((row) => row.name);
+}
+
+/** Gizlenmiş alan sıfırla doldurulmaz: yokluğu açıkça gösterilir. */
+function statCell(value) {
+  return value === null || value === undefined || String(value).trim() === "" ? "—" : String(value);
+}
+
+function playerRadarPage() {
+  const roster = verifiedPlayerCards();
+  const cards = roster
+    .slice()
+    .sort((left, right) => Number(right.rating || 0) - Number(left.rating || 0))
+    .slice(0, 40)
+    .map((player) => `<article class="player-card">
+            <header><div><h3>${escapeHtml(player.name)}</h3>
+            <span>${escapeHtml([player.team, player.position].filter(Boolean).join(" · ") || "Player profile")}</span></div>
+            <strong class="momentum-number">${escapeHtml(statCell(player.rating))}</strong></header>
+            <div class="metric-grid compact">
+              <span>Goals <b>${escapeHtml(statCell(player.goals))}</b></span>
+              <span>Assists <b>${escapeHtml(statCell(player.assists))}</b></span>
+              ${player.marketValueEur !== undefined ? `<span>Value <b>${escapeHtml(formatMarketValueEur(player.marketValueEur))}</b></span>` : ""}
+            </div>
+          </article>`).join("");
+
+  const body = `      <section class="grid two" aria-label="Süper Lig players">
+${cards || `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}
+      </section>
+      <section class="data-panel"><p class="muted-copy">A metric that has been deliberately withheld is shown as “—” rather than zero: an unmeasured value must not read as a measured one.</p></section>
+${sectionLinks()}`;
+
+  return pageShell({
+    routeKey: "playerRadar",
+    trPath: "oyuncu-radari.html",
+    enPath: "en/player-radar.html",
+    heroKicker: "Players",
+    heroTitle: "Turkish Süper Lig Player Radar",
+    heroLead: "Süper Lig players ranked by rating, goal contribution and market value. Only verified records appear.",
+    heroMeta: `${roster.length} players`,
+    body,
+    schema: schemaFor("playerRadar", "en/player-radar.html", "CollectionPage")
+  });
+}
+
+function topScorersPage() {
+  const scorers = verifiedPlayerCards()
+    .filter((player) => Number(player.goals || 0) > 0)
+    .sort((left, right) => Number(right.goals || 0) - Number(left.goals || 0) ||
+      Number(right.assists || 0) - Number(left.assists || 0));
+
+  const rows = scorers.map((player, index) => `<tr>
+              <td>${index + 1}</td>
+              <th scope="row">${escapeHtml(player.name)}</th>
+              <td>${escapeHtml(statCell(player.team))}</td>
+              <td><b>${escapeHtml(statCell(player.goals))}</b></td>
+              <td>${escapeHtml(statCell(player.assists))}</td>
+            </tr>`).join("");
+
+  const body = `      <section class="data-panel" aria-labelledby="en-scorers-title">
+        <h2 class="panel-title" id="en-scorers-title">Scoring charts</h2>
+        ${rows
+          ? `<div class="standings-table-wrap"><table class="en-table">
+          <thead><tr><th scope="col">#</th><th scope="col">Player</th><th scope="col">Club</th><th scope="col">Goals</th><th scope="col">Assists</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>`
+          : `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}
+        <p class="muted-copy">A club is shown only where the player record is verified; an unverified club claim is left blank rather than guessed.</p>
+      </section>
+${sectionLinks()}`;
+
+  return pageShell({
+    routeKey: "topScorers",
+    trPath: "gol-kralligi.html",
+    enPath: "en/top-scorers.html",
+    heroKicker: "Goals",
+    heroTitle: "Turkish Süper Lig Top Scorers",
+    heroLead: "Goals and assists for every player with a verified record this season.",
+    heroMeta: `${scorers.length} scorers`,
+    body,
+    schema: schemaFor("topScorers", "en/top-scorers.html", "CollectionPage")
+  });
+}
+
+function momentumPage() {
+  const rows = sortedStandings()
+    .slice()
+    .sort((left, right) => Number(right.momentum || 0) - Number(left.momentum || 0));
+
+  const cards = rows.map((team) => `<article class="team-card">
+            <header><div><h3>${escapeHtml(team.name || "")}</h3><span>Trendyol Süper Lig</span></div>
+            <strong class="momentum-number">${escapeHtml(team.momentum ?? "–")}</strong></header>
+            ${formDots(team)}
+            <div class="metric-grid compact">
+              <span>Attack <b>${escapeHtml(team.attack ?? "–")}</b></span>
+              <span>Defence <b>${escapeHtml(team.defense ?? "–")}</b></span>
+              <span>Form score <b>${escapeHtml(team.formScore ?? "–")}</b></span>
+            </div>
+          </article>`).join("");
+
+  const body = `      <section class="grid two" aria-label="Team momentum">
+${cards || `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}
+      </section>
+${sectionLinks()}`;
+
+  return pageShell({
+    routeKey: "momentum",
+    trPath: "momentum.html",
+    enPath: "en/momentum.html",
+    heroKicker: "Form",
+    heroTitle: "Turkish Süper Lig Team Momentum",
+    heroLead: "Which clubs are trending up and which are falling away, measured from recent form, attack and defence signals.",
+    heroMeta: `${rows.length} clubs`,
+    body,
+    schema: schemaFor("momentum", "en/momentum.html", "CollectionPage")
+  });
+}
+
+function transferRadarPage() {
+  const doc = readJson("transfers.json", {});
+  const rows = (Array.isArray(doc) ? doc : (doc.transfers || []))
+    .filter((row) => String(row.status || "").toLowerCase() === "confirmed")
+    .filter((row) => row.playerName && row.toTeam)
+    .sort((left, right) => String(right.date || "").localeCompare(String(left.date || "")));
+
+  const table = rows.map((row) => `<tr>
+              <th scope="row">${escapeHtml(row.playerName || "")}</th>
+              <td>${escapeHtml(clubLabelEn(row.fromTeam) || "—")}</td>
+              <td>${escapeHtml(clubLabelEn(row.toTeam) || "—")}</td>
+              <td>${escapeHtml(transferTypeEn(row.type) || label("transfer.fallbackType"))}</td>
+              <td>${escapeHtml(row.date ? formatDate(row.date, LOCALE) : "—")}</td>
+            </tr>`).join("");
+
+  const body = `      <section class="data-panel" aria-labelledby="en-transfers-title">
+        <h2 class="panel-title" id="en-transfers-title">Confirmed transfers</h2>
+        ${table
+          ? `<div class="standings-table-wrap"><table class="en-table">
+          <thead><tr><th scope="col">Player</th><th scope="col">From</th><th scope="col">To</th><th scope="col">Type</th><th scope="col">Date</th></tr></thead>
+          <tbody>${table}</tbody>
+        </table></div>`
+          : `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}
+        <p class="muted-copy">Only moves confirmed through an official club or federation statement are listed. Rumours are never promoted to this table.</p>
+      </section>
+${sectionLinks()}`;
+
+  return pageShell({
+    routeKey: "transferRadar",
+    trPath: "transfer-radari.html",
+    enPath: "en/transfer-radar.html",
+    heroKicker: "Transfers",
+    heroTitle: "Turkish Süper Lig Transfer Radar",
+    heroLead: "Verified transfers in and out of Turkish clubs, each carrying the source it was confirmed against.",
+    heroMeta: `${rows.length} confirmed moves`,
+    body,
+    schema: schemaFor("transferRadar", "en/transfer-radar.html", "CollectionPage")
+  });
+}
+
+function statsHubPage() {
+  // İngilizce karşılığı OLAN ekranlar İngilizce sürüme; olmayan iki ekran
+  // (oyuncu kıyaslama, takım trendleri) Türkçe sürüme işaretli bağlanır.
+  const screens = [
+    { href: "./player-radar.html", kicker: "Players", title: "Player Radar", copy: "Süper Lig players by rating, goals and market value." },
+    { href: "./top-scorers.html", kicker: "Goals", title: "Top Scorers", copy: "The scoring charts, goals and assists." },
+    { href: "./momentum.html", kicker: "Form", title: "Team Momentum", copy: "Which clubs are trending up and which are falling away." },
+    { href: "./standings.html", kicker: "Table", title: "Standings", copy: "The full Trendyol Süper Lig table." },
+    { href: "./teams.html", kicker: "Clubs", title: "Teams", copy: "All 18 clubs with position and form." },
+    { href: "./transfer-radar.html", kicker: "Transfers", title: "Transfer Radar", copy: "Confirmed moves with their sources." }
+  ];
+  const cards = screens.map((screen) => `<article class="card">
+            <span class="card-kicker">${escapeHtml(screen.kicker)}</span>
+            <h3>${escapeHtml(screen.title)}</h3>
+            <p>${escapeHtml(screen.copy)}</p>
+            <a class="detail-link" href="${escapeHtml(screen.href)}">Open</a>
+          </article>`).join("");
+
+  const body = `      <section class="data-panel" aria-labelledby="en-stats-title">
+        <h2 class="panel-title" id="en-stats-title">Statistics screens</h2>
+        <div class="grid">${cards}</div>
+      </section>
+      <section class="data-panel" aria-labelledby="en-stats-tr-title">
+        <h2 class="panel-title" id="en-stats-tr-title">Published in Turkish only</h2>
+        <div class="grid">
+          <article class="card"><span class="card-kicker">Compare</span><h3>Player comparisons</h3>
+            <p>Two players side by side across rating, goals and market value.</p>
+            ${trLink("oyuncu-karsilastirmalari.html", "Open the comparison tool")}</article>
+          <article class="card"><span class="card-kicker">Trends</span><h3>Team trends</h3>
+            <p>Longer-run club form and goal trends.</p>
+            ${trLink("takim-trendleri.html", "Open team trends")}</article>
+        </div>
+        <p class="muted-copy">These two screens are table-driven and usable in any language, but their labels are published in Turkish; the links say so before you click.</p>
+      </section>`;
+
+  return pageShell({
+    routeKey: "statsHub",
+    trPath: "istatistik-merkezi.html",
+    enPath: "en/stats-hub.html",
+    heroKicker: "Statistics",
+    heroTitle: "Turkish Football Statistics Hub",
+    heroLead: "Player leaders, team trends, momentum and comparisons — every statistics screen in one place.",
+    heroMeta: `${screens.length} screens`,
+    body,
+    schema: schemaFor("statsHub", "en/stats-hub.html", "CollectionPage")
+  });
+}
+
+function archivePage() {
+  const doc = readJson("season-archive.json", {});
+  const seasons = Object.values(doc.seasons || {})
+    .sort((left, right) => String(right.season || "").localeCompare(String(left.season || "")));
+
+  const cards = seasons.map((season) => `<article class="card">
+            <span class="card-kicker">Season</span>
+            <h3>${escapeHtml(season.season || "")}</h3>
+            <p>${escapeHtml(String(season.matchCount ?? (season.matches || []).length))} recorded matches, written to the season they belong to.</p>
+            ${trLink("arsiv.html", "Open the archive")}
+          </article>`).join("");
+
+  const body = `      <section class="data-panel" aria-labelledby="en-archive-title">
+        <h2 class="panel-title" id="en-archive-title">Seasons on record</h2>
+        <div class="grid">${cards || `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}</div>
+        <p class="muted-copy">A finished match is written to the season it belongs to and stays there. Season pages themselves are published in Turkish; the links say so before you click.</p>
+      </section>
+      <section class="data-panel" aria-labelledby="en-archive-what-title">
+        <h2 class="panel-title" id="en-archive-what-title">What the archive keeps</h2>
+        <div class="grid">
+          <article class="card"><span class="card-kicker">Matches</span><h3>Results season by season</h3><p>Every finished match, linked to its report where one exists.</p></article>
+          <article class="card"><span class="card-kicker">Squads</span><h3>Squads of the season</h3><p>A squad is captured once per season and stays even if it is trimmed later.</p></article>
+          <article class="card"><span class="card-kicker">Managers</span><h3>Managerial spells</h3><p>Start date, recorded match record and source credits. A record without a source produces no page.</p></article>
+        </div>
+      </section>`;
+
+  return pageShell({
+    routeKey: "archive",
+    trPath: "arsiv.html",
+    enPath: "en/archive.html",
+    heroKicker: "Archive",
+    heroTitle: "Turkish Football Archive",
+    heroLead: "Season by season match archive, archived squads and sourced managerial spells.",
+    heroMeta: `${seasons.length} seasons`,
+    body,
+    schema: schemaFor("archive", "en/archive.html", "CollectionPage")
+  });
+}
+
+/**
+ * KÖŞE YAZILARI — ÇERÇEVE İNGİLİZCE, YAZI KENDİ DİLİNDE.
+ *
+ * Yazı başlıkları çevrilmez: makine çevirisi yapmıyoruz ve bir yazarın
+ * cümlesini uydurma bir İngilizceyle sunmak, yazıyı yanlış aktarmak olurdu.
+ * Başlık `lang="tr"` taşır, bağlantı `hreflang="tr"` ile Türkçe metne gider.
+ */
+function columnsPage() {
+  const cards = columnList.slice(0, 24).map((column) => {
+    const href = escapeHtml(`${BASE}${String(column.path || "").replace(/^\.?\//, "")}`);
+    const published = column.publishedAt || column.date || "";
+    return `<article class="column-card" data-card="column">
+            <div class="column-card-head"><span class="column-badge">Opinion</span>
+            <span class="column-category" lang="tr">${escapeHtml(column.categoryLabel || column.category || "")}</span></div>
+            <h3 lang="tr">${escapeHtml(column.title || "")}</h3>
+            ${column.summary ? `<p lang="tr">${escapeHtml(column.summary)}</p>` : ""}
+            <div class="column-card-foot"><span>${escapeHtml(column.author || "FutbolRadar")}</span>
+            ${published ? `<time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time>` : ""}</div>
+            <a class="detail-link" href="${href}" hreflang="tr" lang="tr">Read the column (in Turkish)</a>
+          </article>`;
+  }).join("");
+
+  const body = `      <section class="data-panel" aria-labelledby="en-columns-title">
+        <h2 class="panel-title" id="en-columns-title">Latest columns</h2>
+        <p class="muted-copy">Personal assessments by FutbolRadar writers. This section is opinion and is kept separate from the site's verified match data.</p>
+        <div class="column-grid">${cards || `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}</div>
+        <p class="muted-copy">Columns are written and published in Turkish. Titles are shown in the language they were written in rather than machine-translated.</p>
+      </section>
+${sectionLinks()}`;
+
+  return pageShell({
+    routeKey: "columns",
+    trPath: "kose-yazilari.html",
+    enPath: "en/columns.html",
+    heroKicker: "Opinion",
+    heroTitle: "Turkish Football Columns",
+    heroLead: "Commentary from FutbolRadar writers, kept separate from the site's verified match data.",
+    heroMeta: `${columnList.length} columns`,
+    body,
+    schema: schemaFor("columns", "en/columns.html", "CollectionPage")
+  });
+}
+
+/** Haberler — köşe yazılarıyla aynı kural: çerçeve İngilizce, haber kendi dilinde. */
+function newsPage() {
+  const cards = newsList.slice(0, 24).map((item) => {
+    const href = escapeHtml(newsHref(item, BASE));
+    const published = item.publishedAt || item.date || "";
+    return `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}">
+            <div class="news-card-meta"><span class="tag green" lang="tr">${escapeHtml(item.category || "Football agenda")}</span>
+            <time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time></div>
+            <div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span>
+            <h3 lang="tr">${escapeHtml(item.title || "")}</h3>
+            ${item.summary ? `<p lang="tr">${escapeHtml(item.summary)}</p>` : ""}</div>
+            <div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Official source")}</span>
+            <a class="detail-link" href="${href}" hreflang="tr" lang="tr">Read the story (in Turkish)</a></div>
+          </article>`;
+  }).join("");
+
+  const body = `      <section class="data-panel" aria-labelledby="en-news-title">
+        <h2 class="panel-title" id="en-news-title">Verified football agenda</h2>
+        <div class="news-grid">${cards || `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}</div>
+        <p class="muted-copy">Every story is published with the source it was confirmed against. Stories are written in Turkish and are not machine-translated.</p>
+      </section>
+${sectionLinks()}`;
+
+  return pageShell({
+    routeKey: "news",
+    trPath: "haberler.html",
+    enPath: "en/news.html",
+    heroKicker: "News",
+    heroTitle: "Turkish Football News",
+    heroLead: "Verified updates from official club and competition statements.",
+    heroMeta: `${newsList.length} stories`,
+    body,
+    schema: schemaFor("news", "en/news.html", "CollectionPage")
+  });
+}
+
 const PAGE_BUILDERS = {
   home: homePage,
   todaysMatches: todaysMatchesPage,
   liveScores: liveScoresPage,
   standings: standingsPage,
   analysis: analysisPage,
-  teams: teamsPage
+  teams: teamsPage,
+  results: resultsPage,
+  fixtures: fixturesPage,
+  matchCentre: matchCentrePage,
+  playerRadar: playerRadarPage,
+  topScorers: topScorersPage,
+  momentum: momentumPage,
+  transferRadar: transferRadarPage,
+  statsHub: statsHubPage,
+  archive: archivePage,
+  columns: columnsPage,
+  news: newsPage
 };
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
