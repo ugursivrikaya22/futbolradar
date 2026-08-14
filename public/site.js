@@ -758,13 +758,14 @@
     return Math.round((count / total) * 100);
   }
 
-  function renderResults(poll, state) {
+  function renderResults(poll, state, closed) {
     var results = poll.querySelector("[data-motm-results]");
     // İKİ NOT, İKİ İDDİA. Sayım sunucudan geliyorsa sonuç topluluk
     // ortalamasıdır; gelmiyorsa yalnızca bu tarayıcının oylarıdır. Hangi
     // cümlenin gösterildiği, gösterilen sayının ne olduğuna bağlı.
     var noteCommunity = poll.querySelector('[data-motm-note="community"]');
     var noteLocal = poll.querySelector('[data-motm-note="local"]');
+    var noteClosed = poll.querySelector('[data-motm-note="closed"]');
     var form = poll.querySelector("[data-motm-form]");
     var thanks = poll.querySelector("[data-motm-thanks]");
     if (!results) return;
@@ -832,7 +833,10 @@
     });
 
     if (form) form.hidden = true;
-    if (thanks) thanks.hidden = false;
+    // Kapanmış ankette "Teşekkürler" değil "oylama kapandı" konuşur:
+    // teşekkür bir oy eylemine cevaptır, kilitli sonuçta eylem yok.
+    if (thanks) thanks.hidden = Boolean(closed);
+    if (noteClosed) noteClosed.hidden = !closed;
     results.hidden = false;
 
     var remote = Boolean(state && state.remote);
@@ -881,6 +885,14 @@
     return { counts: counts, choice: choice || data.choice || null, remote: true };
   }
 
+  /**
+   * CANLI TAZELEME ARALIĞI. Yüzdeler oy verildikçe değişir; sonucu açık
+   * tutan okuyucu güncel sayıyı görmeli. Aralık bilinçli olarak geniş:
+   * anket bir skor bandı değil ve her sekmenin dakikada bir istekten
+   * fazlasını atması uç noktanın hız sınırına da saygısızlık olurdu.
+   */
+  var REFRESH_INTERVAL_MS = 60000;
+
   function setupPoll(poll) {
     var matchId = poll.getAttribute("data-motm-match");
     var form = poll.querySelector("[data-motm-form]");
@@ -890,25 +902,101 @@
     poll.hidden = false;
 
     var stored = readStore(matchId);
+    var refreshTimer = null;
+
+    // OYLAMA PENCERESİ: kapanış saati işaretlemede taşınır ve KARAR ANLIK
+    // verilir — sayfa pencere açıkken derlenmiş olabilir. Sunucu kendi
+    // kapısını ayrıca tutuyor; buradaki kilit görünümü dürüst tutmak için.
+    var closesStamp = Date.parse(poll.getAttribute("data-motm-closes") || "");
+    function votingClosed() {
+      return isFinite(closesStamp) && closesStamp > 0 && Date.now() >= closesStamp;
+    }
+
+    function stopRefresh() {
+      if (refreshTimer) {
+        window.clearInterval(refreshTimer);
+        refreshTimer = null;
+      }
+    }
+
+    /** Kilitli görünüm: form yok, kapanış notu var, eldeki en iyi sonuç. */
+    function renderLocked(data) {
+      form.hidden = true;
+      var state = data ? serverState(data, stored && stored.choice)
+        : (stored && stored.choice ? stored : null);
+      if (state) {
+        renderResults(poll, state, true);
+      } else {
+        // Gösterilecek sayım yok: yalnızca kapanış bilgisi verilir. Boş
+        // sonuç listesi çizip "%0" iddia etmek uydurma olurdu.
+        var noteClosed = poll.querySelector('[data-motm-note="closed"]');
+        if (noteClosed) noteClosed.hidden = false;
+      }
+      stopRefresh();
+    }
+
+    /**
+     * Sonuç görünümdeyken sayım periyodik tazelenir. Sekme arka plandaysa
+     * istek atılmaz; pencere kapandıysa son bir kez kilitli çizilir ve
+     * zamanlayıcı durur — kilitli sonuç artık değişmez.
+     */
+    function startRefresh() {
+      if (refreshTimer || typeof window.fetch !== "function") return;
+      refreshTimer = window.setInterval(function () {
+        if (document.hidden) return;
+        requestTally(matchId, null).then(function (data) {
+          if (!data) return;
+          if (votingClosed() || data.votingOpen === false) {
+            renderLocked(data);
+            return;
+          }
+          if (data.alreadyVoted || (stored && stored.choice)) {
+            renderResults(poll, serverState(data, stored && stored.choice));
+          }
+        });
+      }, REFRESH_INTERVAL_MS);
+    }
+
+    if (votingClosed()) {
+      // Kilitli anket: herkes sonucu görür, kimse form görmez.
+      form.hidden = true;
+      requestTally(matchId, null).then(renderLocked);
+      return;
+    }
 
     // Sunucuda sayım varsa onu göster. Yoksa cihazdaki kayda düş.
     requestTally(matchId, null).then(function (data) {
+      if (data && data.votingOpen === false) {
+        // Saat farkı olan cihazda sunucunun kararı geçerlidir.
+        renderLocked(data);
+        return;
+      }
       if (data && (data.alreadyVoted || data.total > 0)) {
         // Sunucu "bu tarayıcı oy verdi" diyorsa form yerine sonuç gösterilir;
         // hangi seçeneğe oy verildiği yalnızca cihazda biliniyor (sunucu
         // seçmeni oyuna bağlamıyor), o yüzden işaret oradan alınır.
         if (data.alreadyVoted) {
           renderResults(poll, serverState(data, stored && stored.choice));
+          startRefresh();
           return;
         }
       }
-      if (stored && stored.choice) renderResults(poll, stored);
+      if (stored && stored.choice) {
+        renderResults(poll, stored);
+        startRefresh();
+      }
     });
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       var selected = form.querySelector(".motm-poll__radio:checked");
       if (!selected) return;
+
+      if (votingClosed()) {
+        // Sayfa açıkken pencere kapandı: oy denemesi yerine kilit gösterilir.
+        requestTally(matchId, null).then(renderLocked);
+        return;
+      }
 
       var submit = form.querySelector("[data-motm-submit]");
       if (submit) submit.disabled = true;
@@ -921,10 +1009,12 @@
       local.choice = selected.value;
       local.votedAt = new Date().toISOString();
       writeStore(matchId, local);
+      stored = local;
 
       requestTally(matchId, selected.value).then(function (data) {
         if (submit) submit.disabled = false;
         renderResults(poll, data ? serverState(data, selected.value) : local);
+        startRefresh();
       });
     });
   }
@@ -938,5 +1028,152 @@
     document.addEventListener("DOMContentLoaded", setupMotmPolls);
   } else {
     setupMotmPolls();
+  }
+})();
+
+/**
+ * BU HAFTANIN EN ÇOK OY ALAN OYUNCULARI — ANA SAYFA WIDGET'I.
+ *
+ * Bölüm `hidden` doğar ve yalnızca `/api/motm-week` GERÇEK bir sayım
+ * döndürürse açılır. Depo kapalıysa, ağ hatası varsa ya da bu hafta hiç oy
+ * yoksa bölüm hiç görünmez: ana sayfada boş bir vitrin, yer tutucu
+ * uydurmanın sessiz biçimi olurdu.
+ *
+ * Bütün metin ve görsel adresleri sunucu yanıtından gelir ve DOM'a yalnızca
+ * `textContent`/`setAttribute` ile yazılır — burada HTML kurulmaz.
+ * Fotoğraf yüklenemezse baş harflere düşülür; kırık görsel bırakılmaz.
+ */
+(function () {
+  function initialsSpan(className, initials) {
+    var span = document.createElement("span");
+    span.className = className + " is-initials";
+    span.textContent = initials || "?";
+    span.setAttribute("aria-hidden", "true");
+    return span;
+  }
+
+  /** Görsel: yüklenemezse aynı boyutlu baş-harf kutusuna düşer. */
+  function mediaImage(className, url, alt, size, initials) {
+    if (!url) return initialsSpan(className, initials);
+    var img = document.createElement("img");
+    img.className = className;
+    img.src = url;
+    img.alt = alt || "";
+    img.width = size;
+    img.height = size;
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.referrerPolicy = "no-referrer";
+    img.addEventListener("error", function () {
+      if (img.parentNode) img.parentNode.replaceChild(initialsSpan(className, initials), img);
+    });
+    return img;
+  }
+
+  function renderRow(row, index) {
+    var item = document.createElement("li");
+    item.className = "motm-week__item";
+    item.style.setProperty("--motm-week-delay", (index * 70) + "ms");
+
+    // Raporu olan maçın kartı rapora gider; olmayan kart bağlantı vaat etmez.
+    var card = document.createElement(row.reportHref ? "a" : "div");
+    card.className = "motm-week__card";
+    if (row.reportHref) card.href = row.reportHref;
+
+    var rank = document.createElement("span");
+    rank.className = "motm-week__rank";
+    rank.textContent = String(index + 1);
+    card.appendChild(rank);
+
+    var media = document.createElement("span");
+    media.className = "motm-week__media";
+    media.appendChild(mediaImage("motm-week__photo", row.photo && row.photo.url, row.name, 56,
+      (row.photo && row.photo.initials) || ""));
+    media.appendChild(mediaImage("motm-week__club", row.teamLogo, row.team, 22, row.teamInitials));
+    card.appendChild(media);
+
+    var info = document.createElement("span");
+    info.className = "motm-week__info";
+    var name = document.createElement("strong");
+    name.className = "motm-week__name";
+    name.textContent = row.name;
+    info.appendChild(name);
+    if (row.team) {
+      var team = document.createElement("span");
+      team.className = "motm-week__team";
+      team.textContent = row.team;
+      info.appendChild(team);
+    }
+    var match = document.createElement("span");
+    match.className = "motm-week__match";
+    match.textContent = row.matchLabel || "";
+    info.appendChild(match);
+    card.appendChild(info);
+
+    var score = document.createElement("span");
+    score.className = "motm-week__score";
+    var percent = document.createElement("b");
+    percent.className = "motm-week__percent";
+    percent.textContent = "%" + row.percent;
+    score.appendChild(percent);
+    var votes = document.createElement("span");
+    votes.className = "motm-week__votes";
+    votes.textContent = row.votes + " oy";
+    score.appendChild(votes);
+    var bar = document.createElement("span");
+    bar.className = "motm-week__bar";
+    var fill = document.createElement("span");
+    fill.className = "motm-week__bar-fill";
+    bar.appendChild(fill);
+    score.appendChild(bar);
+    if (row.reportHref) {
+      var cta = document.createElement("span");
+      cta.className = "motm-week__cta";
+      cta.textContent = "Maç raporu →";
+      score.appendChild(cta);
+    }
+    card.appendChild(score);
+
+    item.appendChild(card);
+    // Çubuk 0'dan gerçek paya animasyonla dolar (CSS geçişi); genişlik
+    // yerleştirme SONRASI verilir ki geçiş görülsün.
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        fill.style.width = Math.max(0, Math.min(100, row.percent)) + "%";
+      });
+    });
+    return item;
+  }
+
+  function setupWeeklyWidget() {
+    var section = document.querySelector("[data-motm-week]");
+    if (!section || typeof window.fetch !== "function") return;
+    var list = section.querySelector("[data-motm-week-list]");
+    var source = section.getAttribute("data-motm-week-source") || "/api/motm-week";
+    if (!list) return;
+
+    window.fetch(source, { headers: { Accept: "application/json" } })
+      .then(function (response) { return response.ok ? response.json() : null; })
+      .then(function (payload) {
+        var data = payload && payload.data ? payload.data : null;
+        var rows = data && data.storage === "ready" && Array.isArray(data.players) ? data.players : [];
+        if (!rows.length) return; // Gerçek sayım yok: bölüm hiç açılmaz.
+
+        list.innerHTML = "";
+        rows.forEach(function (row, index) {
+          list.appendChild(renderRow(row, index));
+        });
+        section.hidden = false;
+        window.requestAnimationFrame(function () {
+          section.classList.add("is-ready");
+        });
+      })
+      .catch(function () { /* Ağ hatası widget'ı değil, yalnızca bu isteği düşürür; bölüm kapalı kalır. */ });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupWeeklyWidget);
+  } else {
+    setupWeeklyWidget();
   }
 })();

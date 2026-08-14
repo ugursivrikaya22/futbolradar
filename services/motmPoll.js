@@ -41,6 +41,25 @@ const MIN_OPTIONS = 2;
 /** Kayan bir liste değil; okunabilir üst sınır (iki kadro + girenler). */
 const MAX_OPTIONS = 40;
 
+/**
+ * OYLAMA PENCERESİ: MAÇ SONUNDAN 24 SAAT SONRA KAPANIR.
+ *
+ * "Maçın adamı" taze bir yargıdır; haftalar sonra gelen oy, maçı izlemiş
+ * bir okuyucunun yargısı olmaktan çıkar. Pencere kapanınca sonuç KİLİTLENİR:
+ * bant değişmez, kazanan değişmez.
+ *
+ * Veride maçın BİTİŞ damgası yok, yalnızca başlama saati var. Bitiş bu
+ * yüzden başlama + 2 saat olarak alınır (devre arası ve uzatma payıyla
+ * standart bir maçın üst sınırı). Yanılma payı pencerenin lehine: kapanış
+ * hiçbir maçta gerçek bitişten ÖNCE gelmez.
+ *
+ * Başlama saati OKUNAMAYAN maçta pencere hesaplanamaz ve oylama açık
+ * kalır — "bilmiyorum" durumunda okuyucunun elinden oy alma hakkını almak,
+ * uydurma bir kapanış saati ilan etmek olurdu.
+ */
+const MATCH_DURATION_APPROX_MS = 2 * 60 * 60 * 1000;
+const VOTING_WINDOW_AFTER_MATCH_MS = 24 * 60 * 60 * 1000;
+
 /** Ekran metinleri. Gereksinimde birebir verildi; tek yerde durur. */
 const COPY = Object.freeze({
   title: "Maçın Adamını Seç!",
@@ -63,7 +82,11 @@ const COPY = Object.freeze({
   // topluluk sonucu gibi sunardı.
   communityNote: "Sonuçlar tüm okuyucuların oylarından hesaplanıyor. " +
     "Her tarayıcı bir kez oy verebilir.",
-  yourVote: "Senin oyun"
+  yourVote: "Senin oyun",
+  // Pencere kapanınca iddia değişir: artık bir çağrı değil, kesinleşmiş bir
+  // sonuç gösteriliyor. Not bunu açıkça söyler.
+  closedNote: "Oylama kapandı; sonuçlar kesinleşti. Oylama her maçta maç " +
+    "sonundan 24 saat sonra kapanır."
 });
 
 function text(value) {
@@ -91,6 +114,29 @@ function asSubstitutions(match) {
 /** Maç oynanmış mı? Yalnızca bitmiş maçta "maçın adamı" sorulabilir. */
 function isFinished(match) {
   return /^(finished|ft|aet|pen|match_finished|full[- ]?time)$/i.test(text(match && match.status));
+}
+
+/** Maçın başlama damgası (ms). Okunamayan tarih 0'dır — "bilinmiyor". */
+function kickoffStamp(match) {
+  const parsed = Date.parse(text(match && (match.kickoff || match.date || match.time)));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+/**
+ * Oylamanın kapandığı an (ms). Başlama saati bilinmiyorsa 0 döner —
+ * "kapanış yok" değil, "kapanış HESAPLANAMIYOR" demektir ve oylama açık
+ * kalır (gerekçe dosya başındaki pencere yorumunda).
+ */
+function votingClosesAtMs(match) {
+  const stamp = kickoffStamp(match);
+  return stamp ? stamp + MATCH_DURATION_APPROX_MS + VOTING_WINDOW_AFTER_MATCH_MS : 0;
+}
+
+/** Oylama şu an açık mı? `now` test edilebilirlik için dışarıdan gelebilir. */
+function isVotingOpen(match, nowMs) {
+  const closes = votingClosesAtMs(match);
+  const now = Number.isFinite(nowMs) ? nowMs : Date.now();
+  return !closes || now < closes;
 }
 
 /** Maçta en az bir Türk kulübü var mı? */
@@ -150,7 +196,7 @@ function playedPlayers(match) {
  * derleme günlüğünden görülebilsin diye. Sessiz eleme, hata ayıklanamaz
  * eleme demek.
  */
-function buildMotmPoll(match) {
+function buildMotmPoll(match, options = {}) {
   if (!match || typeof match !== "object") return { poll: null, skipReason: "kayıt okunamadı" };
 
   const matchId = text(match.id || match.slug || match.matchId);
@@ -159,17 +205,23 @@ function buildMotmPoll(match) {
   if (!isFinished(match)) return { poll: null, skipReason: "maç bitmemiş" };
   if (!hasTurkishSide(match)) return { poll: null, skipReason: "Türk kulübü yok" };
 
-  const options = playedPlayers(match);
-  if (options.length < MIN_OPTIONS) {
-    return { poll: null, skipReason: `kadro verisi yok (${options.length} aday)` };
+  const candidates = playedPlayers(match);
+  if (candidates.length < MIN_OPTIONS) {
+    return { poll: null, skipReason: `kadro verisi yok (${candidates.length} aday)` };
   }
 
+  // KAPANMIŞ ANKET YOK OLMAZ, KİLİTLENİR. Pencere geçince anket hâlâ
+  // "var" — sonuçlar gösterilir, yalnızca oy kabul edilmez. `votingOpen`
+  // bu ayrımı taşır; `closesAt` istemciye pencereyi bildirir.
+  const closesAtMs = votingClosesAtMs(match);
   return {
     poll: {
       matchId,
       homeTeam: text(match.homeTeam),
       awayTeam: text(match.awayTeam),
-      options
+      options: candidates,
+      closesAt: closesAtMs ? new Date(closesAtMs).toISOString() : null,
+      votingOpen: isVotingOpen(match, options.now)
     },
     skipReason: null
   };
@@ -188,12 +240,17 @@ function indexMatchesById(payload) {
 
 module.exports = {
   COPY,
+  MATCH_DURATION_APPROX_MS,
   MAX_OPTIONS,
   MIN_OPTIONS,
+  VOTING_WINDOW_AFTER_MATCH_MS,
   buildMotmPoll,
   foldName,
   hasTurkishSide,
   indexMatchesById,
   isFinished,
-  playedPlayers
+  isVotingOpen,
+  kickoffStamp,
+  playedPlayers,
+  votingClosesAtMs
 };

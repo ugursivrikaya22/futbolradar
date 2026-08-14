@@ -20,7 +20,11 @@ const CACHE_POLICIES = Object.freeze({
   // Anket sayımı her oyla değişiyor ve yanıt seçmene özel bir alan taşıyor
   // (`alreadyVoted`). Önbelleğe alınırsa okuyucu ya eski sonucu görür ya da
   // BAŞKASININ oy durumunu devralır — ikincisi sessiz ve çok daha kötü.
-  "motm-vote": { noStore: true }
+  "motm-vote": { noStore: true },
+  // Haftalık liste kişiye özel alan TAŞIMAZ; kısa CDN önbelleği her ana
+  // sayfa görüntülemesinin depoya inmesini engeller. 60 saniyelik gecikme
+  // "canlı" iddiasını bozmaz — sayım zaten dakikada bir tazeleniyor.
+  "motm-week": { maxAge: 60, stale: 120 }
 });
 const QUERY_VALUE_MAX_LENGTH = 160;
 const QUERY_PARAM_MAX_COUNT = 24;

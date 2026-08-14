@@ -5,6 +5,7 @@ const { MODEL_VERSION: MATCH_PREDICTION_MODEL_VERSION } = require("../services/m
 const { getFixtureWeeks, groupMatchesIntoWeeks } = require("../services/superLigFixtureService");
 const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
 const { handleMotmVote } = require("../server/motmVoteRoute");
+const { handleMotmWeek } = require("../server/motmWeekRoute");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -261,6 +262,12 @@ module.exports = async function handler(req, res) {
   // bir sunucusuz işlev sayılıyor ve Hobby planının 12 işlev sınırı doluydu.
   if (routeName(req) === "motm-vote") {
     return handleMotmVote(req, res);
+  }
+
+  // Haftalık liste de kendi kapılarını taşır (kendi önbellek politikası ve
+  // hız sınırı); alttaki genel kapılara sokulmaz.
+  if (routeName(req) === "motm-week") {
+    return handleMotmWeek(req, res);
   }
 
   if (rejectUnsupportedMethod(req, res)) {

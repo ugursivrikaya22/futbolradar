@@ -18,7 +18,17 @@ import { createRequire } from "node:module";
 import { motmPollBlock } from "./lib/motmPoll.mjs";
 
 const require = createRequire(import.meta.url);
-const { COPY, buildMotmPoll, isFinished, hasTurkishSide, playedPlayers } = require("../services/motmPoll.js");
+const {
+  COPY,
+  MATCH_DURATION_APPROX_MS,
+  VOTING_WINDOW_AFTER_MATCH_MS,
+  buildMotmPoll,
+  isFinished,
+  hasTurkishSide,
+  isVotingOpen,
+  playedPlayers,
+  votingClosesAtMs
+} = require("../services/motmPoll.js");
 
 const root = process.cwd();
 
@@ -229,6 +239,52 @@ console.log("motm-poll");
   }
   assert.ok(printed > 0, "en az bir sayfada anket basılmış olmalı");
   console.log(`  ok  ${printed} sayfada anket basılı, ${pages.length - printed} sayfada yok`);
+}
+
+// ── 12. OYLAMA PENCERESİ: maç sonundan 24 saat sonra kapanır ───────────────
+//
+// Kapanan anket YOK OLMAZ, KİLİTLENİR: `poll` üretilmeye devam eder
+// (sonuçlar gösterilecek), yalnızca `votingOpen` düşer. Pencere sunucuda da
+// ayrıca kapatılıyor (test-motm-vote-api); buradaki sözleşme seçim katmanı.
+{
+  const kickoff = "2026-08-01T20:00:00+03:00";
+  const kickoffMs = Date.parse(kickoff);
+  const closesMs = kickoffMs + MATCH_DURATION_APPROX_MS + VOTING_WINDOW_AFTER_MATCH_MS;
+
+  assert.equal(votingClosesAtMs(match({ kickoff })), closesMs, "kapanış = başlama + 2sa + 24sa olmalı");
+
+  // Pencere içinde açık, sınırda ve sonrasında kapalı.
+  assert.equal(isVotingOpen(match({ kickoff }), closesMs - 1), true);
+  assert.equal(isVotingOpen(match({ kickoff }), closesMs), false);
+  assert.equal(isVotingOpen(match({ kickoff }), closesMs + 1), false);
+
+  const open = buildMotmPoll(match({ kickoff }), { now: closesMs - 1 }).poll;
+  assert.equal(open.votingOpen, true);
+  assert.equal(open.closesAt, new Date(closesMs).toISOString(), "kapanış istemciye ISO olarak gitmeli");
+
+  const closed = buildMotmPoll(match({ kickoff }), { now: closesMs + 1 }).poll;
+  assert.ok(closed, "kapanan anket yok olmamalı, kilitlenmeli");
+  assert.equal(closed.votingOpen, false);
+
+  // Başlama saati OKUNAMAYAN maçta kapanış hesaplanamaz ve oylama açık
+  // kalır — uydurma bir kapanış saati ilan edilmez.
+  assert.equal(votingClosesAtMs(match()), 0);
+  assert.equal(isVotingOpen(match(), Date.parse("2099-01-01")), true);
+  assert.equal(buildMotmPoll(match()).poll.closesAt, null);
+
+  // İşaretleme: kapanış saati veri olarak taşınır, kilit notu blokta hazır.
+  const html = motmPollBlock(open);
+  assert.ok(html.includes(`data-motm-closes="${open.closesAt}"`), "kapanış işaretlemede taşınmalı");
+  assert.ok(html.includes('data-motm-note="closed"'), "kilit notu blokta olmalı");
+  assert.ok(html.includes(COPY.closedNote), "kilit notunun metni COPY'den gelmeli");
+  assert.ok(!motmPollBlock(buildMotmPoll(match()).poll).includes("data-motm-closes"),
+    "kapanışı bilinmeyen maçta öznitelik basılmamalı");
+
+  // İstemci sözleşmesi: kilit kancaları site.js'te.
+  const client = fs.readFileSync(path.join(root, "site.js"), "utf8");
+  for (const hook of ["data-motm-closes", 'data-motm-note="closed"', "votingOpen === false"]) {
+    assert.ok(client.includes(hook), `site.js "${hook}" kancasını kaybetmiş`);
+  }
 }
 
 console.log("motm-poll OK");

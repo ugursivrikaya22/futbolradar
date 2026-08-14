@@ -63,7 +63,13 @@ export function motmPollBlock(poll) {
   const options = poll.options.map((option, index) => optionRow(option, index, matchId)).join("");
   const heading = `motm-title-${matchId}`;
 
-  return `<section class="motm-poll" data-motm-poll data-motm-match="${escapeHtml(matchId)}" ` +
+  // Kapanış saati İSTEMCİYE VERİ OLARAK gider; karar orada anlık verilir.
+  // Derleme anında "kapalı" diye formu hiç basmamak, pencere içindeyken
+  // derlenen ama pencere kapandıktan sonra da servis edilen sayfayı yanlış
+  // bırakırdı. İşaretleme tek biçim; kilidi saat belirler.
+  const closesAttr = poll.closesAt ? ` data-motm-closes="${escapeHtml(poll.closesAt)}"` : "";
+
+  return `<section class="motm-poll" data-motm-poll data-motm-match="${escapeHtml(matchId)}"${closesAttr} ` +
     `aria-labelledby="${escapeHtml(heading)}" hidden>
       <div class="motm-poll__badge" aria-hidden="true">⭐ ${escapeHtml(COPY.badge)}</div>
       <h2 class="motm-poll__title" id="${escapeHtml(heading)}">${escapeHtml(COPY.title)}</h2>
@@ -74,6 +80,7 @@ export function motmPollBlock(poll) {
       </form>
       <p class="motm-poll__thanks" data-motm-thanks hidden>${escapeHtml(COPY.thanks)}</p>
       <div class="motm-poll__results" data-motm-results hidden></div>
+      <p class="motm-poll__note" data-motm-note="closed" hidden>${escapeHtml(COPY.closedNote)}</p>
       <p class="motm-poll__note" data-motm-note="community" hidden>${escapeHtml(COPY.communityNote)}</p>
       <p class="motm-poll__note" data-motm-note="local" hidden>${escapeHtml(COPY.localNote)}</p>
     </section>`;

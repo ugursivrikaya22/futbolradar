@@ -24,7 +24,7 @@
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
-    <link rel="stylesheet" href="./page.css?v=93bd05db" />
+    <link rel="stylesheet" href="./page.css?v=2f03f25e" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -231,6 +231,14 @@
     </div><div class="quick-stats" aria-label="Bugünün maç özeti"><a class="quick-stat" href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>32</b></a><a class="quick-stat" href="./bugunun-maclari.html"><span>Toplam</span><b>32</b></a></div>
 <!-- prerender:featured-match:end -->
           </div>
+        </section>
+
+        <!-- Bu Haftanın En Çok Oy Alanları: gerçek okuyucu oylarından beslenir.
+             Blok hidden doğar; site.js /api/motm-week'ten GERÇEK sayım bulursa
+             açar. Sayım yoksa bölüm hiç görünmez — boş vitrin basılmaz. -->
+        <section class="container section motm-week" id="haftanin-oyunculari" aria-labelledby="motm-week-title" data-motm-week data-motm-week-source="/api/motm-week" hidden>
+          <div class="section-head"><div class="section-title"><span class="section-kicker">Maçın Adamı</span><h2 id="motm-week-title">🏆 Bu Haftanın En Çok Oy Alan Oyuncuları</h2><p>Okuyucuların &quot;maçın adamı&quot; oylarıyla öne çıkan isimler. Yüzde, oyuncunun kendi maçındaki oy payıdır; oylama her maçta maç sonundan 24 saat sonra kapanır.</p></div><a class="section-link" href="./mac-sonuclari.html">Maç sonuçları</a></div>
+          <ol class="motm-week__list" data-motm-week-list aria-live="polite"></ol>
         </section>
 
         <section class="container section section-columns" id="radar-yorumu" aria-labelledby="radar-yorumu-title" data-api-section="columns" data-empty-hide>
@@ -582,7 +590,7 @@
       </div>
     </footer>
     </div>
-    <script src="./site.js?v=0c9cf8a7" defer></script>
+    <script src="./site.js?v=12e56ee4" defer></script>
     <script src="./app.js?v=f1c21f24" defer></script>
     <!-- ANALYSES CARD -->  <div class="analyses-card">
       <h3>Maç Analizleri</h3>
