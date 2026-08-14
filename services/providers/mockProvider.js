@@ -1,5 +1,5 @@
 const { filterPublishable, logExcluded, logDataGaps } = require("../matchEligibility.js");
-const { mergeSuperLigTeams, isFixtureOnly } = require("../superLigTeams.js");
+const { mergeSuperLigTeams, isFixtureOnly, sameClub, confirmedHomeVenue } = require("../superLigTeams.js");
 const matches = require("../../data/matches.json");
 const teams = require("../../data/teams.json");
 const players = require("../../data/players.json");
@@ -333,6 +333,28 @@ function resolveProviderVenue(existingVenue, providerVenue) {
   return providerVenue || null;
 }
 
+/**
+ * LİG MAÇINDA AÇIKLANMAMIŞ SAHAYI EV SAHİBİNİN KENDİ STADIYLA DOLDURUR.
+ *
+ * Sağlayıcı takvimi bazı Süper Lig maçlarını `venue: null` gönderiyor
+ * (15.08.2026 Kasımpaşa - Trabzonspor böyleydi). Saha aslında biliniyor:
+ * lig maçında ev sahibi kendi stadında oynar ve o stat, fikstür dosyasında
+ * `status: "confirmed"` olarak zaten doğrulanmış.
+ *
+ * Kural neden YALNIZCA lige uygulanıyor: sağlayıcının saha tahminine
+ * güvenilmemesinin nedeni hazırlık maçlarıydı — sezon öncesi kampta takım
+ * yurt dışında oynarken sağlayıcı ev sahibinin varsayılan stadını yazıyordu.
+ * Lig maçında böyle bir belirsizlik yok. Tarafsız sahaya alınan bir lig maçı
+ * olursa fikstürde `venue` zaten dolu gelir ve burası hiç çalışmaz.
+ */
+function withHomeGroundVenue(match) {
+  if (!match || match.league !== "Süper Lig") return match;
+  if (hasRealVenue(match.venue) && match.venue) return match;
+  const venue = confirmedHomeVenue(match.homeTeam);
+  if (!venue) return match;
+  return { ...match, venue, venueSource: "club-home-ground" };
+}
+
 function curatedMatches() {
   const merged = new Map();
 
@@ -341,8 +363,36 @@ function curatedMatches() {
   }
 
   for (const calendarMatch of fixtureCalendarMatches()) {
-    const key = matchIdentity(calendarMatch);
-    const existing = merged.get(key);
+    let key = matchIdentity(calendarMatch);
+    let existing = merged.get(key);
+
+    // AYNI MAÇ, FARKLI YAZILMIŞ TAKIM ADI.
+    //
+    // Kimlik anahtarı ham metin eşitliğine bakıyor; iki sağlayıcı aynı
+    // kulübü farklı yazınca ("Gençlerbirliği" / "Gençlerbirliği S.K.",
+    // "Rizespor" / "Çaykur Rizespor") aynı maç listeye İKİ KEZ giriyordu.
+    // Bedeli görünürdü: ana sayfada ve fikstürde aynı karşılaşma iki satır,
+    // ve maç dosyası hangi kayda bağlanacağını bilemiyordu — üstelik
+    // sağlayıcı kimlikleri ayrı olduğu için resmî 11 yalnızca birinde
+    // çalışıyordu.
+    //
+    // `sameClub` bu eşleşmeyi zaten biliyor (kelime sınırlı içerme, yani
+    // "amed" ⊂ "amed sportif faaliyetler" eşleşir ama rastgele alt dize
+    // eşleşmez). Anahtar tutmazsa AYNI GÜNDEKİ kayıtlar arasında kulüp
+    // eşleştirmesiyle aranır.
+    if (!existing) {
+      const date = matchDateOnly(calendarMatch);
+      for (const [candidateKey, candidate] of merged) {
+        if (matchDateOnly(candidate) !== date) continue;
+        const straight = sameClub(candidate.homeTeam, calendarMatch.homeTeam)
+          && sameClub(candidate.awayTeam, calendarMatch.awayTeam);
+        // Tarafsız sahada kaynaklar ev sahibini ters yazabiliyor; kimlik
+        // anahtarı da bu yüzden sırasız kuruluyor.
+        const swapped = sameClub(candidate.homeTeam, calendarMatch.awayTeam)
+          && sameClub(candidate.awayTeam, calendarMatch.homeTeam);
+        if (straight || swapped) { key = candidateKey; existing = candidate; break; }
+      }
+    }
 
     if (!existing) {
       merged.set(key, calendarMatch);
@@ -357,7 +407,18 @@ function curatedMatches() {
     const advances = matchStateRank(calendarMatch.status) > matchStateRank(existing.status);
     const canAdvance = advances && !hasFinalScore(existing);
 
+    // SAĞLAYICI KİMLİKLERİ HER ZAMAN BİRLEŞİR.
+    //
+    // Erken çıkış yalnızca durum/saha güncellemesini atlamalı; kimlikleri
+    // de atlayınca yinelenen kaydın taşıdığı API-Football kimliği kayboldu
+    // ve resmî 11 otomasyonu o maçlarda hiç çalışamaz oldu. Kimlik birleşimi
+    // hiçbir şeyi "ilerletmiyor", yalnızca iki kaynağın bildiğini tek kayıtta
+    // topluyor.
+    const mergedProviderIds = { ...(calendarMatch.providerIds || {}), ...(existing.providerIds || {}) };
+    const idsChanged = JSON.stringify(mergedProviderIds) !== JSON.stringify(existing.providerIds || {});
+
     if (!canAdvance && !providerVenue) {
+      if (idsChanged) merged.set(key, { ...existing, providerIds: mergedProviderIds });
       continue;
     }
 
@@ -371,7 +432,11 @@ function curatedMatches() {
           liveStateSource: calendarMatch.source || "provider"
         }
         : {}),
-      providerId: existing.providerId || calendarMatch.providerId || ""
+      providerId: existing.providerId || calendarMatch.providerId || "",
+      // Resmî 11 otomasyonu API-Football kimliğine bağlı ve o kimlik
+      // yinelenen kayıtların yalnızca birinde olabiliyor; iki kaynaktan
+      // gelen kimlikler BİRLEŞTİRİLİR, biri diğerini ezmez.
+      providerIds: mergedProviderIds
     });
   }
 
@@ -388,7 +453,7 @@ function curatedMatches() {
   // İki günlük ayrı tutuluyor: eleme (gerçeklik sorunu) ve veri boşluğu
   // (yayımlandı ama eksik). İkincisi kalıcıysa sağlayıcı tarafında bir
   // sorunun tek işareti olabilir.
-  const { eligible, excluded, pending } = filterPublishable([...merged.values()]);
+  const { eligible, excluded, pending } = filterPublishable([...merged.values()].map(withHomeGroundVenue));
   logExcluded("curated-matches", excluded);
   logDataGaps("curated-matches", pending);
   return eligible;
