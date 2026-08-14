@@ -725,4 +725,45 @@ console.log("home-poll");
   }
 }
 
-console.log("home-poll OK (13 bölüm)");
+// ── 14. VERİ DOSYALARI SABİT DİZEYLE İSTENMELİ ────────────────────────────
+//
+// BU TEST BİR CANLI ARIZADAN DOĞDU. Uç noktalar veri dosyalarını
+// `require(değişken)` ile okuyan genel bir yükleyiciyle açılmıştı; yerelde
+// çalıştı, testler yeşildi, CANLIDA SESSİZCE BOŞ DÖNDÜ. Vercel sunucusuz
+// işlevin bağımlılıklarını STATİK çözümlüyor ve değişkenle çağrılan bir
+// `require`ı göremiyor — dosyalar fonksiyon paketine hiç konmadı ve uç
+// nokta "yayında anket yok" dedi.
+//
+// Hata sınıfı en kötüsü: kod doğru, test yeşil, canlı yanlış. Testin işi bu
+// yüzden davranışı değil BİÇİMİ denetlemek.
+{
+  const ROUTE_FILES = [
+    path.join("server", "homePollRoute.js"),
+    path.join("server", "motmWeekRoute.js"),
+    path.join("server", "motmVoteRoute.js"),
+    path.join("api", "[...route].js")
+  ];
+
+  for (const file of ROUTE_FILES) {
+    const source = fs.readFileSync(path.join(root, file), "utf8");
+    // YORUMLAR AYIKLANIR. Bu dosyalardaki yorumlar kuralın kendisini
+    // anlatıyor ve içlerinde "require(değişken)" ifadesi geçiyor; ham metni
+    // taramak testi kendi belgelendirmesine takardı.
+    const code = source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^[\t ]*\/\/.*$/gm, "");
+
+    // `require(` sonrası TIRNAK gelmeli. Gelmiyorsa argüman bir ifadedir ve
+    // çözümleyici onu takip edemez.
+    const dynamic = [...code.matchAll(/\brequire\(\s*([^"'`)\s])/g)].map((match) => match[1]);
+    assert.equal(dynamic.length, 0,
+      `${file}: require() sabit dize almalı — Vercel değişkenli require'ı çözümleyemez ` +
+      `(bulunan: ${dynamic.join(", ")})`);
+
+    // Okunan her veri dosyası gerçekten var olmalı: pakete girse bile
+    // olmayan bir dosya aynı sessiz boşluğu üretir.
+    for (const [, dataFile] of source.matchAll(/require\("\.\.\/(data\/[^"]+)"\)/g)) {
+      assert.ok(fs.existsSync(path.join(root, dataFile)), `${file}: ${dataFile} yok`);
+    }
+  }
+}
+
+console.log("home-poll OK (14 bölüm)");

@@ -40,9 +40,48 @@ const SOURCE = "motm-week";
  * ama sonsuz bir liste değil ve her satır bir depo okuması demek. */
 const MAX_MATCH_POLLS = 20;
 
-function loadJson(relative) {
+/**
+ * VERİ DOSYALARI SABİT DİZEYLE İSTENİR.
+ *
+ * Gerekçe `server/homePollRoute.js` başındaki yorumda ayrıntılı: Vercel
+ * bağımlılıkları statik çözümlüyor, `require(değişken)` görünmez oluyor ve
+ * dosya fonksiyon paketine girmiyor — uç nokta canlıda sessizce boş dönüyor.
+ */
+function loadMatches() {
   try {
-    return require(relative);
+    return require("../data/matches.json");
+  } catch (error) {
+    return null;
+  }
+}
+
+function loadPollPages() {
+  try {
+    return require("../data/motm-poll-pages.json");
+  } catch (error) {
+    return null;
+  }
+}
+
+function loadPlayers() {
+  try {
+    return require("../data/players.json");
+  } catch (error) {
+    return null;
+  }
+}
+
+function loadTeams() {
+  try {
+    return require("../data/teams.json");
+  } catch (error) {
+    return null;
+  }
+}
+
+function loadReports() {
+  try {
+    return require("../data/post-match-reports.json");
   } catch (error) {
     return null;
   }
@@ -67,7 +106,7 @@ async function handleMotmWeek(req, res) {
   const unavailable = (note) =>
     sendSuccess(res, { storage: "unavailable", players: [], matchCount: 0, totalVotes: 0 }, SOURCE, null, { note });
 
-  const matches = loadJson("../data/matches.json");
+  const matches = loadMatches();
   const candidates = weeklyPollMatches(matches || {});
 
   // NOT: depo kapalıysa haftalık OYUNCU sıralaması hiç gösterilmez (aşağıda),
@@ -94,7 +133,7 @@ async function handleMotmWeek(req, res) {
    * "oy ver" bağlantısı, bağlantı olmamasından kötüdür.
    */
   if (String(getQuery(req).scope || "") === "matches") {
-    const pageMap = (loadJson("../data/motm-poll-pages.json") || {}).pages || {};
+    const pageMap = (loadPollPages() || {}).pages || {};
     const index = indexMatchesById(matches || {});
 
     const linked = Object.keys(pageMap)
@@ -177,9 +216,9 @@ async function handleMotmWeek(req, res) {
     const data = selectWeeklyTopPlayers({
       matches: matches || {},
       tallies,
-      players: loadJson("../data/players.json") || [],
-      teams: loadJson("../data/teams.json") || [],
-      reports: loadJson("../data/post-match-reports.json") || {}
+      players: loadPlayers() || [],
+      teams: loadTeams() || [],
+      reports: loadReports() || {}
     }, { limit: Number(query.limit) || undefined });
 
     return sendSuccess(res, { storage: "ready", windowDays: 7, ...data }, SOURCE, new Date().toISOString());
