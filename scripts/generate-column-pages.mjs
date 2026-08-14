@@ -194,12 +194,36 @@ export function groupAuthors(columns) {
   return [...authors.values()].sort((left, right) => left.name.localeCompare(right.name, "tr"));
 }
 
+/**
+ * SAYFA METNİ İKİ DİLDE — ŞABLON TEK.
+ *
+ * İngilizce köşe yazısı için ayrı bir şablon yazmak, aynı sayfanın iki
+ * kopyasını bakımda tutmak demekti; biri değişince diğeri geride kalırdı.
+ * Çerçeve metinleri buradan seçiliyor, işaretleme aynı kalıyor.
+ */
+const PAGE_STRINGS = {
+  tr: {
+    lang: "tr", ogLocale: "tr_TR", inLanguage: "tr-TR",
+    breadcrumbLabel: "Sayfa yolu", home: "Ana Sayfa",
+    indexPath: "kose-yazilari.html", backAll: "Tüm Köşe Yazıları",
+    byline: (author, title) => `${author} yazdı: ${title}`
+  },
+  en: {
+    lang: "en", ogLocale: "en_GB", inLanguage: "en-GB",
+    breadcrumbLabel: "Breadcrumb", home: "Home",
+    indexPath: "en/columns.html", backAll: "All columns",
+    byline: (author, title) => `${author} wrote: ${title}`
+  }
+};
+
 /** Tek yazı sayfası. */
-export function columnPageHtml(column) {
+export function columnPageHtml(column, locale = "tr") {
+  const copy = PAGE_STRINGS[locale === "en" ? "en" : "tr"];
   const url = publicUrl(column.path);
-  const base = "../";
+  // İngilizce yazı iki kat derinlikte (`en/columns/`), Türkçe bir kat.
+  const base = "../".repeat(column.path.split("/").length - 1);
   const pageTitle = column.seoTitle || `${column.title} | FutbolRadar`;
-  const pageDescription = column.metaDescription || column.excerpt || `${column.author} yazdı: ${column.title}`;
+  const pageDescription = column.metaDescription || column.excerpt || copy.byline(column.author, column.title);
   const standfirst = column.hideStandfirst ? "" : (column.spot || column.excerpt);
   const shareDescription = `${pageDescription} — futbolradar.com`;
   const shareImage = column.featuredImage ? publicAssetUrl(column.featuredImage) : SHARE_IMAGE;
@@ -232,11 +256,11 @@ export function columnPageHtml(column) {
     keywords: column.tags.join(", "),
     mainEntityOfPage: url,
     image: shareImage,
-    inLanguage: "tr-TR"
+    inLanguage: copy.inLanguage
   };
 
   return `<!doctype html>
-<html lang="tr">
+<html lang="${copy.lang}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -246,7 +270,7 @@ export function columnPageHtml(column) {
     <meta name="robots" content="index,follow" />
     <meta name="theme-color" content="#0b8f5a" />
     <meta property="og:type" content="article" />
-    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:locale" content="${copy.ogLocale}" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:url" content="${escapeHtml(url)}" />
     <meta property="og:title" content="${escapeHtml(pageTitle)}" />
@@ -267,7 +291,7 @@ export function columnPageHtml(column) {
   <body class="subpage column-page">
     ${siteHeader({ base })}
     <main class="container">
-      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="${base}index.html">Ana Sayfa</a><span>/</span><a href="${base}kose-yazilari.html">${escapeHtml(SECTION_NAME)}</a><span>/</span><span>${escapeHtml(column.title)}</span></nav>
+      <nav class="breadcrumb" aria-label="${copy.breadcrumbLabel}"><a href="${base}${locale === "en" ? "en/index.html" : "index.html"}">${escapeHtml(copy.home)}</a><span>/</span><a href="${base}${copy.indexPath}">${escapeHtml(locale === "en" ? "Columns" : SECTION_NAME)}</a><span>/</span><span>${escapeHtml(column.title)}</span></nav>
 
       <article class="column-article">
         <header class="column-article-head">
@@ -295,7 +319,7 @@ export function columnPageHtml(column) {
       </article>
 
       <section class="column-back">
-        <a class="detail-link" href="${base}kose-yazilari.html">Tüm Köşe Yazıları</a>
+        <a class="detail-link" href="${base}${copy.indexPath}">${escapeHtml(copy.backAll)}</a>
       </section>
     </main>
     ${siteFooter({ base })}
@@ -401,12 +425,34 @@ function sitemapEntry(column) {
   </url>`;
 }
 
+/**
+ * hreflang ÇİFTİ — TEK YERDE.
+ *
+ * `data/en-route-map.json`a yazılır; `inject-hreflang.mjs` haritadaki HER
+ * türü kapsıyor (tür süzgeci PR #54'te kaldırıldı), yani buraya kayıt
+ * düşmesi iki tarafa da alternate etiketi basılması için yeterli.
+ */
+function writeRouteMap(englishColumns) {
+  const mapPath = path.join(root, "data", "en-route-map.json");
+  let existing = [];
+  try { existing = JSON.parse(fs.readFileSync(mapPath, "utf8")); } catch { existing = []; }
+  const kept = (Array.isArray(existing) ? existing : []).filter((row) => row && row.kind !== "column");
+  const pairs = englishColumns
+    .filter((column) => column.counterpartPath)
+    .map((column) => ({ kind: "column", tr: column.counterpartPath, en: column.path }));
+  const serialized = `${JSON.stringify([...kept, ...pairs], null, 2)}\n`;
+  if (!fs.existsSync(mapPath) || fs.readFileSync(mapPath, "utf8") !== serialized) {
+    fs.writeFileSync(mapPath, serialized, "utf8");
+  }
+}
+
 function updateSitemap(columns) {
   const entries = columns.map(sitemapEntry);
   for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
     if (!fs.existsSync(sitemapPath)) continue;
     let xml = fs.readFileSync(sitemapPath, "utf8");
-    xml = xml.replace(/  <url>\n    <loc>https:\/\/www\.futbolradar\.com\/kose-yazilari\/[^<]+(?:\.html)?<\/loc>[\s\S]*?  <\/url>\n?/g, "");
+    // İki dizin de temizlenir: Türkçe yazı ve İngilizce karşılığı.
+    xml = xml.replace(/  <url>\n    <loc>https:\/\/www\.futbolradar\.com\/(?:kose-yazilari|en\/columns)\/[^<]+(?:\.html)?<\/loc>[\s\S]*?  <\/url>\n?/g, "");
     xml = xml.replace("</urlset>", `${entries.join("\n")}\n</urlset>`);
     writeGeneratedFile(sitemapPath, xml);
   }
@@ -424,8 +470,21 @@ export function generateColumnPages() {
   fs.mkdirSync(AUTHOR_DIR, { recursive: true });
 
   for (const column of columns) {
-    writeBoth(column.path, columnPageHtml(column));
+    writeBoth(column.path, columnPageHtml(column, "tr"));
   }
+
+  // ── İNGİLİZCE KARŞILIKLAR ────────────────────────────────────────────────
+  //
+  // Yalnızca gövdesi GERÇEKTEN İngilizce yazılmış yazılar. Makine çevirisi
+  // yok: `hasEnglish` başlık ve gövdeyi birlikte arıyor, biri eksikse
+  // İngilizce sayfa hiç üretilmez ve İngilizce yüzey eskisi gibi Türkçe
+  // yazıya bağlanır.
+  const { columns: englishColumns } = publishedColumns(store, { locale: "en" });
+  const translated = englishColumns.filter((column) => column.hasEnglish && column.path);
+  for (const column of translated) {
+    writeBoth(column.path, columnPageHtml(column, "en"));
+  }
+  writeRouteMap(translated);
 
   for (const author of authors) {
     writeBoth(author.path, authorPageHtml(author));
@@ -479,7 +538,7 @@ export function generateColumnPages() {
     writeGeneratedFile(path.join(root, "public", "index.html"), html);
   }
 
-  updateSitemap(columns);
+  updateSitemap([...columns, ...translated]);
 
   console.log(
     `[columns] ${columns.length} yayımlanmış yazı ve ${authors.length} yazar sayfası üretildi` +

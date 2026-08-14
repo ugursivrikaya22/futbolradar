@@ -118,6 +118,26 @@ const columnList = (() => {
   const list = Array.isArray(doc) ? doc : (doc.columns || []);
   return list.filter((entry) => entry && entry.status !== "draft");
 })();
+
+/**
+ * YAZININ İNGİLİZCESİ VAR MI?
+ *
+ * Varsa İngilizce yüzey İngilizce metne bağlanır ve başlık İngilizce
+ * yazılır. Yoksa eski davranış aynen sürer: başlık `lang="tr"` ile kaynak
+ * dilinde gösterilir ve bağlantı Türkçe yazıya gider. Makine çevirisi hâlâ
+ * yok — değişen tek şey, gerçekten İngilizce yazılmış yazıların artık kendi
+ * sayfası olması.
+ */
+function englishColumn(entry) {
+  const en = (entry && entry.en) || {};
+  const hasBody = Array.isArray(en.body) && en.body.filter(Boolean).length > 0;
+  if (!en.title || !en.slug || !hasBody) return null;
+  return {
+    href: `${BASE}en/columns/${en.slug}.html`,
+    title: en.title,
+    excerpt: en.excerpt || ""
+  };
+}
 // Haber akışı kuralı servistedir (services/newsFeed.js) ve Türkçe ön derleme
 // de aynı listeyi oradan alır. Süzgeç burada tekrar yazılmıyor: yazıldığı
 // için `archived` haberler bu sayfada kart olmuş, sayfaları üretilmediğinden
@@ -712,7 +732,8 @@ function columnsSection() {
   if (!columns.length) return "";
 
   const cards = columns.map((column) => {
-    const href = `${BASE}kose-yazilari/${escapeHtml(column.slug || column.id)}.html`;
+    const english = englishColumn(column);
+    const href = english ? escapeHtml(english.href) : `${BASE}kose-yazilari/${escapeHtml(column.slug || column.id)}.html`;
     // Kategori veride slug biçiminde duruyor ("galatasaray"); Türkçe kartta
     // olduğu gibi okunur biçimde yazılır.
     const category = String(column.category || "")
@@ -727,14 +748,20 @@ function columnsSection() {
         <span class="column-badge">Opinion</span>
         ${category ? `<span class="column-category">${escapeHtml(category)}</span>` : ""}
       </div>
-      <h3><a href="${href}" hreflang="tr"><span lang="tr">${escapeHtml(column.title || "")}</span></a></h3>
-      <p lang="tr">${escapeHtml(column.excerpt || "")}</p>
+      <h3>${english
+        ? `<a href="${href}">${escapeHtml(english.title)}</a>`
+        : `<a href="${href}" hreflang="tr"><span lang="tr">${escapeHtml(column.title || "")}</span></a>`}</h3>
+      ${english
+        ? `<p>${escapeHtml(english.excerpt)}</p>`
+        : `<p lang="tr">${escapeHtml(column.excerpt || "")}</p>`}
       <div class="column-card-meta">
         <span class="column-author">${escapeHtml(column.author || "FutbolRadar")}</span>
         <time datetime="${escapeHtml(column.date || "")}">${escapeHtml(formatDate(column.date, LOCALE))}</time>
       </div>
       <div class="column-tags">${tags}</div>
-      <div class="column-card-actions"><a class="column-card-detail" href="${href}" hreflang="tr">Read the column (in Turkish)</a></div>
+      <div class="column-card-actions">${english
+        ? `<a class="column-card-detail" href="${href}">Read the column</a>`
+        : `<a class="column-card-detail" href="${href}" hreflang="tr">Read the column (in Turkish)</a>`}</div>
     </article>`;
   }).join("");
 
@@ -1705,16 +1732,22 @@ function archivePage() {
  */
 function columnsPage() {
   const cards = columnList.slice(0, 24).map((column) => {
-    const href = escapeHtml(`${BASE}${String(column.path || "").replace(/^\.?\//, "")}`);
+    const english = englishColumn(column);
+    const href = escapeHtml(english
+      ? english.href
+      : `${BASE}${String(column.path || "").replace(/^\.?\//, "")}`);
     const published = column.publishedAt || column.date || "";
+    const titleAttr = english ? "" : ' lang="tr"';
+    const linkAttr = english ? "" : ' hreflang="tr" lang="tr"';
+    const summary = english ? english.excerpt : column.summary;
     return `<article class="column-card" data-card="column">
             <div class="column-card-head"><span class="column-badge">Opinion</span>
             <span class="column-category" lang="tr">${escapeHtml(column.categoryLabel || column.category || "")}</span></div>
-            <h3 lang="tr">${escapeHtml(column.title || "")}</h3>
-            ${column.summary ? `<p lang="tr">${escapeHtml(column.summary)}</p>` : ""}
+            <h3${titleAttr}>${escapeHtml(english ? english.title : (column.title || ""))}</h3>
+            ${summary ? `<p${titleAttr}>${escapeHtml(summary)}</p>` : ""}
             <div class="column-card-foot"><span>${escapeHtml(column.author || "FutbolRadar")}</span>
             ${published ? `<time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time>` : ""}</div>
-            <a class="detail-link" href="${href}" hreflang="tr" lang="tr">Read the column (in Turkish)</a>
+            <a class="detail-link" href="${href}"${linkAttr}>${english ? "Read the column" : "Read the column (in Turkish)"}</a>
           </article>`;
   }).join("");
 

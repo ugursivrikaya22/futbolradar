@@ -116,10 +116,38 @@ function validateColumn(entry) {
   return { valid: errors.length === 0, errors };
 }
 
-/** Yazının kalıcı sayfa yolu. */
-function columnPath(entry) {
+/**
+ * Yazının kalıcı sayfa yolu.
+ *
+ * İngilizce karşılık AYRI BİR DİZİNDE (`en/columns/`) ve KENDİ slug'ıyla
+ * durur. Türkçe slug'ı İngilizce tarafta yeniden kullanmak, İngilizce
+ * okuyucuya adresinde anlamadığı bir dil sunmak olurdu.
+ */
+function columnPath(entry, locale) {
+  if (normalizeLocale(locale) === "en") {
+    const en = (entry && entry.en) || {};
+    const slug = text(en.slug) || slugify(en.title);
+    return slug ? `en/columns/${slug}.html` : "";
+  }
   const slug = text(entry && entry.slug) || slugify(entry && entry.title);
   return `kose-yazilari/${slug}.html`;
+}
+
+function normalizeLocale(locale) {
+  return String(locale || "tr").toLowerCase() === "en" ? "en" : "tr";
+}
+
+/**
+ * Yazının İngilizce karşılığı YAYINA HAZIR MI?
+ *
+ * Yarım çeviri yayına girmemeli: başlık İngilizce ama gövde Türkçe kalırsa
+ * okuyucu iki dilin arasında kalır. Bu yüzden gövde ve başlık BİRLİKTE
+ * aranıyor; biri eksikse İngilizce sayfa hiç üretilmez ve İngilizce yüzey
+ * eskisi gibi Türkçe yazıya bağlanır.
+ */
+function hasEnglish(entry) {
+  const en = (entry && entry.en) || {};
+  return Boolean(text(en.title) && Array.isArray(en.body) && en.body.filter(Boolean).length);
 }
 
 /** Yazarın tüm yayımlanmış yazılarını listeleyen kalıcı sayfa yolu. */
@@ -133,13 +161,19 @@ function authorPath(name) {
  * Künye ve "Köşe Yazısı" rozeti BURADA ekleniyor; her yüzeyin kendi başına
  * hatırlaması gerekmesin diye. Rozeti unutmak mümkün olmamalı.
  */
-function presentColumn(entry) {
+function presentColumn(entry, locale) {
   const status = text(entry.status);
   const category = text(entry.category);
+  const wanted = normalizeLocale(locale);
+  // İngilizce alanlar varsa onlar kullanılır; yoksa Türkçe kayıt olduğu
+  // gibi döner (çağıran taraf `hasEnglish` ile zaten eleme yapıyor).
+  const source = wanted === "en" && hasEnglish(entry) ? { ...entry, ...entry.en } : entry;
 
   return {
     id: text(entry.id),
-    title: text(entry.title),
+    locale: wanted,
+    hasEnglish: hasEnglish(entry),
+    title: text(source.title),
     author: text(entry.author),
     authorPath: authorPath(entry.author),
     date: text(entry.date),
@@ -150,15 +184,19 @@ function presentColumn(entry) {
     statusLabel: STATUSES[status] ? STATUSES[status].label : status,
     isPublic: Boolean(STATUSES[status] && STATUSES[status].public),
     contentType: text(entry.contentType),
-    excerpt: text(entry.excerpt),
-    spot: text(entry.spot),
-    seoTitle: text(entry.seoTitle),
-    metaDescription: text(entry.metaDescription),
+    excerpt: text(source.excerpt),
+    spot: text(source.spot),
+    seoTitle: text(source.seoTitle),
+    metaDescription: text(source.metaDescription),
     featuredImage: text(entry.featuredImage),
     featuredImageAlt: text(entry.featuredImageAlt),
     hideStandfirst: Boolean(entry.hideStandfirst),
-    body: Array.isArray(entry.body) ? entry.body.map(text).filter(Boolean) : [],
-    path: columnPath(entry),
+    body: Array.isArray(source.body) ? source.body.map(text).filter(Boolean) : [],
+    path: columnPath(entry, wanted),
+    // Karşı dilin adresi: hreflang ve dil değiştirme bağlantısı bunu okur.
+    counterpartPath: hasEnglish(entry)
+      ? columnPath(entry, wanted === "en" ? "tr" : "en")
+      : "",
     // Ayrımı taşıyan iki alan. Her kart ve her sayfa bunları basar.
     badge: OPINION_BADGE,
     disclaimer: OPINION_DISCLAIMER
@@ -185,7 +223,7 @@ function publishedColumns(store, options = {}) {
       continue;
     }
     if (text(entry.status) !== "published") continue;
-    columns.push(presentColumn(entry));
+    columns.push(presentColumn(entry, options.locale));
   }
 
   columns.sort((left, right) => String(right.date).localeCompare(String(left.date)));
@@ -216,6 +254,7 @@ module.exports = {
   STATUSES,
   authorPath,
   columnPath,
+  hasEnglish,
   draftColumns,
   logRejected,
   presentColumn,
