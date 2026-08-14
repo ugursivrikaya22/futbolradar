@@ -24,7 +24,7 @@
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
-    <link rel="stylesheet" href="./page.css?v=e5eaf91e" />
+    <link rel="stylesheet" href="./page.css?v=65448993" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -123,7 +123,7 @@
 
 
 
-      <main>
+      <main class="home-main">
         <section class="container hero" id="hero-canli-skor">
           <div>
             <span class="eyebrow"><i class="live-pulse" aria-hidden="true"></i> Canlı maç merkezi</span>
@@ -233,30 +233,30 @@
           </div>
         </section>
 
-        <!-- Tahmin anketi: soru ve seçenekler data/home-polls.json takviminden,
-             oylar Supabase'ten gelir. Blok hidden doğar; site.js /api/home-poll
-             yayında bir anket bildirirse açar. Takvimde anket yoksa hiç görünmez. -->
-        <section class="container section home-poll" id="tahmin-anketi" aria-labelledby="home-poll-title" data-home-poll data-home-poll-source="/api/home-poll" data-home-poll-locale="tr" hidden>
+        <!-- home-poll:start --><section class="container section home-poll" id="tahmin-anketi" aria-labelledby="home-poll-title" data-home-poll data-home-poll-source="/api/home-poll" data-home-poll-locale="tr" data-home-poll-id="super-lig-2026-2027-sampiyon" role="region" aria-label="Ana sayfa tahmin anketi">
           <div class="home-poll__inner">
             <div class="home-poll__head">
               <span class="home-poll__kicker" data-home-poll-kicker>Okuyucu Anketi</span>
-              <h2 class="home-poll__title" id="home-poll-title" data-home-poll-question></h2>
-              <p class="home-poll__subtitle" data-home-poll-subtitle></p>
+              <h2 class="home-poll__title" id="home-poll-title" data-home-poll-question>Bu sezon Trendyol Süper Lig şampiyonu sence kim olacak?</h2>
+              <p class="home-poll__subtitle" data-home-poll-subtitle>Okuyucu tahmini. Bu bir veri iddiası değil, topluluğun beklentisidir; her tarayıcı bir kez oy verebilir.</p>
               <p class="home-poll__deadline" data-home-poll-deadline hidden></p>
             </div>
-            <form class="home-poll__form" data-home-poll-form hidden>
-              <ul class="home-poll__options" data-home-poll-options></ul>
-              <button class="home-poll__submit" type="submit" data-home-poll-submit>Oyunu Ver</button>
+            <form class="home-poll__form" data-home-poll-form>
+              <ul class="home-poll__options" data-home-poll-options><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-alanyaspor" value="alanyaspor"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-alanyaspor"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/996.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Alanyaspor</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-amed" value="amed"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-amed"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/3579.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Amed</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-basaksehir" value="basaksehir"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-basaksehir"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/564.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Başakşehir</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-besiktas" value="besiktas"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-besiktas"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/549.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Beşiktaş</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-corum-fk" value="corum-fk"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-corum-fk"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/6343.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Çorum FK</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-erzurumspor-fk" value="erzurumspor-fk"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-erzurumspor-fk"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/1009.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Erzurumspor FK</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-eyupspor" value="eyupspor"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-eyupspor"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/3588.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Eyüpspor</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-fenerbahce" value="fenerbahce"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-fenerbahce"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/611.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Fenerbahçe</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-galatasaray" value="galatasaray"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-galatasaray"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/645.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Galatasaray</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-gaziantep-fk" value="gaziantep-fk"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-gaziantep-fk"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/3573.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Gaziantep FK</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-genclerbirligi-s-k" value="genclerbirligi-s-k"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-genclerbirligi-s-k"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/997.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Gençlerbirliği S.K.</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-goztepe" value="goztepe"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-goztepe"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/994.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Göztepe</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-kasimpasa" value="kasimpasa"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-kasimpasa"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/1004.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Kasımpaşa</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-kocaelispor" value="kocaelispor"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-kocaelispor"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/7411.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Kocaelispor</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-konyaspor" value="konyaspor"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-konyaspor"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/607.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Konyaspor</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-rizespor" value="rizespor"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-rizespor"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/1007.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Rizespor</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-samsunspor" value="samsunspor"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-samsunspor"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/3603.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Samsunspor</span></label></li><li class="home-poll__option"><input class="home-poll__radio" type="radio" name="home-poll-choice" id="home-poll-super-lig-2026-2027-sampiyon-trabzonspor" value="trabzonspor"><label class="home-poll__label" for="home-poll-super-lig-2026-2027-sampiyon-trabzonspor"><img class="home-poll__crest" src="https://media.api-sports.io/football/teams/998.png" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer"><span class="home-poll__option-name">Trabzonspor</span></label></li></ul>
+              <button class="home-poll__submit" type="submit" data-home-poll-submit disabled>Oyunu Ver</button>
             </form>
             <p class="home-poll__thanks" data-home-poll-thanks hidden>Teşekkürler! Güncel sonuçlar aşağıda.</p>
             <ol class="home-poll__results" data-home-poll-results aria-live="polite" hidden></ol>
             <p class="home-poll__total" data-home-poll-total hidden></p>
             <p class="home-poll__note" data-home-poll-note="closed" hidden>Bu anket kapandı; sonuçlar kesinleşti.</p>
+            <p class="home-poll__note" data-home-poll-note="offline" hidden>Oylama şu anda kullanılamıyor. Soru ve seçenekler görünür; oylar açıldığında bu kutudan oy verebilirsin.</p>
             <p class="home-poll__note" data-home-poll-note="community" hidden>Sonuçlar tüm okuyucuların oylarından hesaplanıyor. Her tarayıcı bir kez oy verebilir.</p>
             <p class="home-poll__note" data-home-poll-note="local" hidden>Oy deposuna ulaşılamadı; aşağıdaki sonuç topluluk ortalaması değil, yalnızca bu tarayıcıda saklanan oydur.</p>
             <p class="home-poll__disclaimer">Bu bölüm okuyucu tahminidir; sitenin doğrulanmış maç verisinden ayrıdır.</p>
           </div>
-        </section>
+        </section><!-- home-poll:end -->
+
+
 
         <!-- Bu Haftanın En Çok Oy Alanları: gerçek okuyucu oylarından beslenir.
              Blok hidden doğar; site.js /api/motm-week'ten GERÇEK sayım bulursa
@@ -615,7 +615,7 @@
       </div>
     </footer>
     </div>
-    <script src="./site.js?v=e16f9561" defer></script>
+    <script src="./site.js?v=c187bf11" defer></script>
     <script src="./app.js?v=f1c21f24" defer></script>
     <!-- ANALYSES CARD -->  <div class="analyses-card">
       <h3>Maç Analizleri</h3>
