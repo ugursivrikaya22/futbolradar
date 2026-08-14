@@ -35,7 +35,7 @@ const {
   selectMatchSpecial
 } = require("../services/matchSpecial.js");
 const { formatDate, formatTime, formatWeekday, absoluteUrl, hreflangOf } = require("../services/i18n.js");
-const { confirmedHomeVenue } = require("../services/superLigTeams.js");
+const { normalizeFixtureCalendar } = require("../services/fixtureCalendar.js");
 
 const root = process.cwd();
 const TR_DIR = "mac-dosyasi";
@@ -488,31 +488,13 @@ function modulePage(special, module, locale) {
 // ── Üretim ──────────────────────────────────────────────────────────────────
 
 /**
- * SAĞLAYICI TAKVİMİ BAZI LİG MAÇLARINI SAHASIZ GÖNDERİYOR.
- *
  * `services/matchSpecial.js` bilerek bağımlılıksız: bütün veriyi `sources`
- * üzerinden alıyor ve hiçbir dosyayı kendi okumuyor. Bu yüzden saha onarımı
+ * üzerinden alıyor ve hiçbir dosyayı kendi okumuyor. Bu yüzden takvim onarımı
  * verinin YÜKLENDİĞİ yerde yapılıyor, servisin içinde değil.
- *
- * Kural `services/providers/mockProvider.js` ile aynı ve aynı gerekçeyle
- * yalnızca lige uygulanıyor: lig maçında ev sahibi kendi stadında oynar,
- * hazırlık maçında oynamayabilir. Stat adı fikstür dosyasında "confirmed";
- * uydurulmuyor, doğrulanmış kayıttan okunuyor.
  */
-function withVenues(payload) {
-  const matches = Array.isArray(payload) ? payload : (payload && payload.matches);
-  if (!Array.isArray(matches)) return payload;
-  const patched = matches.map((match) => {
-    if (!match || match.league !== "Süper Lig" || (match.venue && String(match.venue).trim())) return match;
-    const venue = confirmedHomeVenue(match.homeTeam);
-    return venue ? { ...match, venue, venueSource: "club-home-ground" } : match;
-  });
-  return Array.isArray(payload) ? patched : { ...payload, matches: patched };
-}
-
 const sources = {
   specials: readJson("data/match-specials.json") || {},
-  fixtures: withVenues(readJson("data/fixture-calendar.json") || {}),
+  fixtures: normalizeFixtureCalendar(readJson("data/fixture-calendar.json") || {}),
   squads: readJson("data/super-lig-squads.json") || {},
   archive: readJson("data/season-archive.json") || {}
 };
