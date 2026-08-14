@@ -17,16 +17,9 @@ import { siteHeader, siteFooter, newsTicker } from "./lib/layout.mjs";
 import { buildTickerFeed } from "./lib/tickerFeed.mjs";
 import { buildEnTickerItems } from "./lib/enTicker.mjs";
 import { transferTickerBlock, TRANSFER_TICKER_PAGES } from "./lib/transferTicker.mjs";
-import {
-  besiktasTickerBlock,
-  BESIKTAS_TICKER_PAGES,
-  BESIKTAS_TICKER_MESSAGE_PAGES
-} from "./lib/besiktasTransferTicker.mjs";
 
 const { counterpartPath, localeOfPath } = createRequire(import.meta.url)("../services/i18n.js");
 const { selectTickerRecords, foldText } = createRequire(import.meta.url)("../services/transferRadarTicker.js");
-const { selectBesiktasTransferItems, logRejected: logBesiktasRejected } =
-  createRequire(import.meta.url)("../services/besiktasTransferTicker.js");
 
 const root = process.cwd();
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
@@ -35,7 +28,6 @@ const HEADER_RE = /<header\b[^>]*class="[^"]*\btopbar\b[^"]*"[^>]*>[\s\S]*?<\/he
 const FOOTER_RE = /<footer\b[^>]*class="[^"]*\bfooter\b[^"]*"[^>]*>[\s\S]*?<\/footer>/i;
 const TICKER_RE = /[\t ]*<!-- shared-layout:ticker:start -->[\s\S]*?<!-- shared-layout:ticker:end -->\n?/g;
 const TRANSFER_TICKER_RE = /[\t ]*<!-- shared-layout:transfer-ticker:start -->[\s\S]*?<!-- shared-layout:transfer-ticker:end -->\n?/g;
-const BESIKTAS_TICKER_RE = /[\t ]*<!-- shared-layout:besiktas-ticker:start -->[\s\S]*?<!-- shared-layout:besiktas-ticker:end -->\n?/g;
 
 function readGeneratedFile(file) {
   for (let attempt = 0; attempt < 12; attempt += 1) {
@@ -156,24 +148,6 @@ const enTransferRecords = selectTickerRecords(readJson("transfers.json") || {}, 
     toTeam: foldText(item.toTeam) === "serbest oyuncu" ? "Free agent" : item.toTeam,
     fromTeam: foldText(item.fromTeam) === "serbest oyuncu" ? "Free agent" : item.fromTeam
   }));
-// BEŞİKTAŞ TRANSFER GÜNDEMİ.
-//
-// Seçim servistedir. Buradaki tek karar YİNELENEN METNİ ÖNLEMEK: genel
-// haber bandı aynı sayfanın tepesinde aynı transferi zaten taşıyorsa
-// okuyucu iki şeritte aynı cümleyi okur, arama motoru da sayfada
-// tekrarlanan metin görür. Genel bandın başlıkları eleme listesi olarak
-// geçiliyor; çakışan öğe Beşiktaş bandına girmez.
-const besiktasFeed = selectBesiktasTransferItems(
-  {
-    transfers: readJson("transfers.json") || {},
-    curated: readJson("besiktas-transfer-ticker.json") || {}
-  },
-  { exclude: tickerItems.map((item) => item && item.text).filter(Boolean) }
-);
-logBesiktasRejected(besiktasFeed.rejected);
-
-const BESIKTAS_TICKER_PAGE_SET = new Set(BESIKTAS_TICKER_PAGES);
-const BESIKTAS_TICKER_MESSAGE_SET = new Set(BESIKTAS_TICKER_MESSAGE_PAGES);
 
 const files = [...collectHtmlFiles(root), ...collectHtmlFiles(path.join(root, "public"))]
   .filter((file) => !path.relative(root, file).startsWith("node_modules"));
@@ -222,22 +196,13 @@ for (const file of files) {
     ? transferTickerBlock(locale === "en" ? enTransferRecords : transferRecords, { locale })
     : "";
 
-  // Beşiktaş bandı diğer iki bandın ALTINA, yalnızca listedeki Türkçe
-  // sayfalara girer. İngilizce tarafta hiç basılmaz: başlık ve durum
-  // etiketleri çevrilmemiş Türkçe metindir.
-  const besiktasTicker = locale !== "en" && BESIKTAS_TICKER_PAGE_SET.has(sitePath)
-    ? besiktasTickerBlock(besiktasFeed.items, { keepEmpty: BESIKTAS_TICKER_MESSAGE_SET.has(sitePath) })
-    : "";
-
   const headerBlock = [
     siteHeader({ base, locale, altHref }),
     ticker ? `\n      <!-- shared-layout:ticker:start -->${ticker}<!-- shared-layout:ticker:end -->` : "",
-    transferTicker ? `\n      <!-- shared-layout:transfer-ticker:start -->${transferTicker}<!-- shared-layout:transfer-ticker:end -->` : "",
-    besiktasTicker ? `\n      <!-- shared-layout:besiktas-ticker:start -->${besiktasTicker}<!-- shared-layout:besiktas-ticker:end -->` : ""
+    transferTicker ? `\n      <!-- shared-layout:transfer-ticker:start -->${transferTicker}<!-- shared-layout:transfer-ticker:end -->` : ""
   ].join("");
 
-  let next = original.replace(BESIKTAS_TICKER_RE, "");
-  next = next.replace(TRANSFER_TICKER_RE, "");
+  let next = original.replace(TRANSFER_TICKER_RE, "");
   next = next.replace(TICKER_RE, "");
   next = next.replace(HEADER_RE, () => headerBlock);
   next = next.replace(FOOTER_RE, () => siteFooter({ base, locale }));
@@ -251,6 +216,5 @@ for (const file of files) {
 console.log(
   `Shared layout applied: ${updated} updated, ${skipped} without layout blocks, ` +
   `${tickerItems.length} ticker items (${tickerFeed.badge}` +
-  `${tickerFeed.usedFallback ? ", son doğrulanmış içerik korundu" : ""}), ` +
-  `${besiktasFeed.items.length} Beşiktaş transfer öğesi`
+  `${tickerFeed.usedFallback ? ", son doğrulanmış içerik korundu" : ""})`
 );
