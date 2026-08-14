@@ -141,7 +141,19 @@ function configurationHint() {
       ? "servis anahtari yerine anon anahtari tanimli; RLS anon rolune izin vermiyor, service_role gerekiyor"
       : "";
   }
-  if (!url && !key && !anon) return "SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY tanimli degil";
+  if (!url && !key && !anon) {
+    // HİÇBİRİ YOKSA İKİ AYRI SEBEP VAR VE AYIRT EDİLMELERİ GEREKİR:
+    // değişkenler bu projeye/ortama hiç eklenmemiş, ya da eklenmiş ama
+    // TANIMADIĞIMIZ bir adla (yazım hatası, baştaki/sondaki boşluk, farklı
+    // isim). Ortamdaki "supabase" geçen değişkenlerin SAYISI bunu ayırır.
+    //
+    // Yalnızca SAYI yazılır — ad da değer de yazılmaz. Sayı tek başına
+    // hiçbir sır taşımaz ama operatörün hangi hatayı yaptığını gösterir.
+    const seen = Object.keys(process.env).filter((name) => /supabase/i.test(name)).length;
+    return seen
+      ? `SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY tanimli degil; ortamda "supabase" gecen ${seen} degisken var — adlar bekleneni tutmuyor`
+      : "SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY tanimli degil; ortamda \"supabase\" gecen hicbir degisken yok — degiskenler bu projeye/ortama ulasmamis";
+  }
   if (!url) return "SUPABASE_URL tanimli degil";
   if (anon && !key) {
     return "yalnizca SUPABASE_ANON_KEY tanimli; RLS anon rolune izin vermiyor, SUPABASE_SERVICE_ROLE_KEY gerekiyor";
