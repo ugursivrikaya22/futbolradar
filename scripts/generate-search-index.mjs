@@ -19,6 +19,7 @@ const require = createRequire(import.meta.url);
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { mergeSuperLigTeams } = require("../services/superLigTeams.js");
 const { publishedColumns } = require("../services/columnService.js");
+const { ROUTES: I18N_ROUTES, routeMeta } = require("../services/i18n.js");
 
 function readJson(file) {
   try {
@@ -39,6 +40,33 @@ function asArray(payload, ...keys) {
   }
   return [];
 }
+
+/**
+ * İNGİLİZCE SAYFALAR DA DİZİNDE — LİSTE ROTA EŞLEMESİNDEN TÜRER.
+ *
+ * Dizin yalnızca Türkçe sayfaları taşıyordu ve İngilizce başlıkta arama
+ * kutusu bu yüzden hiç açılmıyordu. Kutu artık iki dilde de var (layout.mjs),
+ * dolayısıyla İngilizce sayfaların da aranabilir olması gerekiyor — yoksa
+ * İngilizce okuyucu kendi dilindeki sayfayı arayıp bulamazdı.
+ *
+ * Liste ELLE TUTULMUYOR: `services/i18n.js` içindeki rota eşlemesinden
+ * okunuyor. Elle tutulan bir kopya, ileride eklenen her İngilizce rotanın
+ * aranamaz kalması demekti — nitekim rota sayısı 6'dan 17'ye çıktığında
+ * kopya bir anda eskimişti.
+ *
+ * Üretilen İngilizce alt sayfalar (maç/oyuncu/takım detayları) dizine
+ * girmez: dosyayı birkaç katına çıkarırlardı ve o sayfalara zaten Türkçe
+ * karşılıklarından hreflang ile ulaşılıyor.
+ */
+const EN_PAGES = I18N_ROUTES.map((route) => {
+  const meta = routeMeta(route.key, "en");
+  return {
+    href: route.en,
+    // Başlıktaki " | FutbolRadar" kuyruğu sonuç satırında gereksiz gürültü.
+    title: String(meta.title || "").split(" | ")[0],
+    subtitle: String(meta.description || "").split(". ")[0]
+  };
+});
 
 const EXTRA_PAGES = [
   { href: "index.html", title: "Ana Sayfa", subtitle: "Canlı skor ve maç merkezi" },
@@ -72,6 +100,14 @@ for (const link of [...NAV_PRIMARY, ...NAV_SECONDARY]) {
 
 for (const page of EXTRA_PAGES) {
   push({ type: "page", badge: "SYF", href: page.href, title: page.title, subtitle: page.subtitle });
+}
+
+// İngilizce sayfalar KENDİ TİPİYLE girer ("enPage", rozet "EN"). Türkçe
+// sayfalarla aynı rozeti taşısalardı, Türkçe bir sayfada arayan okuyucu
+// tıkladığında habersizce İngilizce bir sayfaya düşerdi; rozet hedefin
+// dilini tıklamadan önce söyler.
+for (const page of EN_PAGES) {
+  push({ type: "enPage", badge: "EN", href: page.href, title: page.title, subtitle: page.subtitle, locale: "en" });
 }
 
 for (const article of asArray(readJson("news.json"), "news", "items")) {

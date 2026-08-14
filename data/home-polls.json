@@ -1,0 +1,75 @@
+{
+  "_comment": "ANA SAYFA TAHMİN ANKETLERİ — TAKVİMLİ KAMPANYA DOSYASI. Kural ve doğrulama: services/homePoll.js, belge: docs/home-poll.md. Ankete SIRAYLA girilir: aynı anda YALNIZCA BİR anket açıktır ve o, 'startsAt' ile 'endsAt' arasında bulunan ankettir. Bir anket kapanınca sonuçları gösterilmeye devam eder ve sıradaki anket kendi 'startsAt' saatinde otomatik açılır — kod değişikliği ya da elle müdahale gerekmez. Her anket EN AZ 14 gün açık kalmak ZORUNDA (kısa pencereli kayıt elenir ve nedeni derleme günlüğüne yazılır). Yeni anket eklemek için 'polls' dizisine bir nesne yazmak yeterlidir; tarihler çakışmamalıdır. 'optionSource' alanı 'super-lig-teams' ise seçenekler data/teams.json içindeki güncel Süper Lig kulüplerinden RESMİ ad ve armalarıyla otomatik doldurulur; başka anket türlerinde seçenekler 'options' dizisinde elle yazılır. Soru, alt başlık ve seçenek etiketleri Türkçe ve İngilizce olarak birlikte verilir — iki sürüm birebir aynı ankettir, yalnızca dil değişir.",
+  "_sample": {
+    "_comment": "YALNIZCA ŞEKİL ÖRNEĞİ — YAYINA ÇIKMAZ. Bu anahtar servis tarafından HİÇ OKUNMAZ. Elle seçenekli bir anket (transfer/teknik direktör/oyuncu) böyle yazılır; kopyalayıp 'polls' dizisine taşıyın ve alanları gerçek bilgiyle doldurun.",
+    "poll": {
+      "id": "ornek-anket-yayina-cikmaz",
+      "type": "custom",
+      "startsAt": "2027-01-01T00:00:00+03:00",
+      "endsAt": "2027-01-20T00:00:00+03:00",
+      "question": {
+        "tr": "ÖRNEK SORU?",
+        "en": "SAMPLE QUESTION?"
+      },
+      "subtitle": {
+        "tr": "ÖRNEK alt başlık.",
+        "en": "SAMPLE subtitle."
+      },
+      "options": [
+        {
+          "id": "ornek-secenek",
+          "label": { "tr": "Örnek Seçenek", "en": "Sample Option" },
+          "team": "Galatasaray"
+        }
+      ]
+    }
+  },
+  "updatedAt": "2026-08-14T00:00:00+03:00",
+  "polls": [
+    {
+      "id": "super-lig-2026-2027-sampiyon",
+      "type": "champion",
+      "startsAt": "2026-08-14T00:00:00+03:00",
+      "endsAt": "2026-09-15T00:00:00+03:00",
+      "optionSource": "super-lig-teams",
+      "question": {
+        "tr": "🏆 Bu Sezon Trendyol Süper Lig Şampiyonu Sence Kim Olacak?",
+        "en": "🏆 Who Will Win the Trendyol Süper Lig This Season?"
+      },
+      "subtitle": {
+        "tr": "Okuyucu tahmini. Bu bir veri iddiası değil, topluluğun beklentisidir; her tarayıcı bir kez oy verebilir.",
+        "en": "A reader prediction. This is not a data claim but the community's expectation; each browser can vote once."
+      }
+    },
+    {
+      "id": "super-lig-2026-2027-ilk-dort",
+      "type": "top-four",
+      "startsAt": "2026-09-15T00:00:00+03:00",
+      "endsAt": "2026-10-15T00:00:00+03:00",
+      "optionSource": "super-lig-teams",
+      "question": {
+        "tr": "Bu Sezon Süper Lig'i İlk 4'te Kim Bitirir?",
+        "en": "Who Will Finish in the Süper Lig Top 4 This Season?"
+      },
+      "subtitle": {
+        "tr": "Şampiyonluk dışında ilk dörde gireceğini düşündüğün kulübü seç. Okuyucu tahminidir.",
+        "en": "Pick the club you expect to reach the top four. A reader prediction."
+      }
+    },
+    {
+      "id": "super-lig-2026-2027-dusen",
+      "type": "relegation",
+      "startsAt": "2026-10-15T00:00:00+03:00",
+      "endsAt": "2026-11-15T00:00:00+03:00",
+      "optionSource": "super-lig-teams",
+      "question": {
+        "tr": "Bu Sezon Süper Lig'den Kim Düşer?",
+        "en": "Who Will Be Relegated from the Süper Lig This Season?"
+      },
+      "subtitle": {
+        "tr": "Küme düşeceğini düşündüğün kulübü seç. Bu bir tahmindir; sitenin doğrulanmış maç verisinden ayrıdır.",
+        "en": "Pick the club you expect to go down. This is a prediction, separate from the site's verified match data."
+      }
+    }
+  ]
+}

@@ -30,14 +30,33 @@ const ROUTE_PATH = path.join(root, "server", "motmVoteRoute.js");
 const { buildMotmPoll, indexMatchesById } = require(path.join(root, "services", "motmPoll.js"));
 
 /** Gerçek veriden anket hak eden bir maç seç: test uydurma maç kullanmaz. */
-const matches = indexMatchesById(require(path.join(root, "data", "matches.json")));
+const MATCHES_PATH = path.join(root, "data", "matches.json");
+const matches = indexMatchesById(require(MATCHES_PATH));
 let eligibleId = null;
 let eligiblePoll = null;
+let eligibleMatch = null;
 for (const [id, match] of matches) {
   const { poll } = buildMotmPoll(match);
-  if (poll) { eligibleId = id; eligiblePoll = poll; break; }
+  if (poll) { eligibleId = id; eligiblePoll = poll; eligibleMatch = match; break; }
 }
 assert.ok(eligibleId, "anket hak eden en az bir maç bulunmalı");
+
+/**
+ * OYLAMA PENCERESİ İÇİN SAAT AYARI.
+ *
+ * Gerçek kayıtların başlama saati geçmişte kaldıkça pencere (maç sonu +
+ * 24 saat) kapanır ve POST testleri anlamını yitirirdi. Testler bu yüzden
+ * gerçek listeyi, SEÇİLEN maçın başlama saati "3 saat önce" olacak biçimde
+ * kopyalayıp sunar — aday listesi ve tüm diğer alanlar birebir gerçek
+ * kayıttır. Kapanış senaryosu için aynı maçın 40 saat önce başlamış bir
+ * kopyası ("penceresi-kapali-mac") eklenir.
+ */
+const HOUR_MS = 60 * 60 * 1000;
+const CLOSED_ID = "penceresi-kapali-mac";
+const timeShifted = require(MATCHES_PATH).map((record) =>
+  record.id === eligibleId ? { ...record, kickoff: new Date(Date.now() - 3 * HOUR_MS).toISOString() } : record);
+timeShifted.push({ ...eligibleMatch, id: CLOSED_ID, kickoff: new Date(Date.now() - 40 * HOUR_MS).toISOString() });
+require.cache[MATCHES_PATH] = { id: MATCHES_PATH, filename: MATCHES_PATH, loaded: true, exports: timeShifted };
 
 /** Bellekte yaşayan sahte depo; gerçek Redis'e çıkılmaz. */
 function installFakeStore(options = {}) {
@@ -254,4 +273,34 @@ console.log("motm-vote-api");
   process.env = saved;
 }
 
-console.log("motm-vote-api OK (12 bölüm)");
+// ── 13. OYLAMA PENCERESİ: kapanmış maçta oy DEPOYA GİREMEZ ─────────────────
+//
+// Kilit istemcide yalnızca görünümdür; HTML'i kurcalayan biri formu geri
+// açabilir. Sayımı koruyan kapı bu yüzden SUNUCUDA: pencere geçtiyse POST
+// reddedilir ve depoya hiçbir şey yazılmaz. GET ise çalışmaya devam eder —
+// kilitli sonuç okunabilir kalmalı.
+{
+  const handler = installFakeStore();
+
+  const late = await invoke(handler, {
+    method: "POST", body: { matchId: CLOSED_ID, optionId: eligiblePoll.options[0].id }
+  });
+  assert.equal(late.status, 409, "kapanmış ankette oy reddedilmeli");
+  assert.equal(late.payload.error.code, "POLL_CLOSED");
+
+  // Reddedilen oy sayıma girmedi ve GET kilidi bildiriyor.
+  const read = await invoke(handler, { url: `/api/motm-vote?matchId=${CLOSED_ID}` });
+  assert.equal(read.status, 200, "kilitli sonuç okunabilir kalmalı");
+  assert.equal(read.payload.data.votingOpen, false, "GET kilidi bildirmeli");
+  assert.ok(read.payload.data.closesAt, "kapanış saati yanıtta olmalı");
+  assert.equal(read.payload.data.total, 0, "reddedilen oy sayıma girmiş");
+
+  // Penceresi açık maçta aynı istek sayılır ve yanıt pencereyi bildirir.
+  const fresh = await invoke(handler, {
+    method: "POST", body: { matchId: eligibleId, optionId: eligiblePoll.options[0].id }
+  });
+  assert.equal(fresh.payload.data.counted, true, "açık pencerede oy sayılmalı");
+  assert.equal(fresh.payload.data.votingOpen, true);
+}
+
+console.log("motm-vote-api OK (13 bölüm)");

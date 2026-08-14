@@ -188,9 +188,16 @@ async function handleMotmVote(req, res) {
 
   try {
     if (method === "POST") {
+      // KAPI 2 — OYLAMA PENCERESİ. Maç sonundan 24 saat sonra oy kabul
+      // edilmez; sonuçlar kilitlenir. Kapı SUNUCUDA: istemcideki kilit
+      // yalnızca görünümdür, HTML'i kurcalayan biri buradan geçemez.
+      if (!poll.votingOpen) {
+        return sendError(res, 409, "Bu macin oylamasi kapandi; sonuclar kesinlesti.", "POLL_CLOSED", SOURCE);
+      }
+
       const optionId = String((body && body.optionId) || "").trim();
 
-      // KAPI 2 — seçenek O MAÇIN gerçek aday listesinde mi?
+      // KAPI 3 — seçenek O MAÇIN gerçek aday listesinde mi?
       if (!poll.options.some((option) => option.id === optionId)) {
         return sendError(res, 400, "Bu oyuncu bu macin aday listesinde degil.", "OPTION_NOT_IN_POLL", SOURCE);
       }
@@ -208,6 +215,8 @@ async function handleMotmVote(req, res) {
         // Zaten oy verilmişse istemci formu değil sonucu gösterir.
         alreadyVoted: !outcome.counted,
         choice: outcome.counted ? optionId : null,
+        votingOpen: poll.votingOpen,
+        closesAt: poll.closesAt,
         ...tally
       }, SOURCE, new Date().toISOString());
     }
@@ -217,6 +226,9 @@ async function handleMotmVote(req, res) {
       storage: "ready",
       matchId,
       alreadyVoted: voter.isNew ? false : await hasVoted(matchId, voter.voterId),
+      // Kapanmış ankette istemci formu hiç göstermez, kilitli sonucu çizer.
+      votingOpen: poll.votingOpen,
+      closesAt: poll.closesAt,
       ...tally
     }, SOURCE, new Date().toISOString());
   } catch (error) {

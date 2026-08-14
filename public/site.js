@@ -168,21 +168,31 @@
       .trim();
   }
 
-  function scoreEntry(entry, needle) {
+  /**
+   * Eşleşme puanı.
+   *
+   * `locale`, ARAYAN SAYFANIN dilidir. Dizin iki dilli sayfaları birlikte
+   * taşıyor; İngilizce bir sayfada arayan okuyucuya İngilizce karşılığı olan
+   * sayfa önce gösterilir. Bu bir SIRALAMA tercihi, bir süzgeç değil: Türkçe
+   * sonuçlar listeden düşmez, çünkü sitenin içeriğinin çoğu orada ve onları
+   * gizlemek aramayı işe yaramaz kılardı.
+   */
+  function scoreEntry(entry, needle, locale) {
     var name = foldTurkish(entry.title);
     var extra = foldTurkish(entry.subtitle);
+    var localeBonus = locale && entry.locale === locale ? 12 : 0;
 
     if (name.indexOf(needle) === 0) {
-      return 100 - name.length;
+      return 100 - name.length + localeBonus;
     }
     if (name.indexOf(" " + needle) > -1) {
-      return 80 - name.length;
+      return 80 - name.length + localeBonus;
     }
     if (name.indexOf(needle) > -1) {
-      return 60 - name.length;
+      return 60 - name.length + localeBonus;
     }
     if (extra.indexOf(needle) > -1) {
-      return 30;
+      return 30 + localeBonus;
     }
 
     return -1;
@@ -202,6 +212,8 @@
     var panel = form.querySelector(".site-search-panel");
     var clear = form.querySelector(".site-search-clear");
     var base = form.getAttribute("data-search-base") || "./";
+    // Arayan sayfanın dili: aynı dildeki sonuçlar öne alınır (süzgeç değil).
+    var searchLocale = form.getAttribute("data-search-locale") || "tr";
 
     if (!input || !panel) {
       return;
@@ -279,7 +291,7 @@
 
         var matches = index
           .map(function (entry) {
-            return { entry: entry, score: scoreEntry(entry, needle) };
+            return { entry: entry, score: scoreEntry(entry, needle, searchLocale) };
           })
           .filter(function (row) {
             return row.score >= 0;
@@ -758,13 +770,14 @@
     return Math.round((count / total) * 100);
   }
 
-  function renderResults(poll, state) {
+  function renderResults(poll, state, closed) {
     var results = poll.querySelector("[data-motm-results]");
     // İKİ NOT, İKİ İDDİA. Sayım sunucudan geliyorsa sonuç topluluk
     // ortalamasıdır; gelmiyorsa yalnızca bu tarayıcının oylarıdır. Hangi
     // cümlenin gösterildiği, gösterilen sayının ne olduğuna bağlı.
     var noteCommunity = poll.querySelector('[data-motm-note="community"]');
     var noteLocal = poll.querySelector('[data-motm-note="local"]');
+    var noteClosed = poll.querySelector('[data-motm-note="closed"]');
     var form = poll.querySelector("[data-motm-form]");
     var thanks = poll.querySelector("[data-motm-thanks]");
     if (!results) return;
@@ -832,7 +845,10 @@
     });
 
     if (form) form.hidden = true;
-    if (thanks) thanks.hidden = false;
+    // Kapanmış ankette "Teşekkürler" değil "oylama kapandı" konuşur:
+    // teşekkür bir oy eylemine cevaptır, kilitli sonuçta eylem yok.
+    if (thanks) thanks.hidden = Boolean(closed);
+    if (noteClosed) noteClosed.hidden = !closed;
     results.hidden = false;
 
     var remote = Boolean(state && state.remote);
@@ -881,6 +897,14 @@
     return { counts: counts, choice: choice || data.choice || null, remote: true };
   }
 
+  /**
+   * CANLI TAZELEME ARALIĞI. Yüzdeler oy verildikçe değişir; sonucu açık
+   * tutan okuyucu güncel sayıyı görmeli. Aralık bilinçli olarak geniş:
+   * anket bir skor bandı değil ve her sekmenin dakikada bir istekten
+   * fazlasını atması uç noktanın hız sınırına da saygısızlık olurdu.
+   */
+  var REFRESH_INTERVAL_MS = 60000;
+
   function setupPoll(poll) {
     var matchId = poll.getAttribute("data-motm-match");
     var form = poll.querySelector("[data-motm-form]");
@@ -890,25 +914,101 @@
     poll.hidden = false;
 
     var stored = readStore(matchId);
+    var refreshTimer = null;
+
+    // OYLAMA PENCERESİ: kapanış saati işaretlemede taşınır ve KARAR ANLIK
+    // verilir — sayfa pencere açıkken derlenmiş olabilir. Sunucu kendi
+    // kapısını ayrıca tutuyor; buradaki kilit görünümü dürüst tutmak için.
+    var closesStamp = Date.parse(poll.getAttribute("data-motm-closes") || "");
+    function votingClosed() {
+      return isFinite(closesStamp) && closesStamp > 0 && Date.now() >= closesStamp;
+    }
+
+    function stopRefresh() {
+      if (refreshTimer) {
+        window.clearInterval(refreshTimer);
+        refreshTimer = null;
+      }
+    }
+
+    /** Kilitli görünüm: form yok, kapanış notu var, eldeki en iyi sonuç. */
+    function renderLocked(data) {
+      form.hidden = true;
+      var state = data ? serverState(data, stored && stored.choice)
+        : (stored && stored.choice ? stored : null);
+      if (state) {
+        renderResults(poll, state, true);
+      } else {
+        // Gösterilecek sayım yok: yalnızca kapanış bilgisi verilir. Boş
+        // sonuç listesi çizip "%0" iddia etmek uydurma olurdu.
+        var noteClosed = poll.querySelector('[data-motm-note="closed"]');
+        if (noteClosed) noteClosed.hidden = false;
+      }
+      stopRefresh();
+    }
+
+    /**
+     * Sonuç görünümdeyken sayım periyodik tazelenir. Sekme arka plandaysa
+     * istek atılmaz; pencere kapandıysa son bir kez kilitli çizilir ve
+     * zamanlayıcı durur — kilitli sonuç artık değişmez.
+     */
+    function startRefresh() {
+      if (refreshTimer || typeof window.fetch !== "function") return;
+      refreshTimer = window.setInterval(function () {
+        if (document.hidden) return;
+        requestTally(matchId, null).then(function (data) {
+          if (!data) return;
+          if (votingClosed() || data.votingOpen === false) {
+            renderLocked(data);
+            return;
+          }
+          if (data.alreadyVoted || (stored && stored.choice)) {
+            renderResults(poll, serverState(data, stored && stored.choice));
+          }
+        });
+      }, REFRESH_INTERVAL_MS);
+    }
+
+    if (votingClosed()) {
+      // Kilitli anket: herkes sonucu görür, kimse form görmez.
+      form.hidden = true;
+      requestTally(matchId, null).then(renderLocked);
+      return;
+    }
 
     // Sunucuda sayım varsa onu göster. Yoksa cihazdaki kayda düş.
     requestTally(matchId, null).then(function (data) {
+      if (data && data.votingOpen === false) {
+        // Saat farkı olan cihazda sunucunun kararı geçerlidir.
+        renderLocked(data);
+        return;
+      }
       if (data && (data.alreadyVoted || data.total > 0)) {
         // Sunucu "bu tarayıcı oy verdi" diyorsa form yerine sonuç gösterilir;
         // hangi seçeneğe oy verildiği yalnızca cihazda biliniyor (sunucu
         // seçmeni oyuna bağlamıyor), o yüzden işaret oradan alınır.
         if (data.alreadyVoted) {
           renderResults(poll, serverState(data, stored && stored.choice));
+          startRefresh();
           return;
         }
       }
-      if (stored && stored.choice) renderResults(poll, stored);
+      if (stored && stored.choice) {
+        renderResults(poll, stored);
+        startRefresh();
+      }
     });
 
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       var selected = form.querySelector(".motm-poll__radio:checked");
       if (!selected) return;
+
+      if (votingClosed()) {
+        // Sayfa açıkken pencere kapandı: oy denemesi yerine kilit gösterilir.
+        requestTally(matchId, null).then(renderLocked);
+        return;
+      }
 
       var submit = form.querySelector("[data-motm-submit]");
       if (submit) submit.disabled = true;
@@ -921,10 +1021,12 @@
       local.choice = selected.value;
       local.votedAt = new Date().toISOString();
       writeStore(matchId, local);
+      stored = local;
 
       requestTally(matchId, selected.value).then(function (data) {
         if (submit) submit.disabled = false;
         renderResults(poll, data ? serverState(data, selected.value) : local);
+        startRefresh();
       });
     });
   }
@@ -938,5 +1040,855 @@
     document.addEventListener("DOMContentLoaded", setupMotmPolls);
   } else {
     setupMotmPolls();
+  }
+})();
+
+/**
+ * BU HAFTANIN EN ÇOK OY ALAN OYUNCULARI — ANA SAYFA WIDGET'I.
+ *
+ * Bölüm `hidden` doğar ve yalnızca `/api/motm-week` GERÇEK bir sayım
+ * döndürürse açılır. Depo kapalıysa, ağ hatası varsa ya da bu hafta hiç oy
+ * yoksa bölüm hiç görünmez: ana sayfada boş bir vitrin, yer tutucu
+ * uydurmanın sessiz biçimi olurdu.
+ *
+ * Bütün metin ve görsel adresleri sunucu yanıtından gelir ve DOM'a yalnızca
+ * `textContent`/`setAttribute` ile yazılır — burada HTML kurulmaz.
+ * Fotoğraf yüklenemezse baş harflere düşülür; kırık görsel bırakılmaz.
+ */
+(function () {
+  function initialsSpan(className, initials) {
+    var span = document.createElement("span");
+    span.className = className + " is-initials";
+    span.textContent = initials || "?";
+    span.setAttribute("aria-hidden", "true");
+    return span;
+  }
+
+  /** Görsel: yüklenemezse aynı boyutlu baş-harf kutusuna düşer. */
+  function mediaImage(className, url, alt, size, initials) {
+    if (!url) return initialsSpan(className, initials);
+    var img = document.createElement("img");
+    img.className = className;
+    img.src = url;
+    img.alt = alt || "";
+    img.width = size;
+    img.height = size;
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.referrerPolicy = "no-referrer";
+    img.addEventListener("error", function () {
+      if (img.parentNode) img.parentNode.replaceChild(initialsSpan(className, initials), img);
+    });
+    return img;
+  }
+
+  function renderRow(row, index) {
+    var item = document.createElement("li");
+    item.className = "motm-week__item";
+    item.style.setProperty("--motm-week-delay", (index * 70) + "ms");
+
+    // Raporu olan maçın kartı rapora gider; olmayan kart bağlantı vaat etmez.
+    var card = document.createElement(row.reportHref ? "a" : "div");
+    card.className = "motm-week__card";
+    if (row.reportHref) card.href = row.reportHref;
+
+    var rank = document.createElement("span");
+    rank.className = "motm-week__rank";
+    rank.textContent = String(index + 1);
+    card.appendChild(rank);
+
+    var media = document.createElement("span");
+    media.className = "motm-week__media";
+    media.appendChild(mediaImage("motm-week__photo", row.photo && row.photo.url, row.name, 56,
+      (row.photo && row.photo.initials) || ""));
+    media.appendChild(mediaImage("motm-week__club", row.teamLogo, row.team, 22, row.teamInitials));
+    card.appendChild(media);
+
+    var info = document.createElement("span");
+    info.className = "motm-week__info";
+    var name = document.createElement("strong");
+    name.className = "motm-week__name";
+    name.textContent = row.name;
+    info.appendChild(name);
+    if (row.team) {
+      var team = document.createElement("span");
+      team.className = "motm-week__team";
+      team.textContent = row.team;
+      info.appendChild(team);
+    }
+    var match = document.createElement("span");
+    match.className = "motm-week__match";
+    match.textContent = row.matchLabel || "";
+    info.appendChild(match);
+    card.appendChild(info);
+
+    var score = document.createElement("span");
+    score.className = "motm-week__score";
+    var percent = document.createElement("b");
+    percent.className = "motm-week__percent";
+    percent.textContent = "%" + row.percent;
+    score.appendChild(percent);
+    var votes = document.createElement("span");
+    votes.className = "motm-week__votes";
+    votes.textContent = row.votes + " oy";
+    score.appendChild(votes);
+    var bar = document.createElement("span");
+    bar.className = "motm-week__bar";
+    var fill = document.createElement("span");
+    fill.className = "motm-week__bar-fill";
+    bar.appendChild(fill);
+    score.appendChild(bar);
+    if (row.reportHref) {
+      var cta = document.createElement("span");
+      cta.className = "motm-week__cta";
+      cta.textContent = "Maç raporu →";
+      score.appendChild(cta);
+    }
+    card.appendChild(score);
+
+    item.appendChild(card);
+    // Çubuk 0'dan gerçek paya animasyonla dolar (CSS geçişi); genişlik
+    // yerleştirme SONRASI verilir ki geçiş görülsün.
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () {
+        fill.style.width = Math.max(0, Math.min(100, row.percent)) + "%";
+      });
+    });
+    return item;
+  }
+
+  function setupWeeklyWidget() {
+    var section = document.querySelector("[data-motm-week]");
+    if (!section || typeof window.fetch !== "function") return;
+    var list = section.querySelector("[data-motm-week-list]");
+    var source = section.getAttribute("data-motm-week-source") || "/api/motm-week";
+    if (!list) return;
+
+    window.fetch(source, { headers: { Accept: "application/json" } })
+      .then(function (response) { return response.ok ? response.json() : null; })
+      .then(function (payload) {
+        var data = payload && payload.data ? payload.data : null;
+        var rows = data && data.storage === "ready" && Array.isArray(data.players) ? data.players : [];
+        if (!rows.length) return; // Gerçek sayım yok: bölüm hiç açılmaz.
+
+        list.innerHTML = "";
+        rows.forEach(function (row, index) {
+          list.appendChild(renderRow(row, index));
+        });
+        section.hidden = false;
+        window.requestAnimationFrame(function () {
+          section.classList.add("is-ready");
+        });
+      })
+      .catch(function () { /* Ağ hatası widget'ı değil, yalnızca bu isteği düşürür; bölüm kapalı kalır. */ });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupWeeklyWidget);
+  } else {
+    setupWeeklyWidget();
+  }
+})();
+
+/**
+ * ANA SAYFA TAHMİN ANKETİ.
+ *
+ * Kabuk iki dilde de aynı; soru, seçenekler ve sayım `/api/home-poll`ten
+ * gelir (`data-home-poll-locale` hangi dilde istendiğini söyler). Bölüm
+ * `hidden` doğar: takvimde yayında anket yoksa ya da uç noktaya
+ * ulaşılamıyorsa ana sayfada hiç görünmez — boş bir anket kutusu, yer
+ * tutucu uydurmanın sessiz biçimi olurdu.
+ *
+ * ÜÇ DURUM, ÜÇ GÖRÜNÜM:
+ *   • açık + oy verilmemiş → form
+ *   • açık + oy verilmiş   → canlı sonuçlar (lider vurgulu)
+ *   • kapanmış             → kilitli sonuçlar, form yok
+ *
+ * `localStorage` yalnızca NEZAKET katmanıdır: sayan katman sunucudur
+ * (çerez + IP karması + veritabanı benzersiz kısıtı). Depo erişilemezse
+ * anket salt okunur görünür; sayfa hiçbir koşulda kırılmaz.
+ */
+(function () {
+  var STORAGE_PREFIX = "futbolradar:home-poll:";
+  /** Sonuç görünümdeyken canlı tazeleme; maçın adamı bandıyla aynı ritim. */
+  var REFRESH_INTERVAL_MS = 60000;
+
+  function readStore(pollId) {
+    try {
+      var raw = window.localStorage.getItem(STORAGE_PREFIX + pollId);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function writeStore(pollId, state) {
+    try {
+      window.localStorage.setItem(STORAGE_PREFIX + pollId, JSON.stringify(state));
+    } catch (error) {
+      /* Depo yoksa oy oturum boyunca geçerli kalır; sayfa kırılmaz. */
+    }
+  }
+
+  function setText(node, value) {
+    if (node) node.textContent = value || "";
+  }
+
+  function show(node, visible) {
+    if (node) node.hidden = !visible;
+  }
+
+  /** Arma: yüklenemezse aynı boyutlu baş-harf kutusuna düşer. */
+  function crest(option) {
+    if (!option.logo) {
+      var fallback = document.createElement("span");
+      fallback.className = "home-poll__crest is-initials";
+      fallback.textContent = option.initials || "?";
+      fallback.setAttribute("aria-hidden", "true");
+      return fallback;
+    }
+    var img = document.createElement("img");
+    img.className = "home-poll__crest";
+    img.src = option.logo;
+    img.alt = "";
+    img.width = 32;
+    img.height = 32;
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.referrerPolicy = "no-referrer";
+    img.addEventListener("error", function () {
+      var span = document.createElement("span");
+      span.className = "home-poll__crest is-initials";
+      span.textContent = option.initials || "?";
+      span.setAttribute("aria-hidden", "true");
+      if (img.parentNode) img.parentNode.replaceChild(span, img);
+    });
+    return img;
+  }
+
+  function setupPoll(section) {
+    var source = section.getAttribute("data-home-poll-source") || "/api/home-poll";
+    var locale = section.getAttribute("data-home-poll-locale") === "en" ? "en" : "tr";
+    var form = section.querySelector("[data-home-poll-form]");
+    var optionList = section.querySelector("[data-home-poll-options]");
+    var resultList = section.querySelector("[data-home-poll-results]");
+    var totalNode = section.querySelector("[data-home-poll-total]");
+    var submit = section.querySelector("[data-home-poll-submit]");
+    if (!form || !optionList || !resultList || typeof window.fetch !== "function") return;
+
+    var strings = locale === "en"
+      ? { votes: "votes", total: "total votes", leader: "Leading", yours: "Your vote", ends: "Voting closes:" }
+      : { votes: "oy", total: "toplam oy", leader: "Önde", yours: "Senin oyun", ends: "Oylama bitişi:" };
+
+    var poll = null;
+    var refreshTimer = null;
+
+    function stopRefresh() {
+      if (refreshTimer) {
+        window.clearInterval(refreshTimer);
+        refreshTimer = null;
+      }
+    }
+
+    function request(optionId) {
+      var options = { headers: { Accept: "application/json" }, credentials: "same-origin" };
+      var url = source;
+      if (optionId) {
+        options.method = "POST";
+        options.headers["Content-Type"] = "application/json";
+        options.body = JSON.stringify({ optionId: optionId, locale: locale, pollId: poll && poll.id });
+      } else {
+        url += (url.indexOf("?") < 0 ? "?" : "&") + "locale=" + encodeURIComponent(locale);
+      }
+      return window.fetch(url, options)
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (payload) { return payload && payload.data ? payload.data : null; })
+        .catch(function () { return null; });
+    }
+
+    /** Seçenek listesi: kulüp arması + resmi ad; sıra sunucudan gelir. */
+    function renderOptions(options) {
+      optionList.innerHTML = "";
+      options.forEach(function (option, index) {
+        var item = document.createElement("li");
+        item.className = "home-poll__option";
+
+        var input = document.createElement("input");
+        input.className = "home-poll__radio";
+        input.type = "radio";
+        input.name = "home-poll-choice";
+        input.id = "home-poll-" + option.id;
+        input.value = option.id;
+
+        var label = document.createElement("label");
+        label.className = "home-poll__label";
+        label.htmlFor = input.id;
+        label.appendChild(crest(option));
+        var name = document.createElement("span");
+        name.className = "home-poll__option-name";
+        name.textContent = option.label;
+        label.appendChild(name);
+
+        item.appendChild(input);
+        item.appendChild(label);
+        item.style.setProperty("--home-poll-delay", Math.min(index, 12) * 25 + "ms");
+        optionList.appendChild(item);
+      });
+    }
+
+    /**
+     * SONUÇLAR: en çok oy alan üstte, lider vurgulu. Sıra ve lider işareti
+     * sunucudan gelir — beraberlikte lider işareti VERİLMEZ, çünkü eşitken
+     * birini "önde" göstermek veride olmayan bir sıra uydurmaktır.
+     */
+    function renderResults(data) {
+      var rows = data.results || [];
+      resultList.innerHTML = "";
+
+      rows.forEach(function (row, index) {
+        var item = document.createElement("li");
+        item.className = "home-poll__result" +
+          (row.isLeader ? " is-leader" : "") +
+          (data.choice && data.choice === row.optionId ? " is-yours" : "");
+        item.style.setProperty("--home-poll-delay", Math.min(index, 12) * 45 + "ms");
+
+        var head = document.createElement("div");
+        head.className = "home-poll__result-head";
+
+        var option = null;
+        for (var i = 0; poll && i < poll.options.length; i += 1) {
+          if (poll.options[i].id === row.optionId) { option = poll.options[i]; break; }
+        }
+        if (option) head.appendChild(crest(option));
+
+        var name = document.createElement("span");
+        name.className = "home-poll__result-name";
+        name.textContent = row.label;
+        head.appendChild(name);
+
+        if (row.isLeader) {
+          var leader = document.createElement("span");
+          leader.className = "home-poll__badge";
+          leader.textContent = strings.leader;
+          head.appendChild(leader);
+        }
+        if (data.choice && data.choice === row.optionId) {
+          var mine = document.createElement("span");
+          mine.className = "home-poll__badge is-yours";
+          mine.textContent = strings.yours;
+          head.appendChild(mine);
+        }
+
+        var percent = document.createElement("span");
+        percent.className = "home-poll__result-percent";
+        percent.textContent = "%" + row.percent;
+        head.appendChild(percent);
+
+        var votes = document.createElement("span");
+        votes.className = "home-poll__result-votes";
+        votes.textContent = row.votes + " " + strings.votes;
+        head.appendChild(votes);
+
+        var bar = document.createElement("div");
+        bar.className = "home-poll__bar";
+        var fill = document.createElement("span");
+        fill.className = "home-poll__bar-fill";
+        bar.appendChild(fill);
+
+        item.appendChild(head);
+        item.appendChild(bar);
+        resultList.appendChild(item);
+
+        window.requestAnimationFrame(function () {
+          window.requestAnimationFrame(function () {
+            fill.style.width = Math.max(0, Math.min(100, row.percent)) + "%";
+          });
+        });
+      });
+
+      show(resultList, rows.length > 0);
+      if (totalNode) {
+        setText(totalNode, data.total ? data.total + " " + strings.total : "");
+        show(totalNode, Boolean(data.total));
+      }
+    }
+
+    function render(data) {
+      poll = data.poll;
+      if (!poll) return;
+
+      setText(section.querySelector("[data-home-poll-question]"), poll.question);
+      var subtitle = section.querySelector("[data-home-poll-subtitle]");
+      setText(subtitle, poll.subtitle);
+      show(subtitle, Boolean(poll.subtitle));
+
+      var closed = data.status === "closed";
+      var readOnly = data.storage !== "ready";
+      var stored = readStore(poll.id);
+      // Sunucu "oy verdin" demiyorsa cihazdaki işaret yine de dikkate alınır:
+      // depo erişilemezken kullanıcıyı tekrar tekrar oya çağırmamak için.
+      var voted = Boolean(data.alreadyVoted || (stored && stored.choice));
+      if (!data.choice && stored && stored.choice) data.choice = stored.choice;
+
+      var deadline = section.querySelector("[data-home-poll-deadline]");
+      if (deadline && !closed && poll.endsAt) {
+        var ends = new Date(poll.endsAt);
+        setText(deadline, strings.ends + " " + ends.toLocaleDateString(locale === "en" ? "en-GB" : "tr-TR", {
+          day: "numeric", month: "long", year: "numeric"
+        }));
+        show(deadline, true);
+      }
+
+      // Form yalnızca anket AÇIK, depo HAZIR ve oy VERİLMEMİŞSE görünür.
+      var canVote = !closed && !readOnly && !voted;
+      if (canVote) renderOptions(poll.options);
+      show(form, canVote);
+      show(section.querySelector("[data-home-poll-thanks]"), voted && !closed);
+      show(section.querySelector('[data-home-poll-note="closed"]'), closed);
+      show(section.querySelector('[data-home-poll-note="community"]'), !readOnly && (voted || closed));
+      show(section.querySelector('[data-home-poll-note="local"]'), readOnly && voted);
+
+      renderResults(data);
+      section.hidden = false;
+      window.requestAnimationFrame(function () { section.classList.add("is-ready"); });
+
+      if (closed || readOnly || !voted) stopRefresh();
+      else startRefresh();
+    }
+
+    /** Sonuç görünümdeyken sayım tazelenir; arka plan sekmede istek atılmaz. */
+    function startRefresh() {
+      if (refreshTimer) return;
+      refreshTimer = window.setInterval(function () {
+        if (document.hidden) return;
+        request(null).then(function (data) {
+          if (data && data.poll) render(data);
+        });
+      }, REFRESH_INTERVAL_MS);
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      var selected = form.querySelector(".home-poll__radio:checked");
+      if (!selected || !poll) return;
+      if (submit) submit.disabled = true;
+
+      writeStore(poll.id, { choice: selected.value, votedAt: new Date().toISOString() });
+
+      request(selected.value).then(function (data) {
+        if (submit) submit.disabled = false;
+        if (data && data.poll) render(data);
+      });
+    });
+
+    request(null).then(function (data) {
+      // Anket yok, depo yok ya da ağ hatası: bölüm hiç açılmaz.
+      if (data && data.poll) render(data);
+    });
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     ANKET SAYFASI — TÜM ANKETLER BİR ARADA.
+     Ana sayfa tek anket gösterir; bu sayfa takvimin tamamını ister
+     (`?scope=all`): oy verilebilen üstte, kapanmışlar sonuçlarıyla, en altta
+     planlananlar. Çizim yardımcıları (crest) yukarıdaki anketle ORTAK —
+     ikinci bir kopya, iki yüzeyin zamanla ayrışması demek olurdu.
+     ──────────────────────────────────────────────────────────────────────── */
+
+  function pollStrings(locale) {
+    return locale === "en"
+      ? {
+        votes: "votes", total: "total votes", leader: "Leading", yours: "Your vote",
+        open: "Open", closed: "Closed", upcoming: "Upcoming",
+        endsPrefix: "Closes", startsPrefix: "Opens", closedAt: "Closed on",
+        button: "Cast Your Vote", thanks: "Thanks! Live results are below.",
+        noVotes: "No votes recorded yet.", noStore: "The vote store cannot be reached, so no counts are shown.",
+        empty: "There are no polls scheduled right now.", failed: "Polls could not be loaded."
+      }
+      : {
+        votes: "oy", total: "toplam oy", leader: "Önde", yours: "Senin oyun",
+        open: "Açık", closed: "Kapandı", upcoming: "Yakında",
+        endsPrefix: "Bitiş", startsPrefix: "Başlangıç", closedAt: "Kapanış",
+        button: "Oyunu Ver", thanks: "Teşekkürler! Güncel sonuçlar aşağıda.",
+        noVotes: "Henüz oy verilmemiş.", noStore: "Oy deposuna ulaşılamadığı için sayımlar gösterilemiyor.",
+        empty: "Şu an planlanmış bir anket yok.", failed: "Anketler yüklenemedi."
+      };
+  }
+
+  function formatPollDate(value, locale) {
+    var stamp = Date.parse(value || "");
+    if (!isFinite(stamp)) return "";
+    return new Date(stamp).toLocaleDateString(locale === "en" ? "en-GB" : "tr-TR", {
+      day: "numeric", month: "long", year: "numeric"
+    });
+  }
+
+  /** Tek anket kartı: başlık, durum rozeti, tarih ve sonuç/oy alanı. */
+  function pollCard(poll, strings, locale, onVote) {
+    var card = document.createElement("article");
+    card.className = "poll-archive__card is-" + poll.status;
+
+    var head = document.createElement("div");
+    head.className = "poll-archive__head";
+
+    var badge = document.createElement("span");
+    badge.className = "poll-archive__badge is-" + poll.status;
+    badge.textContent = strings[poll.status] || poll.status;
+    head.appendChild(badge);
+
+    var when = document.createElement("span");
+    when.className = "poll-archive__when";
+    when.textContent = poll.status === "upcoming"
+      ? strings.startsPrefix + ": " + formatPollDate(poll.startsAt, locale)
+      : (poll.status === "closed" ? strings.closedAt : strings.endsPrefix) + ": " + formatPollDate(poll.endsAt, locale);
+    head.appendChild(when);
+    card.appendChild(head);
+
+    var title = document.createElement("h2");
+    title.className = "poll-archive__question";
+    title.textContent = poll.question;
+    card.appendChild(title);
+
+    if (poll.subtitle) {
+      var lead = document.createElement("p");
+      lead.className = "poll-archive__subtitle";
+      lead.textContent = poll.subtitle;
+      card.appendChild(lead);
+    }
+
+    // BAŞLAMAMIŞ ANKETTE SEÇENEK GÖSTERİLİR, SONUÇ GÖSTERİLMEZ: henüz oy
+    // yok ve "%0" basmak veride olmayan bir sayı iddia etmek olurdu.
+    if (poll.status === "upcoming") {
+      var preview = document.createElement("ul");
+      preview.className = "poll-archive__preview";
+      poll.options.slice(0, 6).forEach(function (option) {
+        var item = document.createElement("li");
+        item.appendChild(crest(option));
+        var name = document.createElement("span");
+        name.textContent = option.label;
+        item.appendChild(name);
+        preview.appendChild(item);
+      });
+      card.appendChild(preview);
+      return card;
+    }
+
+    var canVote = poll.status === "open" && !poll.alreadyVoted && poll.storage === "ready";
+
+    if (canVote) {
+      var form = document.createElement("form");
+      form.className = "home-poll__form";
+
+      var list = document.createElement("ul");
+      list.className = "home-poll__options";
+      poll.options.forEach(function (option) {
+        var item = document.createElement("li");
+        item.className = "home-poll__option";
+
+        var input = document.createElement("input");
+        input.className = "home-poll__radio";
+        input.type = "radio";
+        input.name = "poll-" + poll.id;
+        input.id = "poll-" + poll.id + "-" + option.id;
+        input.value = option.id;
+
+        var labelEl = document.createElement("label");
+        labelEl.className = "home-poll__label";
+        labelEl.htmlFor = input.id;
+        labelEl.appendChild(crest(option));
+        var optionName = document.createElement("span");
+        optionName.className = "home-poll__option-name";
+        optionName.textContent = option.label;
+        labelEl.appendChild(optionName);
+
+        item.appendChild(input);
+        item.appendChild(labelEl);
+        list.appendChild(item);
+      });
+      form.appendChild(list);
+
+      var submit = document.createElement("button");
+      submit.className = "home-poll__submit";
+      submit.type = "submit";
+      submit.textContent = strings.button;
+      form.appendChild(submit);
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var selected = form.querySelector(".home-poll__radio:checked");
+        if (!selected) return;
+        submit.disabled = true;
+        onVote(poll, selected.value, function () { submit.disabled = false; });
+      });
+      card.appendChild(form);
+      return card;
+    }
+
+    var rows = poll.results || [];
+    if (!rows.length) {
+      var note = document.createElement("p");
+      note.className = "poll-archive__note";
+      note.textContent = poll.storage === "ready" ? strings.noVotes : strings.noStore;
+      card.appendChild(note);
+      return card;
+    }
+
+    if (poll.alreadyVoted && poll.status === "open") {
+      var thanks = document.createElement("p");
+      thanks.className = "home-poll__thanks";
+      thanks.textContent = strings.thanks;
+      card.appendChild(thanks);
+    }
+
+    var results = document.createElement("ol");
+    results.className = "home-poll__results";
+    rows.forEach(function (row, index) {
+      var item = document.createElement("li");
+      item.className = "home-poll__result" +
+        (row.isLeader ? " is-leader" : "") +
+        (poll.choice && poll.choice === row.optionId ? " is-yours" : "");
+      item.style.setProperty("--home-poll-delay", Math.min(index, 12) * 40 + "ms");
+
+      var rowHead = document.createElement("div");
+      rowHead.className = "home-poll__result-head";
+
+      var option = null;
+      for (var i = 0; i < poll.options.length; i += 1) {
+        if (poll.options[i].id === row.optionId) { option = poll.options[i]; break; }
+      }
+      if (option) rowHead.appendChild(crest(option));
+
+      var name = document.createElement("span");
+      name.className = "home-poll__result-name";
+      name.textContent = row.label;
+      rowHead.appendChild(name);
+
+      if (row.isLeader) {
+        var leaderBadge = document.createElement("span");
+        leaderBadge.className = "home-poll__badge";
+        leaderBadge.textContent = strings.leader;
+        rowHead.appendChild(leaderBadge);
+      }
+      if (poll.choice && poll.choice === row.optionId) {
+        var mine = document.createElement("span");
+        mine.className = "home-poll__badge is-yours";
+        mine.textContent = strings.yours;
+        rowHead.appendChild(mine);
+      }
+
+      var percent = document.createElement("span");
+      percent.className = "home-poll__result-percent";
+      percent.textContent = "%" + row.percent;
+      rowHead.appendChild(percent);
+
+      var votes = document.createElement("span");
+      votes.className = "home-poll__result-votes";
+      votes.textContent = row.votes + " " + strings.votes;
+      rowHead.appendChild(votes);
+
+      var bar = document.createElement("div");
+      bar.className = "home-poll__bar";
+      var fill = document.createElement("span");
+      fill.className = "home-poll__bar-fill";
+      bar.appendChild(fill);
+
+      item.appendChild(rowHead);
+      item.appendChild(bar);
+      results.appendChild(item);
+
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          fill.style.width = Math.max(0, Math.min(100, row.percent)) + "%";
+        });
+      });
+    });
+    card.appendChild(results);
+
+    if (poll.total) {
+      var total = document.createElement("p");
+      total.className = "home-poll__total";
+      total.textContent = poll.total + " " + strings.total;
+      card.appendChild(total);
+    }
+
+    return card;
+  }
+
+  function setupPollArchive(section) {
+    var list = section.querySelector("[data-poll-archive-list]");
+    var status = section.querySelector("[data-poll-archive-status]");
+    var source = section.getAttribute("data-poll-archive-source") || "/api/home-poll";
+    var locale = section.getAttribute("data-poll-archive-locale") === "en" ? "en" : "tr";
+    var strings = pollStrings(locale);
+    if (!list || typeof window.fetch !== "function") return;
+
+    function load() {
+      return window.fetch(source + "?scope=all&locale=" + encodeURIComponent(locale), {
+        headers: { Accept: "application/json" },
+        credentials: "same-origin"
+      })
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (payload) { return payload && payload.data ? payload.data : null; })
+        .catch(function () { return null; });
+    }
+
+    /** Oy verildikten sonra liste yeniden çizilir: sıra ve lider değişebilir. */
+    function vote(poll, optionId, done) {
+      window.fetch(source, {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ optionId: optionId, locale: locale, pollId: poll.id })
+      })
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .catch(function () { return null; })
+        .then(function () { done(); return render(); });
+    }
+
+    function render() {
+      return load().then(function (data) {
+        var polls = data && Array.isArray(data.polls) ? data.polls : [];
+        if (!polls.length) {
+          if (status) status.textContent = data ? strings.empty : strings.failed;
+          return;
+        }
+        if (status) status.hidden = true;
+        list.innerHTML = "";
+        polls.forEach(function (poll) {
+          // Depo durumu anket başına değil yanıt başına geliyor; karta
+          // taşınıyor ki "sayım yok" ile "oy yok" ayrımı korunsun.
+          var entry = {};
+          for (var key in poll) {
+            if (Object.prototype.hasOwnProperty.call(poll, key)) entry[key] = poll[key];
+          }
+          entry.storage = data.storage;
+          list.appendChild(pollCard(entry, strings, locale, vote));
+        });
+        section.classList.add("is-ready");
+      });
+    }
+
+    render();
+  }
+
+  /* ────────────────────────────────────────────────────────────────────────
+     MAÇIN ADAMI ANKETLERİ — ANKET SAYFASINDAKİ İKİNCİ LİSTE.
+     Oy BURADA VERİLMEZ: her maçın oylaması kendi sayfasında yaşıyor ve
+     pencere kapısı orada. Bu liste yalnızca "hangi maçta anket var, açık mı,
+     kim önde" sorusunu yanıtlar ve maç sayfasına götürür.
+     ──────────────────────────────────────────────────────────────────────── */
+
+  function motmStrings(locale) {
+    return locale === "en"
+      ? {
+        open: "Voting open", closed: "Closed", votes: "votes", leading: "Leading",
+        closesPrefix: "Closes", vote: "Vote on the match page", view: "See the result",
+        noVotes: "No votes yet", noStore: "Counts unavailable",
+        empty: "No match polls yet.", failed: "Match polls could not be loaded.",
+        trNote: " (TR)"
+      }
+      : {
+        open: "Oylama açık", closed: "Kapandı", votes: "oy", leading: "Önde",
+        closesPrefix: "Kapanış", vote: "Maç sayfasında oy ver", view: "Sonucu gör",
+        noVotes: "Henüz oy yok", noStore: "Sayım gösterilemiyor",
+        empty: "Henüz maç anketi yok.", failed: "Maç anketleri yüklenemedi.",
+        trNote: ""
+      };
+  }
+
+  function motmCard(row, strings, locale) {
+    var card = document.createElement("article");
+    card.className = "motm-archive__card" + (row.votingOpen ? " is-open" : " is-closed");
+
+    var head = document.createElement("div");
+    head.className = "poll-archive__head";
+
+    var badge = document.createElement("span");
+    badge.className = "poll-archive__badge is-" + (row.votingOpen ? "open" : "closed");
+    badge.textContent = row.votingOpen ? strings.open : strings.closed;
+    head.appendChild(badge);
+
+    if (row.votingOpen && row.closesAt) {
+      var when = document.createElement("span");
+      when.className = "poll-archive__when";
+      when.textContent = strings.closesPrefix + ": " + formatPollDate(row.closesAt, locale);
+      head.appendChild(when);
+    }
+    card.appendChild(head);
+
+    var title = document.createElement("h3");
+    title.className = "motm-archive__match";
+    title.textContent = row.matchLabel;
+    card.appendChild(title);
+
+    var meta = document.createElement("p");
+    meta.className = "motm-archive__meta";
+    if (row.leader) {
+      // Lider yalnızca GERÇEK sayım varsa ve beraberlik yoksa gelir;
+      // sunucu eşitlikte lider bildirmiyor.
+      meta.textContent = strings.leading + ": " + row.leader.name +
+        " · %" + row.leader.percent + " (" + row.leader.votes + " " + strings.votes + ")";
+    } else if (row.total) {
+      meta.textContent = row.total + " " + strings.votes;
+    } else {
+      meta.textContent = row.storage === "ready" ? strings.noVotes : strings.noStore;
+    }
+    card.appendChild(meta);
+
+    // Maç raporu Türkçe yayımlanıyor; İngilizce sayfada bağlantı bunu söyler.
+    var link = document.createElement("a");
+    link.className = "detail-link";
+    link.href = row.href;
+    link.textContent = (row.votingOpen ? strings.vote : strings.view) + strings.trNote;
+    if (locale === "en") {
+      link.setAttribute("hreflang", "tr");
+      link.setAttribute("lang", "tr");
+    }
+    card.appendChild(link);
+
+    return card;
+  }
+
+  function setupMotmArchive(section) {
+    var list = section.querySelector("[data-motm-archive-list]");
+    var status = section.querySelector("[data-motm-archive-status]");
+    var source = section.getAttribute("data-motm-archive-source") || "/api/motm-week";
+    var locale = section.getAttribute("data-motm-archive-locale") === "en" ? "en" : "tr";
+    var strings = motmStrings(locale);
+    if (!list || typeof window.fetch !== "function") return;
+
+    window.fetch(source + "?scope=matches", { headers: { Accept: "application/json" } })
+      .then(function (response) { return response.ok ? response.json() : null; })
+      .then(function (payload) { return payload && payload.data ? payload.data : null; })
+      .catch(function () { return null; })
+      .then(function (data) {
+        var rows = data && Array.isArray(data.matches) ? data.matches : [];
+        if (!rows.length) {
+          if (status) status.textContent = data ? strings.empty : strings.failed;
+          return;
+        }
+        if (status) status.hidden = true;
+        list.innerHTML = "";
+        rows.forEach(function (row) {
+          row.storage = data.storage;
+          list.appendChild(motmCard(row, strings, locale));
+        });
+        section.classList.add("is-ready");
+      });
+  }
+
+  function setupHomePolls() {
+    var sections = document.querySelectorAll("[data-home-poll]");
+    Array.prototype.forEach.call(sections, setupPoll);
+    var archives = document.querySelectorAll("[data-poll-archive]");
+    Array.prototype.forEach.call(archives, setupPollArchive);
+    var motmArchives = document.querySelectorAll("[data-motm-archive]");
+    Array.prototype.forEach.call(motmArchives, setupMotmArchive);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupHomePolls);
+  } else {
+    setupHomePolls();
   }
 })();

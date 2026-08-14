@@ -12416,246 +12416,6 @@ a.transfer-radar-ticker__item:focus-visible {
   .transfer-radar-ticker__group[aria-hidden="true"] { display: none; }
 }
 
-/* ==========================================================================
-   BEŞİKTAŞ TRANSFER GÜNDEMİ BANDI
-   --------------------------------------------------------------------------
-   Transfer radarı bandının HEMEN ALTINA girer ve ondan AYIRT EDİLEBİLİR
-   olmak zorunda: iki kayan şerit üst üste gelince okuyucu ikisini tek bir
-   bant sanar ve genel transfer haberini Beşiktaş haberi sanmaya başlar.
-
-   Ayrım renkle yapılıyor: transfer radarı kırmızı-bordo, bu bant kulübün
-   siyah-beyazı. Ayrım YALNIZCA renge bırakılmıyor — başlık kutusu metni
-   ("Beşiktaş Transfer Gündemi") ve üstteki beyaz ayraç çizgisi renk
-   ayırt edemeyen okuyucu için de sınırı görünür kılıyor.
-   ========================================================================== */
-
-.besiktas-ticker {
-  position: relative;
-  z-index: 38;
-  overflow: hidden;
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
-  background: linear-gradient(90deg, #000 0, #131316 42%, #26262b 100%);
-  color: #fff;
-}
-
-.besiktas-ticker__inner {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: stretch;
-  min-height: 42px;
-  padding-inline: 0;
-}
-
-.besiktas-ticker__label {
-  position: relative;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
-  padding: 0 clamp(14px, 2vw, 24px);
-  background: #f4f4f5;
-  color: #09090b;
-  font-size: 0.76rem;
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.besiktas-ticker__label::after {
-  position: absolute;
-  top: 0;
-  right: -12px;
-  width: 13px;
-  height: 100%;
-  background: #f4f4f5;
-  clip-path: polygon(0 0, 100% 50%, 0 100%);
-  content: "";
-}
-
-.besiktas-ticker__viewport {
-  min-width: 0;
-  overflow: hidden;
-  padding-left: 18px;
-  mask-image: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 18px), transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 18px), transparent);
-}
-
-.besiktas-ticker__track {
-  display: flex;
-  width: max-content;
-  min-height: 42px;
-  animation: ticker-scroll var(--besiktas-ticker-duration, 48s) linear infinite;
-  backface-visibility: hidden;
-  will-change: transform;
-}
-
-.besiktas-ticker__track.is-static {
-  width: 100%;
-  animation: none;
-}
-
-.besiktas-ticker:hover .besiktas-ticker__track,
-.besiktas-ticker:focus-within .besiktas-ticker__track {
-  animation-play-state: paused;
-}
-
-.besiktas-ticker__group {
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  padding-right: 28px;
-}
-
-.besiktas-ticker__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: inherit;
-  font-size: 0.8rem;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-a.besiktas-ticker__item:hover,
-a.besiktas-ticker__item:focus-visible {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-a.besiktas-ticker__item:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 3px;
-}
-
-.besiktas-ticker__headline {
-  font-weight: 800;
-}
-
-/* Özet bantta KISALTILIR: bant bir liste değil. Tam metin title ve
-   aria-label içinde durur, yani hiçbir bilgi gizlenmiş olmuyor. */
-.besiktas-ticker__summary {
-  display: inline-block;
-  max-width: 34ch;
-  overflow: hidden;
-  color: rgba(255, 255, 255, 0.74);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.besiktas-ticker__source {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.72rem;
-  font-style: italic;
-}
-
-.besiktas-ticker__separator {
-  color: rgba(255, 255, 255, 0.32);
-}
-
-.besiktas-ticker__lead,
-.besiktas-ticker__status {
-  display: inline-flex;
-  align-items: center;
-  min-height: 20px;
-  padding: 2px 7px;
-  border-radius: 999px;
-  font-size: 0.66rem;
-  font-weight: 900;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.besiktas-ticker__lead {
-  background: #fff;
-  color: #09090b;
-}
-
-.besiktas-ticker__lead.is-dated {
-  background: rgba(255, 255, 255, 0.14);
-  color: rgba(255, 255, 255, 0.82);
-}
-
-/* Durum renkleri üç kademeyi AYIRIR ve renk tek sinyal değildir: her
-   rozetin kendi metni var ("Resmî", "Güçlü iddia", "İddia"). */
-.besiktas-ticker__status.is-official {
-  background: rgba(34, 197, 94, 0.18);
-  color: #86efac;
-  box-shadow: inset 0 0 0 1px rgba(134, 239, 172, 0.4);
-}
-
-.besiktas-ticker__status.is-strong-rumour {
-  background: rgba(250, 204, 21, 0.16);
-  color: #fde047;
-  box-shadow: inset 0 0 0 1px rgba(253, 224, 71, 0.38);
-}
-
-.besiktas-ticker__status.is-rumour {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.78);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24);
-}
-
-.besiktas-ticker__empty {
-  display: inline-flex;
-  align-items: center;
-  min-height: 42px;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 0.78rem;
-  font-weight: 700;
-}
-
-@media (max-width: 1024px) {
-  .besiktas-ticker__label { padding-inline: 14px; }
-  .besiktas-ticker__item { font-size: 0.76rem; }
-  .besiktas-ticker__summary { max-width: 26ch; }
-}
-
-@media (max-width: 640px) {
-  .besiktas-ticker__inner,
-  .besiktas-ticker__track,
-  .besiktas-ticker__item,
-  .besiktas-ticker__empty { min-height: 38px; }
-
-  .besiktas-ticker__label {
-    padding-inline: 10px;
-    font-size: 0.64rem;
-    letter-spacing: 0.03em;
-  }
-
-  .besiktas-ticker__viewport {
-    padding-left: 14px;
-    mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
-  }
-
-  .besiktas-ticker__group { gap: 22px; padding-right: 22px; }
-  .besiktas-ticker__item { gap: 5px; font-size: 0.7rem; }
-
-  /* Dar ekranda özet DÜŞER, kaynak ve durum KALIR. Bir iddianın kimden
-     geldiği ve ne kadar kesin olduğu, ayrıntısından önce gelir. */
-  .besiktas-ticker__summary { display: none; }
-  .besiktas-ticker__summary + .besiktas-ticker__separator { display: none; }
-
-  .besiktas-ticker__lead,
-  .besiktas-ticker__status { min-height: 18px; padding: 2px 5px; font-size: 0.63rem; }
-  .besiktas-ticker__source { font-size: 0.64rem; }
-  .besiktas-ticker__empty { font-size: 0.72rem; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .besiktas-ticker__viewport {
-    overflow-x: auto;
-    mask-image: none;
-    -webkit-mask-image: none;
-    scrollbar-width: thin;
-  }
-
-  .besiktas-ticker__track { animation: none !important; }
-  .besiktas-ticker__group[aria-hidden="true"] { display: none; }
-}
-
 .news-ticker-tag {
   border-radius: 6px;
   padding: 2px 7px;
@@ -18232,6 +17992,672 @@ body,
 
 @media (prefers-reduced-motion: reduce) {
   .motm-poll__bar-fill { transition: none; }
+}
+
+/* ==========================================================================
+   ANA SAYFA TAHMİN ANKETİ
+   --------------------------------------------------------------------------
+   Ana sayfanın en dikkat çeken etkileşimi: büyük başlık, kulüp armalı
+   seçenek ızgarası, canlı yüzdeler ve vurgulu lider. Bölüm `hidden` doğar
+   ve yalnızca yayında bir anket varsa açılır.
+
+   İki dilde de AYNI stil kullanılır; tek fark metin. Mobil önce: seçenekler
+   dar ekranda tek sütun, genişledikçe ızgaraya açılır.
+   ========================================================================== */
+
+.home-poll[hidden] { display: none; }
+
+.home-poll__inner {
+  position: relative;
+  padding: clamp(20px, 3.5vw, 34px) clamp(16px, 3vw, 30px);
+  border: 2px solid var(--line-strong);
+  border-radius: 20px;
+  background:
+    radial-gradient(120% 140% at 0 0, rgba(11, 143, 90, 0.1) 0, transparent 60%),
+    var(--panel);
+  box-shadow: 0 14px 40px rgba(11, 143, 90, 0.1);
+  overflow: hidden;
+}
+
+.home-poll__head { margin-bottom: 18px; }
+
+.home-poll__kicker {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(11, 143, 90, 0.12);
+  color: var(--green);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.home-poll__title {
+  margin: 0 0 8px;
+  font-size: clamp(1.25rem, 3.2vw, 1.9rem);
+  line-height: 1.25;
+}
+
+.home-poll__subtitle {
+  margin: 0;
+  max-width: 68ch;
+  color: var(--text-soft);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.home-poll__deadline {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.home-poll__options {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin: 0 0 16px;
+  padding: 0;
+  gap: 8px;
+  list-style: none;
+}
+
+.home-poll__option { position: relative; }
+
+.home-poll__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.home-poll__label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 700;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.home-poll__label:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+
+/* Seçili seçenek RENKTEN BAŞKA bir şeyle de belli olur (kalın çerçeve):
+   rengi ayırt edemeyen okuyucu için seçim görünür kalmalı. */
+.home-poll__radio:checked + .home-poll__label {
+  border-color: var(--green);
+  box-shadow: inset 0 0 0 1px var(--green);
+  background: rgba(11, 143, 90, 0.08);
+}
+
+.home-poll__radio:focus-visible + .home-poll__label {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+.home-poll__crest {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  object-fit: contain;
+  padding: 2px;
+}
+
+.home-poll__crest.is-initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.home-poll__option-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-poll__submit {
+  width: 100%;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 900;
+  cursor: pointer;
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+
+.home-poll__submit:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+.home-poll__submit:disabled { opacity: 0.6; cursor: progress; }
+.home-poll__submit:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+
+.home-poll__thanks {
+  margin: 0 0 12px;
+  color: var(--green);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.home-poll__results {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: 8px;
+  list-style: none;
+}
+
+.home-poll__result {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.home-poll.is-ready .home-poll__result {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.4s ease var(--home-poll-delay, 0ms), transform 0.4s ease var(--home-poll-delay, 0ms);
+}
+
+/* Lider vurgusu: renk TEK sinyal değil — "Önde" rozeti de yazıyor. */
+.home-poll__result.is-leader {
+  border-color: var(--green);
+  background: rgba(11, 143, 90, 0.07);
+  box-shadow: inset 0 0 0 1px rgba(11, 143, 90, 0.3);
+}
+
+.home-poll__result-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+  flex-wrap: wrap;
+}
+
+.home-poll__result .home-poll__crest { width: 26px; height: 26px; }
+
+.home-poll__result-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.home-poll__badge {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.home-poll__badge.is-yours { background: var(--text-soft); }
+
+.home-poll__result-percent {
+  color: var(--green);
+  font-size: 1rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-poll__result-votes {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-poll__bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.home-poll__bar-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--green);
+  transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-poll__total {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-poll__note,
+.home-poll__disclaimer {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.home-poll__disclaimer { opacity: 0.8; }
+
+@media (min-width: 640px) {
+  .home-poll__options { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+  .home-poll__submit { width: auto; min-width: 220px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-poll__result,
+  .home-poll.is-ready .home-poll__result { opacity: 1; transform: none; transition: none; }
+  .home-poll__bar-fill,
+  .home-poll__label,
+  .home-poll__submit { transition: none; }
+}
+
+/* ==========================================================================
+   ANKET SAYFASI — TÜM ANKETLER BİR ARADA
+   --------------------------------------------------------------------------
+   Kart içi sonuç ve oy alanı ana sayfadaki anketle AYNI sınıfları kullanır
+   (.home-poll__*); burada yalnızca kartın kendisi ve durum rozeti tanımlı.
+   İkinci bir sonuç stili yazmak, iki yüzeyin zamanla ayrışması demek olurdu.
+   ========================================================================== */
+
+.poll-archive__status {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.poll-archive__list {
+  display: grid;
+  gap: 16px;
+}
+
+.poll-archive__card {
+  padding: clamp(16px, 3vw, 26px);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+}
+
+/* Oy verilebilen anket öne çıkar: sayfaya giren okuyucu onu aramasın. */
+.poll-archive__card.is-open {
+  border: 2px solid var(--line-strong);
+  background:
+    radial-gradient(120% 140% at 0 0, rgba(11, 143, 90, 0.09) 0, transparent 60%),
+    var(--panel);
+  box-shadow: 0 12px 32px rgba(11, 143, 90, 0.09);
+}
+
+/* Planlanan anket geri çekilir: henüz oylanamaz. */
+.poll-archive__card.is-upcoming { opacity: 0.82; }
+
+.poll-archive__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.poll-archive__badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Durum rengi TEK sinyal değil: her rozetin kendi metni var. */
+.poll-archive__badge.is-open { background: var(--green); color: #fff; }
+.poll-archive__badge.is-closed { background: var(--surface-sunken); color: var(--text-soft); }
+.poll-archive__badge.is-upcoming { background: rgba(11, 143, 90, 0.12); color: var(--green); }
+
+.poll-archive__when {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.poll-archive__question {
+  margin: 0 0 8px;
+  font-size: clamp(1.05rem, 2.4vw, 1.5rem);
+  line-height: 1.3;
+}
+
+.poll-archive__subtitle {
+  margin: 0 0 14px;
+  max-width: 68ch;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.poll-archive__note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* Başlamamış ankette seçenekler ÖNİZLEME olarak görünür, sonuç görünmez. */
+.poll-archive__preview {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  gap: 8px;
+  flex-wrap: wrap;
+  list-style: none;
+}
+
+.poll-archive__preview li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 5px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.poll-archive__preview .home-poll__crest { width: 22px; height: 22px; }
+
+.poll-archive__card .home-poll__results { margin-top: 4px; }
+.poll-archive__card .home-poll__form { margin-top: 4px; }
+
+/* Maçın adamı listesi: kart daha küçük, çünkü burada oy verilmiyor —
+   satırın işi "hangi maçta anket var, açık mı, kim önde" demek. */
+.poll-archive--motm { margin-top: 28px; }
+
+.poll-archive__intro h2 {
+  margin: 0 0 6px;
+  font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+}
+
+.poll-archive__intro p {
+  margin: 0 0 6px;
+  max-width: 68ch;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.poll-archive--motm .poll-archive__list {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  margin-top: 14px;
+  gap: 10px;
+}
+
+.motm-archive__card {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.motm-archive__card.is-open { border-color: var(--line-strong); }
+
+.motm-archive__match {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.motm-archive__meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.poll-archive__note {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poll-archive__card { transition: none; }
+}
+
+/* ==========================================================================
+   BU HAFTANIN EN ÇOK OY ALAN OYUNCULARI — ANA SAYFA WIDGET'I
+   --------------------------------------------------------------------------
+   Anketin vitrini. Bölüm `hidden` doğar; site.js yalnızca GERÇEK sayım
+   bulursa açar, o yüzden boş durum için ayrı bir görsel yok. Mobil önce:
+   kartlar dar ekranda tek sütun yığılır, genişledikçe satıra açılır.
+   Animasyonlar dekor değil geçiştir ve `prefers-reduced-motion`a uyar.
+   ========================================================================== */
+
+.motm-week[hidden] { display: none; }
+
+.motm-week__list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: 10px;
+  list-style: none;
+  counter-reset: none;
+}
+
+.motm-week__item {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.motm-week.is-ready .motm-week__item {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.45s ease var(--motm-week-delay, 0ms), transform 0.45s ease var(--motm-week-delay, 0ms);
+}
+
+.motm-week__card {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+a.motm-week__card:hover,
+a.motm-week__card:focus-visible {
+  border-color: var(--line-strong);
+  box-shadow: 0 8px 24px rgba(11, 143, 90, 0.12);
+  transform: translateY(-1px);
+}
+
+a.motm-week__card:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+.motm-week__rank {
+  min-width: 26px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+/* İlk sıranın rozeti: liste bir sıralamadır ve kazanan görünür olmalı. */
+.motm-week__item:first-child .motm-week__rank { color: #b45309; }
+
+.motm-week__media {
+  position: relative;
+  display: inline-flex;
+  width: 56px;
+  height: 56px;
+  flex: none;
+}
+
+.motm-week__photo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface-sunken);
+  object-fit: cover;
+}
+
+.motm-week__photo.is-initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+/* Kulüp arması fotoğrafın köşesine rozet olarak oturur. */
+.motm-week__club {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  object-fit: contain;
+  padding: 1px;
+}
+
+.motm-week__club.is-initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: 0.5rem;
+  font-weight: 900;
+}
+
+.motm-week__info {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.motm-week__name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.motm-week__team {
+  color: var(--text-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.motm-week__match {
+  color: var(--muted);
+  font-size: 0.74rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.motm-week__score {
+  display: grid;
+  justify-items: end;
+  gap: 3px;
+  min-width: 96px;
+}
+
+.motm-week__percent {
+  color: var(--green);
+  font-size: 1.05rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.motm-week__votes {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.motm-week__bar {
+  width: 96px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  overflow: hidden;
+}
+
+.motm-week__bar-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--green);
+  transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.motm-week__cta {
+  color: var(--green);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+@media (min-width: 720px) {
+  .motm-week__list {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .motm-week__card { grid-template-columns: auto auto minmax(0, 1fr); gap: 10px; padding: 10px 12px; }
+  /* Dar ekranda sayı bloğu alta iner; fotoğraf ve ad öndedir. */
+  .motm-week__score { grid-column: 1 / -1; grid-template-columns: auto auto 1fr; align-items: center; justify-items: start; gap: 8px; min-width: 0; }
+  .motm-week__bar { width: 100%; justify-self: stretch; }
+  .motm-week__cta { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motm-week__item,
+  .motm-week.is-ready .motm-week__item { opacity: 1; transform: none; transition: none; }
+  .motm-week__bar-fill { transition: none; }
+  .motm-week__card { transition: none; }
 }
 
 /* ==========================================================================

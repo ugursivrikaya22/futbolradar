@@ -133,6 +133,95 @@ const ROUTES = Object.freeze([
     en: "en/teams.html",
     changefreq: "weekly",
     priority: "0.7"
+  },
+  // İkinci dalga: menüdeki her Türkçe yüzeyin İngilizce karşılığı.
+  //
+  // Bu sayfalar daha önce üretilmiyordu ve İngilizce menü onlara Türkçe
+  // hedefle bağlanıyordu ("(TR)" işaretiyle). Artık gerçek İngilizce
+  // sürümleri var; menü de bunlara bağlanıyor.
+  {
+    key: "results",
+    tr: "mac-sonuclari.html",
+    en: "en/results.html",
+    changefreq: "daily",
+    priority: "0.8"
+  },
+  {
+    key: "fixtures",
+    tr: "super-lig-fikstur.html",
+    en: "en/fixtures.html",
+    changefreq: "daily",
+    priority: "0.8"
+  },
+  {
+    key: "matchCentre",
+    tr: "mac-merkezi.html",
+    en: "en/match-centre.html",
+    changefreq: "daily",
+    priority: "0.8"
+  },
+  {
+    key: "playerRadar",
+    tr: "oyuncu-radari.html",
+    en: "en/player-radar.html",
+    changefreq: "weekly",
+    priority: "0.7"
+  },
+  {
+    key: "topScorers",
+    tr: "gol-kralligi.html",
+    en: "en/top-scorers.html",
+    changefreq: "weekly",
+    priority: "0.7"
+  },
+  {
+    key: "momentum",
+    tr: "momentum.html",
+    en: "en/momentum.html",
+    changefreq: "weekly",
+    priority: "0.7"
+  },
+  {
+    key: "transferRadar",
+    tr: "transfer-radari.html",
+    en: "en/transfer-radar.html",
+    changefreq: "daily",
+    priority: "0.7"
+  },
+  {
+    key: "statsHub",
+    tr: "istatistik-merkezi.html",
+    en: "en/stats-hub.html",
+    changefreq: "weekly",
+    priority: "0.6"
+  },
+  {
+    key: "archive",
+    tr: "arsiv.html",
+    en: "en/archive.html",
+    changefreq: "weekly",
+    priority: "0.6"
+  },
+  {
+    key: "columns",
+    tr: "kose-yazilari.html",
+    en: "en/columns.html",
+    changefreq: "weekly",
+    priority: "0.6"
+  },
+  {
+    key: "news",
+    tr: "haberler.html",
+    en: "en/news.html",
+    changefreq: "daily",
+    priority: "0.7"
+  },
+  {
+    key: "polls",
+    tr: "anketler.html",
+    en: "en/polls.html",
+    changefreq: "daily",
+    priority: "0.6"
   }
 ]);
 
@@ -203,6 +292,126 @@ const ROUTE_META = Object.freeze({
       title: "Turkish Süper Lig Teams | FutbolRadar",
       description: "Every Trendyol Süper Lig club with league position, form and season record — Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor and the rest."
     }
+  },
+  results: {
+    tr: {
+      title: "Maç Sonuçları | FutbolRadar",
+      description: "Tamamlanan maçların doğrulanmış skorları; Süper Lig ve Türk kulüplerinin Avrupa maçları."
+    },
+    en: {
+      title: "Turkish Football Results | FutbolRadar",
+      description: "Verified final scores from the Trendyol Süper Lig and Turkish clubs in European competitions, with links to full match reports."
+    }
+  },
+  fixtures: {
+    tr: {
+      title: "Süper Lig Fikstürü | FutbolRadar",
+      description: "Trendyol Süper Lig fikstürü: hafta hafta maç programı, tarih ve saatler."
+    },
+    en: {
+      title: "Turkish Süper Lig Fixtures | FutbolRadar",
+      description: "The full Trendyol Süper Lig fixture list week by week, with kick-off dates and times in Türkiye time."
+    }
+  },
+  matchCentre: {
+    tr: {
+      title: "Maç Merkezi | FutbolRadar",
+      description: "Tüm maç ekranları tek yerde: canlı skor, günün maçları, sonuçlar ve analizler."
+    },
+    en: {
+      title: "Turkish Football Match Centre | FutbolRadar",
+      description: "Every match screen in one place: live scores, today's fixtures, verified results and match analysis for Turkish football."
+    }
+  },
+  playerRadar: {
+    tr: {
+      title: "Oyuncu Radarı | FutbolRadar",
+      description: "Süper Lig oyuncuları; form, gol katkısı ve piyasa değeri göstergeleri."
+    },
+    en: {
+      title: "Turkish Süper Lig Player Radar | FutbolRadar",
+      description: "Süper Lig players ranked by form, goal contribution and market value, built only from verified records."
+    }
+  },
+  topScorers: {
+    tr: {
+      title: "Gol Krallığı | FutbolRadar",
+      description: "Süper Lig gol krallığı sıralaması; gol ve asist katkıları."
+    },
+    en: {
+      title: "Turkish Süper Lig Top Scorers | FutbolRadar",
+      description: "The Trendyol Süper Lig scoring charts: goals and assists for every player with a verified record."
+    }
+  },
+  momentum: {
+    tr: {
+      title: "Momentum | FutbolRadar",
+      description: "Takım momentumu: form eğrisi, hücum ve savunma sinyalleri."
+    },
+    en: {
+      title: "Turkish Süper Lig Team Momentum | FutbolRadar",
+      description: "Which Süper Lig clubs are trending up and which are falling away, measured from recent form, attack and defence signals."
+    }
+  },
+  transferRadar: {
+    tr: {
+      title: "Transfer Radarı | FutbolRadar",
+      description: "Doğrulanmış transfer hareketleri; kaynak ve durum bilgisiyle."
+    },
+    en: {
+      title: "Turkish Süper Lig Transfer Radar | FutbolRadar",
+      description: "Verified transfers in and out of Turkish clubs, each one carrying its source and confirmation status."
+    }
+  },
+  statsHub: {
+    tr: {
+      title: "İstatistik Merkezi | FutbolRadar",
+      description: "Tüm istatistik ekranları: oyuncu liderleri, takım trendleri ve karşılaştırmalar."
+    },
+    en: {
+      title: "Turkish Football Statistics Hub | FutbolRadar",
+      description: "Every statistics screen in one place: player leaders, team trends, momentum and head-to-head comparisons."
+    }
+  },
+  archive: {
+    tr: {
+      title: "Arşiv | FutbolRadar",
+      description: "Sezon sezon maç arşivi, kadrolar ve teknik direktör dönemleri."
+    },
+    en: {
+      title: "Turkish Football Archive | FutbolRadar",
+      description: "Season by season match archive, archived squads and sourced managerial spells from Turkish football."
+    }
+  },
+  columns: {
+    tr: {
+      title: "Köşe Yazıları | FutbolRadar",
+      description: "Yazarların kişisel değerlendirmeleri; sitenin doğrulanmış maç verisinden ayrıdır."
+    },
+    en: {
+      title: "Turkish Football Columns | FutbolRadar",
+      description: "Opinion pieces from FutbolRadar writers on Turkish football. Commentary, kept separate from the site's verified match data."
+    }
+  },
+  news: {
+    tr: {
+      title: "Futbol Haberleri | FutbolRadar",
+      description: "Doğrulanmış futbol haberleri; her haber kaynağıyla birlikte yayımlanır."
+    },
+    en: {
+      title: "Turkish Football News | FutbolRadar",
+      description: "Verified Turkish football news, each story published with the source it was confirmed against."
+    }
+  },
+  polls: {
+    tr: {
+      title: "Anketler | FutbolRadar",
+      description: "FutbolRadar okuyucu anketleri: açık oylamalar, kapanmış anketlerin kesinleşmiş sonuçları ve yaklaşan sorular bir arada."
+    },
+    en: {
+      title: "Turkish Football Reader Polls | FutbolRadar",
+      description: "Open votes, final results from closed polls and upcoming questions — every FutbolRadar reader poll in one place."
+    }
   }
 });
 
@@ -232,18 +441,41 @@ const NAV_KEYS = Object.freeze({
       { href: "transfer-radari.html", key: "nav.transferRadar" },
       { href: "momentum.html", key: "nav.momentum" },
       { href: "gol-kralligi.html", key: "nav.topScorers" },
-      { href: "haberler.html", key: "nav.news" }
+      { href: "haberler.html", key: "nav.news" },
+      { href: "anketler.html", key: "nav.polls" }
     ]
   },
+  // İNGİLİZCE MENÜ TÜRKÇEYLE AYNI YÜZEYİ, AYNI SIRAYLA AÇAR.
+  //
+  // Menü bir aşama önce beş bağlantıydı ve eksik yüzeylere Türkçe hedefle
+  // (`trOnly`, "(TR)" işaretiyle) bağlanıyordu. Artık her Türkçe yüzeyin
+  // gerçek bir İngilizce karşılığı üretiliyor, dolayısıyla işaret de gerekmiyor:
+  // sıra, sayı ve hedef iki dilde birebir aynı.
+  //
+  // `trOnly` bayrağı KALDIRILMADI (layout.mjs ve i18n testi onu tanıyor):
+  // ileride İngilizce karşılığı olmayan bir sayfa menüye girerse, sessizce
+  // dil değiştirmek yerine yine işaretlenerek bağlanabilsin.
   en: {
     primary: [
       { href: "en/todays-matches.html", key: "nav.todayMatches" },
       { href: "en/live-scores.html", key: "nav.liveScores" },
-      { href: "en/standings.html", key: "nav.standings" },
+      { href: "en/results.html", key: "nav.results" },
+      { href: "en/fixtures.html", key: "nav.superLig" },
       { href: "en/analysis.html", key: "nav.analysis" },
-      { href: "en/teams.html", key: "nav.teams" }
+      { href: "en/teams.html", key: "nav.teams" },
+      { href: "en/columns.html", key: "nav.columns" },
+      { href: "en/standings.html", key: "nav.standings" },
+      { href: "en/archive.html", key: "nav.archive" }
     ],
-    secondary: []
+    secondary: [
+      { href: "en/player-radar.html", key: "nav.playerRadar" },
+      { href: "en/stats-hub.html", key: "nav.statsHub" },
+      { href: "en/transfer-radar.html", key: "nav.transferRadar" },
+      { href: "en/momentum.html", key: "nav.momentum" },
+      { href: "en/top-scorers.html", key: "nav.topScorers" },
+      { href: "en/news.html", key: "nav.news" },
+      { href: "en/polls.html", key: "nav.polls" }
+    ]
   }
 });
 

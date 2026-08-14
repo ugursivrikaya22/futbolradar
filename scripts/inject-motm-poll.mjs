@@ -108,6 +108,20 @@ let cleared = 0;
 const problems = [];
 const skipCounts = new Map();
 
+/**
+ * ANKETİN HANGİ SAYFADA OLDUĞUNU BU BETİK BİLİR — VE YAZAR.
+ *
+ * Anket sayfası (`anketler.html`) açık maç anketlerini listeleyip her birine
+ * bağlantı veriyor. O bağlantıyı "herhalde mac-raporu altındadır" diye
+ * kurmak, anket ileride `mac/` ya da `analiz/` altına düştüğünde sessizce
+ * 404 üretirdi. Enjektör zaten hangi dosyaya yazdığını biliyor; eşleme
+ * buradan çıkıyor ve uç nokta onu okuyor.
+ *
+ * Yalnızca ANKETİ OLAN sayfalar yazılır: bir maçın anketi kaldırıldığında
+ * eşlemeden de düşer.
+ */
+const pollPages = new Map();
+
 for (const dir of PAGE_DIRS) {
   const absoluteDir = path.join(root, dir);
   if (!fs.existsSync(absoluteDir)) continue;
@@ -127,8 +141,12 @@ for (const dir of PAGE_DIRS) {
       if (result.poll) block = motmPollBlock(result.poll);
     }
 
-    if (block) injected += 1;
-    else {
+    if (block) {
+      injected += 1;
+      // Aynı maç kimliği birden fazla dizinde varsa İLKİ kalır: eşleme tek
+      // bir hedef taşımalı, yoksa "anketin yeri" belirsiz olur.
+      if (!pollPages.has(matchId)) pollPages.set(matchId, relativePath);
+    } else {
       cleared += 1;
       skipCounts.set(reason, (skipCounts.get(reason) || 0) + 1);
       if (VERBOSE) console.log(`[motm-poll] atlandı ${relativePath} — ${reason}`);
@@ -138,6 +156,28 @@ for (const dir of PAGE_DIRS) {
       const result = injectInto(file, block, problems);
       if (result.updated) updated += 1;
     }
+  }
+}
+
+// Eşleme yalnızca gerçekten yazılan koşuda güncellenir; `--check` doğrulama
+// koşusudur ve dosyaya dokunmaz.
+if (!CHECK_ONLY && !problems.length) {
+  const payload = {
+    _comment: "ÜRETİLEN DOSYA — ELLE DÜZENLEMEYİN. scripts/inject-motm-poll.mjs her derlemede yeniden yazar. Maçın adamı anketinin HANGİ sayfada olduğunu tutar; anket sayfası (anketler.html) bağlantıları buradan kurar.",
+    updatedAt: new Date().toISOString(),
+    pages: Object.fromEntries([...pollPages.entries()].sort(([left], [right]) => left.localeCompare(right)))
+  };
+  const serialized = `${JSON.stringify(payload, null, 2)}\n`;
+  for (const target of [path.join(root, "data", "motm-poll-pages.json"), path.join(root, "public", "data", "motm-poll-pages.json")]) {
+    if (!fs.existsSync(path.dirname(target))) continue;
+    // Damga dışında değişiklik yoksa dosyaya dokunma: her derlemede
+    // yalnızca `updatedAt` değişen bir diff gürültüdür.
+    let previous = null;
+    try {
+      previous = JSON.parse(fs.readFileSync(target, "utf8"));
+    } catch { previous = null; }
+    if (previous && JSON.stringify(previous.pages) === JSON.stringify(payload.pages)) continue;
+    fs.writeFileSync(target, serialized, "utf8");
   }
 }
 

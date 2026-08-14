@@ -28,7 +28,14 @@ const { NAV_KEYS, normalizeLocale, t } = require("../../services/i18n.js");
  */
 function navList(locale, group) {
   const resolved = NAV_KEYS[normalizeLocale(locale)] || NAV_KEYS.tr;
-  return (resolved[group] || []).map((item) => ({ href: item.href, label: t(item.key, locale) }));
+  return (resolved[group] || []).map((item) => ({
+    href: item.href,
+    label: t(item.key, locale),
+    // Hedef sayfa yalnızca Türkçe var: bağlantı bunu okuyucuya SÖYLER
+    // (etiketinde "(TR)", işaretlemede `hreflang="tr"`). Gerekçe
+    // services/i18n.js içindeki NAV_KEYS.en yorumunda.
+    trOnly: Boolean(item.trOnly)
+  }));
 }
 
 export const NAV_PRIMARY = navList("tr", "primary");
@@ -85,7 +92,14 @@ function normalizeBase(base) {
 
 function linkList(items, base, className) {
   return items
-    .map((item) => `<a href="${base}${item.href}">${escapeHtml(item.label)}</a>`)
+    .map((item) => {
+      // Türkçe-only hedef: dil işareti hem makineye (`hreflang`) hem
+      // okuyucuya ("(TR)") verilir. Sessizce başka dile götürmek, bağlantıyı
+      // hiç vermemekten daha kötü olurdu.
+      const attributes = item.trOnly ? ' hreflang="tr" lang="tr"' : "";
+      const suffix = item.trOnly ? " (TR)" : "";
+      return `<a href="${base}${item.href}"${attributes}>${escapeHtml(item.label)}${suffix}</a>`;
+    })
     .join("");
 }
 
@@ -132,27 +146,35 @@ export function siteHeader(options = {}) {
   const secondary = secondaryItems.length
     ? `<div class="nav-links nav-links-secondary">${linkList(secondaryItems, base)}</div>`
     : "";
-  // Maç Merkezi'nin İngilizce karşılığı henüz üretilmiyor; İngilizce başlıkta
-  // var olmayan bir sayfaya düğme koymaktansa düğme hiç çizilmiyor.
-  const cta = locale === "tr"
-    ? `<a class="cta" href="${base}mac-merkezi.html">${escapeHtml(t("nav.matchCentre", locale))}</a>`
-    : "";
-  const search = locale === "tr"
-    ? `<form class="site-search" role="search" method="get" action="${base}oyuncu-radari.html" data-search-base="${base}" autocomplete="off">
+  // MAÇ MERKEZİ DÜĞMESİ İKİ DİLDE DE VAR.
+  //
+  // Sayfanın İngilizce sürümü henüz üretilmiyor ve düğme bu yüzden İngilizce
+  // başlıkta hiç çizilmiyordu — ama sonuç, İngilizce okuyucunun sitenin en
+  // kapsamlı maç ekranına üst çubuktan hiç ulaşamaması oldu. Düğme artık
+  // İngilizce tarafta da var; hedefi Türkçe olduğu için menü bağlantılarıyla
+  // aynı biçimde işaretleniyor (`hreflang="tr"`, etikette "(TR)").
+  const ctaTrOnly = locale !== "tr";
+  const cta = `<a class="cta" href="${base}mac-merkezi.html"${ctaTrOnly ? ' hreflang="tr" lang="tr"' : ""}>` +
+    `${escapeHtml(t("nav.matchCentre", locale))}${ctaTrOnly ? " (TR)" : ""}</a>`;
+
+  // ARAMA KUTUSU İKİ DİLDE DE VAR.
+  //
+  // Dizin ağırlıklı olarak Türkçe içerik taşıyor ve kutu bu yüzden İngilizce
+  // başlıkta hiç açılmıyordu. Ama arama, sitenin 700'den fazla sayfasına
+  // ulaşmanın tek pratik yolu: kutuyu hiç göstermemek, İngilizce okuyucuyu
+  // o içeriğin tamamından mahrum bırakıyordu. Kutu artık iki dilde de
+  // çiziliyor; yer tutucu ve etiketler çevrildi, sonuç satırları hedef
+  // sayfanın kendi dilini taşıyor.
+  const search = `<form class="site-search" role="search" method="get" action="${base}${locale === "en" ? "en/teams.html" : "oyuncu-radari.html"}" data-search-base="${base}" data-search-locale="${escapeHtml(locale)}" autocomplete="off">
             <span class="site-search-icon" aria-hidden="true">${ICONS.search}</span>
             <input class="site-search-input" type="search" name="search" placeholder="${escapeHtml(t("nav.searchPlaceholder", locale))}" aria-label="${escapeHtml(t("nav.searchInSite", locale))}" aria-expanded="false" aria-controls="site-search-results" role="combobox" />
             <button class="site-search-clear" type="button" aria-label="${escapeHtml(t("nav.searchClear", locale))}" hidden>×</button>
             <div class="site-search-panel" id="site-search-results" role="listbox" hidden></div>
-          </form>`
-    : "";
-  // Arama dizini yalnızca Türkçe içerik taşıyor; İngilizce başlıkta arama
-  // kutusu açmak, Türkçe sonuç döndüren bir kutu göstermek olurdu.
-  const searchToggles = locale === "tr"
-    ? {
-      mobile: `<button class="nav-search-toggle nav-search-toggle-mobile" type="button" aria-label="${escapeHtml(t("nav.search", locale))}" aria-controls="primary-menu">${ICONS.search}</button>`,
-      desktop: `<button class="nav-search-toggle nav-search-toggle-desktop" type="button" data-search-open aria-label="${escapeHtml(t("nav.search", locale))}" aria-expanded="false" title="${escapeHtml(t("nav.search", locale))}">${ICONS.search}</button>`
-    }
-    : { mobile: "", desktop: "" };
+          </form>`;
+  const searchToggles = {
+    mobile: `<button class="nav-search-toggle nav-search-toggle-mobile" type="button" aria-label="${escapeHtml(t("nav.search", locale))}" aria-controls="primary-menu">${ICONS.search}</button>`,
+    desktop: `<button class="nav-search-toggle nav-search-toggle-desktop" type="button" data-search-open aria-label="${escapeHtml(t("nav.search", locale))}" aria-expanded="false" title="${escapeHtml(t("nav.search", locale))}">${ICONS.search}</button>`
+  };
 
   return `<header class="topbar topbar-premium" data-shared-layout="header">
       <div class="topbar-inner">

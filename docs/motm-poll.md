@@ -41,6 +41,29 @@ oynamış olmak değildir.
 Koşullardan biri tutmazsa anket **hiç basılmaz**; eksik veri yer tutucuyla
 doldurulmaz. Neden basılmadığı derleme günlüğüne yazılır:
 
+## Oylama penceresi: maç sonundan 24 saat sonra kilit
+
+Oylama her maçta **maç sonundan 24 saat sonra kapanır**; sonuçlar
+kilitlenir ve değişmez. Kapanan anket yok olmaz: sonuç herkese gösterilir,
+yalnızca form gösterilmez.
+
+- Veride bitiş damgası yok; bitiş **başlama + 2 saat** varsayılır
+  (`MATCH_DURATION_APPROX_MS`). Yanılma payı pencerenin lehine.
+- Başlama saati okunamayan maçta pencere **hesaplanamaz ve oylama açık
+  kalır** — uydurma bir kapanış saati ilan edilmez.
+- Kapı **sunucuda** (`POLL_CLOSED`, 409): istemcideki kilit yalnızca
+  görünümdür. `GET` kilitli maçta da çalışır; `votingOpen` ve `closesAt`
+  yanıtta taşınır.
+- İstemci kapanışı `data-motm-closes` özniteliğinden okur; pencere geçtiyse
+  formu değil kilitli sonucu ve `closedNote`u gösterir.
+
+## Canlı yüzdeler
+
+Sonuç görünümdeyken sayım **dakikada bir** tazelenir (site.js,
+`REFRESH_INTERVAL_MS`). Sekme arka plandayken istek atılmaz; pencere
+kapanınca son bir kez çizilir ve zamanlayıcı durur — kilitli sonuç artık
+değişmez.
+
 ```
 motm-poll: 5 sayfaya anket yazıldı, 640 sayfada anket yok
   Atlama nedenleri — maç kaydı yok: 637, kadro verisi yok (0 aday): 3
@@ -165,9 +188,38 @@ node scripts/test-motm-poll.mjs
 node scripts/test-motm-vote-api.mjs
 ```
 
-`test-motm-poll` 11 bölüm, iki soruyu farklı açılardan soruyor: *listeye girmemesi gereken kim girebilir?* ve *anket
+`test-motm-poll` 12 bölüm, iki soruyu farklı açılardan soruyor: *listeye girmemesi gereken kim girebilir?* ve *anket
 çıkmaması gereken yerde çıkabilir mi?*
 
-`test-motm-vote-api` 12 bölüm, tek soru: *istemci ne gönderirse göndersin,
+`test-motm-vote-api` 13 bölüm, tek soru: *istemci ne gönderirse göndersin,
 sayıma geçersiz bir şey girebilir mi?* Sahte bir depoyla çalışır; gerçek
 Redis'e çıkmaz.
+
+```
+node scripts/test-motm-week.mjs
+```
+
+`test-motm-week` 9 bölüm; haftalık widget'ın sözleşmesi (aşağıda).
+
+## Ana sayfa widget'ı: Bu Haftanın En Çok Oy Alan Oyuncuları
+
+Ana sayfadaki `🏆 Bu Haftanın En Çok Oy Alan Oyuncuları` bölümü son 7
+günün oylarını tek listede toplar: oyuncu fotoğrafı, kulüp arması, oy
+sayısı, maç-içi oy payı ve maç raporu bağlantısı.
+
+- Seçim ve birleştirme `services/motmWeekly.js`te; uç nokta
+  `GET /api/motm-week` (`server/motmWeekRoute.js`, yönlendirme
+  `api/[...route].js` — 12 işlev sınırı gerekçesi oy uç noktasıyla aynı).
+- **Bölüm `hidden` doğar** ve site.js yalnızca gerçek sayım bulursa açar.
+  Depo yoksa, arızalıysa ya da bu hafta hiç oy yoksa bölüm hiç görünmez.
+- **Yüzde, oyuncunun kendi maçındaki oy payıdır.** Farklı maçların oyları
+  tek havuzda yüzdelenmez; aynı oyuncunun iki maçtaki oyları toplanmaz,
+  en çok oy aldığı maç gösterilir.
+- Fotoğraf `services/playerPhotoService.js` kurallarına tabidir (yalnızca
+  lisanslı kaynak); kulüp arması yalnızca gerçek sağlayıcı kimliğinden
+  türetilir. Eşleşmeyen ada baş harf gösterilir, görsel uydurulmaz.
+- Rapor bağlantısı yalnızca raporu gerçekten üretilmiş maça konur
+  (`data/post-match-reports.json`); kimlikler ayrışıyorsa aynı günün aynı
+  iki takımlı raporuna köprülenir, tahmin yapılmaz.
+- Yanıt kişiye özel alan taşımaz; kısa CDN önbelleği alır
+  (`motm-week` politikası, 60 sn).
