@@ -16,6 +16,9 @@ assert.ok(html.indexOf("data-super-lig-launch") < html.indexOf('id="hero-canli-s
 assert.match(css, /\.super-lig-launch-team strong[\s\S]*?white-space:\s*nowrap/);
 assert.match(css, /\.super-lig-launch-card\.is-live/);
 assert.match(css, /\.super-lig-launch\s*\{\s*order:\s*-2;/);
+assert.match(css, /\.super-lig-launch-card\s*\{[^}]*height:\s*auto;[^}]*min-height:\s*0;[^}]*max-height:\s*none;[^}]*overflow:\s*visible;/);
+assert.match(css, /\.super-lig-launch\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*1;/);
+assert.doesNotMatch(css, /\.super-lig-launch-card\s*\{[^}]*min-height:\s*(?:clamp\(|260px)/);
 assert.match(app, /function initSuperLigLaunchCard\(\)/);
 assert.match(app, /Date\.now\(\) >= kickoff/);
 
