@@ -333,6 +333,43 @@ function selectHomePoll(sources = {}, options = {}) {
   return { poll: null, status: "none", next: polls[0] || null, rejected };
 }
 
+/**
+ * TAKVİMDEKİ BÜTÜN ANKETLER, DURUMLARIYLA — ANKET SAYFASI İÇİN.
+ *
+ * Ana sayfa tek bir anket gösterir (açık olan, ya da son kapanmış).
+ * Anket sayfasının işi farklı: geçmişi, bugünü ve planlananı BİR ARADA
+ * göstermek. Bu yüzden burada eleme yok — takvimdeki her geçerli anket,
+ * durumuyla birlikte dönüyor.
+ *
+ * Sıra OKUYUCUNUN İLGİSİNE göre: önce oy verilebilen (`open`), sonra
+ * sonuçları okunabilen (`closed`, en yenisi üstte), en sonda henüz
+ * başlamamış olanlar (`upcoming`, en yakını üstte). Kronolojik sıralamak
+ * kapanmış bir anketi açık olanın üstüne koyardı ve sayfaya giren okuyucu
+ * oy verebileceği anketi aramak zorunda kalırdı.
+ */
+function listHomePolls(sources = {}, options = {}) {
+  const nowMs = Number.isFinite(options.now) ? options.now : Date.now();
+  const { polls, rejected } = scheduleFrom(sources);
+
+  const statusOf = (poll) => {
+    if (Date.parse(poll.startsAt) > nowMs) return "upcoming";
+    return Date.parse(poll.endsAt) <= nowMs ? "closed" : "open";
+  };
+
+  const rank = { open: 0, closed: 1, upcoming: 2 };
+  const entries = polls.map((poll) => ({ poll, status: statusOf(poll) }));
+
+  entries.sort((left, right) => {
+    if (rank[left.status] !== rank[right.status]) return rank[left.status] - rank[right.status];
+    // Kapanmışlarda en YENİ üstte, planlananlarda en YAKIN üstte.
+    return left.status === "upcoming"
+      ? Date.parse(left.startsAt || left.poll.startsAt) - Date.parse(right.poll.startsAt)
+      : Date.parse(right.poll.endsAt) - Date.parse(left.poll.endsAt);
+  });
+
+  return { entries, rejected };
+}
+
 /** Anketi tek dile indirger; istemciye giden biçim budur. */
 function localizePoll(poll, locale) {
   if (!poll) return null;
@@ -371,6 +408,7 @@ module.exports = {
   foldKey,
   hasLocale,
   localized,
+  listHomePolls,
   localizePoll,
   logRejected,
   normalizeLocale,

@@ -162,6 +162,31 @@ Uç nokta `api/` altında **değil** (`server/homePollRoute.js`, yönlendirme
 `api/[...route].js`): Vercel Hobby planında `api/` altındaki her dosya bir
 sunucusuz işlev sayılıyor ve 12 işlev sınırı dolu.
 
+## Anket sayfası: tüm anketler bir arada
+
+Ana sayfa **tek** anket gösterir (açık olan, ya da son kapanmış). Anket
+sayfası (`anketler.html` / `en/polls.html`) takvimin **tamamını** gösterir:
+
+| Durum | Ne görünür |
+|---|---|
+| `open` | Oy formu (henüz oy verilmediyse) ya da canlı sonuçlar |
+| `closed` | Kesinleşmiş sonuçlar |
+| `upcoming` | Soru ve seçenek önizlemesi — **sonuç yok** |
+
+Sıra okuyucunun ilgisine göre: **oy verilebilen üstte**, sonra kapananlar
+(en yeni önce), en sonda planlananlar (en yakın önce). Kronolojik sıralamak
+kapanmış bir anketi açık olanın üstüne koyar ve sayfaya giren okuyucu oy
+verebileceği anketi aramak zorunda kalırdı.
+
+Başlamamış anketin **sayımı okunmaz**: henüz oy olamaz ve boş bir sorgu her
+sayfa görüntülemesinde depoya gereksiz yük olurdu.
+
+Veri `GET /api/home-poll?scope=all` üzerinden gelir — ayrı bir uç nokta
+değil, aynı yolun bir kipi: Vercel'deki işlev sayısı sabit kalıyor ve iki
+yüzey aynı doğrulama ve sunum kodunu paylaşıyor. **Liste kipi POST kabul
+etmez**; oy vermek her zaman tekil anket yolundan geçer, çünkü pencere
+kapısı orada.
+
 ## İki sürüm birebir aynı
 
 Kabuk iki tarafta da aynı sınıfları ve aynı `data-*` kancalarını taşır;

@@ -1487,9 +1487,295 @@
     });
   }
 
+  /* ────────────────────────────────────────────────────────────────────────
+     ANKET SAYFASI — TÜM ANKETLER BİR ARADA.
+     Ana sayfa tek anket gösterir; bu sayfa takvimin tamamını ister
+     (`?scope=all`): oy verilebilen üstte, kapanmışlar sonuçlarıyla, en altta
+     planlananlar. Çizim yardımcıları (crest) yukarıdaki anketle ORTAK —
+     ikinci bir kopya, iki yüzeyin zamanla ayrışması demek olurdu.
+     ──────────────────────────────────────────────────────────────────────── */
+
+  function pollStrings(locale) {
+    return locale === "en"
+      ? {
+        votes: "votes", total: "total votes", leader: "Leading", yours: "Your vote",
+        open: "Open", closed: "Closed", upcoming: "Upcoming",
+        endsPrefix: "Closes", startsPrefix: "Opens", closedAt: "Closed on",
+        button: "Cast Your Vote", thanks: "Thanks! Live results are below.",
+        noVotes: "No votes recorded yet.", noStore: "The vote store cannot be reached, so no counts are shown.",
+        empty: "There are no polls scheduled right now.", failed: "Polls could not be loaded."
+      }
+      : {
+        votes: "oy", total: "toplam oy", leader: "Önde", yours: "Senin oyun",
+        open: "Açık", closed: "Kapandı", upcoming: "Yakında",
+        endsPrefix: "Bitiş", startsPrefix: "Başlangıç", closedAt: "Kapanış",
+        button: "Oyunu Ver", thanks: "Teşekkürler! Güncel sonuçlar aşağıda.",
+        noVotes: "Henüz oy verilmemiş.", noStore: "Oy deposuna ulaşılamadığı için sayımlar gösterilemiyor.",
+        empty: "Şu an planlanmış bir anket yok.", failed: "Anketler yüklenemedi."
+      };
+  }
+
+  function formatPollDate(value, locale) {
+    var stamp = Date.parse(value || "");
+    if (!isFinite(stamp)) return "";
+    return new Date(stamp).toLocaleDateString(locale === "en" ? "en-GB" : "tr-TR", {
+      day: "numeric", month: "long", year: "numeric"
+    });
+  }
+
+  /** Tek anket kartı: başlık, durum rozeti, tarih ve sonuç/oy alanı. */
+  function pollCard(poll, strings, locale, onVote) {
+    var card = document.createElement("article");
+    card.className = "poll-archive__card is-" + poll.status;
+
+    var head = document.createElement("div");
+    head.className = "poll-archive__head";
+
+    var badge = document.createElement("span");
+    badge.className = "poll-archive__badge is-" + poll.status;
+    badge.textContent = strings[poll.status] || poll.status;
+    head.appendChild(badge);
+
+    var when = document.createElement("span");
+    when.className = "poll-archive__when";
+    when.textContent = poll.status === "upcoming"
+      ? strings.startsPrefix + ": " + formatPollDate(poll.startsAt, locale)
+      : (poll.status === "closed" ? strings.closedAt : strings.endsPrefix) + ": " + formatPollDate(poll.endsAt, locale);
+    head.appendChild(when);
+    card.appendChild(head);
+
+    var title = document.createElement("h2");
+    title.className = "poll-archive__question";
+    title.textContent = poll.question;
+    card.appendChild(title);
+
+    if (poll.subtitle) {
+      var lead = document.createElement("p");
+      lead.className = "poll-archive__subtitle";
+      lead.textContent = poll.subtitle;
+      card.appendChild(lead);
+    }
+
+    // BAŞLAMAMIŞ ANKETTE SEÇENEK GÖSTERİLİR, SONUÇ GÖSTERİLMEZ: henüz oy
+    // yok ve "%0" basmak veride olmayan bir sayı iddia etmek olurdu.
+    if (poll.status === "upcoming") {
+      var preview = document.createElement("ul");
+      preview.className = "poll-archive__preview";
+      poll.options.slice(0, 6).forEach(function (option) {
+        var item = document.createElement("li");
+        item.appendChild(crest(option));
+        var name = document.createElement("span");
+        name.textContent = option.label;
+        item.appendChild(name);
+        preview.appendChild(item);
+      });
+      card.appendChild(preview);
+      return card;
+    }
+
+    var canVote = poll.status === "open" && !poll.alreadyVoted && poll.storage === "ready";
+
+    if (canVote) {
+      var form = document.createElement("form");
+      form.className = "home-poll__form";
+
+      var list = document.createElement("ul");
+      list.className = "home-poll__options";
+      poll.options.forEach(function (option) {
+        var item = document.createElement("li");
+        item.className = "home-poll__option";
+
+        var input = document.createElement("input");
+        input.className = "home-poll__radio";
+        input.type = "radio";
+        input.name = "poll-" + poll.id;
+        input.id = "poll-" + poll.id + "-" + option.id;
+        input.value = option.id;
+
+        var labelEl = document.createElement("label");
+        labelEl.className = "home-poll__label";
+        labelEl.htmlFor = input.id;
+        labelEl.appendChild(crest(option));
+        var optionName = document.createElement("span");
+        optionName.className = "home-poll__option-name";
+        optionName.textContent = option.label;
+        labelEl.appendChild(optionName);
+
+        item.appendChild(input);
+        item.appendChild(labelEl);
+        list.appendChild(item);
+      });
+      form.appendChild(list);
+
+      var submit = document.createElement("button");
+      submit.className = "home-poll__submit";
+      submit.type = "submit";
+      submit.textContent = strings.button;
+      form.appendChild(submit);
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        var selected = form.querySelector(".home-poll__radio:checked");
+        if (!selected) return;
+        submit.disabled = true;
+        onVote(poll, selected.value, function () { submit.disabled = false; });
+      });
+      card.appendChild(form);
+      return card;
+    }
+
+    var rows = poll.results || [];
+    if (!rows.length) {
+      var note = document.createElement("p");
+      note.className = "poll-archive__note";
+      note.textContent = poll.storage === "ready" ? strings.noVotes : strings.noStore;
+      card.appendChild(note);
+      return card;
+    }
+
+    if (poll.alreadyVoted && poll.status === "open") {
+      var thanks = document.createElement("p");
+      thanks.className = "home-poll__thanks";
+      thanks.textContent = strings.thanks;
+      card.appendChild(thanks);
+    }
+
+    var results = document.createElement("ol");
+    results.className = "home-poll__results";
+    rows.forEach(function (row, index) {
+      var item = document.createElement("li");
+      item.className = "home-poll__result" +
+        (row.isLeader ? " is-leader" : "") +
+        (poll.choice && poll.choice === row.optionId ? " is-yours" : "");
+      item.style.setProperty("--home-poll-delay", Math.min(index, 12) * 40 + "ms");
+
+      var rowHead = document.createElement("div");
+      rowHead.className = "home-poll__result-head";
+
+      var option = null;
+      for (var i = 0; i < poll.options.length; i += 1) {
+        if (poll.options[i].id === row.optionId) { option = poll.options[i]; break; }
+      }
+      if (option) rowHead.appendChild(crest(option));
+
+      var name = document.createElement("span");
+      name.className = "home-poll__result-name";
+      name.textContent = row.label;
+      rowHead.appendChild(name);
+
+      if (row.isLeader) {
+        var leaderBadge = document.createElement("span");
+        leaderBadge.className = "home-poll__badge";
+        leaderBadge.textContent = strings.leader;
+        rowHead.appendChild(leaderBadge);
+      }
+      if (poll.choice && poll.choice === row.optionId) {
+        var mine = document.createElement("span");
+        mine.className = "home-poll__badge is-yours";
+        mine.textContent = strings.yours;
+        rowHead.appendChild(mine);
+      }
+
+      var percent = document.createElement("span");
+      percent.className = "home-poll__result-percent";
+      percent.textContent = "%" + row.percent;
+      rowHead.appendChild(percent);
+
+      var votes = document.createElement("span");
+      votes.className = "home-poll__result-votes";
+      votes.textContent = row.votes + " " + strings.votes;
+      rowHead.appendChild(votes);
+
+      var bar = document.createElement("div");
+      bar.className = "home-poll__bar";
+      var fill = document.createElement("span");
+      fill.className = "home-poll__bar-fill";
+      bar.appendChild(fill);
+
+      item.appendChild(rowHead);
+      item.appendChild(bar);
+      results.appendChild(item);
+
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () {
+          fill.style.width = Math.max(0, Math.min(100, row.percent)) + "%";
+        });
+      });
+    });
+    card.appendChild(results);
+
+    if (poll.total) {
+      var total = document.createElement("p");
+      total.className = "home-poll__total";
+      total.textContent = poll.total + " " + strings.total;
+      card.appendChild(total);
+    }
+
+    return card;
+  }
+
+  function setupPollArchive(section) {
+    var list = section.querySelector("[data-poll-archive-list]");
+    var status = section.querySelector("[data-poll-archive-status]");
+    var source = section.getAttribute("data-poll-archive-source") || "/api/home-poll";
+    var locale = section.getAttribute("data-poll-archive-locale") === "en" ? "en" : "tr";
+    var strings = pollStrings(locale);
+    if (!list || typeof window.fetch !== "function") return;
+
+    function load() {
+      return window.fetch(source + "?scope=all&locale=" + encodeURIComponent(locale), {
+        headers: { Accept: "application/json" },
+        credentials: "same-origin"
+      })
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .then(function (payload) { return payload && payload.data ? payload.data : null; })
+        .catch(function () { return null; });
+    }
+
+    /** Oy verildikten sonra liste yeniden çizilir: sıra ve lider değişebilir. */
+    function vote(poll, optionId, done) {
+      window.fetch(source, {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ optionId: optionId, locale: locale, pollId: poll.id })
+      })
+        .then(function (response) { return response.ok ? response.json() : null; })
+        .catch(function () { return null; })
+        .then(function () { done(); return render(); });
+    }
+
+    function render() {
+      return load().then(function (data) {
+        var polls = data && Array.isArray(data.polls) ? data.polls : [];
+        if (!polls.length) {
+          if (status) status.textContent = data ? strings.empty : strings.failed;
+          return;
+        }
+        if (status) status.hidden = true;
+        list.innerHTML = "";
+        polls.forEach(function (poll) {
+          // Depo durumu anket başına değil yanıt başına geliyor; karta
+          // taşınıyor ki "sayım yok" ile "oy yok" ayrımı korunsun.
+          var entry = {};
+          for (var key in poll) {
+            if (Object.prototype.hasOwnProperty.call(poll, key)) entry[key] = poll[key];
+          }
+          entry.storage = data.storage;
+          list.appendChild(pollCard(entry, strings, locale, vote));
+        });
+        section.classList.add("is-ready");
+      });
+    }
+
+    render();
+  }
+
   function setupHomePolls() {
     var sections = document.querySelectorAll("[data-home-poll]");
     Array.prototype.forEach.call(sections, setupPoll);
+    var archives = document.querySelectorAll("[data-poll-archive]");
+    Array.prototype.forEach.call(archives, setupPollArchive);
   }
 
   if (document.readyState === "loading") {

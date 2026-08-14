@@ -526,4 +526,196 @@ console.log("home-poll");
   }
 }
 
-console.log("home-poll OK (10 bölüm)");
+// ── 11. ANKET SAYFASI: takvimin tamamı, doğru sırada ──────────────────────
+//
+// Ana sayfa tek anket gösterir; anket sayfası geçmişi, bugünü ve planlananı
+// BİR ARADA ister. Sıra okuyucunun ilgisine göre: oy verilebilen üstte,
+// sonra sonuçları okunabilenler, en sonda başlamamışlar. Kronolojik sıra
+// kapanmış bir anketi açık olanın üstüne koyardı.
+{
+  const { listHomePolls } = require(path.join(root, "services", "homePoll.js"));
+
+  const sources = {
+    teams,
+    polls: [
+      poll({ id: "eski", startsAt: "2026-01-01T00:00:00+03:00", endsAt: "2026-02-01T00:00:00+03:00" }),
+      poll({ id: "yeni-kapali", startsAt: "2026-03-01T00:00:00+03:00", endsAt: "2026-04-01T00:00:00+03:00" }),
+      poll({ id: "acik", startsAt: "2026-08-01T00:00:00+03:00", endsAt: "2026-09-01T00:00:00+03:00" }),
+      poll({ id: "yakin-planli", startsAt: "2026-09-10T00:00:00+03:00", endsAt: "2026-10-10T00:00:00+03:00" }),
+      poll({ id: "uzak-planli", startsAt: "2026-11-01T00:00:00+03:00", endsAt: "2026-12-01T00:00:00+03:00" })
+    ]
+  };
+
+  const { entries } = listHomePolls(sources, { now: Date.parse("2026-08-15T00:00:00+03:00") });
+  assert.deepEqual(
+    entries.map((entry) => `${entry.status}:${entry.poll.id}`),
+    ["open:acik", "closed:yeni-kapali", "closed:eski", "upcoming:yakin-planli", "upcoming:uzak-planli"],
+    "sıra: açık → kapananlar (en yeni önce) → planlananlar (en yakın önce)"
+  );
+
+  // Hiç anket yoksa liste boş döner; sayfa "anket yok" der, uydurmaz.
+  assert.deepEqual(listHomePolls({ teams, polls: [] }, { now: Date.now() }).entries, []);
+}
+
+// ── 12. UÇ NOKTA: scope=all ───────────────────────────────────────────────
+{
+  const STORE_PATH = path.join(root, "services", "homePollVoteStore.js");
+  const ROUTE_PATH = path.join(root, "server", "homePollRoute.js");
+  const API_PATH = path.join(root, "api", "[...route].js");
+  const POLLS_PATH = path.join(root, "data", "home-polls.json");
+
+  const openPoll = poll({
+    id: "liste-acik",
+    startsAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+    endsAt: new Date(Date.now() + 20 * DAY_MS).toISOString()
+  });
+  const closedPoll = poll({
+    id: "liste-kapali",
+    startsAt: new Date(Date.now() - 60 * DAY_MS).toISOString(),
+    endsAt: new Date(Date.now() - 30 * DAY_MS).toISOString()
+  });
+  const upcomingPoll = poll({
+    id: "liste-planli",
+    startsAt: new Date(Date.now() + 30 * DAY_MS).toISOString(),
+    endsAt: new Date(Date.now() + 60 * DAY_MS).toISOString()
+  });
+
+  const reads = [];
+  function installHandler(options = {}) {
+    reads.length = 0;
+    const votes = new Map();
+    const fake = {
+      ...require(STORE_PATH),
+      isConfigured: () => options.configured !== false,
+      readTally: async (pollId) => {
+        if (options.throws) throw new Error("store-down");
+        reads.push(pollId);
+        const counts = {};
+        for (const [key, optionId] of votes) {
+          if (key.split("|")[0] !== pollId) continue;
+          counts[optionId] = (counts[optionId] || 0) + 1;
+        }
+        return counts;
+      },
+      recordVote: async (pollId, optionId, voterKey) => {
+        const key = `${pollId}|${voterKey}`;
+        if (votes.has(key)) return { counted: false };
+        votes.set(key, optionId);
+        return { counted: true };
+      },
+      findVote: async (pollId, voterKey) => {
+        const optionId = votes.get(`${pollId}|${voterKey}`);
+        return optionId ? { voted: true, optionId } : { voted: false, optionId: "" };
+      }
+    };
+    require.cache[POLLS_PATH] = {
+      id: POLLS_PATH, filename: POLLS_PATH, loaded: true,
+      exports: { polls: [openPoll, closedPoll, upcomingPoll] }
+    };
+    require.cache[STORE_PATH] = { id: STORE_PATH, filename: STORE_PATH, loaded: true, exports: fake };
+    delete require.cache[ROUTE_PATH];
+    delete require.cache[API_PATH];
+    return require(API_PATH);
+  }
+
+  function invoke(handler, { method = "GET", url = "/api/home-poll?scope=all", body = null, cookie = "" } = {}) {
+    const req = { method, url, headers: cookie ? { cookie } : {}, body };
+    const res = {
+      statusCode: 200,
+      headers: {},
+      setHeader(name, value) { this.headers[name.toLowerCase()] = value; },
+      end(payload) { this.body = payload; return this; }
+    };
+    return Promise.resolve(handler(req, res)).then(() => ({
+      status: res.statusCode,
+      headers: res.headers,
+      payload: res.body ? JSON.parse(res.body) : null
+    }));
+  }
+
+  // Üç anket de döner, her biri durumuyla.
+  {
+    const handler = installHandler();
+    const response = await invoke(handler);
+    assert.equal(response.status, 200);
+    assert.equal(response.payload.data.storage, "ready");
+    assert.deepEqual(
+      response.payload.data.polls.map((entry) => `${entry.status}:${entry.id}`),
+      ["open:liste-acik", "closed:liste-kapali", "upcoming:liste-planli"]
+    );
+
+    // BAŞLAMAMIŞ ANKETİN SAYIMI OKUNMAZ: henüz oy olamaz ve boş bir sorgu
+    // her sayfa görüntülemesinde depoya gereksiz yük olurdu.
+    assert.ok(!reads.includes("liste-planli"), "başlamamış anketin sayımı okunmamalı");
+    assert.ok(reads.includes("liste-acik") && reads.includes("liste-kapali"));
+
+    // Planlanan anket seçenekleriyle gelir ama sonuçsuz: "%0" iddia edilmez.
+    const upcoming = response.payload.data.polls.find((entry) => entry.status === "upcoming");
+    assert.ok(upcoming.options.length >= 18, "planlanan ankette seçenekler görünmeli");
+    assert.deepEqual(upcoming.results, []);
+    assert.equal(upcoming.total, 0);
+  }
+
+  // Liste kipi POST kabul etmez: oy vermek her zaman tekil yoldan geçer,
+  // çünkü pencere kapısı orada.
+  {
+    const handler = installHandler();
+    const response = await invoke(handler, {
+      method: "POST", url: "/api/home-poll?scope=all", body: { optionId: "x" }
+    });
+    assert.notEqual(response.status, 200, "liste kipinde POST sayıma girmemeli");
+  }
+
+  // Depo kapalıyken sorular gösterilir, sayım gösterilmez.
+  {
+    const response = await invoke(installHandler({ configured: false }));
+    assert.equal(response.payload.data.storage, "unavailable");
+    assert.equal(response.payload.data.polls.length, 3, "depo kapalıyken de takvim görünmeli");
+    for (const entry of response.payload.data.polls) assert.deepEqual(entry.results, []);
+  }
+
+  // Depo arızası sayfayı kırmaz.
+  {
+    const response = await invoke(installHandler({ throws: true }));
+    assert.equal(response.status, 200);
+    assert.equal(response.payload.data.storage, "unavailable");
+    assert.equal(response.payload.data.polls.length, 3);
+  }
+
+  delete require.cache[POLLS_PATH];
+  delete require.cache[STORE_PATH];
+  delete require.cache[ROUTE_PATH];
+  delete require.cache[API_PATH];
+}
+
+// ── 13. ANKET SAYFASI: iki dilde aynı kabuk ───────────────────────────────
+{
+  const HOOKS = ["data-poll-archive", "data-poll-archive-source", "data-poll-archive-list", "data-poll-archive-status"];
+  for (const page of [{ file: "anketler.html", locale: "tr" }, { file: path.join("en", "polls.html"), locale: "en" }]) {
+    const html = fs.readFileSync(path.join(root, page.file), "utf8");
+    for (const hook of HOOKS) {
+      assert.ok(html.includes(hook), `${page.file}: "${hook}" kancası eksik`);
+    }
+    assert.ok(html.includes(`data-poll-archive-locale="${page.locale}"`), `${page.file}: dil kancası yanlış`);
+    // Sayfa ortak yerleşimi almış olmalı (menü, arama, dil kutusu).
+    assert.ok(html.includes('data-shared-layout="header"'), `${page.file}: ortak başlık uygulanmamış`);
+    assert.ok(html.includes("lang-switch"), `${page.file}: dil kutusu yok`);
+  }
+
+  // Menüde iki dilde de var: erişilemeyen sayfa işe yaramaz.
+  const { NAV_KEYS } = require(path.join(root, "services", "i18n.js"));
+  assert.ok(NAV_KEYS.tr.secondary.some((item) => item.href === "anketler.html"), "TR menüde anket sayfası yok");
+  assert.ok(NAV_KEYS.en.secondary.some((item) => item.href === "en/polls.html"), "EN menüde anket sayfası yok");
+
+  // İstemci sözleşmesi.
+  const client = fs.readFileSync(path.join(root, "site.js"), "utf8");
+  for (const hook of ["data-poll-archive-list", "scope=all", "poll-archive__card"]) {
+    assert.ok(client.includes(hook), `site.js "${hook}" kancasını kaybetmiş`);
+  }
+  const css = fs.readFileSync(path.join(root, "page.css"), "utf8");
+  for (const selector of [".poll-archive__card", ".poll-archive__badge.is-open", ".poll-archive__preview"]) {
+    assert.ok(css.includes(selector), `page.css "${selector}" seçicisini kaybetmiş`);
+  }
+}
+
+console.log("home-poll OK (13 bölüm)");

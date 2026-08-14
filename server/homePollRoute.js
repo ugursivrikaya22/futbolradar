@@ -7,7 +7,7 @@ const {
   sendSuccess,
   setCachePolicy
 } = require("../api/_utils");
-const { localizePoll, selectHomePoll } = require("../services/homePoll");
+const { listHomePolls, localizePoll, selectHomePoll } = require("../services/homePoll");
 const { findVote, isConfigured, readTally, recordVote, voterKeyFor } = require("../services/homePollVoteStore");
 
 /**
@@ -161,12 +161,69 @@ async function handleHomePoll(req, res) {
   const query = getQuery(req);
   const body = method === "POST" ? await readJsonBody(req) : null;
   const locale = String((body && body.locale) || query.locale || "tr");
-
-  // KAPI 1 — hangi anket? Takvim karar verir, istemci değil.
-  const selection = selectHomePoll({
+  const sources = {
     polls: loadJson("../data/home-polls.json") || {},
     teams: loadJson("../data/teams.json") || []
-  });
+  };
+
+  // ANKET SAYFASI KİPİ: takvimin TAMAMI, durumlarıyla.
+  //
+  // Ana sayfa tek anket gösterir; anket sayfası geçmişi, bugünü ve
+  // planlananı bir arada ister. Ayrı bir uç nokta açmak yerine aynı yola
+  // bir kip eklendi: Vercel'deki işlev sayısı sabit kalıyor ve iki yüzey
+  // aynı doğrulama ve sunum kodunu paylaşıyor.
+  //
+  // Yalnızca OKUMA: oy vermek her zaman tekil anket yolundan geçer, çünkü
+  // pencere kapısı orada. Liste kipinde POST kabul edilmez.
+  if (method === "GET" && String(query.scope || "") === "all") {
+    const { entries } = listHomePolls(sources);
+    if (!entries.length) {
+      return sendSuccess(res, { storage: "none", polls: [] }, SOURCE, null, {
+        note: "Takvimde anket yok."
+      });
+    }
+
+    const configured = isConfigured();
+    const voter = configured ? resolveVoter(req, res) : null;
+    const voterKey = voter ? voterKeyFor(voter.voterId, getClientIp(req)) : "";
+
+    try {
+      const polls = await Promise.all(entries.map(async (entry) => {
+        const poll = localizePoll(entry.poll, locale);
+        // Başlamamış ankette sayım OKUNMAZ: henüz oy olamaz ve boş bir
+        // sorgu her sayfa görüntülemesinde depoya gereksiz yük olurdu.
+        if (!configured || entry.status === "upcoming") {
+          return { ...poll, status: entry.status, results: [], total: 0, alreadyVoted: false, choice: null };
+        }
+        const existing = await findVote(poll.id, voterKey);
+        return {
+          ...poll,
+          status: entry.status,
+          alreadyVoted: existing.voted,
+          choice: existing.optionId || null,
+          ...presentTally(await readTally(poll.id), poll)
+        };
+      }));
+
+      return sendSuccess(res, {
+        storage: configured ? "ready" : "unavailable",
+        polls
+      }, SOURCE, new Date().toISOString());
+    } catch (error) {
+      // Depo arızası sayfayı KIRMAZ: sorular ve takvim yine gösterilir,
+      // yalnızca sayımlar boş kalır.
+      return sendSuccess(res, {
+        storage: "unavailable",
+        polls: entries.map((entry) => ({
+          ...localizePoll(entry.poll, locale),
+          status: entry.status, results: [], total: 0, alreadyVoted: false, choice: null
+        }))
+      }, SOURCE, null, { note: "Oy deposuna ulasilamadi; sayimlar gosterilemiyor." });
+    }
+  }
+
+  // KAPI 1 — hangi anket? Takvim karar verir, istemci değil.
+  const selection = selectHomePoll(sources);
 
   if (!selection.poll) {
     // Gösterilecek anket yok: istemci bölümü hiç çizmez.

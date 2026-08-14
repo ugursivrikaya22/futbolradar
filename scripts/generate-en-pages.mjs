@@ -1789,6 +1789,46 @@ ${sectionLinks()}`;
   });
 }
 
+/**
+ * ANKET SAYFASI — TÜRKÇESİYLE BİREBİR AYNI KABUK.
+ *
+ * Liste istemcide çizilir (`/api/home-poll?scope=all`); burada yalnızca
+ * kabuk var ve iki dilde aynı `data-*` kancalarını taşıyor. Tek fark
+ * `data-poll-archive-locale` ve çerçeve metinleri.
+ */
+function pollsPage() {
+  const body = `      <section class="poll-archive" data-poll-archive data-poll-archive-source="/api/home-poll" data-poll-archive-locale="en" aria-labelledby="poll-archive-title">
+        <h2 class="sr-only" id="poll-archive-title">All polls</h2>
+        <p class="poll-archive__status" data-poll-archive-status>Loading polls…</p>
+        <div class="poll-archive__list" data-poll-archive-list></div>
+      </section>
+
+      <section class="data-panel" aria-labelledby="poll-about-title">
+        <h2 class="panel-title" id="poll-about-title">What these polls do and do not say</h2>
+        <p>These polls are reader <strong>predictions</strong>, kept separate from the site's verified match data. A club leading the vote does not mean it will win the title — it means readers expect it to.</p>
+        <p>Results are calculated from all readers' votes and each browser can vote once. When the vote store cannot be reached, no percentage is shown at all: printing a share without a real count would be an invention.</p>
+        <p>Every poll stays open for at least two weeks, then closes and its results become final. A closed poll does not disappear; it stays on this page with its results.</p>
+      </section>
+
+      <section class="data-panel" aria-labelledby="poll-motm-title">
+        <h2 class="panel-title" id="poll-motm-title">Man of the Match polls</h2>
+        <p>The polls on this page ask about the season as a whole. The per-match <strong>Man of the Match</strong> vote lives on each match page and closes 24 hours after the final whistle.</p>
+        <p><a class="detail-link" href="./results.html">Go to match results</a></p>
+      </section>`;
+
+  return pageShell({
+    routeKey: "polls",
+    trPath: "anketler.html",
+    enPath: "en/polls.html",
+    heroKicker: "Reader Polls",
+    heroTitle: "Turkish Football Reader Polls",
+    heroLead: "Open votes, final results from closed polls and upcoming questions — all in one place. The poll you can vote in sits at the top.",
+    heroMeta: "One vote per browser",
+    body,
+    schema: schemaFor("polls", "en/polls.html", "CollectionPage")
+  });
+}
+
 const PAGE_BUILDERS = {
   home: homePage,
   todaysMatches: todaysMatchesPage,
@@ -1806,7 +1846,8 @@ const PAGE_BUILDERS = {
   statsHub: statsHubPage,
   archive: archivePage,
   columns: columnsPage,
-  news: newsPage
+  news: newsPage,
+  polls: pollsPage
 };
 
 fs.mkdirSync(OUT_DIR, { recursive: true });

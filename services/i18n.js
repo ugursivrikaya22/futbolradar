@@ -215,6 +215,13 @@ const ROUTES = Object.freeze([
     en: "en/news.html",
     changefreq: "daily",
     priority: "0.7"
+  },
+  {
+    key: "polls",
+    tr: "anketler.html",
+    en: "en/polls.html",
+    changefreq: "daily",
+    priority: "0.6"
   }
 ]);
 
@@ -395,6 +402,16 @@ const ROUTE_META = Object.freeze({
       title: "Turkish Football News | FutbolRadar",
       description: "Verified Turkish football news, each story published with the source it was confirmed against."
     }
+  },
+  polls: {
+    tr: {
+      title: "Anketler | FutbolRadar",
+      description: "FutbolRadar okuyucu anketleri: açık oylamalar, kapanmış anketlerin kesinleşmiş sonuçları ve yaklaşan sorular bir arada."
+    },
+    en: {
+      title: "Turkish Football Reader Polls | FutbolRadar",
+      description: "Open votes, final results from closed polls and upcoming questions — every FutbolRadar reader poll in one place."
+    }
   }
 });
 
@@ -424,7 +441,8 @@ const NAV_KEYS = Object.freeze({
       { href: "transfer-radari.html", key: "nav.transferRadar" },
       { href: "momentum.html", key: "nav.momentum" },
       { href: "gol-kralligi.html", key: "nav.topScorers" },
-      { href: "haberler.html", key: "nav.news" }
+      { href: "haberler.html", key: "nav.news" },
+      { href: "anketler.html", key: "nav.polls" }
     ]
   },
   // İNGİLİZCE MENÜ TÜRKÇEYLE AYNI YÜZEYİ, AYNI SIRAYLA AÇAR.
@@ -455,7 +473,8 @@ const NAV_KEYS = Object.freeze({
       { href: "en/transfer-radar.html", key: "nav.transferRadar" },
       { href: "en/momentum.html", key: "nav.momentum" },
       { href: "en/top-scorers.html", key: "nav.topScorers" },
-      { href: "en/news.html", key: "nav.news" }
+      { href: "en/news.html", key: "nav.news" },
+      { href: "en/polls.html", key: "nav.polls" }
     ]
   }
 });
