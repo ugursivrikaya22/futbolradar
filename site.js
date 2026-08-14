@@ -1484,18 +1484,79 @@
       }, REFRESH_INTERVAL_MS);
     }
 
+    /**
+     * OY GÖNDERME — TEK GİRİŞ NOKTASI.
+     *
+     * Üç yol da buraya çıkıyor: seçeneğe tıklamak, klavyeden Enter/Boşluk,
+     * ve "Oyunu Ver" düğmesi. Aynı işi üç yerde yazmak, birinin uçuş
+     * kilidini ya da yerel kaydı unutmasıyla biterdi.
+     *
+     * UÇUŞ KİLİDİ: `sending` olmadan hızlı iki tık iki istek gönderiyordu.
+     * Sunucu ikinciyi "zaten oy verdin" diye eleyecekti ama ekran bu arada
+     * iki kez yeniden çiziliyordu.
+     */
+    var sending = false;
+
+    function castVote(optionId) {
+      if (sending || !poll || !optionId) return;
+      // Kapalı anket ya da oy verilmiş durum: tıklama sessizce yutulur.
+      // Görsel olarak da tıklanabilir görünmüyor (`.home-poll__form` gizli).
+      if (form.hidden) return;
+
+      sending = true;
+      if (submit) submit.disabled = true;
+      // Gönderim görünür olsun: seçenekler soluklaşır ve tıklama almaz.
+      form.className = form.className.indexOf("is-sending") < 0
+        ? form.className + " is-sending" : form.className;
+
+      writeStore(poll.id, { choice: optionId, votedAt: new Date().toISOString() });
+
+      request(optionId).then(function (data) {
+        sending = false;
+        form.className = form.className.replace(/\s*is-sending/g, "");
+        if (data && data.poll) render(data);
+        else if (submit) submit.disabled = false;
+      });
+    }
+
+    /**
+     * SEÇENEĞİN TAMAMI TIKLANABİLİR VE TIK = OY.
+     *
+     * Etiket zaten logo + ad alanının tamamını kaplıyor (radyo görsel olarak
+     * gizli); buradaki değişiklik, tıklamanın ayrıca "Oyunu Ver" beklememesi.
+     *
+     * KLAVYE OKU İLE OY VERİLMEZ. Radyo grubunda yön tuşu seçimi değiştirir
+     * ve `change` olayı üretir; oyu `change`e bağlamak, listeyi oklarla
+     * gezen bir okuyucunun geçtiği İLK takıma oy vermesi demekti. Bu yüzden
+     * yalnızca AÇIK ONAY sayılır: fare tıklaması ya da Enter/Boşluk. Okla
+     * seçenler "Oyunu Ver" düğmesini kullanır.
+     */
+    var optionList = section.querySelector("[data-home-poll-options]");
+    if (optionList) {
+      optionList.addEventListener("click", function (event) {
+        var label = event.target.closest ? event.target.closest(".home-poll__label") : null;
+        if (!label) return;
+        var radio = document.getElementById(label.getAttribute("for"));
+        if (!radio) return;
+        event.preventDefault();
+        radio.checked = true;
+        castVote(radio.value);
+      });
+
+      optionList.addEventListener("keydown", function (event) {
+        if (event.key !== "Enter" && event.key !== " " && event.key !== "Spacebar") return;
+        var radio = event.target;
+        if (!radio || radio.className.indexOf("home-poll__radio") < 0) return;
+        event.preventDefault();
+        radio.checked = true;
+        castVote(radio.value);
+      });
+    }
+
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       var selected = form.querySelector(".home-poll__radio:checked");
-      if (!selected || !poll) return;
-      if (submit) submit.disabled = true;
-
-      writeStore(poll.id, { choice: selected.value, votedAt: new Date().toISOString() });
-
-      request(selected.value).then(function (data) {
-        if (submit) submit.disabled = false;
-        if (data && data.poll) render(data);
-      });
+      if (selected) castVote(selected.value);
     });
 
     request(null).then(function (data) {

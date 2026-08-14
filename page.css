@@ -19512,3 +19512,51 @@ a.motm-week__card:focus-visible {
   .match-special-promo__module:hover,
   .match-special__card:hover { transform: none; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ANA SAYFA ANKETİ — TIKLA VE OY VER
+
+   Seçeneğin tamamı tek bir dokunma hedefi: logo, ad ve çevresindeki boşluk
+   aynı etikete ait. Tıklama artık ayrıca "Oyunu Ver" beklemiyor, bu yüzden
+   basma geri bildirimi ÖNEMLİ — kullanıcı parmağını kaldırmadan bir şeyin
+   olduğunu görmeli.
+   ═════════════════════════════════════════════════════════════════════════ */
+
+/* Basma anı: kart hafifçe içeri gider. Hover'daki yukarı hareketin tersi,
+   böylece iki durum birbirine karışmıyor. */
+.home-poll__label:active {
+  transform: translateY(1px) scale(0.99);
+  transition-duration: 0.06s;
+}
+
+/* Dokunmatikte tıklama vurgusunu tarayıcıya bırakmıyoruz: kendi basma
+   animasyonumuz var ve ikisi üst üste binince gecikmeli görünüyor. */
+.home-poll__label {
+  -webkit-tap-highlight-color: transparent;
+  /* Parmak hedefi: 44px, dokunma için önerilen alt sınır. */
+  min-height: 44px;
+}
+
+/* Oy gönderilirken seçenekler tıklanamaz görünür; çift tık zaten uçuş
+   kilidiyle eleniyor ama kilit görünmezse arayüz donmuş sanılıyor. */
+.home-poll__form.is-sending .home-poll__options { opacity: 0.6; pointer-events: none; }
+
+/* SENİN OYUN — sonuç listesinde kendi seçimin. Liderden AYRI bir işaret:
+   ikisi aynı satır olabilir, o yüzden lider yeşil çerçeve, senin oyun sol
+   kenardaki kalın şerit ve "Senin oyun" rozetiyle ayrılıyor. */
+.home-poll__result.is-yours {
+  border-color: var(--accent-2);
+  box-shadow: inset 3px 0 0 0 var(--accent-2);
+}
+
+/* ROZET EKLENMEDİ, BİLEREK: satırda zaten `.home-poll__badge.is-yours`
+   var ve metnini istemci diline göre yazıyor. Buraya ikinci bir "Senin
+   oyun" etiketi koymak aynı bilgiyi iki kez söylemek olurdu. Eklenen tek
+   şey satırın KENDİSİNİN işaretlenmesi: rozet küçük, uzun listede gözden
+   kaçıyor. */
+
+@media (prefers-reduced-motion: reduce) {
+  .home-poll__label,
+  .home-poll__label:active,
+  .home-poll__label:hover { transition: none; transform: none; }
+}

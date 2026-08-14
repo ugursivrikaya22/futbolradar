@@ -56,9 +56,18 @@ console.log("match-special");
   assert.ok(special, "yayındaki dosya üretilebilmeli");
 
   // FİKSTÜR VERİDEN GELİR, dosyadan değil: saat ve stat elle yazılmaz.
+  //
+  // Stat adı SABİT YAZILMAZ, takvim kaydıyla karşılaştırılır. Sağlayıcı aynı
+  // stadı zaman içinde farklı yazabiliyor ("Rams Park" → "Rams Park
+  // Stadyumu") ve beklenen değeri teste gömmek, kuralı değil o günkü yazımı
+  // ölçmek olurdu — sınanmak istenen şey stadın adı değil, stat bilgisinin
+  // maç dosyasına ELLE değil VERİDEN gelmesi.
+  const calendarMatch = (sources.fixtures.matches || []).find((row) => row.id === MATCH_ID);
+  assert.ok(calendarMatch, "takvim kaydı bulunmalı");
   assert.equal(special.fixture.homeTeam, "Galatasaray");
   assert.equal(special.fixture.awayTeam, "Çorum FK");
-  assert.equal(special.fixture.venue, "Rams Park");
+  assert.equal(special.fixture.venue, calendarMatch.venue);
+  assert.ok(special.fixture.venue, "stat bilgisi boş kalmamalı");
   assert.equal(special.fixture.round, 1);
   assert.match(special.fixture.kickoff, /^2026-08-14T21:30/);
   assert.ok(special.modules.length >= MIN_MODULES);
