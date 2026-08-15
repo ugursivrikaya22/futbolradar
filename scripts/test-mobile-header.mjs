@@ -142,12 +142,26 @@ for (const width of WIDTHS) {
     // Aynı satır denetimi: dikey merkezler birbirine 6 px'den yakın olmalı.
     // Grid ikinci satıra düşürseydi fark en az kutu yüksekliği kadar olurdu.
     const centre = (box) => box.top + box.height / 2;
-    if (measured.brand && measured.toggle) {
-      check(`${name}: marka, kutu ve hamburger aynı satırda`,
-        Math.abs(centre(measured.langSwitch) - centre(measured.brand)) <= 6 &&
-        Math.abs(centre(measured.langSwitch) - centre(measured.toggle)) <= 6,
-        `brand=${Math.round(centre(measured.brand))} lang=${Math.round(centre(measured.langSwitch))} toggle=${Math.round(centre(measured.toggle))}`);
+    if (measured.brand) {
+      check(`${name}: marka ve kutu aynı satırda`,
+        Math.abs(centre(measured.langSwitch) - centre(measured.brand)) <= 6,
+        `brand=${Math.round(centre(measured.brand))} lang=${Math.round(centre(measured.langSwitch))}`);
     }
+
+    /**
+     * HAMBURGER BU GENİŞLİKLERDE GİZLİ OLMALI — ve bu bir gerileme değil,
+     * tasarım kararı: 900 px altında gezinme alt navigasyona taşındı
+     * (`.bottom-nav`, scripts/lib/layout.mjs) ve oradaki "Menü" düğmesi
+     * aynı çekmeceyi açıyor. İki düğme aynı işi yapınca üst çubuk gereksiz
+     * kalabalıklaşıyordu; üstte yalnızca logo, arama ve dil kaldı.
+     *
+     * Düğme DOM'da duruyor (alt çubuk onun tetikleyicisini çağırıyor), bu
+     * yüzden varlığı değil GÖRÜNÜRLÜĞÜ sınanıyor. Test 375/390/430 px'te
+     * koşuyor; üçü de eşiğin altında.
+     */
+    check(`${name}: hamburger gizli (gezinme alt çubukta)`,
+      !measured.toggle || measured.toggle.display === "none" || measured.toggle.width === 0,
+      measured.toggle ? `display=${measured.toggle.display} w=${Math.round(measured.toggle.width)}` : "düğme yok");
 
     check(`${name}: kutu etiketi "${target.expectSwitch}"`, measured.langText === target.expectSwitch,
       String(measured.langText));

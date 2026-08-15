@@ -330,7 +330,59 @@ export function siteFooter(options = {}) {
         <span>© ${escapeHtml(year)} FutbolRadar · ${escapeHtml(t("site.tagline", locale))}</span>
         ${bottomLinks}
       </div>
+      ${bottomNav(base, locale)}
     </footer>`;
+}
+
+/**
+ * MOBİL ALT NAVİGASYON.
+ *
+ * NEDEN ALT BİLGİNİN İÇİNDE: `apply-shared-layout.mjs` sayfalardaki
+ * `<footer class="footer">…</footer>` bloğunun TAMAMINI her derlemede
+ * değiştiriyor. Çubuk alt bilginin DIŞINA yazılsaydı, o düzenli ifade
+ * `</footer>` etiketinde durur ve önceki çubuk yerinde kalırdı: her
+ * derleme bir çubuk daha eklerdi. İçeride durduğu sürece değiştirme
+ * atomik. `position: fixed` olduğu için DOM'daki yeri görünümü etkilemiyor.
+ *
+ * "MENÜ" YENİ BİR MENÜ AÇMIYOR. Başlıktaki mevcut mobil çekmecede zaten
+ * Analizler, Puan Durumu, Köşe Yazıları, Arşiv ve Oyuncu Radarı var;
+ * ikinci bir menü yazmak aynı listeyi iki yerde ayrıştırırdı. Düğme o
+ * çekmeceyi açıyor (site.js).
+ *
+ * Aktif sayfa işaretlemesi derleme anında YAPILMIYOR: bu bileşen ~900
+ * sayfaya aynı çıktıyla basılıyor ve hangi dosyaya yazıldığını bilmiyor.
+ * İşaretleme site.js'te `location.pathname` ile yapılıyor.
+ */
+function bottomNav(base, locale) {
+  const en = locale === "en";
+  const items = [
+    { key: "bottomNav.home", href: en ? "en/index.html" : "index.html", icon:
+      '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>' },
+    { key: "bottomNav.live", href: en ? "en/live-scores.html" : "canli-skor.html", icon:
+      '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2.5"/>' },
+    { key: "bottomNav.matches", href: en ? "en/todays-matches.html" : "bugunun-maclari.html", icon:
+      '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/>' },
+    { key: "bottomNav.teams", href: en ? "en/teams.html" : "takimlar.html", icon:
+      '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 11a3 3 0 1 0-2-5.2"/><path d="M18 20c0-2.2-.9-4.2-2.3-5.6"/>' }
+  ];
+
+  const links = items.map((item) => {
+    const label = escapeHtml(t(item.key, locale));
+    return `<a class="bottom-nav__item" href="${base}${item.href}" data-bottom-nav-item>
+          <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${item.icon}</svg>
+          <span class="bottom-nav__label">${label}</span>
+        </a>`;
+  }).join("");
+
+  const menuLabel = escapeHtml(t("bottomNav.menu", locale));
+
+  return `<nav class="bottom-nav" data-bottom-nav aria-label="${escapeHtml(t("bottomNav.aria", locale))}">
+        ${links}
+        <button class="bottom-nav__item" type="button" data-bottom-nav-menu aria-expanded="false">
+          <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          <span class="bottom-nav__label">${menuLabel}</span>
+        </button>
+      </nav>`;
 }
 
 export { escapeHtml as escapeLayoutHtml, normalizeBase };

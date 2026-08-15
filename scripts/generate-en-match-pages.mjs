@@ -133,7 +133,7 @@ function squadNoteHtml(name) {
   const impact = row.totalAbsenceImpact ?? row.absenceImpact;
   return `<dl class="match-squad-metrics">
     <div><dt>Absences</dt><dd>${escapeHtml(absenceCount)}</dd></div>
-    <div><dt>Squad impact</dt><dd>${impact == null ? "No data" : escapeHtml(`${impact}/100`)}</dd></div>
+    ${impact == null ? "" : `<div><dt>Squad impact</dt><dd>${escapeHtml(`${impact}/100`)}</dd></div>`}
     <div><dt>Key absence</dt><dd>${escapeHtml(row.keyAbsence || "None")}</dd></div>
   </dl>`;
 }

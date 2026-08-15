@@ -226,7 +226,7 @@ function primaryOutcome(probabilities, matchBalance) {
 
 function outcomeLabel(primary, probabilities) {
   if (!probabilities) {
-    return "Tahmin için yeterli veri yok";
+    return "Tahmin hazırlanıyor";
   }
   if (primary === "balanced") return "İki takım da dengeli görünüyor";
   if (primary === "draw") return "Beraberlik ihtimali öne çıkıyor";
@@ -313,7 +313,7 @@ function buildMatchPrediction(fixture, homeTeam, awayTeam, homeContext, awayCont
     probabilities,
     prediction: {
       primary,
-      label: predictionStatus === "unavailable" ? "Tahmin için yeterli veri yok" : outcomeLabel(primary, probabilities),
+      label: predictionStatus === "unavailable" ? "Tahmin hazırlanıyor" : outcomeLabel(primary, probabilities),
       confidence: predictionConfidence
     },
     goalPotential: { score: goalPotential.score, label: goalPotential.label },

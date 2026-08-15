@@ -11,6 +11,29 @@
   // oturur; sağlayıcı geç yayımlarsa sonraki yoklama tamamlar.
   var MATCH_FINAL_ANALYSIS_DELAY_MS = 30000;
   var SUPER_LIG_SEASON_START = "2026-08-14";
+
+  /**
+   * YER TUTUCU METİNLER — TEK KAYNAK.
+   *
+   * Kullanıcıya hiçbir koşulda "Veri yok" denmiyor. Bir alan boşsa sebebi
+   * okuyucu değil sistemdir; cümle de sistemin durumunu değil okuyucunun ne
+   * bekleyeceğini anlatır. Bileşen başına serbest metin YAZILMAZ, hepsi
+   * buradan okunur.
+   *
+   * Bu değerler `locales/tr.json` içindeki `fallback.*` anahtarlarının
+   * birebir aynısıdır; app.js yalnızca Türkçe sayfalarda yükleniyor (İngilizce
+   * sayfalar bu demeti hiç çağırmıyor), bu yüzden tek dil yeterli. Sözlük
+   * değişirse burası da güncellenmeli — `scripts/test-no-data-copy.mjs` iki
+   * tarafın eşitliğini sınıyor.
+   */
+  var FALLBACK = {
+    general: "Güncelleme bekleniyor.",
+    match: "Bilgiler güncelleniyor.",
+    lineup: "Kadrolar açıklandığında burada yayınlanacak.",
+    stats: "İstatistikler hazırlanıyor.",
+    transfer: "Güncel transfer gelişmeleri takip ediliyor."
+  };
+
   var cache = Object.create(null);
   var COMPETITION_ALIASES = {
     "super-lig": ["super lig", "trendyol super lig"],
@@ -848,12 +871,28 @@
     );
   }
 
+  /**
+   * ÖLÇÜLMEMİŞ İSTATİSTİK KUTUSU HİÇ ÇİZİLMEZ.
+   *
+   * Eskiden her boş sayı kutusuna "Veri yok" basılıyordu; sekiz kutuluk bir
+   * ızgarada bu, bilgi vermeyen bir duvar demekti. Sağlayıcı sayıyı
+   * yayımlamadıysa kutu hiç açılmaz — yokluğu bildirmenin en dürüst yolu,
+   * olmayan şeyi çizmemek.
+   */
+  function profileStatHtml(label, value) {
+    if (value === undefined || value === null || value === "") return "";
+    return profileItemHtml(label, value);
+  }
+
   function profileSectionHtml(title, items) {
+    // Tüm kutular elendiyse başlık da basılmaz: boş bölüm, boş kutudan beter.
+    var filled = items.filter(function (item) { return item; });
+    if (!filled.length) return "";
     return (
       '<section class="profile-section">' +
       "<h2>" + escapeHtml(title) + "</h2>" +
       '<div class="profile-grid">' +
-      items.join("") +
+      filled.join("") +
       "</div>" +
       "</section>"
     );
@@ -3458,8 +3497,17 @@
       ? headlineText(match.homeTeam) + " " + score.home + "-" + score.away + " " + headlineText(match.awayTeam)
       : pair;
 
+    // `Number(null)` sıfır, `isFinite(0)` doğru: yayımlanmamış ilk yarı skoru
+    // bu tuzakta "0-0" diye basılıyordu, yani olmayan bir skor uyduruluyordu.
+    // Boşluk önce elenir. Bu blok `daily-headlines` işaretleri arasında
+    // tek başına çalıştırılabilir olmalı (scripts/test-home-signals.mjs onu
+    // kesip ayrı çalıştırıyor), bu yüzden kontrol dışarıdaki yardımcıya
+    // bağlanmadan burada yazılı.
+    var published = function (value) {
+      return value !== null && value !== undefined && value !== "" && isFinite(Number(value));
+    };
     var halftime = "";
-    if (match.score && isFinite(Number(match.score.halftimeHome)) && isFinite(Number(match.score.halftimeAway))) {
+    if (match.score && published(match.score.halftimeHome) && published(match.score.halftimeAway)) {
       halftime = "İlk yarı " + Number(match.score.halftimeHome) + "-" + Number(match.score.halftimeAway) + ".";
     }
     var venue = headlineText(match.venue);
@@ -4008,6 +4056,125 @@
     );
   }
 
+  /**
+   * SÜPER LİG BUGÜN ŞERİDİ — scripts/lib/matchCards.mjs#superLigTodayStripHtml
+   * ile AYNI mantık, istemci tarafı. Ana sayfanın statik ön-render'ı bu
+   * fonksiyonu değil o Node modülünü çağırır (derleme anında); JS
+   * yüklendikten sonra ekranı bu fonksiyon tazeler ve canlı skor
+   * yoklaması da bunu tetikler (MATCH_SECTION_BINDINGS). İkisinin
+   * çıktısı BİREBİR aynı sınıflarla kurulmalı — biri değişirse hidrasyon
+   * anında düzen zıplar.
+   */
+  var SUPER_LIG_PRIORITY_NAMES = ["Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor", "Samsunspor", "Başakşehir"];
+
+  /**
+   * MAÇ VERİSİ İLE data/teams.json AYNI KULÜBÜ FARKLI YAZABİLİR
+   * ("Rizespor" / "Çaykur Rizespor", "Gençlerbirliği" / "Gençlerbirliği
+   * S.K."). Tam ad eşitliği bu ikizleri kaçırır. Kural, kadro senkronunun
+   * aynı sorunu çözmek için kullandığı kuralla AYNI
+   * (services/superLigTeams.js#sameClub): kısa ad, uzun adın içinde
+   * KELİME SINIRINDA geçiyorsa aynı kulüptür. En az dört karakter şartı
+   * tek harfli parçaların rastgele eşleşmesini engeller.
+   */
+  function sameClubName(left, right) {
+    var a = normalizeSearchText(left);
+    var b = normalizeSearchText(right);
+    if (!a || !b) return false;
+    if (a === b) return true;
+    var shorter = a.length <= b.length ? a : b;
+    var longer = a.length <= b.length ? b : a;
+    if (shorter.length < 4) return false;
+    var escaped = shorter.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp("(^|\\s)" + escaped + "(\\s|$)").test(longer);
+  }
+
+  function superLigTeamLogoList(teams) {
+    var list = [];
+    (Array.isArray(teams) ? teams : []).forEach(function (team) {
+      if (!team || !team.isCurrentSuperLigTeam || !team.name) return;
+      var providerId = String(team.providerId || "").trim();
+      list.push({
+        name: String(team.name),
+        logo: /^\d+$/.test(providerId) ? "https://media.api-sports.io/football/teams/" + providerId + ".png" : ""
+      });
+    });
+    return list;
+  }
+
+  function findSuperLigTeam(list, name) {
+    for (var index = 0; index < list.length; index += 1) {
+      if (sameClubName(list[index].name, name)) return list[index];
+    }
+    return null;
+  }
+
+  function superLigPriorityRank(name) {
+    for (var index = 0; index < SUPER_LIG_PRIORITY_NAMES.length; index += 1) {
+      if (sameClubName(SUPER_LIG_PRIORITY_NAMES[index], name)) return index;
+    }
+    return SUPER_LIG_PRIORITY_NAMES.length;
+  }
+
+  function superLigTeamLogoHtml(entry, name) {
+    if (entry && entry.logo) {
+      return '<img class="superlig-strip-logo" src="' + escapeHtml(entry.logo) + '" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\';" />' +
+        '<span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">' + escapeHtml(teamInitials(name)) + '</span>';
+    }
+    return '<span class="superlig-strip-logo-fallback" aria-hidden="true">' + escapeHtml(teamInitials(name)) + '</span>';
+  }
+
+  function renderTodaySuperLigStrip(matches, teams) {
+    var teamList = superLigTeamLogoList(teams);
+    var today = todayInIstanbul();
+
+    var scoped = (Array.isArray(matches) ? matches : []).filter(function (match) {
+      if (!match || istanbulDayOf(match.kickoff || match.date || match.utcDate) !== today) return false;
+      return Boolean(findSuperLigTeam(teamList, match.homeTeam) || findSuperLigTeam(teamList, match.awayTeam));
+    });
+
+    // Aynı karşılaşma canlı yoklama + statik veri birleşiminde birden
+    // fazla kayıtla gelebilir; anahtar eşlenmiş takım adlarından kurulur
+    // (bkz. scripts/lib/matchCards.mjs#superLigTodayStripHtml).
+    var seen = {};
+    var todays = scoped.filter(function (match) {
+      var home = findSuperLigTeam(teamList, match.homeTeam);
+      var away = findSuperLigTeam(teamList, match.awayTeam);
+      var key = ((home && home.name) || match.homeTeam) + "|" + ((away && away.name) || match.awayTeam);
+      if (seen[key]) return false;
+      seen[key] = true;
+      return true;
+    });
+
+    if (!todays.length) {
+      return "";
+    }
+
+    var sorted = todays.slice().sort(function (left, right) {
+      var leftRank = Math.min(superLigPriorityRank(left.homeTeam), superLigPriorityRank(left.awayTeam));
+      var rightRank = Math.min(superLigPriorityRank(right.homeTeam), superLigPriorityRank(right.awayTeam));
+      if (leftRank !== rightRank) return leftRank - rightRank;
+      return String(left.kickoff || "").localeCompare(String(right.kickoff || ""));
+    });
+
+    var rows = sorted.map(function (match) {
+      var home = findSuperLigTeam(teamList, match.homeTeam) || { name: match.homeTeam, logo: "" };
+      var away = findSuperLigTeam(teamList, match.awayTeam) || { name: match.awayTeam, logo: "" };
+      var live = isLiveMatch(match);
+      var finished = !live && isFinishedMatch(match);
+      var score = (live || finished) && match.score
+        ? escapeHtml(displayValue(match.score.home)) + " - " + escapeHtml(displayValue(match.score.away))
+        : escapeHtml(finished ? "MS" : (live ? "Canlı" : (match.time || "Planlandı")));
+
+      return '<a class="superlig-strip-row' + (live ? " is-live" : "") + '" data-card="superlig-strip" data-match="' + escapeHtml(match.id || "") + '" href="' + escapeHtml(matchDetailHref(match)) + '">' +
+        '<span class="superlig-strip-team">' + superLigTeamLogoHtml(home, home.name) + '<b>' + escapeHtml(home.name) + '</b></span>' +
+        '<span class="superlig-strip-score' + (live ? " is-live" : "") + '">' + (live ? '<i class="live-pulse" aria-hidden="true"></i>' : "") + score + '</span>' +
+        '<span class="superlig-strip-team is-away">' + superLigTeamLogoHtml(away, away.name) + '<b>' + escapeHtml(away.name) + '</b></span>' +
+        '</a>';
+    }).join("");
+
+    return '<span class="superlig-strip-kicker">Süper Lig\'de Bugün</span><div class="superlig-strip-rail">' + rows + '</div>';
+  }
+
   function renderTodayMatchesPreview(matches) {
     if (!Array.isArray(matches) || !matches.length) {
       return "";
@@ -4542,6 +4709,12 @@
     { selector: "featured-match", renderer: renderFeaturedMatch },
     { selector: "daily-headlines", renderer: renderDailyHeadlinesSection },
     { selector: "today-matches", renderer: renderTodayMatchesPreview },
+    {
+      selector: "today-superlig-matches",
+      renderer: function (matches) {
+        return renderTodaySuperLigStrip(matches, latestSuperLigTeams);
+      }
+    },
     { selector: "matches-page", renderer: renderMatchesPageSection },
     { selector: "live-score", renderer: renderLiveScoreSection },
     {
@@ -4561,6 +4734,11 @@
   // maç listesi sayfasına düşer. Boş dizi güvenli varsayılan: bağlantı
   // uydurulmaz.
   var latestPostMatchReports = [];
+
+  // Süper Lig şeridinin canlı yoklama tazelemesi yalnızca `matches` alır
+  // (MATCH_SECTION_BINDINGS'in ortak imzası); takım listesi (arma/öncelik
+  // için) ayrı yüklenip burada saklanır ki her yoklamada yeniden çekilmesin.
+  var latestSuperLigTeams = [];
 
   // Canlı yoklama API-Football'ın gerçek zamanlı uç noktasını kullanır
   // (/api/matches?live=all). Bu uç nokta YALNIZCA oynanmakta olan maçları
@@ -5744,9 +5922,9 @@
         profileItemHtml("İkincil mevki", player.secondaryPosition, "Yakında"),
         profileItemHtml("Tercih edilen ayak", player.preferredFoot),
         profileItemHtml("Pas isabeti", player.passAccuracy == null ? null : "%" + player.passAccuracy),
-        profileItemHtml("Şut / maç", player.shotsPerGame, "Veri yok"),
-        profileItemHtml("xG", player.xg, "Veri yok"),
-        profileItemHtml("xA", player.xa, "Veri yok")
+        profileStatHtml("Şut / maç", player.shotsPerGame),
+        profileStatHtml("xG", player.xg),
+        profileStatHtml("xA", player.xa)
       ]) +
       profileSectionHtml("Fiziksel Profil", [
         profileItemHtml("Yaş", age),
@@ -5767,14 +5945,14 @@
         profileItemHtml("Son kontrol", formatProfileDate(player.lastVerifiedAt || player.lastUpdatedAt || player.lastUpdated), "Yakında")
       ]) +
       profileSectionHtml("Sezon İstatistikleri", [
-        profileItemHtml("Maç", player.appearances, "Veri yok"),
-        profileItemHtml("Dakika", player.minutesPlayed != null ? player.minutesPlayed : player.minutes, "Veri yok"),
-        profileItemHtml("Gol", player.goals, "Veri yok"),
-        profileItemHtml("Asist", player.assists, "Veri yok"),
-        profileItemHtml("Sarı kart", player.yellowCards, "Veri yok"),
-        profileItemHtml("Kırmızı kart", player.redCards, "Veri yok"),
-        profileItemHtml("Top kapma / maç", player.tacklesPerGame, "Veri yok"),
-        profileItemHtml("Araya girme / maç", player.interceptionsPerGame, "Veri yok")
+        profileStatHtml("Maç", player.appearances),
+        profileStatHtml("Dakika", player.minutesPlayed != null ? player.minutesPlayed : player.minutes),
+        profileStatHtml("Gol", player.goals),
+        profileStatHtml("Asist", player.assists),
+        profileStatHtml("Sarı kart", player.yellowCards),
+        profileStatHtml("Kırmızı kart", player.redCards),
+        profileStatHtml("Top kapma / maç", player.tacklesPerGame),
+        profileStatHtml("Araya girme / maç", player.interceptionsPerGame)
       ]) +
       '<section class="profile-section"><h2>Radar Profili</h2>' + playerRadarChartHtml(player, null, player.name + " radar profili") + playerRadarHtml(player) + "</section>" +
       '<section class="profile-section"><h2>AI Rating Notu</h2><p class="profile-note">' + escapeHtml(player.ratingExplanation || "Bu rating; dakika, gol/asist, form, disiplin ve veri güvenilirliği bileşenlerinden hesaplanır.") + "</p></section>" +
@@ -7109,6 +7287,51 @@
     );
   }
 
+  /**
+   * DURUM DÜRÜSTLÜĞÜ — sunucu tarafındaki (scripts/lib/matchCards.mjs)
+   * transferStatusClass ile BİREBİR aynı sözlük. İki yerde ayrı ayrı
+   * karar verilirse bir gün rozet ile cümlenin durumu farklı anlatması
+   * an meselesidir; bu yüzden kural burada da aynı üç sınıfa indirgeniyor.
+   */
+  function transferStatusClass(status) {
+    var normalized = normalizeSearchText(status);
+    if (normalized === "confirmed") return "confirmed";
+    if (normalized === "agreed" || normalized === "negotiating" || normalized === "pending") return "pending";
+    return "rumour";
+  }
+
+  function transferVerbPhrase(status) {
+    var normalized = normalizeSearchText(status);
+    if (normalized === "confirmed") return "resmen açıkladı";
+    if (normalized === "agreed") return "ile anlaşmaya vardı";
+    if (normalized === "negotiating" || normalized === "pending") return "ile görüşmelerini sürdürüyor";
+    return "ile ilişkilendiriliyor";
+  }
+
+  /** "SON DAKİKA" yalnızca gerçek bir tazelik sinyaline (≤48 saat) dayanır. */
+  function isBreakingTransfer(dateText) {
+    var parsed = Date.parse(String(dateText || ""));
+    if (!isFinite(parsed)) return false;
+    var hours = (Date.now() - parsed) / (1000 * 60 * 60);
+    return hours >= 0 && hours <= 48;
+  }
+
+  function transferSummarySentence(leader) {
+    var verb = transferVerbPhrase(leader.status);
+    var fee = transferRecordFee(leader);
+    var feeClause = fee && fee !== "Açıklanmadı" ? " (" + fee + ")" : "";
+    return escapeHtml(leader.toTeam) + ", " + escapeHtml(leader.playerName) +
+      (leader.fromTeam ? " (" + escapeHtml(leader.fromTeam) + ")" : "") + " " + verb + escapeHtml(feeClause) + ".";
+  }
+
+  function transferTakeSentence(leader) {
+    var subject = leader.toTeam || leader.playerName;
+    var suffix = leader.position
+      ? "kadrosuna " + leader.position + " hattında derinlik katıyor."
+      : "kadro planlamasında izlenmesi gereken bir hareket.";
+    return escapeHtml(subject) + ", " + escapeHtml(suffix);
+  }
+
   function renderHomeTransferFeed(records) {
     // Ana sayfadaki şerit radarın vitrini; aynı dönem sınırına tabi, aksi
     // hâlde şerit ile radar farklı listeler gösterirdi.
@@ -7119,27 +7342,47 @@
 
     var leader = list[0];
     var sourceUrl = safeImageUrl(leader.sourceUrl);
+    var statusClass = transferStatusClass(leader.status);
+    var breaking = isBreakingTransfer(leader.date);
+    var confirmedCount = list.filter(function (record) { return transferStatusClass(record.status) === "confirmed"; }).length;
+    var clubCount = new Set(list.map(function (record) { return record.toTeam; }).filter(Boolean)).size;
+
+    // Satır rozeti dürüstlük kuralına tabi: yalnızca zaten doğrulanmış
+    // kayıtlar "TRANSFER" der, gerisi "RADAR" — henüz izleniyor demektir.
     var miniRows = list.slice(1, 5).map(function (record) {
+      var rowStatusClass = transferStatusClass(record.status);
+      var rowBadge = rowStatusClass === "confirmed" ? "TRANSFER" : "RADAR";
       return (
         '<a class="home-transfer-row" href="./transfer-radari.html?team=' + encodeURIComponent(record.toTeam || "") + '">' +
-        '<span>' + escapeHtml(formatProfileDate(record.date) || "Yakında") + '</span>' +
+        '<span class="home-transfer-row-badge status-' + rowStatusClass + '">' + rowBadge + '</span>' +
         '<strong>' + escapeHtml(record.playerName) + '</strong>' +
         '<b>' + escapeHtml(record.toTeam) + '</b>' +
         '</a>'
       );
     }).join("");
 
+    var coverHref = './transfer-radari.html?team=' + encodeURIComponent(leader.toTeam || "");
+
     return (
-      '<article class="home-transfer-feature" data-card="home-transfer-watch" data-transfer="' + escapeHtml(leader.id) + '">' +
+      '<article class="home-transfer-feature home-transfer-feature-big" data-card="home-transfer-watch" data-transfer="' + escapeHtml(leader.id) + '" data-transfer-status="' + statusClass + '">' +
+      '<div class="transfer-badge-row">' +
+      (breaking ? '<span class="card-badge breaking">SON DAKİKA</span>' : "") +
+      '<span class="card-badge transfer">TRANSFER</span>' +
+      '<span class="status-badge status-' + statusClass + '">' + escapeHtml(transferRecordStatusLabel(leader.status)) + '</span>' +
+      '</div>' +
       '<div class="home-transfer-player"><div><span>Son kesinleşen transfer</span><h3>' + escapeHtml(leader.playerName) + '</h3><p>' + escapeHtml(leader.type || "Transfer") + ' · ' + escapeHtml(formatProfileDate(leader.date) || leader.season) + '</p></div></div>' +
       '<div class="home-transfer-route"><b>' + escapeHtml(leader.fromTeam) + '</b><em>→</em><b>' + escapeHtml(leader.toTeam) + '</b></div>' +
+      '<p class="home-transfer-summary">' + transferSummarySentence(leader) + '</p>' +
+      '<p class="home-transfer-take"><b>FutbolRadar Yorumu:</b> ' + transferTakeSentence(leader) + '</p>' +
+      '<div class="home-transfer-meta-row"><span class="home-transfer-source">Kaynak: ' + escapeHtml(leader.sourceName || "Kaynak doğrulanmadı") + '</span></div>' +
       '<div class="home-transfer-actions">' +
-      (sourceUrl ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="nofollow noopener noreferrer">Transfer detayını aç</a>' : "") +
+      (sourceUrl ? '<a class="detail-link home-transfer-source-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="nofollow noopener noreferrer">Transfer detayını aç</a>' : "") +
       '<a class="detail-link ghost" href="./transfer-radari.html">Tüm transferler</a></div>' +
+      '<a class="home-transfer-feature-cover" href="' + escapeHtml(coverHref) + '" aria-label="' + escapeHtml(leader.playerName) + ' — Tüm transferler"></a>' +
       '</article>' +
       '<aside class="home-transfer-side" aria-label="Son transferler"><div class="home-transfer-metrics">' +
-      compactMetricHtml("Kesinleşen", list.filter(function (record) { return normalizeSearchText(record.status) === "confirmed"; }).length) +
-      compactMetricHtml("Kulüp", new Set(list.map(function (record) { return record.toTeam; }).filter(Boolean)).size) +
+      compactMetricHtml("Kesinleşen", confirmedCount) +
+      compactMetricHtml("Kulüp", clubCount) +
       compactMetricHtml("Son kontrol", formatProfileDate(leader.lastVerifiedAt || leader.date) || "Yakında") +
       '</div><div class="home-transfer-list">' + miniRows + '</div></aside>'
     );
@@ -9401,7 +9644,10 @@
         (isFiniteNumber(player.rating)
           ? "<div><dt>Reyting</dt><dd>" + escapeHtml(String(player.rating).replace(".", ",")) + "</dd></div>"
           : "") +
-        "<div><dt>Süre</dt><dd>" + (player.minutes === null ? "Veri yok" : escapeHtml(player.minutes + "'")) + "</dd></div>" +
+        // Süre de reyting gibi: sağlayıcı yayımlamadıysa satır hiç basılmaz.
+        (player.minutes === null
+          ? ""
+          : "<div><dt>Süre</dt><dd>" + escapeHtml(player.minutes + "'") + "</dd></div>") +
         "<div><dt>Gol</dt><dd>" + player.goals + "</dd></div>" +
         "<div><dt>Durum</dt><dd>" + escapeHtml(player.status) + "</dd></div>" +
         "</dl>" +
@@ -10174,10 +10420,20 @@
     return "İki takım dengeli";
   }
 
+  /**
+   * BEKLEME DURUMU ROZET BASMAZ.
+   *
+   * "Kadro verisi bekleniyor" listedeki HER karta aynı cümleyi yazıyordu:
+   * 93 maçlık bir günde 93 kez tekrar eden, hiçbir maçı diğerinden ayırmayan
+   * bir satır. Ölçüldü: kart başına 29 px, sayfada ~2.700 px. Rozetin işi
+   * bir maçı öne çıkarmak; hepsinde varsa hiçbirini çıkarmıyor demektir.
+   *
+   * Bilgi taşıyan durumlar OLDUĞU GİBİ KALIYOR — resmî ilk 11, hazır analiz
+   * ve kısmi analiz okuyucuya o maça özgü bir şey söylüyor. Boş dönülünce
+   * `.tag-row:empty` kuralı satırı tümüyle kaldırıyor.
+   */
   function coverageStatusChipHtml(analysis) {
-    if (!analysis) {
-      return '<span class="tag soft">Kadro verisi bekleniyor</span>';
-    }
+    if (!analysis) return "";
     if (analysis.officialLineupStatus === "available") {
       return '<span class="tag green">Resmî ilk 11 açıklandı</span>';
     }
@@ -10187,7 +10443,7 @@
     if (analysis.analysisStatus === "partial") {
       return '<span class="tag soft">Kısmi analiz</span>';
     }
-    return '<span class="tag soft">Kadro verisi bekleniyor</span>';
+    return "";
   }
 
   var COVERAGE_FIELD_LABELS = [
@@ -10885,8 +11141,9 @@
   }
 
   function statisticValue(value, suffix, decimals) {
+    // Çağıran liste ölçülmemiş kaydı zaten eliyor; bu dal savunma amaçlı.
     if (value === null || value === undefined || !Number.isFinite(Number(value))) {
-      return "Veri yok";
+      return FALLBACK.stats;
     }
     var number = Number(value);
     var formatted = decimals == null ? String(number) : number.toFixed(decimals);
@@ -11453,6 +11710,29 @@
         renderTodayMatchesPreview,
         "Bugunun maçları yüklenemedi"
       );
+
+      // SÜPER LİG BUGÜN ŞERİDİ. `data-empty-hide` taşıyan kap kendi
+      // kararını verir: bugün Süper Lig maçı yoksa bölüm sessizce
+      // gizlenir — genel `renderInto` bunun yerine bir "veri yok" kutusu
+      // basardı, ki bu son derece SIRADAN bir durum için (Süper Lig'in
+      // ara verdiği bir gün) yanlış bir mesajdır.
+      var superLigStripTarget = document.querySelector('[data-api-target="today-superlig-matches"]');
+      if (superLigStripTarget) {
+        loadData("teams")
+          .then(function (teams) {
+            latestSuperLigTeams = Array.isArray(teams) ? teams : [];
+            return loadData("matches");
+          })
+          .then(function (matches) {
+            var html = renderTodaySuperLigStrip(Array.isArray(matches) ? matches : [], latestSuperLigTeams);
+            applyEmptyHide(superLigStripTarget, Boolean(html));
+            if (html) setContent(superLigStripTarget, html);
+          })
+          .catch(function () {
+            // Statik yedek zaten kapta duruyor (data-static-fallback);
+            // yükleme başarısızsa dokunulmaz.
+          });
+      }
     });
 
     renderInto(
@@ -11625,30 +11905,6 @@
    * uygulanmıştır (scripts/inject-theme-boot.mjs); buradaki iş yalnızca
    * düğmenin durumunu yansıtmak ve tıklamayı işlemek.
    */
-  function initSuperLigLaunchCard() {
-    var cards = document.querySelectorAll("[data-super-lig-launch]");
-
-    function syncCard(card) {
-      var kickoff = Date.parse(card.getAttribute("data-kickoff") || "");
-      if (!Number.isFinite(kickoff)) return;
-
-      var isLive = Date.now() >= kickoff;
-      card.classList.toggle("is-live", isLive);
-      card.classList.toggle("is-upcoming", !isLive);
-      card.setAttribute("data-match-state", isLive ? "live" : "upcoming");
-
-      var status = card.querySelector("[data-super-lig-launch-status]");
-      if (status) status.innerHTML = '<i aria-hidden="true"></i><span>' + (isLive ? "CANLI" : "Bu akşam 21:30") + "</span>";
-      card.setAttribute("aria-label", isLive ? "Galatasaray - Arca Çorum FK maçı canlı; maç detayını aç" : "Galatasaray - Arca Çorum FK maç detayını aç; 14 Ağustos 2026 Cuma saat 21:30, RAMS Park");
-
-      if (!isLive) {
-        window.setTimeout(function () { syncCard(card); }, Math.min(Math.max(kickoff - Date.now() + 50, 250), 2147483647));
-      }
-    }
-
-    for (var i = 0; i < cards.length; i += 1) syncCard(cards[i]);
-  }
-
   var THEME_KEY = "futbolradar-theme";
 
   function systemPrefersDark() {
@@ -11724,7 +11980,6 @@
 
   function bootstrap() {
     initThemeToggle();
-    initSuperLigLaunchCard();
     initDataLayer();
   }
 

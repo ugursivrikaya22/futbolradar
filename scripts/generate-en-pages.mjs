@@ -28,7 +28,9 @@ import {
   leagueMarkHtml,
   sectionHead as sharedSectionHead,
   trendCard as sharedTrendCard,
-  transferWatchShell
+  transferWatchShell,
+  superLigTodayStripHtml,
+  officialLineupAlertHtml
 } from "./lib/matchCards.mjs";
 import { transferTypeEn } from "./lib/enTicker.mjs";
 import { homePollBlock } from "./lib/homePoll.mjs";
@@ -872,8 +874,15 @@ function todaySection() {
       `</button></div>`
     : "";
 
+  // SÜPER LİG BUGÜN ŞERİDİ — Türkçe ana sayfayla AYNI bileşen
+  // (scripts/lib/matchCards.mjs). EN sayfalarında maç başına ayrı bir
+  // ayrıntı sayfası yok (aşağıdaki genel ızgara da aynı nedenle her
+  // karta `./live-scores.html`e bağlanıyor); şerit de aynı kuralı izler.
+  const superLigStrip = superLigTodayStripHtml(list, teams, LOCALE, { hrefFor: () => "./live-scores.html" });
+
   return `<section class="container section section-matches" id="todays-matches-preview" aria-labelledby="today-title">
           ${sectionHead("Today's fixtures", "today-title", "Matches and live scores", "Matches in play come first, followed by kick-offs still to come and finished games.", "./todays-matches.html", label("common.viewAll"))}
+          ${superLigStrip ? `<div class="superlig-strip" aria-label="Today's Süper Lig matches">${superLigStrip}</div>` : ""}
           <div class="matches-grid" data-match-list="today-matches">
 ${body}
           ${moreRow}
@@ -1152,6 +1161,15 @@ function homePollSection() {
   });
 }
 
+/**
+ * RESMÎ İLK 11 UYARISI — `data/official-lineup-alerts.json`den, kaynaklı.
+ * services/matchSpecial.js'nin "muhtemel 11" katmanına karışmaz.
+ */
+function officialLineupAlertsSection() {
+  const alerts = require("../data/official-lineup-alerts.json").records || [];
+  return alerts.map((alert) => officialLineupAlertHtml(alert, LOCALE)).join("");
+}
+
 function homePage() {
   // BÖLÜM SIRASI TÜRKÇE ANA SAYFANIN AYNISI (prerender-core-pages.mjs):
   //   hero → tahmin anketi → köşe yazıları → günün başlıkları → bugünün
@@ -1161,6 +1179,7 @@ function homePage() {
   // Puan tablosu özeti Türkçe ana sayfada yok; İngilizce tarafta VAR olan
   // tek tablo girişi olduğu için kaldırılmadı, arşivin ardına alındı.
   const body = `      ${heroSection()}
+      ${officialLineupAlertsSection()}
       ${homePollSection()}
       ${columnsSection()}
       ${dailyHeadlinesSection()}

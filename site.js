@@ -13,6 +13,473 @@
     toggle.setAttribute("aria-label", "Menüyü aç");
   }
 
+  /**
+   * "ŞİMDİ FUTBOLDA" — mobil ilk ekran özeti.
+   *
+   * Telefonu açan okuyucunun ilk saniyelerde sorduğu dört soruya tek şeritte
+   * cevap verir: kaç maç canlı, bugün kaç maç var, Türk takımlarının sıradaki
+   * maçı ne zaman, son gelişme ne.
+   *
+   * İKİ BİLGİ ZATEN SAYFADA, YENİDEN HESAPLANMIYOR:
+   *   · sıradaki Türk takımı maçı → `[data-featured-turkish="true"]`
+   *     (sunucuda services/matchRelevance ile seçiliyor; burada aynı kuralı
+   *     ikinci kez yazmak iki mantığı ayrıştırırdı)
+   *   · son gelişme → haber şeridinin ilk maddesi
+   * İkisi de DOM'dan okunuyor: sıfır istek, anında çizim, düzen kaymaz.
+   *
+   * TEK İSTEK sayılar için: canlı/bugün maç sayısı taze veri gerektiriyor ve
+   * hiçbir yerde hazır durmuyor. Türkçe tarafta app.js aynı uç noktayı zaten
+   * çağırdığı için tarayıcı önbelleği çoğu ziyarette bunu bedavaya getiriyor.
+   *
+   * SAYI GELMEZSE SATIR HİÇ ÇİZİLMEZ — "0 canlı maç" ile "sayamadım" aynı şey
+   * değil ve ikincisini birinciymiş gibi göstermek okuyucuyu yanıltır.
+   */
+  function setupNowFootball() {
+    // Yalnızca ana sayfada: iç sayfalarda okuyucu zaten ne aradığını biliyor.
+    var main = document.querySelector("main.home-main");
+    if (!main || document.querySelector("[data-now-football]")) return;
+
+    var en = (document.documentElement.getAttribute("lang") || "tr").toLowerCase().indexOf("en") === 0;
+    var s = en
+      ? { title: "Football Right Now", live: "live now", today: "today",
+        next: "Next Turkish club match", headline: "Latest" }
+      : { title: "Şimdi Futbolda", live: "canlı maç", today: "bugün maç",
+        next: "Sıradaki Türk takımı maçı", headline: "Son gelişme" };
+
+    var strip = document.createElement("section");
+    strip.className = "container now-football";
+    strip.setAttribute("data-now-football", "");
+    strip.setAttribute("aria-label", s.title);
+
+    var counts = document.createElement("div");
+    counts.className = "now-football__counts";
+    counts.setAttribute("data-now-football-counts", "");
+
+    strip.innerHTML = '<span class="now-football__title">' + escapeText(s.title) + "</span>";
+    strip.appendChild(counts);
+
+    // ── Sayfada zaten duran iki bilgi ────────────────────────────────────
+    var featured = document.querySelector('[data-featured-turkish="true"]');
+    if (featured) {
+      var teams = featured.querySelectorAll(".featured-fixture-team strong");
+      var when = featured.querySelector(".featured-fixture-score b");
+      if (teams.length === 2 && when) {
+        strip.appendChild(nowRow(s.next,
+          teams[0].textContent.trim() + " – " + teams[1].textContent.trim(),
+          when.textContent.trim()));
+      }
+    }
+
+    var head = document.querySelector(".news-ticker-item");
+    if (head) {
+      // Şerit maddesi iki parçalı: rozet (`.news-ticker-tag`) + başlık.
+      // Maddenin tamamını okumak ikisini ayraçsız yapıştırıyordu
+      // ("Resmî açıklamaUğurcan Çakır'dan…"); yalnızca başlık alınır.
+      var headline = head.querySelector("span:not(.news-ticker-tag)");
+      var text = ((headline || head).textContent || "").trim();
+      if (text) strip.appendChild(nowRow(s.headline, text, "", head.getAttribute("href")));
+    }
+
+    main.insertBefore(strip, main.firstChild);
+
+    // ── Tek istek: canlı ve bugünkü maç sayısı ───────────────────────────
+    matchesOnce()
+      .then(function (list) {
+        if (!list) return;
+
+        var todayKey = new Date().toDateString();
+        var live = 0;
+        var today = 0;
+        for (var i = 0; i < list.length; i += 1) {
+          var m = list[i];
+          if (m.live === true || m.status === "LIVE" || m.status === "HALFTIME") live += 1;
+          var t = Date.parse(m.kickoff || "");
+          if (isFinite(t) && new Date(t).toDateString() === todayKey) today += 1;
+        }
+
+        if (live) counts.appendChild(nowCount(live, s.live, true));
+        if (today) counts.appendChild(nowCount(today, s.today, false));
+      })
+      // Ağ hatası kullanıcıya teknik metin olarak BASILMAZ; şerit sayısız
+      // kalır, geri kalan iki satır yerinde durur.
+      .catch(function () {});
+  }
+
+  /**
+   * MAÇ LİSTESİ TEK KEZ İSTENİR.
+   *
+   * Hem "Şimdi Futbolda" şeridi hem "Favori Takımım" kartı aynı listeye
+   * bakıyor. İkisi ayrı ayrı çağırsaydı her mobil açılışta aynı yanıt iki
+   * kez indirilirdi. Söz (promise) saklanıyor, ikinci çağıran hazır olanı
+   * alıyor. Hata durumunda `null` dönülür — çağıranlar kendi bölümlerini
+   * çizmez, kullanıcıya teknik hata metni BASILMAZ.
+   */
+  var matchesPromise = null;
+
+  function matchesOnce() {
+    if (matchesPromise) return matchesPromise;
+    matchesPromise = window.fetch("/api/matches", { headers: { Accept: "application/json" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (payload) {
+        return payload && Array.isArray(payload.data) ? payload.data : null;
+      })
+      .catch(function () { return null; });
+    return matchesPromise;
+  }
+
+  /**
+   * PUAN DURUMU DA TEK KEZ İSTENİR.
+   *
+   * Favori takım kartı sıralamayı, mini tablo ilk beşi aynı yanıttan
+   * okuyor. Maç listesindeki gerekçenin aynısı: iki bölüm ayrı çağırsaydı
+   * aynı yanıt iki kez inerdi.
+   */
+  var standingsPromise = null;
+
+  function standingsOnce() {
+    if (standingsPromise) return standingsPromise;
+    standingsPromise = window.fetch("/api/standings", { headers: { Accept: "application/json" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (payload) {
+        return payload && Array.isArray(payload.data) ? payload.data : null;
+      })
+      .catch(function () { return null; });
+    return standingsPromise;
+  }
+
+  /** Ad karşılaştırması: "Gençlerbirliği S.K." ile "Gençlerbirliği" eşleşmeli. */
+  function teamKey(value) {
+    return String(value || "")
+      .toLocaleLowerCase("tr-TR")
+      .replace(/\b(s\.?k\.?|a\.?ş\.?|fk|fc|spor kulübü)\b/g, "")
+      .replace(/[^a-zçğıöşü0-9]+/g, "")
+      .trim();
+  }
+
+  function nowCount(value, label, isLive) {
+    var el = document.createElement("span");
+    el.className = "now-football__count" + (isLive ? " is-live" : "");
+    el.innerHTML = '<b>' + value + "</b> " + escapeText(label);
+    return el;
+  }
+
+  function nowRow(label, value, meta, href) {
+    var row = document.createElement(href ? "a" : "div");
+    row.className = "now-football__row";
+    if (href) {
+      row.setAttribute("href", href);
+      row.setAttribute("target", "_blank");
+      row.setAttribute("rel", "nofollow noopener noreferrer");
+    }
+    row.innerHTML = '<span class="now-football__label">' + escapeText(label) + "</span>" +
+      '<span class="now-football__value">' + escapeText(value) + "</span>" +
+      (meta ? '<span class="now-football__meta">' + escapeText(meta) + "</span>" : "");
+    return row;
+  }
+
+  function escapeText(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  /**
+   * "FAVORİ TAKIMIM" — mobil ana sayfada kişisel kısayol.
+   *
+   * TAKIM LİSTESİ YENİDEN ÜRETİLMİYOR. Ana sayfadaki anket zaten güncel
+   * Süper Lig kadrosunu ad + arma ile basıyor (data/teams.json içindeki
+   * `isCurrentSuperLigTeam` bayrağından türetiliyor). Liste oradan
+   * okunuyor: ek istek yok ve lig kadrosu değişince burası kendiliğinden
+   * doğru kalıyor. Ayrı bir sabit liste tutmak, küme düşen bir takımı
+   * aylarca burada göstermek demekti.
+   *
+   * SEÇİM localStorage'DA. Giriş zorunlu değil; kullanıcı sisteminde bir
+   * hesap yok ve tahmin/kısayol özelliği için hesap istemek bedeli ağır
+   * bir bedel olurdu.
+   *
+   * VERİ GELMEZSE SATIR ÇİZİLMEZ. Sıradaki maç, son sonuç ve sıralama
+   * ayrı ayrı koşullu: hangisi varsa o görünür, olmayan için yer tutucu
+   * yazılmaz.
+   */
+  var FAVOURITE_KEY = "futbolradar-favourite-team";
+
+  function readFavourite() {
+    try { return window.localStorage.getItem(FAVOURITE_KEY) || ""; } catch (e) { return ""; }
+  }
+
+  function writeFavourite(value) {
+    try {
+      if (value) window.localStorage.setItem(FAVOURITE_KEY, value);
+      else window.localStorage.removeItem(FAVOURITE_KEY);
+    } catch (e) { /* gizli sekmede yazma reddedilebilir; özellik sessizce kapalı kalır */ }
+  }
+
+  function favouriteTeams() {
+    var out = [];
+    var nodes = document.querySelectorAll("[data-home-poll-options] .home-poll__option");
+    for (var i = 0; i < nodes.length; i += 1) {
+      var input = nodes[i].querySelector(".home-poll__radio");
+      var name = nodes[i].querySelector(".home-poll__option-name");
+      var crest = nodes[i].querySelector(".home-poll__crest");
+      if (!input || !name) continue;
+      out.push({
+        id: input.value,
+        name: name.textContent.trim(),
+        logo: crest ? crest.getAttribute("src") : ""
+      });
+    }
+    return out;
+  }
+
+  function setupFavouriteTeam() {
+    var main = document.querySelector("main.home-main");
+    if (!main || document.querySelector("[data-favourite-team]")) return;
+
+    var teams = favouriteTeams();
+    // Anket yoksa (başka bir anket dönemi) liste de yok; özellik açılmaz.
+    if (!teams.length) return;
+
+    var en = (document.documentElement.getAttribute("lang") || "tr").toLowerCase().indexOf("en") === 0;
+    var s = en
+      ? { pick: "Pick your team", yours: "Your team", change: "change",
+        next: "Next match", last: "Last result", table: "Table", pos: "pos." }
+      : { pick: "Favori takımını seç", yours: "Takımın", change: "değiştir",
+        next: "Sıradaki maç", last: "Son sonuç", table: "Puan durumu", pos: "sıra" };
+
+    var box = document.createElement("section");
+    box.className = "container favourite-team";
+    box.setAttribute("data-favourite-team", "");
+    main.insertBefore(box, main.firstChild);
+
+    render();
+
+    function render() {
+      var chosen = readFavourite();
+      var team = null;
+      for (var i = 0; i < teams.length; i += 1) if (teams[i].id === chosen) team = teams[i];
+      box.innerHTML = "";
+      if (team) renderChosen(team); else renderPicker();
+    }
+
+    function renderPicker() {
+      var title = document.createElement("span");
+      title.className = "favourite-team__title";
+      title.textContent = "⭐ " + s.pick;
+      box.appendChild(title);
+
+      var rail = document.createElement("div");
+      rail.className = "favourite-team__rail";
+      for (var i = 0; i < teams.length; i += 1) rail.appendChild(teamButton(teams[i]));
+      box.appendChild(rail);
+    }
+
+    function teamButton(team) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "favourite-team__pick";
+      b.setAttribute("data-team", team.id);
+      b.title = team.name;
+      b.innerHTML = (team.logo
+        ? '<img src="' + escapeText(team.logo) + '" alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+        : "") + "<span>" + escapeText(team.name) + "</span>";
+      b.addEventListener("click", function () { writeFavourite(team.id); render(); });
+      return b;
+    }
+
+    function renderChosen(team) {
+      var head = document.createElement("div");
+      head.className = "favourite-team__head";
+      head.innerHTML = (team.logo
+        ? '<img src="' + escapeText(team.logo) + '" alt="" width="26" height="26" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+        : "") +
+        '<span class="favourite-team__name">' + escapeText(s.yours) + ": <b>" + escapeText(team.name) + "</b></span>";
+
+      var change = document.createElement("button");
+      change.type = "button";
+      change.className = "favourite-team__change";
+      change.textContent = s.change;
+      change.addEventListener("click", function () { writeFavourite(""); render(); });
+      head.appendChild(change);
+      box.appendChild(head);
+
+      var key = teamKey(team.name);
+
+      matchesOnce().then(function (list) {
+        if (!list) return;
+        var mine = list.filter(function (m) {
+          return teamKey(m.homeTeam) === key || teamKey(m.awayTeam) === key;
+        });
+        if (!mine.length) return;
+
+        var now = Date.now();
+        var upcoming = null;
+        var finished = null;
+        for (var i = 0; i < mine.length; i += 1) {
+          var m = mine[i];
+          var t = Date.parse(m.kickoff || "");
+          if (!isFinite(t)) continue;
+          if (m.status === "FINISHED") {
+            if (!finished || t > Date.parse(finished.kickoff)) finished = m;
+          } else if (t >= now) {
+            if (!upcoming || t < Date.parse(upcoming.kickoff)) upcoming = m;
+          }
+        }
+
+        if (upcoming) {
+          box.appendChild(favRow(s.next,
+            upcoming.homeTeam + " – " + upcoming.awayTeam, upcoming.time || ""));
+        }
+        if (finished && finished.score) {
+          box.appendChild(favRow(s.last,
+            finished.homeTeam + " " + finished.score.home + "–" + finished.score.away + " " + finished.awayTeam, ""));
+        }
+      });
+
+      standingsOnce()
+        .then(function (rows) {
+          if (!rows) return;
+          for (var i = 0; i < rows.length; i += 1) {
+            if (teamKey(rows[i].team || rows[i].name) !== key) continue;
+            box.appendChild(favRow(s.table,
+              rows[i].rank + ". " + s.pos, rows[i].points + " P"));
+            return;
+          }
+        })
+        .catch(function () {});
+    }
+
+    function favRow(label, value, meta) {
+      var row = document.createElement("div");
+      row.className = "favourite-team__row";
+      row.innerHTML = '<span class="favourite-team__label">' + escapeText(label) + "</span>" +
+        '<span class="favourite-team__value">' + escapeText(value) + "</span>" +
+        (meta ? '<span class="favourite-team__meta">' + escapeText(meta) + "</span>" : "");
+      return row;
+    }
+  }
+
+  /**
+   * "PUAN DURUMU MİNİ" — ilk beş + kullanıcının takımı.
+   *
+   * Ana sayfaya 18 satırlık tam tablo koymak telefonda bir ekran dolusu
+   * kaydırma demekti. İlk beş çoğu okuyucunun sorduğu şeyi karşılıyor;
+   * gerisi için "Tüm Puan Durumu" bağlantısı var.
+   *
+   * FAVORİ TAKIM İLK BEŞTE DEĞİLSE AYRICA GÖSTERİLİR. Kendi takımını
+   * göremeyen okuyucu için ilk beş bir bilgi değil, sadece bir liste.
+   * Araya "…" konuyor ki satır atlandığı belli olsun.
+   *
+   * Veri gelmezse bölüm hiç çizilmez — boş bir tablo iskeleti göstermek
+   * yer tutucudan farksız olurdu.
+   */
+  function setupMiniStandings() {
+    var main = document.querySelector("main.home-main");
+    if (!main || document.querySelector("[data-mini-standings]")) return;
+
+    var en = (document.documentElement.getAttribute("lang") || "tr").toLowerCase().indexOf("en") === 0;
+    var s = en
+      ? { title: "Table", all: "Full table →", href: "en/standings.html", pts: "Pts" }
+      : { title: "Puan Durumu", all: "Tüm Puan Durumu →", href: "puan-durumu.html", pts: "P" };
+
+    standingsOnce().then(function (rows) {
+      if (!rows || !rows.length) return;
+
+      var sorted = rows.slice().sort(function (a, b) { return (a.rank || 99) - (b.rank || 99); });
+      var top = sorted.slice(0, 5);
+
+      // Favori takım ilk beşte mi?
+      var favKey = "";
+      var chosen = readFavourite();
+      if (chosen) {
+        var teams = favouriteTeams();
+        for (var i = 0; i < teams.length; i += 1) if (teams[i].id === chosen) favKey = teamKey(teams[i].name);
+      }
+      var extra = null;
+      if (favKey) {
+        var inTop = top.some(function (r) { return teamKey(r.team || r.name) === favKey; });
+        if (!inTop) {
+          for (var j = 0; j < sorted.length; j += 1) {
+            if (teamKey(sorted[j].team || sorted[j].name) === favKey) { extra = sorted[j]; break; }
+          }
+        }
+      }
+
+      var box = document.createElement("section");
+      box.className = "container mini-standings";
+      box.setAttribute("data-mini-standings", "");
+
+      var html = '<div class="mini-standings__head"><span class="mini-standings__title">' +
+        escapeText(s.title) + '</span><a class="mini-standings__all" href="' +
+        (en ? "../" : "./") + escapeText(s.href) + '">' + escapeText(s.all) + "</a></div>";
+
+      html += '<ol class="mini-standings__list">';
+      for (var k = 0; k < top.length; k += 1) html += row(top[k]);
+      if (extra) {
+        html += '<li class="mini-standings__gap" aria-hidden="true">…</li>' + row(extra, true);
+      }
+      html += "</ol>";
+
+      box.innerHTML = html;
+      main.appendChild(box);
+
+      function row(entry, isFav) {
+        return '<li class="mini-standings__row' + (isFav ? " is-favourite" : "") + '">' +
+          '<span class="mini-standings__rank">' + escapeText(entry.rank) + "</span>" +
+          '<span class="mini-standings__team">' + escapeText(entry.team || entry.name) + "</span>" +
+          '<span class="mini-standings__pts">' + escapeText(entry.points) + " " + escapeText(s.pts) + "</span>" +
+          "</li>";
+      }
+    });
+  }
+
+  /**
+   * ALT NAVİGASYON: aktif sayfa işareti + "Menü" düğmesi.
+   *
+   * Çubuk ~900 sayfaya AYNI çıktıyla basılıyor (scripts/lib/layout.mjs) ve
+   * hangi dosyaya yazıldığını bilmiyor; aktif bağlantı bu yüzden burada,
+   * `location.pathname` ile bulunuyor.
+   *
+   * Eşleştirme dosya adına bakıyor, tam yola değil: aynı çubuk kökte
+   * (`/index.html`), alt klasörde (`/mac/...`) ve İngilizce tarafta
+   * (`/en/index.html`) aynı işaretlemeyle duruyor, bağlantılar ise göreli
+   * (`../index.html`). Tam yol karşılaştırması bu üç durumdan yalnızca
+   * birinde çalışırdı.
+   */
+  function setupBottomNav() {
+    var bar = document.querySelector("[data-bottom-nav]");
+    if (!bar) return;
+
+    var here = window.location.pathname.replace(/\/+$/, "");
+    var hereFile = here.slice(here.lastIndexOf("/") + 1) || "index.html";
+    var hereEn = /(^|\/)en\//.test(window.location.pathname);
+
+    var items = bar.querySelectorAll("[data-bottom-nav-item]");
+    for (var i = 0; i < items.length; i += 1) {
+      var href = items[i].getAttribute("href") || "";
+      var file = href.slice(href.lastIndexOf("/") + 1);
+      // "index.html" iki dilde de aynı dosya adı; hangi tarafta olduğumuzu
+      // da kontrol etmezsek Türkçe ana sayfa İngilizce sekmesini de yakar.
+      var linkEn = /(^|\/)en\//.test(href);
+      if (file === hereFile && linkEn === hereEn) {
+        items[i].classList.add("is-active");
+        items[i].setAttribute("aria-current", "page");
+      }
+    }
+
+    var menuButton = bar.querySelector("[data-bottom-nav-menu]");
+    var navToggle = document.querySelector(".nav .nav-toggle");
+    if (!menuButton || !navToggle) return;
+
+    // Çekmeceyi AÇAN kod tek yerde kalsın diye mevcut düğme tetikleniyor;
+    // burada ikinci bir aç/kapa mantığı yazmak iki davranışı ayrıştırırdı.
+    menuButton.addEventListener("click", function () {
+      navToggle.click();
+      var open = navToggle.getAttribute("aria-expanded") === "true";
+      menuButton.setAttribute("aria-expanded", open ? "true" : "false");
+      menuButton.classList.toggle("is-active", open);
+    });
+  }
+
   function setupNav(nav) {
     var toggle = nav.querySelector(".nav-toggle");
     var menu = nav.querySelector(".nav-menu");
@@ -579,6 +1046,12 @@
   }
 
   document.querySelectorAll(".nav").forEach(setupNav);
+  // Çekmece kurulduktan SONRA: alt çubuğun "Menü" düğmesi onun tetikleyicisini
+  // arıyor, sıra ters olsaydı düğme sessizce işlevsiz kalırdı.
+  setupBottomNav();
+  setupNowFootball();
+  setupFavouriteTeam();
+  setupMiniStandings();
   document.querySelectorAll(".site-search").forEach(setupSearch);
 
   /* --------------------------------------------------------------------------
@@ -2027,7 +2500,9 @@
         badge: "LINE-UPS ANNOUNCED",
         homeBadge: "OFFICIAL XI",
         heading: "Official XI",
-        officialPromoTitle: "Galatasaray's Official XI vs Çorum FK Announced",
+        officialPromoTitleFor: function (team, opponent) {
+          return team + "'s Official XI vs " + opponent + " Announced";
+        },
         officialPromoSpot: "The probable selection has been replaced with the official line-up published by the data provider. Open the match hub for shirt numbers, formation and substitutes.",
         sidePending: "This side's line-up has not been announced yet",
         starting: "Starting XI",
@@ -2049,7 +2524,9 @@
         badge: "İLK 11'LER AÇIKLANDI",
         homeBadge: "RESMÎ İLK 11",
         heading: "Resmî İlk 11",
-        officialPromoTitle: "Galatasaray'ın Çorum FK Maçı Resmî İlk 11'i Açıklandı",
+        officialPromoTitleFor: function (team, opponent) {
+          return team + "'ın " + opponent + " Maçı Resmî İlk 11'i Açıklandı";
+        },
         officialPromoSpot: "Muhtemel kadro kaldırıldı ve veri sağlayıcısının yayımladığı resmî kadroyla değiştirildi. Forma numaraları, diziliş ve yedekler maç merkezinde.",
         sidePending: "Bu takımın kadrosu henüz açıklanmadı",
         starting: "İlk 11",
@@ -2278,9 +2755,18 @@
       return;
     }
     if (!state.homeOfficial) return;
+    // Başlık MAÇIN KENDİSİNDEN kurulur — sabit "Galatasaray/Çorum FK" metni
+    // burada bir zamanlar sabit yazılıydı ve HANGİ maç açıklansa aynı yanlış
+    // takım adını basıyordu. Konu, resmî kadrosu gelen taraf; rakip, diğer
+    // taraf.
+    var subjectTeam = (data.confirmed && data.confirmed.home ? data.home : data.away) || {};
+    var opponentTeam = (data.confirmed && data.confirmed.home ? data.away : data.home) || {};
     promo.classList.add("is-official");
     setText(promo.querySelector("[data-lineup-promo-badge]"), state.announced ? strings.badge : strings.homeBadge);
-    setText(promo.querySelector("[data-lineup-promo-title]"), strings.officialPromoTitle);
+    if (subjectTeam.team && opponentTeam.team) {
+      setText(promo.querySelector("[data-lineup-promo-title]"),
+        strings.officialPromoTitleFor(subjectTeam.team, opponentTeam.team));
+    }
     setText(promo.querySelector("[data-lineup-promo-spot]"), strings.officialPromoSpot);
   }
 

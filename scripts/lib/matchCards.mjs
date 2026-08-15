@@ -18,6 +18,41 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const { normalizeLocale, t } = require("../../services/i18n.js");
+const { canonicalStatus, LIVE_STATES, PLAYED_STATES } = require("../../services/matchStatus.js");
+const { sameClub } = require("../../services/superLigTeams.js");
+
+/**
+ * RESMÎ İLK 11 UYARISI — kalıcı analiz altyapısına (tahmin/matchup/rakip
+ * kıyası) hiç dokunmaz. `data/official-lineup-alerts.json`, kulübün
+ * kendi açıklamasından ELLE girilmiş, kaynaklı bir kayıttır (bkz. o
+ * dosyanın başındaki not); burada yalnızca GÖRÜNTÜLENİR.
+ *
+ * "Doğrulanmadan yayınlanmaz" kuralı burada da geçerli: `startingXI`
+ * yalnızca AD taşır (numara/mevki bilinmiyorsa uydurulmaz), kaynak adı
+ * ve bağlantısı ZORUNLU — kaynağı gösterilemeyen bir kart basılmaz.
+ */
+export function officialLineupAlertHtml(alert, locale) {
+  if (!alert || !Array.isArray(alert.startingXI) || !alert.startingXI.length || !alert.sourceUrl) return "";
+  const loc = normalizeLocale(locale);
+  const players = alert.startingXI.map((player) =>
+    `<li class="lineup-alert-player">${escapeHtml(player.name)}</li>`).join("");
+
+  return `<div class="lineup-alert" data-card="official-lineup-alert" data-match="${escapeHtml(alert.matchId || "")}">` +
+    `<div class="lineup-alert-head">` +
+    `<span class="card-badge breaking">${escapeHtml(t("transfer.badge.breaking", loc))}</span>` +
+    `<h2>${escapeHtml(alert.team)} ${escapeHtml(t("lineup.alert.title", loc))}</h2>` +
+    `<span class="lineup-alert-fixture">${escapeHtml(alert.homeTeam)} – ${escapeHtml(alert.awayTeam)}</span>` +
+    `</div>` +
+    `<ol class="lineup-alert-grid">${players}</ol>` +
+    `<div class="lineup-alert-foot"><span>${escapeHtml(t("transfer.source.label", loc))}: ${escapeHtml(alert.sourceName)}</span>` +
+    `<a class="detail-link" href="${escapeHtml(alert.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(t("lineup.alert.openSource", loc))}</a></div>` +
+    `</div>`;
+}
+
+/** `.player-metric` — küçük istatistik çipi; birden çok panelde kullanılır. */
+export function compactMetricHtml(label, value) {
+  return `<div class="player-metric"><span>${escapeHtml(label)}</span><b>${escapeHtml(value === undefined || value === null || value === "" ? "–" : value)}</b></div>`;
+}
 
 export function escapeHtml(value) {
   return String(value === undefined || value === null ? "" : value)
@@ -165,19 +200,306 @@ export function formDotsHtml(form, locale) {
     .join("")}</span>`;
 }
 
+/**
+ * DURUM DÜRÜSTLÜĞÜ — TEK YERDE.
+ *
+ * "Bir transfer, resmî açıklanana kadar tamamlanmış SAYILMAZ" kuralının
+ * kod karşılığı. `data/transfers.json`deki `status` alanı zaten bu
+ * sözlüğü kullanıyor (confirmed/agreed/negotiating/pending/rumour); bu
+ * fonksiyon o alanı OKUYOR, yeniden yorumlamıyor. Rozet rengi ve fiil
+ * seçimi buradan geçmeyen hiçbir yerde tekrar karar verilmemeli — aksi
+ * hâlde bir gün rozet "İddia" derken cümle "resmen açıkladı" diyebilir.
+ */
+function transferStatusClass(status) {
+  const normalized = String(status || "").trim().toLowerCase();
+  if (normalized === "confirmed") return "confirmed";
+  if (["agreed", "negotiating", "pending"].includes(normalized)) return "pending";
+  return "rumour";
+}
+
+function transferStatusLabel(status, locale) {
+  const cls = transferStatusClass(status);
+  if (cls === "confirmed") return t("transfer.status.confirmed", locale);
+  if (cls === "pending") return t("transfer.status.pending", locale);
+  return t("transfer.status.rumour", locale);
+}
+
+function transferVerbPhrase(status, locale) {
+  const normalized = String(status || "").trim().toLowerCase();
+  if (normalized === "confirmed") return t("transfer.verb.confirmed", locale);
+  if (normalized === "agreed") return t("transfer.verb.agreed", locale);
+  if (["negotiating", "pending"].includes(normalized)) return t("transfer.verb.pending", locale);
+  return t("transfer.verb.rumour", locale);
+}
+
+/**
+ * "SON DAKİKA" rozeti bir GERÇEK tazelik sinyaline dayanır (kayıt 48
+ * saatten yeni), performans ya da önem hakkında bir iddia değildir.
+ * `nowMs` çağırandan gelir — üretim betiği kendi referans zamanını
+ * seçer, bu fonksiyon `Date.now()`a bağımlı olmaz.
+ */
+function isBreakingTransfer(dateText, nowMs) {
+  const parsed = Date.parse(String(dateText || ""));
+  if (!Number.isFinite(parsed)) return false;
+  const hours = (nowMs - parsed) / (1000 * 60 * 60);
+  return hours >= 0 && hours <= 48;
+}
+
+/**
+ * Bedel: "Bedelsiz" GERÇEKTEN sıfırdır, bilinmeyen bedel asla 0
+ * gösterilmez. Biçim, oyuncu profillerindeki piyasa değeri gösterimiyle
+ * aynı ("€3.2M") — sitede iki farklı bedel biçimi okuyucuyu şaşırtırdı.
+ */
+function transferFeeLabel(leader, locale) {
+  if (leader.fee) return leader.fee;
+  const feeEur = Number(leader.feeEur);
+  if (Number.isFinite(feeEur) && feeEur === 0) return t("transfer.fee.free", locale);
+  if (Number.isFinite(feeEur) && feeEur > 0) {
+    return feeEur >= 1_000_000
+      ? `€${(Math.round(feeEur / 100_000) / 10).toFixed(1)}M`
+      : `€${feeEur.toLocaleString(locale === "en" ? "en-GB" : "tr-TR")}`;
+  }
+  return t("transfer.fee.undisclosed", locale);
+}
+
+/**
+ * ÖZET CÜMLESİ — yalnızca GERÇEK alanlardan kurulur (takım, oyuncu,
+ * durum, bedel). Oyuncunun yeteneği/performansı hakkında hiçbir iddia
+ * taşımaz; "ne oldu"yu anlatır, "ne olacağını" değil.
+ */
+function transferSummarySentence(leader, locale) {
+  const verb = transferVerbPhrase(leader.status, locale);
+  const fee = transferFeeLabel(leader, locale);
+  const feeClause = fee && fee !== t("transfer.fee.undisclosed", locale) ? ` (${fee})` : "";
+  return locale === "en"
+    ? `${leader.toTeam} ${verb} ${leader.playerName}${leader.fromTeam ? ` from ${leader.fromTeam}` : ""}${feeClause}.`
+    : `${leader.toTeam}, ${leader.playerName}${leader.fromTeam ? ` (${leader.fromTeam})` : ""} ${verb}${feeClause}.`;
+}
+
+/**
+ * FUTBOLRADAR YORUMU — mevki biliniyorsa kadro planlaması çerçevesinde
+ * tek cümle, bilinmiyorsa uydurma bir gerekçe üretmek yerine nötr bir
+ * "izlenmeye değer" ifadesi. İkisi de sonuç/performans iddiası taşımaz.
+ */
+function transferTakeSentence(leader, locale) {
+  const subject = leader.toTeam || leader.playerName;
+  const suffix = leader.position
+    ? t("transfer.take.withPosition", locale).replace("{position}", leader.position)
+    : t("transfer.take.generic", locale);
+  return locale === "en" ? `${subject} ${suffix}` : `${subject}, ${suffix}`;
+}
+
 export function transferWatchShell(options) {
   const locale = normalizeLocale(options.locale);
   const leader = options.leader;
-  const sideRows = (options.rows || []).map((row) =>
-    `<a class="home-transfer-row" href="${escapeHtml(row.href)}"><span>${escapeHtml(row.date || "")}</span><strong>${escapeHtml(row.playerName)}</strong><b>${escapeHtml(row.toTeam)}</b></a>`).join("");
-  const leaderActions = [
-    leader.sourceUrl
-      ? `<a class="detail-link" href="${escapeHtml(leader.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(t("transfer.openDetail", locale))}</a>`
-      : "",
-    options.allHref
-      ? `<a class="detail-link ghost" href="${escapeHtml(options.allHref)}">${escapeHtml(t("transfer.all", locale))}</a>`
-      : ""
-  ].filter(Boolean).join("");
+  const nowMs = options.nowMs || Date.now();
+  const statusClass = transferStatusClass(leader.status);
+  const breaking = isBreakingTransfer(leader.date, nowMs);
+  const fullList = [leader, ...(options.rows || [])];
+  const confirmedCount = fullList.filter((row) => transferStatusClass(row.status) === "confirmed").length;
+  const clubCount = new Set(fullList.map((row) => row.toTeam).filter(Boolean)).size;
 
-  return `<article class="home-transfer-feature" data-card="home-transfer-watch"><div class="home-transfer-player"><div><span>${escapeHtml(t("transfer.latestConfirmed", locale))}</span><h3>${escapeHtml(leader.playerName)}</h3><p>${escapeHtml(leader.typeLabel || t("transfer.fallbackType", locale))} · ${escapeHtml(leader.date || "")}</p></div></div><div class="home-transfer-route"><b>${escapeHtml(leader.fromTeam || "—")}</b><em>→</em><b>${escapeHtml(leader.toTeam)}</b></div>${leaderActions ? `<div class="home-transfer-actions">${leaderActions}</div>` : ""}</article><aside class="home-transfer-side"><div class="home-transfer-list">${sideRows}</div></aside>`;
+  // Satır rozeti dürüstlük kuralına tabi: yalnızca ZATEN doğrulanmış
+  // kayıtlar "TRANSFER" der, gerisi "RADAR" — henüz izleniyor demektir,
+  // olmuş bitmiş değil.
+  const sideRows = (options.rows || []).map((row) => {
+    const rowStatusClass = transferStatusClass(row.status);
+    const rowBadge = rowStatusClass === "confirmed" ? t("transfer.badge.transfer", locale) : t("transfer.badge.radar", locale);
+    return `<a class="home-transfer-row" href="${escapeHtml(row.href)}">` +
+      `<span class="home-transfer-row-badge status-${escapeHtml(rowStatusClass)}">${escapeHtml(rowBadge)}</span>` +
+      `<strong>${escapeHtml(row.playerName)}</strong><b>${escapeHtml(row.toTeam)}</b></a>`;
+  }).join("");
+
+  // Kaynak bağlantısı, tam kart tıklanabilirliğinin ÜSTÜNDE kalması
+  // gereken TEK öğe: kartın tamamı iç sayfaya (transfer-radari.html)
+  // giderken, kaynağa gitmek isteyen okuyucu dış habere ayrı tıklamalı.
+  // İki bağlantıyı iç içe geçirmek geçersiz HTML olurdu; çözüm CSS'te
+  // (.home-transfer-feature-cover z-index altta, .detail-link üstte).
+  const sourceAction = leader.sourceUrl
+    ? `<a class="detail-link home-transfer-source-link" href="${escapeHtml(leader.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(t("transfer.openDetail", locale))}</a>`
+    : "";
+
+  const coverHref = options.allHref
+    ? `${options.allHref}${options.allHref.includes("?") ? "&" : "?"}team=${encodeURIComponent(leader.toTeam || "")}`
+    : "#";
+
+  return `<article class="home-transfer-feature home-transfer-feature-big" data-card="home-transfer-watch" data-transfer-status="${escapeHtml(statusClass)}">` +
+    `<div class="transfer-badge-row">` +
+    (breaking ? `<span class="card-badge breaking">${escapeHtml(t("transfer.badge.breaking", locale))}</span>` : "") +
+    `<span class="card-badge transfer">${escapeHtml(t("transfer.badge.transfer", locale))}</span>` +
+    `<span class="status-badge status-${escapeHtml(statusClass)}">${escapeHtml(transferStatusLabel(leader.status, locale))}</span>` +
+    `</div>` +
+    `<div class="home-transfer-player"><div><span>${escapeHtml(t("transfer.latestConfirmed", locale))}</span><h3>${escapeHtml(leader.playerName)}</h3><p>${escapeHtml(leader.typeLabel || t("transfer.fallbackType", locale))} · ${escapeHtml(leader.date || "")}</p></div></div>` +
+    `<div class="home-transfer-route"><b>${escapeHtml(leader.fromTeam || "—")}</b><em>→</em><b>${escapeHtml(leader.toTeam)}</b></div>` +
+    `<p class="home-transfer-summary">${escapeHtml(transferSummarySentence(leader, locale))}</p>` +
+    `<p class="home-transfer-take"><b>${escapeHtml(t("transfer.take.label", locale))}:</b> ${escapeHtml(transferTakeSentence(leader, locale))}</p>` +
+    `<div class="home-transfer-meta-row">` +
+    `<span class="home-transfer-source">${escapeHtml(t("transfer.source.label", locale))}: ${escapeHtml(leader.sourceName || t("transfer.source.unverified", locale))}</span>` +
+    `</div>` +
+    `<div class="home-transfer-actions">${sourceAction}${options.allHref ? `<a class="detail-link ghost" href="${escapeHtml(options.allHref)}">${escapeHtml(t("transfer.all", locale))}</a>` : ""}</div>` +
+    `<a class="home-transfer-feature-cover" href="${escapeHtml(coverHref)}" aria-label="${escapeHtml(leader.playerName)} — ${escapeHtml(t("transfer.all", locale))}"></a>` +
+    `</article><aside class="home-transfer-side" aria-label="${escapeHtml(t("transfer.recentAside.label", locale))}"><div class="home-transfer-metrics">` +
+    compactMetricHtml(t("transfer.confirmedCount.label", locale), confirmedCount) +
+    compactMetricHtml(t("transfer.clubCount.label", locale), clubCount) +
+    compactMetricHtml(t("transfer.lastCheck.label", locale), leader.lastVerifiedAt || leader.date || t("fallback.general", locale)) +
+    `</div><div class="home-transfer-list">${sideRows}</div></aside>`;
+}
+
+/**
+ * SÜPER LİG BUGÜN ŞERİDİ — kompakt, yatay, yalnızca güncel Süper Lig
+ * kulüplerinin bugünkü maçları, sabit bir öncelik sırasıyla.
+ *
+ * NEDEN AYRI BİR BİLEŞEN: ana sayfadaki genel "bugünün maçları" ızgarası
+ * TÜM turnuvaları eşit ağırlıkta gösterir (kasıtlı — o bölüm dokunulmadı).
+ * Bu şerit onun YERİNE değil, ÜSTÜNE eklenir: okuyucunun en çok aradığı
+ * altı kulüp (ve ardından ligin geri kalanı) tek bakışta, logo+skorla.
+ *
+ * ÖNCELİK SIRASI editoryal bir karardır, veriden türetilmez — tıpkı
+ * services/majorClubs.js'teki "büyük kulüp" listesi gibi. Sıralanan
+ * kulüpler sabit ADLA eşleşir; sağlayıcı farklı bir yazım gönderirse o
+ * kulüp yalnızca öncelik sırasını kaybeder, listeden düşmez (aşağıdaki
+ * ikincil sıralama onu yine de gösterir).
+ */
+const SUPER_LIG_PRIORITY_NAMES = ["Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor", "Samsunspor", "Başakşehir"];
+
+/**
+ * GÜNCEL SÜPER LİG KULÜPLERİ → arma listesi.
+ *
+ * `isCurrentSuperLigTeam` bayrağı tek kaynak (services/homePoll.js'teki
+ * anket seçenekleriyle AYNI süzgeç): lig kadrosu değiştiğinde bu şerit de
+ * kendiliğinden doğru kalır, elle güncellenen bir liste tutulmaz. Arma
+ * yalnızca GERÇEK sayısal sağlayıcı kimliğinden türetilir; yoksa kulüp
+ * listeden düşmez, yalnızca armasız (baş harfli) görünür.
+ */
+export function superLigTeamLogoMap(teams) {
+  const list = [];
+  for (const team of Array.isArray(teams) ? teams : []) {
+    if (!team || !team.isCurrentSuperLigTeam || !team.name) continue;
+    const providerId = String(team.providerId || "").trim();
+    list.push({
+      name: String(team.name),
+      logo: /^\d+$/.test(providerId) ? `https://media.api-sports.io/football/teams/${providerId}.png` : ""
+    });
+  }
+  return list;
+}
+
+/**
+ * MAÇ VERİSİ İLE data/teams.json AYNI ADI FARKLI YAZABİLİR — tam ad eşitliği
+ * yeterli değil ("Rizespor" vs "Çaykur Rizespor", "Gençlerbirliği" vs
+ * "Gençlerbirliği S.K."). Eşleme `services/superLigTeams.js#sameClub` ile:
+ * kadro senkronunun aynı ikizleşme sorununu çözmek için yazdığı, kelime
+ * sınırlı içerme kuralı. İkinci bir eşleştirici yazmak, iki yerin farklı
+ * kurallarla "aynı kulüp" demesi riskini taşırdı.
+ */
+function findSuperLigTeam(list, name) {
+  return list.find((entry) => sameClub(entry.name, name)) || null;
+}
+
+function superLigPriorityRank(name) {
+  const index = SUPER_LIG_PRIORITY_NAMES.findIndex((candidate) => sameClub(candidate, name));
+  return index === -1 ? SUPER_LIG_PRIORITY_NAMES.length : index;
+}
+
+function teamLogoOrInitials(entry, name) {
+  const logo = entry && entry.logo;
+  if (logo) {
+    return `<img class="superlig-strip-logo" src="${escapeHtml(logo)}" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">${escapeHtml(fixtureTeamInitials(name))}</span>`;
+  }
+  return `<span class="superlig-strip-logo-fallback" aria-hidden="true">${escapeHtml(fixtureTeamInitials(name))}</span>`;
+}
+
+/**
+ * Durum: CANLI/MS/saat üçlüsü, genel maç kartlarıyla AYNI sözlükten
+ * (services/matchStatus.js#canonicalStatus) — bu şeridin "Canlı" dediği
+ * an, sitenin geri kalanının "Canlı" dediği anla birebir aynı olmalı.
+ */
+function superLigMatchState(match, locale) {
+  const canonical = canonicalStatus(match && match.status);
+  const isLive = LIVE_STATES.has(canonical);
+  const isFinal = PLAYED_STATES.has(canonical) && match && match.score &&
+    Number.isFinite(Number(match.score.home)) && Number.isFinite(Number(match.score.away));
+  if (isLive) return { isLive: true, isFinal: false, label: t("status.LIVE", locale) };
+  if (isFinal) return { isLive: false, isFinal: true, label: t("card.fullTimeShort", locale) };
+  return { isLive: false, isFinal: false, label: match && match.time ? String(match.time) : t("card.scheduled", locale) };
+}
+
+/**
+ * Tek satır: [ev logosu+adı] [skor/saat] [deplasman logosu+adı], tamamı
+ * tıklanabilir (transfer kartındaki aynı "kapak bağlantısı" deseni —
+ * burada iç içe ikinci bir bağlantı yok, tüm satır tek `<a>`).
+ */
+function superLigMatchRowHtml(match, teamList, locale, hrefFor) {
+  const home = findSuperLigTeam(teamList, match.homeTeam) || { name: match.homeTeam, logo: "" };
+  const away = findSuperLigTeam(teamList, match.awayTeam) || { name: match.awayTeam, logo: "" };
+  const state = superLigMatchState(match, locale);
+  const score = state.isLive || state.isFinal
+    ? `${escapeHtml(match.score && match.score.home !== undefined && match.score.home !== null ? match.score.home : "–")} - ${escapeHtml(match.score && match.score.away !== undefined && match.score.away !== null ? match.score.away : "–")}`
+    : escapeHtml(state.label);
+
+  return `<a class="superlig-strip-row${state.isLive ? " is-live" : ""}" data-card="superlig-strip" data-match="${escapeHtml(match.id || "")}" href="${escapeHtml(hrefFor(match))}">` +
+    `<span class="superlig-strip-team">${teamLogoOrInitials(home, home.name)}<b>${escapeHtml(home.name)}</b></span>` +
+    `<span class="superlig-strip-score${state.isLive ? " is-live" : ""}">${state.isLive ? `<i class="live-pulse" aria-hidden="true"></i>` : ""}${score}</span>` +
+    `<span class="superlig-strip-team is-away">${teamLogoOrInitials(away, away.name)}<b>${escapeHtml(away.name)}</b></span>` +
+    `</a>`;
+}
+
+/**
+ * Bugünün Süper Lig maçları, öncelik + saat sırasıyla.
+ *
+ * @param {object[]} matches  BUGÜNÜN maç havuzu (çağıran günü zaten süzmüş
+ *   olmalı — bu fonksiyon "hangi gün" sorusuna karışmaz, yalnızca "hangi
+ *   kulüp" sorusuna karışır).
+ * @param {object[]} teams    data/teams.json
+ * @param {string} locale
+ * @param {object} options    { hrefFor(match) => string } — bağlantı kuralı
+ *   dile göre değiştiği için (mac-detay.html / match-detail.html) çağırandan
+ *   gelir, tıpkı fixtureCard'ın actionHref'i gibi.
+ *
+ * Süper Lig'de bugün maç yoksa BOŞ DİZE döner — bölüm hiç çizilmez. Boş bir
+ * "bugün maç yok" kutusu göstermek, zaten altında duran genel program
+ * bölümünün söylediğini tekrarlamak ve yer kaplamak olurdu.
+ */
+export function superLigTodayStripHtml(matches, teams, locale, options = {}) {
+  const loc = normalizeLocale(locale);
+  const teamList = superLigTeamLogoMap(teams);
+  const hrefFor = typeof options.hrefFor === "function" ? options.hrefFor : () => "#";
+
+  const scoped = (Array.isArray(matches) ? matches : []).filter((match) =>
+    match && (findSuperLigTeam(teamList, match.homeTeam) || findSuperLigTeam(teamList, match.awayTeam)));
+
+  // AYNI KARŞILAŞMA takvim kaynağında birden fazla kayıtla (farklı
+  // kimlik/yazımla) görünebiliyor — bu bileşene özgü bir sorun değil,
+  // İngilizce takvim beslemesinin kendi tuhaflığı. Genel "bugünün
+  // maçları" ızgarasında bu fark az satır arasında kayboluyor; bu dar
+  // şeritte "aynı maç iki kez" göze batardı. Anahtar EŞLENMİŞ (takma ad
+  // çözülmüş) takım adlarından kurulur — "Rizespor" ile "Çaykur
+  // Rizespor" aynı fikstürün iki kaydı sayılmalı.
+  const seen = new Set();
+  const todays = scoped.filter((match) => {
+    const home = findSuperLigTeam(teamList, match.homeTeam);
+    const away = findSuperLigTeam(teamList, match.awayTeam);
+    const key = `${(home && home.name) || match.homeTeam}|${(away && away.name) || match.awayTeam}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  if (!todays.length) return "";
+
+  const sorted = todays.slice().sort((left, right) => {
+    const leftRank = Math.min(superLigPriorityRank(left.homeTeam), superLigPriorityRank(left.awayTeam));
+    const rightRank = Math.min(superLigPriorityRank(right.homeTeam), superLigPriorityRank(right.awayTeam));
+    if (leftRank !== rightRank) return leftRank - rightRank;
+    return String(left.kickoff || "").localeCompare(String(right.kickoff || ""));
+  });
+
+  const rows = sorted.map((match) => superLigMatchRowHtml(match, teamList, loc, hrefFor)).join("");
+
+  // YALNIZCA İÇ İÇERİK döner — dıştaki kararlı kap (data-api-target,
+  // data-static-fallback) index.html'de elle yazılı duruyor, tıpkı
+  // .home-transfer-watch-shell gibi. Bu fonksiyon o kabın İÇİNİ, hem
+  // ön-render hem istemci hidrasyonu için AYNI şekilde doldurur.
+  return `<span class="superlig-strip-kicker">${escapeHtml(t("superlig.strip.kicker", loc))}</span>` +
+    `<div class="superlig-strip-rail">${rows}</div>`;
 }

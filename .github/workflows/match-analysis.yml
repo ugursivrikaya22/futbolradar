@@ -53,6 +53,12 @@ jobs:
       APIFOOTBALL_COUNTRY: Turkey
       THESPORTSDB_API_KEY: ${{ secrets.THESPORTSDB_API_KEY }}
       FOOTBALL_NEWS_FEEDS: ${{ secrets.FOOTBALL_NEWS_FEEDS }}
+      # Supabase veri katmanı için — tanımlı değilse `supabase-sync` adımı
+      # açıkça "atlandı" der ve geri kalan güncelleme normal çalışır
+      # (services/supabase/env.js, scripts/supabase-ingest.mjs).
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      HOME_POLL_IP_SALT: ${{ secrets.HOME_POLL_IP_SALT }}
       # GitHub issues this short-lived token only inside the authenticated run.
       # The orchestrator validates the event, repository and token presence.
       FUTBOLRADAR_AUTOMATION_TOKEN: ${{ github.token }}

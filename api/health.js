@@ -14,6 +14,68 @@ const { getConfig } = require("../services/providers/footballProvider");
 const { readCachedLeague } = require("../services/leagueCache");
 const { buildPipelineDiagnostics } = require("../services/pipelineDiagnostics");
 const { curatedMatches } = require("../services/providers/mockProvider");
+const homePollStore = require("../services/homePollVoteStore");
+
+/**
+ * HANGİ DAĞITIM YANIT VERİYOR? — "değişkeni ekledim ama görünmüyor"un
+ * iki ayrı sebebini ayırmak için.
+ *
+ * Ortam değişkeni eklemek tek başına yetmez: Vercel değerleri isteğe değil
+ * DAĞITIMA bağlar, yani yeni değişken ancak yeni bir dağıtımda görünür.
+ * Buna karşılık değişken doğru ama BAŞKA bir projeye/ortama eklenmişse
+ * kaç kez yeniden dağıtılırsa dağıtılsın hiçbir şey değişmez. Dışarıdan
+ * ikisi de "değişken yok" diye görünüyordu ve aradaki farkı ölçecek hiçbir
+ * alan yoktu; bu blok o farkı ölçüyor.
+ *
+ * Sır yazılmaz. Depo adı, dal adı ve KISA commit kimliği, yayındaki
+ * sitenin içeriğiyle zaten eşleşen genel bilgilerdir; bunlarla bir şeye
+ * erişilemez. Dağıtım adresi yazılmaz.
+ */
+function deploymentSection() {
+  const sha = String(process.env.VERCEL_GIT_COMMIT_SHA || "");
+  return {
+    platform: process.env.VERCEL ? "vercel" : "other",
+    environment: process.env.VERCEL_ENV || "",
+    region: process.env.VERCEL_REGION || "",
+    repo: [process.env.VERCEL_GIT_REPO_OWNER, process.env.VERCEL_GIT_REPO_SLUG]
+      .filter(Boolean)
+      .join("/"),
+    branch: process.env.VERCEL_GIT_COMMIT_REF || "",
+    commit: sha ? sha.slice(0, 7) : "",
+    // Sistem değişkenleri kapatılmışsa yukarıdaki alanlar boş kalır; bu
+    // "eski dağıtım" ile karıştırılmasın diye ayrıca bildiriliyor.
+    systemEnvExposed: Boolean(process.env.VERCEL_GIT_COMMIT_SHA || process.env.VERCEL_URL)
+  };
+}
+
+/**
+ * ANKET OY DEPOSU — teşhis sağlık ucunda da olsun.
+ *
+ * Aynı bilgi `/api/home-poll` yanıtında da var, ama operatör kurulum
+ * doğrularken sağlık ucuna bakıyor ve orada anketle ilgili tek satır
+ * yoktu. Mantık kopyalanmadı: karar da, ipucu da deponun kendi
+ * fonksiyonlarından okunuyor.
+ */
+function homePollStorageSection() {
+  const present = (names) => names.filter((name) => String(process.env[name] || "").trim() !== "");
+  const keyNames = present(homePollStore.SERVICE_KEY_ENV_NAMES);
+  const configured = homePollStore.isConfigured();
+
+  return {
+    storage: configured ? "ready" : "unavailable",
+    urlEnvNames: present(homePollStore.REST_URL_ENV_NAMES),
+    serviceKeyEnvNames: keyNames,
+    anonKeyEnvNames: present(homePollStore.ANON_KEY_ENV_NAMES),
+    ipSaltEnvNames: present(homePollStore.IP_SALT_ENV_NAMES),
+    // Anahtarın kendisi değil, JWT'nin ilan ettiği ROL. Yanlış anahtarı
+    // yapıştırmak en sık yapılan hata ve RLS açıkken sessizce reddedilir.
+    serviceKeyRole: keyNames.length ? (homePollStore.keyRole(String(process.env[keyNames[0]]).trim()) || "okunamadi") : "",
+    // Ad da değer de yazılmaz, yalnızca SAYI: "hiç eklenmemiş" ile
+    // "yanlış adla eklenmiş" ancak böyle ayrılıyor.
+    supabaseNamedEnvCount: Object.keys(process.env).filter((name) => /supabase/i.test(name)).length,
+    configuration: configured ? "" : homePollStore.configurationHint()
+  };
+}
 
 /**
  * Maç hattının durumu: son senkron, bugünün maçları, canlı sayısı, analiz
@@ -147,6 +209,8 @@ module.exports = async function handler(req, res) {
   const query = getQuery(req);
   const config = getConfig();
   const diagnostics = buildDiagnostics(config);
+  diagnostics.deployment = deploymentSection();
+  diagnostics.homePollStorage = homePollStorageSection();
   diagnostics.pipeline = pipelineSection();
 
   // `?probe=api-football` kimliği gerçek istekle sınar. Biçim kontrolü
@@ -156,6 +220,36 @@ module.exports = async function handler(req, res) {
   // olduğu gibi raporlar. Anahtarın kendisi hiçbir koşulda yanıta girmez.
   if (String(query.probe || "") === "api-football") {
     diagnostics.apiFootballProbe = await apiFootballProvider.probeCredentials();
+  }
+
+  // `?probe=supabase` GERÇEK bir istek gönderir (env değişkeni okumakla
+  // yetinmez). "Değişkenler dolu" ile "depo gerçekten çalışıyor" farklı
+  // sorular: anahtar yanlış PROJEYE ait olabilir, tablo hiç oluşturulmamış
+  // olabilir, ya da servis anahtarı yerine anon anahtar girilmiş olabilir
+  // (RLS bunu sessizce reddeder). Bu üçü de "storage: unavailable" olarak
+  // aynı görünür; prob PostgREST'in kendi hata gövdesini (şema bilgisi,
+  // SIR değil) döndürerek ayırt eder. Anket sayımını BOZMAZ: yalnızca
+  // okur, `readTally` hiçbir satır yazmaz.
+  if (String(query.probe || "") === "supabase") {
+    if (!homePollStore.isConfigured()) {
+      diagnostics.supabaseProbe = { attempted: false, note: homePollStore.configurationHint() };
+    } else {
+      try {
+        const tally = await homePollStore.readTally("home-health-probe");
+        diagnostics.supabaseProbe = {
+          attempted: true,
+          ok: true,
+          table: homePollStore.TABLE,
+          rowsForProbePollId: Object.values(tally).reduce((sum, n) => sum + (Number(n) || 0), 0)
+        };
+      } catch (error) {
+        diagnostics.supabaseProbe = {
+          attempted: true,
+          ok: false,
+          error: String((error && error.message) || error).slice(0, 300)
+        };
+      }
+    }
   }
 
   return sendSuccess(res, [diagnostics]);

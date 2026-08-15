@@ -315,13 +315,35 @@ function fullMaintenanceSteps(providerReady) {
   ];
 }
 
+function supabaseConfigured() {
+  // Bu betik ESM, veri katmanı CJS — `createRequire` yerine düz env
+  // kontrolü tercih edildi: yalnızca "koşulsun mu" sorusuna cevap
+  // gerekiyor, gerçek istek mantığı `supabase-ingest.mjs`in kendi işi.
+  const urlNames = ["SUPABASE_URL", "HOME_POLL_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_URL"];
+  const keyNames = ["SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_SERVICE_KEY", "HOME_POLL_SUPABASE_KEY"];
+  const hasAny = (names) => names.some((name) => String(process.env[name] || "").trim());
+  return hasAny(urlNames) && hasAny(keyNames);
+}
+
 function transformSteps(type, hasChanges, providerReady) {
   if (type === "hourly" && !hasChanges) return [];
   return [
     nodeStep("upcoming-analyses", "generate-match-analyses.mjs", ["--days=3", "--apply"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("refetch-finished", "refetch-finished-matches.mjs", ["--apply", "--limit=25", "--days=4"], { kind: "source", source: "api-football", timeoutMs: 10 * 60 * 1000, skip: providerReady ? false : "API-Football is unavailable." }),
     nodeStep("post-match-store", "generate-post-match-reports.mjs", ["--apply"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
-    nodeStep("post-match-backfill", "backfill-post-match-analyses.mjs", ["--apply", "--limit=40"], { kind: "transform", timeoutMs: 8 * 60 * 1000 })
+    nodeStep("post-match-backfill", "backfill-post-match-analyses.mjs", ["--apply", "--limit=40"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
+    // SUPABASE ALIMI — SİTENİN BUİLD/DEPLOY'UNU HİÇBİR KOŞULDA ENGELLEMEZ.
+    //
+    // Bu adım `required` DEĞİL (varsayılan `false`) ve `criticalFailure`
+    // yalnızca doğrulama/derleme/QA adımlarından set edilir (bkz. main()).
+    // Yani Supabase o an erişilemez olsa bile üretim sitesi normal
+    // şekilde derlenip yayına çıkar — depo, sitenin TEK gerçek kaynağı
+    // değil, ikinci bir dayanıklı depo. Yapılandırılmamışsa `skip`
+    // nedeni açıkça yazılır; sessizce atlanmaz.
+    nodeStep("supabase-sync", "supabase-ingest.mjs", [], {
+      kind: "transform", timeoutMs: 10 * 60 * 1000,
+      skip: supabaseConfigured() ? false : "SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY tanımlı değil; Supabase alımı atlandı."
+    })
   ];
 }
 

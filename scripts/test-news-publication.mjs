@@ -38,9 +38,28 @@ assert.ok(
 assert.match(transferReaction.updateNote || "", /resmî bir özet yayımladığında/, "resmî kulüp özeti için güncelleme notu bulunmalı");
 
 const galatasarayNews = readVerifiedTeamNews(root, "Galatasaray", 3);
+
+/**
+ * KURAL SINANIYOR, ANLIK GERÇEK DEĞİL.
+ *
+ * Burada bir haberin KİMLİĞİ sabit yazılıydı ("şu an en yenisi bu"). Bu
+ * bir kural değil, o günün fotoğrafıydı: yayımlanan her yeni Galatasaray
+ * haberi testi düşürüyordu — haber doğru, sıralama doğru, test yanlış
+ * olduğu hâlde. Bir tripwire'ın her doğru işte çalması, zamanla onu
+ * "yine mi düştü, geç" diye görmezden gelmeye götürür.
+ *
+ * Sınanan şey artık iddianın kendisi: ilk sıradaki kayıt, doğrulanmış
+ * Galatasaray haberleri arasında GERÇEKTEN en yenisi mi. Bu, hangi haber
+ * yayımlanırsa yayımlansın geçerli kalır.
+ */
+const newestGalatasarayStamp = galatasarayNews
+  .map((item) => String(item.publishedAt || ""))
+  .sort()
+  .at(-1);
+assert.ok(galatasarayNews.length, "doğrulanmış Galatasaray haberi bulunmalı");
 assert.equal(
-  galatasarayNews[0]?.id,
-  "galatasaray-osimhen-premier-league-ilgisi-iddialari",
+  String(galatasarayNews[0]?.publishedAt || ""),
+  newestGalatasarayStamp,
   "en yeni Galatasaray haberi takım sayfalarında ilk sırada görünmeli"
 );
 const sortedByRecency = galatasarayNews
@@ -49,11 +68,18 @@ const sortedByRecency = galatasarayNews
 assert.ok(sortedByRecency, "takım haberleri yayın tarihine göre yeniden eskiye sıralanmalı");
 const galatasaraySection = renderTeamNewsSection(galatasarayNews, { team: "Galatasaray", base: "./" });
 assert.match(galatasaraySection, /data-team-news="galatasaray"/, "Galatasaray haber bölümü üretilmeli");
-assert.match(
-  galatasaraySection,
-  /haber\/galatasaray-divan-kurulu-dursun-ozbek-transfer-tepkisi"/,
-  "Galatasaray haber kartı yeni detay sayfasına bağlanmalı"
-);
+/**
+ * Yine kural sınanıyor, belirli bir haber değil: burada tek bir slug
+ * sabit yazılıydı ve o haber ilk üçten düştüğü anda test kırılıyordu —
+ * bağlantı kurma mantığında hiçbir şey bozulmamışken. Sınanan şey artık
+ * ÇİZİLEN her kartın kendi detay sayfasına bağlanması.
+ */
+for (const article of galatasarayNews) {
+  assert.ok(
+    galatasaraySection.includes(`haber/${article.slug || article.id}"`),
+    `Galatasaray haber kartı kendi detay sayfasına bağlanmalı: ${article.slug || article.id}`
+  );
+}
 
 for (const draft of drafts.items || []) {
   assert.equal(draft.public, false, `${draft.id}: taslak public=false olmalı`);
