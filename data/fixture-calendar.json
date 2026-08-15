@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-15T11:23:32.839Z",
+  "fetchedAt": "2026-08-15T12:43:03.764Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -89039,8 +89039,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-15T11:23:34.649Z",
-      "staleAfter": "2026-08-15T11:28:34.649Z",
+      "fetchedAt": "2026-08-15T12:43:05.590Z",
+      "staleAfter": "2026-08-15T12:48:05.590Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -89050,17 +89050,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Beasain skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Beasain tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 75' Normal Goal tarafından kaydedildi. Beasain skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Beasain tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "75'",
+            "text": "Son gol 75' Normal Goal tarafından kaydedildi."
+          },
           {
             "label": "Canlı skor",
             "value": "2-1",
             "text": "Beasain skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 3,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -90018,6 +90023,26 @@
           "detail": "Normal Goal",
           "value": "Normal Goal",
           "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Touring"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "Beasain"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
         }
       ]
     },
@@ -90841,8 +90866,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-15T11:23:34.649Z",
-      "staleAfter": "2026-08-15T11:28:34.649Z",
+      "fetchedAt": "2026-08-15T12:43:05.590Z",
+      "staleAfter": "2026-08-15T12:48:05.590Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -90978,8 +91003,8 @@
             "last_5": {
               "played": 1,
               "form": "100%",
-              "att": "25%",
-              "def": "88%",
+              "att": "29%",
+              "def": "86%",
               "goals": {
                 "for": {
                   "total": 2,
@@ -91279,8 +91304,8 @@
             "last_5": {
               "played": 1,
               "form": "0%",
-              "att": "13%",
-              "def": "75%",
+              "att": "14%",
+              "def": "71%",
               "goals": {
                 "for": {
                   "total": 1,
@@ -91410,20 +91435,20 @@
                       "percentage": null
                     },
                     "46-60": {
-                      "total": 1,
-                      "percentage": "50.00%"
+                      "total": null,
+                      "percentage": null
                     },
                     "61-75": {
-                      "total": null,
-                      "percentage": null
-                    },
-                    "76-90": {
-                      "total": null,
-                      "percentage": null
-                    },
-                    "91-105": {
                       "total": 1,
                       "percentage": "50.00%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
                     },
                     "106-120": {
                       "total": null,
@@ -91679,53 +91704,6 @@
       }
     },
     {
-      "id": "werder-bremen-auxerre-2026-08-15",
-      "providerId": "1598612",
-      "league": "Friendlies Clubs",
-      "round": null,
-      "venue": null,
-      "kickoff": "2026-08-15T12:00:00+03:00",
-      "time": "12:00",
-      "homeTeam": "Werder Bremen",
-      "awayTeam": "Auxerre",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/162.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/108.png",
-      "status": "CANCELLED",
-      "providerStatus": "CANC",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
-      "score": {
-        "home": null,
-        "away": null,
-        "halftimeHome": null,
-        "halftimeAway": null
-      },
-      "homeForm": null,
-      "awayForm": null,
-      "homeMomentum": null,
-      "awayMomentum": null,
-      "momentum": {
-        "side": "neutral",
-        "value": null
-      },
-      "aiPrediction": null,
-      "goalExpectation": null,
-      "goalPotential": null,
-      "risk": null,
-      "source": "api-football",
-      "providerName": "api-football",
-      "fetchedAt": "2026-08-15T01:23:28.202Z",
-      "staleAfter": "2026-08-15T01:28:28.202Z",
-      "dataStatus": "provider",
-      "needsReview": false,
-      "resource": "matches",
-      "providerIds": {
-        "apiFootball": "1598612"
-      },
-      "competitionId": "hazirlik-maci"
-    },
-    {
       "id": "atletico-tordesillas-guijuelo-2026-08-15",
       "providerId": "1618937",
       "league": "Friendlies Clubs",
@@ -91737,11 +91715,11 @@
       "awayTeam": "Guijuelo",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9724.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9388.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 89,
-      "elapsed": 89,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 1,
         "away": 1,
@@ -91762,8 +91740,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-15T11:23:34.649Z",
-      "staleAfter": "2026-08-15T11:28:34.649Z",
+      "fetchedAt": "2026-08-15T12:43:05.590Z",
+      "staleAfter": "2026-08-15T12:48:05.590Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -91794,7 +91772,7 @@
         }
       ],
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "Son gol 55' Normal Goal tarafından kaydedildi. Skor dengede.",
         "confidence": "Orta",
         "signals": [
@@ -92771,11 +92749,11 @@
       "awayTeam": "Salamanca UDS",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/725.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9588.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
+      "status": "FINISHED",
+      "providerStatus": "FT",
       "minute": 90,
       "elapsed": 90,
-      "live": true,
+      "live": false,
       "score": {
         "home": 5,
         "away": 0,
@@ -92796,8 +92774,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-15T11:23:34.649Z",
-      "staleAfter": "2026-08-15T11:28:34.649Z",
+      "fetchedAt": "2026-08-15T12:43:05.590Z",
+      "staleAfter": "2026-08-15T12:48:05.590Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -92866,13 +92844,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/6822.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/6786.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 23,
-      "elapsed": 23,
+      "providerStatus": "2H",
+      "minute": 85,
+      "elapsed": 85,
       "live": true,
       "score": {
-        "home": 1,
-        "away": 0,
+        "home": 3,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -92890,8 +92868,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-15T11:23:34.649Z",
-      "staleAfter": "2026-08-15T11:28:34.649Z",
+      "fetchedAt": "2026-08-15T12:43:05.590Z",
+      "staleAfter": "2026-08-15T12:48:05.590Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -92912,14 +92890,14 @@
       "awayTeam": "Cardiff MET",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/361.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/353.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 53,
+      "elapsed": 53,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -92937,8 +92915,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-14T22:27:06.175Z",
-      "staleAfter": "2026-08-14T22:32:06.175Z",
+      "fetchedAt": "2026-08-15T12:43:05.590Z",
+      "staleAfter": "2026-08-15T12:48:05.590Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -92959,14 +92937,14 @@
       "awayTeam": "Van",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3683.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/6286.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 37,
+      "elapsed": 37,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -92984,8 +92962,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-15T02:48:37.608Z",
-      "staleAfter": "2026-08-15T02:53:37.608Z",
+      "fetchedAt": "2026-08-15T12:43:05.590Z",
+      "staleAfter": "2026-08-15T12:48:05.590Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93053,14 +93031,14 @@
       "awayTeam": "Transport United",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/5591.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/5593.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 43,
+      "elapsed": 43,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 3,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93078,8 +93056,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-14T22:27:06.175Z",
-      "staleAfter": "2026-08-14T22:32:06.175Z",
+      "fetchedAt": "2026-08-15T12:43:05.590Z",
+      "staleAfter": "2026-08-15T12:48:05.590Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93087,53 +93065,6 @@
         "apiFootball": "1611329"
       },
       "competitionId": "premier-league"
-    },
-    {
-      "id": "sabah-fa-persib-bandung-2026-08-15",
-      "providerId": "1626997",
-      "league": "Friendlies Clubs",
-      "round": null,
-      "venue": "Kapten I Wayan Dipta Stadium",
-      "kickoff": "2026-08-15T15:00:00+03:00",
-      "time": "15:00",
-      "homeTeam": "Sabah FA",
-      "awayTeam": "Persib Bandung",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/2505.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/2445.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
-      "score": {
-        "home": null,
-        "away": null,
-        "halftimeHome": null,
-        "halftimeAway": null
-      },
-      "homeForm": null,
-      "awayForm": null,
-      "homeMomentum": null,
-      "awayMomentum": null,
-      "momentum": {
-        "side": "neutral",
-        "value": null
-      },
-      "aiPrediction": null,
-      "goalExpectation": null,
-      "goalPotential": null,
-      "risk": null,
-      "source": "api-football",
-      "providerName": "api-football",
-      "fetchedAt": "2026-08-14T23:25:11.579Z",
-      "staleAfter": "2026-08-14T23:30:11.579Z",
-      "dataStatus": "provider",
-      "needsReview": false,
-      "resource": "matches",
-      "providerIds": {
-        "apiFootball": "1626997"
-      },
-      "competitionId": "hazirlik-maci"
     },
     {
       "id": "fc-gomel-naftan-2026-08-15",
@@ -93147,14 +93078,14 @@
       "awayTeam": "Naftan",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/389.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/750.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 33,
+      "elapsed": 33,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 2,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93172,8 +93103,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-14T22:27:06.175Z",
-      "staleAfter": "2026-08-14T22:32:06.175Z",
+      "fetchedAt": "2026-08-15T12:43:05.590Z",
+      "staleAfter": "2026-08-15T12:48:05.590Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -93181,6 +93112,100 @@
         "apiFootball": "1525948"
       },
       "competitionId": "premier-league"
+    },
+    {
+      "id": "werder-bremen-auxerre-2026-08-15",
+      "providerId": "1598612",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": null,
+      "kickoff": "2026-08-15T15:30:00+03:00",
+      "time": "15:30",
+      "homeTeam": "Werder Bremen",
+      "awayTeam": "Auxerre",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/162.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/108.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 2,
+      "elapsed": 2,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0,
+        "halftimeHome": null,
+        "halftimeAway": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-15T12:43:05.590Z",
+      "staleAfter": "2026-08-15T12:48:05.590Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1598612"
+      },
+      "competitionId": "hazirlik-maci"
+    },
+    {
+      "id": "sabah-fa-persib-bandung-2026-08-15",
+      "providerId": "1626997",
+      "league": "Friendlies Clubs",
+      "round": null,
+      "venue": "Kapten I Wayan Dipta Stadium",
+      "kickoff": "2026-08-15T15:30:00+03:00",
+      "time": "15:30",
+      "homeTeam": "Sabah FA",
+      "awayTeam": "Persib Bandung",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/2505.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/2445.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 13,
+      "elapsed": 13,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0,
+        "halftimeHome": null,
+        "halftimeAway": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-15T12:43:05.590Z",
+      "staleAfter": "2026-08-15T12:48:05.590Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1626997"
+      },
+      "competitionId": "hazirlik-maci"
     },
     {
       "id": "kudrivka-obolon-brovar-2026-08-15",
@@ -93194,14 +93219,14 @@
       "awayTeam": "Obolon'-Brovar",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/21953.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3630.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 11,
+      "elapsed": 11,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -93219,8 +93244,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-14T22:27:06.175Z",
-      "staleAfter": "2026-08-14T22:32:06.175Z",
+      "fetchedAt": "2026-08-15T12:43:05.590Z",
+      "staleAfter": "2026-08-15T12:48:05.590Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
