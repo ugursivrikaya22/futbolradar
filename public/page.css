@@ -2024,17 +2024,255 @@ p {
         }
       }
 
-      
+      /* ----------------------------------------------------------------
+         HERO — daha küçük, daha yoğun.
 
-      
+         İki değişiklik birlikte: dekoratif iki satırlık başlık tek
+         satıra indi ve punto küçüldü ("büyük metin" kaldırıldı); öne
+         çıkan maç kartı (armalar, saat/skor, dolgu) yaklaşık %25 küçüldü.
+         Anlam kaybı yok — aynı bilgi daha az yer kaplıyor. `h1` SEO için
+         korunuyor (anasayfanın tek H1'i), yalnızca görsel ağırlığı
+         azaltıldı.
+         ---------------------------------------------------------------- */
+      .hero h1 {
+        font-size: clamp(1.5rem, 2.6vw, 2rem);
+      }
 
-      
+      .hero-value-prop {
+        font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+      }
 
-      
+      .featured-fixture {
+        gap: calc(var(--sp-4) * 0.75);
+        padding: clamp(12px, 1.8vw, 18px);
+      }
 
-      
+      .featured-fixture-team img,
+      .featured-fixture-team .team-logo-fallback,
+      .featured-fixture-team .fixture-row-fallback {
+        width: clamp(36px, 5.2vw, 48px);
+        height: clamp(36px, 5.2vw, 48px);
+        font-size: clamp(0.78rem, 1.5vw, 1.02rem);
+      }
 
-      
+      .featured-fixture-team strong {
+        font-size: 0.86rem;
+      }
+
+      .featured-fixture-score b {
+        font-size: clamp(1.5rem, 3.6vw, 2.15rem);
+      }
+
+      /* ----------------------------------------------------------------
+         SÜPER LİG BUGÜN ŞERİDİ — kompakt, yatay, yalnızca Süper Lig.
+
+         Genel "bugünün maçları" ızgarasının ÜSTÜNDE, ondan bağımsız bir
+         kap: boşsa `data-empty-hide` onu tamamen gizler (bkz. app.js),
+         derleme anında boşsa `:empty` seçicisi aynı işi CSS'te yapar —
+         JS yüklenmeden önce de boş bir çerçeve görünmez.
+         ---------------------------------------------------------------- */
+      .superlig-strip:empty {
+        display: none;
+      }
+
+      /* ----------------------------------------------------------------
+         RESMÎ İLK 11 UYARISI — maç başlamadan hemen önce, güçlü görsel
+         öncelik. İsimler tek satırda, kısaltılmadan; mobilde iki sütun.
+         ---------------------------------------------------------------- */
+      .lineup-alert {
+        display: grid;
+        gap: 12px;
+        margin: 0 0 18px;
+        padding: 16px;
+        border: 2px solid var(--live);
+        border-radius: var(--radius-lg);
+        background: linear-gradient(180deg, rgba(200, 30, 45, 0.06), transparent 60%), var(--panel);
+        box-shadow: var(--shadow-card);
+      }
+
+      .lineup-alert-head {
+        display: grid;
+        gap: 6px;
+      }
+
+      .lineup-alert-head h2 {
+        margin: 0;
+        font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+        font-weight: 900;
+        letter-spacing: -0.01em;
+      }
+
+      .lineup-alert-fixture {
+        color: var(--muted);
+        font-size: 0.85rem;
+        font-weight: 700;
+      }
+
+      .lineup-alert-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .lineup-alert-player {
+        display: flex;
+        align-items: center;
+        min-height: 40px;
+        padding: 8px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: rgba(var(--surface-rgb), 0.5);
+        color: var(--text);
+        font-size: 0.86rem;
+        font-weight: 700;
+        line-height: 1.25;
+        white-space: normal;
+        overflow-wrap: break-word;
+      }
+
+      .lineup-alert-foot {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 700;
+      }
+
+      .lineup-alert-foot .detail-link {
+        margin-top: 0;
+      }
+
+      @media (max-width: 480px) {
+        .lineup-alert-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .superlig-strip {
+        display: grid;
+        gap: 8px;
+        margin: 0 0 14px;
+      }
+
+      .superlig-strip-kicker {
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .superlig-strip-rail {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .superlig-strip-rail::-webkit-scrollbar {
+        display: none;
+      }
+
+      .superlig-strip-row {
+        display: flex;
+        flex-shrink: 0;
+        align-items: center;
+        gap: 8px;
+        scroll-snap-align: start;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 12px 6px 6px;
+        background: var(--panel);
+        color: var(--text);
+        transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+      }
+
+      .superlig-strip-row:hover,
+      .superlig-strip-row:focus-visible {
+        border-color: var(--line-strong);
+        transform: translateY(-1px);
+        outline: 0;
+      }
+
+      .superlig-strip-row.is-live {
+        border-color: rgba(200, 30, 45, 0.32);
+      }
+
+      .superlig-strip-team {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+      }
+
+      .superlig-strip-team b {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 92px;
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .superlig-strip-logo {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        object-fit: contain;
+        flex-shrink: 0;
+      }
+
+      .superlig-strip-logo-fallback {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        flex-shrink: 0;
+        background: rgba(var(--surface-rgb), 0.08);
+        color: var(--muted);
+        font-size: 0.62rem;
+        font-weight: 850;
+      }
+
+      .superlig-strip-score {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        min-width: 40px;
+        justify-content: center;
+        color: var(--muted);
+        font-size: 0.74rem;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+
+      .superlig-strip-score.is-live {
+        color: var(--live);
+      }
+
+      @media (max-width: 640px) {
+        .superlig-strip-team b {
+          max-width: 68px;
+          font-size: 0.76rem;
+        }
+
+        .superlig-strip-row {
+          padding: 5px 10px 5px 5px;
+        }
+      }
+
+
 
       
 

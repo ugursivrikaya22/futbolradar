@@ -4056,6 +4056,125 @@
     );
   }
 
+  /**
+   * SÜPER LİG BUGÜN ŞERİDİ — scripts/lib/matchCards.mjs#superLigTodayStripHtml
+   * ile AYNI mantık, istemci tarafı. Ana sayfanın statik ön-render'ı bu
+   * fonksiyonu değil o Node modülünü çağırır (derleme anında); JS
+   * yüklendikten sonra ekranı bu fonksiyon tazeler ve canlı skor
+   * yoklaması da bunu tetikler (MATCH_SECTION_BINDINGS). İkisinin
+   * çıktısı BİREBİR aynı sınıflarla kurulmalı — biri değişirse hidrasyon
+   * anında düzen zıplar.
+   */
+  var SUPER_LIG_PRIORITY_NAMES = ["Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor", "Samsunspor", "Başakşehir"];
+
+  /**
+   * MAÇ VERİSİ İLE data/teams.json AYNI KULÜBÜ FARKLI YAZABİLİR
+   * ("Rizespor" / "Çaykur Rizespor", "Gençlerbirliği" / "Gençlerbirliği
+   * S.K."). Tam ad eşitliği bu ikizleri kaçırır. Kural, kadro senkronunun
+   * aynı sorunu çözmek için kullandığı kuralla AYNI
+   * (services/superLigTeams.js#sameClub): kısa ad, uzun adın içinde
+   * KELİME SINIRINDA geçiyorsa aynı kulüptür. En az dört karakter şartı
+   * tek harfli parçaların rastgele eşleşmesini engeller.
+   */
+  function sameClubName(left, right) {
+    var a = normalizeSearchText(left);
+    var b = normalizeSearchText(right);
+    if (!a || !b) return false;
+    if (a === b) return true;
+    var shorter = a.length <= b.length ? a : b;
+    var longer = a.length <= b.length ? b : a;
+    if (shorter.length < 4) return false;
+    var escaped = shorter.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp("(^|\\s)" + escaped + "(\\s|$)").test(longer);
+  }
+
+  function superLigTeamLogoList(teams) {
+    var list = [];
+    (Array.isArray(teams) ? teams : []).forEach(function (team) {
+      if (!team || !team.isCurrentSuperLigTeam || !team.name) return;
+      var providerId = String(team.providerId || "").trim();
+      list.push({
+        name: String(team.name),
+        logo: /^\d+$/.test(providerId) ? "https://media.api-sports.io/football/teams/" + providerId + ".png" : ""
+      });
+    });
+    return list;
+  }
+
+  function findSuperLigTeam(list, name) {
+    for (var index = 0; index < list.length; index += 1) {
+      if (sameClubName(list[index].name, name)) return list[index];
+    }
+    return null;
+  }
+
+  function superLigPriorityRank(name) {
+    for (var index = 0; index < SUPER_LIG_PRIORITY_NAMES.length; index += 1) {
+      if (sameClubName(SUPER_LIG_PRIORITY_NAMES[index], name)) return index;
+    }
+    return SUPER_LIG_PRIORITY_NAMES.length;
+  }
+
+  function superLigTeamLogoHtml(entry, name) {
+    if (entry && entry.logo) {
+      return '<img class="superlig-strip-logo" src="' + escapeHtml(entry.logo) + '" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\';" />' +
+        '<span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">' + escapeHtml(teamInitials(name)) + '</span>';
+    }
+    return '<span class="superlig-strip-logo-fallback" aria-hidden="true">' + escapeHtml(teamInitials(name)) + '</span>';
+  }
+
+  function renderTodaySuperLigStrip(matches, teams) {
+    var teamList = superLigTeamLogoList(teams);
+    var today = todayInIstanbul();
+
+    var scoped = (Array.isArray(matches) ? matches : []).filter(function (match) {
+      if (!match || istanbulDayOf(match.kickoff || match.date || match.utcDate) !== today) return false;
+      return Boolean(findSuperLigTeam(teamList, match.homeTeam) || findSuperLigTeam(teamList, match.awayTeam));
+    });
+
+    // Aynı karşılaşma canlı yoklama + statik veri birleşiminde birden
+    // fazla kayıtla gelebilir; anahtar eşlenmiş takım adlarından kurulur
+    // (bkz. scripts/lib/matchCards.mjs#superLigTodayStripHtml).
+    var seen = {};
+    var todays = scoped.filter(function (match) {
+      var home = findSuperLigTeam(teamList, match.homeTeam);
+      var away = findSuperLigTeam(teamList, match.awayTeam);
+      var key = ((home && home.name) || match.homeTeam) + "|" + ((away && away.name) || match.awayTeam);
+      if (seen[key]) return false;
+      seen[key] = true;
+      return true;
+    });
+
+    if (!todays.length) {
+      return "";
+    }
+
+    var sorted = todays.slice().sort(function (left, right) {
+      var leftRank = Math.min(superLigPriorityRank(left.homeTeam), superLigPriorityRank(left.awayTeam));
+      var rightRank = Math.min(superLigPriorityRank(right.homeTeam), superLigPriorityRank(right.awayTeam));
+      if (leftRank !== rightRank) return leftRank - rightRank;
+      return String(left.kickoff || "").localeCompare(String(right.kickoff || ""));
+    });
+
+    var rows = sorted.map(function (match) {
+      var home = findSuperLigTeam(teamList, match.homeTeam) || { name: match.homeTeam, logo: "" };
+      var away = findSuperLigTeam(teamList, match.awayTeam) || { name: match.awayTeam, logo: "" };
+      var live = isLiveMatch(match);
+      var finished = !live && isFinishedMatch(match);
+      var score = (live || finished) && match.score
+        ? escapeHtml(displayValue(match.score.home)) + " - " + escapeHtml(displayValue(match.score.away))
+        : escapeHtml(finished ? "MS" : (live ? "Canlı" : (match.time || "Planlandı")));
+
+      return '<a class="superlig-strip-row' + (live ? " is-live" : "") + '" data-card="superlig-strip" data-match="' + escapeHtml(match.id || "") + '" href="' + escapeHtml(matchDetailHref(match)) + '">' +
+        '<span class="superlig-strip-team">' + superLigTeamLogoHtml(home, home.name) + '<b>' + escapeHtml(home.name) + '</b></span>' +
+        '<span class="superlig-strip-score' + (live ? " is-live" : "") + '">' + (live ? '<i class="live-pulse" aria-hidden="true"></i>' : "") + score + '</span>' +
+        '<span class="superlig-strip-team is-away">' + superLigTeamLogoHtml(away, away.name) + '<b>' + escapeHtml(away.name) + '</b></span>' +
+        '</a>';
+    }).join("");
+
+    return '<span class="superlig-strip-kicker">Süper Lig\'de Bugün</span><div class="superlig-strip-rail">' + rows + '</div>';
+  }
+
   function renderTodayMatchesPreview(matches) {
     if (!Array.isArray(matches) || !matches.length) {
       return "";
@@ -4590,6 +4709,12 @@
     { selector: "featured-match", renderer: renderFeaturedMatch },
     { selector: "daily-headlines", renderer: renderDailyHeadlinesSection },
     { selector: "today-matches", renderer: renderTodayMatchesPreview },
+    {
+      selector: "today-superlig-matches",
+      renderer: function (matches) {
+        return renderTodaySuperLigStrip(matches, latestSuperLigTeams);
+      }
+    },
     { selector: "matches-page", renderer: renderMatchesPageSection },
     { selector: "live-score", renderer: renderLiveScoreSection },
     {
@@ -4609,6 +4734,11 @@
   // maç listesi sayfasına düşer. Boş dizi güvenli varsayılan: bağlantı
   // uydurulmaz.
   var latestPostMatchReports = [];
+
+  // Süper Lig şeridinin canlı yoklama tazelemesi yalnızca `matches` alır
+  // (MATCH_SECTION_BINDINGS'in ortak imzası); takım listesi (arma/öncelik
+  // için) ayrı yüklenip burada saklanır ki her yoklamada yeniden çekilmesin.
+  var latestSuperLigTeams = [];
 
   // Canlı yoklama API-Football'ın gerçek zamanlı uç noktasını kullanır
   // (/api/matches?live=all). Bu uç nokta YALNIZCA oynanmakta olan maçları
@@ -11580,6 +11710,29 @@
         renderTodayMatchesPreview,
         "Bugunun maçları yüklenemedi"
       );
+
+      // SÜPER LİG BUGÜN ŞERİDİ. `data-empty-hide` taşıyan kap kendi
+      // kararını verir: bugün Süper Lig maçı yoksa bölüm sessizce
+      // gizlenir — genel `renderInto` bunun yerine bir "veri yok" kutusu
+      // basardı, ki bu son derece SIRADAN bir durum için (Süper Lig'in
+      // ara verdiği bir gün) yanlış bir mesajdır.
+      var superLigStripTarget = document.querySelector('[data-api-target="today-superlig-matches"]');
+      if (superLigStripTarget) {
+        loadData("teams")
+          .then(function (teams) {
+            latestSuperLigTeams = Array.isArray(teams) ? teams : [];
+            return loadData("matches");
+          })
+          .then(function (matches) {
+            var html = renderTodaySuperLigStrip(Array.isArray(matches) ? matches : [], latestSuperLigTeams);
+            applyEmptyHide(superLigStripTarget, Boolean(html));
+            if (html) setContent(superLigStripTarget, html);
+          })
+          .catch(function () {
+            // Statik yedek zaten kapta duruyor (data-static-fallback);
+            // yükleme başarısızsa dokunulmaz.
+          });
+      }
     });
 
     renderInto(
