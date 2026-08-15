@@ -18178,3 +18178,44 @@ a.motm-week__card:focus-visible {
 /* Masaüstünde gizli: orada hero ve canlı skor panosu zaten aynı bilgiyi
    çok daha geniş biçimde veriyor, şerit tekrar olurdu. */
 @media (min-width: 901px) { .now-football { display: none; } }
+
+/* ── MOBİLDE KOMPAKT MAÇ KARTI ──────────────────────────────────────
+   Ölçüm: kart 213 px, telefon ekranına 3 maç sığıyordu. En büyük kalem
+   "Maç ayrıntısını aç" bağlantısının kapladığı tam genişlikte 44 px'lik
+   satırdı.
+
+   Bağlantı SİLİNMİYOR — kartın tamamına yayılıyor. Böylece hem o satır
+   geri kazanılıyor hem de dokunma hedefi 44 px'in çok üstüne çıkıyor:
+   artık kartın her yeri tıklanabilir. Metin DOM'da ve erişilebilirlik
+   ağacında kalıyor (bağlantının erişilebilir adı o), yalnızca görsel
+   olarak gizleniyor; `display: none` olsaydı ad da giderdi. */
+@media (max-width: 900px) {
+  .fixture-card {
+    position: relative;
+    gap: 6px;
+    padding: 10px 12px;
+  }
+
+  .fixture-card-action {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: transparent;
+    font-size: 0;
+  }
+
+  /* Dokunulduğu görülsün: kartın tamamı bir düğme gibi davranıyor. */
+  .fixture-card:active { background: var(--green-soft, rgba(11, 143, 90, .08)); }
+
+  /* Skor ve ad satırı sıkışmasın ama boşluk da yemesin. */
+  .fixture-card-rows { gap: 4px; }
+  .fixture-row-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* Rozet satırı boşsa hiç çizilmez: içi boş bir kutu, kart yüksekliğini
+   bilgi vermeden büyütür (app.js → coverageStatusChipHtml). */
+.tag-row:empty { display: none; }

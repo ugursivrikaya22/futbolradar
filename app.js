@@ -10225,10 +10225,20 @@
     return "İki takım dengeli";
   }
 
+  /**
+   * BEKLEME DURUMU ROZET BASMAZ.
+   *
+   * "Kadro verisi bekleniyor" listedeki HER karta aynı cümleyi yazıyordu:
+   * 93 maçlık bir günde 93 kez tekrar eden, hiçbir maçı diğerinden ayırmayan
+   * bir satır. Ölçüldü: kart başına 29 px, sayfada ~2.700 px. Rozetin işi
+   * bir maçı öne çıkarmak; hepsinde varsa hiçbirini çıkarmıyor demektir.
+   *
+   * Bilgi taşıyan durumlar OLDUĞU GİBİ KALIYOR — resmî ilk 11, hazır analiz
+   * ve kısmi analiz okuyucuya o maça özgü bir şey söylüyor. Boş dönülünce
+   * `.tag-row:empty` kuralı satırı tümüyle kaldırıyor.
+   */
   function coverageStatusChipHtml(analysis) {
-    if (!analysis) {
-      return '<span class="tag soft">Kadro verisi bekleniyor</span>';
-    }
+    if (!analysis) return "";
     if (analysis.officialLineupStatus === "available") {
       return '<span class="tag green">Resmî ilk 11 açıklandı</span>';
     }
@@ -10238,7 +10248,7 @@
     if (analysis.analysisStatus === "partial") {
       return '<span class="tag soft">Kısmi analiz</span>';
     }
-    return '<span class="tag soft">Kadro verisi bekleniyor</span>';
+    return "";
   }
 
   var COVERAGE_FIELD_LABELS = [
