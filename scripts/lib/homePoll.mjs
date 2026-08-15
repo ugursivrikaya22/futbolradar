@@ -63,6 +63,16 @@ const STRINGS = {
   }
 };
 
+const PROMO_STRINGS = {
+  tr: { kicker: "Anket", cta: "Oyunu Ver", label: "Anket vitrin kartı" },
+  en: { kicker: "Poll", cta: "Cast Your Vote", label: "Homepage poll promo" }
+};
+
+const STICKY_STRINGS = {
+  tr: { kicker: "Anket", cta: "Şimdi Oy Ver", dismiss: "Anket kutusunu kapat", label: "Sabit anket kutusu" },
+  en: { kicker: "Poll", cta: "Vote Now", dismiss: "Dismiss poll widget", label: "Sticky poll widget" }
+};
+
 /** Tek seçenek: kulüp arması + resmi ad. Arma yoksa baş harfler. */
 function optionRow(option, pollId) {
   const inputId = `home-poll-${pollId}-${option.id}`;
@@ -122,6 +132,87 @@ export function homePollBlock(poll, options = {}) {
             <p class="home-poll__disclaimer">${escapeHtml(copy.disclaimer)}</p>
           </div>
         </section>`;
+}
+
+/**
+ * ANKET VİTRİN KARTI — tam form DEĞİL, mevcut ankete çağrı.
+ *
+ * Sayfada birden fazla yere basılabildiği için (maç önü/maç sonrası arası,
+ * transfer-gündem kümesinin yanı, haber akışında her 6-8 karttan sonra) tam
+ * oy formunu tekrarlamıyor: aynı `name="home-poll-choice"` radyo grubunu
+ * birden çok yerde basmak geçersiz işaretleme ve karışık klavye gezinmesi
+ * demek olurdu. Katılım sayısı derleme anında bilinmiyor (gerçek sayaç
+ * veritabanından geliyor) — bu yüzden `data-poll-promo-total` boş ve
+ * `hidden` doğar, istemci dolduruyor. Kapanmış ankete "oy ver" çağrısı
+ * yapılmaz; bu yüzden `status === "closed"` iken boş dize döner.
+ *
+ * @param poll `localizePoll()` çıktısı
+ * @param options.locale "tr" | "en"
+ * @param options.status "open" | "closed"
+ * @param options.href kart tıklanınca gidilecek yer (varsayılan: ana sayfadaki `#tahmin-anketi`)
+ */
+export function pollPromoCardHtml(poll, options = {}) {
+  if (!poll) return "";
+  if (options.status === "closed") return "";
+  const locale = options.locale === "en" ? "en" : "tr";
+  const copy = PROMO_STRINGS[locale];
+  const href = options.href || "#tahmin-anketi";
+
+  return `<aside class="poll-promo" data-poll-promo data-poll-promo-locale="${locale}" data-poll-promo-id="${escapeHtml(poll.id)}" aria-label="${escapeHtml(copy.label)}">
+    <div class="poll-promo-body">
+      <span class="poll-promo-kicker">${escapeHtml(copy.kicker)}</span>
+      <p class="poll-promo-question" data-poll-promo-question>${escapeHtml(poll.question)}</p>
+      <span class="poll-promo-total" data-poll-promo-total hidden></span>
+    </div>
+    <a class="poll-promo-cta" href="${escapeHtml(href)}" data-poll-promo-cta>${escapeHtml(copy.cta)}</a>
+  </aside>`;
+}
+
+/**
+ * SABİT/YAPIŞKAN ANKET KUTUSU — yalnızca ana sayfada.
+ *
+ * `hidden` DOĞAR: görünürlüğü istemci yönetir (ana anket ekrandan çıkınca
+ * belirir, geri gelince kaybolur; kapatılırsa 24 saat gösterilmez). `position:
+ * fixed` olduğu için sayfa akışına girmez — açılıp kapanması bir düzen
+ * kayması (CLS) yaratmaz.
+ */
+export function pollStickyWidgetHtml(poll, options = {}) {
+  if (!poll) return "";
+  if (options.status === "closed") return "";
+  const locale = options.locale === "en" ? "en" : "tr";
+  const copy = STICKY_STRINGS[locale];
+
+  return `<div class="poll-sticky" data-poll-sticky data-poll-sticky-locale="${locale}" hidden aria-label="${escapeHtml(copy.label)}">
+    <button class="poll-sticky-dismiss" type="button" data-poll-sticky-dismiss aria-label="${escapeHtml(copy.dismiss)}">&times;</button>
+    <a class="poll-sticky-link" href="#tahmin-anketi" data-poll-sticky-cta>
+      <span class="poll-sticky-kicker">${escapeHtml(copy.kicker)}</span>
+      <p class="poll-sticky-question" data-poll-sticky-question>${escapeHtml(poll.question)}</p>
+      <span class="poll-sticky-total" data-poll-sticky-total hidden></span>
+      <span class="poll-sticky-cta-label">${escapeHtml(copy.cta)}</span>
+    </a>
+  </div>`;
+}
+
+/**
+ * KART LİSTESİNE ANKET VİTRİN KARTINI SERPİŞTİR.
+ *
+ * Yalnızca TAM listeyi basan sayfalarda kullanılır (`haberler.html` /
+ * `en/news.html`); ana sayfanın 3 kartlık önizlemesinde kullanılmaz — 3 kart
+ * "her 6-8 karttan sonra" kuralına giremeyecek kadar az. `every` aralığın
+ * ortası olan 7. Son kart grubundan sonra kart kalmıyorsa vitrin kartı hiç
+ * eklenmez — listenin en altına asılı kalan, hiçbir şeyi takip etmeyen bir
+ * kart eklemenin anlamı yok.
+ */
+export function interleavePollPromo(cardsHtml, promoHtml, every = 7) {
+  const cards = Array.isArray(cardsHtml) ? cardsHtml : [];
+  if (!promoHtml || !cards.length) return cards.join("");
+  const out = [];
+  cards.forEach((card, index) => {
+    out.push(card);
+    const position = index + 1;
+    if (position % every === 0 && position < cards.length) out.push(promoHtml);
+  });
+  return out.join("");
 }
 
 export const HOME_POLL_STRINGS = STRINGS;

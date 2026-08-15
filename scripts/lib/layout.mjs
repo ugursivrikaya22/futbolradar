@@ -34,7 +34,8 @@ function navList(locale, group) {
     // Hedef sayfa yalnızca Türkçe var: bağlantı bunu okuyucuya SÖYLER
     // (etiketinde "(TR)", işaretlemede `hreflang="tr"`). Gerekçe
     // services/i18n.js içindeki NAV_KEYS.en yorumunda.
-    trOnly: Boolean(item.trOnly)
+    trOnly: Boolean(item.trOnly),
+    key: item.key
   }));
 }
 
@@ -90,7 +91,23 @@ function normalizeBase(base) {
   return value.endsWith("/") ? value : `${value}/`;
 }
 
-function linkList(items, base, className) {
+/**
+ * ANKETLER MENÜSÜNDEKİ "YENİ" RÖZETİ — yayından itibaren yalnızca 7 gün.
+ *
+ * Tarih burada SABİT yazılır (özellik 2026-08-15'te yayınlandı) ve rözet
+ * işaretlemede HER derleme için basılır; ne zaman kaybolacağı istemcide
+ * (`site.js#hideExpiredNavBadges`) karşılaştırılır. Böylece derleme
+ * gecikse/duraklasa bile (bu oturumda olduğu gibi) rözet süresi geçmiş bir
+ * tarihte asılı kalmaz — geçerliliği tarayıcıda, gerçek saatle denetlenir.
+ */
+const NAV_NEW_BADGE_UNTIL = "2026-08-22T21:00:00+03:00";
+const NAV_NEW_BADGE_KEY = "nav.polls";
+
+function linkList(items, base, locale, options = {}) {
+  // Rözet yalnızca ÜST menüde gösterilir (`showBadges: true` ile açıkça
+  // istenmedikçe): alt bilgi bağlantı listesi gezinme değil kaynakça, aynı
+  // rözeti orada da basmak "menü öğesi" iddiasını orada tekrarlamış olurdu.
+  const showBadges = Boolean(options.showBadges);
   return items
     .map((item) => {
       // Türkçe-only hedef: dil işareti hem makineye (`hreflang`) hem
@@ -98,7 +115,10 @@ function linkList(items, base, className) {
       // hiç vermemekten daha kötü olurdu.
       const attributes = item.trOnly ? ' hreflang="tr" lang="tr"' : "";
       const suffix = item.trOnly ? " (TR)" : "";
-      return `<a href="${base}${item.href}"${attributes}>${escapeHtml(item.label)}${suffix}</a>`;
+      const badge = showBadges && item.key === NAV_NEW_BADGE_KEY
+        ? ` <span class="nav-badge" data-nav-badge-until="${NAV_NEW_BADGE_UNTIL}">${escapeHtml(t("nav.newBadge", locale))}</span>`
+        : "";
+      return `<a href="${base}${item.href}"${attributes}>${escapeHtml(item.label)}${suffix}${badge}</a>`;
     })
     .join("");
 }
@@ -141,10 +161,10 @@ function languageSwitch(base, locale, altHref) {
 export function siteHeader(options = {}) {
   const base = normalizeBase(options.base);
   const locale = normalizeLocale(options.locale);
-  const primary = linkList(navList(locale, "primary"), base);
+  const primary = linkList(navList(locale, "primary"), base, locale, { showBadges: true });
   const secondaryItems = navList(locale, "secondary");
   const secondary = secondaryItems.length
-    ? `<div class="nav-links nav-links-secondary">${linkList(secondaryItems, base)}</div>`
+    ? `<div class="nav-links nav-links-secondary">${linkList(secondaryItems, base, locale, { showBadges: true })}</div>`
     : "";
   // MAÇ MERKEZİ DÜĞMESİ İKİ DİLDE DE VAR.
   //

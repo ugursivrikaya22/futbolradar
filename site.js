@@ -147,6 +147,31 @@
     return standingsPromise;
   }
 
+  /**
+   * TAKIM LİSTESİ DE TEK KEZ İSTENİR — `/api/teams`DEN, ANKETTEN DEĞİL.
+   *
+   * "Favori Takımım" kartı eskiden bu listeyi anketin basılı DOM'undan
+   * (`[data-home-poll-options]`) okuyordu: anket kapanınca ya da takvimde
+   * yayında anket olmayınca kart tamamen kaybolurdu, çünkü okuyacağı bir
+   * işaretleme yoktu. "Takımını sev"le "şampiyon tahmin et" kavramca ayrı
+   * iki şey; biri diğerine muhtaç olmamalı. Kimlikler (`id`) her iki
+   * kaynakta da aynı (`data/teams.json`nin `id` alanı ile anketin seçenek
+   * kimliği aynı katlama kuralından türüyor — `services/homePoll.js`), bu
+   * yüzden geçiş tarayıcıda önceden kaydedilmiş bir seçimi bozmuyor.
+   */
+  var teamsPromise = null;
+
+  function teamsOnce() {
+    if (teamsPromise) return teamsPromise;
+    teamsPromise = window.fetch("/api/teams", { headers: { Accept: "application/json" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (payload) {
+        return payload && Array.isArray(payload.data) ? payload.data : null;
+      })
+      .catch(function () { return null; });
+    return teamsPromise;
+  }
+
   /** Ad karşılaştırması: "Gençlerbirliği S.K." ile "Gençlerbirliği" eşleşmeli. */
   function teamKey(value) {
     return String(value || "")
@@ -214,30 +239,27 @@
     } catch (e) { /* gizli sekmede yazma reddedilebilir; özellik sessizce kapalı kalır */ }
   }
 
+  /** `/api/teams`den güncel Süper Lig kadrosu; arma `providerId`den kurulur. */
   function favouriteTeams() {
-    var out = [];
-    var nodes = document.querySelectorAll("[data-home-poll-options] .home-poll__option");
-    for (var i = 0; i < nodes.length; i += 1) {
-      var input = nodes[i].querySelector(".home-poll__radio");
-      var name = nodes[i].querySelector(".home-poll__option-name");
-      var crest = nodes[i].querySelector(".home-poll__crest");
-      if (!input || !name) continue;
-      out.push({
-        id: input.value,
-        name: name.textContent.trim(),
-        logo: crest ? crest.getAttribute("src") : ""
-      });
-    }
-    return out;
+    return teamsOnce().then(function (rows) {
+      if (!rows) return [];
+      var out = [];
+      for (var i = 0; i < rows.length; i += 1) {
+        var team = rows[i];
+        if (!team || !team.isCurrentSuperLigTeam || !team.id || !team.name) continue;
+        out.push({
+          id: team.id,
+          name: team.name,
+          logo: team.providerId ? "https://media.api-sports.io/football/teams/" + team.providerId + ".png" : ""
+        });
+      }
+      return out;
+    });
   }
 
   function setupFavouriteTeam() {
     var main = document.querySelector("main.home-main");
     if (!main || document.querySelector("[data-favourite-team]")) return;
-
-    var teams = favouriteTeams();
-    // Anket yoksa (başka bir anket dönemi) liste de yok; özellik açılmaz.
-    if (!teams.length) return;
 
     var en = (document.documentElement.getAttribute("lang") || "tr").toLowerCase().indexOf("en") === 0;
     var s = en
@@ -249,9 +271,16 @@
     var box = document.createElement("section");
     box.className = "container favourite-team";
     box.setAttribute("data-favourite-team", "");
-    main.insertBefore(box, main.firstChild);
 
-    render();
+    var teams = [];
+    favouriteTeams().then(function (list) {
+      // Liste hâlâ boşsa (sağlayıcı ulaşılamadı) kutu hiç eklenmez — boş bir
+      // takım seçici, yer tutucu uydurmanın sessiz biçimi olurdu.
+      if (!list.length) return;
+      teams = list;
+      main.insertBefore(box, main.firstChild);
+      render();
+    });
 
     function render() {
       var chosen = readFavourite();
@@ -381,7 +410,10 @@
       ? { title: "Table", all: "Full table →", href: "en/standings.html", pts: "Pts" }
       : { title: "Puan Durumu", all: "Tüm Puan Durumu →", href: "puan-durumu.html", pts: "P" };
 
-    standingsOnce().then(function (rows) {
+    var chosen = readFavourite();
+    Promise.all([standingsOnce(), chosen ? favouriteTeams() : Promise.resolve([])]).then(function (results) {
+      var rows = results[0];
+      var favouriteList = results[1] || [];
       if (!rows || !rows.length) return;
 
       var sorted = rows.slice().sort(function (a, b) { return (a.rank || 99) - (b.rank || 99); });
@@ -389,11 +421,7 @@
 
       // Favori takım ilk beşte mi?
       var favKey = "";
-      var chosen = readFavourite();
-      if (chosen) {
-        var teams = favouriteTeams();
-        for (var i = 0; i < teams.length; i += 1) if (teams[i].id === chosen) favKey = teamKey(teams[i].name);
-      }
+      for (var i = 0; i < favouriteList.length; i += 1) if (favouriteList[i].id === chosen) favKey = teamKey(favouriteList[i].name);
       var extra = null;
       if (favKey) {
         var inTop = top.some(function (r) { return teamKey(r.team || r.name) === favKey; });
@@ -1755,6 +1783,23 @@
 
     var poll = null;
     var refreshTimer = null;
+    // Formun ŞU AN oy alıp alamayacağı (anket açık + depo hazır + oy
+    // verilmemiş). `render()`de güncellenir, `updateSubmitEnabled()`de
+    // okunur — tıklama/klavye seçim yaptığında düğmeyi doğru açıp kapatmak
+    // için `render()`in dışından da erişilebilir olması gerekiyor.
+    var canVote = false;
+
+    /**
+     * OY AÇIK VE NİYETLİ OLMALI: seçeneğe tıklamak/Enter'a basmak yalnızca
+     * SEÇER, OY VERMEZ. "Oyunu Ver" düğmesi hem bir seçenek işaretliyken
+     * hem depo hazırken açılır — tek tıkla geri alınamaz bir oyun kilitlenmesi
+     * masaüstünde "yanlışlıkla tıkladım" şikâyetinin en sık nedeniydi.
+     */
+    function updateSubmitEnabled() {
+      if (!submit) return;
+      var selected = form.querySelector(".home-poll__radio:checked");
+      submit.disabled = !canVote || !selected;
+    }
 
     function stopRefresh() {
       if (refreshTimer) {
@@ -1925,11 +1970,11 @@
       }
 
       // Form yalnızca anket AÇIK, depo HAZIR ve oy VERİLMEMİŞSE oy alabilir.
-      var canVote = !closed && !readOnly && !voted;
+      canVote = !closed && !readOnly && !voted;
       show(form, canVote);
-      // GÖNDER DÜĞMESİ KAPALI DOĞAR ve ancak depo hazırsa açılır: açık bir
-      // düğme basıp oyu sessizce kaybetmek, kapalı düğmeden kötüdür.
-      if (submit) submit.disabled = !canVote;
+      // GÖNDER DÜĞMESİ KAPALI DOĞAR: depo hazır olsa BİLE bir seçenek
+      // işaretlenmeden açılmaz (gerekçe `updateSubmitEnabled` başında).
+      updateSubmitEnabled();
       show(section.querySelector("[data-home-poll-thanks]"), voted && !closed);
       show(section.querySelector('[data-home-poll-note="closed"]'), closed);
       // Depo kapalıyken ve henüz oy verilmemişken kutunun NEDEN oy almadığı
@@ -1941,6 +1986,10 @@
       renderResults(data);
       section.hidden = false;
       window.requestAnimationFrame(function () { section.classList.add("is-ready"); });
+      if (!section.hasAttribute("data-poll-impression-tracked")) {
+        section.setAttribute("data-poll-impression-tracked", "true");
+        trackImpressionOnce(section, "main");
+      }
 
       if (closed || readOnly || !voted) stopRefresh();
       else startRefresh();
@@ -1987,22 +2036,26 @@
       request(optionId).then(function (data) {
         sending = false;
         form.className = form.className.replace(/\s*is-sending/g, "");
-        if (data && data.poll) render(data);
-        else if (submit) submit.disabled = false;
+        if (data && data.poll) {
+          render(data);
+          trackPollEvent("poll_vote_complete", { location: "main", pollId: poll.id });
+        } else if (submit) submit.disabled = false;
       });
     }
 
     /**
-     * SEÇENEĞİN TAMAMI TIKLANABİLİR VE TIK = OY.
+     * SEÇENEĞİN TAMAMI TIKLANABİLİR — AMA TIK ARTIK OY DEĞİL, SEÇİM.
      *
-     * Etiket zaten logo + ad alanının tamamını kaplıyor (radyo görsel olarak
-     * gizli); buradaki değişiklik, tıklamanın ayrıca "Oyunu Ver" beklememesi.
+     * Eskiden tıklama doğrudan oy gönderiyordu: masaüstünde bir takıma
+     * bakmak için tıklayan (ya da yanlışlıkla iki takım üstünden geçen)
+     * okuyucu geri alınamaz biçimde oy vermiş oluyordu — "tıklama sorunu"
+     * diye bildirilen şikâyetlerin kaynağı büyük olasılıkla buydu. Artık
+     * tıklama/Enter/Boşluk yalnızca radyo düğmesini işaretliyor; oy YALNIZCA
+     * "Oyunu Ver" düğmesine açık basışla gidiyor (`updateSubmitEnabled`).
      *
-     * KLAVYE OKU İLE OY VERİLMEZ. Radyo grubunda yön tuşu seçimi değiştirir
-     * ve `change` olayı üretir; oyu `change`e bağlamak, listeyi oklarla
-     * gezen bir okuyucunun geçtiği İLK takıma oy vermesi demekti. Bu yüzden
-     * yalnızca AÇIK ONAY sayılır: fare tıklaması ya da Enter/Boşluk. Okla
-     * seçenler "Oyunu Ver" düğmesini kullanır.
+     * KLAVYE OKU İLE SEÇİM DE OY DEĞİL. Radyo grubunda yön tuşu seçimi
+     * değiştirir ve `change` olayı üretir; bu olaya bağlanmıyoruz — listeyi
+     * oklarla gezen bir okuyucu geçtiği her takımı işaretlemiş sayılmamalı.
      */
     var optionList = section.querySelector("[data-home-poll-options]");
     if (optionList) {
@@ -2013,7 +2066,7 @@
         if (!radio) return;
         event.preventDefault();
         radio.checked = true;
-        castVote(radio.value);
+        updateSubmitEnabled();
       });
 
       optionList.addEventListener("keydown", function (event) {
@@ -2022,7 +2075,7 @@
         if (!radio || radio.className.indexOf("home-poll__radio") < 0) return;
         event.preventDefault();
         radio.checked = true;
-        castVote(radio.value);
+        updateSubmitEnabled();
       });
     }
 
@@ -2176,7 +2229,16 @@
       submit.className = "home-poll__submit";
       submit.type = "submit";
       submit.textContent = strings.button;
+      // Ana sayfadaki anketle AYNI kural: düğme bir seçenek işaretlenene
+      // kadar kapalı — buradaki formda tıklama zaten oy vermiyordu, ama
+      // görünüşte açık bir düğmenin sessizce hiçbir şey yapmaması da
+      // kafa karıştırıcıydı.
+      submit.disabled = true;
       form.appendChild(submit);
+
+      list.addEventListener("change", function () {
+        submit.disabled = !list.querySelector(".home-poll__radio:checked");
+      });
 
       form.addEventListener("submit", function (event) {
         event.preventDefault();
@@ -2442,6 +2504,188 @@
       });
   }
 
+  /**
+   * ANKET İZLEME — gösterim, tıklama, tamamlanma.
+   *
+   * Sitede GA4/GTM henüz kurulu değil (bkz. `api/health.js` içindeki
+   * denetim). Bu yüzden burada gerçek bir analiz sağlayıcısına GÖNDERİLMEZ;
+   * yalnızca standart `window.dataLayer` kuyruğuna itilir. GTM/GA4 ileride
+   * kurulursa bu olaylar sıfır kod değişikliğiyle görünür olur; kurulana
+   * kadar da sayfa hiçbir şeyi kırmaz, kuyruk sessizce birikir.
+   */
+  function trackPollEvent(name, detail) {
+    try {
+      window.dataLayer = window.dataLayer || [];
+      var payload = { event: name };
+      for (var key in detail) if (Object.prototype.hasOwnProperty.call(detail, key)) payload[key] = detail[key];
+      window.dataLayer.push(payload);
+    } catch (error) {
+      /* izleme sayfayı kesinlikle kıramaz */
+    }
+  }
+
+  /** Bir öğe ekranda İLK KEZ göründüğünde bir kez izler, sonra kendini bırakır. */
+  function trackImpressionOnce(el, location) {
+    if (!el || typeof window.IntersectionObserver !== "function") return;
+    var observer = new window.IntersectionObserver(function (entries) {
+      if (!entries[0] || !entries[0].isIntersecting) return;
+      trackPollEvent("poll_impression", { location: location });
+      observer.disconnect();
+    }, { threshold: 0.4 });
+    observer.observe(el);
+  }
+
+  /**
+   * PAYLAŞILAN ANKET GETİRİŞİ — vitrin kartları ve sabit kutu için TEK istek.
+   *
+   * Ana form (`setupPoll`) kendi `request()` kapanışını KORUYOR — bu paylaşılan
+   * önbellek onu değiştirmiyor, yalnızca yeni eklenen ikincil yüzeyler (vitrin
+   * kartları, sabit kutu) aynı ankete kaç yerden bakarsa baksın tek ağ isteği
+   * paylaşsın diye var.
+   */
+  var SHARED_POLL_FETCH = {};
+  function sharedHomePollFetch(locale) {
+    var key = locale === "en" ? "en" : "tr";
+    if (!SHARED_POLL_FETCH[key]) {
+      SHARED_POLL_FETCH[key] = typeof window.fetch !== "function"
+        ? Promise.resolve(null)
+        : window.fetch("/api/home-poll?locale=" + key, { headers: { Accept: "application/json" }, credentials: "same-origin" })
+          .then(function (response) { return response.ok ? response.json() : null; })
+          .then(function (payload) { return payload && payload.data ? payload.data : null; })
+          .catch(function () { return null; });
+    }
+    return SHARED_POLL_FETCH[key];
+  }
+
+  function pollTotalText(total, locale) {
+    if (!total) return "";
+    return locale === "en" ? total + " votes" : total + " oy";
+  }
+
+  /**
+   * VİTRİN KARTLARINI DOLDUR — soru + canlı katılım sayısı.
+   *
+   * Sunucuda basılan kartların sorusu zaten dolu (derleme anındaki geçerli
+   * anketten); istemcide eklenenlerin (haberler.html'in canlı yeniden
+   * çizimi) sorusu BOŞ doğar. İkisi de burada aynı yoldan geçer: soru varsa
+   * DOKUNULMAZ (üzerine yazmak takvim kaymasında yanlış olurdu), yoksa
+   * doldurulur. Kapanmış/kalmamış ankette kart tamamen kaldırılır — "oy ver"
+   * çağrısı süresi geçmiş bir ankete asla yapılmaz.
+   */
+  function hydratePollPromoCards(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+    var cards = scope.querySelectorAll("[data-poll-promo]:not([data-poll-promo-ready])");
+    Array.prototype.forEach.call(cards, function (card) {
+      card.setAttribute("data-poll-promo-ready", "true");
+      var locale = card.getAttribute("data-poll-promo-locale") === "en" ? "en" : "tr";
+      sharedHomePollFetch(locale).then(function (data) {
+        if (!data || !data.poll || data.status === "closed") {
+          card.remove();
+          return;
+        }
+        var question = card.querySelector("[data-poll-promo-question]");
+        if (question && !question.textContent) question.textContent = data.poll.question;
+        var total = card.querySelector("[data-poll-promo-total]");
+        if (total && data.total) {
+          total.textContent = pollTotalText(data.total, locale);
+          total.hidden = false;
+        }
+        trackImpressionOnce(card, "promo");
+        var cta = card.querySelector("[data-poll-promo-cta]");
+        if (cta) cta.addEventListener("click", function () { trackPollEvent("poll_click", { location: "promo" }); });
+      });
+    });
+  }
+
+  /**
+   * SABİT/YAPIŞKAN ANKET KUTUSU — yalnızca ana sayfada basılıyor.
+   *
+   * Görünürlük kuralı: ana anket (`#tahmin-anketi`) ekrandan çıkınca belirir,
+   * geri gelince kaybolur. Kapatılırsa 24 saat boyunca hiç gösterilmez
+   * (localStorage). `position: fixed` olduğu için açılıp kapanması sayfa
+   * akışını etkilemez — düzen kayması (CLS) yaratmaz.
+   */
+  var STICKY_DISMISS_KEY = "futbolradar:poll-sticky-dismissed-at";
+  var STICKY_DISMISS_MS = 24 * 60 * 60 * 1000;
+
+  function pollStickyDismissed() {
+    try {
+      var raw = window.localStorage.getItem(STICKY_DISMISS_KEY);
+      return Boolean(raw) && (Date.now() - Number(raw)) < STICKY_DISMISS_MS;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function setupPollSticky() {
+    var widget = document.querySelector("[data-poll-sticky]");
+    var pollSection = document.getElementById("tahmin-anketi");
+    if (!widget || !pollSection || typeof window.IntersectionObserver !== "function") return;
+
+    var locale = widget.getAttribute("data-poll-sticky-locale") === "en" ? "en" : "tr";
+    var pollOpen = false;
+    var pollInView = true;
+    var visible = false;
+
+    function updateVisibility() {
+      var shouldShow = pollOpen && !pollInView && !pollStickyDismissed();
+      if (shouldShow === visible) return;
+      visible = shouldShow;
+      widget.hidden = !visible;
+      if (visible) trackImpressionOnce(widget, "sticky");
+    }
+
+    var observer = new window.IntersectionObserver(function (entries) {
+      pollInView = Boolean(entries[0] && entries[0].isIntersecting);
+      updateVisibility();
+    }, { threshold: 0 });
+    observer.observe(pollSection);
+
+    var dismissBtn = widget.querySelector("[data-poll-sticky-dismiss]");
+    if (dismissBtn) {
+      dismissBtn.addEventListener("click", function () {
+        try { window.localStorage.setItem(STICKY_DISMISS_KEY, String(Date.now())); } catch (error) { /* nezaket katmanı, kırmaz */ }
+        widget.hidden = true;
+        visible = false;
+        trackPollEvent("poll_dismiss", { location: "sticky" });
+      });
+    }
+
+    var ctaLink = widget.querySelector("[data-poll-sticky-cta]");
+    if (ctaLink) {
+      ctaLink.addEventListener("click", function () { trackPollEvent("poll_click", { location: "sticky" }); });
+    }
+
+    sharedHomePollFetch(locale).then(function (data) {
+      if (!data || !data.poll || data.status === "closed") return;
+      pollOpen = true;
+      var question = widget.querySelector("[data-poll-sticky-question]");
+      if (question) question.textContent = data.poll.question;
+      var total = widget.querySelector("[data-poll-sticky-total]");
+      if (total && data.total) {
+        total.textContent = pollTotalText(data.total, locale);
+        total.hidden = false;
+      }
+      updateVisibility();
+    });
+  }
+
+  /**
+   * MENÜDEKİ "YENİ" RÖZETİ — yalnızca ilk 7 gün.
+   *
+   * Rozet işaretlemede HER ZAMAN basılıdır (`data-nav-badge-until` ile);
+   * gizlenmesi istemcide tarih karşılaştırmasıyla olur. Böylece derleme
+   * gecikse/duraklasa bile (bu oturumda Vercel dağıtım kotası yüzünden oldu)
+   * rozet yayında geçerliliğini yitirmiş bir tarihte asılı KALMAZ.
+   */
+  function hideExpiredNavBadges() {
+    var badges = document.querySelectorAll("[data-nav-badge-until]");
+    Array.prototype.forEach.call(badges, function (badge) {
+      var until = Date.parse(badge.getAttribute("data-nav-badge-until") || "");
+      if (!until || Date.now() > until) badge.remove();
+    });
+  }
+
   function setupHomePolls() {
     var sections = document.querySelectorAll("[data-home-poll]");
     Array.prototype.forEach.call(sections, setupPoll);
@@ -2449,6 +2693,27 @@
     Array.prototype.forEach.call(archives, setupPollArchive);
     var motmArchives = document.querySelectorAll("[data-motm-archive]");
     Array.prototype.forEach.call(motmArchives, setupMotmArchive);
+
+    hydratePollPromoCards(document);
+    setupPollSticky();
+    hideExpiredNavBadges();
+
+    // HABER AKIŞI GİBİ SONRADAN DOLAN ALANLAR: app.js'in canlı yeniden
+    // çizimi (`renderInto`) vitrin kartlarını içeriyor ama DOM'a bu bootstrap
+    // çalıştıktan SONRA ekliyor. Tek bir gözlemci yeni eklenen kartları
+    // yakalayıp aynı yoldan dolduruyor; kart zaten dolmuşsa (`-ready`
+    // işareti) yeniden dokunmuyor.
+    if (typeof window.MutationObserver === "function") {
+      var mutationObserver = new window.MutationObserver(function (mutations) {
+        for (var i = 0; i < mutations.length; i += 1) {
+          if (mutations[i].addedNodes && mutations[i].addedNodes.length) {
+            hydratePollPromoCards(document);
+            return;
+          }
+        }
+      });
+      mutationObserver.observe(document.body, { childList: true, subtree: true });
+    }
   }
 
   if (document.readyState === "loading") {

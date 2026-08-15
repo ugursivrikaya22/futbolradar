@@ -11,6 +11,7 @@ import {
   superLigTodayStripHtml,
   officialLineupAlertHtml
 } from "./lib/matchCards.mjs";
+import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -33,6 +34,7 @@ const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
 // Haber akışı kuralı da tek yerde: services/newsFeed.js. Veri okumadan önce
 // alınıyor, çünkü `news` sabiti hemen aşağıda bu süzgeci kullanıyor.
 const { publishableNews, newsHref, isExternalHref } = require("../services/newsFeed.js");
+const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // Transfer bandının seçim/sıralama kuralı da tek yerde; İngilizce bant da
 // aynı servisi kullanıyor.
 const { selectTickerRecords } = require("../services/transferRadarTicker.js");
@@ -1067,8 +1069,30 @@ function newsCardAction(item) {
   return `<a class="detail-link" href="${escapeHtml(href)}"${attrs}>${label}</a>`;
 }
 
+function newsCardList(limit) {
+  return news.slice(0, limit || news.length).map((item) => `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}"><div class="news-card-meta"><span class="tag green">${escapeHtml(item.category || "Futbol Gündemi")}</span><time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatFreshnessDate(item.publishedAt) || "Tarih açıklanmadı")}</time></div><div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p></div><div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Resmî kaynak")}</span>${newsCardAction(item)}</div></article>`);
+}
+
 function newsCards(limit) {
-  return news.slice(0, limit || news.length).map((item) => `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}"><div class="news-card-meta"><span class="tag green">${escapeHtml(item.category || "Futbol Gündemi")}</span><time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatFreshnessDate(item.publishedAt) || "Tarih açıklanmadı")}</time></div><div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p></div><div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Resmî kaynak")}</span>${newsCardAction(item)}</div></article>`).join("");
+  return newsCardList(limit).join("");
+}
+
+/**
+ * HABERLER SAYFASI — TAM LİSTE, ANKET VİTRİN KARTI SERPİŞTİRİLMİŞ.
+ *
+ * Ana sayfanın 3 kartlık önizlemesi (`newsCards(3)`) BUNU kullanmaz: 3 kart
+ * "her 6-8 karttan sonra" kuralına giremeyecek kadar az, gerekçe kullanıcı
+ * onayında ("haberler.html — tam liste") netleşti.
+ */
+function newsPageCards() {
+  const selection = selectHomePoll({
+    polls: require("../data/home-polls.json"),
+    teams: require("../data/teams.json")
+  });
+  const promo = selection.poll
+    ? pollPromoCardHtml(localizePoll(selection.poll, "tr"), { locale: "tr", status: selection.status, href: "./anketler.html" })
+    : "";
+  return interleavePollPromo(newsCardList(), promo);
 }
 
 function fixtureMatchRowHtml(match, round) {
@@ -1365,7 +1389,7 @@ writePage("mac-sonuclari.html", {
 });
 
 writePage("haberler.html", {
-  "news-page": newsCards()
+  "news-page": newsPageCards()
 }, fixtureFreshness);
 
 /**

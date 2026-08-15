@@ -17107,6 +17107,200 @@ body,
 }
 
 /* ==========================================================================
+   ANKET VİTRİN KARTI — maç önü/maç sonrası arası, transfer-gündem kümesinin
+   yanı ve haber akışında her 7 karttan sonra. Tam form DEĞİL: mevcut ankete
+   çağrı. Haber ızgarasının içine düştüğünde tam genişlik alır, karışık bir
+   haber kartı gibi görünmesin diye ayrı bir zemin taşır.
+   ========================================================================== */
+.poll-promo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(11, 143, 90, 0.08), var(--surface));
+  box-shadow: var(--shadow-card);
+}
+
+.news-grid .poll-promo { grid-column: 1 / -1; }
+
+.poll-promo-body { min-width: 0; flex: 1 1 auto; }
+
+.poll-promo-kicker {
+  display: block;
+  color: var(--green);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.poll-promo-question {
+  margin: 2px 0 0;
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.poll-promo-total {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.poll-promo-cta {
+  flex: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 900;
+  white-space: nowrap;
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+
+.poll-promo-cta:hover { filter: brightness(1.06); transform: translateY(-1px); }
+.poll-promo-cta:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+
+@media (max-width: 520px) {
+  .poll-promo { flex-direction: column; align-items: stretch; text-align: center; }
+  .poll-promo-cta { text-align: center; }
+}
+
+/* ==========================================================================
+   SABİT/YAPIŞKAN ANKET KUTUSU — yalnızca ana sayfa. `position: fixed`
+   olduğu için açılıp kapanması sayfa akışını etkilemez (CLS yaratmaz).
+   Masaüstünde küçük bir kart, mobilde alt tam genişlik bant.
+   ========================================================================== */
+.poll-sticky {
+  position: fixed;
+  z-index: 55;
+  right: 16px;
+  bottom: 16px;
+  width: min(300px, calc(100vw - 32px));
+  padding: 14px 16px 14px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.poll-sticky[hidden] { display: none; }
+.poll-sticky.is-visible { opacity: 1; transform: none; }
+
+.poll-sticky-dismiss {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.poll-sticky-dismiss:hover { background: var(--line); color: var(--text); }
+.poll-sticky-dismiss:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+
+.poll-sticky-link {
+  display: block;
+  padding-right: 22px;
+  color: var(--text);
+}
+
+.poll-sticky-kicker {
+  display: block;
+  color: var(--green);
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.poll-sticky-question {
+  margin: 2px 0 0;
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.poll-sticky-total {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.poll-sticky-cta-label {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--green);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+.poll-sticky-link:hover .poll-sticky-cta-label { filter: brightness(1.06); }
+.poll-sticky-link:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; border-radius: 8px; }
+
+/* Kırılma noktası `.bottom-nav`ınkiyle AYNI (900px): o çubuk görünürken
+   masaüstü biçimindeki köşe kartı onun üstüne binerdi. */
+@media (max-width: 900px) {
+  /* Mobilde alt gezinme çubuğu ZATEN `position: fixed; bottom: 0` (bkz.
+     `.bottom-nav`, z-index 70). Anket bandı `bottom: 0` alsaydı onun üstüne
+     biner, ikisi de yarım görünürdü — bant onun HEMEN ÜSTÜNE oturtuluyor. */
+  .poll-sticky {
+    left: 0;
+    right: 0;
+    bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    width: 100%;
+    border-radius: 0;
+    border-width: 1px 0;
+    padding: 10px 44px 10px 14px;
+    display: flex;
+    align-items: center;
+  }
+  .poll-sticky-link { display: flex; align-items: center; gap: 10px; flex: 1 1 auto; padding-right: 0; }
+  .poll-sticky-kicker { display: none; }
+  .poll-sticky-question { flex: 1 1 auto; margin: 0; font-size: 0.8rem; }
+  .poll-sticky-total { display: none; }
+  .poll-sticky-cta-label { margin: 0; flex: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poll-sticky { transition: none; }
+}
+
+/* ==========================================================================
+   MENÜDEKİ "YENİ" RÖZETİ — Anketler bağlantısının yanında, ilk 7 gün.
+   ========================================================================== */
+.nav-badge {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--live);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  vertical-align: middle;
+}
+
+/* ==========================================================================
    ANKET SAYFASI — TÜM ANKETLER BİR ARADA
    --------------------------------------------------------------------------
    Kart içi sonuç ve oy alanı ana sayfadaki anketle AYNI sınıfları kullanır

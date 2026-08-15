@@ -33,7 +33,7 @@ import {
   officialLineupAlertHtml
 } from "./lib/matchCards.mjs";
 import { transferTypeEn } from "./lib/enTicker.mjs";
-import { homePollBlock } from "./lib/homePoll.mjs";
+import { homePollBlock, interleavePollPromo, pollPromoCardHtml, pollStickyWidgetHtml } from "./lib/homePoll.mjs";
 import { transferTickerBlock } from "./lib/transferTicker.mjs";
 
 const require = createRequire(import.meta.url);
@@ -369,7 +369,7 @@ function sectionLinks() {
  * canonical HER DİLİN KENDİ URL'İDİR. İngilizce sayfanın canonical'ını
  * Türkçe sayfaya vermek, İngilizce sürümü indeksten silmek demek olurdu.
  */
-function pageShell({ routeKey, trPath, enPath, heroKicker, heroTitle, heroLead, heroMeta, body, schema, bare, transferTicker }) {
+function pageShell({ routeKey, trPath, enPath, heroKicker, heroTitle, heroLead, heroMeta, body, schema, bare, transferTicker, stickyWidget }) {
   const meta = routeMeta(routeKey, LOCALE);
   const canonical = absoluteUrl(enPath);
   const trUrl = absoluteUrl(trPath);
@@ -441,6 +441,7 @@ ${body}
     ${siteHeader({ base: BASE, locale: LOCALE, altHref })}${transferTicker ? `\n    ${transferRadarTicker()}` : ""}
     ${main}
     ${siteFooter({ base: BASE, locale: LOCALE })}
+    ${stickyWidget || ""}
     <script src="${BASE}site.js" defer></script>
   </body>
 </html>
@@ -1162,6 +1163,36 @@ function homePollSection() {
 }
 
 /**
+ * ANKET VİTRİN KARTI VE SABİT KUTU — Türkçe tarafla AYNI bileşenden
+ * (gerekçe scripts/lib/homePoll.mjs başlığında: tam formu tekrarlamaz,
+ * mevcut ankete bağlanır, katılım sayısı istemcide dolar).
+ */
+function pollPromoSection(href) {
+  const selection = selectHomePoll({
+    polls: readJson("home-polls.json", {}),
+    teams: readJson("teams.json", [])
+  });
+  if (!selection.poll) return "";
+  return pollPromoCardHtml(localizePoll(selection.poll, LOCALE), {
+    locale: LOCALE,
+    status: selection.status,
+    href
+  });
+}
+
+function pollStickySection() {
+  const selection = selectHomePoll({
+    polls: readJson("home-polls.json", {}),
+    teams: readJson("teams.json", [])
+  });
+  if (!selection.poll) return "";
+  return pollStickyWidgetHtml(localizePoll(selection.poll, LOCALE), {
+    locale: LOCALE,
+    status: selection.status
+  });
+}
+
+/**
  * RESMÎ İLK 11 UYARISI — `data/official-lineup-alerts.json`den, kaynaklı.
  * services/matchSpecial.js'nin "muhtemel 11" katmanına karışmaz.
  */
@@ -1185,12 +1216,14 @@ function homePage() {
       ${dailyHeadlinesSection()}
       ${todaySection()}
       ${radarMatchSection()}
+      ${pollPromoSection("#tahmin-anketi")}
       ${postMatchSection()}
       ${recentReportsSection()}
       ${playerRadarSection()}
       ${trendTeamsSection()}
       ${quickNavSection()}
       ${transferWatchSection()}
+      ${pollPromoSection("#tahmin-anketi")}
       ${newsSection()}
       ${archiveSection()}
       <section class="container section" aria-labelledby="en-standings-title">
@@ -1207,6 +1240,7 @@ function homePage() {
     heroTitle: "Turkish football, in English",
     heroLead: "Live scores, fixtures, standings and verified results from the Trendyol Süper Lig and Turkish clubs in European competitions.",
     heroMeta: todayLabel,
+    stickyWidget: pollStickySection(),
     body,
     schema: schemaFor("home", "en/index.html", "WebPage"),
     bare: true
@@ -1793,7 +1827,7 @@ ${sectionLinks()}`;
 
 /** Haberler — köşe yazılarıyla aynı kural: çerçeve İngilizce, haber kendi dilinde. */
 function newsPage() {
-  const cards = newsList.slice(0, 24).map((item) => {
+  const cardList = newsList.slice(0, 24).map((item) => {
     const href = escapeHtml(newsHref(item, BASE));
     const published = item.publishedAt || item.date || "";
     return `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}">
@@ -1805,7 +1839,11 @@ function newsPage() {
             <div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Official source")}</span>
             <a class="detail-link" href="${href}" hreflang="tr" lang="tr">Read the story (in Turkish)</a></div>
           </article>`;
-  }).join("");
+  });
+  // Ana sayfanın 3 kartlık önizlemesinden farklı olarak bu TAM liste; anket
+  // vitrin kartı her 7 haberden sonra araya giriyor (gerekçe
+  // scripts/lib/homePoll.mjs#interleavePollPromo).
+  const cards = interleavePollPromo(cardList, pollPromoSection("./polls.html"));
 
   const body = `      <section class="data-panel" aria-labelledby="en-news-title">
         <h2 class="panel-title" id="en-news-title">Verified football agenda</h2>
