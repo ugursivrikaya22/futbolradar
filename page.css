@@ -18380,3 +18380,33 @@ a.motm-week__card:focus-visible {
     text-align: center;
   }
 }
+
+/* ── MOBİL BİLGİ HİYERARŞİSİ ────────────────────────────────────────
+   İstenen sıra: son dakika/ticker → canlı skor → bugünün maçları →
+   anket → haberler → analizler → puan durumu → diğerleri.
+
+   Ölçülen sıra bundan farklıydı: canlı skor 4., bugünün maçları 8. ve
+   anket 3. sıradaydı. Sıralama CSS ile düzeltiliyor, İŞARETLEME
+   BOZULMADAN — belge sırası ekran okuyucu ve arama motoru için aynı
+   kalıyor (deponun anket için zaten benimsediği yaklaşım).
+
+   Kişisel iki şerit (favori takım, Şimdi Futbolda) en üstte kalıyor:
+   ikisi de ~120 px ve brifingin "ilk 5-10 saniyede cevap" hedefi tam
+   olarak bu — büyük bölümlerin sırası aşağıda düzeltiliyor.
+
+   Seçiciler kimlik taşıyor çünkü mevcut kurallar sınıf üzerinden
+   yazılmış (`.home-poll { order: -1 }`, `.home-main > .hero { order: 0 }`)
+   ve sınıf özgüllüğüyle yazılan yeni kural onları yenemezdi. */
+@media (max-width: 720px) {
+  .home-main > #hero-canli-skor { order: -2; }        /* canlı skor */
+  .home-main > #bugunun-maclari-preview { order: -1; } /* bugünün maçları */
+  .home-main > #tahmin-anketi { order: 0; }            /* şampiyonluk anketi */
+  /* Maç dosyası tanıtımı 2.142 px ile sayfadaki en büyük blok; belge
+     sırasında anketten önce geldiği için onu aşağı itiyordu. İstenen
+     listede "maç analizleri" başlıklar ve anketten sonra geliyor. */
+  .home-main > .match-special-promo-group { order: 2; }
+  .home-main > #gunun-basliklari { order: 1; }         /* son haberler */
+  .home-main > #futbol-gundemi { order: 1; }
+  .home-main > #gunun-radar-maci { order: 2; }         /* maç analizleri */
+  .home-main > #radar-yorumu { order: 3; }             /* köşe yazıları */
+}
