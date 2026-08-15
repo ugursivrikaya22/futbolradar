@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-15T16:29:26.499Z",
+  "updatedAt": "2026-08-15T17:26:26.723Z",
   "items": [
     {
       "id": "auto-news-3f0c44aaf187c9c72b3d",
@@ -286,6 +286,26 @@
         "feed": "sabah-spor",
         "priority": 8,
         "status": "REPORTED"
+      }
+    },
+    {
+      "id": "auto-news-03231b9641851aad8482",
+      "category": "transfer-rumour",
+      "confidence": "reported",
+      "section": "transfer",
+      "text": "Galatasaray'da Victor Osimhen'den transfer iddialarına yanıt!",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-14T22:33:19.000Z",
+      "source": {
+        "name": "fotomac",
+        "url": "https://www.fotomac.com.tr/galatasaray/2026/08/14/galatasarayda-victor-osimhenden-transfer-iddialarina-yanit",
+        "publisher": "fotomac.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fotomac",
+        "priority": 8,
+        "status": "RUMOUR"
       }
     },
     {
