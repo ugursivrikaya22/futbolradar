@@ -13,6 +13,54 @@
     toggle.setAttribute("aria-label", "Menüyü aç");
   }
 
+  /**
+   * ALT NAVİGASYON: aktif sayfa işareti + "Menü" düğmesi.
+   *
+   * Çubuk ~900 sayfaya AYNI çıktıyla basılıyor (scripts/lib/layout.mjs) ve
+   * hangi dosyaya yazıldığını bilmiyor; aktif bağlantı bu yüzden burada,
+   * `location.pathname` ile bulunuyor.
+   *
+   * Eşleştirme dosya adına bakıyor, tam yola değil: aynı çubuk kökte
+   * (`/index.html`), alt klasörde (`/mac/...`) ve İngilizce tarafta
+   * (`/en/index.html`) aynı işaretlemeyle duruyor, bağlantılar ise göreli
+   * (`../index.html`). Tam yol karşılaştırması bu üç durumdan yalnızca
+   * birinde çalışırdı.
+   */
+  function setupBottomNav() {
+    var bar = document.querySelector("[data-bottom-nav]");
+    if (!bar) return;
+
+    var here = window.location.pathname.replace(/\/+$/, "");
+    var hereFile = here.slice(here.lastIndexOf("/") + 1) || "index.html";
+    var hereEn = /(^|\/)en\//.test(window.location.pathname);
+
+    var items = bar.querySelectorAll("[data-bottom-nav-item]");
+    for (var i = 0; i < items.length; i += 1) {
+      var href = items[i].getAttribute("href") || "";
+      var file = href.slice(href.lastIndexOf("/") + 1);
+      // "index.html" iki dilde de aynı dosya adı; hangi tarafta olduğumuzu
+      // da kontrol etmezsek Türkçe ana sayfa İngilizce sekmesini de yakar.
+      var linkEn = /(^|\/)en\//.test(href);
+      if (file === hereFile && linkEn === hereEn) {
+        items[i].classList.add("is-active");
+        items[i].setAttribute("aria-current", "page");
+      }
+    }
+
+    var menuButton = bar.querySelector("[data-bottom-nav-menu]");
+    var navToggle = document.querySelector(".nav .nav-toggle");
+    if (!menuButton || !navToggle) return;
+
+    // Çekmeceyi AÇAN kod tek yerde kalsın diye mevcut düğme tetikleniyor;
+    // burada ikinci bir aç/kapa mantığı yazmak iki davranışı ayrıştırırdı.
+    menuButton.addEventListener("click", function () {
+      navToggle.click();
+      var open = navToggle.getAttribute("aria-expanded") === "true";
+      menuButton.setAttribute("aria-expanded", open ? "true" : "false");
+      menuButton.classList.toggle("is-active", open);
+    });
+  }
+
   function setupNav(nav) {
     var toggle = nav.querySelector(".nav-toggle");
     var menu = nav.querySelector(".nav-menu");
@@ -579,6 +627,9 @@
   }
 
   document.querySelectorAll(".nav").forEach(setupNav);
+  // Çekmece kurulduktan SONRA: alt çubuğun "Menü" düğmesi onun tetikleyicisini
+  // arıyor, sıra ters olsaydı düğme sessizce işlevsiz kalırdı.
+  setupBottomNav();
   document.querySelectorAll(".site-search").forEach(setupSearch);
 
   /* --------------------------------------------------------------------------

@@ -18007,3 +18007,74 @@ a.motm-week__card:focus-visible {
   .transfer-radar-ticker__breaking,
   .transfer-radar-ticker__status { font-size: 12px; }
 }
+
+/* ── MOBİL ALT NAVİGASYON ───────────────────────────────────────────
+   Telefonda ana gezinme burada. Masaüstünde hiç görünmez: üstteki tam
+   menü zaten orada duruyor ve iki gezinme birbirini tekrar ederdi. */
+.bottom-nav { display: none; }
+
+@media (max-width: 900px) {
+  .bottom-nav {
+    position: fixed;
+    z-index: 70; /* başlık 60; çubuk onun da üstünde kalmalı */
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2px;
+    /* iPhone'da alt çubuk ekranın "çene" bölgesine denk geliyor:
+       safe-area kadar ek dolgu, düğmelerin oraya sıkışmasını önler. */
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--line-strong, rgba(0, 0, 0, .12));
+    background: var(--bg, #fff);
+    box-shadow: 0 -6px 24px rgba(0, 0, 0, .10);
+  }
+
+  .bottom-nav__item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: center;
+    justify-content: center;
+    /* Parmak hedefi: 44 px'in altına düşmemeli. */
+    min-height: 48px;
+    padding: 4px 2px;
+    border: 0;
+    border-radius: 12px;
+    background: none;
+    color: var(--muted, #5b6470);
+    font: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .bottom-nav__icon { width: 22px; height: 22px; }
+
+  .bottom-nav__label {
+    max-width: 100%;
+    overflow: hidden;
+    /* Etiketler tek satır: "Ana Sayfa" iki satıra düşerse çubuk büyür. */
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .bottom-nav__item.is-active {
+    background: var(--green-soft, rgba(11, 143, 90, .1));
+    color: var(--green, #0b8f5a);
+  }
+
+  .bottom-nav__item:focus-visible {
+    outline: 2px solid var(--green, #0b8f5a);
+    outline-offset: -2px;
+  }
+
+  /* ÇUBUK İÇERİĞİ KAPATMAZ. Sayfanın sonuna çubuk yüksekliği kadar boşluk
+     bırakılıyor; yoksa son bölüm ve alt bilgi bağlantıları çubuğun altında
+     kalıp erişilemez oluyordu. */
+  body { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+}
