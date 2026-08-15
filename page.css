@@ -18408,5 +18408,75 @@ a.motm-week__card:focus-visible {
   .home-main > #gunun-basliklari { order: 1; }         /* son haberler */
   .home-main > #futbol-gundemi { order: 1; }
   .home-main > #gunun-radar-maci { order: 2; }         /* maç analizleri */
-  .home-main > #radar-yorumu { order: 3; }             /* köşe yazıları */
+  .home-main > .mini-standings { order: 3; }            /* puan durumu */
+  .home-main > #radar-yorumu { order: 4; }             /* köşe yazıları */
 }
+
+/* ── PUAN DURUMU MİNİ ───────────────────────────────────────────────
+   İlk beş + (varsa) kullanıcının takımı. Tam tablo bir tık uzakta. */
+.mini-standings {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong, rgba(0, 0, 0, .12));
+  border-radius: 14px;
+  background: var(--surface, #fff);
+}
+
+.mini-standings__head { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; }
+
+.mini-standings__title {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted, #5b6470);
+}
+
+.mini-standings__all {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--green, #0b8f5a);
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.mini-standings__list { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
+
+.mini-standings__row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 32px;
+  padding: 2px 4px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.mini-standings__rank { color: var(--muted, #5b6470); font-weight: 800; font-variant-numeric: tabular-nums; }
+
+.mini-standings__team {
+  min-width: 0;
+  overflow: hidden;
+  /* Uzun kulüp adı harf harf bölünmesin. */
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 700;
+}
+
+.mini-standings__pts { font-weight: 900; font-variant-numeric: tabular-nums; }
+
+.mini-standings__gap { padding-left: 6px; color: var(--muted, #5b6470); letter-spacing: .2em; }
+
+.mini-standings__row.is-favourite {
+  background: var(--green-soft, rgba(11, 143, 90, .1));
+  color: var(--green, #0b8f5a);
+}
+
+/* Masaüstünde gizli: orada tam puan durumu bölümü zaten var. */
+@media (min-width: 901px) { .mini-standings { display: none; } }

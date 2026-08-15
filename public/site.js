@@ -127,6 +127,26 @@
     return matchesPromise;
   }
 
+  /**
+   * PUAN DURUMU DA TEK KEZ İSTENİR.
+   *
+   * Favori takım kartı sıralamayı, mini tablo ilk beşi aynı yanıttan
+   * okuyor. Maç listesindeki gerekçenin aynısı: iki bölüm ayrı çağırsaydı
+   * aynı yanıt iki kez inerdi.
+   */
+  var standingsPromise = null;
+
+  function standingsOnce() {
+    if (standingsPromise) return standingsPromise;
+    standingsPromise = window.fetch("/api/standings", { headers: { Accept: "application/json" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (payload) {
+        return payload && Array.isArray(payload.data) ? payload.data : null;
+      })
+      .catch(function () { return null; });
+    return standingsPromise;
+  }
+
   /** Ad karşılaştırması: "Gençlerbirliği S.K." ile "Gençlerbirliği" eşleşmeli. */
   function teamKey(value) {
     return String(value || "")
@@ -315,12 +335,8 @@
         }
       });
 
-      // Sıralama yalnızca favori seçiliyken isteniyor: seçmeyen kullanıcı
-      // bu yükü hiç taşımıyor.
-      window.fetch("/api/standings", { headers: { Accept: "application/json" } })
-        .then(function (r) { return r.ok ? r.json() : null; })
-        .then(function (payload) {
-          var rows = payload && Array.isArray(payload.data) ? payload.data : null;
+      standingsOnce()
+        .then(function (rows) {
           if (!rows) return;
           for (var i = 0; i < rows.length; i += 1) {
             if (teamKey(rows[i].team || rows[i].name) !== key) continue;
@@ -340,6 +356,80 @@
         (meta ? '<span class="favourite-team__meta">' + escapeText(meta) + "</span>" : "");
       return row;
     }
+  }
+
+  /**
+   * "PUAN DURUMU MİNİ" — ilk beş + kullanıcının takımı.
+   *
+   * Ana sayfaya 18 satırlık tam tablo koymak telefonda bir ekran dolusu
+   * kaydırma demekti. İlk beş çoğu okuyucunun sorduğu şeyi karşılıyor;
+   * gerisi için "Tüm Puan Durumu" bağlantısı var.
+   *
+   * FAVORİ TAKIM İLK BEŞTE DEĞİLSE AYRICA GÖSTERİLİR. Kendi takımını
+   * göremeyen okuyucu için ilk beş bir bilgi değil, sadece bir liste.
+   * Araya "…" konuyor ki satır atlandığı belli olsun.
+   *
+   * Veri gelmezse bölüm hiç çizilmez — boş bir tablo iskeleti göstermek
+   * yer tutucudan farksız olurdu.
+   */
+  function setupMiniStandings() {
+    var main = document.querySelector("main.home-main");
+    if (!main || document.querySelector("[data-mini-standings]")) return;
+
+    var en = (document.documentElement.getAttribute("lang") || "tr").toLowerCase().indexOf("en") === 0;
+    var s = en
+      ? { title: "Table", all: "Full table →", href: "en/standings.html", pts: "Pts" }
+      : { title: "Puan Durumu", all: "Tüm Puan Durumu →", href: "puan-durumu.html", pts: "P" };
+
+    standingsOnce().then(function (rows) {
+      if (!rows || !rows.length) return;
+
+      var sorted = rows.slice().sort(function (a, b) { return (a.rank || 99) - (b.rank || 99); });
+      var top = sorted.slice(0, 5);
+
+      // Favori takım ilk beşte mi?
+      var favKey = "";
+      var chosen = readFavourite();
+      if (chosen) {
+        var teams = favouriteTeams();
+        for (var i = 0; i < teams.length; i += 1) if (teams[i].id === chosen) favKey = teamKey(teams[i].name);
+      }
+      var extra = null;
+      if (favKey) {
+        var inTop = top.some(function (r) { return teamKey(r.team || r.name) === favKey; });
+        if (!inTop) {
+          for (var j = 0; j < sorted.length; j += 1) {
+            if (teamKey(sorted[j].team || sorted[j].name) === favKey) { extra = sorted[j]; break; }
+          }
+        }
+      }
+
+      var box = document.createElement("section");
+      box.className = "container mini-standings";
+      box.setAttribute("data-mini-standings", "");
+
+      var html = '<div class="mini-standings__head"><span class="mini-standings__title">' +
+        escapeText(s.title) + '</span><a class="mini-standings__all" href="' +
+        (en ? "../" : "./") + escapeText(s.href) + '">' + escapeText(s.all) + "</a></div>";
+
+      html += '<ol class="mini-standings__list">';
+      for (var k = 0; k < top.length; k += 1) html += row(top[k]);
+      if (extra) {
+        html += '<li class="mini-standings__gap" aria-hidden="true">…</li>' + row(extra, true);
+      }
+      html += "</ol>";
+
+      box.innerHTML = html;
+      main.appendChild(box);
+
+      function row(entry, isFav) {
+        return '<li class="mini-standings__row' + (isFav ? " is-favourite" : "") + '">' +
+          '<span class="mini-standings__rank">' + escapeText(entry.rank) + "</span>" +
+          '<span class="mini-standings__team">' + escapeText(entry.team || entry.name) + "</span>" +
+          '<span class="mini-standings__pts">' + escapeText(entry.points) + " " + escapeText(s.pts) + "</span>" +
+          "</li>";
+      }
+    });
   }
 
   /**
@@ -961,6 +1051,7 @@
   setupBottomNav();
   setupNowFootball();
   setupFavouriteTeam();
+  setupMiniStandings();
   document.querySelectorAll(".site-search").forEach(setupSearch);
 
   /* --------------------------------------------------------------------------
