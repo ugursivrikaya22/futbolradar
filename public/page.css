@@ -17903,3 +17903,107 @@ a.motm-week__card:focus-visible {
 .home-poll__label:active,
 .home-poll__label:hover { transition: none; transform: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   MOBİL ÖNCELİKLİ DÜZELTMELER
+
+   Ölçümle başladı, tahminle değil. 375/390/430 px'te gerçek tarayıcıda
+   alınan sayılar:
+
+     · ana sayfa gövdesi        19.066 px  (~25 ekran)
+     · 44 px altı dokunma alanı    155 adet
+     · 12 px altı yazı             275 adet
+
+   Yatay taşma ve dikey yazılan takım adı ARANDI, BULUNAMADI — o yüzden
+   burada onlara dair bir kural yok; olmayan soruna kural yazmak sonraki
+   okuyucuyu yanıltırdı.
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+  /* ── 1. Kart listeleri: dikey yığın yerine yatay kaydırma ──────────
+     En büyük tek kalem, "Bugünün Maçları" önizlemesiydi: 94 maç kartı
+     alt alta 2.082 px. Kartlar artık yan yana duruyor ve parmakla
+     kaydırılıyor. İÇERİK GİZLENMİYOR — 94 kartın tamamı yerinde, sadece
+     ekseni değişti. Kütüphane yok: yerel CSS scroll-snap.
+
+     Kurallar bölüm kimliğine bağlı; `.grid` gibi genel sınıflar sitenin
+     her yerinde kullanılıyor ve global bir kural başka sayfaları bozardı. */
+  #bugunun-maclari-preview .matches-grid,
+  #todays-matches-preview .matches-grid,
+  #gunun-radar-maci .grid,
+  #futbol-gundemi .news-grid,
+  #radar-yorumu .column-grid,
+  #arsiv-girisi .grid {
+    display: grid;
+    /* Şablon sütunları SIFIRLANMALI. Bu kapsayıcıların masaüstü kuralında
+       `grid-template-columns` tanımlı; sıfırlanmazsa ilk kart o şablon
+       sütununda kalıp 38 px'e çöküyor ve yalnızca sonraki kartlar
+       `grid-auto-columns` genişliğini alıyordu. */
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 84%;
+    gap: 12px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px;
+    scrollbar-width: none;
+  }
+
+  #bugunun-maclari-preview .matches-grid > *,
+  #todays-matches-preview .matches-grid > *,
+  #gunun-radar-maci .grid > *,
+  #futbol-gundemi .news-grid > *,
+  #radar-yorumu .column-grid > *,
+  #arsiv-girisi .grid > * {
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  #bugunun-maclari-preview .matches-grid::-webkit-scrollbar,
+  #todays-matches-preview .matches-grid::-webkit-scrollbar,
+  #gunun-radar-maci .grid::-webkit-scrollbar,
+  #futbol-gundemi .news-grid::-webkit-scrollbar,
+  #radar-yorumu .column-grid::-webkit-scrollbar,
+  #arsiv-girisi .grid::-webkit-scrollbar { display: none; }
+
+  /* ── 2. Dokunma alanları en az 44 px ───────────────────────────────
+     Parmak ucu ~44 px'lik bir alana basar; 30-40 px'lik bağlantılarda
+     yanlış hedefe basmak kural hâline geliyordu.
+
+     Kayan şerit (ticker) bağlantıları BİLEREK DIŞARIDA: şerit 41 px ve
+     kompakt kalması istendi; içindeki bağlantıyı 44 px'e çıkarmak şeridin
+     kendisini büyütürdü. İki istek çakışıyor, şeridin inceliği kazandı. */
+  .fixture-card-action,
+  .detail-link,
+  .section-link,
+  .column-author,
+  .home-main .button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    /* `inline-flex` bu bağlantıları esnek bir kapsayıcıda daraltabiliyor:
+       ilk denemede "Derin Analiz" 28 px genişliğe sıkışıp harf harf alt
+       alta dizildi. Daralmayı ve sözcük kırılmasını birlikte kapatmak
+       gerekiyor — yalnızca biri yetmiyor. */
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .featured-carousel-dot {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* ── 3. En küçük yazılar okunur boyuta ─────────────────────────────
+     10 px'lik lig rozetleri (93 adet) telefonda okunmuyordu. */
+  .league-mark { font-size: 12px; }
+
+  .radar-badge,
+  .match-special-promo__module-kicker,
+  .match-special-promo__chip,
+  .live-score-team-logo-fallback,
+  .transfer-radar-ticker__breaking,
+  .transfer-radar-ticker__status { font-size: 12px; }
+}
