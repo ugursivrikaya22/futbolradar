@@ -124,9 +124,24 @@ async function supabaseRequest(pathname, options = {}) {
     // 409 = benzersiz kısıt: bu seçmen bu ankette zaten oy kullanmış.
     // Bir HATA değil, bir DURUM; çağıran onu "sonucu göster" diye işler.
     if (response.status === 409) return { conflict: true, rows: null };
-    if (!response.ok) throw new Error(`home-poll-store-http-${response.status}`);
 
     const raw = await response.text();
+
+    if (!response.ok) {
+      // PostgREST hata gövdesi ŞEMA bilgisi taşır (ör. "relation ... does
+      // not exist", "JWT expired"), SIR taşımaz. Yalnızca `message`/`hint`
+      // alanı ve en fazla 200 karakter alınır — anahtarın kendisi hiçbir
+      // koşulda bu gövdede yoktur zaten (PostgREST anahtarı yankılamaz).
+      let detail = "";
+      try {
+        const parsed = JSON.parse(raw);
+        detail = String((parsed && (parsed.message || parsed.hint || parsed.code)) || "").slice(0, 200);
+      } catch (error) {
+        detail = raw.slice(0, 200);
+      }
+      throw new Error(`home-poll-store-http-${response.status}${detail ? `: ${detail}` : ""}`);
+    }
+
     return { conflict: false, rows: raw ? JSON.parse(raw) : [] };
   } finally {
     clearTimeout(timer);
