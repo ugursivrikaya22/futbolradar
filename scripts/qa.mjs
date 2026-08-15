@@ -171,14 +171,7 @@ const cssFeatureMarkers = [
   "player-empty-state",
   "player-trust-note",
   "player-quick-links",
-  "traffic-hub",
-  "traffic-card",
-  "traffic-route-chip",
   "live-pulse",
-  "traffic-deep-links",
-  "traffic-player-card",
-  "traffic-mini-link",
-  "traffic-fixture-note",
   "hero-value-prop",
   "daily-headlines",
   "daily-headline-kicker",
@@ -186,35 +179,13 @@ const cssFeatureMarkers = [
   "share-block",
   "share-targets",
   "share-copy",
-  "home-search-section",
-  "home-search-card",
-  "home-search-results",
-  "home-directory",
-  "home-directory-panel",
-  "home-intelligence-board",
-  "home-leader-row",
-  "home-flow-list",
-  "home-team-corridor",
-  "home-agenda-hub",
-  "home-agenda-card",
-  "home-agenda-actions",
-  "home-radar-ticker",
-  "radar-ticker-track",
   "home-match-command",
-  "home-player-leagues",
-  "home-rivalry-wall",
   "intent-card-grid",
   "intent-player-card",
   "intent-link-grid",
-  "home-explore-lab",
-  "explore-lab-grid",
-  "explore-lab-card",
   "intent-stack-grid",
   "intent-stack-card",
   "intent-chip-row",
-  "home-daily-brief",
-  "daily-brief-shell",
-  "daily-brief-card",
   "brief-command-grid",
   "brief-command-card",
   "stats-summary",
@@ -701,12 +672,34 @@ function checkSeoAndLinks() {
 const VERIFICATION_FILE = "googlef881b0d7527a8fba.html";
 const VERIFICATION_CONTENT = "google-site-verification: googlef881b0d7527a8fba.html";
 
+/**
+ * ÖLÇÜM ETİKETİ: YAPILANDIRILDIYSA HER SAYFADA, YAPILANDIRILMADIYSA HİÇBİRİNDE.
+ *
+ * Denetim eskiden etiketi KOŞULSUZ arıyordu. Oysa `analytics.js` kimlik
+ * yokken ilk satırlarda `return` ediyor; etiket yine de basıldığı için
+ * tarayıcı betiği indirip çalıştırıyor ve karşılığında hiçbir iş yapmıyordu —
+ * 5.169 sayfanın her görüntülenmesinde bir istek, sıfır ölçüm.
+ *
+ * Sözleşme artık duruma bağlı ve İKİ YÖNLÜ sınanıyor: kimlik varsa etiket
+ * her sayfada olmalı (ölçüm sessizce düşmesin), kimlik yoksa hiçbir sayfada
+ * olmamalı (boşuna istek atılmasın). Tek yönlü sınamak, ikisinden birini
+ * fark edilmeden kaybettirirdi.
+ */
 function checkAnalyticsTag() {
+  const ga4 = /^G-[A-Z0-9]+$/i.test(String(process.env.GA4_MEASUREMENT_ID || "").trim());
+  const ads = /^AW-\d+$/i.test(String(process.env.GOOGLE_ADS_ID || "").trim());
+  const configured = ga4 || ads;
+
   const htmlFiles = walk(root, (full) => full.endsWith(".html") && path.basename(full) !== VERIFICATION_FILE);
   for (const file of htmlFiles) {
     const html = fs.readFileSync(file, "utf8");
-    expect(html.includes("data-futbolradar-ga4"), `${path.relative(root, file)}: GA4 tag missing`);
-    expect(html.includes('src="/analytics.js"'), `${path.relative(root, file)}: analytics loader missing`);
+    const hasTag = html.includes("data-futbolradar-ga4");
+    if (configured) {
+      expect(hasTag, `${path.relative(root, file)}: GA4 tag missing`);
+      expect(html.includes('src="/analytics.js"'), `${path.relative(root, file)}: analytics loader missing`);
+    } else {
+      expect(!hasTag, `${path.relative(root, file)}: ölçüm yapılandırılmamışken etiket basılmamalı`);
+    }
     expect(!html.includes("G-XXXXXXXXXX"), `${path.relative(root, file)}: analytics placeholder must not ship`);
   }
 }

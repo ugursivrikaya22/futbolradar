@@ -37,9 +37,22 @@ function escapeAttribute(value) {
     .replace(/>/g, "&gt;");
 }
 
+/**
+ * YAPILANDIRILMAMIŞ ÖLÇÜM ETİKETİ HİÇ BASILMAZ.
+ *
+ * `analytics.js` kimlik yoksa ilk satırlarda `return` ediyor — yani hiçbir
+ * şey yapmıyor. Buna rağmen etiket her sayfaya basıldığı için tarayıcı
+ * betiği yine de İNDİRİYOR ve çalıştırıyordu: 5.169 sayfanın her
+ * görüntülenmesinde bir istek, karşılığında sıfır iş.
+ *
+ * Kimlik tanımlıysa davranış AYNEN eskisi gibi. Bu bir ölçüm kaybı değil;
+ * ölçülecek bir şey olmadığında istek de yapılmıyor. GA4_MEASUREMENT_ID ya
+ * da GOOGLE_ADS_ID tanımlandığı an etiket kendiliğinden geri gelir.
+ */
 function analyticsTag() {
   const ga4 = /^G-[A-Z0-9]+$/i.test(measurementId) ? measurementId : "";
   const ads = /^AW-\d+$/i.test(googleAdsId) ? googleAdsId : "";
+  if (!ga4 && !ads) return "";
 
   return `  <script src="/analytics.js" defer ${marker} data-ga4-id="${escapeAttribute(ga4)}" data-google-ads-id="${escapeAttribute(ads)}" data-page-view-label="${escapeAttribute(pageViewLabel)}" data-match-click-label="${escapeAttribute(matchClickLabel)}"></script>`;
 }
@@ -53,7 +66,9 @@ for (const file of walk(root)) {
   }
 
   const withoutOldTag = html.replace(/\s*<script\b[^>]*data-futbolradar-ga4[^>]*>[\s\S]*?<\/script>/gi, "");
-  const next = withoutOldTag.replace("</head>", `${analyticsTag()}\n  </head>`);
+  // Etiket boşsa fazladan boş satır bırakma: 5.169 dosyada anlamsız fark olur.
+  const tag = analyticsTag();
+  const next = tag ? withoutOldTag.replace("</head>", `${tag}\n  </head>`) : withoutOldTag;
   fs.writeFileSync(file, next, "utf8");
   injected += 1;
 }
