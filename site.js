@@ -2511,7 +2511,7 @@
         live: "Live",
         finished: "Full time",
         finishedBadge: "FULL TIME",
-        overPending: "Match finished — the XIs below were our pre-match expectation",
+        overPending: "Match finished — the result and official line-ups are in the match report",
         statusScheduled: "Not started",
         countdown: "Kicks off in",
         day: "d", hour: "h", minute: "m",
@@ -2535,7 +2535,7 @@
         live: "Canlı",
         finished: "Tamamlandı",
         finishedBadge: "MAÇ BİTTİ",
-        overPending: "Maç tamamlandı — aşağıdaki 11'ler maç öncesi beklentimizdi",
+        overPending: "Maç tamamlandı — sonuç ve resmî kadrolar maç raporunda",
         statusScheduled: "Başlamadı",
         countdown: "Maça kalan",
         day: "g", hour: "sa", minute: "dk",
@@ -2834,6 +2834,12 @@
       // sonra sağlayıcıya gidilmediği için kadro alanları boş dönüyor;
       // eski metin bunu "kadro açıklanmadı" diye okuyup oynanmış bir maç
       // hakkında yanlış bilgi veriyordu.
+      //
+      // Metin, ALTTAKİ PANELİN NE OLDUĞU HAKKINDA İDDİA KURMAZ. Bir ara
+      // sürümde "aşağıdaki 11'ler maç öncesi beklentimizdi" yazıyordu; oysa
+      // muhtemel 11 kaydı maç sırasında resmî kadroyla güncellenebiliyor
+      // (Fenerbahçe panelinde öyle oldu) ve cümle o durumda yanlış oluyordu.
+      // Okuyucu, doğrulanmış kadro ve skor için maç raporuna yönlendiriliyor.
       var statusText = strings.pending;
       if (announced) statusText = strings.confirmed;
       else if (data.status === "partial") statusText = strings.partial;
