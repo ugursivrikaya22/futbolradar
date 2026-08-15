@@ -18331,3 +18331,52 @@ a.motm-week__card:focus-visible {
 /* Masaüstünde gizli: geniş ekranda takım sayfaları zaten bir tık uzakta
    ve şerit orada yer kaplamaktan başka iş görmüyor. */
 @media (min-width: 901px) { .favourite-team { display: none; } }
+
+/* ── ANKET: MOBİLDE 2 SÜTUN ─────────────────────────────────────────
+   Ölçüm: 18 seçenek tek sütunda 54 px'lik satırlar hâlinde 1.108 px
+   yer kaplıyordu — telefonda devasa bir liste. İki sütun bunu yarıya
+   indiriyor; dokunma alanı 44 px'in altına inmiyor. */
+@media (max-width: 900px) {
+  .home-poll__options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .home-poll__label {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    /* Parmak hedefi: iki sütunda da 48 px yükseklik korunuyor. */
+    min-height: 48px;
+    padding: 8px 10px;
+  }
+
+  .home-poll__crest { flex: 0 0 24px; width: 24px; height: 24px; }
+
+  .home-poll__option-name {
+    min-width: 0;
+    overflow: hidden;
+    /* Dar sütunda uzun kulüp adı harf harf bölünmesin. */
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 13px;
+  }
+
+  /* ── Oy sonrası sonuç listesi ──────────────────────────────────────
+     Yüzde ve oy sayısı takımın hemen altında; bar kısa ve okunur. */
+  .home-poll__results { display: grid; gap: 6px; }
+
+  .home-poll__bar { height: 6px; border-radius: 999px; }
+
+  .home-poll__result-percent { font-size: 13px; font-weight: 900; }
+  .home-poll__result-votes { font-size: 12px; }
+
+  /* Toplam katılım: büyük ve net (istenen buydu). */
+  .home-poll__total {
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 900;
+    text-align: center;
+  }
+}
