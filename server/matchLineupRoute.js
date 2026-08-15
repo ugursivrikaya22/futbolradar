@@ -256,7 +256,13 @@ async function handleMatchLineup(req, res) {
   const status = lineupStatusFor(home, away, state.phase);
   const scoreboard = scoreboardFrom(providerMatch, fixture);
 
-  setCachePolicy(res, status === "confirmed" && scoreboard.finished ? "match-lineup-final" : "match-lineup");
+  // `final` fazı da uzun önbelleğe girer. Eskiden koşul yalnızca
+  // "kadro onaylı VE maç bitti" idi; oysa pencere kapandıktan sonra
+  // sağlayıcıya hiç gidilmediği için durum `final` oluyor ve onay bayrağı
+  // düşüyordu. Sonuç tersine dönmüştü: yanıtı ARTIK DEĞİŞMEYECEK maç, 45
+  // saniyelik önbellekle her dakika işlev uyandırıyordu.
+  const immutable = state.phase === "final" || (status === "confirmed" && scoreboard.finished);
+  setCachePolicy(res, immutable ? "match-lineup-final" : "match-lineup");
   if (enforceRateLimit(req, res, { limit: 240, windowMs: 60000 })) return;
 
   return sendSuccess(

@@ -189,11 +189,24 @@ console.log("match-lineup-api");
   assert.ok(payload.meta && typeof payload.meta.reason !== "undefined",
     "yanıt neden yoklamadığını söylemeli");
 
-  // Kadro açıklanmadıkça yanıt önbelleklenebilir olmalı ama uzun süreli değil.
-  // Onaylanmış VE bitmiş maç uzun önbellek alır; diğer her durum kısa.
-  const expectFinal = data.status === "confirmed" && board.finished;
+  // ÖNBELLEK, YANITIN DEĞİŞEBİLİRLİĞİNE BAĞLI.
+  //
+  // Uzun önbellek iki durumda: kadro onaylı ve maç bitmiş, YA DA faz
+  // `final`. İkincisi eskiden atlanıyordu ve kural tersine dönmüştü:
+  // pencere kapandıktan sonra sağlayıcıya hiç gidilmediği için durum
+  // `final` oluyor, onay bayrağı düşüyor ve ARTIK HİÇ DEĞİŞMEYECEK yanıt
+  // 45 saniyelik önbellekle her dakika işlev uyandırıyordu.
+  const immutable = data.phase === "final" || (data.status === "confirmed" && board.finished);
   assert.match(String(res.headers["cdn-cache-control"] || ""),
-    expectFinal ? /s-maxage=1800/ : /s-maxage=45/);
+    immutable ? /s-maxage=1800/ : /s-maxage=45/);
+
+  // Sabit bir geçmiş tarih her koşuda geçmişte kalır: bu blok pencere
+  // kapandıktan sonraki davranışı belirlenimci biçimde sınar.
+  if (Date.parse(data.kickoff) < Date.now() - 210 * 60 * 1000) {
+    assert.equal(data.phase, "final", "pencere kapandıktan sonra faz `final` olmalı");
+    assert.match(String(res.headers["cdn-cache-control"] || ""), /s-maxage=1800/,
+      "bir daha değişmeyecek yanıt uzun önbelleğe girmeli");
+  }
 }
 
 // ── 8. YAZMA YÖNTEMİ REDDEDİLİR ───────────────────────────────────────────
