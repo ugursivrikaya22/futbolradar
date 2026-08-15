@@ -17696,6 +17696,10 @@ a.motm-week__card:focus-visible {
   letter-spacing: .06em;
 }
 .match-special-promo__breaking.is-official .match-special-promo__breaking-badge { background: var(--accent); }
+/* Biten maçın rozeti kırmızı "son dakika" tonunu bırakır: oynanmış bir maçın
+   skoru acil bir duyuru değil, arşiv bilgisidir. */
+.match-special-promo__breaking.is-final { border-color: var(--line); }
+.match-special-promo__breaking.is-final .match-special-promo__breaking-badge { background: var(--muted); }
 .match-special-promo__breaking strong { font-size: clamp(1.05rem, 2.8vw, 1.55rem); line-height: 1.22; }
 .match-special-promo__breaking > span:last-child { color: var(--muted); font-size: .9rem; line-height: 1.55; }
 

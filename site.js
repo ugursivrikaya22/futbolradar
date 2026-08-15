@@ -2510,6 +2510,8 @@
         formation: "Formation",
         live: "Live",
         finished: "Full time",
+        finishedBadge: "FULL TIME",
+        overPending: "Match finished — the XIs below were our pre-match expectation",
         statusScheduled: "Not started",
         countdown: "Kicks off in",
         day: "d", hour: "h", minute: "m",
@@ -2532,6 +2534,8 @@
         formation: "Diziliş",
         live: "Canlı",
         finished: "Tamamlandı",
+        finishedBadge: "MAÇ BİTTİ",
+        overPending: "Maç tamamlandı — aşağıdaki 11'ler maç öncesi beklentimizdi",
         statusScheduled: "Başlamadı",
         countdown: "Maça kalan",
         day: "g", hour: "sa", minute: "dk",
@@ -2721,9 +2725,65 @@
     return false;
   }
 
-  function renderBadges(data, strings) {
+  /** Maç oynanıp bitti mi. Pencere kapandığında sağlayıcıya artık
+   *  gidilmiyor ve kadro alanları boş dönüyor; bu bayrak olmadan sayfa
+   *  BİTMİŞ bir maç için "ilk 11'ler henüz açıklanmadı" yazıyordu. */
+  function matchIsOver(data) {
+    if (!data) return false;
+    if (data.phase === "final") return true;
+    return Boolean(data.scoreboard && data.scoreboard.finished);
+  }
+
+  /**
+   * ANA SAYFA TANITIM KARTI.
+   *
+   * KART, KENDİ MAÇININ KARTIDIR. Eskiden `document.querySelector` tek kart
+   * döndürüyordu; ana sayfada iki tanıtım kartı olduğundan İKİNCİ KART HİÇ
+   * GÜNCELLENMİYORDU — kadro açıklansa da "muhtemel 11" yazmaya devam
+   * ediyor, maç bitse de öyle kalıyordu. Kart artık kendi yoklayıcısından
+   * besleniyor.
+   */
+  function renderPromoCard(promo, data, strings, state) {
+    if (!promo) return;
+    var board = data.scoreboard || {};
+    if (state.over && board.home != null && board.away != null) {
+      // Biten maçın kartı skoru söyler. "Muhtemel 11" rozetini oynanmış bir
+      // maçın üstünde bırakmak, kartı 24 saat boyunca yanlış kılıyordu.
+      promo.classList.add("is-final");
+      setText(promo.querySelector("[data-lineup-promo-badge]"),
+        strings.finishedBadge + " · " + board.home + "-" + board.away);
+      return;
+    }
+    if (!state.homeOfficial) return;
+    // Başlık MAÇIN KENDİSİNDEN kurulur — sabit "Galatasaray/Çorum FK" metni
+    // burada bir zamanlar sabit yazılıydı ve HANGİ maç açıklansa aynı yanlış
+    // takım adını basıyordu. Konu, resmî kadrosu gelen taraf; rakip, diğer
+    // taraf.
+    var subjectTeam = (data.confirmed && data.confirmed.home ? data.home : data.away) || {};
+    var opponentTeam = (data.confirmed && data.confirmed.home ? data.away : data.home) || {};
+    promo.classList.add("is-official");
+    setText(promo.querySelector("[data-lineup-promo-badge]"), state.announced ? strings.badge : strings.homeBadge);
+    if (subjectTeam.team && opponentTeam.team) {
+      setText(promo.querySelector("[data-lineup-promo-title]"),
+        strings.officialPromoTitleFor(subjectTeam.team, opponentTeam.team));
+    }
+    setText(promo.querySelector("[data-lineup-promo-spot]"), strings.officialPromoSpot);
+  }
+
+  function renderBadges(data, strings, context) {
+    var scope = context || {};
     var announced = data.status === "confirmed";
     var homeOfficial = Boolean(data.confirmed && data.confirmed.home);
+    var over = matchIsOver(data);
+
+    // Yalnızca tanıtım kartını süren yoklayıcı (ana sayfa) sayfa genelindeki
+    // kadro öğelerine DOKUNMAZ: kartın maçı, sayfadaki maç dosyasının maçı
+    // olmayabilir ve rozetleri başka maçın verisiyle boyamak olurdu.
+    if (!scope.lineupSection) {
+      renderPromoCard(scope.promo, data, strings, { announced: announced, homeOfficial: homeOfficial, over: over });
+      return;
+    }
+
     var badges = document.querySelectorAll("[data-lineup-badge]");
     Array.prototype.forEach.call(badges, function (badge) {
       setText(badge, strings.badge);
@@ -2766,26 +2826,21 @@
       }
     }
 
-    var promo = document.querySelector("[data-lineup-promo]");
-    if (promo && homeOfficial) {
-      // Başlık MAÇIN KENDİSİNDEN kurulur — sabit "Galatasaray/Çorum FK"
-      // metni burada bir zamanlar sabit yazılıydı ve HANGİ maç açıklansa
-      // aynı yanlış takım adını basıyordu. Konu, resmî kadrosu gelen
-      // taraf; rakip, diğer taraf.
-      var subjectTeam = (data.confirmed && data.confirmed.home ? data.home : data.away) || {};
-      var opponentTeam = (data.confirmed && data.confirmed.home ? data.away : data.home) || {};
-      promo.classList.add("is-official");
-      setText(promo.querySelector("[data-lineup-promo-badge]"), announced ? strings.badge : strings.homeBadge);
-      if (subjectTeam.team && opponentTeam.team) {
-        setText(promo.querySelector("[data-lineup-promo-title]"), strings.officialPromoTitleFor(subjectTeam.team, opponentTeam.team));
-      }
-      setText(promo.querySelector("[data-lineup-promo-spot]"), strings.officialPromoSpot);
-    }
+    renderPromoCard(scope.promo, data, strings, { announced: announced, homeOfficial: homeOfficial, over: over });
 
     var statusNode = document.querySelector("[data-lineup-status]");
     if (statusNode) {
-      setText(statusNode, announced ? strings.confirmed : (data.status === "partial" ? strings.partial : strings.pending));
+      // Bitmiş maçta "henüz açıklanmadı" YAZILMAZ. Pencere kapandıktan
+      // sonra sağlayıcıya gidilmediği için kadro alanları boş dönüyor;
+      // eski metin bunu "kadro açıklanmadı" diye okuyup oynanmış bir maç
+      // hakkında yanlış bilgi veriyordu.
+      var statusText = strings.pending;
+      if (announced) statusText = strings.confirmed;
+      else if (data.status === "partial") statusText = strings.partial;
+      else if (over) statusText = strings.overPending;
+      setText(statusNode, statusText);
       statusNode.classList.toggle("is-announced", announced);
+      statusNode.classList.toggle("is-over", !announced && over);
     }
   }
 
@@ -2806,15 +2861,18 @@
     return Math.max(PRE_MATCH_MS, Math.min(untilWindow, IDLE_MAX_MS));
   }
 
-  function setupMatchSpecial() {
-    var lineupSection = document.querySelector("[data-match-lineups]");
-    var promo = document.querySelector("[data-lineup-promo]");
-    var board = document.querySelector("[data-match-special-board]");
-    var host = lineupSection || promo || board;
-    if (!host || typeof window.fetch !== "function" || window.location.protocol === "file:") return;
-
-    var matchId = host.getAttribute("data-match-id");
-    if (!matchId) return;
+  /**
+   * TEK MAÇIN YOKLAYICISI.
+   *
+   * `context` bu yoklamanın hangi öğeleri güncelleyeceğini söyler:
+   * maç dosyasında kadro bölümü ve künye, ana sayfada yalnızca o maçın
+   * tanıtım kartı. Ayrı yoklayıcı olmasının sebebi ana sayfada birden çok
+   * maç kartı bulunabilmesi — hepsi tek maçın verisini paylaşamaz.
+   */
+  function startMatchPoller(matchId, context) {
+    var lineupSection = context.lineupSection || null;
+    var promo = context.promo || null;
+    var board = context.board || null;
 
     var declared = lineupSection ? lineupSection.getAttribute("data-lineup-locale") : null;
     var locale = (declared || document.documentElement.lang) === "en" ? "en" : "tr";
@@ -2868,9 +2926,9 @@
           }
           failures = 0;
           if (!isFinite(kickoffMs) && data.kickoff) kickoffMs = Date.parse(data.kickoff);
-          renderBadges(data, strings);
-          renderLineups(data, strings);
-          renderScoreboard(data, strings);
+          renderBadges(data, strings, { promo: promo, lineupSection: lineupSection });
+          if (lineupSection) renderLineups(data, strings);
+          if (board) renderScoreboard(data, strings);
           tickCountdown();
           var delay = nextDelay(data);
           if (delay == null) stopped = true;
@@ -2896,6 +2954,33 @@
     });
 
     poll();
+  }
+
+  function setupMatchSpecial() {
+    if (typeof window.fetch !== "function" || window.location.protocol === "file:") return;
+
+    var lineupSection = document.querySelector("[data-match-lineups]");
+    var board = document.querySelector("[data-match-special-board]");
+    var mainHost = lineupSection || board;
+    var mainId = mainHost ? mainHost.getAttribute("data-match-id") : null;
+    var promos = document.querySelectorAll("[data-lineup-promo]");
+    var mainPromo = null;
+
+    // Aynı maçın kartı sayfadaysa onu ana yoklayıcı sürer; ikinci bir
+    // yoklayıcı açmak aynı uç noktaya iki istek demek olurdu.
+    Array.prototype.forEach.call(promos, function (card) {
+      if (!mainPromo && mainId && card.getAttribute("data-match-id") === mainId) mainPromo = card;
+    });
+
+    if (mainId) {
+      startMatchPoller(mainId, { lineupSection: lineupSection, board: board, promo: mainPromo });
+    }
+
+    Array.prototype.forEach.call(promos, function (card) {
+      var id = card.getAttribute("data-match-id");
+      if (!id || id === mainId) return;
+      startMatchPoller(id, { promo: card });
+    });
   }
 
   if (document.readyState === "loading") {

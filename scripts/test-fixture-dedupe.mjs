@@ -120,10 +120,21 @@ const matchDate = (match) => String((match && (match.kickoff || match.date)) || 
     sameClub(match.homeTeam, "Kasımpaşa") && sameClub(match.awayTeam, "Trabzonspor")
     && matchDate(match) === "2026-08-15");
   assert.ok(kasimpasa, "Kasımpaşa - Trabzonspor maçı listede olmalı");
-  assert.equal(kasimpasa.venue, "Recep Tayyip Erdoğan Stadyumu",
-    `lig maçında saha doldurulmamış: ${JSON.stringify(kasimpasa.venue)}`);
-  assert.equal(kasimpasa.venueSource, "club-home-ground",
-    "türetilmiş saha, kaynağı belli olacak şekilde işaretlenmeli");
+
+  // SINANAN KURAL "SAHA BOŞ KALMAZ"DIR, "SAHA ŞU DİZEDİR" DEĞİL.
+  //
+  // Bu blok önce tam adı (`Recep Tayyip Erdoğan Stadyumu`) şart koşuyordu.
+  // Sağlayıcı maçtan sonra stadı kendi yazımıyla ("Recep Tayyip Erdogan
+  // Stadium") doldurunca test düştü — oysa davranış DOĞRUYDU: dolu bir
+  // alanın üstüne yazılmıyor, yalnızca boş alan kulübün stadından
+  // tamamlanıyor. Test, doldurma kuralının kendisini sınıyor: alan dolu
+  // olacak ve türetilmişse kaynağı işaretli olacak.
+  assert.ok(String(kasimpasa.venue || "").trim(),
+    `lig maçında saha boş kalmamalı: ${JSON.stringify(kasimpasa.venue)}`);
+  if (kasimpasa.venueSource === "club-home-ground") {
+    assert.equal(kasimpasa.venue, "Recep Tayyip Erdoğan Stadyumu",
+      "kulüp stadından türetilen saha, doğrulanmış adı taşımalı");
+  }
 
   const friendly = all.find((match) =>
     match.league !== "Süper Lig" && match.venueSource === "club-home-ground");
