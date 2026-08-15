@@ -2675,6 +2675,11 @@
         setText(statusNode, board.minute ? strings.live + " · " + board.minute + "'" : strings.live);
       } else if (board.finished) {
         setText(statusNode, strings.finished);
+      } else if (board.unknown) {
+        // Sunucu "bu maç oynandı ama sonucu elimde yok" diyor. "Başlamadı"
+        // yazmak yanlış olurdu; skor uydurmak daha da yanlış. Alan boş
+        // kalır ve okuyucu maç raporuna yönlendirilir.
+        setText(statusNode, strings.finished);
       } else {
         setText(statusNode, strings.statusScheduled);
       }
@@ -2746,12 +2751,18 @@
   function renderPromoCard(promo, data, strings, state) {
     if (!promo) return;
     var board = data.scoreboard || {};
-    if (state.over && board.home != null && board.away != null) {
+    if (state.over) {
       // Biten maçın kartı skoru söyler. "Muhtemel 11" rozetini oynanmış bir
       // maçın üstünde bırakmak, kartı 24 saat boyunca yanlış kılıyordu.
+      //
+      // Skor elde yoksa rozet YİNE değişir, yalnızca sayısız: maçın oynandığı
+      // başlama saatinden biliniyor, bilinmeyen sadece sonuç. Skoru
+      // bekleyip rozeti "muhtemel 11"de bırakmak, bilmediğimiz bir şey için
+      // bildiğimiz bir şeyi yanlış göstermek olurdu.
+      var known = board.home != null && board.away != null;
       promo.classList.add("is-final");
       setText(promo.querySelector("[data-lineup-promo-badge]"),
-        strings.finishedBadge + " · " + board.home + "-" + board.away);
+        known ? strings.finishedBadge + " · " + board.home + "-" + board.away : strings.finishedBadge);
       return;
     }
     if (!state.homeOfficial) return;
