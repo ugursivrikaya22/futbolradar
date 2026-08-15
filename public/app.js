@@ -7157,6 +7157,51 @@
     );
   }
 
+  /**
+   * DURUM DÜRÜSTLÜĞÜ — sunucu tarafındaki (scripts/lib/matchCards.mjs)
+   * transferStatusClass ile BİREBİR aynı sözlük. İki yerde ayrı ayrı
+   * karar verilirse bir gün rozet ile cümlenin durumu farklı anlatması
+   * an meselesidir; bu yüzden kural burada da aynı üç sınıfa indirgeniyor.
+   */
+  function transferStatusClass(status) {
+    var normalized = normalizeSearchText(status);
+    if (normalized === "confirmed") return "confirmed";
+    if (normalized === "agreed" || normalized === "negotiating" || normalized === "pending") return "pending";
+    return "rumour";
+  }
+
+  function transferVerbPhrase(status) {
+    var normalized = normalizeSearchText(status);
+    if (normalized === "confirmed") return "resmen açıkladı";
+    if (normalized === "agreed") return "ile anlaşmaya vardı";
+    if (normalized === "negotiating" || normalized === "pending") return "ile görüşmelerini sürdürüyor";
+    return "ile ilişkilendiriliyor";
+  }
+
+  /** "SON DAKİKA" yalnızca gerçek bir tazelik sinyaline (≤48 saat) dayanır. */
+  function isBreakingTransfer(dateText) {
+    var parsed = Date.parse(String(dateText || ""));
+    if (!isFinite(parsed)) return false;
+    var hours = (Date.now() - parsed) / (1000 * 60 * 60);
+    return hours >= 0 && hours <= 48;
+  }
+
+  function transferSummarySentence(leader) {
+    var verb = transferVerbPhrase(leader.status);
+    var fee = transferRecordFee(leader);
+    var feeClause = fee && fee !== "Açıklanmadı" ? " (" + fee + ")" : "";
+    return escapeHtml(leader.toTeam) + ", " + escapeHtml(leader.playerName) +
+      (leader.fromTeam ? " (" + escapeHtml(leader.fromTeam) + ")" : "") + " " + verb + escapeHtml(feeClause) + ".";
+  }
+
+  function transferTakeSentence(leader) {
+    var subject = leader.toTeam || leader.playerName;
+    var suffix = leader.position
+      ? "kadrosuna " + leader.position + " hattında derinlik katıyor."
+      : "kadro planlamasında izlenmesi gereken bir hareket.";
+    return escapeHtml(subject) + ", " + escapeHtml(suffix);
+  }
+
   function renderHomeTransferFeed(records) {
     // Ana sayfadaki şerit radarın vitrini; aynı dönem sınırına tabi, aksi
     // hâlde şerit ile radar farklı listeler gösterirdi.
@@ -7167,27 +7212,47 @@
 
     var leader = list[0];
     var sourceUrl = safeImageUrl(leader.sourceUrl);
+    var statusClass = transferStatusClass(leader.status);
+    var breaking = isBreakingTransfer(leader.date);
+    var confirmedCount = list.filter(function (record) { return transferStatusClass(record.status) === "confirmed"; }).length;
+    var clubCount = new Set(list.map(function (record) { return record.toTeam; }).filter(Boolean)).size;
+
+    // Satır rozeti dürüstlük kuralına tabi: yalnızca zaten doğrulanmış
+    // kayıtlar "TRANSFER" der, gerisi "RADAR" — henüz izleniyor demektir.
     var miniRows = list.slice(1, 5).map(function (record) {
+      var rowStatusClass = transferStatusClass(record.status);
+      var rowBadge = rowStatusClass === "confirmed" ? "TRANSFER" : "RADAR";
       return (
         '<a class="home-transfer-row" href="./transfer-radari.html?team=' + encodeURIComponent(record.toTeam || "") + '">' +
-        '<span>' + escapeHtml(formatProfileDate(record.date) || "Yakında") + '</span>' +
+        '<span class="home-transfer-row-badge status-' + rowStatusClass + '">' + rowBadge + '</span>' +
         '<strong>' + escapeHtml(record.playerName) + '</strong>' +
         '<b>' + escapeHtml(record.toTeam) + '</b>' +
         '</a>'
       );
     }).join("");
 
+    var coverHref = './transfer-radari.html?team=' + encodeURIComponent(leader.toTeam || "");
+
     return (
-      '<article class="home-transfer-feature" data-card="home-transfer-watch" data-transfer="' + escapeHtml(leader.id) + '">' +
+      '<article class="home-transfer-feature home-transfer-feature-big" data-card="home-transfer-watch" data-transfer="' + escapeHtml(leader.id) + '" data-transfer-status="' + statusClass + '">' +
+      '<div class="transfer-badge-row">' +
+      (breaking ? '<span class="card-badge breaking">SON DAKİKA</span>' : "") +
+      '<span class="card-badge transfer">TRANSFER</span>' +
+      '<span class="status-badge status-' + statusClass + '">' + escapeHtml(transferRecordStatusLabel(leader.status)) + '</span>' +
+      '</div>' +
       '<div class="home-transfer-player"><div><span>Son kesinleşen transfer</span><h3>' + escapeHtml(leader.playerName) + '</h3><p>' + escapeHtml(leader.type || "Transfer") + ' · ' + escapeHtml(formatProfileDate(leader.date) || leader.season) + '</p></div></div>' +
       '<div class="home-transfer-route"><b>' + escapeHtml(leader.fromTeam) + '</b><em>→</em><b>' + escapeHtml(leader.toTeam) + '</b></div>' +
+      '<p class="home-transfer-summary">' + transferSummarySentence(leader) + '</p>' +
+      '<p class="home-transfer-take"><b>FutbolRadar Yorumu:</b> ' + transferTakeSentence(leader) + '</p>' +
+      '<div class="home-transfer-meta-row"><span class="home-transfer-source">Kaynak: ' + escapeHtml(leader.sourceName || "Kaynak doğrulanmadı") + '</span></div>' +
       '<div class="home-transfer-actions">' +
-      (sourceUrl ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="nofollow noopener noreferrer">Transfer detayını aç</a>' : "") +
+      (sourceUrl ? '<a class="detail-link home-transfer-source-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="nofollow noopener noreferrer">Transfer detayını aç</a>' : "") +
       '<a class="detail-link ghost" href="./transfer-radari.html">Tüm transferler</a></div>' +
+      '<a class="home-transfer-feature-cover" href="' + escapeHtml(coverHref) + '" aria-label="' + escapeHtml(leader.playerName) + ' — Tüm transferler"></a>' +
       '</article>' +
       '<aside class="home-transfer-side" aria-label="Son transferler"><div class="home-transfer-metrics">' +
-      compactMetricHtml("Kesinleşen", list.filter(function (record) { return normalizeSearchText(record.status) === "confirmed"; }).length) +
-      compactMetricHtml("Kulüp", new Set(list.map(function (record) { return record.toTeam; }).filter(Boolean)).size) +
+      compactMetricHtml("Kesinleşen", confirmedCount) +
+      compactMetricHtml("Kulüp", clubCount) +
       compactMetricHtml("Son kontrol", formatProfileDate(leader.lastVerifiedAt || leader.date) || "Yakında") +
       '</div><div class="home-transfer-list">' + miniRows + '</div></aside>'
     );

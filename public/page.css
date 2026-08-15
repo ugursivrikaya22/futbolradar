@@ -1842,13 +1842,187 @@ p {
         color: var(--green);
       }
 
-      
+      /* ----------------------------------------------------------------
+         TRANSFER KARTI — rozetler, "kapak" bağlantısı, dürüstlük renkleri.
 
-      
+         Kart tamamen tıklanabilir OLMALI ama içinde bağımsız çalışması
+         gereken bir dış kaynak bağlantısı da var; ikisini tek <a> içine
+         iç içe koymak geçersiz HTML olurdu. Çözüm: `.home-transfer-feature`
+         `position: relative` alır, `.home-transfer-feature-cover` onu
+         `inset: 0` ile KAPLAR ve en altta durur (z-index yok = doğal
+         akış sırası), üstündeki gerçek içerik normal şekilde görünür ama
+         tıklamalar kapak bağlantısına düşer — TEK İSTİSNA, kaynak
+         bağlantısı: ona `position: relative; z-index: 1` verilerek
+         kapağın ÜSTÜNE çıkarılır ve kendi hedefine tıklanabilir kalır.
+         ---------------------------------------------------------------- */
+      .home-transfer-feature-big {
+        position: relative;
+        gap: 12px;
+      }
 
-      
+      .home-transfer-feature-cover {
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        /* Ekran okuyucu ve arama motoru için erişilebilir isim
+           `aria-label`de; görünür metin taşımıyor, kartın kendisi
+           zaten okunabilir içerikle dolu. */
+        font-size: 0;
+        color: transparent;
+      }
 
-      
+      .home-transfer-source-link {
+        position: relative;
+        z-index: 1;
+      }
+
+      .transfer-badge-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .card-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        border-radius: 999px;
+        padding: 3px 11px;
+        font-size: 0.72rem;
+        font-weight: 950;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+
+      .card-badge.breaking {
+        color: #ffe3e3;
+        background: var(--live);
+        box-shadow: 0 0 0 1px rgba(200, 30, 45, 0.3);
+      }
+
+      .card-badge.transfer {
+        color: #ffffff;
+        background: var(--green);
+      }
+
+      /* Rozet+cümle DÜRÜSTLÜK sözleşmesi: yalnızca resmî açıklanan bir
+         transfer "Kesinleşti" yeşiliyle işaretlenir. "Takipte"/"İddia"
+         asla yeşil görünmez — okuyucu renge bakarak bile durumu doğru
+         okumalı, cümleyi okumak zorunda kalmadan. */
+      .status-badge.status-confirmed {
+        border-color: rgba(11, 143, 90, 0.187);
+        color: var(--green);
+        background: rgba(11, 143, 90, 0.044);
+      }
+
+      .status-badge.status-pending {
+        border-color: rgba(176, 116, 16, 0.204);
+        color: var(--amber);
+        background: rgba(176, 116, 16, 0.048);
+      }
+
+      .status-badge.status-rumour {
+        border-color: rgba(14, 26, 22, 0.16);
+        color: var(--muted);
+        background: rgba(14, 26, 22, 0.03);
+      }
+
+      .home-transfer-summary {
+        margin: 0;
+        color: var(--text);
+        font-size: 1rem;
+        font-weight: 600;
+        line-height: 1.5;
+      }
+
+      .home-transfer-take {
+        margin: 0;
+        padding: 10px 12px;
+        border-left: 3px solid var(--green);
+        border-radius: 0 8px 8px 0;
+        background: rgba(11, 143, 90, 0.05);
+        color: var(--text-soft);
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      .home-transfer-take b {
+        color: var(--green);
+      }
+
+      .home-transfer-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .home-transfer-source {
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .home-transfer-row {
+        position: relative;
+      }
+
+      .home-transfer-row-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 20px;
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-size: 0.62rem;
+        font-weight: 950;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+      }
+
+      .home-transfer-row-badge.status-confirmed {
+        color: var(--green);
+        background: rgba(11, 143, 90, 0.1);
+      }
+
+      .home-transfer-row-badge.status-pending {
+        color: var(--amber);
+        background: rgba(176, 116, 16, 0.1);
+      }
+
+      .home-transfer-row-badge.status-rumour {
+        color: var(--muted);
+        background: rgba(14, 26, 22, 0.06);
+      }
+
+      /* Kütle çekiciliği: ana sayfa transfer kartı mobilde en büyük tekil
+         eleman olsun diye başlığı ve rotası büyütülür — 18 maddelik
+         mobil geçişteki "compact ama okunur" ilkesiyle çelişmez, çünkü
+         bu TEK vitrin kart, liste değil. */
+      @media (max-width: 640px) {
+        .home-transfer-watch-shell {
+          grid-template-columns: 1fr;
+        }
+
+        .home-transfer-player h3 {
+          font-size: clamp(1.6rem, 7vw, 2.1rem);
+        }
+
+        .home-transfer-route {
+          font-size: 1.05rem;
+        }
+
+        .home-transfer-summary {
+          font-size: 1.05rem;
+        }
+
+        /* Kartın kendisi tam tıklanabilir; içindeki DIŞ kaynak
+           bağlantısı bağımsız bir dokunma hedefi olarak kalmalı. */
+        .home-transfer-source-link {
+          min-height: var(--tap);
+        }
+      }
 
       
 
