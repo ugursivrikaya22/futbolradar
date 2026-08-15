@@ -18078,3 +18078,34 @@ a.motm-week__card:focus-visible {
      kalıp erişilemez oluyordu. */
   body { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* ── MOBİL BAŞLIK: yalnızca logo | arama | dil ──────────────────────
+   Hamburger düğmesi alt navigasyondaki "Menü" ile AYNI çekmeceyi
+   açıyordu; iki düğme aynı işi yapınca üst çubuk gereksiz kalabalıktı.
+
+   Düğme KALDIRILMIYOR, yalnızca gizleniyor: alt çubuktaki "Menü" onun
+   tetikleyicisini çağırıyor (site.js) ve DOM'dan çıkarılırsa menü hiç
+   açılmaz. Eşik 900 px — alt navigasyonun göründüğü genişlikle AYNI.
+   901-1365 px arasında alt çubuk yok, orada hamburger tek erişim yolu
+   ve görünür kalmalı. */
+@media (max-width: 900px) {
+  /* `!important` BURADA ZORUNLU, tercih değil: 1365 px bloğundaki
+     `.topbar-premium .nav-toggle` kuralı `display: inline-grid !important`
+     diyor. Önemli bildirim, kaynak sırasından da özgüllükten de üstün;
+     normal bir `display: none` sessizce kaybediyordu (ölçüldü: hesaplanan
+     değer `grid` kalıyordu). */
+  .nav .nav-toggle { display: none !important; }
+
+  /* Kalan iki düğme parmak hedefine çıkarıldı (40x40 ve 44x32'ydi). */
+  .nav .nav-search-toggle-mobile,
+  .nav .lang-switch {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .nav .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
