@@ -34,8 +34,15 @@ import path from "node:path";
 
 const root = process.cwd();
 
-/** Sürümlenecek varlıklar. Yol, sitenin kökünden. */
-const ASSETS = ["page.css", "app.js", "site.js"];
+/**
+ * Sürümlenecek varlıklar. Yol, sitenin kökünden.
+ *
+ * `app-lite.js` ve `app-compare.js`, app.js'ten türetilen sayfa demetleri
+ * (bkz. scripts/build-app-bundles.mjs). Damgasız kalırlarsa app.js ile aynı
+ * tuzağa düşerler: "max-age=31536000, immutable" ile servis edilen bir
+ * dosyada dönen ziyaretçi bir yıl boyunca eski sürüme kilitlenir.
+ */
+const ASSETS = ["page.css", "app.js", "site.js", "app-lite.js", "app-compare.js"];
 
 const SKIP_DIRS = new Set([".git", ".agents", ".codex", ".vercel", "node_modules", "work", "outputs"]);
 const VERIFICATION_FILE = "googlef881b0d7527a8fba.html";

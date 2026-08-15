@@ -59,6 +59,11 @@ export const POSTPROCESS_CHAIN = [
   // Meta uzunlukları üreticiler ne yazarsa yazsın son sözü burada bulur;
   // damga adımından ÖNCE koşmalı (içeriği değiştirir).
   { id: "normalize-meta", script: "normalize-meta.mjs", args: [], timeoutMinutes: 5 },
+  // Demetler app.js'ten TÜRETİLİR; app.js değiştiyse önce yeniden üretilmeli,
+  // sonra sayfalara bağlanmalı. İkisi de damga adımından ÖNCE: damga
+  // sayfadaki adresi okuyup sürümlüyor, adres önce doğru olmalı.
+  { id: "app-bundles", script: "build-app-bundles.mjs", args: [], timeoutMinutes: 5 },
+  { id: "app-bundle-link", script: "inject-app-bundle.mjs", args: [], timeoutMinutes: 8 },
   { id: "asset-version", script: "inject-asset-version.mjs", args: [], timeoutMinutes: 5 }
 ];
 
