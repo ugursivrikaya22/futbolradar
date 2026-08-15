@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-15T01:23:44.904Z",
+  "updatedAt": "2026-08-15T02:50:30.093Z",
   "items": [
     {
       "id": "auto-news-d50c3189bba4afd96e44",
@@ -18,7 +18,8 @@
       "automation": {
         "source": "rss",
         "feed": "galatasaray",
-        "priority": 1
+        "priority": 1,
+        "status": "OFFICIAL"
       }
     },
     {
@@ -37,7 +38,10 @@
       "automation": {
         "source": "rss",
         "feed": "galatasaray",
-        "priority": 1
+        "priority": 1,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-08-14T18:19:00.000Z"
       }
     },
     {
@@ -56,7 +60,8 @@
       "automation": {
         "source": "rss",
         "feed": "fenerbahce",
-        "priority": 2
+        "priority": 2,
+        "status": "OFFICIAL"
       }
     },
     {
@@ -75,7 +80,28 @@
       "automation": {
         "source": "rss",
         "feed": "fenerbahce",
-        "priority": 2
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-cb2ab0ac14f3be9eb536",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "FUTBOL",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-14T12:18:30.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1kQUpCWEJpVzUzTjQ1bGNuX0VGRExrQjNBbFN3bUtMV3hRT3lvY3lrZTV6cFM3YlZpWWt4cTFLZHlITXYtcmx2a0tlRE16OGl5eVBZeWIzV09jSWczeThCcDNzcVp5SUMyZXl0OHhtb2I?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
       }
     },
     {
@@ -94,7 +120,50 @@
       "automation": {
         "source": "rss",
         "feed": "fenerbahce",
-        "priority": 2
+        "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 3,
+        "firstSeenAt": "2026-08-12T17:50:15.000Z"
+      }
+    },
+    {
+      "id": "auto-news-0093a3588982cdb3cadd",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Kasımpaşa maçı hazırlıklarımız tamamlandı",
+      "team": "Trabzonspor",
+      "timestamp": "2026-08-14T10:46:07.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxPdGEwSmFaTFpoNE40cVNvYy1yMURHbzZGVGxFYTQ5RlEtdXE5VlZWVlV6THd0YlE5UmppcDRvQ3BVbjlycUJaeDkzbVNjY0hmcWcwVE1RNEExZU9YV1NVd2VDX29oQW9nRWd4em9BUHQzcnVURUduNUZjNFJzeDdBcDFDenRyN2JDUVBMSVhCQWliVG5n?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-c5ea5bdd688ec803cc06",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "FUTBOL",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-14T08:29:55.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFB6YTBVTFZycWhuc1VSRThmYkJDLTU1TkU4YUVPMTh6RjFxTUZhZmFRSEJ5QU1Ba2NyRkVmYmJhcjFadl85RmZueEFqdjVkMUZ3bGRVRVpEZUxRX21IYVhnV3QyeHRaVHhqb0I2RHg0aVI?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
       }
     },
     {
@@ -113,7 +182,10 @@
       "automation": {
         "source": "rss",
         "feed": "besiktas",
-        "priority": 3
+        "priority": 3,
+        "status": "OFFICIAL",
+        "mergedReports": 3,
+        "firstSeenAt": "2026-08-12T15:47:16.000Z"
       }
     },
     {
@@ -132,45 +204,28 @@
       "automation": {
         "source": "rss",
         "feed": "besiktas",
-        "priority": 3
+        "priority": 3,
+        "status": "OFFICIAL"
       }
     },
     {
-      "id": "auto-news-a496b5ec2e78cd1e706e",
+      "id": "auto-news-f941a9570aed67aa97b0",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Çorum FK maçı hazırlıkları tamamlandı",
-      "team": "Galatasaray",
-      "timestamp": "2026-08-13T17:48:00.000Z",
+      "text": "Kasımpaşa maçı hazırlıklarımız devam ediyor",
+      "team": "Trabzonspor",
+      "timestamp": "2026-08-13T17:02:13.000Z",
       "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPOFpXbGttWVRST3hjMlZGWXRwTzFXZTl6YnZSWW55WjhFbHJoekVkN1BPSm9sVmFEemtGa0RlUTlYVlN4VEFueWVzeUpMUzNFWURtb0NNU0pZWVdMdTFZMmNJRUVpSW1nMWJoY3c2UHZoZHZZRC1vc0tMN3RIbUdRTENRRGMxNlQ5WjNwOQ?oc=5",
-        "publisher": "galatasaray.org"
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOQWctNWllaEg2c0dHd3lkSDVnZHZHUEJTVV9laFRVX1pHaFVzMGJuaTdRY3BwM2Z0M1d5WHlFM2d2YWg4Wjg3dndMMFBLNGlaYXZZUFJoVUZoaFJnRjgtV1A3NUpuampZdzR0X0pVMWUtUW45WUVwX203Mk5WYlR1Rjl3N0VmWkt6RURIT1FKZlRJLW9GMHpkVnAzWGo?oc=5",
+        "publisher": "trabzonspor.org.tr"
       },
       "automation": {
         "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1
-      }
-    },
-    {
-      "id": "auto-news-fb36bd30c473f2aeab39",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "O. Lyon maçının biletleri satışa çıktı",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-13T15:35:34.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxQN19fOXdPeEVieUR2M3RiY3JGVnZtN3BQamdlbWRRZFhYdlFER0hiNi1tN3AzS3NGT2QwaS1FaHhrbnp4ZmpGUDh0UXAxaVdKT3p3Qk1UdUQxNzdwZ1ozdklfWnhVckpXb3ZWSVFZOHMxYU5rSE9xN3IyVVNrVHB5cExkUXpfa1BjQjRyZVVqcERjQ3M?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
       }
     },
     {
@@ -189,140 +244,90 @@
       "automation": {
         "source": "rss",
         "feed": "besiktas",
-        "priority": 3
+        "priority": 3,
+        "status": "OFFICIAL"
       }
     },
     {
-      "id": "auto-news-a0e6ac5dda9955a0274f",
+      "id": "auto-news-ef4a7f90bca20b9a0789",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Teşekkürler OPET",
+      "text": "Futbolcumuz Ernest Muçi’nin sağlık durumuyla ilgili açıklama",
+      "team": "Trabzonspor",
+      "timestamp": "2026-08-13T10:21:52.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNMUI3MFdNSERrV1E3MmpsOGk0WVc2aWpvSWtwaEdfR3BmVUxROVQ0RzJTMnZMT1QyQXI2STc4SHJWV0ZoMDVkX2Z6VnNSRDF5RUNYd09XUWcxUHN6QzlkWm1SUzVobWFEQTIzdzFsaUYyNl8xSHNOVXlJT29UQmJBbWV3M21VcFhEOVh3b2hUUm5qQU02Sk9RMUxWNjRodGlpcTlRcXRHS0l1QQ?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-2233287cfe9d868bfed0",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Kasımpaşa maçı hazırlıklarımız sürüyor",
+      "team": "Trabzonspor",
+      "timestamp": "2026-08-12T18:03:22.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNVzJVZFYxb2dWS21uaFg4THJicm53S3RTOFBXWGFtblZ4WC0wMGwwQzN3VnlKZXFlOVQ5OEJDdnF1cmxkcDFoRnRLWmxfTHF5RUxVX2MyOVEwSFk1ZU5IaG9ZeFFpS2pRSURkdFAydkZ5blByeEs3bkVrd1NzR3JqNXIzeW5pRm5hMVExUHVhQkw?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-714fd617b9229c70640e",
+      "category": "squad-update",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Fenerbahçe, Lyon maçı kadrosunu UEFA'ya bildirdi!",
       "team": "Fenerbahçe",
-      "timestamp": "2026-08-13T13:25:33.000Z",
+      "timestamp": "2026-08-14T18:44:47.000Z",
       "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQdTlnQVZhS05rYUFCVXcxN3JUNGhMY3RsM2RrdVdrYXI2ZEZjUkJEbENrWVd2eDFsZ2t2UnhaUC1uTjdKLWtIclU3aDJ2Vk1DT2JOM19SeldnVlBLVTJISzZodFhlYUFxQTJuT3lOajgyRk9ISEhHZ1J5SEVGN0xKNw?oc=5",
-        "publisher": "fenerbahce.org"
+        "name": "hurriyet-spor",
+        "url": "https://www.hurriyet.com.tr/sporarena/fenerbahce-lyon-maci-kadrosunu-uefaya-bildirdi-43273728",
+        "publisher": "hurriyet.com.tr"
       },
       "automation": {
         "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2
+        "feed": "hurriyet-spor",
+        "priority": 7,
+        "status": "REPORTED"
       }
     },
     {
-      "id": "auto-news-4825021de667df6e1d2a",
+      "id": "auto-news-195dc4521ed92bfc04c7",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Romelu Lukaku İstanbul’da",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-12T20:45:20.000Z",
+      "text": "UEFA Super Cup analysis: Paris Saint-Germain, Aston Villa and the art of one v one",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-08-14T16:25:44.000Z",
       "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxNaGZJZy1RYTZNRWJxbG8wMlRqdmt3SWo0UTY2eFBYZDkwUkw3SGFaZUdVZjVXbmRhdWlRNUVhMEZZbm96eTlTMmFPaG9Ya2VCZVZEQVlmbzNORDA3cF9KN05sYmlZWWZ0N1hBWWp1c0tzaXJ3cGFtakY1SV84d194Qw?oc=5",
-        "publisher": "fenerbahce.org"
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQWGJIa1FEblNPaDJvdHc5TmUwVEtKV2FFVTIyVW1iVEZKNTlSMmpfbEtNNkZoSENRRXdsaTAyU1N5NWlwT2JscmF4aFFnTDdQOVRpajlNeEtRVFdobHhFUjY2U1U2cngtV1F6QUJ5VFFjc1k0YmdoOVBhS2pRc1h3QlNqODFGRjM5MWZoUGRueDFNOFhXWVRpVnNpWHJLSGpUMk9Rckx4UmI5Q0JVa09VZmVxTDFGLW9MMHpuMHgySE1JckNBWjJGajZPSi02dGJRU3ZJ?oc=5",
+        "publisher": "uefa.com"
       },
       "automation": {
         "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2
-      }
-    },
-    {
-      "id": "auto-news-b97e2b8334ba80cae71e",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Metin Oktay Fair Play Ödülleri sahiplerini buldu",
-      "team": "Galatasaray",
-      "timestamp": "2026-08-12T20:38:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxNeVJnbmVtTmRfci1ST1ZTc3Nla2VqMG45dVJIUDlrMXpGVXp3OW42cnp1VFlBX0hGT0NGeDk3R3JzZ0d6eVlncWNLcWJULW83a2g2RHl1b3hEMU1VUFpJb1QzTWJPOHROUDlIU1NEMzRhcU5fSld4V1B4ZGJjNGJIVlBBQW1nRkViV0d6WjZVbW5ETEVDV0dDTmJ0NGhBVkZKNGN4SzRjRVhtNS1EOHFBT0swMkR1TGw2c211cVBYaEw0UVdoOThN?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1
-      }
-    },
-    {
-      "id": "auto-news-47a9f5d8bd91cba187c1",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "U16 Takımımızın yeni teknik sorumlusu Faruk Koç oldu",
-      "team": "Galatasaray",
-      "timestamp": "2026-08-12T19:50:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOYXZmR1FQMjdoamFtTmhHdTFrSVVKQk56WWNKeXJvcFVrY29lNk5HcElnbUVHcEJWZnAwUVpRUHZzOWZ0QldnUDItekJfNV9vQkF4UzlEV19EakRqQ1RabzdYRWpoZ01YQ1JCNWNVZEpvNWVScWxwc0ZoV2RVc19hb2NrcDY1Z1JRVGxqMFdsMGhLVjRRVURDcDJKbkdmeUsyVmx4eEQ2MXRiSlJlTkE?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1
-      }
-    },
-    {
-      "id": "auto-news-326d4ec1ff823257237a",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Futbol Direktörümüz Oğuz Çetin: Romelu Lukaku Fenerbahçemizde",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-12T17:50:15.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxOd2Vmc2w5M0N1NEd2a2R0OGlnZE1BZWZGQWpPSFY1Z3NKUTJXU1dENnpWQWpwTXlNRHAybEd5U0lGZkxCMjJxdlBiT0dvRi05NXUyXzJlcFRvWk0tV3c2N0Z4bjh4ZERLc3FSdWJ5SXBqRjBwbjM3YjdEQzRRSklKcnZiUE1EOXQ5YnJndTlaTHpqT3JhOXVscW9mUXdESWFHMTdKcVBzczE5ZmthYmlZ?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2
-      }
-    },
-    {
-      "id": "auto-news-ceb3216b45320a198f89",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Romelu Lukaku’nun ilk sözleri",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-12T17:50:15.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxOblJueEpRQ04yZ3R6WW9oSzZtS2Q0MmNNUG5vdmVSUmp3Tm8zWFNWNS1ILWxhZlZld3BHMkhvak1IVjNIcmJDYTBLZU1seVNvc3dVRFhzdGxlUWcycmw5M1d3Y21FU2FMUElHSTZOd3E3WW53VmEtWHlVZUtkY0hrY3MteHpNZw?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2
-      }
-    },
-    {
-      "id": "auto-news-97f664646fa46dc1be64",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Antrenman Raporu | 12 Ağustos Çarşamba",
-      "team": "Galatasaray",
-      "timestamp": "2026-08-12T17:10:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPMTdnWVQ2Y1Y4eER1dXJ4aVZQaTVlaUtOUEJtVE9reHBPaTZmYUlWMzVuMmdvM1ZCaW0zd0dfSkZqUVFPb2ctX2hJODQxc1ZMYnJxUU1hd2QtX21ORjRjX0N1SmlTblBzbXFvbWpnaDk2U0xvLVFNYzJqSUZpcGUwRnFSNXBUNTVUek5Z?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1
+        "feed": "uefa",
+        "priority": 9,
+        "status": "OFFICIAL",
+        "mergedReports": 4,
+        "firstSeenAt": "2026-08-12T14:54:20.000Z"
       }
     }
   ]
