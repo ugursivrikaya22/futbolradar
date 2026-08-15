@@ -168,8 +168,15 @@ function liveHeadline(match, reports) {
     : pair;
 
   // Kanca sırası: maçın kendi özeti → devre arası skoru → lig ve saha.
-  const halftime = match.score && Number.isFinite(Number(match.score.halftimeHome))
-    && Number.isFinite(Number(match.score.halftimeAway))
+  //
+  // `Number(null)` sıfır, `Number.isFinite(0)` doğru: yayımlanmamış ilk yarı
+  // skoru bu tuzakta "0-0" diye basılıyordu, yani olmayan bir skor
+  // uyduruluyordu. Boşluk önce elenir. (Aynı korumanın doğru yazılmış hâli:
+  // services/matchEligibility.js)
+  const published = (value) =>
+    value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value));
+  const halftime = match.score && published(match.score.halftimeHome)
+    && published(match.score.halftimeAway)
     ? `İlk yarı ${Number(match.score.halftimeHome)}-${Number(match.score.halftimeAway)}.`
     : "";
   const venue = text(match.venue);

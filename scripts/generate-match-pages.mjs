@@ -110,7 +110,7 @@ function squadHtml(name) {
 
   const absenceCount = Number(row.absenceCount || 0);
   const impact = row.totalAbsenceImpact ?? row.absenceImpact;
-  return `<dl class="match-squad-metrics"><div><dt>Eksik oyuncu</dt><dd>${escapeHtml(absenceCount)}</dd></div><div><dt>Kadro kaybı</dt><dd>${impact == null ? "Veri yok" : escapeHtml(`${impact}/100`)}</dd></div><div><dt>Önemli eksik</dt><dd>${escapeHtml(row.keyAbsence || "Yok")}</dd></div></dl>`;
+  return `<dl class="match-squad-metrics"><div><dt>Eksik oyuncu</dt><dd>${escapeHtml(absenceCount)}</dd></div>${impact == null ? "" : `<div><dt>Kadro kaybı</dt><dd>${escapeHtml(`${impact}/100`)}</dd></div>`}<div><dt>Önemli eksik</dt><dd>${escapeHtml(row.keyAbsence || "Yok")}</dd></div></dl>`;
 }
 
 function radarCard(name, radar, team) {

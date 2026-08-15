@@ -14,8 +14,8 @@ const MISSING_COMPONENT_LABELS = Object.freeze({
   awaySquadCoverage: "Deplasman kadro kapsamı yetersiz",
   homeStatsCoverage: "Ev sahibi için güncel oyuncu verileri tamamlanıyor",
   awayStatsCoverage: "Deplasman için güncel oyuncu verileri tamamlanıyor",
-  recentFormCoverage: "Son maç formu için yeterli doğrulanmış veri yok",
-  teamAnalysisCoverage: "Takım analizi için yeterli veri yok",
+  recentFormCoverage: "Son maç formu hazırlanıyor",
+  teamAnalysisCoverage: "Takım analizi hazırlanıyor",
   probableLineupCoverage: "Muhtemel ilk 11 için yeterli kadro verisi yok",
   officialLineupCoverage: "Resmî ilk 11 henüz açıklanmadı"
 });
