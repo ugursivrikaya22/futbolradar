@@ -67,7 +67,13 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
 
   // Doğrulanmış spor medyası
   media: Object.freeze([
-    "hurriyet.com.tr",
+    // Championat: Rusya'nın en büyük spor yayınlarından biri. Batrakov
+  // sürecinde birincil kaynak; .com ve .ru ayrı alan adları olarak yayın yapıyor.
+  "championat.com",
+  "championat.ru",
+  // NTV Spor: ulusal spor yayıncısı, listedeki hurriyet.com.tr ile aynı sınıf.
+  "ntvspor.net",
+  "hurriyet.com.tr",
     "fanatik.com.tr",
     "sporx.com",
     "sozcu.com.tr",
