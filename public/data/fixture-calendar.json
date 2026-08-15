@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-15T09:29:40.534Z",
+  "fetchedAt": "2026-08-15T10:26:20.885Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -84195,11 +84195,11 @@
       "awayTeam": "Ebro",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/15327.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/5261.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 67,
-      "elapsed": 67,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 1,
         "away": 0,
@@ -84220,8 +84220,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-15T09:29:42.551Z",
-      "staleAfter": "2026-08-15T09:34:42.551Z",
+      "fetchedAt": "2026-08-15T10:26:22.287Z",
+      "staleAfter": "2026-08-15T10:31:22.287Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -84230,7 +84230,7 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "Ebro kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 52' Normal Goal tarafından kaydedildi. Skor üstünlüğü Huesca II tarafında.",
         "confidence": "Orta",
         "signals": [
@@ -86455,11 +86455,11 @@
       "awayTeam": "Marchamalo",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9713.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/15332.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 73,
-      "elapsed": 73,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
         "away": 1,
@@ -86480,8 +86480,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-15T09:29:42.551Z",
-      "staleAfter": "2026-08-15T09:34:42.551Z",
+      "fetchedAt": "2026-08-15T10:26:22.287Z",
+      "staleAfter": "2026-08-15T10:31:22.287Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -86490,7 +86490,7 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "Son gol 54' Gabri Salazar tarafından kaydedildi. Marchamalo skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Marchamalo tarafında.",
         "confidence": "Orta",
         "signals": [
@@ -88061,13 +88061,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9387.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/5281.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 30,
-      "elapsed": 30,
+      "providerStatus": "2H",
+      "minute": 67,
+      "elapsed": 67,
       "live": true,
       "score": {
         "home": 0,
-        "away": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -88085,8 +88085,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-15T09:29:42.551Z",
-      "staleAfter": "2026-08-15T09:34:42.551Z",
+      "fetchedAt": "2026-08-15T10:26:22.287Z",
+      "staleAfter": "2026-08-15T10:31:22.287Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -88096,17 +88096,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 33' P. Ferrer tarafından kaydedildi. Unionistas de Salamanca skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Unionistas de Salamanca tarafında.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "33'",
+            "text": "Son gol 33' P. Ferrer tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "0-1",
+            "text": "Unionistas de Salamanca skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 1,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -88983,7 +88988,19 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "33'",
+          "team": {
+            "name": "Unionistas de Salamanca"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "P. Ferrer · Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "beasain-touring-2026-08-15",
@@ -88998,12 +89015,12 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9657.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/20261.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 28,
-      "elapsed": 28,
+      "providerStatus": "2H",
+      "minute": 67,
+      "elapsed": 67,
       "live": true,
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -89022,8 +89039,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-15T09:29:42.551Z",
-      "staleAfter": "2026-08-15T09:34:42.551Z",
+      "fetchedAt": "2026-08-15T10:26:22.287Z",
+      "staleAfter": "2026-08-15T10:31:22.287Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -89033,17 +89050,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 42' Normal Goal tarafından kaydedildi. Beasain skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Beasain tarafında.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "42'",
+            "text": "Son gol 42' Normal Goal tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "1-0",
+            "text": "Beasain skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 1,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -89990,7 +90012,19 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "42'",
+          "team": {
+            "name": "Beasain"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "la-calzada-san-ignacio-2026-08-15",
@@ -90005,13 +90039,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9867.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9663.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 29,
-      "elapsed": 29,
+      "providerStatus": "2H",
+      "minute": 68,
+      "elapsed": 68,
       "live": true,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 1,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -90029,8 +90063,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-15T09:29:42.551Z",
-      "staleAfter": "2026-08-15T09:34:42.551Z",
+      "fetchedAt": "2026-08-15T10:26:22.287Z",
+      "staleAfter": "2026-08-15T10:31:22.287Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -90040,17 +90074,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 53' Normal Goal tarafından kaydedildi. San Ignacio skor üstünlüğünü elinde tutuyor. Skor üstünlüğü San Ignacio tarafında.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "53'",
+            "text": "Son gol 53' Normal Goal tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "1-2",
+            "text": "San Ignacio skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 3,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -90716,7 +90755,39 @@
           }
         },
         "h2h": []
-      }
+      },
+      "events": [
+        {
+          "time": "31'",
+          "team": {
+            "name": "San Ignacio"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "B. Lopez · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "34'",
+          "team": {
+            "name": "San Ignacio"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "A. Galceran · Penalty",
+          "comments": ""
+        },
+        {
+          "time": "53'",
+          "team": {
+            "name": "La Calzada"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "racing-santander-ii-basconia-2026-08-15",
@@ -90731,12 +90802,12 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9643.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9656.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 29,
-      "elapsed": 29,
+      "providerStatus": "2H",
+      "minute": 66,
+      "elapsed": 66,
       "live": true,
       "score": {
-        "home": 1,
+        "home": 3,
         "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
@@ -90755,8 +90826,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-15T09:29:42.551Z",
-      "staleAfter": "2026-08-15T09:34:42.551Z",
+      "fetchedAt": "2026-08-15T10:26:22.287Z",
+      "staleAfter": "2026-08-15T10:31:22.287Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -90794,25 +90865,45 @@
           "detail": "Missed Penalty",
           "value": "Missed Penalty",
           "comments": ""
+        },
+        {
+          "time": "34'",
+          "team": {
+            "name": "Racing Santander II"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "43'",
+          "team": {
+            "name": "Racing Santander II"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
         }
       ],
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Son gol 26' Missed Penalty tarafından kaydedildi. Skor dengede.",
+        "summary": "Son gol 43' Normal Goal tarafından kaydedildi. Racing Santander II skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Racing Santander II tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "26'",
-            "text": "Son gol 26' Missed Penalty tarafından kaydedildi."
+            "value": "43'",
+            "text": "Son gol 43' Normal Goal tarafından kaydedildi."
           },
           {
             "label": "Canlı skor",
-            "value": "1-1",
-            "text": "Skor dengede."
+            "value": "3-1",
+            "text": "Racing Santander II skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 3,
+        "eventCount": 5,
         "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
@@ -91611,14 +91702,14 @@
       "awayTeam": "Guijuelo",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9724.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9388.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "HALFTIME",
+      "providerStatus": "HT",
+      "minute": 45,
+      "elapsed": 45,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -91636,15 +91727,992 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-14T22:27:06.175Z",
-      "staleAfter": "2026-08-14T22:32:06.175Z",
+      "fetchedAt": "2026-08-15T10:26:22.287Z",
+      "staleAfter": "2026-08-15T10:31:22.287Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1618937"
       },
-      "competitionId": "hazirlik-maci"
+      "competitionId": "hazirlik-maci",
+      "events": [
+        {
+          "time": "38'",
+          "team": {
+            "name": "Atlético Tordesillas"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ],
+      "analysis": {
+        "title": "Canlı Radar Analizi",
+        "summary": "Son gol 38' Normal Goal tarafından kaydedildi. Atlético Tordesillas skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Atlético Tordesillas tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "38'",
+            "text": "Son gol 38' Normal Goal tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-0",
+            "text": "Atlético Tordesillas skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 1,
+        "dataPoints": 2,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 9388,
+            "name": "Guijuelo",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": "-2.5",
+          "goals": {
+            "home": "-1.5",
+            "away": null
+          },
+          "advice": "Combo Double chance : draw or Guijuelo and -2.5 goals",
+          "percent": {
+            "home": "0%",
+            "draw": "50%",
+            "away": "50%"
+          }
+        },
+        "league": {
+          "id": 667,
+          "name": "Friendlies Clubs",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/667.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 9724,
+            "name": "Atlético Tordesillas",
+            "logo": "https://media.api-sports.io/football/teams/9724.png",
+            "last_5": {
+              "played": 2,
+              "form": "17%",
+              "att": "7%",
+              "def": "79%",
+              "goals": {
+                "for": {
+                  "total": 1,
+                  "average": "0.5"
+                },
+                "against": {
+                  "total": 3,
+                  "average": "1.5"
+                }
+              }
+            },
+            "league": {
+              "form": "DL",
+              "fixtures": {
+                "played": {
+                  "home": 2,
+                  "away": 0,
+                  "total": 2
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                },
+                "loses": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 1,
+                    "away": 0,
+                    "total": 1
+                  },
+                  "average": {
+                    "home": "0.5",
+                    "away": "0.0",
+                    "total": "0.5"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 3,
+                    "away": 0,
+                    "total": 3
+                  },
+                  "average": {
+                    "home": "1.5",
+                    "away": "0.0",
+                    "total": "1.5"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 1,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": "0-2",
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 1,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 2,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 1,
+                "away": 0,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 9388,
+            "name": "Guijuelo",
+            "logo": "https://media.api-sports.io/football/teams/9388.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "att": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "def": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "20%",
+            "away": "80%"
+          },
+          "goals": {
+            "home": "11%",
+            "away": "89%"
+          },
+          "total": {
+            "home": "15.5%",
+            "away": "84.5%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1460410,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2026-05-10T16:00:00+00:00",
+              "timestamp": 1778428800,
+              "periods": {
+                "first": 1778428800,
+                "second": 1778432400
+              },
+              "venue": {
+                "id": 12287,
+                "name": "Estadio Municipal Luis Ramos",
+                "city": "Guijuelo"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 3
+              }
+            },
+            "league": {
+              "id": 446,
+              "name": "Tercera División RFEF - Group 8",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/446.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2025,
+              "round": "Group 8 - 34",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9388,
+                "name": "Guijuelo",
+                "logo": "https://media.api-sports.io/football/teams/9388.png",
+                "winner": true
+              },
+              "away": {
+                "id": 9724,
+                "name": "Atlético Tordesillas",
+                "logo": "https://media.api-sports.io/football/teams/9724.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 4,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 4,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1460254,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2026-01-11T15:15:00+00:00",
+              "timestamp": 1768144500,
+              "periods": {
+                "first": 1768144500,
+                "second": 1768148100
+              },
+              "venue": {
+                "id": 6813,
+                "name": "Estadio Las Salinas",
+                "city": "Tordesillas"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 6
+              }
+            },
+            "league": {
+              "id": 446,
+              "name": "Tercera División RFEF - Group 8",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/446.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2025,
+              "round": "Group 8 - 17",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9724,
+                "name": "Atlético Tordesillas",
+                "logo": "https://media.api-sports.io/football/teams/9724.png",
+                "winner": null
+              },
+              "away": {
+                "id": 9388,
+                "name": "Guijuelo",
+                "logo": "https://media.api-sports.io/football/teams/9388.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 782341,
+              "referee": "Víctor Laín",
+              "timezone": "UTC",
+              "date": "2022-03-06T16:00:00+00:00",
+              "timestamp": 1646582400,
+              "periods": {
+                "first": 1646582400,
+                "second": 1646586000
+              },
+              "venue": {
+                "id": 6813,
+                "name": "Estadio Las Salinas",
+                "city": "Tordesillas"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 446,
+              "name": "Tercera División RFEF - Group 8",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/446.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2021,
+              "round": "Group 8 - 26",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9724,
+                "name": "Atlético Tordesillas",
+                "logo": "https://media.api-sports.io/football/teams/9724.png",
+                "winner": null
+              },
+              "away": {
+                "id": 9388,
+                "name": "Guijuelo",
+                "logo": "https://media.api-sports.io/football/teams/9388.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 782204,
+              "referee": "Antonio Del Bosque",
+              "timezone": "UTC",
+              "date": "2021-10-23T15:30:00+00:00",
+              "timestamp": 1635003000,
+              "periods": {
+                "first": 1635003000,
+                "second": 1635006600
+              },
+              "venue": {
+                "id": 12287,
+                "name": "Estadio Municipal Luis Ramos",
+                "city": "Guijuelo"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 446,
+              "name": "Tercera División RFEF - Group 8",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/446.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2021,
+              "round": "Group 8 - 9",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9388,
+                "name": "Guijuelo",
+                "logo": "https://media.api-sports.io/football/teams/9388.png",
+                "winner": true
+              },
+              "away": {
+                "id": 9724,
+                "name": "Atlético Tordesillas",
+                "logo": "https://media.api-sports.io/football/teams/9724.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "cultural-leonesa-salamanca-uds-2026-08-15",
@@ -91658,14 +92726,14 @@
       "awayTeam": "Salamanca UDS",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/725.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9588.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "HALFTIME",
+      "providerStatus": "HT",
+      "minute": 45,
+      "elapsed": 45,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 2,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -91683,8 +92751,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-14T23:25:11.579Z",
-      "staleAfter": "2026-08-14T23:30:11.579Z",
+      "fetchedAt": "2026-08-15T10:26:22.287Z",
+      "staleAfter": "2026-08-15T10:31:22.287Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -91705,14 +92773,14 @@
       "awayTeam": "Livyi Bereh",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/6489.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/17162.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 24,
+      "elapsed": 24,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -91730,8 +92798,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-14T22:27:06.175Z",
-      "staleAfter": "2026-08-14T22:32:06.175Z",
+      "fetchedAt": "2026-08-15T10:26:22.287Z",
+      "staleAfter": "2026-08-15T10:31:22.287Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",

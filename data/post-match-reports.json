@@ -1,9 +1,472 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-15T09:30:03.127Z",
-  "matchCount": 427,
+  "updatedAt": "2026-08-15T10:26:40.180Z",
+  "matchCount": 429,
   "records": [
+    {
+      "matchId": "huesca-ii-ebro-2026-08-15",
+      "fixtureId": "1618935",
+      "provider": "api-football",
+      "slug": "huesca-ii-ebro-2026-08-15",
+      "kickoff": "2026-08-15T11:00:00+03:00",
+      "kickoffUtc": "2026-08-15T08:00:00.000Z",
+      "kickoffLocal": "2026-08-15T11:00",
+      "date": "2026-08-15",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Huesca II",
+      "awayTeam": "Ebro",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "finalScore": "1-0",
+      "winner": "Huesca II",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 3
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 3,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "30ef344f7b8d193e",
+      "fingerprint": "30ef344f7b8d193e",
+      "analysisGeneratedAt": "2026-08-15T10:26:40.144Z",
+      "analysisUpdatedAt": "2026-08-15T10:26:40.144Z",
+      "generatedAt": "2026-08-15T10:26:40.144Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Huesca II 1-0 Ebro maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Huesca II, Friendlies Clubs karşılaşmasında Ebro'yu 1-0 mağlup etti.",
+        "path": "mac-raporu/huesca-ii-ebro-2026-08-15.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/huesca-ii-ebro-2026-08-15.html",
+      "digest": {
+        "headline": "Huesca II, Ebro'yu 1-0 yendi",
+        "paragraph": "Huesca II, Friendlies Clubs karşılaşmasında Ebro'yu 1-0 mağlup etti. Golleri 27. dakikada Missed Penalty (Ebro), 52. dakikada Normal Goal (Huesca II) kaydetti.",
+        "result": {
+          "winner": "Huesca II",
+          "loser": "Ebro",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "27'",
+              "team": "Ebro",
+              "type": "Kaçan penaltı",
+              "detail": "Missed Penalty",
+              "pivotal": true
+            },
+            {
+              "minute": "29'",
+              "team": "Ebro",
+              "type": "Kırmızı kart",
+              "detail": "Red Card",
+              "pivotal": true
+            },
+            {
+              "minute": "52'",
+              "team": "Huesca II",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Missed Penalty",
+              "team": "Ebro",
+              "contribution": "27' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Normal Goal",
+              "team": "Huesca II",
+              "contribution": "52' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Red Card",
+              "team": "Ebro",
+              "contribution": "29' kırmızı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "27' Ebro — Missed Penalty: kaçan penaltı"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "52' Huesca II — Normal Goal: gol"
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Huesca II, Ebro'yu 1-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Kırmızı kart maçın seyrini etkiledi (29' Ebro)."
+          ],
+          "closing": "Huesca II sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "pozuelo-alarcon-marchamalo-2026-08-15",
+      "fixtureId": "1626992",
+      "provider": "api-football",
+      "slug": "pozuelo-alarcon-marchamalo-2026-08-15",
+      "kickoff": "2026-08-15T11:00:00+03:00",
+      "kickoffUtc": "2026-08-15T08:00:00.000Z",
+      "kickoffLocal": "2026-08-15T11:00",
+      "date": "2026-08-15",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Pozuelo Alarcón",
+      "awayTeam": "Marchamalo",
+      "venue": null,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "Marchamalo",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 1,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "86357ce7e4bbc5f8",
+      "fingerprint": "86357ce7e4bbc5f8",
+      "analysisGeneratedAt": "2026-08-15T10:26:40.144Z",
+      "analysisUpdatedAt": "2026-08-15T10:26:40.144Z",
+      "generatedAt": "2026-08-15T10:26:40.144Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Pozuelo Alarcón 0-1 Marchamalo maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Marchamalo, Friendlies Clubs karşılaşmasında Pozuelo Alarcón'ı 1-0 mağlup etti.",
+        "path": "mac-raporu/pozuelo-alarcon-marchamalo-2026-08-15.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/pozuelo-alarcon-marchamalo-2026-08-15.html",
+      "digest": {
+        "headline": "Marchamalo, Pozuelo Alarcón'ı 1-0 yendi",
+        "paragraph": "Marchamalo, Friendlies Clubs karşılaşmasında Pozuelo Alarcón'ı 1-0 mağlup etti. Tek golü 54. dakikada Gabri Salazar (Marchamalo) kaydetti.",
+        "result": {
+          "winner": "Marchamalo",
+          "loser": "Pozuelo Alarcón",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "54'",
+              "team": "Marchamalo",
+              "type": "Gol",
+              "detail": "Gabri Salazar",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Gabri Salazar",
+              "team": "Marchamalo",
+              "contribution": "54' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "54' Marchamalo — Gabri Salazar: gol"
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Marchamalo, Pozuelo Alarcón'ı 0-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Marchamalo sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 43,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "deportiva-minera-cartagena-lu-ii-2026-08-15",
       "fixtureId": "1626990",
