@@ -24,6 +24,7 @@ const {
   handleMatchLineup,
   isConfirmedSide,
   lineupStatusFor,
+  markStaleFixtureStatus,
   publicSide,
   scoreboardFrom,
   windowState
@@ -236,4 +237,75 @@ console.log("match-lineup-api");
   assert.deepEqual(dynamic, [], "veri dosyaları sabit dizeyle istenmeli");
 }
 
-console.log("match-lineup-api OK (10 bölüm)");
+// ── 11. OYNANMIŞ MAÇA "BAŞLAMADI" DENMEZ ──────────────────────────────────
+//
+// Pencere kapandıktan sonra skor, derleme anındaki fikstür kaydından
+// okunuyor. Sonuç eşitlemesi henüz koşmadıysa o kayıt maçı `SCHEDULED`
+// gösteriyor ve uç nokta OYNANMIŞ maçı "başlamadı" diye döndürüyordu:
+// Gençlerbirliği – Fenerbahçe 2-1 bittikten sonra üç buçuk saat boyunca
+// böyleydi, rapor sayfası skoru yazarken maç dosyası maçı başlamamış
+// sanıyordu. Skor uydurulmuyor; uydurulmayan tek şey de o değil — maçın
+// oynandığı biliniyor ve durum artık bunu söylüyor.
+{
+  const stale = { status: "SCHEDULED", providerStatus: "NS", live: false, finished: false, home: null, away: null };
+
+  const repaired = markStaleFixtureStatus(stale, "final");
+  assert.equal(repaired.unknown, true, "geçmiş maçın bayat kaydı işaretlenmeli");
+  assert.equal(repaired.status, "UNKNOWN", "`SCHEDULED` oynanmış maç için korunmamalı");
+  assert.equal(repaired.home, null, "bilinmeyen skor uydurulmamalı");
+  assert.equal(repaired.away, null, "bilinmeyen skor uydurulmamalı");
+
+  // Pencere içindeki maça dokunulmaz: orada `SCHEDULED` gerçekten doğru.
+  for (const phase of ["scheduled", "pre-match", "in-play", "unknown"]) {
+    assert.equal(markStaleFixtureStatus(stale, phase).unknown, undefined,
+      `${phase} fazında bayat işareti konmamalı`);
+  }
+
+  // Sonucu bilinen maç olduğu gibi kalır — bayrak onu ezmemeli.
+  const finished = { status: "FINISHED", providerStatus: "FT", live: false, finished: true, home: 2, away: 1 };
+  assert.deepEqual(markStaleFixtureStatus(finished, "final"), finished,
+    "bitmiş ve skoru bilinen maç değiştirilmemeli");
+
+  const live = { status: "LIVE", providerStatus: "2H", live: true, finished: false, home: 1, away: 0 };
+  assert.deepEqual(markStaleFixtureStatus(live, "final"), live, "canlı kayıt değiştirilmemeli");
+  console.log("  ok  bayat fikstür kaydı: oynanmış maç `SCHEDULED` dönmüyor");
+}
+
+// ── 12. TAKVİM, YAYIMLANMIŞ SONUÇLARLA ÇELİŞMEZ ───────────────────────────
+//
+// Maç raporu sayfası "Gençlerbirliği 2-1 Fenerbahçe" derken takvim aynı
+// maçı `SCHEDULED` tutuyordu. İki dosya aynı maç hakkında iki şey
+// söylediğinde hangisinin okunduğu tesadüfe kalıyor.
+{
+  const reports = JSON.parse(fs.readFileSync(path.join(root, "data", "post-match-reports.json"), "utf8"));
+  const calendar = JSON.parse(fs.readFileSync(path.join(root, "data", "fixture-calendar.json"), "utf8"));
+  const matches = new Map();
+  for (const match of (Array.isArray(calendar) ? calendar : calendar.matches || [])) {
+    if (match && match.id) matches.set(String(match.id), match);
+  }
+
+  const FINISHED = new Set(["FT", "AET", "PEN", "FINISHED"]);
+  const contradictions = [];
+  for (const record of reports.records || []) {
+    const status = String(record.providerStatus || record.status || "").toUpperCase();
+    if (!FINISHED.has(status)) continue;
+    const score = record.score || {};
+    if (!Number.isFinite(Number(score.home)) || !Number.isFinite(Number(score.away))) continue;
+
+    const match = matches.get(String(record.matchId || ""));
+    if (!match) continue;
+    const kickoff = Date.parse(match.kickoff || "");
+    if (!Number.isFinite(kickoff) || kickoff > Date.now()) continue;
+
+    const calendarStatus = String(match.providerStatus || match.status || "").toUpperCase();
+    if (!FINISHED.has(calendarStatus)) {
+      contradictions.push(`${record.matchId}: rapor ${score.home}-${score.away}, takvim ${calendarStatus || "(boş)"}`);
+    }
+  }
+
+  assert.deepEqual(contradictions.slice(0, 5), [],
+    "takvim, yayımlanmış maç raporlarıyla çelişiyor — `node scripts/repair-fixture-results.mjs --apply`");
+  console.log("  ok  takvim ile yayımlanmış raporlar tutarlı");
+}
+
+console.log("match-lineup-api OK (12 bölüm)");

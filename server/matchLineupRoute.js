@@ -199,6 +199,25 @@ function scoreboardFrom(providerMatch, fixture) {
   };
 }
 
+/**
+ * SAATLER ÖNCE OYNANMIŞ MAÇA "BAŞLAMADI" DENMEZ.
+ *
+ * Pencere kapandıktan sonra sağlayıcıya gidilmiyor ve skor, derleme anındaki
+ * fikstür kaydından okunuyor. O kayıt sonuç eşitlemesi henüz koşmadıysa maçı
+ * `SCHEDULED` gösteriyor: Gençlerbirliği – Fenerbahçe 2-1 bittikten sonra uç
+ * nokta üç buçuk saat boyunca "başlamadı" dedi, sayfa da öyle yazdı.
+ *
+ * SKOR UYDURULMAZ — bilinmeyen skor `null` kalır. Uydurulmayan şey başlama
+ * bilgisi de değil: başlama saati saatler önce geçmişse maçın oynandığı
+ * BİLİNİYOR, bilinmeyen yalnızca sonucu. Bayrak istemciye bunu söyler; o da
+ * "Başlamadı" yerine hiçbir şey yazmaz.
+ */
+function markStaleFixtureStatus(scoreboard, phase) {
+  if (phase !== "final") return scoreboard;
+  if (scoreboard.live || scoreboard.finished) return scoreboard;
+  return { ...scoreboard, status: "UNKNOWN", providerStatus: null, unknown: true };
+}
+
 async function readProviderFixture(fixtureId) {
   try {
     const fixtures = await withTimeout(apiFootballProvider.getFixtures({ fixtureId }), PROVIDER_TIMEOUT_MS);
@@ -254,7 +273,7 @@ async function handleMatchLineup(req, res) {
   const home = publicSide(lineup && lineup.home, fixture.homeTeam, fixture.homeTeamLogo);
   const away = publicSide(lineup && lineup.away, fixture.awayTeam, fixture.awayTeamLogo);
   const status = lineupStatusFor(home, away, state.phase);
-  const scoreboard = scoreboardFrom(providerMatch, fixture);
+  const scoreboard = markStaleFixtureStatus(scoreboardFrom(providerMatch, fixture), state.phase);
 
   // `final` fazı da uzun önbelleğe girer. Eskiden koşul yalnızca
   // "kadro onaylı VE maç bitti" idi; oysa pencere kapandıktan sonra
@@ -305,6 +324,7 @@ module.exports = {
   AFTER_KICKOFF_WINDOW_MINUTES,
   isConfirmedSide,
   lineupStatusFor,
+  markStaleFixtureStatus,
   publicSide,
   scoreboardFrom,
   windowState
