@@ -48,8 +48,21 @@ for (const page of HOME_PAGES) {
   if (!fs.existsSync(file)) continue;
   const html = fs.readFileSync(file, "utf8");
 
-  // Kart işaretlemesi `data-kickoff` ile başlama saatini duyuruyor.
-  const matches = [...html.matchAll(/data-kickoff="([^"]+)"/g)];
+  /**
+   * İki ayrı yerde başlama saati duyuruluyor ve İKİSİ DE denetlenmeli:
+   *   · `data-kickoff` — kartın görünen işaretlemesi.
+   *   · JSON-LD `SportsEvent.startDate` — okuyucuya görünmeyen, arama
+   *     motoruna giden hâli.
+   *
+   * İlk sürüm yalnızca ilkine bakıyordu. Kart silindikten sonra şema bloğu
+   * sayfada KALDI ve dünkü maçı Google'a "EventScheduled" diye bildirmeye
+   * devam etti — göze görünmediği için de fark edilmedi. Görünmeyen bayat
+   * veri, görünenden daha uzun ömürlü oluyor; bu yüzden ikisi bir arada.
+   */
+  const matches = [
+    ...html.matchAll(/data-kickoff="([^"]+)"/g),
+    ...html.matchAll(/"startDate":\s*"([^"]+)"/g)
+  ];
   for (const [, value] of matches) {
     scanned += 1;
     const kickoff = Date.parse(value);
