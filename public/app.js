@@ -11625,30 +11625,6 @@
    * uygulanmıştır (scripts/inject-theme-boot.mjs); buradaki iş yalnızca
    * düğmenin durumunu yansıtmak ve tıklamayı işlemek.
    */
-  function initSuperLigLaunchCard() {
-    var cards = document.querySelectorAll("[data-super-lig-launch]");
-
-    function syncCard(card) {
-      var kickoff = Date.parse(card.getAttribute("data-kickoff") || "");
-      if (!Number.isFinite(kickoff)) return;
-
-      var isLive = Date.now() >= kickoff;
-      card.classList.toggle("is-live", isLive);
-      card.classList.toggle("is-upcoming", !isLive);
-      card.setAttribute("data-match-state", isLive ? "live" : "upcoming");
-
-      var status = card.querySelector("[data-super-lig-launch-status]");
-      if (status) status.innerHTML = '<i aria-hidden="true"></i><span>' + (isLive ? "CANLI" : "Bu akşam 21:30") + "</span>";
-      card.setAttribute("aria-label", isLive ? "Galatasaray - Arca Çorum FK maçı canlı; maç detayını aç" : "Galatasaray - Arca Çorum FK maç detayını aç; 14 Ağustos 2026 Cuma saat 21:30, RAMS Park");
-
-      if (!isLive) {
-        window.setTimeout(function () { syncCard(card); }, Math.min(Math.max(kickoff - Date.now() + 50, 250), 2147483647));
-      }
-    }
-
-    for (var i = 0; i < cards.length; i += 1) syncCard(cards[i]);
-  }
-
   var THEME_KEY = "futbolradar-theme";
 
   function systemPrefersDark() {
@@ -11724,7 +11700,6 @@
 
   function bootstrap() {
     initThemeToggle();
-    initSuperLigLaunchCard();
     initDataLayer();
   }
 
