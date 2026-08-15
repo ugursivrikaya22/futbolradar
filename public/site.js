@@ -14,6 +14,127 @@
   }
 
   /**
+   * "ŞİMDİ FUTBOLDA" — mobil ilk ekran özeti.
+   *
+   * Telefonu açan okuyucunun ilk saniyelerde sorduğu dört soruya tek şeritte
+   * cevap verir: kaç maç canlı, bugün kaç maç var, Türk takımlarının sıradaki
+   * maçı ne zaman, son gelişme ne.
+   *
+   * İKİ BİLGİ ZATEN SAYFADA, YENİDEN HESAPLANMIYOR:
+   *   · sıradaki Türk takımı maçı → `[data-featured-turkish="true"]`
+   *     (sunucuda services/matchRelevance ile seçiliyor; burada aynı kuralı
+   *     ikinci kez yazmak iki mantığı ayrıştırırdı)
+   *   · son gelişme → haber şeridinin ilk maddesi
+   * İkisi de DOM'dan okunuyor: sıfır istek, anında çizim, düzen kaymaz.
+   *
+   * TEK İSTEK sayılar için: canlı/bugün maç sayısı taze veri gerektiriyor ve
+   * hiçbir yerde hazır durmuyor. Türkçe tarafta app.js aynı uç noktayı zaten
+   * çağırdığı için tarayıcı önbelleği çoğu ziyarette bunu bedavaya getiriyor.
+   *
+   * SAYI GELMEZSE SATIR HİÇ ÇİZİLMEZ — "0 canlı maç" ile "sayamadım" aynı şey
+   * değil ve ikincisini birinciymiş gibi göstermek okuyucuyu yanıltır.
+   */
+  function setupNowFootball() {
+    // Yalnızca ana sayfada: iç sayfalarda okuyucu zaten ne aradığını biliyor.
+    var main = document.querySelector("main.home-main");
+    if (!main || document.querySelector("[data-now-football]")) return;
+
+    var en = (document.documentElement.getAttribute("lang") || "tr").toLowerCase().indexOf("en") === 0;
+    var s = en
+      ? { title: "Football Right Now", live: "live now", today: "today",
+        next: "Next Turkish club match", headline: "Latest" }
+      : { title: "Şimdi Futbolda", live: "canlı maç", today: "bugün maç",
+        next: "Sıradaki Türk takımı maçı", headline: "Son gelişme" };
+
+    var strip = document.createElement("section");
+    strip.className = "container now-football";
+    strip.setAttribute("data-now-football", "");
+    strip.setAttribute("aria-label", s.title);
+
+    var counts = document.createElement("div");
+    counts.className = "now-football__counts";
+    counts.setAttribute("data-now-football-counts", "");
+
+    strip.innerHTML = '<span class="now-football__title">' + escapeText(s.title) + "</span>";
+    strip.appendChild(counts);
+
+    // ── Sayfada zaten duran iki bilgi ────────────────────────────────────
+    var featured = document.querySelector('[data-featured-turkish="true"]');
+    if (featured) {
+      var teams = featured.querySelectorAll(".featured-fixture-team strong");
+      var when = featured.querySelector(".featured-fixture-score b");
+      if (teams.length === 2 && when) {
+        strip.appendChild(nowRow(s.next,
+          teams[0].textContent.trim() + " – " + teams[1].textContent.trim(),
+          when.textContent.trim()));
+      }
+    }
+
+    var head = document.querySelector(".news-ticker-item");
+    if (head) {
+      // Şerit maddesi iki parçalı: rozet (`.news-ticker-tag`) + başlık.
+      // Maddenin tamamını okumak ikisini ayraçsız yapıştırıyordu
+      // ("Resmî açıklamaUğurcan Çakır'dan…"); yalnızca başlık alınır.
+      var headline = head.querySelector("span:not(.news-ticker-tag)");
+      var text = ((headline || head).textContent || "").trim();
+      if (text) strip.appendChild(nowRow(s.headline, text, "", head.getAttribute("href")));
+    }
+
+    main.insertBefore(strip, main.firstChild);
+
+    // ── Tek istek: canlı ve bugünkü maç sayısı ───────────────────────────
+    window.fetch("/api/matches", { headers: { Accept: "application/json" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (payload) {
+        var list = payload && Array.isArray(payload.data) ? payload.data : null;
+        if (!list) return;
+
+        var todayKey = new Date().toDateString();
+        var live = 0;
+        var today = 0;
+        for (var i = 0; i < list.length; i += 1) {
+          var m = list[i];
+          if (m.live === true || m.status === "LIVE" || m.status === "HALFTIME") live += 1;
+          var t = Date.parse(m.kickoff || "");
+          if (isFinite(t) && new Date(t).toDateString() === todayKey) today += 1;
+        }
+
+        if (live) counts.appendChild(nowCount(live, s.live, true));
+        if (today) counts.appendChild(nowCount(today, s.today, false));
+      })
+      // Ağ hatası kullanıcıya teknik metin olarak BASILMAZ; şerit sayısız
+      // kalır, geri kalan iki satır yerinde durur.
+      .catch(function () {});
+  }
+
+  function nowCount(value, label, isLive) {
+    var el = document.createElement("span");
+    el.className = "now-football__count" + (isLive ? " is-live" : "");
+    el.innerHTML = '<b>' + value + "</b> " + escapeText(label);
+    return el;
+  }
+
+  function nowRow(label, value, meta, href) {
+    var row = document.createElement(href ? "a" : "div");
+    row.className = "now-football__row";
+    if (href) {
+      row.setAttribute("href", href);
+      row.setAttribute("target", "_blank");
+      row.setAttribute("rel", "nofollow noopener noreferrer");
+    }
+    row.innerHTML = '<span class="now-football__label">' + escapeText(label) + "</span>" +
+      '<span class="now-football__value">' + escapeText(value) + "</span>" +
+      (meta ? '<span class="now-football__meta">' + escapeText(meta) + "</span>" : "");
+    return row;
+  }
+
+  function escapeText(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  /**
    * ALT NAVİGASYON: aktif sayfa işareti + "Menü" düğmesi.
    *
    * Çubuk ~900 sayfaya AYNI çıktıyla basılıyor (scripts/lib/layout.mjs) ve
@@ -630,6 +751,7 @@
   // Çekmece kurulduktan SONRA: alt çubuğun "Menü" düğmesi onun tetikleyicisini
   // arıyor, sıra ters olsaydı düğme sessizce işlevsiz kalırdı.
   setupBottomNav();
+  setupNowFootball();
   document.querySelectorAll(".site-search").forEach(setupSearch);
 
   /* --------------------------------------------------------------------------

@@ -18109,3 +18109,72 @@ a.motm-week__card:focus-visible {
     justify-content: center;
   }
 }
+
+/* ── "ŞİMDİ FUTBOLDA" — ilk ekran özeti ─────────────────────────────
+   Birkaç satırlık şerit; devasa kart DEĞİL. Amaç okuyucunun ilk
+   saniyede "maç var mı, skor ne, son dakika ne" sorusunu görmesi. */
+.now-football {
+  display: grid;
+  gap: 6px;
+  /* 720 px altında `.home-main` flex sütun ve `.home-poll` `order: -1` ile
+     öne alınıyor. Belge sırasında ilk olmak yetmiyor — şerit ilk ekranda
+     kalsın diye anketin de önüne geçmeli. */
+  order: -3;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong, rgba(0, 0, 0, .12));
+  border-radius: 14px;
+  background: var(--surface, #fff);
+}
+
+.now-football__title {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted, #5b6470);
+}
+
+.now-football__counts { display: flex; flex-wrap: wrap; gap: 8px; }
+.now-football__counts:empty { display: none; }
+
+.now-football__count {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--green-soft, rgba(11, 143, 90, .1));
+  color: var(--green, #0b8f5a);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.now-football__count b { font-size: 14px; font-weight: 900; }
+.now-football__count.is-live { background: rgba(200, 30, 45, .1); color: var(--live, #c81e2d); }
+
+.now-football__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: baseline;
+  min-height: 24px;
+  color: inherit;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.now-football__label { flex: 0 0 auto; color: var(--muted, #5b6470); font-size: 12px; font-weight: 700; }
+
+.now-football__value {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  /* Tek satır: uzun haber başlığı şeridi üç satıra çıkarmasın. */
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 700;
+}
+
+.now-football__meta { flex: 0 0 auto; color: var(--green, #0b8f5a); font-weight: 900; }
+
+/* Masaüstünde gizli: orada hero ve canlı skor panosu zaten aynı bilgiyi
+   çok daha geniş biçimde veriyor, şerit tekrar olurdu. */
+@media (min-width: 901px) { .now-football { display: none; } }
