@@ -2500,7 +2500,9 @@
         badge: "LINE-UPS ANNOUNCED",
         homeBadge: "OFFICIAL XI",
         heading: "Official XI",
-        officialPromoTitle: "Galatasaray's Official XI vs Çorum FK Announced",
+        officialPromoTitleFor: function (team, opponent) {
+          return team + "'s Official XI vs " + opponent + " Announced";
+        },
         officialPromoSpot: "The probable selection has been replaced with the official line-up published by the data provider. Open the match hub for shirt numbers, formation and substitutes.",
         sidePending: "This side's line-up has not been announced yet",
         starting: "Starting XI",
@@ -2520,7 +2522,9 @@
         badge: "İLK 11'LER AÇIKLANDI",
         homeBadge: "RESMÎ İLK 11",
         heading: "Resmî İlk 11",
-        officialPromoTitle: "Galatasaray'ın Çorum FK Maçı Resmî İlk 11'i Açıklandı",
+        officialPromoTitleFor: function (team, opponent) {
+          return team + "'ın " + opponent + " Maçı Resmî İlk 11'i Açıklandı";
+        },
         officialPromoSpot: "Muhtemel kadro kaldırıldı ve veri sağlayıcısının yayımladığı resmî kadroyla değiştirildi. Forma numaraları, diziliş ve yedekler maç merkezinde.",
         sidePending: "Bu takımın kadrosu henüz açıklanmadı",
         starting: "İlk 11",
@@ -2764,9 +2768,17 @@
 
     var promo = document.querySelector("[data-lineup-promo]");
     if (promo && homeOfficial) {
+      // Başlık MAÇIN KENDİSİNDEN kurulur — sabit "Galatasaray/Çorum FK"
+      // metni burada bir zamanlar sabit yazılıydı ve HANGİ maç açıklansa
+      // aynı yanlış takım adını basıyordu. Konu, resmî kadrosu gelen
+      // taraf; rakip, diğer taraf.
+      var subjectTeam = (data.confirmed && data.confirmed.home ? data.home : data.away) || {};
+      var opponentTeam = (data.confirmed && data.confirmed.home ? data.away : data.home) || {};
       promo.classList.add("is-official");
       setText(promo.querySelector("[data-lineup-promo-badge]"), announced ? strings.badge : strings.homeBadge);
-      setText(promo.querySelector("[data-lineup-promo-title]"), strings.officialPromoTitle);
+      if (subjectTeam.team && opponentTeam.team) {
+        setText(promo.querySelector("[data-lineup-promo-title]"), strings.officialPromoTitleFor(subjectTeam.team, opponentTeam.team));
+      }
       setText(promo.querySelector("[data-lineup-promo-spot]"), strings.officialPromoSpot);
     }
 

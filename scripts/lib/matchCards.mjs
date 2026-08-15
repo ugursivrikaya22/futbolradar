@@ -18,6 +18,36 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const { normalizeLocale, t } = require("../../services/i18n.js");
+const { canonicalStatus, LIVE_STATES, PLAYED_STATES } = require("../../services/matchStatus.js");
+const { sameClub } = require("../../services/superLigTeams.js");
+
+/**
+ * RESMÎ İLK 11 UYARISI — kalıcı analiz altyapısına (tahmin/matchup/rakip
+ * kıyası) hiç dokunmaz. `data/official-lineup-alerts.json`, kulübün
+ * kendi açıklamasından ELLE girilmiş, kaynaklı bir kayıttır (bkz. o
+ * dosyanın başındaki not); burada yalnızca GÖRÜNTÜLENİR.
+ *
+ * "Doğrulanmadan yayınlanmaz" kuralı burada da geçerli: `startingXI`
+ * yalnızca AD taşır (numara/mevki bilinmiyorsa uydurulmaz), kaynak adı
+ * ve bağlantısı ZORUNLU — kaynağı gösterilemeyen bir kart basılmaz.
+ */
+export function officialLineupAlertHtml(alert, locale) {
+  if (!alert || !Array.isArray(alert.startingXI) || !alert.startingXI.length || !alert.sourceUrl) return "";
+  const loc = normalizeLocale(locale);
+  const players = alert.startingXI.map((player) =>
+    `<li class="lineup-alert-player">${escapeHtml(player.name)}</li>`).join("");
+
+  return `<div class="lineup-alert" data-card="official-lineup-alert" data-match="${escapeHtml(alert.matchId || "")}">` +
+    `<div class="lineup-alert-head">` +
+    `<span class="card-badge breaking">${escapeHtml(t("transfer.badge.breaking", loc))}</span>` +
+    `<h2>${escapeHtml(alert.team)} ${escapeHtml(t("lineup.alert.title", loc))}</h2>` +
+    `<span class="lineup-alert-fixture">${escapeHtml(alert.homeTeam)} – ${escapeHtml(alert.awayTeam)}</span>` +
+    `</div>` +
+    `<ol class="lineup-alert-grid">${players}</ol>` +
+    `<div class="lineup-alert-foot"><span>${escapeHtml(t("transfer.source.label", loc))}: ${escapeHtml(alert.sourceName)}</span>` +
+    `<a class="detail-link" href="${escapeHtml(alert.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(t("lineup.alert.openSource", loc))}</a></div>` +
+    `</div>`;
+}
 
 /** `.player-metric` — küçük istatistik çipi; birden çok panelde kullanılır. */
 export function compactMetricHtml(label, value) {
@@ -313,4 +343,163 @@ export function transferWatchShell(options) {
     compactMetricHtml(t("transfer.clubCount.label", locale), clubCount) +
     compactMetricHtml(t("transfer.lastCheck.label", locale), leader.lastVerifiedAt || leader.date || t("fallback.general", locale)) +
     `</div><div class="home-transfer-list">${sideRows}</div></aside>`;
+}
+
+/**
+ * SÜPER LİG BUGÜN ŞERİDİ — kompakt, yatay, yalnızca güncel Süper Lig
+ * kulüplerinin bugünkü maçları, sabit bir öncelik sırasıyla.
+ *
+ * NEDEN AYRI BİR BİLEŞEN: ana sayfadaki genel "bugünün maçları" ızgarası
+ * TÜM turnuvaları eşit ağırlıkta gösterir (kasıtlı — o bölüm dokunulmadı).
+ * Bu şerit onun YERİNE değil, ÜSTÜNE eklenir: okuyucunun en çok aradığı
+ * altı kulüp (ve ardından ligin geri kalanı) tek bakışta, logo+skorla.
+ *
+ * ÖNCELİK SIRASI editoryal bir karardır, veriden türetilmez — tıpkı
+ * services/majorClubs.js'teki "büyük kulüp" listesi gibi. Sıralanan
+ * kulüpler sabit ADLA eşleşir; sağlayıcı farklı bir yazım gönderirse o
+ * kulüp yalnızca öncelik sırasını kaybeder, listeden düşmez (aşağıdaki
+ * ikincil sıralama onu yine de gösterir).
+ */
+const SUPER_LIG_PRIORITY_NAMES = ["Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor", "Samsunspor", "Başakşehir"];
+
+/**
+ * GÜNCEL SÜPER LİG KULÜPLERİ → arma listesi.
+ *
+ * `isCurrentSuperLigTeam` bayrağı tek kaynak (services/homePoll.js'teki
+ * anket seçenekleriyle AYNI süzgeç): lig kadrosu değiştiğinde bu şerit de
+ * kendiliğinden doğru kalır, elle güncellenen bir liste tutulmaz. Arma
+ * yalnızca GERÇEK sayısal sağlayıcı kimliğinden türetilir; yoksa kulüp
+ * listeden düşmez, yalnızca armasız (baş harfli) görünür.
+ */
+export function superLigTeamLogoMap(teams) {
+  const list = [];
+  for (const team of Array.isArray(teams) ? teams : []) {
+    if (!team || !team.isCurrentSuperLigTeam || !team.name) continue;
+    const providerId = String(team.providerId || "").trim();
+    list.push({
+      name: String(team.name),
+      logo: /^\d+$/.test(providerId) ? `https://media.api-sports.io/football/teams/${providerId}.png` : ""
+    });
+  }
+  return list;
+}
+
+/**
+ * MAÇ VERİSİ İLE data/teams.json AYNI ADI FARKLI YAZABİLİR — tam ad eşitliği
+ * yeterli değil ("Rizespor" vs "Çaykur Rizespor", "Gençlerbirliği" vs
+ * "Gençlerbirliği S.K."). Eşleme `services/superLigTeams.js#sameClub` ile:
+ * kadro senkronunun aynı ikizleşme sorununu çözmek için yazdığı, kelime
+ * sınırlı içerme kuralı. İkinci bir eşleştirici yazmak, iki yerin farklı
+ * kurallarla "aynı kulüp" demesi riskini taşırdı.
+ */
+function findSuperLigTeam(list, name) {
+  return list.find((entry) => sameClub(entry.name, name)) || null;
+}
+
+function superLigPriorityRank(name) {
+  const index = SUPER_LIG_PRIORITY_NAMES.findIndex((candidate) => sameClub(candidate, name));
+  return index === -1 ? SUPER_LIG_PRIORITY_NAMES.length : index;
+}
+
+function teamLogoOrInitials(entry, name) {
+  const logo = entry && entry.logo;
+  if (logo) {
+    return `<img class="superlig-strip-logo" src="${escapeHtml(logo)}" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">${escapeHtml(fixtureTeamInitials(name))}</span>`;
+  }
+  return `<span class="superlig-strip-logo-fallback" aria-hidden="true">${escapeHtml(fixtureTeamInitials(name))}</span>`;
+}
+
+/**
+ * Durum: CANLI/MS/saat üçlüsü, genel maç kartlarıyla AYNI sözlükten
+ * (services/matchStatus.js#canonicalStatus) — bu şeridin "Canlı" dediği
+ * an, sitenin geri kalanının "Canlı" dediği anla birebir aynı olmalı.
+ */
+function superLigMatchState(match, locale) {
+  const canonical = canonicalStatus(match && match.status);
+  const isLive = LIVE_STATES.has(canonical);
+  const isFinal = PLAYED_STATES.has(canonical) && match && match.score &&
+    Number.isFinite(Number(match.score.home)) && Number.isFinite(Number(match.score.away));
+  if (isLive) return { isLive: true, isFinal: false, label: t("status.LIVE", locale) };
+  if (isFinal) return { isLive: false, isFinal: true, label: t("card.fullTimeShort", locale) };
+  return { isLive: false, isFinal: false, label: match && match.time ? String(match.time) : t("card.scheduled", locale) };
+}
+
+/**
+ * Tek satır: [ev logosu+adı] [skor/saat] [deplasman logosu+adı], tamamı
+ * tıklanabilir (transfer kartındaki aynı "kapak bağlantısı" deseni —
+ * burada iç içe ikinci bir bağlantı yok, tüm satır tek `<a>`).
+ */
+function superLigMatchRowHtml(match, teamList, locale, hrefFor) {
+  const home = findSuperLigTeam(teamList, match.homeTeam) || { name: match.homeTeam, logo: "" };
+  const away = findSuperLigTeam(teamList, match.awayTeam) || { name: match.awayTeam, logo: "" };
+  const state = superLigMatchState(match, locale);
+  const score = state.isLive || state.isFinal
+    ? `${escapeHtml(match.score && match.score.home !== undefined && match.score.home !== null ? match.score.home : "–")} - ${escapeHtml(match.score && match.score.away !== undefined && match.score.away !== null ? match.score.away : "–")}`
+    : escapeHtml(state.label);
+
+  return `<a class="superlig-strip-row${state.isLive ? " is-live" : ""}" data-card="superlig-strip" data-match="${escapeHtml(match.id || "")}" href="${escapeHtml(hrefFor(match))}">` +
+    `<span class="superlig-strip-team">${teamLogoOrInitials(home, home.name)}<b>${escapeHtml(home.name)}</b></span>` +
+    `<span class="superlig-strip-score${state.isLive ? " is-live" : ""}">${state.isLive ? `<i class="live-pulse" aria-hidden="true"></i>` : ""}${score}</span>` +
+    `<span class="superlig-strip-team is-away">${teamLogoOrInitials(away, away.name)}<b>${escapeHtml(away.name)}</b></span>` +
+    `</a>`;
+}
+
+/**
+ * Bugünün Süper Lig maçları, öncelik + saat sırasıyla.
+ *
+ * @param {object[]} matches  BUGÜNÜN maç havuzu (çağıran günü zaten süzmüş
+ *   olmalı — bu fonksiyon "hangi gün" sorusuna karışmaz, yalnızca "hangi
+ *   kulüp" sorusuna karışır).
+ * @param {object[]} teams    data/teams.json
+ * @param {string} locale
+ * @param {object} options    { hrefFor(match) => string } — bağlantı kuralı
+ *   dile göre değiştiği için (mac-detay.html / match-detail.html) çağırandan
+ *   gelir, tıpkı fixtureCard'ın actionHref'i gibi.
+ *
+ * Süper Lig'de bugün maç yoksa BOŞ DİZE döner — bölüm hiç çizilmez. Boş bir
+ * "bugün maç yok" kutusu göstermek, zaten altında duran genel program
+ * bölümünün söylediğini tekrarlamak ve yer kaplamak olurdu.
+ */
+export function superLigTodayStripHtml(matches, teams, locale, options = {}) {
+  const loc = normalizeLocale(locale);
+  const teamList = superLigTeamLogoMap(teams);
+  const hrefFor = typeof options.hrefFor === "function" ? options.hrefFor : () => "#";
+
+  const scoped = (Array.isArray(matches) ? matches : []).filter((match) =>
+    match && (findSuperLigTeam(teamList, match.homeTeam) || findSuperLigTeam(teamList, match.awayTeam)));
+
+  // AYNI KARŞILAŞMA takvim kaynağında birden fazla kayıtla (farklı
+  // kimlik/yazımla) görünebiliyor — bu bileşene özgü bir sorun değil,
+  // İngilizce takvim beslemesinin kendi tuhaflığı. Genel "bugünün
+  // maçları" ızgarasında bu fark az satır arasında kayboluyor; bu dar
+  // şeritte "aynı maç iki kez" göze batardı. Anahtar EŞLENMİŞ (takma ad
+  // çözülmüş) takım adlarından kurulur — "Rizespor" ile "Çaykur
+  // Rizespor" aynı fikstürün iki kaydı sayılmalı.
+  const seen = new Set();
+  const todays = scoped.filter((match) => {
+    const home = findSuperLigTeam(teamList, match.homeTeam);
+    const away = findSuperLigTeam(teamList, match.awayTeam);
+    const key = `${(home && home.name) || match.homeTeam}|${(away && away.name) || match.awayTeam}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  if (!todays.length) return "";
+
+  const sorted = todays.slice().sort((left, right) => {
+    const leftRank = Math.min(superLigPriorityRank(left.homeTeam), superLigPriorityRank(left.awayTeam));
+    const rightRank = Math.min(superLigPriorityRank(right.homeTeam), superLigPriorityRank(right.awayTeam));
+    if (leftRank !== rightRank) return leftRank - rightRank;
+    return String(left.kickoff || "").localeCompare(String(right.kickoff || ""));
+  });
+
+  const rows = sorted.map((match) => superLigMatchRowHtml(match, teamList, loc, hrefFor)).join("");
+
+  // YALNIZCA İÇ İÇERİK döner — dıştaki kararlı kap (data-api-target,
+  // data-static-fallback) index.html'de elle yazılı duruyor, tıpkı
+  // .home-transfer-watch-shell gibi. Bu fonksiyon o kabın İÇİNİ, hem
+  // ön-render hem istemci hidrasyonu için AYNI şekilde doldurur.
+  return `<span class="superlig-strip-kicker">${escapeHtml(t("superlig.strip.kicker", loc))}</span>` +
+    `<div class="superlig-strip-rail">${rows}</div>`;
 }

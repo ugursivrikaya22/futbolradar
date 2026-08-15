@@ -7,7 +7,9 @@ import {
   fixtureRow as sharedFixtureRow,
   leagueMatchGroup as sharedLeagueMatchGroup,
   trendCard as sharedTrendCard,
-  transferWatchShell
+  transferWatchShell,
+  superLigTodayStripHtml,
+  officialLineupAlertHtml
 } from "./lib/matchCards.mjs";
 
 const root = process.cwd();
@@ -781,6 +783,29 @@ function verifiedResultCards(limit = 18) {
  * yokken basılan buton ölü bir düğmedir. Yedek, penceresi kadarını gösterir
  * ve okuyucuyu tam listeye bağlantılarla yönlendirir.
  */
+/**
+ * Süper Lig bugün şeridinin ön-render girdisi: BUGÜNÜN (yalnızca bugünün,
+ * `programMatchPool`'un aksine yaklaşan günleri de kapsayan geniş havuzun
+ * DEĞİL) maçları. Filtre ve öncelik sırası scripts/lib/matchCards.mjs'te;
+ * burada yalnızca "hangi gün" sorusu yanıtlanır.
+ */
+/**
+ * RESMÎ İLK 11 UYARISI — `data/official-lineup-alerts.json`den, kaynaklı
+ * ve elle girilmiş. `services/matchSpecial.js`'nin "muhtemel 11" katmanına
+ * KARIŞMAZ (o katman resmî statü kazanamayacağını açıkça yazıyor); bu
+ * ayrı, tek amaçlı bir bileşen.
+ */
+function officialLineupAlerts() {
+  const alerts = require("../data/official-lineup-alerts.json").records || [];
+  return alerts.map((alert) => officialLineupAlertHtml(alert, "tr")).join("");
+}
+
+function todaySuperLigStrip() {
+  const today = istanbulToday();
+  const todays = curatedMatches().filter((match) => istanbulDay(match.kickoff) === today);
+  return superLigTodayStripHtml(todays, teams, "tr", { hrefFor: matchDetailPath });
+}
+
 function matchProgramState(variant) {
   const cards = calendarProgramCards(MATCH_LIST_INITIAL);
   return cards || emptyMatchState(variant);
@@ -1294,6 +1319,7 @@ writePage("index.html", {
   "daily-headlines": dailyHeadlineCards(),
   "home-trend-teams": trendTeamCards(),
   "home-transfer-watch": transferWatch(),
+  "today-superlig-matches": todaySuperLigStrip(),
   "today-matches": matchProgramState("today"),
   "radar-signals": signalCards(),
   "team-radar": topTeams.slice(0, 4).map(staticTeamCard).join(""),
@@ -1303,7 +1329,9 @@ writePage("index.html", {
   "news-preview": newsCards(3),
   "analysis-preview": analysisCards(),
   "transfer-radar": transferRadarTrack()
-}, fixtureFreshness);
+}, fixtureFreshness, {
+  "official-lineup-alerts": officialLineupAlerts()
+});
 
 writePage("analizler.html", {
   "post-match-analyses": postMatchAnalysisCards(undefined, { verifiedScoresOnly: true })
