@@ -49,6 +49,22 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+/**
+ * YAZI GÖVDESİNDE **KALIN** VURGU.
+ *
+ * Gövde satırları düz metin olarak saklanıyor ve tamamı kaçırılıyor; yazar
+ * bir cümleyi `**...**` ile vurguladığında okuyucu ekranda yıldızları
+ * görüyordu. Vurgu yazarın sesinin parçası — yıldızları silmek vurguyu
+ * götürür, olduğu gibi basmak metni bozar.
+ *
+ * SIRA ÖNEMLİ: önce kaçırılır, sonra işaretleme uygulanır. Tersi olsaydı
+ * gövdeye HTML enjekte edilebilirdi. Bu yüzden desen, kaçırma sonrası
+ * metinde kalan yıldızlara bakar; `<` ve `>` çoktan zararsızlaştırılmıştır.
+ */
+function inlineText(value) {
+  return escapeHtml(value).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+}
+
 function writeGeneratedFile(file, contents) {
   for (let attempt = 0; attempt < 12; attempt += 1) {
     try {
@@ -233,9 +249,9 @@ export function columnPageHtml(column, locale = "tr") {
   const body = column.body.map((paragraph) => {
     const line = String(paragraph ?? "");
     if (line.startsWith("## ")) {
-      return `<h2>${escapeHtml(line.slice(3).trim())}</h2>`;
+      return `<h2>${inlineText(line.slice(3).trim())}</h2>`;
     }
-    return `<p>${escapeHtml(line)}</p>`;
+    return `<p>${inlineText(line)}</p>`;
   }).join("\n        ");
 
   // Article ana tipi SEO sözleşmesini taşır; additionalType yorum niteliğini korur.

@@ -12448,6 +12448,36 @@ a.transfer-radar-ticker__item:focus-visible {
   background: var(--glass);
   min-width: 0;
   overflow-wrap: anywhere;
+  /* Kartın tamamı tıklanabilir; kancası aşağıdaki başlık bağlantısı. */
+  position: relative;
+}
+
+/* ── KARTIN TAMAMI TIKLANABİLİR ────────────────────────────────────────────
+   Kartı bir <a> ile sarmalamak en kestirme yol ama olmaz: kartın içinde
+   yazar bağlantısı var ve <a> içine <a> koymak geçersiz HTML — tarayıcı
+   iç bağlantıyı dışarı taşıyıp işaretlemeyi sessizce bozar.
+
+   Bunun yerine başlık bağlantısı kartın tamamına yayılıyor: ::after tüm
+   karta oturuyor ve tıklamayı yazıya götürüyor. Yazar bağlantısı ve
+   görsel bağlantısı üstte kalıp kendi hedeflerini koruyor, çünkü
+   yayılmanın z-index'i 1, onlarınki 2.
+
+   Metin seçilebilirliği korunuyor: ::after yalnızca tıklamayı yakalar,
+   altındaki paragraf hâlâ işaretlenip kopyalanabilir. */
+.column-card h3 > a::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  border-radius: inherit;
+  content: "";
+}
+
+.column-card .column-card-image,
+.column-card .column-author,
+.column-card .column-card-detail,
+.column-card .column-card-share {
+  position: relative;
+  z-index: 2;
 }
 
 .column-card-image {
