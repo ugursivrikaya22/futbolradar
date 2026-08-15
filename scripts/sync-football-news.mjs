@@ -6,7 +6,7 @@ import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 
 const require = createRequire(import.meta.url);
-const { validateTickerItem } = require("../services/newsTicker.js");
+const { validateTickerItem, sameStory, tokenSet } = require("../services/newsTicker.js");
 const SOURCE_TRUST = require("../services/sourceTrust.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
 
@@ -319,6 +319,120 @@ export function relevanceScore(item, options = {}) {
   return Math.round(score);
 }
 
+/**
+ * HABERİN KİMLİĞİ — AYNI OLAY, TEK KAYIT.
+ *
+ * `automatedId` bağlantı/başlık karmasıdır: aynı olayı altı kaynak yazınca
+ * altı ayrı kimlik doğar. `services/newsTicker.js` bunları ÇİZİM anında
+ * eliyor, ama DEPODA altısı da 96 saat duruyor ve 18 yuvalık bandı
+ * tüketiyordu — okuyucu tek haber görüyor, band kapasitesi altı gidiyor.
+ *
+ * Kanonik kimlik olayın kendisinden türetilir: takım + olay türü + başlığın
+ * ayırt edici kökleri. Böylece "Fenerbahçe Lukaku ile anlaştı" ve
+ * "Fenerbahçe Lukaku'yu resmen açıkladı" AYNI hikâyeye düşer ve ikincisi
+ * birincisinin YERİNE geçer.
+ */
+/**
+ * AYNI HİKÂYEYİ TANIMA — ÖLÇÜ newsTicker.js'TEN GELİR.
+ *
+ * İlk deneme başlığın kelime kümesini karmalıyordu; kırıldı. Bir olay
+ * ilerledikçe başlık yeniden yazılıyor ("… ile görüşüyor" → "… resmen
+ * açıklandı") ve tam küme eşitliği bunları AYRI hikâye sayıyordu. Ölçüldü:
+ * aynı transferin üç aşaması üç ayrı kimlik aldı.
+ *
+ * Doğru ölçü zaten depoda: `services/newsTicker.js` içindeki `sameStory`,
+ * çizim anında tam bu işi yapıyor (örtüşme oranı + kapsama, kısa başlıklar
+ * için ayrı eşik). İkinci bir benzerlik ölçütü yazmak, aynı kuralın iki
+ * kopyasını tutmak olurdu — bu depoda o hatanın bedeli daha önce ödendi.
+ *
+ * Burada yalnızca EŞLEŞTİRME yapılıyor: aynı takımın haberleri arasında
+ * `sameStory` tutuyorsa ikisi aynı hikâyedir. Takım şartı bilinçli: iki
+ * kulübün benzer cümleleri ("Trabzonspor duyuru yaptı" / "Samsunspor duyuru
+ * yaptı") birbirine karışmasın.
+ */
+function sameTeamKey(item) {
+  return String((item && item.team) || "").toLocaleLowerCase("tr-TR").trim();
+}
+
+/**
+ * Başlıktaki ÖZEL ADLAR (takım adı hariç).
+ *
+ * Türkçede cümle başı da büyük harfle başlar; ilk sözcük bu yüzden atlanır.
+ * Takımın kendi sözcükleri de çıkarılır — aranan şey haberin ÖZNESİ, yani
+ * çoğunlukla oyuncu adı.
+ */
+function properNouns(item) {
+  const teamWords = new Set(sameTeamKey(item).split(/\s+/).filter(Boolean));
+  return new Set(String((item && item.text) || "")
+    .split(/\s+/)
+    .slice(1)
+    .map((word) => word.replace(/[^\p{L}]/gu, ""))
+    .filter((word) => word.length > 3 && /^\p{Lu}/u.test(word))
+    .map((word) => word.toLocaleLowerCase("tr-TR"))
+    .filter((word) => !teamWords.has(word)));
+}
+
+/**
+ * AYNI HİKÂYE Mİ?
+ *
+ * İki yol var ve ikincisi yaşam döngüsü için gerekli:
+ *
+ * 1. `sameStory` — neredeyse aynı başlığın iki yazımı. Ölçü newsTicker'dan.
+ *
+ * 2. AYNI TAKIM + AYNI KİŞİ + AYNI KATEGORİ. Bir olay ilerledikçe fiil öbeği
+ *    tamamen değişiyor ("… ile görüşüyor" → "… transferini resmen açıkladı")
+ *    ve 1. yol bunu yakalamıyor: ölçüldü, örtüşme 3/8 = 0,375 ve eşik 0,5.
+ *    Eşiği gevşetmek ortak koda dokunmak olurdu ve çizim tarafında AYRI
+ *    haberleri birleştirmeye başlardı. Bunun yerine burada dar bir kural:
+ *    aynı kulübün aynı kişi hakkındaki aynı türden haberi tek hikâyedir.
+ */
+export function isSameStory(left, right) {
+  if (sameTeamKey(left) !== sameTeamKey(right)) return false;
+  if (sameStory(tokenSet(left && left.text), tokenSet(right && right.text))) return true;
+
+  if (String(left && left.category) !== String(right && right.category)) return false;
+  const leftNames = properNouns(left);
+  if (!leftNames.size) return false;
+  for (const name of properNouns(right)) {
+    if (leftNames.has(name)) return true;
+  }
+  return false;
+}
+
+/**
+ * YAŞAM DÖNGÜSÜ: RUMOUR → REPORTED → DEVELOPING → CONFIRMED → OFFICIAL.
+ *
+ * Resmî kaynak her zaman üste çıkar; kulübün kendi açıklaması bir gazete
+ * aktarımını geçersiz kılar. Çekinceli dil ("iddia", "görüşüyor") haberi
+ * aşağı çeker — söylenti doğrulanmış gibi gösterilemez.
+ */
+const LIFECYCLE_RANK = { RUMOUR: 0, REPORTED: 1, DEVELOPING: 2, CONFIRMED: 3, OFFICIAL: 4 };
+
+export function lifecycleStatus(item, official) {
+  const title = String((item && item.text) || "");
+  if (official) return "OFFICIAL";
+  if (/resmen|resmî açıklama|açıkladı|imza attı|duyurdu/i.test(title)) return "CONFIRMED";
+  if (/iddia|söylenti|kulis|olabilir|iddiası/i.test(title)) return "RUMOUR";
+  if (/görüşüyor|görüşmelere|temas|gündeminde|istiyor|teklif/i.test(title)) return "DEVELOPING";
+  return "REPORTED";
+}
+
+/**
+ * ÇÖP BAŞLIK BANDA GİRMEZ.
+ *
+ * Yayıncı beslemelerinde arada içi boş başlıklar geliyor — canlı koşuda
+ * banda ham "FUTBOL" metni düştüğü görüldü. Okuyucuya hiçbir şey söylemeyen
+ * bir satır bandın en değerli kaynağını (dikkat) harcıyor.
+ */
+export function hasUsableTitle(text) {
+  const value = String(text || "").trim();
+  if (value.length < 15) return false;
+  if (value.split(/\s+/).length < 3) return false;
+  // Tamamı büyük harf ve tek kelimelik bölüm etiketleri ("FUTBOL", "SPOR").
+  if (/^[A-ZÇĞİÖŞÜ\s|]+$/.test(value) && value.split(/\s+/).length < 5) return false;
+  return true;
+}
+
 function automatedId(item) {
   const input = item.guid || `${item.sourceUrl}|${item.link}|${item.title}`;
   return `auto-news-${crypto.createHash("sha256").update(input).digest("hex").slice(0, 20)}`;
@@ -340,7 +454,12 @@ export function toTickerItem(item) {
     // ayrı durur ki kaydı okuyan (ya da denetleyen) kimse bağlantının
     // hedefiyle kaynağın kimliğini birbirine karıştırmasın.
     source: { name: item.sourceName, url: item.link, publisher: publisherOf(item) || null },
-    automation: { source: "rss", feed: item.feed.id || item.feed.url, priority: item.feed.priority || 99 }
+    automation: {
+      source: "rss",
+      feed: item.feed.id || item.feed.url,
+      priority: item.feed.priority || 99,
+      status: lifecycleStatus({ text: item.title }, official)
+    }
   };
 }
 
@@ -402,6 +521,44 @@ export function mergeNewsItems(payload, incoming, options = {}) {
     isFootballTopic({ title: item.text }));
   const byId = new Map(retainedAutomated.map((item) => [item.id, item]));
   for (const item of incoming || []) byId.set(item.id, item);
+
+  // ── AYNI HİKÂYE TEK KAYIT: YAŞAM DÖNGÜSÜ ────────────────────────────────
+  //
+  // Bir olay ilerledikçe farklı başlıklarla geri geliyor:
+  //   09:00 "… ile görüşüyor"  →  12:00 "… görüşmelere başladı"
+  //   →  17:00 "… resmen açıklandı"
+  // Üçü de ayrı kimlik taşıdığı için depoda YAN YANA duruyordu; okuyucu
+  // bandı kaydırdıkça aynı transferi üç kez, üstelik en zayıf sürümüyle
+  // birlikte görüyordu. `newsTicker.js` bunları çizimde eliyordu ama
+  // depodaki 18 yuva yine de tükeniyordu.
+  //
+  // Eşleştirme `isSameStory` ile (ölçü newsTicker'dan). YALNIZCA EN GÜÇLÜ
+  // sürüm kalır: resmî açıklama "görüşüyor" aktarımının yerine geçer.
+  // Eşit güçte olanda daha yeni kazanır.
+  const rank = (entry) => LIFECYCLE_RANK[(entry.automation && entry.automation.status) || "REPORTED"] ?? 1;
+  const stories = [];
+  // Güçlüden zayıfa gidilir: ilk yerleşen temsilci olur, zayıf sürümler
+  // ona katılır. Ters sırada gidilseydi temsilci sonradan değişeceği için
+  // eşleşmeler kayabilirdi.
+  const ordered = [...byId.values()].sort((left, right) =>
+    rank(right) - rank(left) || String(right.timestamp).localeCompare(String(left.timestamp)));
+
+  for (const item of ordered) {
+    const match = stories.find((entry) => isSameStory(entry.item, item));
+    if (!match) { stories.push({ item, merged: 1, firstSeen: item.timestamp }); continue; }
+    match.merged += 1;
+    // Hikâyenin İLK görülme anı korunur: gelişme "yeni haber" gibi görünüp
+    // bandın başına geçmemeli, aynı hikâyenin devamıdır.
+    if (String(item.timestamp) < String(match.firstSeen)) match.firstSeen = item.timestamp;
+  }
+
+  byId.clear();
+  for (const entry of stories) {
+    byId.set(entry.item.id, entry.merged > 1
+      ? { ...entry.item, automation: { ...entry.item.automation, mergedReports: entry.merged, firstSeenAt: entry.firstSeen } }
+      : entry.item);
+  }
+
   // TEK BESLEME BANDI ELE GEÇİREMEZ.
   //
   // Puan tek başına yetmiyor: aynı kulübün resmî beslemesi aynı gün beş
@@ -462,7 +619,7 @@ export async function synchronizeFootballNews(options = {}) {
   const accepted = [];
   const seen = new Set();
   for (const candidate of candidates
-    .filter((item) => Date.parse(item.publishedAt) >= cutoff && isTrusted(item) && isFootballTopic(item) && inScope(item))
+    .filter((item) => Date.parse(item.publishedAt) >= cutoff && isTrusted(item) && isFootballTopic(item) && inScope(item) && hasUsableTitle(item.title))
     .sort((left, right) => Number(left.feed.priority || 99) - Number(right.feed.priority || 99) || Date.parse(right.publishedAt) - Date.parse(left.publishedAt))) {
     const tickerItem = toTickerItem(candidate);
     const verdict = validateTickerItem(tickerItem);
