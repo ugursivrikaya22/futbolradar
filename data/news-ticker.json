@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-15T04:35:22.314Z",
+  "updatedAt": "2026-08-15T05:28:52.671Z",
   "items": [
     {
       "id": "auto-news-57258580554eef6bfc45",
@@ -141,7 +141,9 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
-        "status": "OFFICIAL"
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-08-12T17:50:15.000Z"
       }
     },
     {
@@ -267,22 +269,22 @@
       }
     },
     {
-      "id": "auto-news-2233287cfe9d868bfed0",
+      "id": "auto-news-798f70f00af5c93e0d26",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Kasımpaşa maçı hazırlıklarımız sürüyor",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-12T18:03:22.000Z",
+      "text": "Romelu Lukaku’yu yakından tanıyalım",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-12T17:50:15.000Z",
       "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxNVzJVZFYxb2dWS21uaFg4THJicm53S3RTOFBXWGFtblZ4WC0wMGwwQzN3VnlKZXFlOVQ5OEJDdnF1cmxkcDFoRnRLWmxfTHF5RUxVX2MyOVEwSFk1ZU5IaG9ZeFFpS2pRSURkdFAydkZ5blByeEs3bkVrd1NzR3JqNXIzeW5pRm5hMVExUHVhQkw?oc=5",
-        "publisher": "trabzonspor.org.tr"
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQLVdjenBkajdScmlTQjZyakQyLWx2VXhmN1libGJFZ1M3QXFEMUZjanRuR195b0JHb3hnZnpaWmxKb19OcXRwTTJZLTNicGFyc3NscWN2M1M2TFNZVVVLaF9LeWFHMy1fS2F3OW14WHZuNHdnZ05EMWpvV0t3dDNLSG5sVmtmMUI4Yk0wWGRB?oc=5",
+        "publisher": "fenerbahce.org"
       },
       "automation": {
         "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
+        "feed": "fenerbahce",
+        "priority": 2,
         "status": "OFFICIAL"
       }
     },
@@ -303,6 +305,26 @@
         "source": "rss",
         "feed": "hurriyet-spor",
         "priority": 7,
+        "status": "REPORTED"
+      }
+    },
+    {
+      "id": "auto-news-b67add1352dd0098a8e2",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "İşte Trabzonspor'da Fatih Tekke'nin Kasımpaşa maçı muhtemel 11'i",
+      "team": "Kasımpaşa",
+      "timestamp": "2026-08-14T21:45:50.000Z",
+      "source": {
+        "name": "fotomac",
+        "url": "https://www.fotomac.com.tr/trabzonspor/2026/08/15/salah-sahaya-cikiyor",
+        "publisher": "fotomac.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fotomac",
+        "priority": 8,
         "status": "REPORTED"
       }
     },
