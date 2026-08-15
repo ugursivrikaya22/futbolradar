@@ -27,6 +27,14 @@ const { PROVIDER_MISSING_LABEL, orderForDisplay } = require("../services/postMat
 const { isTurkishMatch } = require("../services/turkishTeams.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
 const { buildCoreReport } = require("../services/postMatchCoreReport.js");
+const { t } = require("../services/i18n.js");
+
+/**
+ * Yer tutucu metinler TEK KAYNAKTAN gelir (locales/tr.json → `fallback.*`).
+ * Bileşen başına serbest metin yazılmıyor: aynı durum sitenin her yerinde
+ * aynı cümleyle anlatılsın diye sözlükten okunuyor.
+ */
+const FALLBACK_STATS = t("fallback.stats", "tr");
 
 /** Teknik direktör alıntıları: küratörlü, kaynaklı, uydurulmayan. */
 const managerQuoteStore = (() => {
@@ -193,9 +201,25 @@ function monogram(name) {
   return parts.slice(0, 2).map((part) => part.charAt(0).toLocaleUpperCase("tr-TR")).join("");
 }
 
+/**
+ * İLK YARI SKORU GERÇEKTEN YAYIMLANDI MI?
+ *
+ * `Number(null)` sıfırdır ve `Number.isFinite(0)` doğrudur; bu yüzden soru
+ * `Number.isFinite(Number(x))` ile SORULAMAZ. Yayımlanmamış ilk yarı skoru
+ * bu tuzağa düşüp "var" sayılıyor ve ekrana iki tarafı da boş bir
+ * "İlk yarı -" satırı basılıyordu. Değerin KENDİSİ sayı mı diye sorulur.
+ */
+function hasHalftime(score) {
+  return [score && score.halftimeHome, score && score.halftimeAway].every((value) => {
+    if (value === null || value === undefined || value === "") return false;
+    return Number.isFinite(Number(value));
+  });
+}
+
 function metricValue(value, metric) {
   const number = Number(value);
-  if (!Number.isFinite(number)) return "Veri yok";
+  // measuredRows ölçülmemiş satırı zaten eliyor; bu dal savunma amaçlı.
+  if (!Number.isFinite(number)) return FALLBACK_STATS;
   const decimals = Number.isInteger(metric.decimals) ? metric.decimals : Number.isInteger(number) ? 0 : 2;
   return `${number.toFixed(decimals).replace(".", ",")}${metric.unit || ""}`;
 }
@@ -206,12 +230,27 @@ function noteCard(text) {
   return `<article class="card data-empty" data-card="empty-state"><strong>${escapeHtml(PROVIDER_MISSING_LABEL)}</strong><span>${escapeHtml(text)}</span></article>`;
 }
 
+/**
+ * Bir satır ancak İKİ TARAF DA ölçülmüşse anlamlıdır.
+ *
+ * Tek taraf boşken bar %50/%50 çiziliyor ve boş taraf bir yer tutucu
+ * basıyordu; ikisi de okuyucuya yanlış bilgi veriyor. Ölçülmemiş satır
+ * artık hiç çizilmez, kategori tümüyle boşalırsa başlığı da basılmaz.
+ */
+function measuredRows(stats, category) {
+  return stats.filter((item) =>
+    (item.category || "Genel") === category &&
+    Number.isFinite(Number(item.home)) &&
+    Number.isFinite(Number(item.away)));
+}
+
 function statsHtml(match) {
   const stats = match.statistics || [];
   if (!stats.length) return "";
   const categories = [...new Set(stats.map((item) => item.category || "Genel"))];
   return categories.map((category) => {
-    const rows = stats.filter((item) => (item.category || "Genel") === category);
+    const rows = measuredRows(stats, category);
+    if (!rows.length) return "";
     const id = `stats-${category.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9]+/gi, "-")}`;
     return `<section class="post-match-stat-group" aria-labelledby="${escapeHtml(id)}">
       <h3 id="${escapeHtml(id)}">${escapeHtml(category)}</h3>
@@ -626,7 +665,7 @@ function pageHtml(report, match) {
         <div class="post-match-heading"><span class="eyebrow">${escapeHtml(match.league)}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""}</span><h1>${escapeHtml(pageHeading)}</h1><p>${escapeHtml(lead)}</p><div class="post-match-meta"><span>${escapeHtml(formatDate(match.kickoff))}</span>${match.venue && match.venue !== "Açıklanmadı" ? `<span>${escapeHtml(match.venue)}</span>` : ""}${match.referee ? `<span>Hakem: ${escapeHtml(match.referee)}</span>` : ""}<span>Veri kapsamı %${escapeHtml(report.coverage)}</span></div></div>
         <div class="post-match-scoreboard" aria-label="Maç sonucu">
           <div><span class="team-monogram">${escapeHtml(monogram(match.homeTeam))}</span><strong>${escapeHtml(match.homeTeam)}</strong></div>
-          ${hasScore ? `<div class="post-match-score"><span>Maç sonucu</span><b>${escapeHtml(score.home)}<i>-</i>${escapeHtml(score.away)}</b>${Number.isFinite(Number(score.halftimeHome)) ? `<small>İlk yarı ${escapeHtml(score.halftimeHome)}-${escapeHtml(score.halftimeAway)}</small>` : ""}</div>` : '<div class="post-match-score is-empty" aria-label="Skor verisi bekleniyor"></div>'}
+          ${hasScore ? `<div class="post-match-score"><span>Maç sonucu</span><b>${escapeHtml(score.home)}<i>-</i>${escapeHtml(score.away)}</b>${hasHalftime(score) ? `<small>İlk yarı ${escapeHtml(score.halftimeHome)}-${escapeHtml(score.halftimeAway)}</small>` : ""}</div>` : '<div class="post-match-score is-empty" aria-label="Skor verisi bekleniyor"></div>'}
           <div><span class="team-monogram away">${escapeHtml(monogram(match.awayTeam))}</span><strong>${escapeHtml(match.awayTeam)}</strong></div>
         </div>
       </section>

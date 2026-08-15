@@ -11,6 +11,29 @@
   // oturur; sağlayıcı geç yayımlarsa sonraki yoklama tamamlar.
   var MATCH_FINAL_ANALYSIS_DELAY_MS = 30000;
   var SUPER_LIG_SEASON_START = "2026-08-14";
+
+  /**
+   * YER TUTUCU METİNLER — TEK KAYNAK.
+   *
+   * Kullanıcıya hiçbir koşulda "Veri yok" denmiyor. Bir alan boşsa sebebi
+   * okuyucu değil sistemdir; cümle de sistemin durumunu değil okuyucunun ne
+   * bekleyeceğini anlatır. Bileşen başına serbest metin YAZILMAZ, hepsi
+   * buradan okunur.
+   *
+   * Bu değerler `locales/tr.json` içindeki `fallback.*` anahtarlarının
+   * birebir aynısıdır; app.js yalnızca Türkçe sayfalarda yükleniyor (İngilizce
+   * sayfalar bu demeti hiç çağırmıyor), bu yüzden tek dil yeterli. Sözlük
+   * değişirse burası da güncellenmeli — `scripts/test-no-data-copy.mjs` iki
+   * tarafın eşitliğini sınıyor.
+   */
+  var FALLBACK = {
+    general: "Güncelleme bekleniyor.",
+    match: "Bilgiler güncelleniyor.",
+    lineup: "Kadrolar açıklandığında burada yayınlanacak.",
+    stats: "İstatistikler hazırlanıyor.",
+    transfer: "Güncel transfer gelişmeleri takip ediliyor."
+  };
+
   var cache = Object.create(null);
   var COMPETITION_ALIASES = {
     "super-lig": ["super lig", "trendyol super lig"],
@@ -848,12 +871,28 @@
     );
   }
 
+  /**
+   * ÖLÇÜLMEMİŞ İSTATİSTİK KUTUSU HİÇ ÇİZİLMEZ.
+   *
+   * Eskiden her boş sayı kutusuna "Veri yok" basılıyordu; sekiz kutuluk bir
+   * ızgarada bu, bilgi vermeyen bir duvar demekti. Sağlayıcı sayıyı
+   * yayımlamadıysa kutu hiç açılmaz — yokluğu bildirmenin en dürüst yolu,
+   * olmayan şeyi çizmemek.
+   */
+  function profileStatHtml(label, value) {
+    if (value === undefined || value === null || value === "") return "";
+    return profileItemHtml(label, value);
+  }
+
   function profileSectionHtml(title, items) {
+    // Tüm kutular elendiyse başlık da basılmaz: boş bölüm, boş kutudan beter.
+    var filled = items.filter(function (item) { return item; });
+    if (!filled.length) return "";
     return (
       '<section class="profile-section">' +
       "<h2>" + escapeHtml(title) + "</h2>" +
       '<div class="profile-grid">' +
-      items.join("") +
+      filled.join("") +
       "</div>" +
       "</section>"
     );
@@ -3458,8 +3497,17 @@
       ? headlineText(match.homeTeam) + " " + score.home + "-" + score.away + " " + headlineText(match.awayTeam)
       : pair;
 
+    // `Number(null)` sıfır, `isFinite(0)` doğru: yayımlanmamış ilk yarı skoru
+    // bu tuzakta "0-0" diye basılıyordu, yani olmayan bir skor uyduruluyordu.
+    // Boşluk önce elenir. Bu blok `daily-headlines` işaretleri arasında
+    // tek başına çalıştırılabilir olmalı (scripts/test-home-signals.mjs onu
+    // kesip ayrı çalıştırıyor), bu yüzden kontrol dışarıdaki yardımcıya
+    // bağlanmadan burada yazılı.
+    var published = function (value) {
+      return value !== null && value !== undefined && value !== "" && isFinite(Number(value));
+    };
     var halftime = "";
-    if (match.score && isFinite(Number(match.score.halftimeHome)) && isFinite(Number(match.score.halftimeAway))) {
+    if (match.score && published(match.score.halftimeHome) && published(match.score.halftimeAway)) {
       halftime = "İlk yarı " + Number(match.score.halftimeHome) + "-" + Number(match.score.halftimeAway) + ".";
     }
     var venue = headlineText(match.venue);
@@ -5744,9 +5792,9 @@
         profileItemHtml("İkincil mevki", player.secondaryPosition, "Yakında"),
         profileItemHtml("Tercih edilen ayak", player.preferredFoot),
         profileItemHtml("Pas isabeti", player.passAccuracy == null ? null : "%" + player.passAccuracy),
-        profileItemHtml("Şut / maç", player.shotsPerGame, "Veri yok"),
-        profileItemHtml("xG", player.xg, "Veri yok"),
-        profileItemHtml("xA", player.xa, "Veri yok")
+        profileStatHtml("Şut / maç", player.shotsPerGame),
+        profileStatHtml("xG", player.xg),
+        profileStatHtml("xA", player.xa)
       ]) +
       profileSectionHtml("Fiziksel Profil", [
         profileItemHtml("Yaş", age),
@@ -5767,14 +5815,14 @@
         profileItemHtml("Son kontrol", formatProfileDate(player.lastVerifiedAt || player.lastUpdatedAt || player.lastUpdated), "Yakında")
       ]) +
       profileSectionHtml("Sezon İstatistikleri", [
-        profileItemHtml("Maç", player.appearances, "Veri yok"),
-        profileItemHtml("Dakika", player.minutesPlayed != null ? player.minutesPlayed : player.minutes, "Veri yok"),
-        profileItemHtml("Gol", player.goals, "Veri yok"),
-        profileItemHtml("Asist", player.assists, "Veri yok"),
-        profileItemHtml("Sarı kart", player.yellowCards, "Veri yok"),
-        profileItemHtml("Kırmızı kart", player.redCards, "Veri yok"),
-        profileItemHtml("Top kapma / maç", player.tacklesPerGame, "Veri yok"),
-        profileItemHtml("Araya girme / maç", player.interceptionsPerGame, "Veri yok")
+        profileStatHtml("Maç", player.appearances),
+        profileStatHtml("Dakika", player.minutesPlayed != null ? player.minutesPlayed : player.minutes),
+        profileStatHtml("Gol", player.goals),
+        profileStatHtml("Asist", player.assists),
+        profileStatHtml("Sarı kart", player.yellowCards),
+        profileStatHtml("Kırmızı kart", player.redCards),
+        profileStatHtml("Top kapma / maç", player.tacklesPerGame),
+        profileStatHtml("Araya girme / maç", player.interceptionsPerGame)
       ]) +
       '<section class="profile-section"><h2>Radar Profili</h2>' + playerRadarChartHtml(player, null, player.name + " radar profili") + playerRadarHtml(player) + "</section>" +
       '<section class="profile-section"><h2>AI Rating Notu</h2><p class="profile-note">' + escapeHtml(player.ratingExplanation || "Bu rating; dakika, gol/asist, form, disiplin ve veri güvenilirliği bileşenlerinden hesaplanır.") + "</p></section>" +
@@ -9401,7 +9449,10 @@
         (isFiniteNumber(player.rating)
           ? "<div><dt>Reyting</dt><dd>" + escapeHtml(String(player.rating).replace(".", ",")) + "</dd></div>"
           : "") +
-        "<div><dt>Süre</dt><dd>" + (player.minutes === null ? "Veri yok" : escapeHtml(player.minutes + "'")) + "</dd></div>" +
+        // Süre de reyting gibi: sağlayıcı yayımlamadıysa satır hiç basılmaz.
+        (player.minutes === null
+          ? ""
+          : "<div><dt>Süre</dt><dd>" + escapeHtml(player.minutes + "'") + "</dd></div>") +
         "<div><dt>Gol</dt><dd>" + player.goals + "</dd></div>" +
         "<div><dt>Durum</dt><dd>" + escapeHtml(player.status) + "</dd></div>" +
         "</dl>" +
@@ -10174,10 +10225,20 @@
     return "İki takım dengeli";
   }
 
+  /**
+   * BEKLEME DURUMU ROZET BASMAZ.
+   *
+   * "Kadro verisi bekleniyor" listedeki HER karta aynı cümleyi yazıyordu:
+   * 93 maçlık bir günde 93 kez tekrar eden, hiçbir maçı diğerinden ayırmayan
+   * bir satır. Ölçüldü: kart başına 29 px, sayfada ~2.700 px. Rozetin işi
+   * bir maçı öne çıkarmak; hepsinde varsa hiçbirini çıkarmıyor demektir.
+   *
+   * Bilgi taşıyan durumlar OLDUĞU GİBİ KALIYOR — resmî ilk 11, hazır analiz
+   * ve kısmi analiz okuyucuya o maça özgü bir şey söylüyor. Boş dönülünce
+   * `.tag-row:empty` kuralı satırı tümüyle kaldırıyor.
+   */
   function coverageStatusChipHtml(analysis) {
-    if (!analysis) {
-      return '<span class="tag soft">Kadro verisi bekleniyor</span>';
-    }
+    if (!analysis) return "";
     if (analysis.officialLineupStatus === "available") {
       return '<span class="tag green">Resmî ilk 11 açıklandı</span>';
     }
@@ -10187,7 +10248,7 @@
     if (analysis.analysisStatus === "partial") {
       return '<span class="tag soft">Kısmi analiz</span>';
     }
-    return '<span class="tag soft">Kadro verisi bekleniyor</span>';
+    return "";
   }
 
   var COVERAGE_FIELD_LABELS = [
@@ -10885,8 +10946,9 @@
   }
 
   function statisticValue(value, suffix, decimals) {
+    // Çağıran liste ölçülmemiş kaydı zaten eliyor; bu dal savunma amaçlı.
     if (value === null || value === undefined || !Number.isFinite(Number(value))) {
-      return "Veri yok";
+      return FALLBACK.stats;
     }
     var number = Number(value);
     var formatted = decimals == null ? String(number) : number.toFixed(decimals);
@@ -11625,30 +11687,6 @@
    * uygulanmıştır (scripts/inject-theme-boot.mjs); buradaki iş yalnızca
    * düğmenin durumunu yansıtmak ve tıklamayı işlemek.
    */
-  function initSuperLigLaunchCard() {
-    var cards = document.querySelectorAll("[data-super-lig-launch]");
-
-    function syncCard(card) {
-      var kickoff = Date.parse(card.getAttribute("data-kickoff") || "");
-      if (!Number.isFinite(kickoff)) return;
-
-      var isLive = Date.now() >= kickoff;
-      card.classList.toggle("is-live", isLive);
-      card.classList.toggle("is-upcoming", !isLive);
-      card.setAttribute("data-match-state", isLive ? "live" : "upcoming");
-
-      var status = card.querySelector("[data-super-lig-launch-status]");
-      if (status) status.innerHTML = '<i aria-hidden="true"></i><span>' + (isLive ? "CANLI" : "Bu akşam 21:30") + "</span>";
-      card.setAttribute("aria-label", isLive ? "Galatasaray - Arca Çorum FK maçı canlı; maç detayını aç" : "Galatasaray - Arca Çorum FK maç detayını aç; 14 Ağustos 2026 Cuma saat 21:30, RAMS Park");
-
-      if (!isLive) {
-        window.setTimeout(function () { syncCard(card); }, Math.min(Math.max(kickoff - Date.now() + 50, 250), 2147483647));
-      }
-    }
-
-    for (var i = 0; i < cards.length; i += 1) syncCard(cards[i]);
-  }
-
   var THEME_KEY = "futbolradar-theme";
 
   function systemPrefersDark() {
@@ -11724,7 +11762,6 @@
 
   function bootstrap() {
     initThemeToggle();
-    initSuperLigLaunchCard();
     initDataLayer();
   }
 

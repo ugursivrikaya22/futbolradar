@@ -51,6 +51,9 @@ export const POSTPROCESS_CHAIN = [
   // göreli satırını basıyor, bu adım onları söküp tek bloğu koyuyor.
   { id: "favicon", script: "inject-favicon.mjs", args: [], timeoutMinutes: 8 },
   { id: "theme-boot", script: "inject-theme-boot.mjs", args: [], timeoutMinutes: 5 },
+  // Kulüp armaları tek bir dış kaynaktan geliyor ve sayfada 240'ı aşıyor;
+  // bağlantı önden ısıtılmazsa ilk arma DNS + TLS el sıkışmasını bekliyor.
+  { id: "preconnect", script: "inject-preconnect.mjs", args: [], timeoutMinutes: 8 },
   { id: "analytics", script: "inject-ga4.mjs", args: [], timeoutMinutes: 5 },
   { id: "site-verification", script: "inject-site-verification.mjs", args: [], timeoutMinutes: 5 },
   { id: "core-page-schema", script: "inject-core-page-schema.mjs", args: [], timeoutMinutes: 5 },

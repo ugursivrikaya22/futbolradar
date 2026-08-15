@@ -64,8 +64,14 @@ const CORE_SECTIONS = Object.freeze([
   }
 ]);
 
-/** Bölüm boşken gösterilecek tek biçimli ifade. */
-const NO_DATA_LABEL = "Veri yok";
+/**
+ * Bölüm boşken gösterilecek tek biçimli ifade.
+ *
+ * "Veri yok" demiyoruz: okuyucuya sistemin durumunu değil, kendi bekleyişini
+ * anlatan bir cümle daha doğru. Bölümün NEDEN boş olduğu ayrıca `reason`
+ * alanında yazılır, yani bu etiket tek başına kalmaz.
+ */
+const NO_DATA_LABEL = "Bilgiler güncelleniyor.";
 
 function sectionIsReady(section) {
   return Boolean(section) && section.status === "ready";

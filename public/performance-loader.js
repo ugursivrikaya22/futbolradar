@@ -8,7 +8,7 @@
     loaded = true;
 
     var script = document.createElement("script");
-    script.src = "/app.js?v=df7b393e";
+    script.src = "/app.js?v=69acc5b2";
     script.async = true;
     script.dataset.performanceLoaded = "true";
     if ("fetchPriority" in script) script.fetchPriority = "low";
