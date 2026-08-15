@@ -18480,3 +18480,34 @@ a.motm-week__card:focus-visible {
 
 /* Masaüstünde gizli: orada tam puan durumu bölümü zaten var. */
 @media (min-width: 901px) { .mini-standings { display: none; } }
+
+/* ── MAÇ MERKEZİ CTA: MOBİLDE KOMPAKT ───────────────────────────────
+   Ölçüm: iki tanıtım kartı mobilde 2.142 px — sayfanın en büyük bloğu.
+   Bunun 1.064 px'i "Dosyadan bölümler" listesiydi: dosyanın alt
+   sayfalarına giden ikincil bir gezinme.
+
+   Telefonda bu liste gereksiz: kartın kendi CTA'sı zaten aynı dosyayı
+   açıyor ve bölümler orada, tam genişlikte duruyor. Mobilde kalan şey
+   brifingin istediği çekirdek — başlık, iki takım, saat ve "aç"
+   çağrısı. İçerik SİLİNMİYOR, yalnızca dar ekranda katlanıyor;
+   masaüstünde kart olduğu gibi. */
+@media (max-width: 900px) {
+  .match-special-promo__body { display: none; }
+
+  .match-special-promo__lead {
+    display: -webkit-box;
+    overflow: hidden;
+    /* Spot metin iki satırla sınırlı: kart yüksekliği metne göre
+       şişmesin. */
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  /* Çağrı bağlantısı parmak hedefi olacak kadar büyük. */
+  .match-special-promo__cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-weight: 900;
+  }
+}
