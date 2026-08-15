@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-15T05:28:52.671Z",
+  "updatedAt": "2026-08-15T06:43:04.984Z",
   "items": [
     {
       "id": "auto-news-57258580554eef6bfc45",
@@ -33,6 +33,26 @@
       "source": {
         "name": "GALATASARAY.ORG",
         "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxObEh6TFNVVFlsT1p2dnVLaXV3N2FzMkRCNy1wWE81aG5JNzZXWlhGSHZsMUtnOUg5eHZWWEFSa1JKRk5Vd2pEWVdmOWdxWU5hYTBwbHZuT0VIMGdIa3RaQV9vcmxRY09ZaEpjNnp0aXJ5UG5GSFhwRFJvemoyR0ZiRl9JN24wdVFDMUpaQmctM3pfWVRIYnJz?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-37f1e70ebeb10a92c498",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Victor Osimhen'den maç sonrası açıklamalar",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-14T21:10:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxNa1g1cTVIVTY0Zy1JOEttQjRvdHlkT29YTGFLZDRYQUVydzF3RjVGaFJ6OVk0QkJJZGZ6b0pYdjc0QU44c3k0Y1pnMkdoZWlpREZsanY2Z0c5Y3ZrZUREREFMUVVzVnA5Y2hIU2tTQVp0Um1PTXd6dEFBVi1LMU01QkhTbU1XN0U5anRqMzNBUlFhZw?oc=5",
         "publisher": "galatasaray.org"
       },
       "automation": {
@@ -105,26 +125,6 @@
       }
     },
     {
-      "id": "auto-news-cb2ab0ac14f3be9eb536",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "FUTBOL",
-      "team": "Galatasaray",
-      "timestamp": "2026-08-14T12:18:30.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE1kQUpCWEJpVzUzTjQ1bGNuX0VGRExrQjNBbFN3bUtMV3hRT3lvY3lrZTV6cFM3YlZpWWt4cTFLZHlITXYtcmx2a0tlRE16OGl5eVBZeWIzV09jSWczeThCcDNzcVp5SUMyZXl0OHhtb2I?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-170b9e88605184ead250",
       "category": "official",
       "confidence": "confirmed",
@@ -141,9 +141,7 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-08-12T17:50:15.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -155,7 +153,7 @@
       "team": "Trabzonspor",
       "timestamp": "2026-08-14T10:46:07.000Z",
       "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "name": "trabzonspor.org.tr",
         "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxPdGEwSmFaTFpoNE40cVNvYy1yMURHbzZGVGxFYTQ5RlEtdXE5VlZWVlV6THd0YlE5UmppcDRvQ3BVbjlycUJaeDkzbVNjY0hmcWcwVE1RNEExZU9YV1NVd2VDX29oQW9nRWd4em9BUHQzcnVURUduNUZjNFJzeDdBcDFDenRyN2JDUVBMSVhCQWliVG5n?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
@@ -217,7 +215,7 @@
       "team": "Trabzonspor",
       "timestamp": "2026-08-13T17:02:13.000Z",
       "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "name": "trabzonspor.org.tr",
         "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxOQWctNWllaEg2c0dHd3lkSDVnZHZHUEJTVV9laFRVX1pHaFVzMGJuaTdRY3BwM2Z0M1d5WHlFM2d2YWg4Wjg3dndMMFBLNGlaYXZZUFJoVUZoaFJnRjgtV1A3NUpuampZdzR0X0pVMWUtUW45WUVwX203Mk5WYlR1Rjl3N0VmWkt6RURIT1FKZlRJLW9GMHpkVnAzWGo?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
@@ -257,7 +255,7 @@
       "team": "Trabzonspor",
       "timestamp": "2026-08-13T10:21:52.000Z",
       "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "name": "trabzonspor.org.tr",
         "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNMUI3MFdNSERrV1E3MmpsOGk0WVc2aWpvSWtwaEdfR3BmVUxROVQ0RzJTMnZMT1QyQXI2STc4SHJWV0ZoMDVkX2Z6VnNSRDF5RUNYd09XUWcxUHN6QzlkWm1SUzVobWFEQTIzdzFsaUYyNl8xSHNOVXlJT29UQmJBbWV3M21VcFhEOVh3b2hUUm5qQU02Sk9RMUxWNjRodGlpcTlRcXRHS0l1QQ?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
@@ -265,26 +263,6 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-798f70f00af5c93e0d26",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Romelu Lukaku’yu yakından tanıyalım",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-12T17:50:15.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQLVdjenBkajdScmlTQjZyakQyLWx2VXhmN1libGJFZ1M3QXFEMUZjanRuR195b0JHb3hnZnpaWmxKb19OcXRwTTJZLTNicGFyc3NscWN2M1M2TFNZVVVLaF9LeWFHMy1fS2F3OW14WHZuNHdnZ05EMWpvV0t3dDNLSG5sVmtmMUI4Yk0wWGRB?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
         "status": "OFFICIAL"
       }
     },
