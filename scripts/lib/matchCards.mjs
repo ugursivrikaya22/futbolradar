@@ -21,7 +21,6 @@ const { normalizeLocale, t } = require("../../services/i18n.js");
 const { canonicalStatus, LIVE_STATES, PLAYED_STATES } = require("../../services/matchStatus.js");
 const { sameClub } = require("../../services/superLigTeams.js");
 
-/** `.player-metric` — küçük istatistik çipi; birden çok panelde kullanılır. */
 /**
  * RESMÎ İLK 11 UYARISI — kalıcı analiz altyapısına (tahmin/matchup/rakip
  * kıyası) hiç dokunmaz. `data/official-lineup-alerts.json`, kulübün
@@ -50,6 +49,7 @@ export function officialLineupAlertHtml(alert, locale) {
     `</div>`;
 }
 
+/** `.player-metric` — küçük istatistik çipi; birden çok panelde kullanılır. */
 export function compactMetricHtml(label, value) {
   return `<div class="player-metric"><span>${escapeHtml(label)}</span><b>${escapeHtml(value === undefined || value === null || value === "" ? "–" : value)}</b></div>`;
 }

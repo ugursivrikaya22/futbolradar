@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-15T14:27:01.395Z",
+  "updatedAt": "2026-08-15T17:26:26.723Z",
   "items": [
+    {
+      "id": "auto-news-3f0c44aaf187c9c72b3d",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "transfer",
+      "text": "Emre Bilgin, Eyüpspor'a Transfer Oldu - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-08-15T15:01:20.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE1CMlF4Qnh3ZlhDbV8taEkyRUhfeWlXY0JsYWQwYUg3NnFTSTV6XzJiM2pWN3l2RTVqS2lROWkydTBXVWFxLU9od2JTZGRfM1N4RzJGNGJwQ013OThOVnE4?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-2e689a23f0b0173b76ea",
       "category": "official",
@@ -125,26 +145,6 @@
       }
     },
     {
-      "id": "auto-news-dfe1724018cc99ba89cc",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Ailemize yeniden hoş geldin Stefano Lavarini",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-14T15:06:08.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxQU29QZldPQkFNLVNwblNEb1dEY1hQb3dKUTRwcktmWVBrSzBUU3BpVTQwT0hUdGs0bDJqejFJS1Y1TWZZV2FPaXNlQXpwdl9RbjdQUU5hQ2doTE5wN0lTTEhLZHhhbG5zdmR5VEtGRTVPRFNPX3lSODVtbUs2OVA5YWxGeXdXTFlPZUQ5OGs4cGk0a2Q5cUl4eUlmaVl4Sm91dzRCOA?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-170b9e88605184ead250",
       "category": "official",
       "confidence": "confirmed",
@@ -181,7 +181,9 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
-        "status": "OFFICIAL"
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-08-14T10:46:07.000Z"
       }
     },
     {
@@ -267,43 +269,43 @@
       }
     },
     {
-      "id": "auto-news-ef4a7f90bca20b9a0789",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Futbolcumuz Ernest Muçi’nin sağlık durumuyla ilgili açıklama",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-13T10:21:52.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxNMUI3MFdNSERrV1E3MmpsOGk0WVc2aWpvSWtwaEdfR3BmVUxROVQ0RzJTMnZMT1QyQXI2STc4SHJWV0ZoMDVkX2Z6VnNSRDF5RUNYd09XUWcxUHN6QzlkWm1SUzVobWFEQTIzdzFsaUYyNl8xSHNOVXlJT29UQmJBbWV3M21VcFhEOVh3b2hUUm5qQU02Sk9RMUxWNjRodGlpcTlRcXRHS0l1QQ?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-4f365583832feddad3c0",
+      "id": "auto-news-ae1a83ce67f8c8a26c79",
       "category": "club-agenda",
       "confidence": "reported",
       "section": "news",
-      "text": "Gençlerbirliği-Fenerbahçe maçı ne zaman? Saat kaçta, hangi kanalda? Muhtemel 11'ler",
+      "text": "CANLI | Süper Lig’de Gençlerbirliği – Fenerbahçe maçı! Muhtemel 11'ler",
       "team": "Fenerbahçe",
-      "timestamp": "2026-08-15T07:03:03.000Z",
+      "timestamp": "2026-08-15T15:18:18.000Z",
+      "source": {
+        "name": "sabah-spor",
+        "url": "https://www.sabah.com.tr/spor/futbol/2026/08/15/canli-super-ligde-genclerbirligi-fenerbahce-maci-ne-zaman-saat-kacta-hangi-kanalda",
+        "publisher": "sabah.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "sabah-spor",
+        "priority": 8,
+        "status": "REPORTED"
+      }
+    },
+    {
+      "id": "auto-news-03231b9641851aad8482",
+      "category": "transfer-rumour",
+      "confidence": "reported",
+      "section": "transfer",
+      "text": "Galatasaray'da Victor Osimhen'den transfer iddialarına yanıt!",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-14T22:33:19.000Z",
       "source": {
         "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/fenerbahce/2026/08/15/genclerbirligi-fenerbahce-maci-ne-zaman-saat-kacta-hangi-kanalda-muhtemel-11ler",
+        "url": "https://www.fotomac.com.tr/galatasaray/2026/08/14/galatasarayda-victor-osimhenden-transfer-iddialarina-yanit",
         "publisher": "fotomac.com.tr"
       },
       "automation": {
         "source": "rss",
         "feed": "fotomac",
         "priority": 8,
-        "status": "REPORTED"
+        "status": "RUMOUR"
       }
     },
     {
@@ -355,7 +357,7 @@
       "team": "Avrupa futbolu",
       "timestamp": "2026-08-14T16:25:44.000Z",
       "source": {
-        "name": "UEFA.com",
+        "name": "uefa.com",
         "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQWGJIa1FEblNPaDJvdHc5TmUwVEtKV2FFVTIyVW1iVEZKNTlSMmpfbEtNNkZoSENRRXdsaTAyU1N5NWlwT2JscmF4aFFnTDdQOVRpajlNeEtRVFdobHhFUjY2U1U2cngtV1F6QUJ5VFFjc1k0YmdoOVBhS2pRc1h3QlNqODFGRjM5MWZoUGRueDFNOFhXWVRpVnNpWHJLSGpUMk9Rckx4UmI5Q0JVa09VZmVxTDFGLW9MMHpuMHgySE1JckNBWjJGajZPSi02dGJRU3ZJ?oc=5",
         "publisher": "uefa.com"
       },
@@ -364,8 +366,8 @@
         "feed": "uefa",
         "priority": 9,
         "status": "OFFICIAL",
-        "mergedReports": 4,
-        "firstSeenAt": "2026-08-12T07:00:00.000Z"
+        "mergedReports": 3,
+        "firstSeenAt": "2026-08-12T20:24:22.000Z"
       }
     }
   ]

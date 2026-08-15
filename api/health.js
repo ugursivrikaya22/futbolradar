@@ -222,5 +222,35 @@ module.exports = async function handler(req, res) {
     diagnostics.apiFootballProbe = await apiFootballProvider.probeCredentials();
   }
 
+  // `?probe=supabase` GERÇEK bir istek gönderir (env değişkeni okumakla
+  // yetinmez). "Değişkenler dolu" ile "depo gerçekten çalışıyor" farklı
+  // sorular: anahtar yanlış PROJEYE ait olabilir, tablo hiç oluşturulmamış
+  // olabilir, ya da servis anahtarı yerine anon anahtar girilmiş olabilir
+  // (RLS bunu sessizce reddeder). Bu üçü de "storage: unavailable" olarak
+  // aynı görünür; prob PostgREST'in kendi hata gövdesini (şema bilgisi,
+  // SIR değil) döndürerek ayırt eder. Anket sayımını BOZMAZ: yalnızca
+  // okur, `readTally` hiçbir satır yazmaz.
+  if (String(query.probe || "") === "supabase") {
+    if (!homePollStore.isConfigured()) {
+      diagnostics.supabaseProbe = { attempted: false, note: homePollStore.configurationHint() };
+    } else {
+      try {
+        const tally = await homePollStore.readTally("home-health-probe");
+        diagnostics.supabaseProbe = {
+          attempted: true,
+          ok: true,
+          table: homePollStore.TABLE,
+          rowsForProbePollId: Object.values(tally).reduce((sum, n) => sum + (Number(n) || 0), 0)
+        };
+      } catch (error) {
+        diagnostics.supabaseProbe = {
+          attempted: true,
+          ok: false,
+          error: String((error && error.message) || error).slice(0, 300)
+        };
+      }
+    }
+  }
+
   return sendSuccess(res, [diagnostics]);
 };
