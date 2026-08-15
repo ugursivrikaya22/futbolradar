@@ -1,9 +1,284 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-15T03:42:47.225Z",
-  "matchCount": 425,
+  "updatedAt": "2026-08-15T04:35:18.259Z",
+  "matchCount": 426,
   "records": [
+    {
+      "matchId": "san-carlos-cs-herediano-2026-08-15",
+      "fixtureId": "1551663",
+      "provider": "api-football",
+      "slug": "san-carlos-cs-herediano-2026-08-15",
+      "kickoff": "2026-08-15T05:00:00+03:00",
+      "kickoffUtc": "2026-08-15T02:00:00.000Z",
+      "kickoffLocal": "2026-08-15T05:00",
+      "date": "2026-08-15",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primera División",
+      "competition": "Primera División",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "San Carlos",
+      "awayTeam": "CS Herediano",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "finalScore": "1-0",
+      "winner": "San Carlos",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 17
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 17,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "2494adeabf5de55d",
+      "fingerprint": "2494adeabf5de55d",
+      "analysisGeneratedAt": "2026-08-15T04:35:18.208Z",
+      "analysisUpdatedAt": "2026-08-15T04:35:18.208Z",
+      "generatedAt": "2026-08-15T04:35:18.208Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "San Carlos 1-0 CS Herediano maç raporu: Primera División istatistikleri | FutbolRadar",
+        "description": "Primera División maçını San Carlos 1-0 kazandı; CS Herediano sahadan puansız ayrıldı.",
+        "path": "mac-raporu/san-carlos-cs-herediano-2026-08-15.html",
+        "competition": "Primera División"
+      },
+      "reportUrl": "./mac-raporu/san-carlos-cs-herediano-2026-08-15.html",
+      "digest": {
+        "headline": "San Carlos, CS Herediano'yu 1-0 yendi",
+        "paragraph": "Primera División maçını San Carlos 1-0 kazandı; CS Herediano sahadan puansız ayrıldı. Tek golü 62. dakikada B. Martinez (San Carlos) kaydetti.",
+        "result": {
+          "winner": "San Carlos",
+          "loser": "CS Herediano",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 1
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "62'",
+              "team": "San Carlos",
+              "type": "Penaltı",
+              "detail": "B. Martinez",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "San Carlos",
+              "type": "Oyuncu değişikliği",
+              "detail": "J. Aguilar",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "San Carlos",
+              "type": "Oyuncu değişikliği",
+              "detail": "P. Fonseca",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "CS Herediano",
+              "type": "Oyuncu değişikliği",
+              "detail": "R. Rivera",
+              "decisive": false
+            },
+            {
+              "minute": "90'",
+              "team": "San Carlos",
+              "type": "Sarı kart",
+              "detail": "J. Venegas",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "B. Martinez",
+              "team": "San Carlos",
+              "contribution": "62' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "E. Hernandez",
+              "team": "San Carlos",
+              "contribution": "90+1' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "E. Rubio",
+              "team": "CS Herediano",
+              "contribution": "59' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "J. Aguilar",
+              "team": "San Carlos",
+              "contribution": "55' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (15 olay).",
+            "62' San Carlos — B. Martinez: penaltı",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "46' CS Herediano değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "57' CS Herediano değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "69' CS Herediano değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "69' CS Herediano değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "70' San Carlos değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "70' San Carlos değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "San Carlos, CS Herediano'yu 1-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "San Carlos sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "municipal-limeno-inter-2026-08-15",
       "fixtureId": "1600564",
@@ -266,7 +541,7 @@
       "coverageGrade": "events-only",
       "coverageLabel": "Sadece olaylar",
       "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coveragePercent": 60,
       "dataSources": {
         "score": {
           "present": true,
@@ -284,9 +559,9 @@
           "count": 0
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": false,
@@ -298,20 +573,16 @@
       "availability": {
         "events": 20,
         "statistics": 0,
-        "lineups": 0,
+        "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
         },
         {
           "field": "players",
@@ -322,11 +593,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "d8b3c3b29ce92c9c",
-      "fingerprint": "d8b3c3b29ce92c9c",
+      "analysisSourceHash": "90de8a92bc8e9ef4",
+      "fingerprint": "90de8a92bc8e9ef4",
       "analysisGeneratedAt": "2026-08-15T02:49:00.773Z",
-      "analysisUpdatedAt": "2026-08-15T02:49:00.773Z",
-      "generatedAt": "2026-08-15T02:49:00.773Z",
+      "analysisUpdatedAt": "2026-08-15T04:35:18.208Z",
+      "generatedAt": "2026-08-15T04:35:18.208Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3496,7 +3767,7 @@
       "season": null,
       "homeTeam": "Galatasaray",
       "awayTeam": "Çorum FK",
-      "venue": "Rams Park",
+      "venue": "Rams Park Stadyumu",
       "score": {
         "home": 2,
         "away": 2
@@ -3551,23 +3822,23 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "434a03bcb7d236e8",
-      "fingerprint": "434a03bcb7d236e8",
+      "analysisSourceHash": "53ac056ee3c6c639",
+      "fingerprint": "53ac056ee3c6c639",
       "analysisGeneratedAt": "2026-08-14T20:52:14.121Z",
-      "analysisUpdatedAt": "2026-08-15T02:49:00.773Z",
-      "generatedAt": "2026-08-15T02:49:00.773Z",
+      "analysisUpdatedAt": "2026-08-15T04:35:18.208Z",
+      "generatedAt": "2026-08-15T04:35:18.208Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Galatasaray 2-2 Çorum FK maç raporu: Süper Lig istatistikleri | FutbolRadar",
-        "description": "Rams Park'ta oynanan Süper Lig maçında Galatasaray ile Çorum FK birbirini geçemedi: 2-2.",
+        "description": "Rams Park Stadyumu'nda oynanan Süper Lig maçında Galatasaray ile Çorum FK birbirini geçemedi: 2-2.",
         "path": "mac-raporu/galatasaray-corum-fk-2026-08-14.html",
         "competition": "Süper Lig"
       },
       "reportUrl": "./mac-raporu/galatasaray-corum-fk-2026-08-14.html",
       "digest": {
         "headline": "Galatasaray ile Çorum FK 2-2 berabere kaldı",
-        "paragraph": "Rams Park'ta oynanan Süper Lig maçında Galatasaray ile Çorum FK birbirini geçemedi: 2-2. Golleri 53. dakikada V. Osimhen (Galatasaray), 59. dakikada A. Kyziridis (Çorum FK), 61. dakikada J. Ramirez (Çorum FK), 90. dakikada V. Osimhen (Galatasaray) kaydetti.",
+        "paragraph": "Rams Park Stadyumu'nda oynanan Süper Lig maçında Galatasaray ile Çorum FK birbirini geçemedi: 2-2. Golleri 53. dakikada V. Osimhen (Galatasaray), 59. dakikada A. Kyziridis (Çorum FK), 61. dakikada J. Ramirez (Çorum FK), 90. dakikada V. Osimhen (Galatasaray) kaydetti.",
         "result": {
           "winner": null,
           "loser": null,
@@ -10464,7 +10735,7 @@
       "season": null,
       "homeTeam": "Epitsentr Dunayivtsi",
       "awayTeam": "Veres Rivne",
-      "venue": "Tonkocheyev Stadium",
+      "venue": "Roman Shukhevych Ternopil City Stadium",
       "score": {
         "home": 0,
         "away": 0
@@ -10532,23 +10803,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "824b2e518720d11d",
-      "fingerprint": "824b2e518720d11d",
+      "analysisSourceHash": "7f4434e3eb395362",
+      "fingerprint": "7f4434e3eb395362",
       "analysisGeneratedAt": "2026-08-14T22:27:15.007Z",
-      "analysisUpdatedAt": "2026-08-15T02:49:00.773Z",
-      "generatedAt": "2026-08-15T02:49:00.773Z",
+      "analysisUpdatedAt": "2026-08-15T04:35:18.208Z",
+      "generatedAt": "2026-08-15T04:35:18.208Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Epitsentr Dunayivtsi 0-0 Veres Rivne maç raporu: Premier League istatistikleri | FutbolRadar",
-        "description": "Epitsentr Dunayivtsi ile Veres Rivne, Tonkocheyev Stadium'da oynanan Premier League karşılaşmasında 0-0 berabere kaldı.",
+        "description": "Epitsentr Dunayivtsi ile Veres Rivne, Roman Shukhevych Ternopil City Stadium'da oynanan Premier League karşılaşmasında 0-0 berabere kaldı.",
         "path": "mac-raporu/epitsentr-dunayivtsi-veres-rivne-2026-08-14.html",
         "competition": "Premier League"
       },
       "reportUrl": "./mac-raporu/epitsentr-dunayivtsi-veres-rivne-2026-08-14.html",
       "digest": {
         "headline": "Epitsentr Dunayivtsi ile Veres Rivne 0-0 berabere kaldı",
-        "paragraph": "Epitsentr Dunayivtsi ile Veres Rivne, Tonkocheyev Stadium'da oynanan Premier League karşılaşmasında 0-0 berabere kaldı. İki takım da gol bulamadı.",
+        "paragraph": "Epitsentr Dunayivtsi ile Veres Rivne, Roman Shukhevych Ternopil City Stadium'da oynanan Premier League karşılaşmasında 0-0 berabere kaldı. İki takım da gol bulamadı.",
         "result": {
           "winner": null,
           "loser": null,
