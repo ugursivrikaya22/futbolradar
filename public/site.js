@@ -83,10 +83,8 @@
     main.insertBefore(strip, main.firstChild);
 
     // ── Tek istek: canlı ve bugünkü maç sayısı ───────────────────────────
-    window.fetch("/api/matches", { headers: { Accept: "application/json" } })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (payload) {
-        var list = payload && Array.isArray(payload.data) ? payload.data : null;
+    matchesOnce()
+      .then(function (list) {
         if (!list) return;
 
         var todayKey = new Date().toDateString();
@@ -105,6 +103,37 @@
       // Ağ hatası kullanıcıya teknik metin olarak BASILMAZ; şerit sayısız
       // kalır, geri kalan iki satır yerinde durur.
       .catch(function () {});
+  }
+
+  /**
+   * MAÇ LİSTESİ TEK KEZ İSTENİR.
+   *
+   * Hem "Şimdi Futbolda" şeridi hem "Favori Takımım" kartı aynı listeye
+   * bakıyor. İkisi ayrı ayrı çağırsaydı her mobil açılışta aynı yanıt iki
+   * kez indirilirdi. Söz (promise) saklanıyor, ikinci çağıran hazır olanı
+   * alıyor. Hata durumunda `null` dönülür — çağıranlar kendi bölümlerini
+   * çizmez, kullanıcıya teknik hata metni BASILMAZ.
+   */
+  var matchesPromise = null;
+
+  function matchesOnce() {
+    if (matchesPromise) return matchesPromise;
+    matchesPromise = window.fetch("/api/matches", { headers: { Accept: "application/json" } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (payload) {
+        return payload && Array.isArray(payload.data) ? payload.data : null;
+      })
+      .catch(function () { return null; });
+    return matchesPromise;
+  }
+
+  /** Ad karşılaştırması: "Gençlerbirliği S.K." ile "Gençlerbirliği" eşleşmeli. */
+  function teamKey(value) {
+    return String(value || "")
+      .toLocaleLowerCase("tr-TR")
+      .replace(/\b(s\.?k\.?|a\.?ş\.?|fk|fc|spor kulübü)\b/g, "")
+      .replace(/[^a-zçğıöşü0-9]+/g, "")
+      .trim();
   }
 
   function nowCount(value, label, isLive) {
@@ -132,6 +161,185 @@
     return String(value == null ? "" : value)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
+  }
+
+  /**
+   * "FAVORİ TAKIMIM" — mobil ana sayfada kişisel kısayol.
+   *
+   * TAKIM LİSTESİ YENİDEN ÜRETİLMİYOR. Ana sayfadaki anket zaten güncel
+   * Süper Lig kadrosunu ad + arma ile basıyor (data/teams.json içindeki
+   * `isCurrentSuperLigTeam` bayrağından türetiliyor). Liste oradan
+   * okunuyor: ek istek yok ve lig kadrosu değişince burası kendiliğinden
+   * doğru kalıyor. Ayrı bir sabit liste tutmak, küme düşen bir takımı
+   * aylarca burada göstermek demekti.
+   *
+   * SEÇİM localStorage'DA. Giriş zorunlu değil; kullanıcı sisteminde bir
+   * hesap yok ve tahmin/kısayol özelliği için hesap istemek bedeli ağır
+   * bir bedel olurdu.
+   *
+   * VERİ GELMEZSE SATIR ÇİZİLMEZ. Sıradaki maç, son sonuç ve sıralama
+   * ayrı ayrı koşullu: hangisi varsa o görünür, olmayan için yer tutucu
+   * yazılmaz.
+   */
+  var FAVOURITE_KEY = "futbolradar-favourite-team";
+
+  function readFavourite() {
+    try { return window.localStorage.getItem(FAVOURITE_KEY) || ""; } catch (e) { return ""; }
+  }
+
+  function writeFavourite(value) {
+    try {
+      if (value) window.localStorage.setItem(FAVOURITE_KEY, value);
+      else window.localStorage.removeItem(FAVOURITE_KEY);
+    } catch (e) { /* gizli sekmede yazma reddedilebilir; özellik sessizce kapalı kalır */ }
+  }
+
+  function favouriteTeams() {
+    var out = [];
+    var nodes = document.querySelectorAll("[data-home-poll-options] .home-poll__option");
+    for (var i = 0; i < nodes.length; i += 1) {
+      var input = nodes[i].querySelector(".home-poll__radio");
+      var name = nodes[i].querySelector(".home-poll__option-name");
+      var crest = nodes[i].querySelector(".home-poll__crest");
+      if (!input || !name) continue;
+      out.push({
+        id: input.value,
+        name: name.textContent.trim(),
+        logo: crest ? crest.getAttribute("src") : ""
+      });
+    }
+    return out;
+  }
+
+  function setupFavouriteTeam() {
+    var main = document.querySelector("main.home-main");
+    if (!main || document.querySelector("[data-favourite-team]")) return;
+
+    var teams = favouriteTeams();
+    // Anket yoksa (başka bir anket dönemi) liste de yok; özellik açılmaz.
+    if (!teams.length) return;
+
+    var en = (document.documentElement.getAttribute("lang") || "tr").toLowerCase().indexOf("en") === 0;
+    var s = en
+      ? { pick: "Pick your team", yours: "Your team", change: "change",
+        next: "Next match", last: "Last result", table: "Table", pos: "pos." }
+      : { pick: "Favori takımını seç", yours: "Takımın", change: "değiştir",
+        next: "Sıradaki maç", last: "Son sonuç", table: "Puan durumu", pos: "sıra" };
+
+    var box = document.createElement("section");
+    box.className = "container favourite-team";
+    box.setAttribute("data-favourite-team", "");
+    main.insertBefore(box, main.firstChild);
+
+    render();
+
+    function render() {
+      var chosen = readFavourite();
+      var team = null;
+      for (var i = 0; i < teams.length; i += 1) if (teams[i].id === chosen) team = teams[i];
+      box.innerHTML = "";
+      if (team) renderChosen(team); else renderPicker();
+    }
+
+    function renderPicker() {
+      var title = document.createElement("span");
+      title.className = "favourite-team__title";
+      title.textContent = "⭐ " + s.pick;
+      box.appendChild(title);
+
+      var rail = document.createElement("div");
+      rail.className = "favourite-team__rail";
+      for (var i = 0; i < teams.length; i += 1) rail.appendChild(teamButton(teams[i]));
+      box.appendChild(rail);
+    }
+
+    function teamButton(team) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "favourite-team__pick";
+      b.setAttribute("data-team", team.id);
+      b.title = team.name;
+      b.innerHTML = (team.logo
+        ? '<img src="' + escapeText(team.logo) + '" alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+        : "") + "<span>" + escapeText(team.name) + "</span>";
+      b.addEventListener("click", function () { writeFavourite(team.id); render(); });
+      return b;
+    }
+
+    function renderChosen(team) {
+      var head = document.createElement("div");
+      head.className = "favourite-team__head";
+      head.innerHTML = (team.logo
+        ? '<img src="' + escapeText(team.logo) + '" alt="" width="26" height="26" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
+        : "") +
+        '<span class="favourite-team__name">' + escapeText(s.yours) + ": <b>" + escapeText(team.name) + "</b></span>";
+
+      var change = document.createElement("button");
+      change.type = "button";
+      change.className = "favourite-team__change";
+      change.textContent = s.change;
+      change.addEventListener("click", function () { writeFavourite(""); render(); });
+      head.appendChild(change);
+      box.appendChild(head);
+
+      var key = teamKey(team.name);
+
+      matchesOnce().then(function (list) {
+        if (!list) return;
+        var mine = list.filter(function (m) {
+          return teamKey(m.homeTeam) === key || teamKey(m.awayTeam) === key;
+        });
+        if (!mine.length) return;
+
+        var now = Date.now();
+        var upcoming = null;
+        var finished = null;
+        for (var i = 0; i < mine.length; i += 1) {
+          var m = mine[i];
+          var t = Date.parse(m.kickoff || "");
+          if (!isFinite(t)) continue;
+          if (m.status === "FINISHED") {
+            if (!finished || t > Date.parse(finished.kickoff)) finished = m;
+          } else if (t >= now) {
+            if (!upcoming || t < Date.parse(upcoming.kickoff)) upcoming = m;
+          }
+        }
+
+        if (upcoming) {
+          box.appendChild(favRow(s.next,
+            upcoming.homeTeam + " – " + upcoming.awayTeam, upcoming.time || ""));
+        }
+        if (finished && finished.score) {
+          box.appendChild(favRow(s.last,
+            finished.homeTeam + " " + finished.score.home + "–" + finished.score.away + " " + finished.awayTeam, ""));
+        }
+      });
+
+      // Sıralama yalnızca favori seçiliyken isteniyor: seçmeyen kullanıcı
+      // bu yükü hiç taşımıyor.
+      window.fetch("/api/standings", { headers: { Accept: "application/json" } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (payload) {
+          var rows = payload && Array.isArray(payload.data) ? payload.data : null;
+          if (!rows) return;
+          for (var i = 0; i < rows.length; i += 1) {
+            if (teamKey(rows[i].team || rows[i].name) !== key) continue;
+            box.appendChild(favRow(s.table,
+              rows[i].rank + ". " + s.pos, rows[i].points + " P"));
+            return;
+          }
+        })
+        .catch(function () {});
+    }
+
+    function favRow(label, value, meta) {
+      var row = document.createElement("div");
+      row.className = "favourite-team__row";
+      row.innerHTML = '<span class="favourite-team__label">' + escapeText(label) + "</span>" +
+        '<span class="favourite-team__value">' + escapeText(value) + "</span>" +
+        (meta ? '<span class="favourite-team__meta">' + escapeText(meta) + "</span>" : "");
+      return row;
+    }
   }
 
   /**
@@ -752,6 +960,7 @@
   // arıyor, sıra ters olsaydı düğme sessizce işlevsiz kalırdı.
   setupBottomNav();
   setupNowFootball();
+  setupFavouriteTeam();
   document.querySelectorAll(".site-search").forEach(setupSearch);
 
   /* --------------------------------------------------------------------------

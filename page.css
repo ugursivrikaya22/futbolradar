@@ -18219,3 +18219,115 @@ a.motm-week__card:focus-visible {
 /* Rozet satırı boşsa hiç çizilmez: içi boş bir kutu, kart yüksekliğini
    bilgi vermeden büyütür (app.js → coverageStatusChipHtml). */
 .tag-row:empty { display: none; }
+
+/* ── FAVORİ TAKIMIM ─────────────────────────────────────────────────
+   Seçilmemişken: armalardan oluşan tek satırlık yatay şerit.
+   Seçilmişken: takımın sıradaki maçı, son sonucu ve sıradaki yeri. */
+.favourite-team {
+  display: grid;
+  gap: 6px;
+  order: -4; /* şeridin de üstünde: kişisel bilgi ilk sırada */
+  margin-top: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-strong, rgba(0, 0, 0, .12));
+  border-radius: 14px;
+  background: var(--surface, #fff);
+}
+
+.favourite-team__title {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted, #5b6470);
+}
+
+/* 18 takım alt alta uzun bir liste olurdu; yatay kaydırma tek satırda
+   tutuyor. Yerel CSS, kütüphane yok. */
+.favourite-team__rail {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.favourite-team__rail::-webkit-scrollbar { display: none; }
+
+.favourite-team__pick {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  /* Parmak hedefi 44 px'in altına inmiyor. */
+  min-width: 64px;
+  min-height: 66px;
+  padding: 6px 4px;
+  border: 1px solid var(--line, rgba(0, 0, 0, .1));
+  border-radius: 12px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.1;
+  scroll-snap-align: start;
+  cursor: pointer;
+}
+
+.favourite-team__pick img { width: 28px; height: 28px; object-fit: contain; }
+
+.favourite-team__pick span {
+  display: block;
+  max-width: 58px;
+  overflow: hidden;
+  /* Takım adı harf harf bölünmesin: tek satır, gerekirse kısaltılır. */
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.favourite-team__head { display: flex; gap: 8px; align-items: center; }
+.favourite-team__head img { width: 26px; height: 26px; object-fit: contain; }
+.favourite-team__name { flex: 1 1 auto; min-width: 0; font-size: 14px; }
+
+.favourite-team__change {
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--line, rgba(0, 0, 0, .12));
+  border-radius: 999px;
+  background: none;
+  color: var(--muted, #5b6470);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.favourite-team__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: baseline;
+  font-size: 13px;
+}
+
+.favourite-team__label { flex: 0 0 auto; color: var(--muted, #5b6470); font-size: 12px; font-weight: 700; }
+
+.favourite-team__value {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 700;
+}
+
+.favourite-team__meta { flex: 0 0 auto; color: var(--green, #0b8f5a); font-weight: 900; }
+
+/* Masaüstünde gizli: geniş ekranda takım sayfaları zaten bir tık uzakta
+   ve şerit orada yer kaplamaktan başka iş görmüyor. */
+@media (min-width: 901px) { .favourite-team { display: none; } }
