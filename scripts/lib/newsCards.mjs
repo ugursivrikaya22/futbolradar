@@ -73,11 +73,13 @@ export function renderTeamNewsSection(articles, { team, base = "./" }) {
   const cards = articles.map((article) => {
     const slug = newsSlug(article.slug || article.id || article.title);
     const href = `${base}haber/${slug}`;
-    return `<article class="news-card" data-card="news" data-news="${escapeHtml(article.id || slug)}">
-      <div class="news-card-meta"><span class="tag green">${escapeHtml(article.category || team)}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(formatDate(article.publishedAt))}</time></div>
+    const isTransfer = /transfer/i.test(String(article.category || ""));
+    const badgeLabel = isTransfer ? "Transfer" : String(article.category || team);
+    return `<a class="news-card" data-card="news" data-news="${escapeHtml(article.id || slug)}" href="${escapeHtml(href)}">
+      <div class="news-card-meta"><span class="mega-badge ${isTransfer ? "mega-badge--transfer" : "mega-badge--radar"}">${escapeHtml(badgeLabel)}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(formatDate(article.publishedAt))}</time></div>
       <div><span class="card-kicker">${escapeHtml(team)}</span><h3>${escapeHtml(article.title)}</h3><p>${escapeHtml(article.summary || article.spot || "")}</p></div>
-      <div class="news-card-footer"><span>${escapeHtml(article.sourceName || "FutbolRadar")}</span><a class="detail-link" href="${escapeHtml(href)}">Haberi oku</a></div>
-    </article>`;
+      <div class="news-card-footer"><span>${escapeHtml(article.sourceName || "FutbolRadar")}</span><span class="detail-link">Haberi oku</span></div>
+    </a>`;
   }).join("");
 
   return `<section class="team-news-section" data-team-news="${escapeHtml(newsSlug(team))}" aria-labelledby="${escapeHtml(sectionId)}">

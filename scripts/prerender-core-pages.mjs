@@ -1056,21 +1056,28 @@ function analysisCards() {
   return analyses.map((analysis) => `<article class="article-card" data-card="analysis" id="${escapeHtml(analysis.id)}-preview"><div><h3>${escapeHtml(analysis.title)}</h3><p>${escapeHtml(analysis.summary)}</p></div><a href="${escapeHtml(analysis.url)}">Analizi aç</a></article>`).join("");
 }
 
-function newsCardAction(item) {
+function newsCardActionLabel(item) {
   const href = newsHref(item, "./");
-  if (!href) {
-    return "";
-  }
+  if (!href) return { href: "", label: "" };
   const external = isExternalHref(href);
-  // Dışarı çıkan künye `nofollow` taşır (services/sourceLinks.js ile aynı
-  // kural): alıntı bir atıftır, tavsiye değil. İç bağlantı sade açılır.
-  const attrs = external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : "";
   const label = external ? "Resmî açıklamayı aç" : "Haberi oku";
-  return `<a class="detail-link" href="${escapeHtml(href)}"${attrs}>${label}</a>`;
+  return { href, external, label };
 }
 
 function newsCardList(limit) {
-  return news.slice(0, limit || news.length).map((item) => `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}"><div class="news-card-meta"><span class="tag green">${escapeHtml(item.category || "Futbol Gündemi")}</span><time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatFreshnessDate(item.publishedAt) || "Tarih açıklanmadı")}</time></div><div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p></div><div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Resmî kaynak")}</span>${newsCardAction(item)}</div></article>`);
+  return news.slice(0, limit || news.length).map((item) => {
+    const action = newsCardActionLabel(item);
+    const isTransfer = /transfer/i.test(String(item.category || ""));
+    const badgeClass = isTransfer ? "mega-badge--transfer" : "mega-badge--radar";
+    const badgeLabel = isTransfer ? "Transfer" : String(item.category || "Radar");
+    // Kart tamamen tıklanabilir: <a> gövdesi, iç içe link yok. Kaynağa çıkan
+    // linkler `nofollow` taşır (services/sourceLinks.js ile aynı kural).
+    const attrs = action.href
+      ? ` href="${escapeHtml(action.href)}"${action.external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : ""}`
+      : "";
+    const tag = action.href ? "a" : "article";
+    return `<${tag} class="news-card" data-card="news" data-news="${escapeHtml(item.id)}"${attrs}><div class="news-card-meta"><span class="mega-badge ${badgeClass}">${escapeHtml(badgeLabel)}</span><time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatFreshnessDate(item.publishedAt) || "Tarih açıklanmadı")}</time></div><div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p></div><div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Resmî kaynak")}</span>${action.href ? `<span class="detail-link">${action.label}</span>` : ""}</div></${tag}>`;
+  });
 }
 
 function newsCards(limit) {
