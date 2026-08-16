@@ -17897,6 +17897,10 @@ a.motm-week__card:focus-visible {
   letter-spacing: .06em;
 }
 .match-special-promo__breaking.is-official .match-special-promo__breaking-badge { background: var(--accent); }
+/* Biten maçın rozeti kırmızı "son dakika" tonunu bırakır: oynanmış bir maçın
+   skoru acil bir duyuru değil, arşiv bilgisidir. */
+.match-special-promo__breaking.is-final { border-color: var(--line); }
+.match-special-promo__breaking.is-final .match-special-promo__breaking-badge { background: var(--muted); }
 .match-special-promo__breaking strong { font-size: clamp(1.05rem, 2.8vw, 1.55rem); line-height: 1.22; }
 .match-special-promo__breaking > span:last-child { color: var(--muted); font-size: .9rem; line-height: 1.55; }
 
@@ -18729,6 +18733,14 @@ a.motm-week__card:focus-visible {
    saniyede "maç var mı, skor ne, son dakika ne" sorusunu görmesi. */
 .now-football {
   display: grid;
+  /* SÜTUN, KAPSAYICIYA BAĞLANIR.
+     Örtük `auto` sütun en geniş satırın max-content'ine büyüyordu: uzun bir
+     haber başlığı geldiğinde şerit 351 px'lik alanda 423 px yer kaplıyor ve
+     ANA SAYFANIN TAMAMINI yatay kaydırıyordu (375/390/430 px'te ölçüldü).
+     `.now-football__value` zaten `overflow: hidden` + `text-overflow:
+     ellipsis` taşıyor ama sütun büyüdüğü için kırpma hiç devreye girmiyordu.
+     `minmax(0, 1fr)` sütunu kapsayıcı genişliğinde tutar; kırpma çalışır. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
   /* 720 px altında `.home-main` flex sütun ve `.home-poll` `order: -1` ile
      öne alınıyor. Belge sırasında ilk olmak yetmiyor — şerit ilk ekranda

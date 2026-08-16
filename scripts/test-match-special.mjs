@@ -404,6 +404,35 @@ console.log("match-special");
   assert.match(client, /data-lineup-team/, "panel kendi takımını bildirmeli");
   assert.match(client, /show\(section, team \? !mine : !homeOfficial\)/,
     "panel önce kendi takımına, ad yoksa ev sahibine bakmalı");
+
+  // ── BİTMİŞ MAÇA "HENÜZ AÇIKLANMADI" DENMEZ ────────────────────────────
+  //
+  // Pencere kapandıktan sonra uç nokta sağlayıcıya gitmiyor ve kadro
+  // alanları boş dönüyor. Sayfa bunu "kadro açıklanmadı" diye okuyup
+  // OYNANMIŞ bir maç hakkında yanlış bilgi veriyordu: hub "Tamamlandı
+  // 1-1" derken ilk 11 sayfası "İlk 11'ler henüz açıklanmadı" yazıyordu.
+  assert.match(client, /function matchIsOver/, "maçın bitmişliği tek yerde kararlaştırılmalı");
+  assert.match(client, /data\.phase === "final"/, "kapanan pencere bitmiş sayılmalı");
+  assert.match(client, /else if \(over\) statusText = strings\.overPending/,
+    "bitmiş maçta durum metni `overPending` olmalı");
+  for (const key of ["overPending", "finishedBadge"]) {
+    const hits = (client.match(new RegExp(`${key}:`, "g")) || []).length;
+    assert.equal(hits, 2, `${key} hem Türkçe hem İngilizce tabloda olmalı`);
+  }
+
+  // ── HER TANITIM KARTI KENDİ MAÇINI YOKLAR ─────────────────────────────
+  //
+  // Tek `document.querySelector("[data-lineup-promo]")` ana sayfadaki İKİNCİ
+  // kartı hiç güncellemiyordu: o maçın kadrosu açıklansa da kart "muhtemel
+  // 11" yazmaya, maç bitse de aynı rozeti taşımaya devam ediyordu.
+  assert.doesNotMatch(client, /querySelector\("\[data-lineup-promo\]"\)/,
+    "tanıtım kartı tek seçiciyle bulunmamalı; her kart kendi yoklayıcısını almalı");
+  assert.match(client, /querySelectorAll\("\[data-lineup-promo\]"\)/,
+    "tüm tanıtım kartları dolaşılmalı");
+  assert.match(client, /function startMatchPoller/, "yoklayıcı maç başına kurulmalı");
+  // Aynı maçın kartı sayfadaysa ikinci bir istek açılmamalı.
+  assert.match(client, /if \(!id \|\| id === mainId\) return;/,
+    "ana maçın kartı için ikinci yoklayıcı açılmamalı");
 }
 
 // ── 13. ANA SAYFA KUTUSU: PENCERE VE BAĞLANTILAR ─────────────────────────
