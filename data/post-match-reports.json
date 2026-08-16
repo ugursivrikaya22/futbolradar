@@ -1,9 +1,295 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-16T12:45:15.659Z",
-  "matchCount": 535,
+  "updatedAt": "2026-08-16T13:06:44.021Z",
+  "matchCount": 536,
   "records": [
+    {
+      "matchId": "tottenham-1899-hoffenheim-2026-08-16",
+      "fixtureId": "1598622",
+      "provider": "api-football",
+      "slug": "tottenham-1899-hoffenheim-2026-08-16",
+      "kickoff": "2026-08-16T14:00:00+03:00",
+      "kickoffUtc": "2026-08-16T11:00:00.000Z",
+      "kickoffLocal": "2026-08-16T14:00",
+      "date": "2026-08-16",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Tottenham",
+      "awayTeam": "1899 Hoffenheim",
+      "venue": "Hotspur Way Training Centre",
+      "score": {
+        "home": 2,
+        "away": 2
+      },
+      "finalScore": "2-2",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 20
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 20,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "3ab97611783150ab",
+      "fingerprint": "3ab97611783150ab",
+      "analysisGeneratedAt": "2026-08-16T13:06:43.984Z",
+      "analysisUpdatedAt": "2026-08-16T13:06:43.984Z",
+      "generatedAt": "2026-08-16T13:06:43.984Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Tottenham 2-2 1899 Hoffenheim maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Tottenham ile 1899 Hoffenheim, Hotspur Way Training Centre'de oynanan Friendlies Clubs karşılaşmasında 2-2 berabere kaldı.",
+        "path": "mac-raporu/tottenham-1899-hoffenheim-2026-08-16.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/tottenham-1899-hoffenheim-2026-08-16.html",
+      "digest": {
+        "headline": "Tottenham ile 1899 Hoffenheim 2-2 berabere kaldı",
+        "paragraph": "Tottenham ile 1899 Hoffenheim, Hotspur Way Training Centre'de oynanan Friendlies Clubs karşılaşmasında 2-2 berabere kaldı. Golleri 16. dakikada A. Hlozek (1899 Hoffenheim), 20. dakikada B. Davies (Tottenham), 45+2. dakikada L. Williams-Barnett (Tottenham), 55. dakikada V. Gendrey (1899 Hoffenheim) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "16'",
+              "team": "1899 Hoffenheim",
+              "type": "Penaltı",
+              "detail": "A. Hlozek",
+              "pivotal": true
+            },
+            {
+              "minute": "20'",
+              "team": "Tottenham",
+              "type": "Gol",
+              "detail": "B. Davies",
+              "pivotal": true
+            },
+            {
+              "minute": "45+2'",
+              "team": "Tottenham",
+              "type": "Gol",
+              "detail": "L. Williams-Barnett",
+              "pivotal": true
+            },
+            {
+              "minute": "55'",
+              "team": "1899 Hoffenheim",
+              "type": "Gol",
+              "detail": "V. Gendrey",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 2 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "87'",
+              "team": "Tottenham",
+              "type": "Oyuncu değişikliği",
+              "detail": "P. M. Sarr",
+              "decisive": false
+            },
+            {
+              "minute": "87'",
+              "team": "Tottenham",
+              "type": "Oyuncu değişikliği",
+              "detail": "L. Williams-Barnett",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Hlozek",
+              "team": "1899 Hoffenheim",
+              "contribution": "16' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "B. Davies",
+              "team": "Tottenham",
+              "contribution": "20' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "L. Williams-Barnett",
+              "team": "Tottenham",
+              "contribution": "45+2' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "V. Gendrey",
+              "team": "1899 Hoffenheim",
+              "contribution": "55' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "16' 1899 Hoffenheim — A. Hlozek: penaltı",
+            "20' Tottenham — B. Davies: gol",
+            "45+2' Tottenham — L. Williams-Barnett: gol",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 3
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (16 olay).",
+            "55' 1899 Hoffenheim — V. Gendrey: gol",
+            "İkinci yarı içinde 15 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "32' 1899 Hoffenheim değişikliği (Substitution 1). Değişiklikten sonra 1899 Hoffenheim adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "46' 1899 Hoffenheim değişikliği (Substitution 2). Değişiklikten sonra 1899 Hoffenheim adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "46' 1899 Hoffenheim değişikliği (Substitution 3). Değişiklikten sonra 1899 Hoffenheim adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "46' 1899 Hoffenheim değişikliği (Substitution 4). Değişiklikten sonra 1899 Hoffenheim adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "46' 1899 Hoffenheim değişikliği (Substitution 5). Değişiklikten sonra 1899 Hoffenheim adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "46' 1899 Hoffenheim değişikliği (Substitution 6). Değişiklikten sonra 1899 Hoffenheim adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 2-2 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "2-2 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "liverpool-como-2026-08-16",
       "fixtureId": "1550631",
