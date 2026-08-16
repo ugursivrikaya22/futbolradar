@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-16T05:32:15.253Z",
+  "updatedAt": "2026-08-16T06:45:32.933Z",
   "matchCount": 531,
   "records": [
     {
@@ -226,10 +226,10 @@
       "winner": "Matagalpa",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -237,9 +237,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 4
         },
         "statistics": {
           "present": false,
@@ -259,19 +259,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 4,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -289,11 +285,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "febf09c8f3311019",
-      "fingerprint": "febf09c8f3311019",
+      "analysisSourceHash": "d1a90fc9d160f06d",
+      "fingerprint": "d1a90fc9d160f06d",
       "analysisGeneratedAt": "2026-08-16T02:58:27.795Z",
-      "analysisUpdatedAt": "2026-08-16T02:58:27.795Z",
-      "generatedAt": "2026-08-16T02:58:27.795Z",
+      "analysisUpdatedAt": "2026-08-16T06:45:32.893Z",
+      "generatedAt": "2026-08-16T06:45:32.893Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -305,7 +301,7 @@
       "reportUrl": "./mac-raporu/matagalpa-san-marcos-2026-08-16.html",
       "digest": {
         "headline": "Matagalpa, San Marcos'u 1-0 yendi",
-        "paragraph": "Estadio Matagalpa Yaule'de oynanan Primera Division maçını Matagalpa 1-0 kazandı; San Marcos sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Estadio Matagalpa Yaule'de oynanan Primera Division maçını Matagalpa 1-0 kazandı; San Marcos sahadan puansız ayrıldı. Tek golü 14. dakikada Normal Goal (Matagalpa) kaydetti.",
         "result": {
           "winner": "Matagalpa",
           "loser": "San Marcos",
@@ -321,32 +317,96 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "14'",
+              "team": "Matagalpa",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            },
+            {
+              "minute": "32'",
+              "team": "Matagalpa",
+              "type": "Kırmızı kart",
+              "detail": "Red Card",
+              "pivotal": true
+            },
+            {
+              "minute": "71'",
+              "team": "Matagalpa",
+              "type": "Kırmızı kart",
+              "detail": "Red Card",
+              "pivotal": true
+            },
+            {
+              "minute": "87'",
+              "team": "San Marcos",
+              "type": "Kırmızı kart",
+              "detail": "Red Card",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "1 kırmızı kart bu bölümde görüldü.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "87'",
+              "team": "San Marcos",
+              "type": "Kırmızı kart",
+              "detail": "Red Card",
+              "decisive": true
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Normal Goal",
+              "team": "Matagalpa",
+              "contribution": "14' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Red Card",
+              "team": "San Marcos",
+              "contribution": "87' kırmızı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "Red Card",
+              "team": "Matagalpa",
+              "contribution": "32' kırmızı kart · 71' kırmızı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "14' Matagalpa — Normal Goal: gol"
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
           "goals": 0
         },
         "coaching": {
@@ -361,7 +421,9 @@
             "Matagalpa, San Marcos'u 1-0 yendi."
           ],
           "strengths": [],
-          "improvements": [],
+          "improvements": [
+            "Kırmızı kart maçın seyrini etkiledi (32' Matagalpa, 71' Matagalpa, 87' San Marcos)."
+          ],
           "closing": "Matagalpa sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -385,10 +447,16 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 57,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -614,10 +682,10 @@
       "winner": "Alianza Lima",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -625,9 +693,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 13
         },
         "statistics": {
           "present": false,
@@ -647,19 +715,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 13,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -677,11 +741,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "b75c6d0dee56fb4c",
-      "fingerprint": "b75c6d0dee56fb4c",
+      "analysisSourceHash": "cba85aeefdd19076",
+      "fingerprint": "cba85aeefdd19076",
       "analysisGeneratedAt": "2026-08-16T02:58:27.795Z",
-      "analysisUpdatedAt": "2026-08-16T02:58:27.795Z",
-      "generatedAt": "2026-08-16T02:58:27.795Z",
+      "analysisUpdatedAt": "2026-08-16T06:45:32.893Z",
+      "generatedAt": "2026-08-16T06:45:32.893Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -693,7 +757,7 @@
       "reportUrl": "./mac-raporu/alianza-lima-utc-cajamarca-2026-08-16.html",
       "digest": {
         "headline": "Alianza Lima, UTC Cajamarca'yı 1-0 yendi",
-        "paragraph": "Estadio Alejandro Villanueva'da oynanan Primera División maçını Alianza Lima 1-0 kazandı; UTC Cajamarca sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Estadio Alejandro Villanueva'da oynanan Primera División maçını Alianza Lima 1-0 kazandı; UTC Cajamarca sahadan puansız ayrıldı. Tek golü 45+2. dakikada F. Gaibor (Alianza Lima) kaydetti.",
         "result": {
           "winner": "Alianza Lima",
           "loser": "UTC Cajamarca",
@@ -709,39 +773,118 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "56'",
+              "team": "UTC Cajamarca",
+              "type": "Kırmızı kart",
+              "detail": "A. Munoz",
+              "pivotal": true
+            },
+            {
+              "minute": "45+2'",
+              "team": "Alianza Lima",
+              "type": "Gol",
+              "detail": "F. Gaibor",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "UTC Cajamarca",
+              "type": "Oyuncu değişikliği",
+              "detail": "D. Caro",
+              "decisive": false
+            },
+            {
+              "minute": "77'",
+              "team": "Alianza Lima",
+              "type": "Oyuncu değişikliği",
+              "detail": "J. Velez",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "Alianza Lima",
+              "type": "Oyuncu değişikliği",
+              "detail": "R. Garces",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "Alianza Lima",
+              "type": "Oyuncu değişikliği",
+              "detail": "F. Gaibor",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "F. Gaibor",
+              "team": "Alianza Lima",
+              "contribution": "45+2' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "M. Antoni",
+              "team": "Alianza Lima",
+              "contribution": "4' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "A. Munoz",
+              "team": "UTC Cajamarca",
+              "contribution": "56' kırmızı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "45+2' Alianza Lima — F. Gaibor: gol"
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "46' UTC Cajamarca değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "65' Alianza Lima değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "65' Alianza Lima değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' UTC Cajamarca değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' UTC Cajamarca değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "77' UTC Cajamarca değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -749,7 +892,9 @@
             "Alianza Lima, UTC Cajamarca'yı 1-0 yendi."
           ],
           "strengths": [],
-          "improvements": [],
+          "improvements": [
+            "Kırmızı kart maçın seyrini etkiledi (56' UTC Cajamarca)."
+          ],
           "closing": "Alianza Lima sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -773,10 +918,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
