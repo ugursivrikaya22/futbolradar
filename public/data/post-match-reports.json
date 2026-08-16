@@ -1,14 +1,14 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-16T18:35:28.140Z",
-  "matchCount": 557,
+  "updatedAt": "2026-08-16T19:26:31.594Z",
+  "matchCount": 561,
   "records": [
     {
-      "matchId": "liverpool-como-2026-08-16",
-      "fixtureId": "1550631",
+      "matchId": "dinamo-brest-fc-isloch-minsk-r-2026-08-16",
+      "fixtureId": "1525947",
       "provider": "api-football",
-      "slug": "liverpool-como-2026-08-16",
+      "slug": "dinamo-brest-fc-isloch-minsk-r-2026-08-16",
       "kickoff": "2026-08-16T20:00:00+03:00",
       "kickoffUtc": "2026-08-16T17:00:00.000Z",
       "kickoffLocal": "2026-08-16T20:00",
@@ -17,25 +17,25 @@
       "providerStatus": "FT",
       "finishType": "regular",
       "finishLabel": "Normal sürede tamamlandı",
-      "league": "Friendlies Clubs",
-      "competition": "Friendlies Clubs",
+      "league": "Premier League",
+      "competition": "Premier League",
       "competitionType": null,
       "season": null,
-      "homeTeam": "Liverpool",
-      "awayTeam": "Como",
-      "venue": null,
+      "homeTeam": "Dinamo Brest",
+      "awayTeam": "FC Isloch Minsk R.",
+      "venue": "Regional Sport Complex Brestskiy",
       "score": {
-        "home": 0,
-        "away": 0
+        "home": 1,
+        "away": 2
       },
-      "finalScore": "0-0",
-      "winner": "draw",
+      "finalScore": "1-2",
+      "winner": "FC Isloch Minsk R.",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
       "dataSources": {
         "score": {
           "present": true,
@@ -43,9 +43,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 6
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": false,
@@ -65,15 +65,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 6,
+        "events": 0,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.2,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -91,28 +95,28 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "c308a8149065b0e9",
-      "fingerprint": "c308a8149065b0e9",
-      "analysisGeneratedAt": "2026-08-16T18:35:28.090Z",
-      "analysisUpdatedAt": "2026-08-16T18:35:28.090Z",
-      "generatedAt": "2026-08-16T18:35:28.090Z",
+      "analysisSourceHash": "579b7a46adf1dba1",
+      "fingerprint": "579b7a46adf1dba1",
+      "analysisGeneratedAt": "2026-08-16T19:26:31.544Z",
+      "analysisUpdatedAt": "2026-08-16T19:26:31.544Z",
+      "generatedAt": "2026-08-16T19:26:31.544Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
-        "title": "Liverpool 0-0 Como maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
-        "description": "Friendlies Clubs maçında Liverpool ile Como birbirini geçemedi: 0-0.",
-        "path": "mac-raporu/liverpool-como-2026-08-16.html",
-        "competition": "Friendlies Clubs"
+        "title": "Dinamo Brest 1-2 FC Isloch Minsk R. maç raporu: Premier League istatistikleri | FutbolRadar",
+        "description": "FC Isloch Minsk R., Regional Sport Complex Brestskiy'de oynanan Premier League karşılaşmasında Dinamo Brest'i 2-1 mağlup etti.",
+        "path": "mac-raporu/dinamo-brest-fc-isloch-minsk-r-2026-08-16.html",
+        "competition": "Premier League"
       },
-      "reportUrl": "./mac-raporu/liverpool-como-2026-08-16.html",
+      "reportUrl": "./mac-raporu/dinamo-brest-fc-isloch-minsk-r-2026-08-16.html",
       "digest": {
-        "headline": "Liverpool ile Como 0-0 berabere kaldı",
-        "paragraph": "Friendlies Clubs maçında Liverpool ile Como birbirini geçemedi: 0-0. İki takım da gol bulamadı.",
+        "headline": "FC Isloch Minsk R., Dinamo Brest'i 2-1 yendi",
+        "paragraph": "FC Isloch Minsk R., Regional Sport Complex Brestskiy'de oynanan Premier League karşılaşmasında Dinamo Brest'i 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
         "result": {
-          "winner": null,
-          "loser": null,
-          "draw": true,
-          "margin": 0
+          "winner": "FC Isloch Minsk R.",
+          "loser": "Dinamo Brest",
+          "draw": false,
+          "margin": 1
         },
         "finish": {
           "status": "ready",
@@ -123,39 +127,14 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "partial",
-          "moments": [
-            {
-              "minute": "46'",
-              "team": "Liverpool",
-              "type": "Oyuncu değişikliği",
-              "detail": "F. Chiesa",
-              "pivotal": false
-            },
-            {
-              "minute": "46'",
-              "team": "Liverpool",
-              "type": "Oyuncu değişikliği",
-              "detail": "H. Elliott",
-              "pivotal": false
-            },
-            {
-              "minute": "46'",
-              "team": "Liverpool",
-              "type": "Oyuncu değişikliği",
-              "detail": "V. Munoz",
-              "pivotal": false
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
+          "verdict": null,
+          "goals": null,
           "moments": []
         },
         "keyPlayers": {
@@ -172,34 +151,24 @@
           "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
-            "İkinci yarı içinde 6 oyuncu değişikliği kaydedildi."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "goals": 0
         },
         "coaching": {
-          "status": "ready",
-          "notes": [
-            "46' Liverpool değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "46' Liverpool değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "46' Liverpool değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "59' Liverpool değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "67' Liverpool değişikliği (Substitution 5). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "67' Liverpool değişikliği (Substitution 6). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "formations": [],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": null
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Maç 0-0 berabere bitti."
+            "FC Isloch Minsk R., Dinamo Brest'i 1-2 yendi."
           ],
           "strengths": [],
           "improvements": [],
-          "closing": "0-0 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "closing": "FC Isloch Minsk R. sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
         "aiRating": null,
@@ -222,14 +191,592 @@
       },
       "readySections": [
         "summary",
-        "momentum",
-        "secondHalf",
-        "lateGame",
-        "coaching",
         "finalAssessment"
       ],
-      "coverage": 43,
-      "dataStatus": "partial",
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "rapid-vienna-grazer-ak-2026-08-16",
+      "fixtureId": "1561911",
+      "provider": "api-football",
+      "slug": "rapid-vienna-grazer-ak-2026-08-16",
+      "kickoff": "2026-08-16T20:00:00+03:00",
+      "kickoffUtc": "2026-08-16T17:00:00.000Z",
+      "kickoffLocal": "2026-08-16T20:00",
+      "date": "2026-08-16",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Bundesliga",
+      "competition": "Bundesliga",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Rapid Vienna",
+      "awayTeam": "Grazer AK",
+      "venue": "Allianz Stadion",
+      "score": {
+        "home": 8,
+        "away": 0
+      },
+      "finalScore": "8-0",
+      "winner": "Rapid Vienna",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "a43e375fe8cbf817",
+      "fingerprint": "a43e375fe8cbf817",
+      "analysisGeneratedAt": "2026-08-16T19:26:31.544Z",
+      "analysisUpdatedAt": "2026-08-16T19:26:31.544Z",
+      "generatedAt": "2026-08-16T19:26:31.544Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Rapid Vienna 8-0 Grazer AK maç raporu: Bundesliga istatistikleri | FutbolRadar",
+        "description": "Allianz Stadion'da oynanan Bundesliga maçını Rapid Vienna 8-0 kazandı; Grazer AK sahadan puansız ayrıldı.",
+        "path": "mac-raporu/rapid-vienna-grazer-ak-2026-08-16.html",
+        "competition": "Bundesliga"
+      },
+      "reportUrl": "./mac-raporu/rapid-vienna-grazer-ak-2026-08-16.html",
+      "digest": {
+        "headline": "Rapid Vienna, Grazer AK'ı 8-0 yendi",
+        "paragraph": "Allianz Stadion'da oynanan Bundesliga maçını Rapid Vienna 8-0 kazandı; Grazer AK sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Rapid Vienna",
+          "loser": "Grazer AK",
+          "draw": false,
+          "margin": 8
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Rapid Vienna, Grazer AK'ı 8-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Rapid Vienna sahadan 8 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "espanyol-levante-2026-08-16",
+      "fixtureId": "1570338",
+      "provider": "api-football",
+      "slug": "espanyol-levante-2026-08-16",
+      "kickoff": "2026-08-16T20:00:00+03:00",
+      "kickoffUtc": "2026-08-16T17:00:00.000Z",
+      "kickoffLocal": "2026-08-16T20:00",
+      "date": "2026-08-16",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "La Liga",
+      "competition": "La Liga",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Espanyol",
+      "awayTeam": "Levante",
+      "venue": "RCDE Stadium",
+      "score": {
+        "home": 3,
+        "away": 0
+      },
+      "finalScore": "3-0",
+      "winner": "Espanyol",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "5d0a524a4c13121f",
+      "fingerprint": "5d0a524a4c13121f",
+      "analysisGeneratedAt": "2026-08-16T19:26:31.544Z",
+      "analysisUpdatedAt": "2026-08-16T19:26:31.544Z",
+      "generatedAt": "2026-08-16T19:26:31.544Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Espanyol 3-0 Levante maç raporu: La Liga istatistikleri | FutbolRadar",
+        "description": "RCDE Stadium'da oynanan La Liga maçını Espanyol 3-0 kazandı; Levante sahadan puansız ayrıldı.",
+        "path": "mac-raporu/espanyol-levante-2026-08-16.html",
+        "competition": "La Liga"
+      },
+      "reportUrl": "./mac-raporu/espanyol-levante-2026-08-16.html",
+      "digest": {
+        "headline": "Espanyol, Levante'yi 3-0 yendi",
+        "paragraph": "RCDE Stadium'da oynanan La Liga maçını Espanyol 3-0 kazandı; Levante sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Espanyol",
+          "loser": "Levante",
+          "draw": false,
+          "margin": 3
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Espanyol, Levante'yi 3-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Espanyol sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "anorthosis-apoel-nicosia-2026-08-16",
+      "fixtureId": "1627006",
+      "provider": "api-football",
+      "slug": "anorthosis-apoel-nicosia-2026-08-16",
+      "kickoff": "2026-08-16T20:00:00+03:00",
+      "kickoffUtc": "2026-08-16T17:00:00.000Z",
+      "kickoffLocal": "2026-08-16T20:00",
+      "date": "2026-08-16",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Anorthosis",
+      "awayTeam": "Apoel Nicosia",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 3
+      },
+      "finalScore": "1-3",
+      "winner": "Apoel Nicosia",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "7b082de2bc13d363",
+      "fingerprint": "7b082de2bc13d363",
+      "analysisGeneratedAt": "2026-08-16T19:26:31.544Z",
+      "analysisUpdatedAt": "2026-08-16T19:26:31.544Z",
+      "generatedAt": "2026-08-16T19:26:31.544Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Anorthosis 1-3 Apoel Nicosia maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Friendlies Clubs maçını Apoel Nicosia 3-1 kazandı; Anorthosis sahadan puansız ayrıldı.",
+        "path": "mac-raporu/anorthosis-apoel-nicosia-2026-08-16.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/anorthosis-apoel-nicosia-2026-08-16.html",
+      "digest": {
+        "headline": "Apoel Nicosia, Anorthosis'i 3-1 yendi",
+        "paragraph": "Friendlies Clubs maçını Apoel Nicosia 3-1 kazandı; Anorthosis sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Apoel Nicosia",
+          "loser": "Anorthosis",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Apoel Nicosia, Anorthosis'i 1-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Apoel Nicosia sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -662,7 +1209,7 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 16
+          "count": 17
         },
         "statistics": {
           "present": true,
@@ -682,7 +1229,7 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 16,
+        "events": 17,
         "statistics": 17,
         "lineups": 2,
         "players": 42
@@ -695,11 +1242,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "4675c4b52a593d95",
-      "fingerprint": "4675c4b52a593d95",
+      "analysisSourceHash": "f73f527defb1ee21",
+      "fingerprint": "f73f527defb1ee21",
       "analysisGeneratedAt": "2026-08-16T18:35:28.090Z",
-      "analysisUpdatedAt": "2026-08-16T18:35:28.090Z",
-      "generatedAt": "2026-08-16T18:35:28.090Z",
+      "analysisUpdatedAt": "2026-08-16T19:26:31.544Z",
+      "generatedAt": "2026-08-16T19:26:31.544Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -830,7 +1377,7 @@
         "firstHalf": {
           "status": "ready",
           "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
             "14' Başakşehir — C. Operi: gol"
           ],
           "goals": 1
@@ -873,7 +1420,7 @@
             "İsabetli şutta da öndeydi (5-4); sonuç üretilen pozisyonla uyumlu."
           ],
           "strengths": [
-            "Başakşehir topa daha çok sahip oldu (%52).",
+            "Başakşehir topa daha çok sahip oldu (%51).",
             "Başakşehir daha çok şut denedi (17-8)."
           ],
           "improvements": [
@@ -889,7 +1436,7 @@
           },
           "away": {
             "team": "Kocaelispor",
-            "score": 39
+            "score": 40
           },
           "confidence": 100
         },
@@ -918,7 +1465,7 @@
             "id": "kurulus",
             "title": "Kuruluş verimliliği",
             "readings": [
-              "Bir şut üretmek için Başakşehir 26.6, Kocaelispor 54.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+              "Bir şut üretmek için Başakşehir 27.5, Kocaelispor 57.4 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -938,7 +1485,7 @@
             "id": "sutkalitesi",
             "title": "Şut kalitesi",
             "readings": [
-              "Şut başına xG Başakşehir 0.115, Kocaelispor 0.053. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+              "Şut başına xG Başakşehir 0.115, Kocaelispor 0.063. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
             ],
             "confidence": {
               "level": "orta",
@@ -4431,10 +4978,10 @@
       "winner": "Nottingham Forest",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -4442,9 +4989,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 9
         },
         "statistics": {
           "present": false,
@@ -4464,19 +5011,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 9,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -4494,11 +5037,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "8c75e0fdb3ccedc4",
-      "fingerprint": "8c75e0fdb3ccedc4",
+      "analysisSourceHash": "b42345e6d12f7d61",
+      "fingerprint": "b42345e6d12f7d61",
       "analysisGeneratedAt": "2026-08-16T15:25:51.794Z",
-      "analysisUpdatedAt": "2026-08-16T15:25:51.794Z",
-      "generatedAt": "2026-08-16T15:25:51.794Z",
+      "analysisUpdatedAt": "2026-08-16T19:26:31.544Z",
+      "generatedAt": "2026-08-16T19:26:31.544Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -4510,7 +5053,7 @@
       "reportUrl": "./mac-raporu/nottingham-forest-stade-brestois-29-2026-08-16.html",
       "digest": {
         "headline": "Nottingham Forest, Stade Brestois 29'i 2-0 yendi",
-        "paragraph": "Friendlies Clubs maçını Nottingham Forest 2-0 kazandı; Stade Brestois 29 sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Friendlies Clubs maçını Nottingham Forest 2-0 kazandı; Stade Brestois 29 sahadan puansız ayrıldı. Golleri 23. dakikada C. Wood (Nottingham Forest), 30. dakikada L. Netz (Nottingham Forest) kaydetti.",
         "result": {
           "winner": "Nottingham Forest",
           "loser": "Stade Brestois 29",
@@ -4526,39 +5069,106 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "23'",
+              "team": "Nottingham Forest",
+              "type": "Penaltı",
+              "detail": "C. Wood",
+              "pivotal": true
+            },
+            {
+              "minute": "30'",
+              "team": "Nottingham Forest",
+              "type": "Gol",
+              "detail": "L. Netz",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 3 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Nottingham Forest",
+              "type": "Oyuncu değişikliği",
+              "detail": "C. Wood",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Nottingham Forest",
+              "type": "Oyuncu değişikliği",
+              "detail": "Z. Abbott",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Stade Brestois 29",
+              "type": "Oyuncu değişikliği",
+              "detail": "B. Locko",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "C. Wood",
+              "team": "Nottingham Forest",
+              "contribution": "23' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "L. Netz",
+              "team": "Nottingham Forest",
+              "contribution": "30' gol",
+              "impact": "yüksek"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "23' Nottingham Forest — C. Wood: penaltı",
+            "30' Nottingham Forest — L. Netz: gol"
+          ],
+          "goals": 2
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (7 olay).",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "46' Nottingham Forest değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Nottingham Forest değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "49' Stade Brestois 29 değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "58' Stade Brestois 29 değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "78' Nottingham Forest değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "78' Nottingham Forest değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -4590,10 +5200,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -4922,7 +5539,7 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 17
+          "count": 22
         },
         "statistics": {
           "present": false,
@@ -4942,7 +5559,7 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 17,
+        "events": 22,
         "statistics": 0,
         "lineups": 2,
         "players": 0
@@ -4964,11 +5581,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "d68a21b80788bf40",
-      "fingerprint": "d68a21b80788bf40",
+      "analysisSourceHash": "0a0352a62f3c2364",
+      "fingerprint": "0a0352a62f3c2364",
       "analysisGeneratedAt": "2026-08-16T15:25:51.794Z",
-      "analysisUpdatedAt": "2026-08-16T17:23:39.282Z",
-      "generatedAt": "2026-08-16T17:23:39.282Z",
+      "analysisUpdatedAt": "2026-08-16T19:26:31.544Z",
+      "generatedAt": "2026-08-16T19:26:31.544Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -5045,18 +5662,25 @@
               "decisive": false
             },
             {
-              "minute": "90+3'",
-              "team": "Irtysh",
+              "minute": "81'",
+              "team": "FK Tobol Kostanay",
               "type": "Sarı kart",
-              "detail": "R. Yudenkov",
+              "detail": "N. Cavnic",
               "decisive": false
             },
             {
-              "minute": "90+3'",
+              "minute": "85'",
               "team": "Irtysh",
-              "type": "Kırmızı kart",
-              "detail": "R. Yudenkov",
-              "decisive": true
+              "type": "Oyuncu değişikliği",
+              "detail": "D. Nyrkov",
+              "decisive": false
+            },
+            {
+              "minute": "88'",
+              "team": "FK Tobol Kostanay",
+              "type": "Oyuncu değişikliği",
+              "detail": "A. Tagybergen",
+              "decisive": false
             }
           ]
         },
@@ -5108,9 +5732,9 @@
         "secondHalf": {
           "status": "ready",
           "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (16 olay).",
             "52' FK Tobol Kostanay — V. Lisakovich: gol",
-            "İkinci yarı içinde 3 oyuncu değişikliği kaydedildi."
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
           ],
           "goals": 1
         },
@@ -5122,7 +5746,7 @@
             "40' FK Tobol Kostanay değişikliği (Substitution 1). Değişiklikten sonra FK Tobol Kostanay adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
             "46' Irtysh değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
             "46' Irtysh değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "73' FK Tobol Kostanay değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "60' Irtysh değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
           "formations": [
             {
@@ -5827,6 +6451,235 @@
         "finalAssessment"
       ],
       "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "liverpool-como-2026-08-16",
+      "fixtureId": "1550631",
+      "provider": "api-football",
+      "slug": "liverpool-como-2026-08-16",
+      "kickoff": "2026-08-16T13:30:00+03:00",
+      "kickoffUtc": "2026-08-16T10:30:00.000Z",
+      "kickoffLocal": "2026-08-16T13:30",
+      "date": "2026-08-16",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Liverpool",
+      "awayTeam": "Como",
+      "venue": null,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "finalScore": "0-0",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 6
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 6,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "db486e8e33361370",
+      "fingerprint": "db486e8e33361370",
+      "analysisGeneratedAt": "2026-08-16T18:35:28.090Z",
+      "analysisUpdatedAt": "2026-08-16T19:26:31.544Z",
+      "generatedAt": "2026-08-16T19:26:31.544Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Liverpool 0-0 Como maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Friendlies Clubs maçında Liverpool ile Como birbirini geçemedi: 0-0.",
+        "path": "mac-raporu/liverpool-como-2026-08-16.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/liverpool-como-2026-08-16.html",
+      "digest": {
+        "headline": "Liverpool ile Como 0-0 berabere kaldı",
+        "paragraph": "Friendlies Clubs maçında Liverpool ile Como birbirini geçemedi: 0-0. İki takım da gol bulamadı.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "46'",
+              "team": "Liverpool",
+              "type": "Oyuncu değişikliği",
+              "detail": "F. Chiesa",
+              "pivotal": false
+            },
+            {
+              "minute": "46'",
+              "team": "Liverpool",
+              "type": "Oyuncu değişikliği",
+              "detail": "H. Elliott",
+              "pivotal": false
+            },
+            {
+              "minute": "46'",
+              "team": "Liverpool",
+              "type": "Oyuncu değişikliği",
+              "detail": "V. Munoz",
+              "pivotal": false
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
+            "İkinci yarı içinde 6 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "46' Liverpool değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Liverpool değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Liverpool değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "59' Liverpool değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "67' Liverpool değişikliği (Substitution 5). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "67' Liverpool değişikliği (Substitution 6). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 0-0 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "0-0 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "momentum",
+        "secondHalf",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 43,
       "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
