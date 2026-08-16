@@ -11767,6 +11767,27 @@ a.column-author:focus-visible {
   margin: 0;
 }
 
+.article-take {
+  display: grid;
+  gap: 6px;
+  padding: var(--sp-3);
+  border-left: 3px solid var(--cyan);
+  border-radius: 0 6px 6px 0;
+  background: rgba(13, 148, 136, 0.06);
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+}
+
+.article-take strong {
+  color: var(--cyan);
+  font-size: var(--fs-base);
+}
+
+.article-take p {
+  margin: 0;
+}
+
 .column-body {
   display: grid;
   gap: var(--sp-3);

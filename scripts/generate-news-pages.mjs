@@ -63,6 +63,24 @@ function articleSources(article) {
     .filter((source) => source && source.name && /^https?:\/\//i.test(String(source.url || "")));
 }
 
+/**
+ * FUTBOLRADAR YORUMU — habere ait YENİ bir iddia üretmez, yalnızca sayfada
+ * zaten görünen doğrulanmış verilerden (kaynak sayısı, kategori,
+ * güncelleme notu) tek cümlelik bir bağlam çıkarır. `updateNote` varsa
+ * "henüz netleşmeyen" başlıkları o notun kendisinden alır — burada ayrı bir
+ * gerekçe uydurulmaz.
+ */
+function articleTakeText(article, sources) {
+  const sourceCount = sources.length;
+  const sourceClause = sourceCount > 0
+    ? `${sourceCount} doğrulanmış kaynakla teyit edildi`
+    : "henüz bağımsız bir kaynakla teyit edilmedi";
+  const pendingClause = String(article.updateNote || "").trim()
+    ? " Netleşmeyen başlıklar için sayfa güncellenmeye açık tutuluyor."
+    : "";
+  return `Bu haber ${sourceClause}.${pendingClause}`;
+}
+
 function articleInternalLinks(article) {
   return (Array.isArray(article.internalLinks) ? article.internalLinks : [])
     .filter((link) =>
@@ -159,6 +177,7 @@ function pageHtml(article) {
   const internalLinksHtml = internalLinks.length
     ? `<section class="article-sources" aria-labelledby="article-internal-links-title"><h2 id="article-internal-links-title">Ilgili baglantilar</h2><ul>${internalLinks.map((link) => `<li><a href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></li>`).join("")}</ul></section>`
     : "";
+  const takeHtml = `<aside class="article-take" aria-labelledby="article-take-title"><strong id="article-take-title">FutbolRadar Yorumu</strong><p>${escapeHtml(articleTakeText(article, sources))}</p></aside>`;
 
   return `<!doctype html>
 <html lang="tr">
@@ -200,6 +219,7 @@ ${siteHeader({ base: "../" })}
         <div class="column-body">
         ${body}
         </div>
+        ${takeHtml}
         ${internalLinksHtml}
         ${sourceHtml}
       </article>
