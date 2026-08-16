@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-16T17:23:43.778Z",
+  "updatedAt": "2026-08-16T18:36:09.327Z",
   "items": [
     {
       "id": "auto-news-b0edd5a81dbeb7efd72f",
@@ -31,7 +31,7 @@
       "team": "Beşiktaş",
       "timestamp": "2026-08-16T13:10:56.000Z",
       "source": {
-        "name": "Bjk.com.tr",
+        "name": "bjk.com.tr",
         "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBuT2dBaUhrRGJfaDEwYXJqZE9DbzltVElEclZ3YlBteUg3WHR1T25wQjdlR1BhX29vVWxiYUdWNW5SblRLOG1ST0tscHdBU1l6Y2lNbzJSbEg5T28?oc=5",
         "publisher": "bjk.com.tr"
       },
@@ -115,7 +115,7 @@
       "team": "Beşiktaş",
       "timestamp": "2026-08-15T16:19:31.000Z",
       "source": {
-        "name": "Bjk.com.tr",
+        "name": "bjk.com.tr",
         "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5UVGxJQjVzV0lpQW9GWnBjcllSaVJNU3NTSkpkeHlpS19wb2YtNjRNU1VESnprMG15WllsNTcwSk0tMTdpSkhZRXZXSHBUTXJyV0NTLS1ndXg1ak0?oc=5",
         "publisher": "bjk.com.tr"
       },
@@ -185,7 +185,9 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1,
-        "status": "OFFICIAL"
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-08-14T22:56:17.000Z"
       }
     },
     {
