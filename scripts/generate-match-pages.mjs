@@ -155,11 +155,22 @@ function clockLabel(value) {
   return new Intl.DateTimeFormat("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }).format(parsed);
 }
 
+/**
+ * Her iki takımın radar puanı da yoksa ("Veri bekleniyor" / "Veri bekleniyor")
+ * sayfanın tek içeriği isim + boş kutulardır — AdSense'in "ince içerik"
+ * kuralına takılır. `noindex,follow`: sayfa erişilebilir kalır (başka
+ * sayfalar ona bağlantı verebilir), veri geldiğinde otomatik index'e döner.
+ */
+function matchIsIndexable(radar) {
+  return radar.home.score !== null || radar.away.score !== null;
+}
+
 function pageHtml(match) {
   const slugValue = pageSlug(match);
   const canonical = `${domain}/mac/${slugValue}.html`;
   const freshness = normalizeFreshness(match.freshness);
   const radar = calculateMatchRadar(match, { teams, players, squadStatus });
+  const indexable = matchIsIndexable(radar);
   const homeTeam = getTeam(match.homeTeam);
   const awayTeam = getTeam(match.awayTeam);
   const dateLabel = match.kickoff ? formatFreshnessDate(match.kickoff) : (match.dateRange || "Tarih ve saat bekleniyor");
@@ -233,7 +244,7 @@ function pageHtml(match) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonical}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${indexable ? "index,follow" : "noindex,follow"}" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -287,7 +298,9 @@ function updateSitemap(matches) {
   // Kök etiket scripts/lib/sitemap.mjs'de: bu adım site haritasını baştan
   // yazdığı için ad alanları burada da bildirilmek zorunda; sabit bir dize
   // yazılsaydı iki dilli girdilerin `xhtml:` öneki tanımsız kalırdı.
-  const content = wrapUrlset(retained.concat(matches.map(sitemapEntry)));
+  const indexableMatches = matches.filter((match) =>
+    matchIsIndexable(calculateMatchRadar(match, { teams, players, squadStatus })));
+  const content = wrapUrlset(retained.concat(indexableMatches.map(sitemapEntry)));
   fs.writeFileSync(sitemapPath, content, "utf8");
   fs.writeFileSync(path.join(root, "public", "sitemap.xml"), content, "utf8");
 }

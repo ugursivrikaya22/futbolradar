@@ -251,12 +251,19 @@ function playerMiniCard(player) {
   </article>`;
 }
 
+/** İki oyuncudan biri bile doğrulanmamışsa kart tek genel cümleye düşüyor
+ * (bkz. comparisonInsight) — sayfa isim + boş kutudan ibaret kalıyor. */
+function pairIsIndexable(pair) {
+  return publicPlayerView(pair.left).verified && publicPlayerView(pair.right).verified;
+}
+
 function pageHtml(pair) {
   const { left, right, slug, reasons } = pair;
   const title = `${left.name} vs ${right.name} | Oyuncu Karşılaştırması | FutbolRadar`;
   const description = `${left.name} ve ${right.name} oyuncu karşılaştırması; AI rating, form, gol tehdidi, yaratıcılık, pres gücü, piyasa değeri ve transfer bilgileriyle FutbolRadar'da analiz edilir.`;
   const canonical = `${domain}/karsilastirma/${slug}.html`;
   const insights = comparisonInsight(left, right);
+  const indexable = pairIsIndexable(pair);
 
   return `<!doctype html>
 <html lang="tr">
@@ -266,7 +273,7 @@ function pageHtml(pair) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonical}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${indexable ? "index,follow" : "noindex,follow"}" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -499,7 +506,7 @@ for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "publ
     .filter((entry) => !entry.includes(`${domain}/karsilastirma/`));
   // Tarih sabit yazılıyordu (2026-07-13) ve karşılaştırma sayfaları
   // güncellenmesine rağmen hiç ilerlemiyordu; gerekçe lib/sitemapFreshness.mjs.
-  const entries = pairs.map((pair) => {
+  const entries = pairs.filter(pairIsIndexable).map((pair) => {
     const file = `karsilastirma/${pair.slug}.html`;
     const lastmod = freshness.lastmodForFile(file, path.join(root, file));
     return `  <url>\n    <loc>${domain}/${file}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.65</priority>\n  </url>`;

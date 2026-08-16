@@ -54,7 +54,11 @@ export const POSTPROCESS_CHAIN = [
   // Kulüp armaları tek bir dış kaynaktan geliyor ve sayfada 240'ı aşıyor;
   // bağlantı önden ısıtılmazsa ilk arma DNS + TLS el sıkışmasını bekliyor.
   { id: "preconnect", script: "inject-preconnect.mjs", args: [], timeoutMinutes: 8 },
+  // Reklam/analitik kimliği tanımlıysa `analytics` adımından ÖNCE çalışmalı:
+  // izin varsayılanı (denied) herhangi bir gtag çağrısından önce yerleşmeli.
+  { id: "consent-mode", script: "inject-consent-mode.mjs", args: [], timeoutMinutes: 5 },
   { id: "analytics", script: "inject-ga4.mjs", args: [], timeoutMinutes: 5 },
+  { id: "adsense-loader", script: "inject-adsense-loader.mjs", args: [], timeoutMinutes: 5 },
   { id: "site-verification", script: "inject-site-verification.mjs", args: [], timeoutMinutes: 5 },
   { id: "core-page-schema", script: "inject-core-page-schema.mjs", args: [], timeoutMinutes: 5 },
   { id: "hreflang", script: "inject-hreflang.mjs", args: [], timeoutMinutes: 5 },

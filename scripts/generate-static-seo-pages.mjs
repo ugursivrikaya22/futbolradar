@@ -10,8 +10,14 @@ import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { publishedColumns } = require("../services/columnService.js");
+const { PLAIN_EXTERNAL_REL } = require("../services/sourceLinks.js");
 const { ROUTES: I18N_ROUTES, absoluteUrl: i18nUrl, hreflangOf } = require("../services/i18n.js");
 const domain = "https://www.futbolradar.com";
+// GERÇEK OLMAYAN İLETİŞİM ADRESİ YAZILMAZ. Bu alan boş kaldığı sürece
+// iletişim sayfası e-posta bloğunu hiç basmaz, yerine zaten sitede gerçek
+// olarak kullanılan sosyal medya kanallarına yönlendirir (bkz. contactHtml).
+// Üretime alınmadan önce buraya gerçek bir gelen kutusu adresi girilmeli.
+const CONTACT_EMAIL = "";
 /**
  * `lastmod` ARTIK SABİT DEĞİL.
  *
@@ -242,46 +248,162 @@ const playerSeoPages = [
   }
 ];
 
+function p(text) {
+  return `<p>${text}</p>`;
+}
+
+function h2(id, text) {
+  return `<h2 id="${id}">${text}</h2>`;
+}
+
+function ul(items) {
+  return `<ul>${items.map((item) => `<li>${item}</li>`).join("")}</ul>`;
+}
+
+/**
+ * İletişim kanalı bloğu. Gerçek olmayan bir e-posta ASLA basılmaz —
+ * `CONTACT_EMAIL` boşsa sayfa, sitede zaten gerçek olarak kullanılan sosyal
+ * kanallara (footer'daki aynı hesaplar) yönlendirir ve bir e-posta
+ * gelmediğini açıkça söyler; kırık bir mailto bağlantısı göstermez.
+ */
+function contactChannelsHtml() {
+  const emailRow = CONTACT_EMAIL
+    ? `<div><span>E-posta</span><b><a href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a></b></div>`
+    : "";
+  return `<section class="grid two" aria-label="İletişim kanalları">
+      <article class="card"><span class="card-kicker">Sosyal medya</span><h2>X (Twitter)</h2><p>Gündeme dair kısa geri bildirim ve düzeltme bildirimleri için.</p><a href="https://x.com/futbolradar" target="_blank" rel="${PLAIN_EXTERNAL_REL}">x.com/futbolradar</a></article>
+      <article class="card"><span class="card-kicker">Sosyal medya</span><h2>Instagram</h2><p>Görsel içerik ve okuyucu geri bildirimi için.</p><a href="https://www.instagram.com/futbolradar" target="_blank" rel="${PLAIN_EXTERNAL_REL}">instagram.com/futbolradar</a></article>
+    </section>${emailRow ? `<dl class="match-squad-metrics">${emailRow}</dl>` : ""}`;
+}
+
+const LEGAL_UPDATED = "16 Ağustos 2026";
+
 const legalPages = [
   {
     file: "veri-notu.html",
-    title: "Veri Notu | FutbolRadar",
-    description: "FutbolRadar veri notu; canlı veri, doğrulanmış kayıtlar, manuel oyuncu kontrolü ve analiz kapsamını açıklar.",
-    h1: "Veri Notu",
-    lead: "FutbolRadar verileri farklı kaynaklardan derlenir; canlı veri alınamadığında son doğrulanmış kayıtlar gösterilebilir.",
-    cards: ["Canlı veri geçici alınamazsa son doğrulanmış kayıtlar korunur.", "Oyuncu ve transfer bilgilerinde manuel doğrulama uygulanabilir.", "Analizler bilgilendirme amaçlıdır."]
+    title: "Veri Notu ve Metodoloji | FutbolRadar",
+    description: "FutbolRadar'ın veri kaynakları, doğrulama süreci, güncelleme sıklığı ve düzeltme talebi akışı — veri notu.",
+    h1: "Veri Notu ve Metodoloji",
+    lastUpdated: LEGAL_UPDATED,
+    body: [
+      p("FutbolRadar; canlı skor, puan durumu, oyuncu istatistikleri, form/momentum okumaları ve transfer takibini tek ekranda toplar. Bu sayfa, gösterdiğimiz verinin nereden geldiğini ve hangi kurallarla yayımlandığını açıklar."),
+      h2("kaynaklar", "Kaynaklar"),
+      p("Maç, kadro ve istatistik verileri üçüncü taraf spor veri sağlayıcılarından (API tabanlı futbol istatistik servisleri) alınır ve kulüplerin resmî açıklamaları, federasyon duyuruları ve güvenilir spor basınıyla çapraz kontrol edilerek yayına hazırlanır. Transfer haberlerinde kaynak, her haberin altında ayrıca ve isimle belirtilir."),
+      h2("dogrulama-kurali", "Doğrulama kuralı"),
+      p("Sitenin genelinde geçerli tek kural şudur: doğrulanmamış veya sağlayıcı kaydıyla eşleşmeyen bir bilgi (kulüp, piyasa değeri, puan) tahmini bir sayıyla doldurulmaz. Bu bilgi hazır olana kadar ilgili alan sayfada hiç gösterilmez; yer tutucu bir rakam veya \"yakında\" ifadesi basılmaz, çünkü bu bir ölçüm bekleniyormuş izlenimi verir."),
+      h2("ai-rating", "AI rating ve radar puanları"),
+      p("Oyuncu ve maç radar puanları, kamuya açık istatistiklerden (gol, asist, xG, pas isabeti, savunma katkısı gibi) türetilen bir ağırlıklandırma modeliyle hesaplanır. Bu puanlar bir tahmin veya kesin sonuç vaadi değildir; okuyucuya karşılaştırmalı bir okuma sunmayı amaçlar."),
+      h2("guncelleme", "Güncelleme sıklığı"),
+      p("Canlı skor ve fikstür verileri sağlayıcıdan sürekli çekilir; oyuncu/takım profilleri ve analiz sayfaları günlük derleme döngüsünde güncellenir. Bir sağlayıcı geçici olarak yanıt vermediğinde, sayfa son doğrulanmış kaydı göstermeye devam eder ve bunu açıkça belirtir; eski veri yeni veri gibi sunulmaz."),
+      h2("duzeltme", "Bir hata mı gördünüz?"),
+      p(`Yanlış veya güncelliğini yitirmiş bir bilgi fark ederseniz <a href="./iletisim.html">İletişim</a> sayfasındaki kanallardan bize ulaşabilirsiniz; veri düzeltme talepleri incelenir.`)
+    ]
   },
   {
     file: "gizlilik.html",
-    title: "Gizlilik | FutbolRadar",
-    description: "FutbolRadar gizlilik sayfası; statik site kullanımı, çerez yaklaşımı ve iletişim verisi kapsamını sade şekilde açıklar.",
-    h1: "Gizlilik",
-    lead: "FutbolRadar, kullanıcı deneyimini sade tutar ve hassas kişisel veri toplamadan veri analiz ekranları sunmayı hedefler.",
-    cards: ["Zorunlu olmayan kişisel veri istenmez.", "Teknik trafik ölçümü anonimleştirilebilir.", "İletişim mesajları yalnızca yanıt amacıyla kullanılır."]
+    title: "Gizlilik Politikası | FutbolRadar",
+    description: "FutbolRadar gizlilik politikası: toplanan bilgiler, çerezler, analitik, Google AdSense ve üçüncü taraf reklam teknolojileri, kullanıcı tercihleri ve veri saklama.",
+    h1: "Gizlilik Politikası",
+    lastUpdated: LEGAL_UPDATED,
+    body: [
+      p("Bu politika, FutbolRadar'ı (\"site\", \"biz\") ziyaret ettiğinizde hangi bilgilerin nasıl işlendiğini açıklar. FutbolRadar bir istatistik ve haber sitesidir; hesap oluşturma veya ödeme gerektiren bir işlem sunmaz, bu yüzden topladığımız bilgi kapsamı sınırlıdır."),
+      h2("topladigimiz-bilgiler", "Topladığımız bilgiler"),
+      p("Siteyi ziyaret ettiğinizde, çoğu web sitesinde olduğu gibi sunucularımız ve kullandığımız üçüncü taraf servisler otomatik olarak bazı teknik bilgileri kaydedebilir:"),
+      ul([
+        "Günlük (log) bilgisi: istek zamanı, görüntülenen sayfa, yönlendiren adres.",
+        "IP adresi: temel güvenlik, kötüye kullanım önleme ve yaklaşık bölge tespiti için.",
+        "Tarayıcı ve cihaz bilgisi: tarayıcı türü/sürümü, işletim sistemi, ekran boyutu (mobil/masaüstü uyumunu ölçmek için).",
+        "Anket oyu gibi gönüllü etkileşimler: yalnızca kullandığınız bölümle sınırlı, kimliğinizi doğrudan belirlemeyen bir biçimde saklanır."
+      ]),
+      p("İletişim formunu veya sosyal medya kanallarımızı kullanarak bize yazdığınızda paylaştığınız bilgiler (ör. mesaj içeriği) yalnızca o talebi yanıtlamak amacıyla kullanılır."),
+      h2("cerezler", "Çerezler ve benzer teknolojiler"),
+      p("Site; oturum tercihlerini (ör. açık/koyu tema), anket oyunuzu tekrar sormamak için ve temel kullanım ölçümü için çerez veya tarayıcı depolama (localStorage) kullanabilir. Reklam ve analitik sağlayıcıları da kendi çerezlerini kullanabilir; bu üçüncü taraf çerezler aşağıda ayrıca açıklanmıştır."),
+      h2("analitik", "Analitik"),
+      p("Ziyaret istatistiklerini anlamak için Google Analytics benzeri bir analitik servisi kullanabiliriz. Bu servisler toplu ve genellikle anonimleştirilmiş kullanım verisi (görüntülenen sayfalar, oturum süresi, cihaz türü) toplar; bu veriyi FutbolRadar'ı iyileştirmek dışında bir amaçla kullanmıyoruz."),
+      h2("reklamcilik", "Reklamcılık ve Google AdSense"),
+      p("FutbolRadar, siteyi finanse etmek için Google AdSense ve benzer üçüncü taraf reklam ağlarını kullanabilir. Google ve reklam ortakları, kişiselleştirilmiş veya kişiselleştirilmemiş reklam göstermek için çerez ve benzer teknolojiler (ör. reklam kimlikleri) kullanabilir; bu, ilgi alanınıza uygun reklam gösterebilmek veya aynı reklamı tekrar tekrar göstermemek amacıyla yapılır."),
+      p("Avrupa Ekonomik Alanı, Birleşik Krallık ve İsviçre'den gelen ziyaretçiler için, kişiselleştirilmiş reklam ve ilgili çerezler yalnızca açık onayınız alındıktan sonra etkinleşir; onay vermediğiniz sürece yalnızca kişiselleştirilmemiş reklamcılık kullanılır (bkz. \"Çerez Tercihleri\" bölümü aşağıda)."),
+      p(`Google'ın reklamcılıkta kullandığı verilerle ilgili daha fazla bilgi ve kişiselleştirilmiş reklamları kapatma seçeneği için Google'ın <a href="https://policies.google.com/technologies/ads" target="_blank" rel="nofollow noopener noreferrer">Reklamcılık nasıl çalışır</a> sayfasını ve <a href="https://adssettings.google.com" target="_blank" rel="nofollow noopener noreferrer">Reklam Ayarları</a>'nı ziyaret edebilirsiniz.`),
+      h2("uculcu-taraflar", "Üçüncü tarafların çerez kullanımı"),
+      p("Reklam ve analitik ortaklarımız, kendi gizlilik politikalarına tabi olarak kendi çerezlerini yerleştirebilir ve okuyabilir. FutbolRadar bu üçüncü taraf çerezlerin içeriğini kontrol etmez; ilgili sağlayıcının kendi politikasını incelemenizi öneririz."),
+      h2("tercihler", "Çerez ve reklam tercihleriniz"),
+      p("Tarayıcınızın ayarlarından çerezleri silebilir veya engelleyebilirsiniz; bu, sitenin bazı bölümlerinin (ör. tema tercihinin hatırlanması) beklendiği gibi çalışmamasına yol açabilir. Onay gerektiren bölgelerde, sitedeki çerez/reklam tercih aracını kullanarak kişiselleştirilmiş reklam onayınızı istediğiniz zaman geri çekebilirsiniz."),
+      h2("saklama", "Veri saklama"),
+      p("Teknik günlük kayıtları makul bir süre için tutulur ve güvenlik/kötüye kullanım tespiti dışında bir amaçla işlenmez. İletişim mesajları, talebiniz sonuçlanana kadar saklanır. Üçüncü taraf reklam ve analitik sağlayıcılarının kendi saklama süreleri kendi politikalarında belirtilir."),
+      h2("dis-baglantilar", "Dış bağlantılar"),
+      p("Haber ve transfer sayfalarımız, kaynak gösterdiğimiz kulüp/haber sitelerine dış bağlantılar içerir. Bu sitelerin gizlilik uygulamalarından FutbolRadar sorumlu değildir; ziyaret ettiğiniz her dış sitenin kendi politikasını okumanızı öneririz."),
+      h2("haklariniz", "Gizlilik haklarınız"),
+      p(`Bulunduğunuz bölgedeki mevzuata bağlı olarak, sizinle ilişkilendirilebilir bilgiler hakkında bilgi talep etme, düzeltme veya silinmesini isteme hakkına sahip olabilirsiniz. Böyle bir talebiniz varsa <a href="./iletisim.html">İletişim</a> sayfasındaki kanallardan bize ulaşabilirsiniz.`),
+      h2("politika-guncellemeleri", "Politika güncellemeleri"),
+      p("Bu politikayı zaman zaman güncelleyebiliriz; önemli değişikliklerde bu sayfadaki \"son güncelleme\" tarihi değişir. Siteyi kullanmaya devam etmeniz, güncel politikayı kabul ettiğiniz anlamına gelir.")
+    ]
   },
   {
     file: "kullanim-sartlari.html",
     title: "Kullanım Şartları | FutbolRadar",
-    description: "FutbolRadar kullanım şartları; analiz verilerinin bilgilendirme amacıyla sunulduğunu ve bahis yönlendirmesi olmadığını belirtir.",
+    description: "FutbolRadar kullanım şartları: içeriğin bilgilendirme amacı, doğruluk sınırları, fikri mülkiyet ve sorumluluk sınırlaması.",
     h1: "Kullanım Şartları",
-    lead: "FutbolRadar verileri bilgilendirme ve analiz amaçlıdır; kesin tahmin veya bahis yönlendirmesi değildir.",
-    cards: ["Veriler hata veya gecikme içerebilir.", "Tahmin sinyalleri kesin sonuç vaadi taşımaz.", "Kullanıcı kararları kendi sorumluluğundadır."]
+    lastUpdated: LEGAL_UPDATED,
+    body: [
+      p("Bu sayfayı kullanarak aşağıdaki şartları kabul etmiş olursunuz. FutbolRadar'ı kullanmadan önce lütfen okuyun."),
+      h2("kapsam", "Hizmetin kapsamı"),
+      p("FutbolRadar; canlı skor, puan durumu, oyuncu/takım istatistikleri, form ve momentum okumaları, transfer takibi ve editoryal futbol içeriği sunan bir bilgilendirme ve analiz platformudur. Site bir bahis, oyun veya finansal tavsiye hizmeti DEĞİLDİR."),
+      h2("dogruluk", "Verinin doğruluğu ve sınırları"),
+      p(`Verilerimiz üçüncü taraf sağlayıcılardan derlenir ve elimizden geldiğince doğrulanır (bkz. <a href="./veri-notu.html">Veri Notu</a>), ancak spor verisi doğası gereği hata, gecikme veya sağlayıcı kaynaklı eksiklik içerebilir. Radar puanları ve form okumaları geçmiş istatistiklerden türetilen yorumlardır; gelecekteki bir maç sonucunun kesin göstergesi değildir.`),
+      h2("kullanici-sorumlulugu", "Kullanıcı sorumluluğu"),
+      p("Sitedeki bilgilere dayanarak alacağınız her karar (bahis, fantezi lig seçimi veya başka bir amaçla) kendi sorumluluğunuzdadır. FutbolRadar, bu bilgilerin kullanımından doğabilecek doğrudan veya dolaylı hiçbir sonuçtan sorumlu tutulamaz."),
+      h2("fikri-mulkiyet", "Fikri mülkiyet"),
+      p("Sitedeki editoryal metinler (köşe yazıları, maç analizleri, veri yorumları) ve site tasarımı FutbolRadar'a aittir. Takım/oyuncu isimleri, logolar ve kulüp içerikleri ilgili hak sahiplerine aittir ve yalnızca tanımlayıcı/haber amacıyla kullanılır."),
+      h2("kabul-edilebilir-kullanim", "Kabul edilebilir kullanım"),
+      p("Siteyi otomatik araçlarla aşırı yükleyecek şekilde taramak, içeriği izinsiz toplu kopyalamak veya sitenin normal işleyişini bozacak şekilde kullanmak yasaktır."),
+      h2("degisiklikler", "Şartlardaki değişiklikler"),
+      p("Bu şartları zaman zaman güncelleyebiliriz; güncel sürüm her zaman bu sayfada yayında olan sürümdür.")
+    ]
   },
   {
     file: "iletisim.html",
     title: "İletişim | FutbolRadar",
-    description: "FutbolRadar iletişim sayfası; veri düzeltme, iş birliği ve ürün geri bildirimi için profesyonel iletişim bilgisini sunar.",
+    description: "FutbolRadar ile veri düzeltme, reklam/iş birliği veya gizlilikle ilgili bir talep için nasıl iletişime geçeceğinizi öğrenin.",
     h1: "İletişim",
-    lead: "Veri düzeltme, oyuncu bilgisi güncelleme veya iş birliği talepleri için FutbolRadar ekibine ulaş.",
-    cards: ["Veri düzeltme talepleri incelenir.", "Oyuncu transfer geri bildirimleri kayda alınır.", "Ürün önerileri geliştirme kuyruğuna aktarılır."]
+    lastUpdated: LEGAL_UPDATED,
+    body: [
+      p("FutbolRadar ekibine üç ana konuda ulaşabilirsiniz. Aşağıdaki kanallardan biriyle yazarken hangi konu başlığıyla ilgili olduğunuzu belirtmeniz, talebinizin daha hızlı değerlendirilmesini sağlar."),
+      h2("veri-duzeltme", "Editoryal düzeltme talepleri"),
+      p("Bir maç, oyuncu, transfer veya istatistikte hata gördüyseniz — kaynağıyla birlikte bildirin. Doğrulanan düzeltmeler ilgili sayfaya yansıtılır."),
+      h2("is-birligi", "Reklam ve iş birliği talepleri"),
+      p("Reklam, sponsorluk veya içerik iş birliği önerileri için aynı kanallardan bize ulaşabilirsiniz."),
+      h2("gizlilik-talepleri", "Gizlilikle ilgili talepler"),
+      p(`Verilerinizle ilgili bir soru veya talebiniz için <a href="./gizlilik.html">Gizlilik Politikası</a> sayfasındaki "Gizlilik haklarınız" bölümüne bakabilir, aynı kanallardan bize yazabilirsiniz.`),
+      h2("kanallar", "İletişim kanalları"),
+      CONTACT_EMAIL
+        ? ""
+        : p("Doğrudan e-posta kanalımız şu anda hazırlık aşamasındadır; bu süre boyunca aşağıdaki sosyal medya kanallarımızdan bize ulaşabilirsiniz."),
+      contactChannelsHtml()
+    ]
   },
   {
     file: "hakkinda.html",
-    title: "Hakkında | FutbolRadar",
-    description: "FutbolRadar hakkında; futbolu canlı skor, momentum, oyuncu radarı ve veri odaklı analizle okuyan platform vizyonunu anlatır.",
+    title: "FutbolRadar Hakkında",
+    description: "FutbolRadar nedir: canlı skor, Süper Lig analizleri, oyuncu/takım radarları, transfer takibi ve editoryal futbol içeriği bir arada.",
     h1: "FutbolRadar Hakkında",
-    lead: "FutbolRadar, maçları skorun ötesinde form, momentum, oyuncu performansı ve veri güvenilirliğiyle yorumlar.",
-    cards: ["Premium futbol dashboard deneyimi.", "Oyuncu ve takım radarları.", "API destekli veri omurgası."]
+    lastUpdated: LEGAL_UPDATED,
+    body: [
+      p("FutbolRadar, Türk futbolunu skorun ötesinde okumak isteyen taraftarlar için kurulmuş bir canlı skor ve analiz platformudur. Odak noktamız Süper Lig ve Türk futbolu olsa da Avrupa'nın önde gelen liglerini de canlı skor ve puan durumuyla takip edebilirsiniz."),
+      h2("neler-var", "Sitede neler bulacaksınız"),
+      ul([
+        "<strong>Canlı skor ve puan durumu</strong> — maçlar oynanırken anlık güncellenen skorlar ve lig tabloları.",
+        "<strong>Maç analizleri</strong> — form, momentum ve radar puanlarıyla desteklenen maç öncesi ve maç sonrası okumalar.",
+        "<strong>Oyuncu ve takım radarları</strong> — doğrulanmış istatistiklerden türetilen karşılaştırmalı performans görünümleri.",
+        "<strong>Transfer takibi</strong> — resmî kaynaklarla doğrulanan transfer haberleri ve \"Transfer Radarı\".",
+        "<strong>Editoryal içerik</strong> — köşe yazıları ve takım özelinde yorum, verinin ötesinde bir bakış açısı sunar."
+      ]),
+      h2("veri-yaklasimimiz", "Veriye yaklaşımımız"),
+      p(`Sitenin tamamında geçerli tek ilke: doğrulanmamış bir bilgiyi tahmini bir sayıyla doldurmayız. Bir oyuncunun güncel kulübü veya piyasa değeri sağlayıcı kaydıyla eşleşmediyse, o alan sayfada hiç gösterilmez — uydurulmuş bir rakam yerine boş bırakılır. Bu yaklaşımın tamamı <a href="./veri-notu.html">Veri Notu</a> sayfasında ayrıntılı olarak açıklanır.`),
+      h2("editoryal-ile-veri-ayrimi", "Editoryal içerik ile veri ayrımı"),
+      p("Köşe yazıları ve maç yorumları FutbolRadar ekibinin kişisel değerlendirmesidir ve doğrulanmış istatistiklerden ayrı tutulur; bir yazının görüşü, bir istatistiğin doğruluğunu etkilemez ya da tam tersi olmaz."),
+      h2("iletisim-cta", "Bize ulaşın"),
+      p(`Bir hata bildirmek, iş birliği önermek veya geri bildirim vermek isterseniz <a href="./iletisim.html">İletişim</a> sayfasından bize ulaşabilirsiniz.`)
+    ]
   }
 ];
 
@@ -432,6 +554,28 @@ function pageHtml(page) {
       }
     ]
   };
+  const mainContent = page.body ? legalMainHtml(page) : `<section class="hero">
+        <div class="hero-row">
+          <div>
+            <span class="eyebrow">FutbolRadar analiz</span>
+            <h1>${page.h1}</h1>
+            <p class="lead">${page.lead}</p>
+          </div>
+          <span class="hero-meta">Veriler periyodik olarak güncellenir</span>
+        </div>
+      </section>
+      ${page.landing ? `<section class="grid three">${cardsHtml(page.cards)}</section>${landingControlsHtml(page)}${landingDescriptionHtml(page)}
+      <section class="player-filter-note"><span data-landing-count>Oyuncu listesi hazırlanıyor</span></section>
+      <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${page.landing}">
+        <article class="data-empty" data-card="empty-state"><strong>Oyuncular yükleniyor</strong><span>Doğrulanmış oyuncu profilleri hazırlanıyor.</span></article>
+      </section>${landingExtraLinksHtml(page)}` : `<section class="grid three">${cardsHtml(page.cards)}</section>`}
+      ${teamContentHtml(page)}
+      <section class="source-strip" aria-label="İlgili bağlantılar">
+        <div><span>İlgili ekran</span><b><a href="./oyuncu-radari.html">Oyuncu Radarı</a></b></div>
+        <div><span>Takım verisi</span><b><a href="./momentum.html">Momentum</a></b></div>
+        <div><span>Maç verisi</span><b><a href="./bugunun-maclari.html">Bugünkü Maçlar</a></b></div>
+      </section>`;
+
   return `<!doctype html>
 <html lang="tr">
   <head>
@@ -464,27 +608,7 @@ function pageHtml(page) {
 ${nav}
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><span>${page.h1}</span></nav>
-      <section class="hero">
-        <div class="hero-row">
-          <div>
-            <span class="eyebrow">FutbolRadar analiz</span>
-            <h1>${page.h1}</h1>
-            <p class="lead">${page.lead}</p>
-          </div>
-          <span class="hero-meta">Veriler periyodik olarak güncellenir</span>
-        </div>
-      </section>
-      ${page.landing ? `<section class="grid three">${cardsHtml(page.cards)}</section>${landingControlsHtml(page)}${landingDescriptionHtml(page)}
-      <section class="player-filter-note"><span data-landing-count>Oyuncu listesi hazırlanıyor</span></section>
-      <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${page.landing}">
-        <article class="data-empty" data-card="empty-state"><strong>Oyuncular yükleniyor</strong><span>Doğrulanmış oyuncu profilleri hazırlanıyor.</span></article>
-      </section>${landingExtraLinksHtml(page)}` : `<section class="grid three">${cardsHtml(page.cards)}</section>`}
-      ${teamContentHtml(page)}
-      <section class="source-strip" aria-label="İlgili bağlantılar">
-        <div><span>İlgili ekran</span><b><a href="./oyuncu-radari.html">Oyuncu Radarı</a></b></div>
-        <div><span>Takım verisi</span><b><a href="./momentum.html">Momentum</a></b></div>
-        <div><span>Maç verisi</span><b><a href="./bugunun-maclari.html">Bugünkü Maçlar</a></b></div>
-      </section>
+      ${mainContent}
     </main>
 ${footer}
     <script src="./site.js" defer></script>
@@ -492,6 +616,29 @@ ${footer}
   </body>
 </html>
 `;
+}
+
+/**
+ * Kurumsal sayfa gövdesi: gerçek düz metin + beş kurumsal sayfa arasında
+ * çapraz bağlantı. Genel iniş şablonundaki alakasız "Oyuncu Radarı /
+ * Momentum / Bugünkü Maçlar" bağlantı şeridi burada YOK — bir Gizlilik
+ * sayfasının altında Oyuncu Radarı'na bağlantı vermek konuyla ilgisizdi.
+ */
+function legalMainHtml(page) {
+  return `<section class="hero">
+        <div class="hero-row">
+          <div>
+            <span class="eyebrow">FutbolRadar kurumsal</span>
+            <h1>${page.h1}</h1>
+          </div>
+          <span class="hero-meta legal-updated">Son güncelleme: ${page.lastUpdated}</span>
+        </div>
+      </section>
+      <article class="legal-copy">${page.body.filter(Boolean).join("\n")}</article>
+      <nav class="legal-links" aria-label="Diğer kurumsal sayfalar">${legalPages
+        .filter((other) => other.file !== page.file)
+        .map((other) => `<a href="./${other.file}">${other.h1}</a>`)
+        .join("")}</nav>`;
 }
 
 function writePage(page) {

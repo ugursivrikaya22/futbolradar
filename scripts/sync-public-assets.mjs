@@ -27,6 +27,7 @@ for (const file of [
   "site.webmanifest",
   "404.html",
   "index.html",
+  "ads.txt",
   "admin-updates.html",
   "canli-skor.html",
   "bugunun-maclari.html",

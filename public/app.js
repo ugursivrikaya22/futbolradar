@@ -10498,7 +10498,7 @@
     return '<div class="matchup-row' + (known ? "" : " is-unavailable") + '">' +
       '<span class="matchup-row-label">' + escapeHtml(label) + "</span>" +
       '<span class="matchup-row-value is-home">' + (known ? Math.round(value) : "–") + "</span>" +
-      '<div class="matchup-row-track" role="img" aria-label="' + escapeHtml(label) + ": " + (known ? Math.round(value) + "/100" : "veri yok") + '">' +
+      '<div class="matchup-row-track" role="img" aria-label="' + escapeHtml(label) + ": " + (known ? Math.round(value) + "/100" : "değer bilinmiyor") + '">' +
       '<span class="home-fill" style="--home-width:' + width + '%"></span>' +
       "</div>" +
       '<span class="matchup-row-value is-away">/100</span>' +
@@ -10730,7 +10730,7 @@
     var balance = (prediction && prediction.matchBalance) || {};
 
     if (teamStrength.home === null || teamStrength.home === undefined || teamStrength.away === null || teamStrength.away === undefined) {
-      return '<div class="match-balance"><p class="muted-copy">Güç dengesi için yeterli doğrulanmış veri yok.</p></div>';
+      return '<div class="match-balance"><p class="muted-copy">Güç dengesi için yeterli doğrulanmış veri bulunmuyor.</p></div>';
     }
 
     var total = teamStrength.home + teamStrength.away || 1;
@@ -10750,7 +10750,7 @@
     var away = pair && pair.away;
     if (home === null || home === undefined || away === null || away === undefined) {
       return '<div class="matchup-row is-unavailable"><span class="matchup-row-label">' + escapeHtml(label) +
-        '</span><span class="muted-copy">Her iki takım için de yeterli doğrulanmış veri yok</span></div>';
+        '</span><span class="muted-copy">Her iki takım için de yeterli doğrulanmış veri bulunmuyor</span></div>';
     }
 
     var total = home + away || 1;
@@ -10815,7 +10815,7 @@
   function keyDuelsHtml(keyDuels) {
     var list = Array.isArray(keyDuels) ? keyDuels : [];
     if (!list.length) {
-      return '<div class="match-empty-state"><strong>Kilit eşleşme için yeterli veri yok</strong>' +
+      return '<div class="match-empty-state"><strong>Kilit eşleşme için yeterli veri bulunmuyor</strong>' +
         "<span>Muhtemel ilk 11 netleştikçe kilit oyuncu eşleşmeleri burada gösterilecek.</span></div>";
     }
     return '<div class="matchup-grid">' + list.map(keyDuelCardHtml).join("") + "</div>";
@@ -10836,7 +10836,7 @@
   function lineupSummaryHtml(lineup, teamName) {
     if (!lineup || lineup.predictionStatus === "unavailable" || !Array.isArray(lineup.starters) || !lineup.starters.length) {
       return '<div class="lineup-summary"><div class="lineup-summary-head"><h3>' + escapeHtml(teamName) + "</h3></div>" +
-        '<div class="match-empty-state"><strong>Muhtemel ilk 11 için yeterli veri yok</strong>' +
+        '<div class="match-empty-state"><strong>Muhtemel ilk 11 için yeterli veri bulunmuyor</strong>' +
         "<span>Doğrulanmış kadro kaydı arttıkça bu bölüm güncellenecek.</span></div></div>";
     }
 

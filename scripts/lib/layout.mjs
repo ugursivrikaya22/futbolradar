@@ -328,11 +328,36 @@ export function siteFooter(options = {}) {
         </div>`
     : "");
 
+  const consentReopenLabel = locale === "tr" ? "Çerez Tercihleri" : "Cookie Preferences";
+  // Yalnızca izin mekanizması AKTİFSE (site.js) görünür kılınır — aksi
+  // hâlde henüz var olmayan bir tercih ekranına bağlantı vermiş oluruz.
+  const consentReopenLink = `<button type="button" class="footer-link-button" data-consent-reopen hidden>${escapeHtml(consentReopenLabel)}</button>`;
   const bottomLinks = locale === "tr"
-    ? `<span class="footer-links"><a href="${base}veri-notu.html">${escapeHtml(t("footer.dataNote", locale))}</a><a href="${base}iletisim.html">${escapeHtml(t("footer.contact", locale))}</a></span>`
-    : "";
+    ? `<span class="footer-links"><a href="${base}veri-notu.html">${escapeHtml(t("footer.dataNote", locale))}</a><a href="${base}iletisim.html">${escapeHtml(t("footer.contact", locale))}</a>${consentReopenLink}</span>`
+    : `<span class="footer-links">${consentReopenLink}</span>`;
+
+  // Çerez/izin çubuğu YALNIZCA `window.__futbolradarConsentActive` true ise
+  // görünür kılınır (site.js, bkz. inject-consent-mode.mjs) — markup her
+  // sayfada güvenle durabilir çünkü gerçek reklam/analitik kimliği
+  // yapılandırılmadığı sürece JS onu hiç açmaz.
+  const consentBanner = locale === "tr"
+    ? `<div class="consent-banner" data-consent-banner hidden role="dialog" aria-label="Çerez tercihleri">
+        <p>FutbolRadar; temel işlevler, analiz ve reklamcılık için çerez kullanabilir. Avrupa Ekonomik Alanı, Birleşik Krallık ve İsviçre'den erişiminizde kişiselleştirilmiş reklam ve analitik yalnızca onayınızla etkinleşir. Ayrıntı için <a href="${base}gizlilik.html">Gizlilik Politikası</a>.</p>
+        <div class="consent-banner-actions">
+          <button type="button" data-consent-reject>Yalnızca gerekli</button>
+          <button type="button" class="is-primary" data-consent-accept>Kabul et</button>
+        </div>
+      </div>`
+    : `<div class="consent-banner" data-consent-banner hidden role="dialog" aria-label="Cookie preferences">
+        <p>FutbolRadar may use cookies for essential functionality, analytics and advertising. If you're visiting from the EEA, UK or Switzerland, personalized ads and analytics only activate with your consent. See our <a href="${base}gizlilik.html">Privacy Policy</a>.</p>
+        <div class="consent-banner-actions">
+          <button type="button" data-consent-reject>Essential only</button>
+          <button type="button" class="is-primary" data-consent-accept>Accept</button>
+        </div>
+      </div>`;
 
   return `<footer class="footer footer-premium" data-shared-layout="footer">
+      ${consentBanner}
       <div class="container-wide footer-grid">
         <div class="footer-brand">
           <a class="brand" href="${base}${locale === "en" ? "en/index.html" : "index.html"}" aria-label="${escapeHtml(t("nav.brandAria", locale))}">

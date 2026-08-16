@@ -239,7 +239,7 @@ function pageHtml(player) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonical}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${view.verified ? "index,follow" : "noindex,follow"}" />
     <meta property="og:type" content="profile" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />

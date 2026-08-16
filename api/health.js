@@ -73,8 +73,28 @@ function homePollStorageSection() {
     // Ad da değer de yazılmaz, yalnızca SAYI: "hiç eklenmemiş" ile
     // "yanlış adla eklenmiş" ancak böyle ayrılıyor.
     supabaseNamedEnvCount: Object.keys(process.env).filter((name) => /supabase/i.test(name)).length,
-    configuration: configured ? "" : homePollStore.configurationHint()
+    // Serbest metin yapılandırma ipucu YALNIZCA `diagnosticsAuthorized()`
+    // doğrularsa eklenir — aksi hâlde bu genel/kimliksiz uç, hangi ortam
+    // değişkeninin eksik olduğunu herkese açık şekilde anlatan bir metin
+    // döndürmüş olurdu (bkz. handler'daki `authorized` kontrolü).
+    configuration: ""
   };
+}
+
+/**
+ * TEŞHİS AYRINTISI (serbest metin hata gövdesi, yapılandırma ipucu) YALNIZCA
+ * bu iki koşuldan biri sağlanırsa döner: yerelde/CI'de çalışılıyor (Vercel
+ * sistem değişkenleri yok) YA DA istek `HEALTH_DIAGNOSTICS_TOKEN` ile eşleşen
+ * bir üstbilgi taşıyor. Üretimde token tanımlı değilse ayrıntı hiç dönmez —
+ * güvenli varsayılan budur. Sır burada da yazılmaz: token'ın kendisi hiçbir
+ * yanıta yansımaz, yalnızca eşleşip eşleşmediği kontrol edilir.
+ */
+function diagnosticsAuthorized(req) {
+  if (!process.env.VERCEL) return true;
+  const expected = String(process.env.HEALTH_DIAGNOSTICS_TOKEN || "").trim();
+  if (!expected) return false;
+  const provided = String((req.headers && req.headers["x-health-token"]) || "").trim();
+  return provided === expected;
 }
 
 /**
@@ -207,10 +227,14 @@ module.exports = async function handler(req, res) {
   if (enforceRateLimit(req, res, { limit: 30 })) return;
 
   const query = getQuery(req);
+  const authorized = diagnosticsAuthorized(req);
   const config = getConfig();
   const diagnostics = buildDiagnostics(config);
   diagnostics.deployment = deploymentSection();
   diagnostics.homePollStorage = homePollStorageSection();
+  if (authorized && diagnostics.homePollStorage.storage !== "ready") {
+    diagnostics.homePollStorage.configuration = homePollStore.configurationHint();
+  }
   diagnostics.pipeline = pipelineSection();
 
   // `?probe=api-football` kimliği gerçek istekle sınar. Biçim kontrolü
@@ -232,7 +256,10 @@ module.exports = async function handler(req, res) {
   // okur, `readTally` hiçbir satır yazmaz.
   if (String(query.probe || "") === "supabase") {
     if (!homePollStore.isConfigured()) {
-      diagnostics.supabaseProbe = { attempted: false, note: homePollStore.configurationHint() };
+      diagnostics.supabaseProbe = {
+        attempted: false,
+        note: authorized ? homePollStore.configurationHint() : ""
+      };
     } else {
       try {
         const tally = await homePollStore.readTally("home-health-probe");
@@ -246,7 +273,10 @@ module.exports = async function handler(req, res) {
         diagnostics.supabaseProbe = {
           attempted: true,
           ok: false,
-          error: String((error && error.message) || error).slice(0, 300)
+          // Ham hata gövdesi yalnızca yetkili teşhis isteğinde yazılır —
+          // aksi hâlde bu genel/kimliksiz uç, sağlayıcının şema/durum
+          // metnini herkese açık şekilde döndürmüş olurdu.
+          error: authorized ? String((error && error.message) || error).slice(0, 300) : ""
         };
       }
     }

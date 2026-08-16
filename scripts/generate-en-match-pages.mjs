@@ -162,6 +162,7 @@ function pageHtml(match) {
   const enPath = `en/match/${slugValue}.html`;
   const canonical = absoluteUrl(enPath);
   const radar = calculateMatchRadar(match, { teams, players, squadStatus });
+  const indexable = radar.home.score !== null || radar.away.score !== null;
   const competition = competitionLabel(match.league, LOCALE);
 
   const kickoffDay = match.kickoff ? shortDateLabel(match.kickoff, LOCALE) : "";
@@ -266,7 +267,7 @@ ${resultPanel}      <section class="match-radar-board" aria-label="${escapeHtml(
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${escapeHtml(canonical)}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${indexable ? "index,follow" : "noindex,follow"}" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="${ogLocale(LOCALE)}" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -295,7 +296,7 @@ ${body}
 </html>
 `;
 
-  return { html, trPath, enPath, canonical, lastmod: String((match.freshness && (match.freshness.verifiedAt || match.freshness.fetchedAt)) || fixtures.lastVerifiedAt || "").slice(0, 10) };
+  return { html, trPath, enPath, canonical, indexable, lastmod: String((match.freshness && (match.freshness.verifiedAt || match.freshness.fetchedAt)) || fixtures.lastVerifiedAt || "").slice(0, 10) };
 }
 
 const matches = flattenFixtures();
@@ -313,7 +314,9 @@ for (const match of matches) {
     written += 1;
   }
   pairs.push({ tr: result.trPath, en: result.enPath });
-  sitemapEntries.push(`  <url>\n    <loc>${result.canonical}</loc>\n    <lastmod>${result.lastmod || fixtures.lastVerifiedAt || ""}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+  if (result.indexable) {
+    sitemapEntries.push(`  <url>\n    <loc>${result.canonical}</loc>\n    <lastmod>${result.lastmod || fixtures.lastVerifiedAt || ""}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+  }
 }
 
 const registered = writeDynamicRoutePairs("match", pairs);

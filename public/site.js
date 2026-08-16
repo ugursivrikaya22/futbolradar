@@ -1981,7 +1981,9 @@
       // yazılır; sessizce çalışmayan bir form açıklanmamış bir arıza olurdu.
       show(section.querySelector('[data-home-poll-note="offline"]'), readOnly && !voted && !closed);
       show(section.querySelector('[data-home-poll-note="community"]'), !readOnly && (voted || closed));
-      show(section.querySelector('[data-home-poll-note="local"]'), readOnly && voted);
+      // "Kapandı" notu her zaman önceliklidir: depo erişilemez notu, anket
+      // zaten kapanmışken aynı anda basılırsa çelişkili iki mesaj görünür.
+      show(section.querySelector('[data-home-poll-note="local"]'), readOnly && voted && !closed);
 
       renderResults(data);
       section.hidden = false;
@@ -3269,5 +3271,103 @@
     document.addEventListener("DOMContentLoaded", setupMatchSpecial);
   } else {
     setupMatchSpecial();
+  }
+})();
+
+/**
+ * ÇEREZ / REKLAM İZNİ ÇUBUĞU (Google Consent Mode v2).
+ *
+ * Yalnızca `window.__futbolradarConsentActive` true ise çalışır — bu bayrak
+ * `inject-consent-mode.mjs`'in ürettiği <head> betiği tarafından, YALNIZCA
+ * gerçek bir GA4/Google Ads/AdSense kimliği yapılandırıldığında set edilir.
+ * Henüz hiçbir kimlik yokken (bugünkü durum) bu blok sessizce hiçbir şey
+ * yapmaz; çubuk hiç görünmez.
+ */
+(function () {
+  var STORAGE_KEY = "futbolradar-consent";
+
+  function readChoice() {
+    try {
+      var stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "null");
+      return stored && stored.choice === "accept" ? "accept" : (stored && stored.choice === "reject" ? "reject" : null);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function writeChoice(choice) {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ choice: choice, ts: new Date().toISOString() }));
+    } catch (error) {
+      /* localStorage kapalıysa tercih bu oturumda kalır, sonraki ziyarette tekrar sorulur. */
+    }
+  }
+
+  function applyConsent(choice) {
+    if (typeof window.gtag !== "function") return;
+    if (choice === "accept") {
+      window.gtag("consent", "update", {
+        ad_storage: "granted",
+        ad_user_data: "granted",
+        ad_personalization: "granted",
+        analytics_storage: "granted"
+      });
+    } else {
+      window.gtag("consent", "update", {
+        ad_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied",
+        analytics_storage: "denied"
+      });
+    }
+  }
+
+  function setupConsentBanner() {
+    if (window.__futbolradarConsentActive !== true) return;
+
+    var banners = document.querySelectorAll("[data-consent-banner]");
+    var reopenButtons = document.querySelectorAll("[data-consent-reopen]");
+    if (!banners.length) return;
+
+    Array.prototype.forEach.call(reopenButtons, function (button) {
+      button.hidden = false;
+    });
+
+    function show() {
+      Array.prototype.forEach.call(banners, function (banner) { banner.hidden = false; });
+    }
+
+    function hide() {
+      Array.prototype.forEach.call(banners, function (banner) { banner.hidden = true; });
+    }
+
+    function choose(choice) {
+      writeChoice(choice);
+      applyConsent(choice);
+      hide();
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll("[data-consent-accept]"), function (button) {
+      button.addEventListener("click", function () { choose("accept"); });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll("[data-consent-reject]"), function (button) {
+      button.addEventListener("click", function () { choose("reject"); });
+    });
+    Array.prototype.forEach.call(reopenButtons, function (button) {
+      button.addEventListener("click", show);
+    });
+
+    var existing = readChoice();
+    if (existing) {
+      applyConsent(existing);
+    } else {
+      show();
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupConsentBanner);
+  } else {
+    setupConsentBanner();
   }
 })();

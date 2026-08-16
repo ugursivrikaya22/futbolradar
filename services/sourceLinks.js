@@ -117,6 +117,18 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "youtube.com"
   ]),
 
+  // GİZLİLİK/REKLAM REFERANS SAYFALARI — bir haber kaynağı DEĞİL.
+  //
+  // Gizlilik Politikası (gizlilik.html), AdSense/reklamcılık açıklaması ve
+  // kişiselleştirilmiş reklam kapatma ayarı için Google'ın KENDİ resmî
+  // yardım sayfalarına bağlanıyor. Bu bağlantılar okuyucuya bir iddiayı
+  // doğrulatmıyor, düzenleyici/şeffaflık gereğidir; yine de üçüncü taraf
+  // olduğu için `nofollow` taşır (bkz. gizlilik.html).
+  legal: Object.freeze([
+    "policies.google.com",
+    "adssettings.google.com"
+  ]),
+
   // İstatistik ve maç verisi sağlayıcıları
   data: Object.freeze([
     "mackolik.com",
