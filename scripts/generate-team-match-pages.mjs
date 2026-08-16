@@ -104,13 +104,46 @@ function upcomingMatches(team, today) {
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)));
 }
 
+/**
+ * KIRIK BAĞLANTIYA KARŞI ÇİFT KORUMA.
+ *
+ * `data/post-match-reports.json` bazen aynı gerçek maçı iki kez içerebiliyor
+ * (sağlayıcı bir takımı farklı yazınca — "Gençlerbirliği" / "Gençlerbirliği
+ * S.K." gibi — kalıcı arşiv o maçı iki ayrı kimlikle biriktiriyordu; kök
+ * neden `generate-post-match-reports.mjs`de düzeltildi). Ama bu script derleme
+ * zincirinde O DÜZELTMEDEN ÖNCE çalışıyor, yani depodaki dosya o an hâlâ
+ * eski/yinelenen olabilir. İki bağımsız korumayla, hangi sebepten olursa
+ * olsun kırık bir bağlantı asla basılmaz:
+ *   1. Hedef dosya diskte gerçekten yoksa satır hiç eklenmez.
+ *   2. Aynı saatte aynı iki kulüp arasında birden fazla kayıt varsa yalnızca
+ *      ilki (en güncel sıralamadan sonra ilk görülen) kalır.
+ */
+function dedupeReports(list) {
+  const seen = [];
+  const out = [];
+  for (const report of list) {
+    const filePath = report.seo && report.seo.path;
+    if (!filePath || !fs.existsSync(path.join(root, filePath))) continue;
+    const duplicate = seen.some((other) => {
+      if (String(other.kickoff || "") !== String(report.kickoff || "")) return false;
+      const straight = sameClub(other.homeTeam, report.homeTeam) && sameClub(other.awayTeam, report.awayTeam);
+      const swapped = sameClub(other.homeTeam, report.awayTeam) && sameClub(other.awayTeam, report.homeTeam);
+      return straight || swapped;
+    });
+    if (duplicate) continue;
+    seen.push(report);
+    out.push(report);
+  }
+  return out;
+}
+
 /** Maç sonu raporu üretilmiş karşılaşmalar; en yenisi önde. */
 function recentReports(team) {
-  return reports
-    .filter((report) => isTeamMatch(report, team))
-    .filter((report) => report.seo && report.seo.path)
-    .sort((left, right) => String(right.kickoff || "").localeCompare(String(left.kickoff || "")))
-    .slice(0, 6);
+  return dedupeReports(
+    reports
+      .filter((report) => isTeamMatch(report, team))
+      .sort((left, right) => String(right.kickoff || "").localeCompare(String(left.kickoff || "")))
+  ).slice(0, 6);
 }
 
 /** TFF eşleşme listesi: takımın 34 haftalık sezon programı. */

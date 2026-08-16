@@ -6298,6 +6298,43 @@
     );
   }
 
+  /**
+   * HABERLER SAYFASINDAKİ ANKET VİTRİN KARTI — istemci tarafı.
+   *
+   * Tam form BASILMAZ (gerekçe scripts/lib/homePoll.mjs#pollPromoCardHtml):
+   * birden çok yerde aynı radyo grubunu tekrarlamak geçersiz işaretleme
+   * olurdu. Soru metni boş doğar; `site.js`teki paylaşılan anket getirişi
+   * kartı MutationObserver ile yakalayıp dolduruyor (aynı mekanizma sunucuda
+   * basılan vitrin kartlarını da dolduruyor).
+   */
+  function pollPromoCardHtml() {
+    return '<aside class="poll-promo" data-poll-promo data-poll-promo-locale="tr" aria-label="Anket vitrin kartı">' +
+      '<div class="poll-promo-body">' +
+      '<span class="poll-promo-kicker">Anket</span>' +
+      '<p class="poll-promo-question" data-poll-promo-question></p>' +
+      '<span class="poll-promo-total" data-poll-promo-total hidden></span>' +
+      '</div>' +
+      '<a class="poll-promo-cta" href="#tahmin-anketi" data-poll-promo-cta>Oyunu Ver</a>' +
+      '</aside>';
+  }
+
+  /**
+   * Kart listesine her 7 karttan sonra vitrin kartını serpiştirir — sunucu
+   * tarafındaki `interleavePollPromo` ile AYNI kural (`scripts/lib/homePoll.mjs`).
+   * Yalnızca haberler.html'in TAM listesinde kullanılır; ana sayfanın 3
+   * kartlık önizlemesi bu fonksiyonu hiç çağırmaz.
+   */
+  function interleavePollPromoCards(cardsHtml, every) {
+    var step = every || 7;
+    var out = [];
+    cardsHtml.forEach(function (card, index) {
+      out.push(card);
+      var position = index + 1;
+      if (position % step === 0 && position < cardsHtml.length) out.push(pollPromoCardHtml());
+    });
+    return out.join("");
+  }
+
   function publicNewsItems(news) {
     return (Array.isArray(news) ? news : [])
       .filter(function (item) {
@@ -11886,7 +11923,7 @@
       document.querySelector('[data-api-target="news-page"]'),
       "news",
       function (news) {
-        return publicNewsItems(news).map(renderNewsCard).join("");
+        return interleavePollPromoCards(publicNewsItems(news).map(renderNewsCard));
       },
       "Güncel futbol gündemi yüklenemedi"
     );

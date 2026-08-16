@@ -26,6 +26,7 @@ const require = createRequire(import.meta.url);
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { syncPostMatchReports, MODEL_VERSION } = require("../services/postMatchReportStore.js");
 const { isAnalyzableMatch, isAwardedMatch, isFinishedMatch } = require("../services/matchStatus.js");
+const { sameClub } = require("../services/superLigTeams.js");
 
 const STORE_PATH = path.join(root, "data", "post-match-reports.json");
 const apply = process.argv.includes("--apply");
@@ -61,11 +62,45 @@ const permanentArchive = (() => {
   }
 })();
 
-// Canlı/son dönem veri ile kalıcı arşiv birleşir. Bir sağlayıcı eski fikstürü
-// güncel pencereden kaldırdığında raporun ve kanonik URL'nin kaybolmaması için
-// arşiv kaydı havuzda kalır; güncel doğrulanmış kayıt aynı id ile önceliklidir.
-const poolById = new Map(permanentArchive.map((match) => [match.id, match]));
-for (const match of curatedMatches()) poolById.set(match.id, match);
+/**
+ * AYNI GERÇEK MAÇ MI — arşiv kaydı ile canlı kayıt arasında.
+ *
+ * `curatedMatches()` kendi içinde bu eşleşmeyi zaten yapıyor (bkz.
+ * services/providers/mockProvider.js), ama kalıcı arşivle birleşirken
+ * yapmıyordu: bir maç geçmişte sağlayıcı tarafından farklı yazılmış bir
+ * takım adıyla ("Gençlerbirliği" / "Gençlerbirliği S.K." gibi) arşivlenmişse
+ * havuzda İKİ FARKLI kimlikle beliriyordu. Sonucu görünürdü: rapor sayfası
+ * yalnızca güncel kimlik altında üretiliyor, eski kimliğe bağlanan her
+ * bağlantı (takım maçları sayfası gibi) kırık kalıyordu.
+ *
+ * SAAT DE EŞLEŞMELİ, YALNIZCA GÜN DEĞİL. Aynı gün aynı iki kulüp arasında
+ * (ör. hazırlık maçlarında A takımı akşam, U21 öğleden önce) birden fazla
+ * GERÇEKTEN AYRI karşılaşma olabiliyor — ilk sürüm yalnızca günü
+ * karşılaştırıyordu ve "Rennes–Brentford U21 12:00"ı "Rennes–Brentford
+ * 18:00" ile aynı maç sanıp yanlışlıkla eledi. Başlama saati de birebir
+ * eşleşmezse iki kayıt farklı maç sayılır.
+ */
+function sameRealMatch(left, right) {
+  const leftKickoff = left && (left.kickoff || left.date || left.utcDate);
+  const rightKickoff = right && (right.kickoff || right.date || right.utcDate);
+  if (!leftKickoff || !rightKickoff || leftKickoff !== rightKickoff) return false;
+  const straight = sameClub(left.homeTeam, right.homeTeam) && sameClub(left.awayTeam, right.awayTeam);
+  const swapped = sameClub(left.homeTeam, right.awayTeam) && sameClub(left.awayTeam, right.homeTeam);
+  return straight || swapped;
+}
+
+// Havuz ÖNCE canlı/kürasyonlu veriden kurulur — kimlikleri güncel ve
+// tutarlı. Kalıcı arşiv yalnızca havuzda AYNI GERÇEK MAÇIN bulunmadığı
+// kayıtları ekler; bir sağlayıcı eski fikstürü güncel pencereden
+// kaldırdığında raporun ve kanonik URL'nin kaybolmaması için var, güncel
+// kayıtla çakışan bir hayalet kimlik üretmek için değil.
+const poolById = new Map(curatedMatches().map((match) => [match.id, match]));
+for (const archived of permanentArchive) {
+  if (poolById.has(archived.id)) continue;
+  const hasLiveEquivalent = [...poolById.values()].some((live) => sameRealMatch(live, archived));
+  if (hasLiveEquivalent) continue;
+  poolById.set(archived.id, archived);
+}
 const pool = [...poolById.values()];
 
 // Hükmen sonuçlar analiz edilmez (maç oynanmadı, olay/istatistik yok) ama
