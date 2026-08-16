@@ -17196,10 +17196,16 @@ body,
 
 .poll-sticky-dismiss {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 26px;
-  height: 26px;
+  top: 0;
+  right: 0;
+  /* Parmak hedefi sitedeki diğer düğmelerle AYNI alt sınır (44px, bkz.
+     `.home-poll__label`). Görünen "×" küçük kalıyor — kutu şeffaf, yalnızca
+     dokunma alanı büyük; büyük bir daire kartı kalabalıklaştırırdı. */
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 0;
   border-radius: 50%;
   background: transparent;
@@ -17214,7 +17220,8 @@ body,
 
 .poll-sticky-link {
   display: block;
-  padding-right: 22px;
+  /* Kapatma düğmesinin 44px'lik dokunma alanına yer açar (bkz. .poll-sticky-dismiss). */
+  padding-right: 40px;
   color: var(--text);
 }
 
@@ -18463,12 +18470,13 @@ a.motm-week__card:focus-visible {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   ANA SAYFA ANKETİ — TIKLA VE OY VER
+   ANA SAYFA ANKETİ — TIKLA VE SEÇ
 
    Seçeneğin tamamı tek bir dokunma hedefi: logo, ad ve çevresindeki boşluk
-   aynı etikete ait. Tıklama artık ayrıca "Oyunu Ver" beklemiyor, bu yüzden
-   basma geri bildirimi ÖNEMLİ — kullanıcı parmağını kaldırmadan bir şeyin
-   olduğunu görmeli.
+   aynı etikete ait. Tıklama yalnızca SEÇER — oy "Oyunu Ver" düğmesine açık
+   basışla gider (bkz. site.js#updateSubmitEnabled) — bu yüzden basma geri
+   bildirimi ÖNEMLİ — kullanıcı parmağını kaldırmadan bir şeyin olduğunu
+   görmeli.
    ═════════════════════════════════════════════════════════════════════════ */
 
 /* Basma anı: kart hafifçe içeri gider. Hover'daki yukarı hareketin tersi,
