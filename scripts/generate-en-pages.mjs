@@ -1111,13 +1111,16 @@ function newsSection() {
     // Bağlantı da servisten: kartın gösterildiği her haberin sayfası var.
     const href = escapeHtml(newsHref(item, BASE));
     const published = item.publishedAt || item.date || "";
-    return `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}">` +
-      `<div class="news-card-meta"><span class="tag green" lang="tr">${escapeHtml(item.category || "Football agenda")}</span>` +
+    const isTransfer = /transfer/i.test(String(item.category || ""));
+    const badgeClass = isTransfer ? "mega-badge--transfer" : "mega-badge--radar";
+    const badgeLabel = isTransfer ? "Transfer" : (item.category || "Radar");
+    return `<a class="news-card" data-card="news" data-news="${escapeHtml(item.id)}" href="${href}" hreflang="tr">` +
+      `<div class="news-card-meta"><span class="mega-badge ${badgeClass}" lang="tr">${escapeHtml(badgeLabel)}</span>` +
       `<time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time></div>` +
       `<div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span>` +
       `<h3 lang="tr">${escapeHtml(item.title || "")}</h3><p lang="tr">${escapeHtml(item.summary || "")}</p></div>` +
       `<div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Official source")}</span>` +
-      `<a class="detail-link" href="${href}" hreflang="tr">Read the story (in Turkish)</a></div></article>`;
+      `<span class="detail-link">Read the story (in Turkish)</span></div></a>`;
   }).join("");
 
   return `<section class="container section home-news" id="futbol-gundemi" aria-labelledby="news-title">
@@ -1830,15 +1833,18 @@ function newsPage() {
   const cardList = newsList.slice(0, 24).map((item) => {
     const href = escapeHtml(newsHref(item, BASE));
     const published = item.publishedAt || item.date || "";
-    return `<article class="news-card" data-card="news" data-news="${escapeHtml(item.id)}">
-            <div class="news-card-meta"><span class="tag green" lang="tr">${escapeHtml(item.category || "Football agenda")}</span>
+    const isTransfer = /transfer/i.test(String(item.category || ""));
+    const badgeClass = isTransfer ? "mega-badge--transfer" : "mega-badge--radar";
+    const badgeLabel = isTransfer ? "Transfer" : (item.category || "Radar");
+    return `<a class="news-card" data-card="news" data-news="${escapeHtml(item.id)}" href="${href}" hreflang="tr" lang="tr">
+            <div class="news-card-meta"><span class="mega-badge ${badgeClass}" lang="tr">${escapeHtml(badgeLabel)}</span>
             <time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time></div>
             <div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span>
             <h3 lang="tr">${escapeHtml(item.title || "")}</h3>
             ${item.summary ? `<p lang="tr">${escapeHtml(item.summary)}</p>` : ""}</div>
             <div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Official source")}</span>
-            <a class="detail-link" href="${href}" hreflang="tr" lang="tr">Read the story (in Turkish)</a></div>
-          </article>`;
+            <span class="detail-link">Read the story (in Turkish)</span></div>
+          </a>`;
   });
   // Ana sayfanın 3 kartlık önizlemesinden farklı olarak bu TAM liste; anket
   // vitrin kartı her 7 haberden sonra araya giriyor (gerekçe
