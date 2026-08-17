@@ -290,6 +290,10 @@ function sourceSteps(type, providerReady) {
     // fixture-calendar başarısız olsa bile çalışması güvenli.
     ...(full ? [nodeStep("super-lig-fixture-dates", "sync-super-lig-fixture-dates.mjs", ["--apply"], { kind: "transform", timeoutMs: 2 * 60 * 1000 })] : []),
     nodeStep("live-fixtures", "sync-live-fixtures.mjs", ["--apply", `--mode=${type}`], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider }),
+    // Yaklaşan Süper Lig maçlarının sağlayıcı tahmini + ikili rekabeti
+    // (maç başına tek /predictions isteği). Günlük full koşu yeter:
+    // sağlayıcı tahmini gün içinde anlamlı değişmez.
+    ...(full ? [nodeStep("match-predictions", "sync-match-predictions.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider })] : []),
     nodeStep("standings", "sync-standings.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("injuries-suspensions", "sync-squad-statuses.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("football-news", "sync-football-news.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 4 * 60 * 1000 }),
@@ -337,7 +341,11 @@ function supabaseConfigured() {
 function transformSteps(type, hasChanges, providerReady) {
   if (type === "hourly" && !hasChanges) return [];
   return [
-    nodeStep("upcoming-analyses", "generate-match-analyses.mjs", ["--days=3", "--apply"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
+    // 7 gün: Süper Lig haftalık ritimde oynanıyor; 3 günlük pencere hafta
+    // ortasında sıradaki turu görmüyor ve maç sayfaları analizsiz kalıyordu.
+    // Motor çevrimdışı hesaplıyor (API çağrısı yok), genişletmenin maliyeti
+    // yalnızca CPU.
+    nodeStep("upcoming-analyses", "generate-match-analyses.mjs", ["--days=7", "--apply"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("refetch-finished", "refetch-finished-matches.mjs", ["--apply", "--limit=25", "--days=4"], { kind: "source", source: "api-football", timeoutMs: 10 * 60 * 1000, skip: providerReady ? false : "API-Football is unavailable." }),
     nodeStep("post-match-store", "generate-post-match-reports.mjs", ["--apply"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("post-match-backfill", "backfill-post-match-analyses.mjs", ["--apply", "--limit=40"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),

@@ -9285,6 +9285,754 @@ body.home-page .metric-tile {
   font-size: 0.84rem;
 }
 
+
+/* ============================================================
+   MAÇ ÖNCESİ ANALİZ BÖLÜMLERİ (mac/*.html)
+   İşaretleme kaynağı: scripts/lib/matchAnalysisSections.mjs.
+   Tema, mevcut jeton sözlüğüyle (surface/line/text/accent) kurulur;
+   sabit renk yalnızca saha yüzeyinde (yeşil, her iki temada aynı).
+   ============================================================ */
+
+.match-section-title {
+  margin: 34px 0 14px;
+  font-size: var(--fs-lg);
+  letter-spacing: -0.01em;
+}
+
+.match-ai-subtitle {
+  margin: 22px 0 10px;
+  font-size: var(--fs-md);
+}
+
+/* --- 1) Saha dizilimi --- */
+
+.match-lineups-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.match-lineup-side {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.lineup-pitch {
+  margin: 0;
+}
+
+.lineup-pitch-surface {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  border: 1px solid rgba(9, 60, 38, 0.5);
+  border-radius: 12px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.12) 0, rgba(255, 255, 255, 0.12) 9%, transparent 9.5%),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.14) 0, rgba(255, 255, 255, 0.14) 1.2%, transparent 1.2%),
+    repeating-linear-gradient(0deg, #17753f 0, #17753f 12.5%, #1d8148 12.5%, #1d8148 25%);
+}
+
+/* Ceza sahaları ve orta çizgi tek pseudo-elemanda: ekstra DOM yok. */
+.lineup-pitch-surface::before {
+  position: absolute;
+  inset: 0;
+  border: 0 solid rgba(255, 255, 255, 0.28);
+  background:
+    linear-gradient(0deg, transparent calc(50% - 1px), rgba(255, 255, 255, 0.28) calc(50% - 1px), rgba(255, 255, 255, 0.28) calc(50% + 1px), transparent calc(50% + 1px)),
+    radial-gradient(circle at 50% 50%, transparent 8.6%, rgba(255, 255, 255, 0.28) 8.8%, rgba(255, 255, 255, 0.28) 9.4%, transparent 9.6%);
+  content: "";
+}
+
+.lineup-pitch-surface::after {
+  position: absolute;
+  right: 25%;
+  bottom: 0;
+  left: 25%;
+  height: 14%;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-bottom: 0;
+  border-radius: 4px 4px 0 0;
+  content: "";
+}
+
+.pitch-spot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.pitch-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+}
+
+.pitch-chip-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  background: rgba(10, 34, 22, 0.82);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+a.pitch-chip:hover .pitch-chip-badge,
+a.pitch-chip:focus-visible .pitch-chip-badge {
+  border-color: #fff;
+  background: rgba(10, 34, 22, 0.96);
+}
+
+.pitch-chip-name {
+  max-width: 76px;
+  overflow: hidden;
+  border-radius: 4px;
+  padding: 1px 4px;
+  background: rgba(10, 34, 22, 0.72);
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lineup-pitch-caption {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+  color: var(--text);
+}
+
+.lineup-pitch-caption span {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.lineup-bench {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--surface-sunken);
+}
+
+.lineup-bench > span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lineup-bench ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--fs-sm);
+}
+
+.lineup-bench li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.lineup-bench li b {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.lineup-bench a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.lineup-bench a:hover,
+.lineup-bench a:focus-visible {
+  color: var(--accent);
+}
+
+.match-lineups-note {
+  margin: 12px 0 0;
+}
+
+/* --- 2) Oyuncu kartları --- */
+
+.match-player-rail-block h3 {
+  margin: 18px 0 10px;
+  font-size: var(--fs-md);
+}
+
+.match-player-rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(228px, 1fr);
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.match-player-card {
+  display: flex;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--surface);
+  scroll-snap-align: start;
+}
+
+.match-player-photo {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--surface-tint);
+}
+
+.match-player-photo.is-placeholder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--green-deep);
+  font-size: var(--fs-sm);
+  font-weight: 800;
+}
+
+.match-player-card-body {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  min-width: 0;
+}
+
+.match-player-card-body strong a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.match-player-card-body strong a:hover,
+.match-player-card-body strong a:focus-visible {
+  color: var(--accent);
+}
+
+.match-player-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.match-player-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: var(--fs-xs);
+  color: var(--text-soft);
+}
+
+.match-player-stats b {
+  color: var(--text);
+}
+
+/* --- 3) AI analizi --- */
+
+.match-ai-summary {
+  margin: 0 0 12px;
+  max-width: 70ch;
+  color: var(--text-soft);
+}
+
+.match-ai-advantages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.match-ai-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 11px;
+  background: var(--surface);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.match-ai-chip.is-home { border-color: var(--line-strong); color: var(--green-deep); }
+.match-ai-chip.is-away { border-color: rgba(13, 148, 136, 0.4); color: var(--cyan); }
+.match-ai-chip.is-missing { border-color: rgba(200, 30, 45, 0.3); color: var(--live); }
+
+.match-ai-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.match-ai-team h3 {
+  margin: 0 0 10px;
+}
+
+.match-ai-lists {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.match-ai-lists > div > span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.match-ai-lists ul {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 16px;
+  font-size: var(--fs-sm);
+}
+
+.match-ai-missing > span {
+  display: block;
+  margin: 4px 0 8px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.match-duel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.match-duel-card {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--surface);
+}
+
+.match-duel-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.match-duel-card header > span {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.match-duel-advantage {
+  border-radius: 999px;
+  padding: 3px 9px;
+  background: var(--surface-tint);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+}
+
+.match-duel-advantage.is-home { color: var(--green-deep); }
+.match-duel-advantage.is-away { color: var(--cyan); }
+
+.match-duel-players {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.match-duel-players i {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-style: normal;
+  font-weight: 800;
+}
+
+.match-duel-player {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.match-duel-player:last-of-type {
+  text-align: right;
+}
+
+.match-duel-player a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.match-duel-player a:hover,
+.match-duel-player a:focus-visible {
+  color: var(--accent);
+}
+
+.match-duel-player span {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+.match-duel-card p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+}
+
+/* --- 4) Olasılık --- */
+
+.match-probability-card {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+}
+
+.match-probability-label {
+  margin: 0;
+  font-weight: 800;
+}
+
+.match-probability-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.match-probability-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: var(--surface-sunken);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.match-probability-chip.is-warning {
+  border-color: rgba(176, 116, 16, 0.35);
+  color: var(--warn);
+}
+
+.match-probability-provider {
+  display: grid;
+  gap: 6px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.match-probability-provider > span {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.match-probability-provider b {
+  font-size: var(--fs-xs);
+  color: var(--text-soft);
+}
+
+.probability-bar-track.is-thin {
+  height: 6px;
+}
+
+/* --- 5) Eksikler + 6) Form ortak ızgара --- */
+
+.match-absences-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.match-absence-list {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.match-absence-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-sm);
+}
+
+.match-absence-list li em {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-style: normal;
+}
+
+.match-absence-badge {
+  border-radius: 999px;
+  padding: 2px 9px;
+  background: var(--surface-tint);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+}
+
+.match-absence-badge.is-injured { color: var(--live); background: rgba(200, 30, 45, 0.1); }
+.match-absence-badge.is-suspended { color: var(--warn); background: rgba(176, 116, 16, 0.12); }
+.match-absence-badge.is-doubtful { color: var(--text-soft); }
+
+.match-absences-source {
+  margin-top: 10px;
+  font-size: var(--fs-xs);
+}
+
+.match-form-list {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.match-form-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-sm);
+}
+
+.match-form-list li b {
+  min-width: 34px;
+}
+
+.match-form-opponent {
+  overflow: hidden;
+  min-width: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.match-form-list li em {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.match-form-totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+  font-size: var(--fs-sm);
+  color: var(--text-soft);
+}
+
+.match-form-totals b {
+  color: var(--text);
+}
+
+/* Eski bağlam kartındaki form noktaları için eksik kalan sarmalayıcı. */
+.match-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 10px;
+}
+
+/* --- 7) H2H + mini tablo --- */
+
+.match-h2h-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 10px 0 12px;
+  font-size: var(--fs-sm);
+  color: var(--text-soft);
+}
+
+.match-h2h-summary b {
+  color: var(--text);
+}
+
+.match-h2h-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.match-h2h-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 10px;
+  font-size: var(--fs-sm);
+}
+
+.match-h2h-list li em {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-style: normal;
+}
+
+.match-h2h-list li i {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-style: normal;
+}
+
+.match-mini-standings {
+  width: 100%;
+  margin: 10px 0 12px;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.match-mini-standings th {
+  border-bottom: 1px solid var(--line);
+  padding: 6px 8px;
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.match-mini-standings td {
+  border-bottom: 1px solid var(--line);
+  padding: 7px 8px;
+}
+
+.match-mini-standings tr.is-focus td {
+  background: var(--surface-tint);
+  font-weight: 700;
+}
+
+/* --- 8) Maç bilgileri --- */
+
+.match-info-card {
+  padding: 18px;
+}
+
+.match-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 14px;
+  margin: 0 0 12px;
+}
+
+.match-info-grid dt {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.match-info-grid dd {
+  margin: 3px 0 0;
+  font-weight: 700;
+}
+
+/* --- 9) Canlı istatistik kabuğu --- */
+
+.match-live-stats-shell {
+  padding: 18px;
+}
+
+.match-live-stat-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 56px;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--fs-sm);
+}
+
+.match-live-stat-row:last-child {
+  border-bottom: 0;
+}
+
+.match-live-stat-row > b {
+  text-align: center;
+}
+
+.match-live-stat-row > span {
+  color: var(--muted);
+  text-align: center;
+  font-size: var(--fs-xs);
+}
+
+.match-live-stats-score {
+  margin: 0 0 10px;
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  text-align: center;
+}
+
+/* --- Mobil --- */
+
+@media (max-width: 760px) {
+  .match-lineups-grid,
+  .match-ai-grid,
+  .match-absences-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .match-player-rail {
+    grid-auto-columns: minmax(200px, 82%);
+  }
+
+  .pitch-chip-name {
+    max-width: 60px;
+    font-size: 0.58rem;
+  }
+
+  .match-section-title {
+    margin-top: 26px;
+  }
+}
+
 .fixture-match-row {
   text-decoration: none;
 }

@@ -3,6 +3,19 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
+import {
+  lineupsSection,
+  playerCardsSection,
+  aiAnalysisSection,
+  probabilitySection,
+  absencesSection,
+  formSection,
+  h2hStandingsSection,
+  matchInfoSection,
+  liveStatsSection,
+  analysisPendingNote,
+  buildH2hEntries
+} from "./lib/matchAnalysisSections.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -11,10 +24,15 @@ const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-f
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
+const matchAnalyses = JSON.parse(fs.readFileSync(path.join(root, "data", "match-analyses.json"), "utf8"));
+const fixtureCalendar = JSON.parse(fs.readFileSync(path.join(root, "data", "fixture-calendar.json"), "utf8"));
+const leagueStandings = JSON.parse(fs.readFileSync(path.join(root, "data", "league-standings.json"), "utf8"));
+const matchArchive = JSON.parse(fs.readFileSync(path.join(root, "data", "historical-match-archive.json"), "utf8"));
 const { getPlayers } = require("../services/playerService.js");
 const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureService.js");
 const { sameClub } = require("../services/superLigTeams.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
+const { isSameFixture } = require("../services/fixtureCalendar.js");
 const {
   confidenceLabel,
   formatFreshnessDate,
@@ -23,8 +41,35 @@ const {
 } = require("../services/freshnessService.js");
 
 const players = getPlayers(rawPlayers);
+const calendarMatches = Array.isArray(fixtureCalendar.matches) ? fixtureCalendar.matches : [];
+const archiveRecords = Array.isArray(matchArchive.records) ? matchArchive.records : [];
+const superLigStandings = (leagueStandings["super-lig"] && Array.isArray(leagueStandings["super-lig"].table))
+  ? leagueStandings["super-lig"]
+  : { table: [], updatedAt: null };
 const outDir = path.join(root, "mac");
 const publicOutDir = path.join(root, "public", "mac");
+
+/**
+ * Üç ayrı kimlik düzeni arasında köprü: TFF fikstürü (tff-tsl-...), analiz
+ * kaydı (takim-takim-tarih) ve takvim kaydı (takim-takim-tarih). Eşleşme
+ * kimlik dizgisiyle DEĞİL, kulüp çifti + gün ile kurulur (sameClub yazım
+ * farklarını tolere eder) — bkz. services/fixtureCalendar.js#isSameFixture.
+ */
+function findAnalysisRecord(match) {
+  if (!match.kickoff) return null;
+  return matchAnalyses.find((record) => record && record.homeContext && isSameFixture(
+    { homeTeam: match.homeTeam, awayTeam: match.awayTeam, kickoff: match.kickoff },
+    { homeTeam: record.homeContext.teamName, awayTeam: record.awayContext && record.awayContext.teamName, kickoff: record.kickoff }
+  )) || null;
+}
+
+function findCalendarRecord(match) {
+  if (!match.kickoff) return null;
+  return calendarMatches.find((record) => isSameFixture(
+    { homeTeam: match.homeTeam, awayTeam: match.awayTeam, kickoff: match.kickoff },
+    record
+  )) || null;
+}
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -164,6 +209,37 @@ function pageHtml(match) {
   const awayTeam = getTeam(match.awayTeam);
   const dateLabel = match.kickoff ? formatFreshnessDate(match.kickoff) : (match.dateRange || "Tarih ve saat bekleniyor");
 
+  // Maç öncesi bölümler (kullanıcı öncelik sırası): analiz kaydı ancak maç
+  // haftası penceresinde üretilir; yokken tek dürüst bekleme notu basılır,
+  // altı ayrı boş kutu değil. H2H, puan tablosu ve maç bilgileri analiz
+  // kaydından bağımsız gerçek verilerdir — her sayfada denenir.
+  const analysis = findAnalysisRecord(match);
+  const calendarRec = findCalendarRecord(match);
+  const base = "../";
+  const fixtureTeamRow = (fixtures.teams || []).find((team) => sameClub(team.name, match.homeTeam)) || null;
+  const h2hEntries = buildH2hEntries({
+    archiveRecords,
+    calendarRec,
+    homeName: match.homeTeam,
+    awayName: match.awayTeam,
+    sameClub
+  });
+  const providerFixtureId = (analysis && analysis.providerId) ||
+    (calendarRec && calendarRec.providerIds && calendarRec.providerIds.apiFootball) || null;
+
+  const preMatchSections = [
+    analysis ? lineupsSection(analysis, players, base) : "",
+    analysis ? playerCardsSection(analysis, players, base) : "",
+    analysis ? aiAnalysisSection(analysis, radar, match.homeTeam, match.awayTeam, base) : "",
+    analysis ? probabilitySection(analysis, calendarRec, match.homeTeam, match.awayTeam) : "",
+    analysis ? absencesSection(analysis, squadStatus, match.homeTeam, match.awayTeam) : "",
+    analysis ? formSection(analysis, match.homeTeam, match.awayTeam) : "",
+    !analysis ? analysisPendingNote() : "",
+    h2hStandingsSection(h2hEntries, superLigStandings.table, match.homeTeam, match.awayTeam, superLigStandings.updatedAt),
+    matchInfoSection(match, calendarRec, fixtureTeamRow && fixtureTeamRow.venue, fixtureTeamRow && fixtureTeamRow.city),
+    liveStatsSection(match, providerFixtureId)
+  ].filter(Boolean).join("\n      ");
+
   // BAŞLIK ARANAN SORUYU KARŞILAMALI.
   //
   // Bir maç sayfasına gelen aramanın ezici çoğunluğu "… maçı ne zaman, saat
@@ -256,6 +332,7 @@ function pageHtml(match) {
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../super-lig-fikstur.html">Süper Lig Fikstürü</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
       <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(match.league)}</span><h1>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</h1><p class="lead">${escapeHtml(radar.lead)}</p></div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>
       <section class="match-freshness-strip" aria-label="Fikstür durumu"><div><span>Fikstür durumu</span><b>${escapeHtml(freshnessLabel(freshness))}</b></div><div><span>Son kontrol</span><b>${escapeHtml(formatFreshnessDate(freshness.verifiedAt || freshness.fetchedAt))}</b></div><div><span>Güven</span><b>${escapeHtml(confidenceLabel(freshness.confidence))}</b></div></section>
+      ${preMatchSections}
       <section class="match-radar-board" aria-label="Maç öncesi radar puanları">${radarCard(match.homeTeam, radar.home, homeTeam)}${radarCard(match.awayTeam, radar.away, awayTeam)}</section>
       <p class="match-radar-disclaimer">${escapeHtml(radar.disclaimer)}</p>
       <section class="match-context-grid" aria-label="Maç bağlamı"><article class="card"><span class="card-kicker">${escapeHtml(match.homeTeam)}</span><h2>Form ve kadro</h2>${formHtml(homeTeam)}${squadHtml(match.homeTeam)}${keyPlayersHtml(match.homeTeam)}</article><article class="card"><span class="card-kicker">${escapeHtml(match.awayTeam)}</span><h2>Form ve kadro</h2>${formHtml(awayTeam)}${squadHtml(match.awayTeam)}${keyPlayersHtml(match.awayTeam)}</article></section>

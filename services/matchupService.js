@@ -12,7 +12,7 @@ const COMPONENT_WEIGHTS = Object.freeze({
 const KEY_DUEL_TEMPLATES = [
   { id: "forward-vs-defense", title: "Santrfor - stoper eşleşmesi", homeSlot: "FWD", awaySlot: "DEF" },
   { id: "wide-vs-fullback", title: "Kanat - bek eşleşmesi", homeSlot: "WING", awaySlot: "DEF" },
-  { id: "away-forward-vs-defense", title: "Deplasman santrforu - ev savunması", homeSlot: "DEF", awaySlot: "FWD", reversed: true },
+  { id: "away-forward-vs-defense", title: "Deplasman santrforu - ev savunması", homeSlot: "DEF", awaySlot: "FWD" },
   { id: "midfield-battle", title: "Orta saha mücadelesi", homeSlot: "MID", awaySlot: "MID" },
   { id: "goalkeepers", title: "Kaleciler", homeSlot: "GK", awaySlot: "GK" }
 ];
@@ -243,12 +243,16 @@ function usageKey(player) {
 }
 
 function buildDuel(template, homeTeam, awayTeam, usedHome, usedAway) {
-  const homeSlot = template.reversed ? template.awaySlot : template.homeSlot;
-  const awaySlot = template.reversed ? template.homeSlot : template.awaySlot;
-  const homeCandidates = slotPlayers(template.reversed ? awayTeam.lineup : homeTeam.lineup, [homeSlot])
+  // Şablonun homeSlot/awaySlot alanları zaten TARAF BAŞINA yazılıdır
+  // ("away-forward-vs-defense" = ev DEF, deplasman FWD). Eski `reversed`
+  // takası kaynakları bir kez daha çeviriyordu: deplasman santrforu
+  // `homePlayer` anahtarıyla yayımlanıyor, doğrulayıcının "oyuncu kendi
+  // muhtemel 11'inde olmalı" kuralına takılıyor ve avantaj yönü ters
+  // okunuyordu. Her taraf yalnızca KENDİ kadrosundan aday alır.
+  const homeCandidates = slotPlayers(homeTeam.lineup, [template.homeSlot])
     .filter((player) => playerRating(player) !== null)
     .sort((left, right) => playerRating(right) - playerRating(left));
-  const awayCandidates = slotPlayers(template.reversed ? homeTeam.lineup : awayTeam.lineup, [awaySlot])
+  const awayCandidates = slotPlayers(awayTeam.lineup, [template.awaySlot])
     .filter((player) => playerRating(player) !== null)
     .sort((left, right) => playerRating(right) - playerRating(left));
 

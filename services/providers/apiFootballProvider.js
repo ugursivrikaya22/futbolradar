@@ -652,6 +652,9 @@ function normalizeFixture(item) {
     providerLeagueId: league.id === undefined || league.id === null ? null : String(league.id),
     round: roundNumber(league),
     venue: (fixture.venue && fixture.venue.name) || null,
+    // Hakem adı sağlayıcı fikstür yükünde hazır geliyordu ama düşürülüyordu;
+    // maç bilgi kartı (stadyum/hakem/saat) bu alanı okur. Açıklanmadıysa null.
+    referee: fixture.referee || null,
     kickoff,
     time: kickoff ? new Date(kickoff).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }) : "",
     homeTeam: teamName(homeTeam),
@@ -1209,6 +1212,20 @@ async function getFixturesByDate(query) {
 }
 
 function normalizeFixtureLineups(items) {
+  // `players`/`substitutes` isim listesi olarak KALIR (mevcut tüketiciler
+  // kırılmasın); saha dizilimi çizecek tüketiciler için forma numarası ve
+  // sağlayıcının grid koordinatı ("satır:sütun") ayrı bir alanda taşınır.
+  const toDetail = (entry) => {
+    const player = (entry && entry.player) || {};
+    if (!player.name) return null;
+    return {
+      name: player.name,
+      number: player.number ?? null,
+      position: player.pos || null,
+      grid: player.grid || null
+    };
+  };
+
   return (Array.isArray(items) ? items : []).map((item) => ({
     team: teamName(item.team),
     formation: item.formation || null,
@@ -1217,7 +1234,9 @@ function normalizeFixtureLineups(items) {
       .filter(Boolean),
     substitutes: (Array.isArray(item.substitutes) ? item.substitutes : [])
       .map((entry) => entry && entry.player && entry.player.name)
-      .filter(Boolean)
+      .filter(Boolean),
+    startingDetails: (Array.isArray(item.startXI) ? item.startXI : []).map(toDetail).filter(Boolean),
+    substituteDetails: (Array.isArray(item.substitutes) ? item.substitutes : []).map(toDetail).filter(Boolean)
   }));
 }
 

@@ -66,7 +66,12 @@ async function main() {
   const byId = new Map(analyses.map((record) => [record.fixtureId, record]));
 
   for (const record of targets) {
-    const fetchResult = await fetchOfficialLineup(record.fixtureId);
+    // API-Football'un /fixtures/lineups ucu SAYISAL fixture kimliği ister;
+    // kaydın sitedeki dizgi kimliği ("takim-takim-tarih") orada çözülemez.
+    // Analiz kaydı artık providerId taşıyor (generate-match-analyses.mjs);
+    // eski kayıtlar için dizgi kimliğe düşülür ve sağlayıcı "pending" döner.
+    const providerFixtureId = record.providerId || record.fixtureId;
+    const fetchResult = await fetchOfficialLineup(providerFixtureId);
     const official = normalizeOfficialLineup(record.fixtureId, fetchResult);
 
     if (official.status !== "available") {

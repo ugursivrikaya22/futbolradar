@@ -19,13 +19,25 @@ const { buildMatchPrediction, freezePreMatchPrediction, MODEL_VERSION } = requir
 const { getPlayers } = require("../services/playerService.js");
 const { findCompetition, classifyFixtureCompetition } = require("../services/competitionCatalog.js");
 const { computeAnalysisCoverage, analysisStatusFromCoverage } = require("../services/analysisCoverageService.js");
+const { isSameFixture } = require("../services/fixtureCalendar.js");
 
 const DATA_DIR = path.join(root, "data");
 const MATCHES_PATH = path.join(DATA_DIR, "matches.json");
+const CALENDAR_PATH = path.join(DATA_DIR, "fixture-calendar.json");
+const ARCHIVE_PATH = path.join(DATA_DIR, "historical-match-archive.json");
 const TEAMS_PATH = path.join(DATA_DIR, "teams.json");
 const PLAYERS_PATH = path.join(DATA_DIR, "players.json");
 const SQUAD_STATUS_PATH = path.join(DATA_DIR, "squad-statuses.json");
 const OUTPUT_PATH = path.join(DATA_DIR, "match-analyses.json");
+
+/**
+ * Takvimden analiz hedefi olarak alınan yarışmalar. Bilinçli olarak dar:
+ * mac/ altındaki üretilmiş analiz sayfaları yalnızca Süper Lig fikstürü
+ * için var; diğer liglerin analizini üretmek kimsenin okumayacağı ~4MB
+ * kayıt biriktirirdi. matches.json'daki elle doğrulanmış kayıtlar (Avrupa
+ * kupaları dahil) bu süzgeçten bağımsız, eskisi gibi hedeflenir.
+ */
+const CALENDAR_TARGET_COMPETITIONS = new Set(["super-lig"]);
 
 const STATUS_MAP = {
   SCHEDULED: "scheduled",
@@ -145,7 +157,9 @@ function normalizeFixture(match) {
   return {
     id: match.id,
     fixtureId: match.id,
-    providerId: match.providerId || null,
+    // API-Football kimliği öncelikli: providerIds.apiFootball her zaman
+    // sayısaldır; düz providerId TheSportsDB'den alfasayısal gelebilir.
+    providerId: (match.providerIds && match.providerIds.apiFootball) || match.providerId || null,
     slug: match.id || `${slug(match.homeTeam)}-${slug(match.awayTeam)}-${dateOnly(match.kickoff) || "tbd"}`,
     competition: resolveCompetition(match),
     competitionType: classification.competitionType,
@@ -242,6 +256,10 @@ function generateFreshAnalysis(fixture, matches, players, teams, squadStatus) {
 
   return {
     fixtureId: fixture.id,
+    // Sağlayıcının sayısal fikstür kimliği: resmî 11 tazelemesi ve canlı
+    // istatistik ucu (/api/match-detail) bu kimlikle çalışır. Yoksa null —
+    // uydurulmaz, o kayıtta resmî 11 "pending"de kalır.
+    providerId: /^\d+$/.test(String(fixture.providerId || "")) ? String(fixture.providerId) : null,
     slug: fixture.slug,
     competition: fixture.competition.name,
     competitionType: fixture.competitionType,
@@ -318,18 +336,65 @@ function validateRecord(record) {
   return errors;
 }
 
+/**
+ * Analiz hedef havuzu: elle doğrulanmış matches.json + takvimin resmî
+ * Süper Lig fikstürleri. Motor daha önce YALNIZCA matches.json'u okuyordu
+ * (12 elle seçilmiş kayıt) — 306 üretilmiş maç sayfası bu yüzden analizsiz
+ * kalıyordu. Takvim kayıtları sağlayıcının SAYISAL fixture kimliğini de
+ * getirir; resmî 11 tazelemesi (refresh-official-lineups.mjs) o kimliğe
+ * muhtaçtır.
+ */
+function buildTargetPool(rawMatches, calendarMatches) {
+  const pool = [...rawMatches];
+  for (const candidate of calendarMatches) {
+    if (!CALENDAR_TARGET_COMPETITIONS.has(String(candidate.competitionId || ""))) continue;
+    if (!candidate.homeTeam || !candidate.awayTeam || !candidate.kickoff) continue;
+    if (pool.some((existing) => isSameFixture(existing, candidate))) continue;
+    pool.push(candidate);
+  }
+  return pool;
+}
+
+/**
+ * Form havuzu: bir takımın "son 5 maçı" için bakılan bitmiş maç kümesi.
+ * matches.json tek başına 12 kayıttı; gerçek form ancak arşiv (bitmiş,
+ * doğrulanmış maçlar) ve takvimin bitmiş kayıtlarıyla okunabilir. Öncelik
+ * elle doğrulanmış kayıtta — aynı maçın iki kopyası havuza girmez, form
+ * çift sayılmaz.
+ */
+function buildFormPool(rawMatches, calendarMatches, archiveRecords) {
+  const pool = [...rawMatches];
+  const candidates = [
+    ...archiveRecords.map((record) => record && record.match).filter(Boolean),
+    ...calendarMatches
+  ];
+  for (const candidate of candidates) {
+    if (!candidate.homeTeam || !candidate.awayTeam) continue;
+    if (pool.some((existing) => isSameFixture(existing, candidate))) continue;
+    pool.push(candidate);
+  }
+  return pool;
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const rawMatches = readJson(MATCHES_PATH, []);
+  const calendar = readJson(CALENDAR_PATH, { matches: [] });
+  const calendarMatches = Array.isArray(calendar.matches) ? calendar.matches : [];
+  const archive = readJson(ARCHIVE_PATH, { records: [] });
+  const archiveRecords = Array.isArray(archive.records) ? archive.records : [];
   const teams = readJson(TEAMS_PATH, []);
   const players = readJson(PLAYERS_PATH, []);
   const squadStatus = readJson(SQUAD_STATUS_PATH, { teams: [] });
   const existingAnalyses = readJson(OUTPUT_PATH, []);
   const existingById = new Map(existingAnalyses.map((item) => [item.fixtureId, item]));
 
+  const targetPool = buildTargetPool(rawMatches, calendarMatches);
+  const formPool = buildFormPool(rawMatches, calendarMatches, archiveRecords);
+
   const seenIds = new Set();
   const fixtures = [];
-  for (const match of rawMatches) {
+  for (const match of targetPool) {
     const key = match.providerId || match.id;
     if (seenIds.has(key)) {
       console.warn(`Duplicate fixture identity skipped: ${key}`);
@@ -351,7 +416,7 @@ async function main() {
   for (const fixture of targets) {
     let record;
     try {
-      const fresh = generateFreshAnalysis(fixture, rawMatches, players, teams, squadStatus);
+      const fresh = generateFreshAnalysis(fixture, formPool, players, teams, squadStatus);
       record = reconcileWithExisting(fixture, existingById.get(fixture.id), fresh);
     } catch (error) {
       console.error(`Failed to generate analysis for ${fixture.id}: ${error.message}`);

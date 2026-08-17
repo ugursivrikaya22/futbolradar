@@ -3270,4 +3270,87 @@
   } else {
     setupMatchSpecial();
   }
+
+  /**
+   * MAÇ SAYFASINDA GİZLİ İSTATİSTİK BÖLÜMÜ (mac/*.html, madde 9).
+   *
+   * Bölüm derleme anında kapalı bir kabuk olarak basılır: maç öncesinde
+   * istatistik diye bir şey YOKTUR, sahte "0-0" satırları çizilmez. Başlama
+   * vuruşundan sonra sayfayı açan okuyucu için /api/match-detail'den gerçek
+   * istatistikler çekilir (uç nokta önbellekli; sayfa başına tek istek).
+   *
+   * Maç henüz başlamadıysa hiçbir istek atılmaz — yalnızca başlamaya bir
+   * saatten az kaldıysa açılışı yakalamak için tek bir zamanlayıcı kurulur.
+   * Veri gelmezse kabuktaki dürüst not yerinde kalır; hata durumunda da
+   * uydurma yok, canlı skor sayfasına bağlantı gösterilir.
+   */
+  function setupMatchLiveStats() {
+    var section = document.querySelector("[data-match-live-stats]");
+    if (!section) return;
+
+    var fixtureId = section.getAttribute("data-provider-fixture");
+    var kickoffMs = Date.parse(section.getAttribute("data-kickoff") || "");
+    var body = section.querySelector("[data-match-live-stats-body]");
+    if (!fixtureId || !body || isNaN(kickoffMs)) return;
+
+    var loaded = false;
+
+    function renderStats(detail) {
+      var stats = detail && Array.isArray(detail.statistics) ? detail.statistics : [];
+      var score = detail && detail.score;
+      var scoreHtml = score && score.home != null && score.away != null
+        ? '<p class="match-live-stats-score">' + Number(score.home) + " - " + Number(score.away) +
+          (detail.minute != null && !["FT", "AET", "PEN"].includes(String(detail.providerStatus || "")) ? ' <small>' + Number(detail.minute) + "&#39;</small>" : "") + "</p>"
+        : "";
+
+      if (!stats.length) {
+        body.innerHTML = scoreHtml +
+          '<p class="muted-copy">Canlı istatistik akışı bu maç için henüz yayımlanmadı. <a href="../canli-skor.html">Canlı skor ekranından</a> takip edebilirsiniz.</p>';
+        return;
+      }
+
+      var rows = stats.map(function (stat) {
+        var label = stat.category || stat.type || "";
+        var home = stat.home == null ? "-" : stat.home;
+        var away = stat.away == null ? "-" : stat.away;
+        var unit = stat.unit === "%" ? "%" : "";
+        return '<div class="match-live-stat-row"><b>' + home + unit + "</b><span>" + label + "</span><b>" + away + unit + "</b></div>";
+      }).join("");
+      body.innerHTML = scoreHtml + rows;
+    }
+
+    function loadStats() {
+      if (loaded) return;
+      loaded = true;
+      fetch("/api/match-detail?fixtureId=" + encodeURIComponent(fixtureId))
+        .then(function (response) {
+          if (!response.ok) throw new Error("http " + response.status);
+          return response.json();
+        })
+        .then(function (payload) {
+          renderStats(payload && (payload.data || payload));
+        })
+        .catch(function () {
+          loaded = false;
+          body.innerHTML = '<p class="muted-copy">İstatistikler şu anda alınamadı. <a href="../canli-skor.html">Canlı skor ekranından</a> takip edebilirsiniz.</p>';
+        });
+    }
+
+    var now = Date.now();
+    if (now >= kickoffMs) {
+      loadStats();
+      return;
+    }
+
+    var untilKickoff = kickoffMs - now;
+    if (untilKickoff <= 60 * 60 * 1000) {
+      window.setTimeout(loadStats, untilKickoff + 60 * 1000);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupMatchLiveStats);
+  } else {
+    setupMatchLiveStats();
+  }
 })();

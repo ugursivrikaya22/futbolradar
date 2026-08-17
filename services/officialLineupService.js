@@ -39,7 +39,10 @@ function normalizeLineupSide(item) {
       providerId: player.id ? String(player.id) : null,
       name: player.name || null,
       number: player.number ?? null,
-      position: player.pos || null
+      position: player.pos || null,
+      // Sağlayıcının saha koordinatı ("satır:sütun", ör. "2:4") — resmî 11'in
+      // saha üzerinde çizilebilmesi için taşınır; yayımlanmadıysa null.
+      grid: player.grid || null
     };
   };
 
