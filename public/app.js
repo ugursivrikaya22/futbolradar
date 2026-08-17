@@ -7761,14 +7761,18 @@
           return playerAiScore(b) - playerAiScore(a);
         });
 
-        if (count) {
-          count.textContent = filtered.length + " oyuncu listeleniyor";
-        }
-
+        // Sayaç yalnızca GERÇEKTEN basılan içerikle güncellenir. İstemci
+        // filtresi boş kalıp statik ön render'a düşerken sayacı "0" yazması,
+        // ekranda hâlâ duran gerçek kartlarla çelişiyordu — statik dal
+        // kendi sayısını zaten taşıyor, dokunulmuyor.
         if (!filtered.length) {
           target.innerHTML = staticFallback;
           target.dataset.state = "fallback";
           return;
+        }
+
+        if (count) {
+          count.textContent = filtered.length + " oyuncu listeleniyor";
         }
 
         updateLandingInsights(target, slug, config, filtered);
