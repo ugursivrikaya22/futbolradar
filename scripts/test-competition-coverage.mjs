@@ -35,9 +35,17 @@ assert.equal(providerLeagueValue("avrupa-ligi", "football-data"), null);
 // Henüz çözülmemiş genişleme ligi (apiFootball: null) katalogda durur ama
 // hiçbir fikstürü kendine bağlamaz — kimlik yokken tahmin yapmak yasak.
 assert.equal(findCompetitionByProviderId(null), null);
-const pendingLeague = competitions.find((item) => item.id === "1-lig");
-assert.ok(pendingLeague, "1. Lig iskelesi katalogda olmalı");
-assert.equal(pendingLeague.providers.apiFootball, null, "Doğrulanmamış lig kimliği uydurulmamalı");
+// Hangi kayıtların hâlâ çözülmemiş olduğu zamanla değişir (registry
+// koşusu doğruladıkça "pending" kayıtlar gerçek kimlik kazanır) — bu
+// yüzden belirli bir lig ID'si sabit varsayılmaz. Kural değişmez: apiFootball
+// null olan HER kayıt, coverage/logo/resolvedAt de null kalmalı — hiçbiri
+// yarım doğrulanmış görünmemeli.
+const pendingLeagues = competitions.filter((item) => item.providers.apiFootball === null);
+for (const pending of pendingLeagues) {
+  assert.equal(pending.providers.apiFootball, null, `${pending.id}: doğrulanmamış lig kimliği uydurulmamalı`);
+  assert.equal(pending.coverage, null, `${pending.id}: kimlik yokken coverage de olmamalı`);
+  assert.equal(pending.resolvedAt, null, `${pending.id}: kimlik yokken resolvedAt de olmamalı`);
+}
 
 // ── KİMLİK (ID) TEMELLİ EŞLEŞME — kök hata düzeltmesi ────────────────────
 //
