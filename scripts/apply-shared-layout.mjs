@@ -189,7 +189,15 @@ for (const file of files) {
   const wantsLiveTicker = LIVE_TICKER_PAGE_SET.has(sitePath)
     && !unmanaged.includes('data-component="LiveScoresTicker"');
   const liveTicker = wantsLiveTicker
-    ? liveTickerBlock(liveRecords, { locale, base })
+    // `keepEmpty`: canlı maç yoksa bant kaybolmaz. Transfer bandı bu
+    // sayfalarda veri yokken hiç basılmıyordu (3 günlük transfer penceresi
+    // neredeyse hiç boş kalmadığı için sorun görünmüyordu) — ama "canlı"
+    // doğası gereği günün büyük bölümünde SIFIR maç demektir; bant her
+    // derlemede belirip kaybolsaydı hem kararsız bir tasarım olurdu hem de
+    // sayfa kapsamı testi (hangi sayfada bant var) derleme anına bağlı
+    // hâle gelirdi. Ana sayfalarla AYNI kural: yoksa "şu anda canlı maç
+    // yok" mesajı, hiç kaybolmaz.
+    ? liveTickerBlock(liveRecords, { locale, base, keepEmpty: true })
     : "";
 
   const headerBlock = [
