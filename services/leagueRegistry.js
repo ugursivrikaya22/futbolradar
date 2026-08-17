@@ -59,8 +59,20 @@ function providerTypeFor(entry) {
   return TYPE_MAP[entry.type] || null;
 }
 
+/**
+ * `resolveHints` ile `aliases` KASITLI OLARAK AYRI TUTULUR.
+ *
+ * `aliases`, competitionCatalog.js'in `findCompetition`'ı üzerinden
+ * fikstür ADI eşleşmesine de girer — orada aynı ada sahip iki farklı
+ * ülkenin ligi (İtalya/Brezilya "Serie A", İspanya/Arjantin "Primera
+ * División/Liga Profesional") birbirine karışabilir ve `findCompetition`
+ * BELİRSİZLİĞİ TESPİT ETMEZ (ilk eşleşeni döner). `resolveHints` yalnızca
+ * BURADA, sağlayıcının zaten ÜLKEYE göre süzdüğü aday listesi içinde
+ * aranır — aynı çakışma riski burada yok, çünkü Brezilya sorgusu asla
+ * İtalyan bir kayıt döndürmez.
+ */
 function nameCandidatesFor(entry) {
-  const names = [entry.name, ...(entry.aliases || [])].filter(Boolean);
+  const names = [entry.name, ...(entry.aliases || []), ...(entry.resolveHints || [])].filter(Boolean);
   return [...new Set(names.map((name) => normalizeText(name)))];
 }
 

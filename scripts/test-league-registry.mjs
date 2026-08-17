@@ -85,6 +85,21 @@ function mockProvider({ configured = true, byCountry = {}, byId = {} } = {}) {
   assert.equal(results[0].leagueId, "204");
 }
 
+// ── `resolveHints`: gerçek /leagues koşusunda görülen kaydın adı,
+// aliases değil resolveHints üzerinden bulunur (bkz. leagueRegistry.js'in
+// nameCandidatesFor). Brezilya'nın API-Football'daki gerçek adı düz
+// "Serie A" — bu ismi aliases'e koymak fikstür ad-eşleşmesinde İtalya'nın
+// Serie A'sıyla çakışırdı, resolveHints bu riski taşımaz.
+{
+  const provider = mockProvider({
+    byCountry: { Brazil: [league("71", "Serie A", "Brazil")] }
+  });
+  const entries = [{ id: "brasileirao", name: "Brazil Série A", country: "Brezilya", type: "domestic", aliases: ["Brasileirão"], resolveHints: ["Serie A"], providers: { apiFootball: null } }];
+  const { results } = await resolveLeagueRegistry({ provider, entries });
+  assert.equal(results[0].status, "resolved");
+  assert.equal(results[0].leagueId, "71");
+}
+
 // ── Aynı ülkede birden fazla hedef, tek getLeagues çağrısını paylaşır
 // (quota tasarrufu) — çağrı sayacıyla doğrulanır.
 {

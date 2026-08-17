@@ -19,6 +19,15 @@ function fakeResponse() {
 
 assert.equal(competitions.length, 23, "13 genişleme ligi eklendikten sonra katalog 23 kayıt taşımalı.");
 assert.equal(findCompetition("Champions League")?.id, "sampiyonlar-ligi");
+
+// `resolveHints` (services/leagueRegistry.js'in ülkeye göre süzülmüş
+// aday listesi içinde aradığı ad varyantları) `findCompetition`in
+// kullandığı `aliases`e KARIŞMAMALI. brasileirao'nun resolveHints'inde
+// "Serie A" var (Brezilya'nın API-Football'daki gerçek adı) ama bu,
+// fikstür ADI eşleşmesinde İtalya'nın Serie A'sının önüne geçmemeli —
+// geçseydi resolveHints, tam da AMBIGUOUS_COMPETITION_NAMES'in önlediği
+// türden bir çakışmayı arka kapıdan geri getirirdi.
+assert.equal(findCompetition("Serie A")?.id, "serie-a", "resolveHints, ad eşleşmesine sızıp İtalya'nın Serie A'sını gölgelememeli");
 assert.equal(findCompetition("UEFA Europa League")?.id, "avrupa-ligi");
 assert.equal(providerLeagueValue("premier-league", "api-football"), 39);
 assert.equal(providerLeagueValue("avrupa-ligi", "football-data"), null);
