@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-17T22:29:12.266Z",
+  "updatedAt": "2026-08-17T23:27:19.300Z",
   "matchCount": 627,
   "records": [
     {
@@ -35,7 +35,7 @@
       "coverageGrade": "full",
       "coverageLabel": "Tam analiz",
       "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 90,
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -45,7 +45,7 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 8
+          "count": 21
         },
         "statistics": {
           "present": true,
@@ -58,36 +58,31 @@
           "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 8,
+        "events": 21,
         "statistics": 17,
         "lineups": 2,
-        "players": 0
+        "players": 46
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "dfd50ce7e31efef5",
-      "fingerprint": "dfd50ce7e31efef5",
+      "analysisSourceHash": "eb48d94a1a92dbaf",
+      "fingerprint": "eb48d94a1a92dbaf",
       "analysisGeneratedAt": "2026-08-17T22:29:12.228Z",
-      "analysisUpdatedAt": "2026-08-17T22:29:12.228Z",
-      "generatedAt": "2026-08-17T22:29:12.228Z",
+      "analysisUpdatedAt": "2026-08-17T23:27:19.245Z",
+      "generatedAt": "2026-08-17T23:27:19.245Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -99,7 +94,7 @@
       "reportUrl": "./mac-raporu/lanus-independiente-2026-08-17.html",
       "digest": {
         "headline": "Independiente, Lanus'u 3-1 yendi",
-        "paragraph": "Estadio Ciudad de Lanus'ta oynanan Liga Profesional Argentina maçını Independiente 3-1 kazandı; Lanus sahadan puansız ayrıldı. Golleri 37. dakikada L. Millan (Independiente), 47. dakikada L. Millan (Independiente), 50. dakikada A. Wlk (Lanus) kaydetti.",
+        "paragraph": "Estadio Ciudad de Lanus'ta oynanan Liga Profesional Argentina maçını Independiente 3-1 kazandı; Lanus sahadan puansız ayrıldı. Golleri 37. dakikada L. Millan (Independiente), 47. dakikada L. Millan (Independiente), 50. dakikada A. Wlk (Lanus), 90+4. dakikada M. Gutierrez (Independiente) kaydetti.",
         "result": {
           "winner": "Independiente",
           "loser": "Lanus",
@@ -112,11 +107,18 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 5
         },
         "turningPoints": {
           "status": "ready",
           "moments": [
+            {
+              "minute": "90+6'",
+              "team": "Lanus",
+              "type": "Kırmızı kart",
+              "detail": "R. Carrera",
+              "pivotal": true
+            },
             {
               "minute": "37'",
               "team": "Independiente",
@@ -137,18 +139,54 @@
               "type": "Gol",
               "detail": "A. Wlk",
               "pivotal": true
+            },
+            {
+              "minute": "90+4'",
+              "team": "Independiente",
+              "type": "Gol",
+              "detail": "M. Gutierrez",
+              "pivotal": true
             }
           ]
         },
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "verdict": "Son bölümde 1 gol kaydedildi, (M. Gutierrez), 1 kırmızı kart bu bölümde görüldü.",
           "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
           },
-          "moments": []
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "Lanus",
+              "type": "Oyuncu değişikliği",
+              "detail": "F. Pena Biafore",
+              "decisive": false
+            },
+            {
+              "minute": "77'",
+              "team": "Independiente",
+              "type": "Oyuncu değişikliği",
+              "detail": "S. Montiel",
+              "decisive": false
+            },
+            {
+              "minute": "77'",
+              "team": "Independiente",
+              "type": "Oyuncu değişikliği",
+              "detail": "J. Palais",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "Lanus",
+              "type": "Oyuncu değişikliği",
+              "detail": "T. Guidara",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "ready",
@@ -166,9 +204,15 @@
               "impact": "yüksek"
             },
             {
-              "name": "R. Carrera",
+              "name": "M. Gutierrez",
+              "team": "Independiente",
+              "contribution": "90+4' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "B. Acosta",
               "team": "Lanus",
-              "contribution": "69' sarı kart",
+              "contribution": "89' sarı kart",
               "impact": "olumsuz"
             }
           ]
@@ -191,20 +235,21 @@
         "secondHalf": {
           "status": "ready",
           "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (7 olay).",
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (20 olay).",
             "47' Independiente — L. Millan: gol",
             "50' Lanus — A. Wlk: gol",
-            "İkinci yarı içinde 4 oyuncu değişikliği kaydedildi."
+            "90+4' Independiente — M. Gutierrez: gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
           ],
-          "goals": 2
+          "goals": 3
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Lanus maça 4-2-3-1 dizilişiyle başladı.",
             "Independiente maça 4-1-4-1 dizilişiyle başladı.",
-            "61' Independiente değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "61' Independiente değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "61' Independiente değişikliği (Substitution 1). Değişiklikten sonra Independiente adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "61' Independiente değişikliği (Substitution 2). Değişiklikten sonra Independiente adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
             "64' Lanus değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
             "64' Lanus değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
@@ -229,10 +274,12 @@
           ],
           "strengths": [
             "Lanus topa daha çok sahip oldu (%52).",
-            "Lanus daha çok şut denedi (20-14)."
+            "Lanus daha çok şut denedi (21-14)."
           ],
           "improvements": [
-            "Independiente şut isabetinde geride kaldı (%29); bitiricilik geliştirilmesi gereken alan."
+            "Independiente şut isabetinde geride kaldı (%29); bitiricilik geliştirilmesi gereken alan.",
+            "Lanus son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun.",
+            "Kırmızı kart maçın seyrini etkiledi (90+6' Lanus)."
           ],
           "closing": "Independiente sahadan 2 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -253,7 +300,7 @@
             "id": "hucum",
             "title": "Hücum analizi",
             "readings": [
-              "Şut isabeti Lanus %30, Independiente %28.6."
+              "Şut isabeti Lanus %28.6, Independiente %28.6."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -273,7 +320,7 @@
             "id": "kurulus",
             "title": "Kuruluş verimliliği",
             "readings": [
-              "Bir şut üretmek için Lanus 19.7, Independiente 27 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+              "Bir şut üretmek için Lanus 18.9, Independiente 27.1 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -293,7 +340,7 @@
             "id": "sutkalitesi",
             "title": "Şut kalitesi",
             "readings": [
-              "Şut başına xG Lanus 0.094, Independiente 0.083. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+              "Şut başına xG Lanus 0.089, Independiente 0.083. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
             ],
             "confidence": {
               "level": "orta",
@@ -421,11 +468,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "d9b66d030d43fbbf",
-      "fingerprint": "d9b66d030d43fbbf",
+      "analysisSourceHash": "bce38e0f84ffe0b6",
+      "fingerprint": "bce38e0f84ffe0b6",
       "analysisGeneratedAt": "2026-08-17T21:30:01.908Z",
-      "analysisUpdatedAt": "2026-08-17T22:29:12.228Z",
-      "generatedAt": "2026-08-17T22:29:12.228Z",
+      "analysisUpdatedAt": "2026-08-17T23:27:19.245Z",
+      "generatedAt": "2026-08-17T23:27:19.245Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -502,14 +549,14 @@
           },
           "moments": [
             {
-              "minute": "77'",
+              "minute": "76'",
               "team": "Casa Pia",
               "type": "Oyuncu değişikliği",
               "detail": "H. Araujo",
               "decisive": false
             },
             {
-              "minute": "77'",
+              "minute": "76'",
               "team": "Casa Pia",
               "type": "Oyuncu değişikliği",
               "detail": "Substitution 5",
@@ -771,7 +818,7 @@
       "coverageGrade": "full",
       "coverageLabel": "Tam analiz",
       "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 90,
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -794,9 +841,9 @@
           "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
@@ -804,26 +851,21 @@
         "events": 16,
         "statistics": 17,
         "lineups": 2,
-        "players": 0
+        "players": 46
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "b9998012d6a6c912",
-      "fingerprint": "b9998012d6a6c912",
+      "analysisSourceHash": "3c59e1a6e9864015",
+      "fingerprint": "3c59e1a6e9864015",
       "analysisGeneratedAt": "2026-08-17T21:30:01.908Z",
-      "analysisUpdatedAt": "2026-08-17T22:29:12.228Z",
-      "generatedAt": "2026-08-17T22:29:12.228Z",
+      "analysisUpdatedAt": "2026-08-17T23:27:19.245Z",
+      "generatedAt": "2026-08-17T23:27:19.245Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -988,14 +1030,14 @@
           "status": "ready",
           "verdict": [
             "Maç 1-1 berabere bitti.",
-            "Deportivo La Coruna, gol beklentisinin 0,79 üzerinde skor üretti."
+            "Deportivo La Coruna, gol beklentisinin 0,66 üzerinde skor üretti."
           ],
           "strengths": [
-            "Elche topa daha çok sahip oldu (%66).",
-            "Elche daha çok şut denedi (6-9)."
+            "Elche topa daha çok sahip oldu (%61).",
+            "Elche daha çok şut denedi (8-11)."
           ],
           "improvements": [
-            "Elche şut isabetinde geride kaldı (%44); bitiricilik geliştirilmesi gereken alan."
+            "Deportivo La Coruna şut isabetinde geride kaldı (%38); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
           "basis": "statistics+events"
@@ -1003,11 +1045,11 @@
         "aiRating": {
           "home": {
             "team": "Deportivo La Coruna",
-            "score": 39
+            "score": 43
           },
           "away": {
             "team": "Elche",
-            "score": 60
+            "score": 67
           },
           "confidence": 100
         },
@@ -1016,7 +1058,7 @@
             "id": "hucum",
             "title": "Hücum analizi",
             "readings": [
-              "Şut isabeti Deportivo La Coruna %50, Elche %44.4."
+              "Şut isabeti Deportivo La Coruna %37.5, Elche %54.5."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -1036,7 +1078,7 @@
             "id": "kurulus",
             "title": "Kuruluş verimliliği",
             "readings": [
-              "Bir şut üretmek için Deportivo La Coruna 42.8, Elche 55.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+              "Bir şut üretmek için Deportivo La Coruna 50, Elche 58.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -1056,7 +1098,7 @@
             "id": "sutkalitesi",
             "title": "Şut kalitesi",
             "readings": [
-              "Şut başına xG Deportivo La Coruna 0.035, Elche 0.143. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+              "Şut başına xG Deportivo La Coruna 0.043, Elche 0.128. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
             ],
             "confidence": {
               "level": "orta",
@@ -1517,7 +1559,7 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 20
+          "count": 21
         },
         "statistics": {
           "present": true,
@@ -1537,7 +1579,7 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 20,
+        "events": 21,
         "statistics": 17,
         "lineups": 2,
         "players": 40
@@ -1550,11 +1592,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "6dbf1b99d98db05f",
-      "fingerprint": "6dbf1b99d98db05f",
+      "analysisSourceHash": "28aef0a25e6aae06",
+      "fingerprint": "28aef0a25e6aae06",
       "analysisGeneratedAt": "2026-08-17T20:31:45.532Z",
-      "analysisUpdatedAt": "2026-08-17T21:30:01.908Z",
-      "generatedAt": "2026-08-17T21:30:01.908Z",
+      "analysisUpdatedAt": "2026-08-17T23:27:19.245Z",
+      "generatedAt": "2026-08-17T23:27:19.245Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1700,7 +1742,7 @@
         "firstHalf": {
           "status": "ready",
           "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
             "3' Göztepe — A. Matos: gol",
             "30' Samsunspor: penaltı",
             "43' Samsunspor — E. Kilinc: gol"
