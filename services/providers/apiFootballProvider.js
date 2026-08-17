@@ -645,6 +645,11 @@ function normalizeFixture(item) {
     id: String(fixture.id || `${teamName(homeTeam)}-${teamName(awayTeam)}-${kickoff}`),
     providerId: fixture.id ? String(fixture.id) : "",
     league: league.name || "",
+    // Sağlayıcının SAYISAL lig kimliği. Aşağı akıştaki her eşleşme
+    // (filterSupportedCompetitions, groupMatchesByLeague, competitionId
+    // çözümü) önce bunu dener — ad hiçbir zaman tek başına karar vermez.
+    // bkz. services/competitionCatalog.js: findCompetitionByProviderId.
+    providerLeagueId: league.id === undefined || league.id === null ? null : String(league.id),
     round: roundNumber(league),
     venue: (fixture.venue && fixture.venue.name) || null,
     kickoff,
@@ -678,9 +683,33 @@ function normalizeFixture(item) {
   };
 }
 
+/**
+ * BİR FİKSTÜR KATALOGDAKİ BİR YARIŞMAYLA EŞLEŞİYOR MU?
+ *
+ * `providerLeagueId` doluysa (API-Football fikstürleri için her zaman
+ * öyledir) eşleşme YALNIZCA sayısal kimlikle kurulur — ad hiç okunmaz.
+ * Kimlik yoksa (ör. TheSportsDB kaynaklı kayıtlar) eskisi gibi ada göre
+ * karar verilir. Bu ayrım, "Premier League" gibi bir adın başka bir
+ * yarışmaya yanlışlıkla bağlanmasını (ya da tersini) imkânsız kılar: kimlik
+ * varken ad hiçbir zaman kimliği ezemez.
+ */
+function competitionMatchesFixture(match, competition) {
+  if (match && match.providerLeagueId) {
+    const declared = competition.providers && competition.providers.apiFootball;
+    if (declared !== null && declared !== undefined) {
+      return String(declared) === String(match.providerLeagueId);
+    }
+    // Katalogdaki yarışmanın henüz doğrulanmış bir API-Football kimliği yok
+    // (ör. çözüm bekleyen yeni bir lig) — kimlik taşıyan bir fikstürü ada
+    // göre bu kayda bağlamak, tam da önlemeye çalıştığımız tahmin olurdu.
+    return false;
+  }
+  return matchesCompetition(match && match.league, competition);
+}
+
 function filterSupportedCompetitions(matches) {
   return (Array.isArray(matches) ? matches : []).filter((match) =>
-    competitions.some((competition) => matchesCompetition(match.league, competition))
+    competitions.some((competition) => competitionMatchesFixture(match, competition))
   );
 }
 
@@ -878,7 +907,7 @@ async function getFixtures(query) {
   const matches = responseItems(payload).map(normalizeFixture);
   const supportedMatches = filterSupportedCompetitions(matches);
   const filteredMatches = league && competition
-    ? supportedMatches.filter((match) => matchesCompetition(match.league, competition))
+    ? supportedMatches.filter((match) => competitionMatchesFixture(match, competition))
     : supportedMatches;
   return stampProviderData(filteredMatches, "matches", 5 * 60 * 1000);
 }
@@ -934,14 +963,23 @@ async function getLeagues(query) {
     .map((item) => {
       const league = (item && item.league) || {};
       const country = (item && item.country) || {};
+      const seasons = Array.isArray(item && item.seasons) ? item.seasons : [];
+      // Kayıt genelde ilgili sezon için sorgulanır (season param), o yüzden
+      // "güncel" işaretli olan yerine SON gelen sezon esas alınır — bazı
+      // paketler `current` bayrağını doğru döndürmüyor.
+      const targetSeason = seasons.find((season) => season && season.current) || seasons[seasons.length - 1] || null;
       return {
         id: league.id === undefined || league.id === null ? null : String(league.id),
         name: league.name || "",
         type: league.type || "",
         country: country.name || "",
-        seasons: Array.isArray(item && item.seasons)
-          ? item.seasons.map((season) => String(season && season.year)).filter(Boolean)
-          : []
+        logo: league.logo || null,
+        seasons: seasons.map((season) => String(season && season.year)).filter(Boolean),
+        currentSeasonYear: targetSeason ? String(targetSeason.year) : null,
+        // Coverage nesnesi hangi modüllerin bu lig/sezon için desteklendiğini
+        // söyler (fixtures.lineups, statistics, standings, players...).
+        // Desteklenmeyen bir modülü render etmemek için ham hâliyle taşınır.
+        coverage: targetSeason && targetSeason.coverage ? targetSeason.coverage : null
       };
     })
     .filter((league) => league.id && league.name);
@@ -1667,6 +1705,7 @@ module.exports = {
   normalizeFixtureStatistics,
   buildLiveMatchAnalysis,
   filterSupportedCompetitions,
+  competitionMatchesFixture,
   normalizeStandingRow,
   normalizeTeam,
   normalizePlayer,

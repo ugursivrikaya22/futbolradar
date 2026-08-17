@@ -124,7 +124,7 @@ function testUnknownProviderValues() {
 }
 
 function testCompetitionCatalog() {
-  assert.equal(competitionCatalog.competitions.length, 10);
+  assert.equal(competitionCatalog.competitions.length, 23);
   assert.equal(competitionCatalog.providerLeagueValue("premier-league", "api-football"), 39);
   assert.equal(competitionCatalog.providerLeagueValue("sampiyonlar-ligi", "football-data"), "CL");
   assert.equal(competitionCatalog.providerLeagueValue("avrupa-ligi", "api-football"), 3);
@@ -686,7 +686,7 @@ async function testFootballDataCompetitionFallback() {
         json: async () => ({
           matches: [
             { id: 1, utcDate: "2026-05-24T15:00:00Z", status: "FINISHED", competition: { name: "Premier League" }, homeTeam: { name: "Home" }, awayTeam: { name: "Away" }, score: { fullTime: { home: 2, away: 1 } } },
-            { id: 2, utcDate: "2026-05-24T18:00:00Z", status: "FINISHED", competition: { name: "Campeonato Brasileiro Série A" }, homeTeam: { name: "Other" }, awayTeam: { name: "Club" }, score: { fullTime: { home: 0, away: 0 } } }
+            { id: 2, utcDate: "2026-05-24T18:00:00Z", status: "FINISHED", competition: { name: "Regional Test League" }, homeTeam: { name: "Other" }, awayTeam: { name: "Club" }, score: { fullTime: { home: 0, away: 0 } } }
           ]
         })
       };

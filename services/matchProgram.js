@@ -30,6 +30,7 @@
 const { sortByRelevance } = require("./matchRelevance.js");
 const { canonicalStatus, matchDay } = require("./matchStatus.js");
 const { isTurkishTeamName } = require("./turkishTeams.js");
+const { resolveCompetitionId, findCompetition } = require("./competitionCatalog.js");
 
 /** Sayfa başına basılan en fazla lig bloğu — SSS'te ad sayarken de geçerli. */
 const FAQ_LEAGUE_LIMIT = 6;
@@ -56,23 +57,36 @@ function orderMatchProgram(matches, options = {}) {
  * maçlarının üstünde durur.
  *
  * Lig adı boş olan kayıt ATILMAZ; adsız blok başlığı çağırandan gelir.
+ *
+ * KÜMELEME ANAHTARI KATALOG KİMLİĞİDİR, HAM METİN DEĞİL. Maç katalogda
+ * doğrulanmış bir yarışmaya çözülüyorsa (öncelik sırasıyla sağlayıcı
+ * kimliği, sonra ad) o kaydın KANONİK adı kullanılır — "Süper Lig" ve
+ * "Trendyol Süper Lig" artık iki ayrı blok üretmez, ikisi de aynı kovaya
+ * düşer. Katalogda karşılığı olmayan bir yarışma (bkz.
+ * services/competitionCatalog.js: resolveCompetitionId) eskisi gibi ham
+ * metnine göre kümelenir — kayıp yok, yalnızca daha güvenilir eşleşme.
  */
 function groupMatchesByLeague(matches) {
   const list = Array.isArray(matches) ? matches : [];
   const order = [];
   const groups = new Map();
+  const labels = new Map();
 
   for (const match of list) {
     if (!match || typeof match !== "object") continue;
-    const league = text(match.league);
-    if (!groups.has(league)) {
-      groups.set(league, []);
-      order.push(league);
+    const resolvedId = resolveCompetitionId(match);
+    const competition = resolvedId ? findCompetition(resolvedId) : null;
+    const label = competition ? competition.name : text(match.league);
+    const key = competition ? `id:${competition.id}` : `raw:${label}`;
+    if (!groups.has(key)) {
+      groups.set(key, []);
+      labels.set(key, label);
+      order.push(key);
     }
-    groups.get(league).push(match);
+    groups.get(key).push(match);
   }
 
-  return order.map((league) => ({ league, matches: groups.get(league) }));
+  return order.map((key) => ({ league: labels.get(key), matches: groups.get(key) }));
 }
 
 /**
