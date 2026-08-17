@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-17T20:31:32.799Z",
+  "fetchedAt": "2026-08-17T21:29:45.767Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -185170,8 +185170,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-17T20:31:33.474Z",
-      "staleAfter": "2026-08-17T20:36:33.474Z",
+      "fetchedAt": "2026-08-17T21:29:46.529Z",
+      "staleAfter": "2026-08-17T21:34:46.529Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -185181,17 +185181,52 @@
       "competitionId": "arjantin-primera",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Atletico Tucuman skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Atletico Tucuman tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Atletico Tucuman topa sahip olma oranında önde. Estudiantes de Rio Cuarto daha fazla şut üretti. Skor üstünlüğü Atletico Tucuman tarafında.",
+        "confidence": "Yüksek",
         "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "49%-51%",
+            "text": "Atletico Tucuman topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "12-9",
+            "text": "Estudiantes de Rio Cuarto daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "1-3",
+            "text": "Atletico Tucuman isabetli şutlarda önde."
+          },
+          {
+            "label": "Gol beklentisi",
+            "value": "0.31-0.34",
+            "text": "Atletico Tucuman daha yüksek pozisyon kalitesi üretti."
+          },
+          {
+            "label": "Disiplin dengesi",
+            "value": "1 kırmızı kart",
+            "text": "Atletico Tucuman kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "82'",
+            "text": "Son gol 82' C. D. Ferreira Namandu tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
+          },
           {
             "label": "Canlı skor",
             "value": "0-1",
             "text": "Atletico Tucuman skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 17,
+        "dataPoints": 8,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -186251,15 +186286,15 @@
           "substitutes": [
             "Rodrigo Granillo",
             "Alexis Canelo",
+            "Kevin Ortíz",
+            "Julián Fernández",
+            "Gabriel Compagnucci",
             "Tomás Durso",
             "Gianluca Ferrari",
             "Ramiro Paunero",
             "Juan Infante",
             "Juan Gabriel Rodríguez",
-            "Kevin Ortíz",
             "Ezequiel Ham",
-            "Gabriel Compagnucci",
-            "Julián Fernández",
             "Facundo Pimienta"
           ],
           "startingDetails": [
@@ -186344,6 +186379,24 @@
               "grid": null
             },
             {
+              "name": "Kevin Ortíz",
+              "number": 45,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Julián Fernández",
+              "number": 5,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Gabriel Compagnucci",
+              "number": 28,
+              "position": "D",
+              "grid": null
+            },
+            {
               "name": "Tomás Durso",
               "number": 25,
               "position": "G",
@@ -186374,26 +186427,8 @@
               "grid": null
             },
             {
-              "name": "Kevin Ortíz",
-              "number": 45,
-              "position": "M",
-              "grid": null
-            },
-            {
               "name": "Ezequiel Ham",
               "number": 8,
-              "position": "M",
-              "grid": null
-            },
-            {
-              "name": "Gabriel Compagnucci",
-              "number": 28,
-              "position": "D",
-              "grid": null
-            },
-            {
-              "name": "Julián Fernández",
-              "number": 5,
               "position": "M",
               "grid": null
             },
@@ -186526,6 +186561,56 @@
           "detail": "Substitution 5",
           "value": "F. Romero · Asist: M. Valiente · Substitution 5",
           "comments": ""
+        },
+        {
+          "time": "88'",
+          "team": {
+            "name": "Atletico Tucuman"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "N. Franco · Asist: K. Ortiz · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "88'",
+          "team": {
+            "name": "Atletico Tucuman"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "L. Vega · Asist: J. Fernandez · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "89'",
+          "team": {
+            "name": "Atletico Tucuman"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "I. Galvan · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "89'",
+          "team": {
+            "name": "Atletico Tucuman"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "I. Galvan · Red Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "90'",
+          "team": {
+            "name": "Atletico Tucuman"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "N. Lamendola · Asist: G. Compagnucci · Substitution 5",
+          "comments": ""
         }
       ],
       "statistics": [
@@ -186539,58 +186624,58 @@
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 5,
+          "home": 6,
           "away": 5
         },
         {
           "category": "Hücum",
           "type": "Toplam şut",
-          "home": 9,
+          "home": 12,
           "away": 9,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 3,
+          "home": 5,
           "away": 1
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
-          "home": 4,
+          "home": 6,
           "away": 4,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 5,
+          "home": 6,
           "away": 5
         },
         {
           "category": "Disiplin",
           "type": "Faul",
           "home": 12,
-          "away": 13
+          "away": 15
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 3,
+          "home": 4,
           "away": 6
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
           "home": 1,
-          "away": 1
+          "away": 2
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 47,
-          "away": 53,
+          "home": 49,
+          "away": 51,
           "unit": "%",
           "higherIsBetter": true
         },
@@ -186598,7 +186683,13 @@
           "category": "Disiplin",
           "type": "Sarı kart",
           "home": 1,
-          "away": 3
+          "away": 4
+        },
+        {
+          "category": "Disiplin",
+          "type": "Kırmızı kart",
+          "home": 0,
+          "away": 1
         },
         {
           "category": "Savunma",
@@ -186609,30 +186700,30 @@
         {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 305,
-          "away": 340,
+          "home": 340,
+          "away": 349,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 220,
-          "away": 254,
+          "home": 246,
+          "away": 258,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
           "home": 72,
-          "away": 75,
+          "away": 74,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Genel",
           "type": "Gol beklentisi (xG)",
-          "home": 0.27,
-          "away": 0.32,
+          "home": 0.31,
+          "away": 0.34,
           "decimals": 2,
           "higherIsBetter": true
         },
@@ -186651,13 +186742,13 @@
           "team": "Estudiantes de Rio Cuarto",
           "providerPlayerId": "5833",
           "source": "api-football",
-          "minutes": 93,
+          "minutes": 96,
           "position": "G",
           "providerRating": 6.9,
           "ratingSource": "api-football",
           "saves": 2,
-          "passes": 22,
-          "passAccuracy": 18,
+          "passes": 23,
+          "passAccuracy": 19,
           "yellowCards": 0,
           "redCards": 0
         },
@@ -186666,9 +186757,9 @@
           "team": "Estudiantes de Rio Cuarto",
           "providerPlayerId": "75580",
           "source": "api-football",
-          "minutes": 93,
+          "minutes": 96,
           "position": "D",
-          "providerRating": 7,
+          "providerRating": 6.9,
           "ratingSource": "api-football",
           "shots": 1,
           "passes": 35,
@@ -186683,12 +186774,12 @@
           "team": "Estudiantes de Rio Cuarto",
           "providerPlayerId": "16618",
           "source": "api-football",
-          "minutes": 93,
+          "minutes": 96,
           "position": "D",
-          "providerRating": 7.2,
+          "providerRating": 7.5,
           "ratingSource": "api-football",
-          "passes": 43,
-          "passAccuracy": 39,
+          "passes": 45,
+          "passAccuracy": 41,
           "tackles": 2,
           "duelsWon": 5,
           "yellowCards": 0,
@@ -186699,14 +186790,14 @@
           "team": "Estudiantes de Rio Cuarto",
           "providerPlayerId": "407357",
           "source": "api-football",
-          "minutes": 93,
+          "minutes": 96,
           "position": "D",
           "providerRating": 6.9,
           "ratingSource": "api-football",
-          "passes": 34,
-          "passAccuracy": 23,
+          "passes": 36,
+          "passAccuracy": 25,
           "tackles": 1,
-          "duelsWon": 5,
+          "duelsWon": 6,
           "yellowCards": 0,
           "redCards": 0
         },
@@ -186734,7 +186825,7 @@
           "source": "api-football",
           "minutes": 76,
           "position": "M",
-          "providerRating": 6.9,
+          "providerRating": 7,
           "ratingSource": "api-football",
           "passes": 13,
           "passAccuracy": 6,
@@ -186750,7 +186841,7 @@
           "source": "api-football",
           "minutes": 57,
           "position": "M",
-          "providerRating": 6.7,
+          "providerRating": 6.6,
           "ratingSource": "api-football",
           "passes": 13,
           "passAccuracy": 9,
@@ -186766,7 +186857,7 @@
           "source": "api-football",
           "minutes": 76,
           "position": "M",
-          "providerRating": 6.3,
+          "providerRating": 6.7,
           "ratingSource": "api-football",
           "shots": 2,
           "shotsOnTarget": 1,
@@ -186782,13 +186873,13 @@
           "team": "Estudiantes de Rio Cuarto",
           "providerPlayerId": "311332",
           "source": "api-football",
-          "minutes": 93,
+          "minutes": 96,
           "position": "M",
           "providerRating": 6.9,
           "ratingSource": "api-football",
           "shots": 1,
-          "passes": 26,
-          "passAccuracy": 18,
+          "passes": 28,
+          "passAccuracy": 19,
           "tackles": 4,
           "duelsWon": 5,
           "yellowCards": 0,
@@ -186815,7 +186906,7 @@
           "team": "Estudiantes de Rio Cuarto",
           "providerPlayerId": "58594",
           "source": "api-football",
-          "minutes": 93,
+          "minutes": 96,
           "position": "F",
           "providerRating": 7.5,
           "ratingSource": "api-football",
@@ -186831,14 +186922,14 @@
           "team": "Estudiantes de Rio Cuarto",
           "providerPlayerId": "289468",
           "source": "api-football",
-          "minutes": 36,
+          "minutes": 39,
           "position": "M",
-          "providerRating": 6.7,
+          "providerRating": 6.9,
           "ratingSource": "api-football",
-          "passes": 23,
-          "passAccuracy": 13,
+          "passes": 25,
+          "passAccuracy": 14,
           "tackles": 4,
-          "duelsWon": 5,
+          "duelsWon": 6,
           "yellowCards": 0,
           "redCards": 0
         },
@@ -186847,7 +186938,7 @@
           "team": "Estudiantes de Rio Cuarto",
           "providerPlayerId": "58593",
           "source": "api-football",
-          "minutes": 36,
+          "minutes": 39,
           "position": "F",
           "providerRating": 6.2,
           "ratingSource": "api-football",
@@ -186863,14 +186954,14 @@
           "team": "Estudiantes de Rio Cuarto",
           "providerPlayerId": "5669",
           "source": "api-football",
-          "minutes": 17,
+          "minutes": 20,
           "position": "D",
-          "providerRating": 6.3,
+          "providerRating": 6.9,
           "ratingSource": "api-football",
-          "passes": 7,
-          "passAccuracy": 5,
-          "tackles": 1,
-          "duelsWon": 2,
+          "passes": 9,
+          "passAccuracy": 7,
+          "tackles": 2,
+          "duelsWon": 4,
           "yellowCards": 0,
           "redCards": 0
         },
@@ -186879,12 +186970,12 @@
           "team": "Estudiantes de Rio Cuarto",
           "providerPlayerId": "5500",
           "source": "api-football",
-          "minutes": 17,
+          "minutes": 20,
           "position": "M",
           "providerRating": 6.3,
           "ratingSource": "api-football",
-          "passes": 13,
-          "passAccuracy": 11,
+          "passes": 15,
+          "passAccuracy": 12,
           "yellowCards": 0,
           "redCards": 0
         },
@@ -186893,8 +186984,10 @@
           "team": "Estudiantes de Rio Cuarto",
           "providerPlayerId": "6253",
           "source": "api-football",
-          "minutes": 5,
+          "minutes": 8,
           "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
           "passes": 2,
           "duelsWon": 1,
           "yellowCards": 0,
@@ -186968,9 +187061,9 @@
           "team": "Atletico Tucuman",
           "providerPlayerId": "6256",
           "source": "api-football",
-          "minutes": 93,
+          "minutes": 96,
           "position": "G",
-          "providerRating": 6.7,
+          "providerRating": 6.6,
           "ratingSource": "api-football",
           "saves": 1,
           "passes": 20,
@@ -186984,7 +187077,7 @@
           "team": "Atletico Tucuman",
           "providerPlayerId": "6201",
           "source": "api-football",
-          "minutes": 93,
+          "minutes": 96,
           "position": "D",
           "providerRating": 6.9,
           "ratingSource": "api-football",
@@ -187001,9 +187094,9 @@
           "team": "Atletico Tucuman",
           "providerPlayerId": "460761",
           "source": "api-football",
-          "minutes": 93,
+          "minutes": 96,
           "position": "D",
-          "providerRating": 7.9,
+          "providerRating": 8,
           "ratingSource": "api-football",
           "goals": 1,
           "shots": 2,
@@ -187020,9 +187113,9 @@
           "team": "Atletico Tucuman",
           "providerPlayerId": "510346",
           "source": "api-football",
-          "minutes": 93,
+          "minutes": 96,
           "position": "D",
-          "providerRating": 7.3,
+          "providerRating": 7.5,
           "ratingSource": "api-football",
           "passes": 38,
           "passAccuracy": 31,
@@ -187038,7 +187131,7 @@
           "source": "api-football",
           "minutes": 89,
           "position": "D",
-          "providerRating": 6.7,
+          "providerRating": 6.6,
           "ratingSource": "api-football",
           "assists": 0,
           "passes": 37,
@@ -187055,7 +187148,7 @@
           "source": "api-football",
           "minutes": 88,
           "position": "M",
-          "providerRating": 6.9,
+          "providerRating": 7,
           "ratingSource": "api-football",
           "passes": 31,
           "passAccuracy": 27,
@@ -187071,7 +187164,7 @@
           "source": "api-football",
           "minutes": 76,
           "position": "M",
-          "providerRating": 6.2,
+          "providerRating": 6.3,
           "ratingSource": "api-football",
           "shots": 2,
           "shotsOnTarget": 1,
@@ -187086,15 +187179,15 @@
           "team": "Atletico Tucuman",
           "providerPlayerId": "475936",
           "source": "api-football",
-          "minutes": 93,
+          "minutes": 96,
           "position": "M",
-          "providerRating": 6.6,
+          "providerRating": 6.9,
           "ratingSource": "api-football",
           "assists": 1,
           "shots": 1,
-          "passes": 51,
+          "passes": 52,
           "passAccuracy": 38,
-          "duelsWon": 2,
+          "duelsWon": 3,
           "yellowCards": 0,
           "redCards": 0
         },
@@ -187105,7 +187198,7 @@
           "source": "api-football",
           "minutes": 88,
           "position": "M",
-          "providerRating": 6.7,
+          "providerRating": 6.3,
           "ratingSource": "api-football",
           "shots": 1,
           "passes": 20,
@@ -187153,7 +187246,7 @@
           "team": "Atletico Tucuman",
           "providerPlayerId": "560300",
           "source": "api-football",
-          "minutes": 17,
+          "minutes": 20,
           "position": "F",
           "providerRating": 6.5,
           "ratingSource": "api-football",
@@ -187167,7 +187260,7 @@
           "team": "Atletico Tucuman",
           "providerPlayerId": "35715",
           "source": "api-football",
-          "minutes": 17,
+          "minutes": 20,
           "position": "F",
           "providerRating": 6.3,
           "ratingSource": "api-football",
@@ -187180,10 +187273,12 @@
           "team": "Atletico Tucuman",
           "providerPlayerId": "354944",
           "source": "api-football",
-          "minutes": 5,
+          "minutes": 8,
           "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
           "tackles": 1,
-          "duelsWon": 1,
+          "duelsWon": 2,
           "yellowCards": 0,
           "redCards": 0
         },
@@ -187192,8 +187287,10 @@
           "team": "Atletico Tucuman",
           "providerPlayerId": "11605",
           "source": "api-football",
-          "minutes": 5,
+          "minutes": 8,
           "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
           "passes": 2,
           "passAccuracy": 1,
           "duelsWon": 1,
@@ -187205,7 +187302,7 @@
           "team": "Atletico Tucuman",
           "providerPlayerId": "6473",
           "source": "api-football",
-          "minutes": 3,
+          "minutes": 6,
           "position": "D",
           "yellowCards": 0,
           "redCards": 0
@@ -187322,14 +187419,14 @@
       "goalPotential": null,
       "risk": null,
       "providerName": "api-football",
-      "fetchedAt": "2026-08-17T20:31:33.474Z",
-      "staleAfter": "2026-08-17T20:36:33.474Z",
+      "fetchedAt": "2026-08-17T21:29:46.529Z",
+      "staleAfter": "2026-08-17T21:34:46.529Z",
       "needsReview": false,
       "resource": "matches",
       "providerLeagueId": "203",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Samsunspor topa sahip olma oranında önde. Göztepe daha fazla şut üretti.",
+        "summary": "Samsunspor topa sahip olma oranında önde. Samsunspor daha fazla şut üretti.",
         "confidence": "Yüksek",
         "signals": [
           {
@@ -187339,8 +187436,8 @@
           },
           {
             "label": "Şut hacmi",
-            "value": "19-20",
-            "text": "Göztepe daha fazla şut üretti."
+            "value": "21-20",
+            "text": "Samsunspor daha fazla şut üretti."
           },
           {
             "label": "Kaleyi bulan",
@@ -187349,8 +187446,18 @@
           },
           {
             "label": "Gol beklentisi",
-            "value": "2.61-1.90",
+            "value": "2.74-1.89",
             "text": "Samsunspor daha yüksek pozisyon kalitesi üretti."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "90'",
+            "text": "Son gol 90' C. Yuksel tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "8 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
@@ -187358,8 +187465,8 @@
             "text": "Skor dengede."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 5,
+        "eventCount": 20,
+        "dataPoints": 7,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -188746,15 +188853,15 @@
             "Emre Kılınç"
           ],
           "substitutes": [
+            "Fatih Kaya",
+            "Samed Onur",
+            "Antoine Sekongo",
             "Efe Yiğit Üstün",
             "Bilal Bayazit",
             "Gabriele Guarino",
             "Enes Albak",
             "Haluk Mustafa Tan",
-            "Samed Onur",
-            "Antoine Sekongo",
-            "Tahsin Bülbül",
-            "Fatih Kaya"
+            "Tahsin Bülbül"
           ],
           "startingDetails": [
             {
@@ -188826,6 +188933,24 @@
           ],
           "substituteDetails": [
             {
+              "name": "Fatih Kaya",
+              "number": 14,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Samed Onur",
+              "number": 8,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Antoine Sekongo",
+              "number": 42,
+              "position": "M",
+              "grid": null
+            },
+            {
               "name": "Efe Yiğit Üstün",
               "number": 13,
               "position": "G",
@@ -188856,27 +188981,9 @@
               "grid": null
             },
             {
-              "name": "Samed Onur",
-              "number": 8,
-              "position": "M",
-              "grid": null
-            },
-            {
-              "name": "Antoine Sekongo",
-              "number": 42,
-              "position": "M",
-              "grid": null
-            },
-            {
               "name": "Tahsin Bülbül",
               "number": 70,
               "position": "M",
-              "grid": null
-            },
-            {
-              "name": "Fatih Kaya",
-              "number": 14,
-              "position": "F",
               "grid": null
             }
           ]
@@ -188898,15 +189005,15 @@
             "Sinclair Armstrong"
           ],
           "substitutes": [
+            "Rhaldney",
+            "Efkan Bekiroğlu",
+            "Juan Santos da Silva",
+            "Janderson",
+            "Ogün Bayrak",
             "Arda Özçimen",
             "Mehmet Şamil Öztürk",
-            "Ogün Bayrak",
-            "Rhaldney",
             "Gökdeniz Bayrakdar",
-            "Juan Santos da Silva",
-            "Efkan Bekiroğlu",
-            "Guilherme Luiz",
-            "Janderson"
+            "Guilherme Luiz"
           ],
           "startingDetails": [
             {
@@ -188978,6 +189085,36 @@
           ],
           "substituteDetails": [
             {
+              "name": "Rhaldney",
+              "number": 5,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Efkan Bekiroğlu",
+              "number": 10,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Juan Santos da Silva",
+              "number": 9,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Janderson",
+              "number": 39,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Ogün Bayrak",
+              "number": 16,
+              "position": "D",
+              "grid": null
+            },
+            {
               "name": "Arda Özçimen",
               "number": 1,
               "position": "G",
@@ -188990,44 +189127,14 @@
               "grid": null
             },
             {
-              "name": "Ogün Bayrak",
-              "number": 16,
-              "position": "D",
-              "grid": null
-            },
-            {
-              "name": "Rhaldney",
-              "number": 5,
-              "position": "M",
-              "grid": null
-            },
-            {
               "name": "Gökdeniz Bayrakdar",
               "number": 17,
               "position": "F",
               "grid": null
             },
             {
-              "name": "Juan Santos da Silva",
-              "number": 9,
-              "position": "F",
-              "grid": null
-            },
-            {
-              "name": "Efkan Bekiroğlu",
-              "number": 10,
-              "position": "M",
-              "grid": null
-            },
-            {
               "name": "Guilherme Luiz",
               "number": 11,
-              "position": "F",
-              "grid": null
-            },
-            {
-              "name": "Janderson",
-              "number": 39,
               "position": "F",
               "grid": null
             }
@@ -189084,6 +189191,156 @@
           "detail": "Normal Goal",
           "value": "E. Kilinc · Asist: J. Mendes · Normal Goal",
           "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Göztepe"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "S. Armstrong · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "52'",
+          "team": {
+            "name": "Göztepe"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "S. Armstrong · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "52'",
+          "team": {
+            "name": "Samsunspor"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "T. Borevkovic · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "56'",
+          "team": {
+            "name": "Göztepe"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Allan Godoi · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "58'",
+          "team": {
+            "name": "Samsunspor"
+          },
+          "type": "Goal",
+          "detail": "Missed Penalty",
+          "value": "Marius · Asist: Marius · Missed Penalty",
+          "comments": ""
+        },
+        {
+          "time": "60'",
+          "team": {
+            "name": "Göztepe"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "A. Antunes · Asist: E. Bekiroglu · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "60'",
+          "team": {
+            "name": "Göztepe"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "A. Matos · Asist: Rhaldney · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Göztepe"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "Andre Henrique · Asist: Janderson · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Göztepe"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "S. Armstrong · Asist: Juan Santos · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "65'",
+          "team": {
+            "name": "Göztepe"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "E. Bekiroglu · Asist: Janderson · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "Samsunspor"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "Marius · Asist: F. Kaya · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "78'",
+          "team": {
+            "name": "Samsunspor"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Y. Kayan · Asist: S. Onur · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "78'",
+          "team": {
+            "name": "Samsunspor"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "S. Jarju · Asist: A. Sekongo · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "90'",
+          "team": {
+            "name": "Samsunspor"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "C. Yuksel · Asist: F. Kaya · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "90+2'",
+          "team": {
+            "name": "Göztepe"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "A. Kurtulan · Asist: O. Bayrak · Substitution 5",
+          "comments": ""
         }
       ],
       "statistics": [
@@ -189103,34 +189360,34 @@
         {
           "category": "Hücum",
           "type": "Toplam şut",
-          "home": 19,
+          "home": 21,
           "away": 20,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 9,
+          "home": 11,
           "away": 7
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
-          "home": 13,
+          "home": 14,
           "away": 14,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 6,
+          "home": 7,
           "away": 6
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 7,
-          "away": 12
+          "home": 8,
+          "away": 13
         },
         {
           "category": "Genel",
@@ -189167,15 +189424,15 @@
         {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 506,
-          "away": 226,
+          "home": 511,
+          "away": 231,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 407,
-          "away": 133,
+          "home": 411,
+          "away": 136,
           "higherIsBetter": true
         },
         {
@@ -189189,8 +189446,8 @@
         {
           "category": "Genel",
           "type": "Gol beklentisi (xG)",
-          "home": 2.61,
-          "away": 1.9,
+          "home": 2.74,
+          "away": 1.89,
           "decimals": 2,
           "higherIsBetter": true
         },
@@ -189209,7 +189466,7 @@
           "team": "Samsunspor",
           "providerPlayerId": "50217",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "G",
           "providerRating": 6.2,
           "ratingSource": "api-football",
@@ -189224,15 +189481,15 @@
           "team": "Samsunspor",
           "providerPlayerId": "310029",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "D",
           "providerRating": 6.9,
           "ratingSource": "api-football",
           "assists": 1,
-          "passes": 48,
+          "passes": 49,
           "passAccuracy": 46,
           "tackles": 2,
-          "duelsWon": 4,
+          "duelsWon": 5,
           "yellowCards": 0,
           "redCards": 0
         },
@@ -189241,7 +189498,7 @@
           "team": "Samsunspor",
           "providerPlayerId": "41172",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "D",
           "providerRating": 6.3,
           "ratingSource": "api-football",
@@ -189257,12 +189514,12 @@
           "team": "Samsunspor",
           "providerPlayerId": "631673",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "D",
           "providerRating": 6.2,
           "ratingSource": "api-football",
-          "passes": 52,
-          "passAccuracy": 44,
+          "passes": 54,
+          "passAccuracy": 46,
           "tackles": 1,
           "duelsWon": 8,
           "yellowCards": 0,
@@ -189273,7 +189530,7 @@
           "team": "Samsunspor",
           "providerPlayerId": "28806",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "D",
           "providerRating": 6.2,
           "ratingSource": "api-football",
@@ -189281,7 +189538,7 @@
           "passes": 48,
           "passAccuracy": 38,
           "tackles": 2,
-          "duelsWon": 3,
+          "duelsWon": 4,
           "yellowCards": 0,
           "redCards": 0
         },
@@ -189307,7 +189564,7 @@
           "team": "Samsunspor",
           "providerPlayerId": "453",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "M",
           "providerRating": 8.2,
           "ratingSource": "api-football",
@@ -189357,9 +189614,9 @@
           "team": "Samsunspor",
           "providerPlayerId": "531370",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "F",
-          "providerRating": 6.9,
+          "providerRating": 7.2,
           "ratingSource": "api-football",
           "goals": 1,
           "shots": 3,
@@ -189375,7 +189632,7 @@
           "team": "Samsunspor",
           "providerPlayerId": "50091",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "F",
           "providerRating": 8.2,
           "ratingSource": "api-football",
@@ -189393,13 +189650,13 @@
           "team": "Samsunspor",
           "providerPlayerId": "25223",
           "source": "api-football",
-          "minutes": 25,
+          "minutes": 26,
           "position": "F",
-          "providerRating": 6.9,
+          "providerRating": 6.6,
           "ratingSource": "api-football",
           "assists": 1,
-          "passes": 13,
-          "passAccuracy": 10,
+          "passes": 14,
+          "passAccuracy": 11,
           "tackles": 1,
           "duelsWon": 2,
           "yellowCards": 0,
@@ -189410,14 +189667,14 @@
           "team": "Samsunspor",
           "providerPlayerId": "202992",
           "source": "api-football",
-          "minutes": 17,
+          "minutes": 18,
           "position": "M",
           "providerRating": 7.2,
           "ratingSource": "api-football",
-          "passes": 18,
-          "passAccuracy": 18,
-          "tackles": 2,
-          "duelsWon": 4,
+          "passes": 19,
+          "passAccuracy": 19,
+          "tackles": 3,
+          "duelsWon": 5,
           "yellowCards": 0,
           "redCards": 0
         },
@@ -189426,9 +189683,9 @@
           "team": "Samsunspor",
           "providerPlayerId": "437484",
           "source": "api-football",
-          "minutes": 17,
+          "minutes": 18,
           "position": "M",
-          "providerRating": 6.3,
+          "providerRating": 6.5,
           "ratingSource": "api-football",
           "passes": 12,
           "passAccuracy": 9,
@@ -189496,7 +189753,7 @@
           "team": "Göztepe",
           "providerPlayerId": "24665",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "G",
           "providerRating": 5.7,
           "ratingSource": "api-football",
@@ -189511,7 +189768,7 @@
           "team": "Göztepe",
           "providerPlayerId": "301272",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "D",
           "providerRating": 6.2,
           "ratingSource": "api-football",
@@ -189525,7 +189782,7 @@
           "team": "Göztepe",
           "providerPlayerId": "159466",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "D",
           "providerRating": 6,
           "ratingSource": "api-football",
@@ -189542,9 +189799,9 @@
           "team": "Göztepe",
           "providerPlayerId": "437786",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "D",
-          "providerRating": 5.9,
+          "providerRating": 6.2,
           "ratingSource": "api-football",
           "shots": 1,
           "shotsOnTarget": 1,
@@ -189596,13 +189853,13 @@
           "team": "Göztepe",
           "providerPlayerId": "303493",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "M",
           "providerRating": 6.9,
           "ratingSource": "api-football",
           "shots": 3,
           "shotsOnTarget": 1,
-          "passes": 26,
+          "passes": 27,
           "passAccuracy": 20,
           "tackles": 2,
           "duelsWon": 5,
@@ -189614,13 +189871,13 @@
           "team": "Göztepe",
           "providerPlayerId": "195897",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "M",
           "providerRating": 7.2,
           "ratingSource": "api-football",
           "shots": 1,
-          "passes": 23,
-          "passAccuracy": 14,
+          "passes": 24,
+          "passAccuracy": 15,
           "tackles": 2,
           "duelsWon": 5,
           "yellowCards": 0,
@@ -189683,14 +189940,14 @@
           "team": "Göztepe",
           "providerPlayerId": "54699",
           "source": "api-football",
-          "minutes": 35,
+          "minutes": 36,
           "position": "M",
           "providerRating": 7,
           "ratingSource": "api-football",
-          "passes": 20,
-          "passAccuracy": 18,
+          "passes": 21,
+          "passAccuracy": 19,
           "tackles": 1,
-          "duelsWon": 5,
+          "duelsWon": 6,
           "yellowCards": 0,
           "redCards": 0
         },
@@ -189699,14 +189956,14 @@
           "team": "Göztepe",
           "providerPlayerId": "26128",
           "source": "api-football",
-          "minutes": 35,
+          "minutes": 36,
           "position": "M",
           "providerRating": 7.6,
           "ratingSource": "api-football",
           "goals": 1,
           "shots": 2,
           "shotsOnTarget": 1,
-          "passes": 8,
+          "passes": 9,
           "passAccuracy": 6,
           "duelsWon": 1,
           "yellowCards": 0,
@@ -189717,14 +189974,14 @@
           "team": "Göztepe",
           "providerPlayerId": "180916",
           "source": "api-football",
-          "minutes": 34,
+          "minutes": 35,
           "position": "F",
-          "providerRating": 6.7,
+          "providerRating": 6.3,
           "ratingSource": "api-football",
           "shots": 1,
           "shotsOnTarget": 1,
-          "passes": 5,
-          "passAccuracy": 3,
+          "passes": 6,
+          "passAccuracy": 4,
           "duelsWon": 2,
           "yellowCards": 1,
           "redCards": 0
@@ -189734,9 +189991,9 @@
           "team": "Göztepe",
           "providerPlayerId": "353394",
           "source": "api-football",
-          "minutes": 34,
+          "minutes": 35,
           "position": "F",
-          "providerRating": 6.5,
+          "providerRating": 6.2,
           "ratingSource": "api-football",
           "assists": 1,
           "passes": 5,
@@ -189751,11 +190008,12 @@
           "team": "Göztepe",
           "providerPlayerId": "134564",
           "source": "api-football",
-          "minutes": 3,
+          "minutes": 4,
           "position": "D",
           "passes": 1,
           "passAccuracy": 1,
-          "duelsWon": 1,
+          "tackles": 1,
+          "duelsWon": 2,
           "yellowCards": 0,
           "redCards": 0
         },
@@ -189882,8 +190140,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-17T20:31:33.474Z",
-      "staleAfter": "2026-08-17T20:36:33.474Z",
+      "fetchedAt": "2026-08-17T21:29:46.529Z",
+      "staleAfter": "2026-08-17T21:34:46.529Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -189893,17 +190151,42 @@
       "competitionId": "1-lig",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Batman Petrolspor skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Batman Petrolspor tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Batman Petrolspor topa sahip olma oranında önde. Batman Petrolspor daha fazla şut üretti. Skor üstünlüğü Batman Petrolspor tarafında.",
+        "confidence": "Yüksek",
         "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "59%-41%",
+            "text": "Batman Petrolspor topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "15-11",
+            "text": "Batman Petrolspor daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "3-4",
+            "text": "Boluspor isabetli şutlarda önde."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "90+3'",
+            "text": "Son gol 90+3' M. Biron tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
+          },
           {
             "label": "Canlı skor",
             "value": "2-0",
             "text": "Batman Petrolspor skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 21,
+        "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -190665,16 +190948,16 @@
             "Sergio Córdova"
           ],
           "substitutes": [
-            "Birkan Tetik",
             "Mücahit Albayrak",
+            "Mamadou Cissokho",
+            "Polat Yaldır",
+            "Gökhan Altıparmak",
+            "Buğra Çağıran",
+            "Birkan Tetik",
             "Ömürcan Artan",
             "Murat Sipahioglu",
-            "Buğra Çağıran",
             "Gökhan Karadeniz",
-            "Mamadou Cissokho",
-            "Emirhan Aydoğan",
-            "Gökhan Altıparmak",
-            "Polat Yaldır"
+            "Emirhan Aydoğan"
           ],
           "startingDetails": [
             {
@@ -190746,15 +191029,39 @@
           ],
           "substituteDetails": [
             {
-              "name": "Birkan Tetik",
-              "number": 13,
-              "position": "G",
-              "grid": null
-            },
-            {
               "name": "Mücahit Albayrak",
               "number": 53,
               "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Mamadou Cissokho",
+              "number": 34,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Polat Yaldır",
+              "number": 72,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Gökhan Altıparmak",
+              "number": 79,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Buğra Çağıran",
+              "number": 26,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Birkan Tetik",
+              "number": 13,
+              "position": "G",
               "grid": null
             },
             {
@@ -190770,20 +191077,8 @@
               "grid": null
             },
             {
-              "name": "Buğra Çağıran",
-              "number": 26,
-              "position": "M",
-              "grid": null
-            },
-            {
               "name": "Gökhan Karadeniz",
               "number": 17,
-              "position": "M",
-              "grid": null
-            },
-            {
-              "name": "Mamadou Cissokho",
-              "number": 34,
               "position": "M",
               "grid": null
             },
@@ -190791,18 +191086,6 @@
               "name": "Emirhan Aydoğan",
               "number": 5,
               "position": "M",
-              "grid": null
-            },
-            {
-              "name": "Gökhan Altıparmak",
-              "number": 79,
-              "position": "F",
-              "grid": null
-            },
-            {
-              "name": "Polat Yaldır",
-              "number": 72,
-              "position": "F",
               "grid": null
             }
           ]
@@ -190824,16 +191107,16 @@
             "Rodrigo Rivas González"
           ],
           "substitutes": [
+            "Yusuf Can Esendemir",
+            "Muhammed Mert",
+            "Mustafa Alptekin Cayli",
+            "Ege Özkayımoğlu",
+            "Bertu Özyürek",
             "Muhammet Ozkan",
             "Ali Cirak",
             "Arda Tugra Saygi",
             "Bartu Göçmen",
-            "Yusuf Can Esendemir",
-            "Muhammed Mert",
-            "Can Yilmaz",
-            "Mustafa Alptekin Cayli",
-            "Bertu Özyürek",
-            "Ege Özkayımoğlu"
+            "Can Yilmaz"
           ],
           "startingDetails": [
             {
@@ -190905,6 +191188,36 @@
           ],
           "substituteDetails": [
             {
+              "name": "Yusuf Can Esendemir",
+              "number": 88,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Muhammed Mert",
+              "number": 21,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Mustafa Alptekin Cayli",
+              "number": 17,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Ege Özkayımoğlu",
+              "number": 35,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Bertu Özyürek",
+              "number": 67,
+              "position": "M",
+              "grid": null
+            },
+            {
               "name": "Muhammet Ozkan",
               "number": 25,
               "position": "G",
@@ -190929,39 +191242,9 @@
               "grid": null
             },
             {
-              "name": "Yusuf Can Esendemir",
-              "number": 88,
-              "position": "D",
-              "grid": null
-            },
-            {
-              "name": "Muhammed Mert",
-              "number": 21,
-              "position": "M",
-              "grid": null
-            },
-            {
               "name": "Can Yilmaz",
               "number": 6,
               "position": "M",
-              "grid": null
-            },
-            {
-              "name": "Mustafa Alptekin Cayli",
-              "number": 17,
-              "position": "M",
-              "grid": null
-            },
-            {
-              "name": "Bertu Özyürek",
-              "number": 67,
-              "position": "M",
-              "grid": null
-            },
-            {
-              "name": "Ege Özkayımoğlu",
-              "number": 35,
-              "position": "F",
               "grid": null
             }
           ]
@@ -190987,105 +191270,295 @@
           "detail": "Penalty",
           "value": "Pedrinho · Penalty",
           "comments": ""
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Batman Petrolspor"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "D. Bozardic · Asist: M. Albayrak · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "49'",
+          "team": {
+            "name": "Batman Petrolspor"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "S. Cordova · Yellow Card",
+          "comments": "Unsportsmanlike conduct"
+        },
+        {
+          "time": "49'",
+          "team": {
+            "name": "Boluspor"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "K. A. Cuesta Rodriguez · Yellow Card",
+          "comments": "Unsportsmanlike conduct"
+        },
+        {
+          "time": "58'",
+          "team": {
+            "name": "Boluspor"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Z. Dursun · Yellow Card",
+          "comments": "Unsportsmanlike conduct"
+        },
+        {
+          "time": "58'",
+          "team": {
+            "name": "Batman Petrolspor"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Biron · Yellow Card",
+          "comments": "Unsportsmanlike conduct"
+        },
+        {
+          "time": "60'",
+          "team": {
+            "name": "Batman Petrolspor"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Pedrinho · Asist: M. Cissokho · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "60'",
+          "team": {
+            "name": "Batman Petrolspor"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "Benny · Asist: P. Yaldir · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Boluspor"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "Z. Dursun · Asist: M. Mert · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Boluspor"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "A. Kirim · Asist: Y. Esendemir · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Boluspor"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "F. E. Kacmaz · Asist: A. Cayli · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "68'",
+          "team": {
+            "name": "Boluspor"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "T. Artuc · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "Boluspor"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "T. Artuc · Asist: E. Ozkayimoglu · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "Batman Petrolspor"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "K. Subasi · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "Boluspor"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Y. Esendemir · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "83'",
+          "team": {
+            "name": "Batman Petrolspor"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "S. Cordova · Asist: G. Altiparmak · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "83'",
+          "team": {
+            "name": "Boluspor"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "Y. Esendemir · Asist: B. Ozyurek · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "90+1'",
+          "team": {
+            "name": "Batman Petrolspor"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "O. Gurbulak · Asist: B. Cagiran · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "90+3'",
+          "team": {
+            "name": "Batman Petrolspor"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "M. Biron · Asist: P. Yaldir · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "90+5'",
+          "team": {
+            "name": "Batman Petrolspor"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "B. Cagiran · Yellow Card",
+          "comments": "Unsportsmanlike conduct"
         }
       ],
       "statistics": [
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 1,
-          "away": 0,
+          "home": 3,
+          "away": 4,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 1,
-          "away": 1
+          "home": 7,
+          "away": 4
         },
         {
           "category": "Hücum",
           "type": "Toplam şut",
-          "home": 3,
-          "away": 1,
+          "home": 15,
+          "away": 11,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 1,
-          "away": 0
+          "home": 5,
+          "away": 3
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
-          "home": 1,
-          "away": 0,
+          "home": 10,
+          "away": 3,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 2,
-          "away": 1
+          "home": 5,
+          "away": 8
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 5,
-          "away": 2
+          "home": 13,
+          "away": 12
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 4,
+          "home": 9,
           "away": 1
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
-          "home": 1,
+          "home": 4,
           "away": 2
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 68,
-          "away": 32,
+          "home": 59,
+          "away": 41,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Disiplin",
           "type": "Sarı kart",
-          "home": 1,
-          "away": 0
+          "home": 5,
+          "away": 4
         },
         {
           "category": "Savunma",
           "type": "Kurtarış",
-          "home": 1,
+          "home": 4,
           "away": 1
         },
         {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 132,
-          "away": 62,
+          "home": 372,
+          "away": 260,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 115,
-          "away": 43,
+          "home": 311,
+          "away": 189,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
-          "home": 87,
-          "away": 69,
+          "home": 84,
+          "away": 73,
           "unit": "%",
           "higherIsBetter": true
         }
@@ -191096,9 +191569,9 @@
           "team": "Batman Petrolspor",
           "providerPlayerId": "61982",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "G",
-          "providerRating": 6.9,
+          "providerRating": 7,
           "ratingSource": "api-football",
           "saves": 4,
           "passes": 33,
@@ -191111,12 +191584,12 @@
           "team": "Batman Petrolspor",
           "providerPlayerId": "109504",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "D",
-          "providerRating": 7.3,
+          "providerRating": 7.2,
           "ratingSource": "api-football",
-          "passes": 44,
-          "passAccuracy": 36,
+          "passes": 45,
+          "passAccuracy": 37,
           "tackles": 2,
           "duelsWon": 6,
           "yellowCards": 0,
@@ -191127,9 +191600,9 @@
           "team": "Batman Petrolspor",
           "providerPlayerId": "35777",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "D",
-          "providerRating": 7.5,
+          "providerRating": 7.7,
           "ratingSource": "api-football",
           "passes": 42,
           "passAccuracy": 37,
@@ -191144,7 +191617,7 @@
           "source": "api-football",
           "minutes": 45,
           "position": "D",
-          "providerRating": 6.7,
+          "providerRating": 6.9,
           "ratingSource": "api-football",
           "passes": 39,
           "passAccuracy": 35,
@@ -191157,9 +191630,9 @@
           "team": "Batman Petrolspor",
           "providerPlayerId": "62023",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "D",
-          "providerRating": 6.5,
+          "providerRating": 6.7,
           "ratingSource": "api-football",
           "passes": 38,
           "passAccuracy": 34,
@@ -191172,9 +191645,9 @@
           "team": "Batman Petrolspor",
           "providerPlayerId": "364597",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "M",
-          "providerRating": 7.2,
+          "providerRating": 7.3,
           "ratingSource": "api-football",
           "shots": 1,
           "passes": 29,
@@ -191191,7 +191664,7 @@
           "source": "api-football",
           "minutes": 60,
           "position": "M",
-          "providerRating": 7.2,
+          "providerRating": 7.3,
           "ratingSource": "api-football",
           "shots": 1,
           "passes": 17,
@@ -191225,7 +191698,7 @@
           "source": "api-football",
           "minutes": 60,
           "position": "M",
-          "providerRating": 7.2,
+          "providerRating": 7.5,
           "ratingSource": "api-football",
           "goals": 1,
           "shots": 1,
@@ -191241,9 +191714,9 @@
           "team": "Batman Petrolspor",
           "providerPlayerId": "83824",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "M",
-          "providerRating": 8,
+          "providerRating": 8.2,
           "ratingSource": "api-football",
           "goals": 1,
           "shots": 3,
@@ -191278,9 +191751,9 @@
           "team": "Batman Petrolspor",
           "providerPlayerId": "61952",
           "source": "api-football",
-          "minutes": 50,
+          "minutes": 51,
           "position": "D",
-          "providerRating": 6.6,
+          "providerRating": 6.9,
           "ratingSource": "api-football",
           "passes": 7,
           "passAccuracy": 6,
@@ -191293,9 +191766,9 @@
           "team": "Batman Petrolspor",
           "providerPlayerId": "431993",
           "source": "api-football",
-          "minutes": 35,
+          "minutes": 36,
           "position": "M",
-          "providerRating": 6.3,
+          "providerRating": 6.7,
           "ratingSource": "api-football",
           "passes": 15,
           "passAccuracy": 11,
@@ -191307,7 +191780,7 @@
           "team": "Batman Petrolspor",
           "providerPlayerId": "329207",
           "source": "api-football",
-          "minutes": 35,
+          "minutes": 36,
           "position": "F",
           "providerRating": 7.3,
           "ratingSource": "api-football",
@@ -191324,7 +191797,7 @@
           "team": "Batman Petrolspor",
           "providerPlayerId": "207479",
           "source": "api-football",
-          "minutes": 12,
+          "minutes": 13,
           "position": "F",
           "providerRating": 6.3,
           "ratingSource": "api-football",
@@ -191338,12 +191811,12 @@
           "team": "Batman Petrolspor",
           "providerPlayerId": "49907",
           "source": "api-football",
-          "minutes": 4,
+          "minutes": 5,
           "position": "M",
           "shots": 1,
           "passes": 3,
           "passAccuracy": 2,
-          "yellowCards": 0,
+          "yellowCards": 1,
           "redCards": 0
         },
         {
@@ -191396,7 +191869,7 @@
           "team": "Boluspor",
           "providerPlayerId": "204200",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "G",
           "providerRating": 6.3,
           "ratingSource": "api-football",
@@ -191411,7 +191884,7 @@
           "team": "Boluspor",
           "providerPlayerId": "566190",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "D",
           "providerRating": 6.2,
           "ratingSource": "api-football",
@@ -191427,7 +191900,7 @@
           "team": "Boluspor",
           "providerPlayerId": "200154",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "D",
           "providerRating": 7.3,
           "ratingSource": "api-football",
@@ -191443,7 +191916,7 @@
           "team": "Boluspor",
           "providerPlayerId": "62305",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "D",
           "providerRating": 6.2,
           "ratingSource": "api-football",
@@ -191474,7 +191947,7 @@
           "team": "Boluspor",
           "providerPlayerId": "535703",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "M",
           "providerRating": 7,
           "ratingSource": "api-football",
@@ -191507,7 +191980,7 @@
           "team": "Boluspor",
           "providerPlayerId": "674262",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "M",
           "providerRating": 6.9,
           "ratingSource": "api-football",
@@ -191558,7 +192031,7 @@
           "team": "Boluspor",
           "providerPlayerId": "80123",
           "source": "api-football",
-          "minutes": 95,
+          "minutes": 96,
           "position": "F",
           "providerRating": 6.6,
           "ratingSource": "api-football",
@@ -191577,7 +192050,7 @@
           "source": "api-football",
           "minutes": 19,
           "position": "D",
-          "providerRating": 6.3,
+          "providerRating": 6.5,
           "ratingSource": "api-football",
           "passes": 2,
           "passAccuracy": 2,
@@ -191589,12 +192062,12 @@
           "team": "Boluspor",
           "providerPlayerId": "61936",
           "source": "api-football",
-          "minutes": 31,
+          "minutes": 32,
           "position": "M",
           "providerRating": 6.7,
           "ratingSource": "api-football",
           "shots": 1,
-          "passes": 9,
+          "passes": 10,
           "passAccuracy": 6,
           "tackles": 1,
           "duelsWon": 1,
@@ -191606,7 +192079,7 @@
           "team": "Boluspor",
           "providerPlayerId": "284799",
           "source": "api-football",
-          "minutes": 31,
+          "minutes": 32,
           "position": "M",
           "providerRating": 6.3,
           "ratingSource": "api-football",
@@ -191622,7 +192095,7 @@
           "team": "Boluspor",
           "providerPlayerId": "128980",
           "source": "api-football",
-          "minutes": 24,
+          "minutes": 25,
           "position": "F",
           "providerRating": 6.5,
           "ratingSource": "api-football",
@@ -191636,7 +192109,7 @@
           "team": "Boluspor",
           "providerPlayerId": "327630",
           "source": "api-football",
-          "minutes": 12,
+          "minutes": 13,
           "position": "M",
           "providerRating": 6.5,
           "ratingSource": "api-football",
@@ -191704,14 +192177,14 @@
       "awayTeam": "Elche",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/544.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/797.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 72,
-      "elapsed": 72,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 1,
-        "away": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -191729,8 +192202,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-17T20:31:33.474Z",
-      "staleAfter": "2026-08-17T20:36:33.474Z",
+      "fetchedAt": "2026-08-17T21:29:46.529Z",
+      "staleAfter": "2026-08-17T21:34:46.529Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -191740,48 +192213,28 @@
       "competitionId": "la-liga",
       "providerLeagueId": "140",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Elche topa sahip olma oranında önde. Elche daha fazla şut üretti. Skor üstünlüğü Deportivo La Coruna tarafında.",
-        "confidence": "Yüksek",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 76' M. Aguado tarafından kaydedildi. Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti.",
+        "confidence": "Orta",
         "signals": [
           {
-            "label": "Top hakimiyeti",
-            "value": "34%-66%",
-            "text": "Elche topa sahip olma oranında önde."
-          },
-          {
-            "label": "Şut hacmi",
-            "value": "6-9",
-            "text": "Elche daha fazla şut üretti."
-          },
-          {
-            "label": "Kaleyi bulan",
-            "value": "3-4",
-            "text": "Elche isabetli şutlarda önde."
-          },
-          {
-            "label": "Gol beklentisi",
-            "value": "0.21-1.29",
-            "text": "Elche daha yüksek pozisyon kalitesi üretti."
-          },
-          {
             "label": "Gol akışı",
-            "value": "21'",
-            "text": "Son gol 21' P. Aubameyang tarafından kaydedildi."
+            "value": "76'",
+            "text": "Son gol 76' M. Aguado tarafından kaydedildi."
           },
           {
             "label": "Teknik hamleler",
-            "value": "7 değişiklik",
-            "text": "Kulübeler oyuna müdahale etti; 7 oyuncu değişikliği kayda geçti."
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "1-0",
-            "text": "Deportivo La Coruna skor üstünlüğünü elinde tutuyor."
+            "value": "1-1",
+            "text": "Skor dengede."
           }
         ],
-        "eventCount": 11,
-        "dataPoints": 7,
+        "eventCount": 16,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "referee": "Francisco Hernandez Maeso, Spain",
@@ -191795,14 +192248,16 @@
             "Lucas Noubi",
             "Bright Ede",
             "Giacomo Quagliata",
-            "Lorenzo Amatucci",
             "Mario Soriano",
+            "Lorenzo Amatucci",
             "Adrià Altimira",
             "Bil Nsongo",
             "Jonathan Asp Jensen",
             "Pierre-Emerick Aubameyang"
           ],
           "substitutes": [
+            "Diego Villares",
+            "Zakaria Eddahchouri",
             "Álvaro Ferllo",
             "Germán Parreño",
             "Arnau Comas",
@@ -191812,9 +192267,7 @@
             "Teun Gijselhart",
             "Kevin Sánchez",
             "Luismi Cruz",
-            "Angeliño",
-            "Diego Villares",
-            "Zakaria Eddahchouri"
+            "Angeliño"
           ],
           "startingDetails": [
             {
@@ -191848,14 +192301,14 @@
               "grid": "2:1"
             },
             {
-              "name": "Lorenzo Amatucci",
-              "number": 16,
+              "name": "Mario Soriano",
+              "number": 21,
               "position": "M",
               "grid": "3:2"
             },
             {
-              "name": "Mario Soriano",
-              "number": 21,
+              "name": "Lorenzo Amatucci",
+              "number": 16,
               "position": "M",
               "grid": "3:1"
             },
@@ -191885,6 +192338,18 @@
             }
           ],
           "substituteDetails": [
+            {
+              "name": "Diego Villares",
+              "number": 8,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Zakaria Eddahchouri",
+              "number": 9,
+              "position": "F",
+              "grid": null
+            },
             {
               "name": "Álvaro Ferllo",
               "number": 25,
@@ -191944,18 +192409,6 @@
               "number": 24,
               "position": "D",
               "grid": null
-            },
-            {
-              "name": "Diego Villares",
-              "number": 8,
-              "position": "M",
-              "grid": null
-            },
-            {
-              "name": "Zakaria Eddahchouri",
-              "number": 9,
-              "position": "F",
-              "grid": null
             }
           ]
         },
@@ -191976,6 +192429,9 @@
             "Fernando Niño"
           ],
           "substitutes": [
+            "Lucas Cepeda",
+            "Tete Morente",
+            "Umaru Konare Tounkara",
             "Alejandro Iturbe",
             "Pedro Bigas",
             "Matia Barzić",
@@ -191983,10 +192439,7 @@
             "Josan",
             "Nordin Al Lal",
             "Javi Morcillo",
-            "Lucas Cepeda",
-            "Tete Morente",
             "Ezequiel Ponce",
-            "Umaru Konare Tounkara",
             "Álvaro Padilla"
           ],
           "startingDetails": [
@@ -192059,6 +192512,24 @@
           ],
           "substituteDetails": [
             {
+              "name": "Lucas Cepeda",
+              "number": 21,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Tete Morente",
+              "number": 20,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Umaru Konare Tounkara",
+              "number": 36,
+              "position": "F",
+              "grid": null
+            },
+            {
               "name": "Alejandro Iturbe",
               "number": 43,
               "position": "G",
@@ -192101,26 +192572,8 @@
               "grid": null
             },
             {
-              "name": "Lucas Cepeda",
-              "number": 21,
-              "position": "F",
-              "grid": null
-            },
-            {
-              "name": "Tete Morente",
-              "number": 20,
-              "position": "F",
-              "grid": null
-            },
-            {
               "name": "Ezequiel Ponce",
               "number": 9,
-              "position": "F",
-              "grid": null
-            },
-            {
-              "name": "Umaru Konare Tounkara",
-              "number": 36,
               "position": "F",
               "grid": null
             },
@@ -193487,7 +193940,7 @@
           "comments": ""
         },
         {
-          "time": "27'",
+          "time": "26'",
           "team": {
             "name": "Deportivo La Coruna"
           },
@@ -193497,7 +193950,7 @@
           "comments": "Roughing"
         },
         {
-          "time": "45+2'",
+          "time": "45+1'",
           "team": {
             "name": "Deportivo La Coruna"
           },
@@ -193547,7 +194000,7 @@
           "comments": ""
         },
         {
-          "time": "68'",
+          "time": "67'",
           "team": {
             "name": "Elche"
           },
@@ -193585,6 +194038,56 @@
           "detail": "Substitution 4",
           "value": "M. Soriano · Asist: D. Mella · Substitution 4",
           "comments": ""
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "Elche"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "M. Aguado · Asist: G. Villar · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Elche"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "G. Valera · Asist: A. Padilla · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Elche"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "A. Houary · Asist: J. Morcillo · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "Deportivo La Coruna"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "P. Aubameyang · Asist: K. Sanchez · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "88'",
+          "team": {
+            "name": "Elche"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "U. Konare · Yellow Card",
+          "comments": "Elbowing"
         }
       ]
     },
@@ -193601,13 +194104,13 @@
       "awayTeam": "Wrexham",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/43.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1837.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 72,
-      "elapsed": 72,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
@@ -193626,8 +194129,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-17T20:31:33.474Z",
-      "staleAfter": "2026-08-17T20:36:33.474Z",
+      "fetchedAt": "2026-08-17T21:29:46.529Z",
+      "staleAfter": "2026-08-17T21:34:46.529Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -193636,38 +194139,48 @@
       },
       "competitionId": "championship",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Cardiff topa sahip olma oranında önde. Wrexham daha fazla şut üretti. Skor üstünlüğü Wrexham tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "Cardiff topa sahip olma oranında önde. Wrexham daha fazla şut üretti.",
         "confidence": "Yüksek",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "64%-36%",
+            "value": "67%-33%",
             "text": "Cardiff topa sahip olma oranında önde."
           },
           {
             "label": "Şut hacmi",
-            "value": "6-13",
+            "value": "10-18",
             "text": "Wrexham daha fazla şut üretti."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "2-5",
+            "value": "2-8",
             "text": "Wrexham isabetli şutlarda önde."
           },
           {
             "label": "Gol beklentisi",
-            "value": "0.42-1.09",
+            "value": "0.77-1.49",
             "text": "Wrexham daha yüksek pozisyon kalitesi üretti."
           },
           {
+            "label": "Gol akışı",
+            "value": "90+8'",
+            "text": "Son gol 90+8' R. Colwill tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-1",
-            "text": "Wrexham skor üstünlüğünü elinde tutuyor."
+            "value": "1-1",
+            "text": "Skor dengede."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 5,
+        "eventCount": 15,
+        "dataPoints": 7,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "referee": "Andrew Kitchen, England",
@@ -193689,13 +194202,13 @@
             "Yousef Salech"
           ],
           "substitutes": [
+            "Rubin Colwill",
+            "Joel Colwill",
             "Harry Tyrer",
             "Noah Anyadike",
             "Ronan Kpakio",
             "Rob Tankiewicz",
-            "Joel Colwill",
             "David Turnbull",
-            "Rubin Colwill",
             "Callum Robinson",
             "Isaak Davies"
           ],
@@ -193769,6 +194282,18 @@
           ],
           "substituteDetails": [
             {
+              "name": "Rubin Colwill",
+              "number": 10,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Joel Colwill",
+              "number": 27,
+              "position": "M",
+              "grid": null
+            },
+            {
               "name": "Harry Tyrer",
               "number": 30,
               "position": "G",
@@ -193793,20 +194318,8 @@
               "grid": null
             },
             {
-              "name": "Joel Colwill",
-              "number": 27,
-              "position": "M",
-              "grid": null
-            },
-            {
               "name": "David Turnbull",
               "number": 14,
-              "position": "M",
-              "grid": null
-            },
-            {
-              "name": "Rubin Colwill",
-              "number": 10,
               "position": "M",
               "grid": null
             },
@@ -193841,15 +194354,15 @@
             "Nathan Broadhead"
           ],
           "substitutes": [
+            "Ben Whiteman",
+            "Sam Smith",
+            "Davis Keillor-Dunn",
             "Danny Ward",
             "Dan Scarr",
             "Max Cleworth",
             "Ryan Longman",
-            "Ben Whiteman",
             "George Dobson",
-            "Bailey Cadamarteri",
-            "Sam Smith",
-            "Davis Keillor-Dunn"
+            "Bailey Cadamarteri"
           ],
           "startingDetails": [
             {
@@ -193921,6 +194434,24 @@
           ],
           "substituteDetails": [
             {
+              "name": "Ben Whiteman",
+              "number": 8,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Sam Smith",
+              "number": 28,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Davis Keillor-Dunn",
+              "number": 7,
+              "position": "F",
+              "grid": null
+            },
+            {
               "name": "Danny Ward",
               "number": 21,
               "position": "G",
@@ -193945,12 +194476,6 @@
               "grid": null
             },
             {
-              "name": "Ben Whiteman",
-              "number": 8,
-              "position": "M",
-              "grid": null
-            },
-            {
               "name": "George Dobson",
               "number": 15,
               "position": "M",
@@ -193959,18 +194484,6 @@
             {
               "name": "Bailey Cadamarteri",
               "number": 11,
-              "position": "F",
-              "grid": null
-            },
-            {
-              "name": "Sam Smith",
-              "number": 28,
-              "position": "F",
-              "grid": null
-            },
-            {
-              "name": "Davis Keillor-Dunn",
-              "number": 7,
               "position": "F",
               "grid": null
             }
@@ -194722,6 +195235,146 @@
           "detail": "Normal Goal",
           "value": "K. Moore · Asist: D. Imray · Normal Goal",
           "comments": ""
+        },
+        {
+          "time": "33'",
+          "team": {
+            "name": "Wrexham"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "K. Moore · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "54'",
+          "team": {
+            "name": "Wrexham"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "D. Hyam · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "62'",
+          "team": {
+            "name": "Cardiff"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "O. Tanner · Asist: R. Colwill · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "Cardiff"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "C. Willock · Asist: J. Colwill · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Wrexham"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "O. Rathbone · Asist: B. Whiteman · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "Wrexham"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "K. Moore · Asist: S. Smith · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "Wrexham"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "N. Broadhead · Asist: D. Keillor-Dunn · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "Wrexham"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "M. James · Asist: G. Dobson · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "Wrexham"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "D. Imray · Asist: R. Longman · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "80'",
+          "team": {
+            "name": "Cardiff"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "A. Robertson · Asist: C. Robinson · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "80'",
+          "team": {
+            "name": "Cardiff"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "C. Scanlon · Asist: R. Kpakio · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "80'",
+          "team": {
+            "name": "Cardiff"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "C. Ashford · Asist: I. Davies · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "90+8'",
+          "team": {
+            "name": "Cardiff"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "R. Colwill · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "90+9'",
+          "team": {
+            "name": "Cardiff"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "B. Barry-Murphy · Yellow Card",
+          "comments": ""
         }
       ],
       "statistics": [
@@ -194729,64 +195382,64 @@
           "category": "Hücum",
           "type": "İsabetli şut",
           "home": 2,
-          "away": 5,
-          "higherIsBetter": true
-        },
-        {
-          "category": "Hücum",
-          "type": "İsabetsiz şut",
-          "home": 2,
-          "away": 5
-        },
-        {
-          "category": "Hücum",
-          "type": "Toplam şut",
-          "home": 6,
-          "away": 13,
-          "higherIsBetter": true
-        },
-        {
-          "category": "Hücum",
-          "type": "Engellenen şut",
-          "home": 2,
-          "away": 3
-        },
-        {
-          "category": "Hücum",
-          "type": "Ceza sahası içinden şut",
-          "home": 4,
           "away": 8,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 5,
+          "away": 7
+        },
+        {
+          "category": "Hücum",
+          "type": "Toplam şut",
+          "home": 10,
+          "away": 18,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 3,
+          "away": 3
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası içinden şut",
+          "home": 7,
+          "away": 12,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 2,
-          "away": 5
+          "home": 3,
+          "away": 6
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 7,
-          "away": 11
+          "home": 9,
+          "away": 12
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 4,
+          "home": 9,
           "away": 9
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
-          "home": 2,
+          "home": 3,
           "away": 1
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 64,
-          "away": 36,
+          "home": 67,
+          "away": 33,
           "unit": "%",
           "higherIsBetter": true
         },
@@ -194799,36 +195452,36 @@
         {
           "category": "Savunma",
           "type": "Kurtarış",
-          "home": 4,
+          "home": 7,
           "away": 2
         },
         {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 382,
-          "away": 201,
+          "home": 540,
+          "away": 258,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 336,
-          "away": 161,
+          "home": 480,
+          "away": 203,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
-          "home": 88,
-          "away": 80,
+          "home": 89,
+          "away": 79,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Genel",
           "type": "Gol beklentisi (xG)",
-          "home": 0.42,
-          "away": 1.09,
+          "home": 0.77,
+          "away": 1.49,
           "decimals": 2,
           "higherIsBetter": true
         },
@@ -194839,6 +195492,597 @@
           "away": 0.35,
           "decimals": 2,
           "higherIsBetter": true
+        }
+      ],
+      "players": [
+        {
+          "name": "Nathan Trott",
+          "team": "Cardiff",
+          "providerPlayerId": "90494",
+          "source": "api-football",
+          "minutes": 96,
+          "position": "G",
+          "providerRating": 8.5,
+          "ratingSource": "api-football",
+          "saves": 7,
+          "passes": 34,
+          "passAccuracy": 26,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Perry Ng",
+          "team": "Cardiff",
+          "providerPlayerId": "17683",
+          "source": "api-football",
+          "minutes": 96,
+          "position": "D",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "passes": 68,
+          "passAccuracy": 63,
+          "tackles": 1,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gabriel Osho",
+          "team": "Cardiff",
+          "providerPlayerId": "20206",
+          "source": "api-football",
+          "minutes": 96,
+          "position": "D",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 60,
+          "passAccuracy": 58,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Joel Bagan",
+          "team": "Cardiff",
+          "providerPlayerId": "196875",
+          "source": "api-football",
+          "minutes": 96,
+          "position": "D",
+          "providerRating": 7.5,
+          "ratingSource": "api-football",
+          "passes": 83,
+          "passAccuracy": 78,
+          "tackles": 2,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Calum Scanlon",
+          "team": "Cardiff",
+          "providerPlayerId": "310186",
+          "source": "api-football",
+          "minutes": 80,
+          "position": "D",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "passes": 40,
+          "passAccuracy": 39,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Alex Robertson",
+          "team": "Cardiff",
+          "providerPlayerId": "288109",
+          "source": "api-football",
+          "minutes": 80,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "passes": 81,
+          "passAccuracy": 73,
+          "tackles": 2,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ollie Tanner",
+          "team": "Cardiff",
+          "providerPlayerId": "137071",
+          "source": "api-football",
+          "minutes": 62,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 18,
+          "passAccuracy": 16,
+          "tackles": 3,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jack Moylan",
+          "team": "Cardiff",
+          "providerPlayerId": "161803",
+          "source": "api-football",
+          "minutes": 96,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "shots": 3,
+          "shotsOnTarget": 1,
+          "passes": 33,
+          "passAccuracy": 24,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Cian Ashford",
+          "team": "Cardiff",
+          "providerPlayerId": "383815",
+          "source": "api-football",
+          "minutes": 80,
+          "position": "M",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 29,
+          "passAccuracy": 26,
+          "tackles": 2,
+          "duelsWon": 8,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Chris Willock",
+          "team": "Cardiff",
+          "providerPlayerId": "41597",
+          "source": "api-football",
+          "minutes": 63,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 16,
+          "passAccuracy": 11,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Yousef Salech",
+          "team": "Cardiff",
+          "providerPlayerId": "320017",
+          "source": "api-football",
+          "minutes": 96,
+          "position": "F",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 12,
+          "passAccuracy": 8,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Rubin Colwill",
+          "team": "Cardiff",
+          "providerPlayerId": "301184",
+          "source": "api-football",
+          "minutes": 34,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 24,
+          "passAccuracy": 20,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Joel Colwill",
+          "team": "Cardiff",
+          "providerPlayerId": "379621",
+          "source": "api-football",
+          "minutes": 33,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "passes": 15,
+          "passAccuracy": 14,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ronan Kpakio",
+          "team": "Cardiff",
+          "providerPlayerId": "394902",
+          "source": "api-football",
+          "minutes": 16,
+          "position": "D",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 13,
+          "passAccuracy": 11,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Callum Robinson",
+          "team": "Cardiff",
+          "providerPlayerId": "19462",
+          "source": "api-football",
+          "minutes": 16,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 7,
+          "passAccuracy": 7,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Isaak Davies",
+          "team": "Cardiff",
+          "providerPlayerId": "215847",
+          "source": "api-football",
+          "minutes": 16,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 7,
+          "passAccuracy": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Harry Tyrer",
+          "team": "Cardiff",
+          "providerPlayerId": "138844",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Noah Anyadike",
+          "team": "Cardiff",
+          "providerPlayerId": "671601",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Rob Tankiewicz",
+          "team": "Cardiff",
+          "providerPlayerId": "560813",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "David Turnbull",
+          "team": "Cardiff",
+          "providerPlayerId": "44929",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Anthony Patterson",
+          "team": "Wrexham",
+          "providerPlayerId": "19881",
+          "source": "api-football",
+          "minutes": 96,
+          "position": "G",
+          "providerRating": 7.9,
+          "ratingSource": "api-football",
+          "saves": 2,
+          "passes": 23,
+          "passAccuracy": 14,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Zak Vyner",
+          "team": "Wrexham",
+          "providerPlayerId": "19664",
+          "source": "api-football",
+          "minutes": 96,
+          "position": "D",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "passes": 22,
+          "passAccuracy": 18,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dominic Hyam",
+          "team": "Wrexham",
+          "providerPlayerId": "19987",
+          "source": "api-football",
+          "minutes": 96,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 6,
+          "passAccuracy": 6,
+          "tackles": 2,
+          "duelsWon": 5,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Callum Doyle",
+          "team": "Wrexham",
+          "providerPlayerId": "284372",
+          "source": "api-football",
+          "minutes": 96,
+          "position": "D",
+          "providerRating": 7.9,
+          "ratingSource": "api-football",
+          "shots": 4,
+          "shotsOnTarget": 3,
+          "passes": 31,
+          "passAccuracy": 27,
+          "tackles": 3,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Daniel Imray",
+          "team": "Wrexham",
+          "providerPlayerId": "196856",
+          "source": "api-football",
+          "minutes": 75,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "shots": 1,
+          "passes": 11,
+          "passAccuracy": 5,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Oliver Rathbone",
+          "team": "Wrexham",
+          "providerPlayerId": "20248",
+          "source": "api-football",
+          "minutes": 67,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 24,
+          "passAccuracy": 18,
+          "tackles": 4,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Matty James",
+          "team": "Wrexham",
+          "providerPlayerId": "18782",
+          "source": "api-football",
+          "minutes": 75,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 20,
+          "passAccuracy": 17,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lewis O'Brien",
+          "team": "Wrexham",
+          "providerPlayerId": "20503",
+          "source": "api-football",
+          "minutes": 96,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "passes": 32,
+          "passAccuracy": 31,
+          "tackles": 2,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "George Thomason",
+          "team": "Wrexham",
+          "providerPlayerId": "194461",
+          "source": "api-football",
+          "minutes": 96,
+          "position": "M",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "passes": 23,
+          "passAccuracy": 17,
+          "tackles": 3,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Kieffer Moore",
+          "team": "Wrexham",
+          "providerPlayerId": "19804",
+          "source": "api-football",
+          "minutes": 72,
+          "position": "F",
+          "providerRating": 7.7,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 3,
+          "shotsOnTarget": 2,
+          "passes": 20,
+          "passAccuracy": 11,
+          "duelsWon": 10,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Nathan Broadhead",
+          "team": "Wrexham",
+          "providerPlayerId": "126791",
+          "source": "api-football",
+          "minutes": 72,
+          "position": "F",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "shots": 2,
+          "shotsOnTarget": 1,
+          "passes": 17,
+          "passAccuracy": 16,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ben Whiteman",
+          "team": "Wrexham",
+          "providerPlayerId": "19941",
+          "source": "api-football",
+          "minutes": 29,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 9,
+          "passAccuracy": 8,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Sam Smith",
+          "team": "Wrexham",
+          "providerPlayerId": "20316",
+          "source": "api-football",
+          "minutes": 24,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "shots": 3,
+          "shotsOnTarget": 2,
+          "passes": 6,
+          "passAccuracy": 4,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Davis Keillor-Dunn",
+          "team": "Wrexham",
+          "providerPlayerId": "45322",
+          "source": "api-football",
+          "minutes": 24,
+          "position": "F",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 4,
+          "passAccuracy": 3,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ryan Longman",
+          "team": "Wrexham",
+          "providerPlayerId": "138790",
+          "source": "api-football",
+          "minutes": 21,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 5,
+          "passAccuracy": 3,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "George Dobson",
+          "team": "Wrexham",
+          "providerPlayerId": "20436",
+          "source": "api-football",
+          "minutes": 21,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 5,
+          "passAccuracy": 5,
+          "tackles": 2,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Danny Ward",
+          "team": "Wrexham",
+          "providerPlayerId": "18146",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dan Scarr",
+          "team": "Wrexham",
+          "providerPlayerId": "20432",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Max Cleworth",
+          "team": "Wrexham",
+          "providerPlayerId": "146316",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Bailey Cadamarteri",
+          "team": "Wrexham",
+          "providerPlayerId": "394585",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
         }
       ]
     },
@@ -194855,14 +196099,14 @@
       "awayTeam": "Benfica",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/4716.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/211.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 58,
-      "elapsed": 58,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
-        "away": 5,
+        "away": 7,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -194880,8 +196124,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-17T20:31:33.474Z",
-      "staleAfter": "2026-08-17T20:36:33.474Z",
+      "fetchedAt": "2026-08-17T21:29:46.529Z",
+      "staleAfter": "2026-08-17T21:34:46.529Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -194890,43 +196134,33 @@
       },
       "competitionId": "primeira-liga",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Benfica topa sahip olma oranında önde. Benfica daha fazla şut üretti. Skor üstünlüğü Benfica tarafında.",
-        "confidence": "Yüksek",
+        "title": "Maç Radar Analizi",
+        "summary": "Casa Pia kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 61' J. Duran tarafından kaydedildi. Skor üstünlüğü Benfica tarafında.",
+        "confidence": "Orta",
         "signals": [
           {
-            "label": "Top hakimiyeti",
-            "value": "40%-60%",
-            "text": "Benfica topa sahip olma oranında önde."
-          },
-          {
-            "label": "Şut hacmi",
-            "value": "1-14",
-            "text": "Benfica daha fazla şut üretti."
-          },
-          {
-            "label": "Kaleyi bulan",
-            "value": "0-7",
-            "text": "Benfica isabetli şutlarda önde."
-          },
-          {
-            "label": "Gol beklentisi",
-            "value": "0.08-2.65",
-            "text": "Benfica daha yüksek pozisyon kalitesi üretti."
+            "label": "Disiplin dengesi",
+            "value": "1 kırmızı kart",
+            "text": "Casa Pia kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
           },
           {
             "label": "Gol akışı",
-            "value": "54'",
-            "text": "Son gol 54' V. Pavlidis tarafından kaydedildi."
+            "value": "61'",
+            "text": "Son gol 61' J. Duran tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "0-5",
+            "value": "0-7",
             "text": "Benfica skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 5,
-        "dataPoints": 6,
+        "eventCount": 21,
+        "dataPoints": 4,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -196563,6 +197797,166 @@
           "detail": "Normal Goal",
           "value": "V. Pavlidis · Asist: L. Barreiro · Normal Goal",
           "comments": ""
+        },
+        {
+          "time": "58'",
+          "team": {
+            "name": "Benfica"
+          },
+          "type": "Goal",
+          "detail": "Own Goal",
+          "value": "L. Ofori · Own Goal",
+          "comments": ""
+        },
+        {
+          "time": "59'",
+          "team": {
+            "name": "Casa Pia"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "K. Prieto · Asist: K. Osundina · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "59'",
+          "team": {
+            "name": "Casa Pia"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Gabi · Asist: A. Jatta · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "59'",
+          "team": {
+            "name": "Benfica"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "V. Pavlidis · Asist: J. Duran · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "59'",
+          "team": {
+            "name": "Benfica"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "T. Araujo · Asist: Manu · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "59'",
+          "team": {
+            "name": "Benfica"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "Rafa Silva · Asist: A. Schjelderup · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Benfica"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "J. Duran · Asist: A. Bah · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "62'",
+          "team": {
+            "name": "Casa Pia"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "S. Perez · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Casa Pia"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "S. Perez · Asist: S. Clua · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Benfica"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "E. Barrenechea · Asist: R. Rios · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "77'",
+          "team": {
+            "name": "Casa Pia"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "H. Araujo · Asist: P. Rosas · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "77'",
+          "team": {
+            "name": "Casa Pia"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "Rochinha · Asist: Kaly · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "78'",
+          "team": {
+            "name": "Benfica"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "G. Sudakov · Asist: D. Lukebakio · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Casa Pia"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Kaly · Yellow Card",
+          "comments": "Roughing"
+        },
+        {
+          "time": "90+2'",
+          "team": {
+            "name": "Casa Pia"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Kaly · Yellow Card",
+          "comments": "Elbowing"
+        },
+        {
+          "time": "90+2'",
+          "team": {
+            "name": "Casa Pia"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "Kaly · Red Card",
+          "comments": "Elbowing"
         }
       ],
       "statistics": [
@@ -196675,6 +198069,632 @@
           "decimals": 2,
           "higherIsBetter": true
         }
+      ],
+      "players": [
+        {
+          "name": "André Gomes",
+          "team": "Casa Pia",
+          "providerPlayerId": "350337",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "G",
+          "providerRating": 5.3,
+          "ratingSource": "api-football",
+          "saves": 2,
+          "passes": 29,
+          "passAccuracy": 19,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "André Geraldes",
+          "team": "Casa Pia",
+          "providerPlayerId": "46879",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "D",
+          "providerRating": 5.7,
+          "ratingSource": "api-football",
+          "passes": 27,
+          "passAccuracy": 23,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "João Goulart",
+          "team": "Casa Pia",
+          "providerPlayerId": "163481",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "D",
+          "providerRating": 5.3,
+          "ratingSource": "api-football",
+          "passes": 34,
+          "passAccuracy": 32,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "David Sousa",
+          "team": "Casa Pia",
+          "providerPlayerId": "197320",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "D",
+          "providerRating": 5.2,
+          "ratingSource": "api-football",
+          "passes": 45,
+          "passAccuracy": 36,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Abdu Conté",
+          "team": "Casa Pia",
+          "providerPlayerId": "1478",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "D",
+          "providerRating": 5,
+          "ratingSource": "api-football",
+          "passes": 25,
+          "passAccuracy": 17,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Sebastián Pérez",
+          "team": "Casa Pia",
+          "providerPlayerId": "63962",
+          "source": "api-football",
+          "minutes": 64,
+          "position": "M",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 29,
+          "passAccuracy": 25,
+          "tackles": 2,
+          "duelsWon": 3,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Lawrence Ofori",
+          "team": "Casa Pia",
+          "providerPlayerId": "41500",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "M",
+          "providerRating": 5.2,
+          "ratingSource": "api-football",
+          "passes": 25,
+          "passAccuracy": 21,
+          "tackles": 2,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gabi Pereira",
+          "team": "Casa Pia",
+          "providerPlayerId": "279096",
+          "source": "api-football",
+          "minutes": 59,
+          "position": "M",
+          "providerRating": 6,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 12,
+          "passAccuracy": 10,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Kevin Prieto",
+          "team": "Casa Pia",
+          "providerPlayerId": "404524",
+          "source": "api-football",
+          "minutes": 59,
+          "position": "F",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 18,
+          "passAccuracy": 14,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Henrique Araújo",
+          "team": "Casa Pia",
+          "providerPlayerId": "162098",
+          "source": "api-football",
+          "minutes": 77,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 26,
+          "passAccuracy": 16,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Rochinha",
+          "team": "Casa Pia",
+          "providerPlayerId": "41154",
+          "source": "api-football",
+          "minutes": 77,
+          "position": "F",
+          "providerRating": 6,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 11,
+          "passAccuracy": 7,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Oluwakorede Osundina",
+          "team": "Casa Pia",
+          "providerPlayerId": "359436",
+          "source": "api-football",
+          "minutes": 24,
+          "position": "F",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 2,
+          "passAccuracy": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Alassana Jatta",
+          "team": "Casa Pia",
+          "providerPlayerId": "60648",
+          "source": "api-football",
+          "minutes": 24,
+          "position": "F",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "tackles": 4,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Selvi Clúa",
+          "team": "Casa Pia",
+          "providerPlayerId": "402281",
+          "source": "api-football",
+          "minutes": 19,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 6,
+          "passAccuracy": 5,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Domingos Jose Gabriel Bandeira",
+          "team": "Casa Pia",
+          "providerPlayerId": "365011",
+          "source": "api-football",
+          "minutes": 6,
+          "position": "D",
+          "passes": 3,
+          "passAccuracy": 3,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Pedro Rosas",
+          "team": "Casa Pia",
+          "providerPlayerId": "331959",
+          "source": "api-football",
+          "minutes": 6,
+          "position": "D",
+          "passes": 3,
+          "passAccuracy": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ivan Mandić",
+          "team": "Casa Pia",
+          "providerPlayerId": "279849",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Daniel Azevedo",
+          "team": "Casa Pia",
+          "providerPlayerId": "41563",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Kaique Rocha",
+          "team": "Casa Pia",
+          "providerPlayerId": "9990",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Abdu Dafe",
+          "team": "Casa Pia",
+          "providerPlayerId": "653946",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Raúl Blanco",
+          "team": "Casa Pia",
+          "providerPlayerId": "278896",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Claudio Mendes",
+          "team": "Casa Pia",
+          "providerPlayerId": "182515",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Cassiano",
+          "team": "Casa Pia",
+          "providerPlayerId": "10470",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Samuel Soares",
+          "team": "Benfica",
+          "providerPlayerId": "162595",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "G",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 17,
+          "passAccuracy": 15,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Alexander Bah",
+          "team": "Benfica",
+          "providerPlayerId": "15623",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "D",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "passes": 66,
+          "passAccuracy": 58,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Tomás Araújo",
+          "team": "Benfica",
+          "providerPlayerId": "161939",
+          "source": "api-football",
+          "minutes": 59,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 51,
+          "passAccuracy": 49,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Clément Lenglet",
+          "team": "Benfica",
+          "providerPlayerId": "133",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "D",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "passes": 66,
+          "passAccuracy": 65,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Samuel Dahl",
+          "team": "Benfica",
+          "providerPlayerId": "135505",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 62,
+          "passAccuracy": 52,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Leandro Barreiro",
+          "team": "Benfica",
+          "providerPlayerId": "25918",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "shots": 2,
+          "shotsOnTarget": 1,
+          "passes": 48,
+          "passAccuracy": 40,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Enzo Barrenechea",
+          "team": "Benfica",
+          "providerPlayerId": "158378",
+          "source": "api-football",
+          "minutes": 67,
+          "position": "M",
+          "providerRating": 7.5,
+          "ratingSource": "api-football",
+          "passes": 57,
+          "passAccuracy": 54,
+          "tackles": 4,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Rafa Silva",
+          "team": "Benfica",
+          "providerPlayerId": "573",
+          "source": "api-football",
+          "minutes": 59,
+          "position": "M",
+          "providerRating": 7.7,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 27,
+          "passAccuracy": 23,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Georgiy Sudakov",
+          "team": "Benfica",
+          "providerPlayerId": "161945",
+          "source": "api-football",
+          "minutes": 78,
+          "position": "M",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 38,
+          "passAccuracy": 33,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gianluca Prestianni",
+          "team": "Benfica",
+          "providerPlayerId": "362755",
+          "source": "api-football",
+          "minutes": 83,
+          "position": "M",
+          "providerRating": 8.3,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 3,
+          "shotsOnTarget": 1,
+          "passes": 43,
+          "passAccuracy": 36,
+          "tackles": 4,
+          "duelsWon": 10,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Vangelis Pavlidis",
+          "team": "Benfica",
+          "providerPlayerId": "36798",
+          "source": "api-football",
+          "minutes": 59,
+          "position": "F",
+          "providerRating": 10,
+          "ratingSource": "api-football",
+          "goals": 3,
+          "assists": 1,
+          "shots": 3,
+          "shotsOnTarget": 3,
+          "passes": 21,
+          "passAccuracy": 17,
+          "tackles": 1,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Manu Silva",
+          "team": "Benfica",
+          "providerPlayerId": "287592",
+          "source": "api-football",
+          "minutes": 24,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 30,
+          "passAccuracy": 29,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Andreas Schjelderup",
+          "team": "Benfica",
+          "providerPlayerId": "301528",
+          "source": "api-football",
+          "minutes": 24,
+          "position": "F",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 17,
+          "passAccuracy": 16,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jhon Durán",
+          "team": "Benfica",
+          "providerPlayerId": "13489",
+          "source": "api-football",
+          "minutes": 24,
+          "position": "F",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 2,
+          "passAccuracy": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Richard Ríos",
+          "team": "Benfica",
+          "providerPlayerId": "195104",
+          "source": "api-football",
+          "minutes": 16,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "passes": 22,
+          "passAccuracy": 21,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dodi Lukebakio",
+          "team": "Benfica",
+          "providerPlayerId": "25458",
+          "source": "api-football",
+          "minutes": 5,
+          "position": "F",
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Anatoliy Trubin",
+          "team": "Benfica",
+          "providerPlayerId": "675",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gabriel Indio",
+          "team": "Benfica",
+          "providerPlayerId": "544987",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "José Neto",
+          "team": "Benfica",
+          "providerPlayerId": "567694",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Daniel Banjaqui",
+          "team": "Benfica",
+          "providerPlayerId": "550932",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Miguel Figueiredo",
+          "team": "Benfica",
+          "providerPlayerId": "550902",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jakub Kamiński",
+          "team": "Benfica",
+          "providerPlayerId": "40560",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Anísio Cabral",
+          "team": "Benfica",
+          "providerPlayerId": "567695",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        }
       ]
     },
     {
@@ -196683,7 +198703,7 @@
       "league": "Liga Profesional Argentina",
       "providerLeagueId": "128",
       "round": 5,
-      "venue": null,
+      "venue": "Estadio Ciudad de Lanus",
       "kickoff": "2026-08-17T23:00:00+03:00",
       "time": "23:00",
       "homeTeam": "Lanus",
@@ -196691,13 +198711,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/446.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/453.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 30,
-      "elapsed": 30,
+      "providerStatus": "2H",
+      "minute": 70,
+      "elapsed": 70,
       "live": true,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 1,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -196715,8 +198735,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-17T20:31:33.474Z",
-      "staleAfter": "2026-08-17T20:36:33.474Z",
+      "fetchedAt": "2026-08-17T21:29:46.529Z",
+      "staleAfter": "2026-08-17T21:34:46.529Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -196724,40 +198744,30 @@
         "apiFootball": "1493069"
       },
       "competitionId": "arjantin-primera",
-      "referee": "S. Martinez",
+      "referee": "Sebastian Nicolas Martinez, Argentina",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Independiente topa sahip olma oranında önde. Lanus daha fazla şut üretti.",
-        "confidence": "Yüksek",
+        "summary": "Son gol 50' A. Wlk tarafından kaydedildi. Kulübeler oyuna müdahale etti; 4 oyuncu değişikliği kayda geçti. Skor üstünlüğü Independiente tarafında.",
+        "confidence": "Orta",
         "signals": [
           {
-            "label": "Top hakimiyeti",
-            "value": "36%-64%",
-            "text": "Independiente topa sahip olma oranında önde."
+            "label": "Gol akışı",
+            "value": "50'",
+            "text": "Son gol 50' A. Wlk tarafından kaydedildi."
           },
           {
-            "label": "Şut hacmi",
-            "value": "6-2",
-            "text": "Lanus daha fazla şut üretti."
-          },
-          {
-            "label": "Kaleyi bulan",
-            "value": "2-0",
-            "text": "Lanus isabetli şutlarda önde."
-          },
-          {
-            "label": "Gol beklentisi",
-            "value": "0.48-0.10",
-            "text": "Lanus daha yüksek pozisyon kalitesi üretti."
+            "label": "Teknik hamleler",
+            "value": "4 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 4 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "1-2",
+            "text": "Independiente skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 5,
+        "eventCount": 8,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -198604,6 +200614,88 @@
           "away": 0.22,
           "decimals": 2,
           "higherIsBetter": true
+        }
+      ],
+      "events": [
+        {
+          "time": "37'",
+          "team": {
+            "name": "Independiente"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "L. Millan · Asist: S. Montiel · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "47'",
+          "team": {
+            "name": "Independiente"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "L. Millan · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "50'",
+          "team": {
+            "name": "Lanus"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Wlk · Asist: R. Carrera · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Independiente"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "M. Perez Curci · Asist: D. Martinez · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Independiente"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "L. Millan · Asist: M. Meza · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Lanus"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "E. Salvio · Asist: M. Sepulveda · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Lanus"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "A. Wlk · Asist: Y. Valois · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "69'",
+          "team": {
+            "name": "Lanus"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "R. Carrera · Yellow Card",
+          "comments": "Unsportsmanlike conduct"
         }
       ]
     },
