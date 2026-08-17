@@ -1,7 +1,29 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-17T19:05:19.783Z",
+  "updatedAt": "2026-08-17T19:32:27.538Z",
   "items": [
+    {
+      "id": "auto-news-33d8dca57476f7b0280d",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "O. Lyon stadımızda basın toplantısı düzenledi",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-17T19:15:43.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNZ3JLSm53Z0l5MGhlMXk2bkJ2TVJWRkhHaGdya2d6RWJLeldjTF9Jc2VPaGgxZzFPamVJbldZcmcxMzZoMnVsODNCVWF5OEdIYUNRWGw5bVAxckFRWWRsWThmVDBCbi12cUoyYkNSX2EwTmRtRW9YblRsUzlRS19MdVNxd1dBblBGLVZRNU44LVZYTzRUbl9YMVJR?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-08-17T14:35:56.000Z"
+      }
+    },
     {
       "id": "auto-news-f54eed312c50088fa3c0",
       "category": "official",
@@ -100,28 +122,6 @@
         "feed": "trabzonspor",
         "priority": 4,
         "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-45672b99efa76d7d463a",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Teknik Direktörümüz İsmail Kartal ve Kerem Aktürkoğlu, O. Lyon maçı öncesi açıklamalarda bulundu",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-17T14:35:56.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxPcjVlZXVDcTkwMkpoQ18yR0dlYlBQUHBCWkxtLXhEWHBvRTlzalE4aThCeDAtNmFCSjZQQ3lEU1VuVlBSYXhBS0dLd1pFMjJ1NTdTSEpXQkM3UlVUWkpubEkzLTFWZ0tkMldTUDg3VUxkWkVXV1JvWkJaQTlWUEJEU1FVWWVnNFhPT3ZBNFVfWFZSS0dnN1J1eGpJU1FoV0oxUWZMemFNNjVrU3pCRnRzQVZiQmpNbzBKUmlLTDBhaHhLWEtlUTU2Q1RuYXlsUHRTME1BeFRwa3VockNL?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-08-15T21:52:38.000Z"
       }
     },
     {
@@ -302,6 +302,28 @@
         "feed": "galatasaray",
         "priority": 1,
         "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-fa6454af9ed3f72d6d97",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Abdülkerim Bardakcı'dan maç sonrası açıklamalar",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-14T21:43:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNd2FOcGRpYWtzUDJVX25KMWd0WC1RWUw4eEhULTdnZzgxRHFnR2E3SVk2QlUyd1lVUk1wcTJLclNESDB2Q1RKMzdCVVpkblpUY0o3VjltUjRYU1d0ZG1ZejVHWlFkd0R1N00wY09tN1Y2eVJHNFpTUjBZWFF6Qk52aWs3ZHNJWlhWcC1JV21RdFkxT294U1lZQw?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-08-14T21:41:00.000Z"
       }
     },
     {
