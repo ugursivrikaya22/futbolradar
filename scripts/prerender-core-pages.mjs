@@ -50,6 +50,8 @@ const {
 } = require("../services/matchProgram.js");
 // Maçların makine okunur karşılığı (SportsEvent / FAQPage).
 const { faqSchema, matchListSchema } = require("../services/matchSchema.js");
+// Lig sayfalarına giden bağlantı listesi — tek gerçek kaynak competitions.json.
+const { competitions } = require("../services/competitionCatalog.js");
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const momentum = JSON.parse(fs.readFileSync(path.join(root, "data", "momentum.json"), "utf8"));
@@ -802,6 +804,25 @@ function officialLineupAlerts() {
   return alerts.map((alert) => officialLineupAlertHtml(alert, "tr")).join("");
 }
 
+/**
+ * LİG SAYFALARI DİZİNİ (ana sayfadaki "Ligler" bandı).
+ *
+ * `scripts/generate-league-pages.mjs`in ürettiği /lig/<slug>.html sayfaları,
+ * ana sayfadan buraya bağlanmadan sitemap'te "yetim sayfa" sayılırdı —
+ * arama motoruna "indeksle" derken siteye "önemsiz" demek çelişirdi
+ * (bkz. test-seo-integrity.mjs). Sıra competitions.json'daki priority alanı;
+ * bucket'ı olmayan kayıtlar (hazırlık maçı) hiç listelenmez.
+ */
+function leagueDirectoryHtml() {
+  const targets = competitions
+    .filter((competition) => competition.bucket)
+    .slice()
+    .sort((left, right) => (left.priority ?? 999) - (right.priority ?? 999));
+  return targets
+    .map((competition) => `<a href="./lig/${escapeHtml(competition.id)}.html">${escapeHtml(competition.name)}</a>`)
+    .join("");
+}
+
 function todaySuperLigStrip() {
   const today = istanbulToday();
   const todays = curatedMatches().filter((match) => istanbulDay(match.kickoff) === today);
@@ -1352,6 +1373,7 @@ writePage("index.html", {
   "home-transfer-watch": transferWatch(),
   "today-superlig-matches": todaySuperLigStrip(),
   "today-matches": matchProgramState("today"),
+  "league-directory": leagueDirectoryHtml(),
   "radar-signals": signalCards(),
   "team-radar": topTeams.slice(0, 4).map(staticTeamCard).join(""),
   "home-standings": staticHomeStandingRows(),

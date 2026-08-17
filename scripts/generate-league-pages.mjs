@@ -103,7 +103,7 @@ function leaguePageCard(match) {
     awayTeam: match.awayTeam,
     homeScore: finalScore ? match.score.home : null,
     awayScore: finalScore ? match.score.away : null,
-    actionHref: matchDetailPath(match),
+    actionHref: `../${matchDetailPath(match).replace(/^\.\//, "")}`,
     withMatchClick: true,
     locale: "tr"
   });
