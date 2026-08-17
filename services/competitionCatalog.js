@@ -29,6 +29,27 @@ function findCompetition(value) {
   }) || null;
 }
 
+/**
+ * SAĞLAYICININ SAYISAL LİG KİMLİĞİYLE DOĞRUDAN EŞLEŞME.
+ *
+ * Bu, sistemdeki EN GÜVENİLİR eşleşme yolu: API-Football her fikstürde bir
+ * `league.id` döndürür ve bu sayı hiçbir yazım/takma ad belirsizliğine
+ * açık değildir — "Premier League" adında iki farklı yarışma olsa bile
+ * kimlikleri asla çakışmaz. `findCompetition`/`matchesCompetition` ada göre
+ * çalışır ve çok anlamlı adlarda (`AMBIGUOUS_COMPETITION_NAMES`) bilerek
+ * geri çekilir; kimlik varken bu geri çekilmeye hiç gerek kalmaz.
+ */
+function findCompetitionByProviderId(providerId, providerName = "apiFootball") {
+  if (providerId === null || providerId === undefined || providerId === "") {
+    return null;
+  }
+  const key = String(providerId);
+  return competitions.find((competition) => {
+    const value = competition.providers && competition.providers[providerName];
+    return value !== null && value !== undefined && String(value) === key;
+  }) || null;
+}
+
 function matchesCompetition(value, competitionValue) {
   const competition = typeof competitionValue === "object"
     ? competitionValue
@@ -116,6 +137,14 @@ function isAmbiguousCompetitionName(value) {
  * Boş dize "bu yarışmayı tanımıyorum" demektir, "yarışma yok" değil.
  */
 function resolveCompetitionId(match) {
+  // EN GÜVENİLİR YOL ÖNCE DENENİR: sağlayıcının sayısal lig kimliği varsa
+  // ad hiç okunmaz. Bu, çok anlamlı bir adın (ör. "Primera División") ID
+  // taşıyan bir kayıtta bile reddedilme riskini ortadan kaldırır.
+  const byProviderId = findCompetitionByProviderId(match && match.providerLeagueId);
+  if (byProviderId) {
+    return byProviderId.id;
+  }
+
   const leagueName = normalizeKey(match && match.league);
   const ambiguous = AMBIGUOUS_COMPETITION_NAMES.has(leagueName);
 
@@ -168,6 +197,7 @@ function classifyFixtureCompetition(match) {
 module.exports = {
   competitions,
   findCompetition,
+  findCompetitionByProviderId,
   matchesCompetition,
   normalizeKey,
   providerLeagueValue,

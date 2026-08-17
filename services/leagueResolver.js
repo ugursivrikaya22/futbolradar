@@ -253,5 +253,6 @@ module.exports = {
   TARGET_LEAGUE_NAMES,
   resolveSuperLigLeagueId,
   selectSuperLig,
-  cacheIsUsable
+  cacheIsUsable,
+  isSeniorMensLeague
 };

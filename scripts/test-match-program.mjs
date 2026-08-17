@@ -107,20 +107,25 @@ function match(overrides) {
   );
 }
 
-// ── 3. Lig blokları — sıra korunur, veri kaybolmaz ─────────────────────────
+// ── 3. Lig blokları — sıra korunur, veri kaybolmaz, kanonik ada göre kümelenir ─
+//
+// Gruplama artık katalog kimliğine göre kurulur (bkz. matchProgram.js:
+// groupMatchesByLeague). Aynı yarışmanın iki farklı yazımı ("UEFA Europa
+// Conference League" alias'ı) tek bloğa düşer; katalogda karşılığı olmayan
+// bir ad (boş dize) eskisi gibi kendi ham metnine göre kümelenir.
 {
   const list = [
-    match({ id: "a", league: "UEFA Europa Conference League" }),
-    match({ id: "b", league: "Friendlies Clubs" }),
-    match({ id: "c", league: "UEFA Europa Conference League" }),
-    match({ id: "d", league: "" })
+    match({ id: "a", league: "UEFA Europa Conference League", competitionId: "konferans-ligi" }),
+    match({ id: "b", league: "Friendlies Clubs", competitionId: "hazirlik-maci" }),
+    match({ id: "c", league: "UEFA Europa Conference League", competitionId: "konferans-ligi" }),
+    match({ id: "d", league: "", competitionId: "" })
   ];
 
   const groups = groupMatchesByLeague(list);
   assert.deepEqual(
     groups.map((group) => group.league),
-    ["UEFA Europa Conference League", "Friendlies Clubs", ""],
-    "bloklar ilk görülme sırasını korumalı"
+    ["Konferans Ligi", "Hazırlık Maçı", ""],
+    "bloklar ilk görülme sırasını korumalı ve kanonik ada göre kümelenmeli"
   );
   assert.equal(
     groups.reduce((total, group) => total + group.matches.length, 0),

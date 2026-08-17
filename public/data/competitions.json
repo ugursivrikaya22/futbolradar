@@ -4,79 +4,770 @@
     "name": "Süper Lig",
     "country": "Türkiye",
     "type": "domestic",
-    "aliases": ["Super Lig", "Trendyol Süper Lig", "Turkish Super Lig", "Turkish Süper Lig", "Trendyol Super Lig", "Süper Lig, Türkiye"],
-    "providers": { "apiFootball": 203, "footballData": "TSL" }
+    "bucket": "turkiye",
+    "priority": 1,
+    "aliases": [
+      "Super Lig",
+      "Trendyol Süper Lig",
+      "Turkish Super Lig",
+      "Turkish Süper Lig",
+      "Trendyol Super Lig",
+      "Süper Lig, Türkiye"
+    ],
+    "providers": {
+      "apiFootball": 203,
+      "footballData": "TSL"
+    },
+    "logo": "https://media.api-sports.io/football/leagues/203.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": true
+      },
+      "standings": true,
+      "players": true,
+      "top_scorers": true,
+      "top_assists": true,
+      "top_cards": true,
+      "injuries": true,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
   },
   {
-    "id": "premier-league",
-    "name": "Premier League",
-    "country": "İngiltere",
+    "id": "1-lig",
+    "name": "Trendyol 1. Lig",
+    "country": "Türkiye",
     "type": "domestic",
-    "aliases": ["English Premier League"],
-    "providers": { "apiFootball": 39, "footballData": "PL" }
+    "bucket": "turkiye",
+    "priority": 2,
+    "aliases": [],
+    "providers": {
+      "apiFootball": 204,
+      "footballData": null
+    },
+    "logo": "https://media.api-sports.io/football/leagues/204.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": true
+      },
+      "standings": true,
+      "players": true,
+      "top_scorers": true,
+      "top_assists": true,
+      "top_cards": true,
+      "injuries": false,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues",
+    "resolveHints": [
+      "1. Lig"
+    ]
   },
   {
-    "id": "la-liga",
-    "name": "La Liga",
-    "country": "İspanya",
+    "id": "tff-2-lig",
+    "name": "TFF 2. Lig",
+    "country": "Türkiye",
     "type": "domestic",
-    "aliases": ["Primera Division", "Primera División"],
-    "providers": { "apiFootball": 140, "footballData": "PD" }
+    "bucket": "turkiye",
+    "priority": 3,
+    "aliases": [],
+    "providers": {
+      "apiFootball": 205,
+      "footballData": null
+    },
+    "logo": "https://media.api-sports.io/football/leagues/205.png",
+    "coverage": {
+      "fixtures": {
+        "events": false,
+        "lineups": false,
+        "statistics_fixtures": false,
+        "statistics_players": false
+      },
+      "standings": true,
+      "players": false,
+      "top_scorers": false,
+      "top_assists": false,
+      "top_cards": false,
+      "injuries": false,
+      "predictions": true,
+      "odds": false
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues",
+    "resolveHints": [
+      "2. Lig"
+    ]
   },
   {
-    "id": "serie-a",
-    "name": "Serie A",
-    "country": "İtalya",
+    "id": "tff-3-lig",
+    "name": "TFF 3. Lig",
+    "country": "Türkiye",
     "type": "domestic",
-    "aliases": ["Italian Serie A"],
-    "providers": { "apiFootball": 135, "footballData": "SA" }
+    "bucket": "turkiye",
+    "priority": 4,
+    "aliases": [],
+    "providers": {
+      "apiFootball": null,
+      "footballData": null
+    },
+    "logo": null,
+    "coverage": null,
+    "resolvedAt": null,
+    "resolvedSeason": null,
+    "source": "pending"
   },
   {
-    "id": "bundesliga",
-    "name": "Bundesliga",
-    "country": "Almanya",
-    "type": "domestic",
-    "aliases": ["German Bundesliga"],
-    "providers": { "apiFootball": 78, "footballData": "BL1" }
-  },
-  {
-    "id": "ligue-1",
-    "name": "Ligue 1",
-    "country": "Fransa",
-    "type": "domestic",
-    "aliases": ["French Ligue 1"],
-    "providers": { "apiFootball": 61, "footballData": "FL1" }
+    "id": "turkiye-kupasi",
+    "name": "Türkiye Kupası",
+    "country": "Türkiye",
+    "type": "cup",
+    "bucket": "turkiye",
+    "priority": 5,
+    "aliases": [],
+    "providers": {
+      "apiFootball": null,
+      "footballData": null
+    },
+    "logo": null,
+    "coverage": null,
+    "resolvedAt": null,
+    "resolvedSeason": null,
+    "source": "pending"
   },
   {
     "id": "sampiyonlar-ligi",
     "name": "Şampiyonlar Ligi",
     "country": "UEFA",
     "type": "continental",
-    "aliases": ["UEFA Champions League", "Champions League"],
-    "providers": { "apiFootball": 2, "footballData": "CL" }
+    "bucket": "avrupa-kupalari",
+    "priority": 10,
+    "aliases": [
+      "UEFA Champions League",
+      "Champions League"
+    ],
+    "providers": {
+      "apiFootball": 2,
+      "footballData": "CL"
+    },
+    "logo": "https://media.api-sports.io/football/leagues/2.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": true
+      },
+      "standings": false,
+      "players": true,
+      "top_scorers": true,
+      "top_assists": true,
+      "top_cards": true,
+      "injuries": false,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
   },
   {
     "id": "avrupa-ligi",
     "name": "Avrupa Ligi",
     "country": "UEFA",
     "type": "continental",
-    "aliases": ["UEFA Europa League", "Europa League"],
-    "providers": { "apiFootball": 3, "footballData": null }
+    "bucket": "avrupa-kupalari",
+    "priority": 11,
+    "aliases": [
+      "UEFA Europa League",
+      "Europa League"
+    ],
+    "providers": {
+      "apiFootball": 3,
+      "footballData": null
+    },
+    "logo": "https://media.api-sports.io/football/leagues/3.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": false
+      },
+      "standings": false,
+      "players": false,
+      "top_scorers": false,
+      "top_assists": false,
+      "top_cards": false,
+      "injuries": false,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
   },
   {
     "id": "konferans-ligi",
     "name": "Konferans Ligi",
     "country": "UEFA",
     "type": "continental",
-    "aliases": ["UEFA Europa Conference League", "UEFA Conference League", "Conference League"],
-    "providers": { "apiFootball": 848, "footballData": null }
+    "bucket": "avrupa-kupalari",
+    "priority": 12,
+    "aliases": [
+      "UEFA Europa Conference League",
+      "UEFA Conference League",
+      "Conference League"
+    ],
+    "providers": {
+      "apiFootball": 848,
+      "footballData": null
+    },
+    "logo": "https://media.api-sports.io/football/leagues/848.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": true
+      },
+      "standings": false,
+      "players": true,
+      "top_scorers": true,
+      "top_assists": true,
+      "top_cards": true,
+      "injuries": false,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
+  },
+  {
+    "id": "premier-league",
+    "name": "Premier League",
+    "country": "İngiltere",
+    "type": "domestic",
+    "bucket": "buyuk-avrupa-ligleri",
+    "priority": 20,
+    "aliases": [
+      "English Premier League"
+    ],
+    "providers": {
+      "apiFootball": 39,
+      "footballData": "PL"
+    },
+    "logo": "https://media.api-sports.io/football/leagues/39.png",
+    "coverage": {
+      "fixtures": {
+        "events": false,
+        "lineups": false,
+        "statistics_fixtures": false,
+        "statistics_players": false
+      },
+      "standings": true,
+      "players": false,
+      "top_scorers": false,
+      "top_assists": false,
+      "top_cards": false,
+      "injuries": false,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
+  },
+  {
+    "id": "la-liga",
+    "name": "La Liga",
+    "country": "İspanya",
+    "type": "domestic",
+    "bucket": "buyuk-avrupa-ligleri",
+    "priority": 21,
+    "aliases": [
+      "Primera Division",
+      "Primera División"
+    ],
+    "providers": {
+      "apiFootball": 140,
+      "footballData": "PD"
+    },
+    "logo": "https://media.api-sports.io/football/leagues/140.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": true
+      },
+      "standings": true,
+      "players": true,
+      "top_scorers": true,
+      "top_assists": true,
+      "top_cards": true,
+      "injuries": true,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
+  },
+  {
+    "id": "serie-a",
+    "name": "Serie A",
+    "country": "İtalya",
+    "type": "domestic",
+    "bucket": "buyuk-avrupa-ligleri",
+    "priority": 22,
+    "aliases": [
+      "Italian Serie A"
+    ],
+    "providers": {
+      "apiFootball": 135,
+      "footballData": "SA"
+    },
+    "logo": "https://media.api-sports.io/football/leagues/135.png",
+    "coverage": {
+      "fixtures": {
+        "events": false,
+        "lineups": false,
+        "statistics_fixtures": false,
+        "statistics_players": false
+      },
+      "standings": true,
+      "players": false,
+      "top_scorers": false,
+      "top_assists": false,
+      "top_cards": false,
+      "injuries": false,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:05:16.244Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
+  },
+  {
+    "id": "bundesliga",
+    "name": "Bundesliga",
+    "country": "Almanya",
+    "type": "domestic",
+    "bucket": "buyuk-avrupa-ligleri",
+    "priority": 23,
+    "aliases": [
+      "German Bundesliga"
+    ],
+    "providers": {
+      "apiFootball": 78,
+      "footballData": "BL1"
+    },
+    "logo": "https://media.api-sports.io/football/leagues/78.png",
+    "coverage": {
+      "fixtures": {
+        "events": false,
+        "lineups": false,
+        "statistics_fixtures": false,
+        "statistics_players": false
+      },
+      "standings": true,
+      "players": false,
+      "top_scorers": false,
+      "top_assists": false,
+      "top_cards": false,
+      "injuries": false,
+      "predictions": true,
+      "odds": false
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
+  },
+  {
+    "id": "ligue-1",
+    "name": "Ligue 1",
+    "country": "Fransa",
+    "type": "domestic",
+    "bucket": "buyuk-avrupa-ligleri",
+    "priority": 24,
+    "aliases": [
+      "French Ligue 1"
+    ],
+    "providers": {
+      "apiFootball": 61,
+      "footballData": "FL1"
+    },
+    "logo": "https://media.api-sports.io/football/leagues/61.png",
+    "coverage": {
+      "fixtures": {
+        "events": false,
+        "lineups": false,
+        "statistics_fixtures": false,
+        "statistics_players": false
+      },
+      "standings": true,
+      "players": false,
+      "top_scorers": false,
+      "top_assists": false,
+      "top_cards": false,
+      "injuries": false,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
+  },
+  {
+    "id": "championship",
+    "name": "Championship",
+    "country": "İngiltere",
+    "type": "domestic",
+    "bucket": "diger-ligler",
+    "priority": 30,
+    "aliases": [],
+    "providers": {
+      "apiFootball": 40,
+      "footballData": "ELC"
+    },
+    "logo": "https://media.api-sports.io/football/leagues/40.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": true
+      },
+      "standings": true,
+      "players": true,
+      "top_scorers": true,
+      "top_assists": true,
+      "top_cards": true,
+      "injuries": true,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
+  },
+  {
+    "id": "eredivisie",
+    "name": "Eredivisie",
+    "country": "Hollanda",
+    "type": "domestic",
+    "bucket": "diger-ligler",
+    "priority": 31,
+    "aliases": [],
+    "providers": {
+      "apiFootball": 88,
+      "footballData": "DED"
+    },
+    "logo": "https://media.api-sports.io/football/leagues/88.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": true
+      },
+      "standings": true,
+      "players": true,
+      "top_scorers": true,
+      "top_assists": true,
+      "top_cards": true,
+      "injuries": true,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:05:16.244Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
+  },
+  {
+    "id": "primeira-liga",
+    "name": "Primeira Liga",
+    "country": "Portekiz",
+    "type": "domestic",
+    "bucket": "diger-ligler",
+    "priority": 32,
+    "aliases": [],
+    "providers": {
+      "apiFootball": 94,
+      "footballData": "PPL"
+    },
+    "logo": "https://media.api-sports.io/football/leagues/94.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": true
+      },
+      "standings": true,
+      "players": true,
+      "top_scorers": true,
+      "top_assists": true,
+      "top_cards": true,
+      "injuries": false,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
+  },
+  {
+    "id": "belcika-pro-ligi",
+    "name": "Belgian Pro League",
+    "country": "Belçika",
+    "type": "domestic",
+    "bucket": "diger-ligler",
+    "priority": 33,
+    "aliases": [],
+    "providers": {
+      "apiFootball": 144,
+      "footballData": null
+    },
+    "logo": "https://media.api-sports.io/football/leagues/144.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": true
+      },
+      "standings": true,
+      "players": true,
+      "top_scorers": true,
+      "top_assists": true,
+      "top_cards": true,
+      "injuries": false,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues",
+    "resolveHints": [
+      "Jupiler Pro League"
+    ]
+  },
+  {
+    "id": "scottish-premiership",
+    "name": "Scottish Premiership",
+    "country": "İskoçya",
+    "type": "domestic",
+    "bucket": "diger-ligler",
+    "priority": 34,
+    "aliases": [],
+    "providers": {
+      "apiFootball": 179,
+      "footballData": null
+    },
+    "logo": "https://media.api-sports.io/football/leagues/179.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": true
+      },
+      "standings": true,
+      "players": true,
+      "top_scorers": true,
+      "top_assists": true,
+      "top_cards": true,
+      "injuries": false,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues",
+    "resolveHints": [
+      "Premiership"
+    ]
+  },
+  {
+    "id": "saudi-pro-league",
+    "name": "Saudi Pro League",
+    "country": "Suudi Arabistan",
+    "type": "domestic",
+    "bucket": "diger-ligler",
+    "priority": 35,
+    "aliases": [],
+    "providers": {
+      "apiFootball": null,
+      "footballData": null
+    },
+    "logo": null,
+    "coverage": null,
+    "resolvedAt": null,
+    "resolvedSeason": null,
+    "source": "pending"
+  },
+  {
+    "id": "mls",
+    "name": "MLS",
+    "country": "ABD",
+    "type": "domestic",
+    "bucket": "diger-ligler",
+    "priority": 36,
+    "aliases": [
+      "Major League Soccer"
+    ],
+    "providers": {
+      "apiFootball": 253,
+      "footballData": null
+    },
+    "logo": "https://media.api-sports.io/football/leagues/253.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": true
+      },
+      "standings": true,
+      "players": true,
+      "top_scorers": true,
+      "top_assists": true,
+      "top_cards": true,
+      "injuries": true,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
+  },
+  {
+    "id": "brasileirao",
+    "name": "Brazil Série A",
+    "country": "Brezilya",
+    "type": "domestic",
+    "bucket": "diger-ligler",
+    "priority": 37,
+    "aliases": [
+      "Brasileirão",
+      "Campeonato Brasileiro Série A"
+    ],
+    "providers": {
+      "apiFootball": 71,
+      "footballData": "BSA"
+    },
+    "logo": "https://media.api-sports.io/football/leagues/71.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": true
+      },
+      "standings": true,
+      "players": true,
+      "top_scorers": true,
+      "top_assists": true,
+      "top_cards": true,
+      "injuries": true,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues",
+    "resolveHints": [
+      "Serie A"
+    ]
+  },
+  {
+    "id": "arjantin-primera",
+    "name": "Argentina Primera División",
+    "country": "Arjantin",
+    "type": "domestic",
+    "bucket": "diger-ligler",
+    "priority": 38,
+    "aliases": [],
+    "providers": {
+      "apiFootball": 128,
+      "footballData": null
+    },
+    "logo": "https://media.api-sports.io/football/leagues/128.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": true,
+        "statistics_players": true
+      },
+      "standings": true,
+      "players": true,
+      "top_scorers": true,
+      "top_assists": true,
+      "top_cards": true,
+      "injuries": false,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues",
+    "resolveHints": [
+      "Liga Profesional Argentina"
+    ]
   },
   {
     "id": "hazirlik-maci",
     "name": "Hazırlık Maçı",
     "country": "Uluslararası",
     "type": "friendly",
-    "aliases": ["Club Friendlies", "Friendlies Clubs", "Friendlies", "Hazirlik Maci", "Hazırlık Maçları"],
-    "providers": { "apiFootball": 667, "footballData": null }
+    "bucket": null,
+    "priority": 999,
+    "aliases": [
+      "Club Friendlies",
+      "Friendlies Clubs",
+      "Friendlies",
+      "Hazirlik Maci",
+      "Hazırlık Maçları"
+    ],
+    "providers": {
+      "apiFootball": 667,
+      "footballData": null
+    },
+    "logo": "https://media.api-sports.io/football/leagues/667.png",
+    "coverage": {
+      "fixtures": {
+        "events": true,
+        "lineups": true,
+        "statistics_fixtures": false,
+        "statistics_players": false
+      },
+      "standings": false,
+      "players": false,
+      "top_scorers": false,
+      "top_assists": false,
+      "top_cards": false,
+      "injuries": false,
+      "predictions": true,
+      "odds": true
+    },
+    "resolvedAt": "2026-08-17T11:21:48.562Z",
+    "resolvedSeason": "2026",
+    "source": "api-football:/leagues"
   }
 ]

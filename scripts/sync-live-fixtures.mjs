@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url";
 
 const require = createRequire(import.meta.url);
 const apiFootballProvider = require("../services/providers/apiFootballProvider.js");
-const { findCompetition, normalizeKey } = require("../services/competitionCatalog.js");
+const { findCompetition, findCompetitionByProviderId, normalizeKey } = require("../services/competitionCatalog.js");
 const { canonicalStatus, istanbulDay } = require("../services/matchStatus.js");
 
 const root = process.cwd();
@@ -119,7 +119,9 @@ function compactDetail(detail) {
 }
 
 function normalizedIncoming(match, detail) {
-  const competition = findCompetition(match.league);
+  // Sağlayıcının sayısal lig kimliği varsa ÖNCE o denenir — ad hiçbir zaman
+  // kimliği ezmez (bkz. services/competitionCatalog.js: resolveCompetitionId).
+  const competition = findCompetitionByProviderId(match.providerLeagueId) || findCompetition(match.league);
   const providerId = String(match.providerId || match.id || "");
   const status = canonicalStatus(match.status || match.providerStatus);
   return {

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const { competitions, findCompetition, providerLeagueValue } = require("../services/competitionCatalog.js");
+const { competitions, findCompetition, findCompetitionByProviderId, providerLeagueValue, resolveCompetitionId } = require("../services/competitionCatalog.js");
 const { filterSupportedCompetitions, normalizeFixture } = require("../services/providers/apiFootballProvider.js");
 const matchesHandler = require("../api/matches.js");
 const mockProvider = require("../services/providers/mockProvider.js");
@@ -17,11 +17,79 @@ function fakeResponse() {
   };
 }
 
-assert.equal(competitions.length, 10, "Altı yerel lig, üç UEFA turnuvası ve hazırlık maçları katalogda olmalı.");
+assert.equal(competitions.length, 23, "13 genişleme ligi eklendikten sonra katalog 23 kayıt taşımalı.");
 assert.equal(findCompetition("Champions League")?.id, "sampiyonlar-ligi");
+
+// `resolveHints` (services/leagueRegistry.js'in ülkeye göre süzülmüş
+// aday listesi içinde aradığı ad varyantları) `findCompetition`in
+// kullandığı `aliases`e KARIŞMAMALI. brasileirao'nun resolveHints'inde
+// "Serie A" var (Brezilya'nın API-Football'daki gerçek adı) ama bu,
+// fikstür ADI eşleşmesinde İtalya'nın Serie A'sının önüne geçmemeli —
+// geçseydi resolveHints, tam da AMBIGUOUS_COMPETITION_NAMES'in önlediği
+// türden bir çakışmayı arka kapıdan geri getirirdi.
+assert.equal(findCompetition("Serie A")?.id, "serie-a", "resolveHints, ad eşleşmesine sızıp İtalya'nın Serie A'sını gölgelememeli");
 assert.equal(findCompetition("UEFA Europa League")?.id, "avrupa-ligi");
 assert.equal(providerLeagueValue("premier-league", "api-football"), 39);
 assert.equal(providerLeagueValue("avrupa-ligi", "football-data"), null);
+
+// Henüz çözülmemiş genişleme ligi (apiFootball: null) katalogda durur ama
+// hiçbir fikstürü kendine bağlamaz — kimlik yokken tahmin yapmak yasak.
+assert.equal(findCompetitionByProviderId(null), null);
+// Hangi kayıtların hâlâ çözülmemiş olduğu zamanla değişir (registry
+// koşusu doğruladıkça "pending" kayıtlar gerçek kimlik kazanır) — bu
+// yüzden belirli bir lig ID'si sabit varsayılmaz. Kural değişmez: apiFootball
+// null olan HER kayıt, coverage/logo/resolvedAt de null kalmalı — hiçbiri
+// yarım doğrulanmış görünmemeli.
+const pendingLeagues = competitions.filter((item) => item.providers.apiFootball === null);
+for (const pending of pendingLeagues) {
+  assert.equal(pending.providers.apiFootball, null, `${pending.id}: doğrulanmamış lig kimliği uydurulmamalı`);
+  assert.equal(pending.coverage, null, `${pending.id}: kimlik yokken coverage de olmamalı`);
+  assert.equal(pending.resolvedAt, null, `${pending.id}: kimlik yokken resolvedAt de olmamalı`);
+}
+
+// ── KİMLİK (ID) TEMELLİ EŞLEŞME — kök hata düzeltmesi ────────────────────
+//
+// Bir fikstürün `league.id`si varsa eşleşme YALNIZCA o kimlikle kurulur;
+// ad yanıltıcı olsa bile kimlik kazanır. Bu, "Premier League filtresinde
+// ilgisiz takımlar" türü hataların kök nedenini kapatır.
+{
+  assert.equal(findCompetitionByProviderId(39)?.id, "premier-league");
+  assert.equal(findCompetitionByProviderId(140)?.id, "la-liga");
+
+  // Ad YANLIŞ/eksik ama kimlik doğru — yine de doğru yarışmaya bağlanmalı.
+  const misleadingName = normalizeFixture({
+    fixture: { id: 900, date: "2026-07-19T18:00:00+00:00", status: { short: "NS" } },
+    league: { id: 39, name: "Bilinmeyen Bir Turnuva" },
+    teams: { home: { name: "Ev 900" }, away: { name: "Dep 900" } },
+    goals: { home: null, away: null }
+  });
+  assert.equal(misleadingName.providerLeagueId, "39");
+  assert.equal(resolveCompetitionId(misleadingName), "premier-league",
+    "Kimlik doğruysa yanıltıcı ad yarışmayı değiştirmemeli");
+
+  // Ad DOĞRU görünüyor ama kimlik katalogda yok (ör. başka bir ülkenin aynı
+  // adlı alt ligi) — kimlik varken ada asla düşülmemeli, eşleşme reddedilir.
+  const wrongIdSameName = normalizeFixture({
+    fixture: { id: 901, date: "2026-07-19T18:00:00+00:00", status: { short: "NS" } },
+    league: { id: 999999, name: "Premier League" },
+    teams: { home: { name: "Ev 901" }, away: { name: "Dep 901" } },
+    goals: { home: null, away: null }
+  });
+  const wrongIdFiltered = filterSupportedCompetitions([wrongIdSameName]);
+  assert.deepEqual(wrongIdFiltered, [], "Katalogda olmayan bir kimlik, ad tutsa bile ada düşüp kabul edilmemeli");
+
+  // Kimlik hiç yok (TheSportsDB gibi kaynaklar) — eski ad eşleşmesi hâlâ
+  // çalışmalı, regresyon yok.
+  const noId = normalizeFixture({
+    fixture: { id: 902, date: "2026-07-19T18:00:00+00:00", status: { short: "NS" } },
+    league: { name: "Premier League" },
+    teams: { home: { name: "Ev 902" }, away: { name: "Dep 902" } },
+    goals: { home: null, away: null }
+  });
+  assert.equal(noId.providerLeagueId, null);
+  const noIdFiltered = filterSupportedCompetitions([noId]);
+  assert.equal(noIdFiltered.length, 1, "Kimliksiz kayıtta ad eşleşmesi hâlâ çalışmalı");
+}
 
 // Hazırlık maçları katalogda yoktu; sonuç olarak sağlayıcıdan gelen tüm
 // sezon öncesi maçlar filterSupportedCompetitions içinde sessizce eleniyor
@@ -98,4 +166,4 @@ try {
   }
 }
 
-console.log("Competition coverage tests passed: 10 competitions, live status and provider fallback checked.");
+console.log(`Competition coverage tests passed: ${competitions.length} competitions, ID-based matching, live status and provider fallback checked.`);

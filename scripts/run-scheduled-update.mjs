@@ -307,6 +307,15 @@ function fullMaintenanceSteps(providerReady) {
   const monday = istanbulParts().weekday === "Mon";
   const noProvider = providerReady ? false : "API-Football is unavailable; cached squads and players are retained.";
   return [
+    // Statik lig metadata'sı (kimlik/logo/coverage) yalnızca günlük full
+    // koşuda tazelenir — saatlik koşuda değil, çünkü lig kimlikleri
+    // sezondan sezona değişmez ve gereksiz bir `/leagues` çağrısı quota
+    // israfı olurdu. Yalnızca "resolved" sonuçlar competitions.json'a
+    // yazılır; belirsiz/eksik kayıtlar dokunulmadan "pending" kalır.
+    nodeStep("league-registry", "resolve-league-registry.mjs", ["--apply", "--json"], { kind: "source", source: "api-football", attempts: 1, timeoutMs: 5 * 60 * 1000, skip: noProvider }),
+    // Puan durumu senkronu registry'den SONRA çalışır: coverage.standings
+    // bayrağı ancak lig kimliği doğrulandıktan sonra güvenilir olur.
+    nodeStep("league-standings", "sync-league-standings.mjs", ["--apply", "--json"], { kind: "source", source: "api-football", attempts: 1, timeoutMs: 5 * 60 * 1000, skip: noProvider }),
     nodeStep("super-lig-squads", "sync-super-lig-squads.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 12 * 60 * 1000, skip: noProvider }),
     nodeStep("canonical-players", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--apply", "--offline", "--skip-squad-refresh"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("confirmed-transfers", "sync-confirmed-transfers.mjs", ["--apply"], { kind: "transform", timeoutMs: 3 * 60 * 1000 }),
@@ -365,6 +374,7 @@ function hourlyBuildSteps(diff) {
     nodeStep("render-post-match-pages", "generate-post-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-update-admin", "generate-update-admin.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
     nodeStep("render-core-pages", "prerender-core-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
+    nodeStep("render-league-pages", "generate-league-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("sync-public-assets", "sync-public-assets.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
     nodeStep("search-index", "generate-search-index.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 })
   );
