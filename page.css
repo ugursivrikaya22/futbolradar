@@ -11151,17 +11151,21 @@ body .container {
   color: var(--green);
 }
 
-/* Homepage-only transfer strip: independent from the Son Dakika ticker. */
-.transfer-radar-ticker {
+/* Homepage-only live scores strip: independent from the Son Dakika ticker. */
+.live-scores-ticker {
   position: relative;
   z-index: 39;
   overflow: hidden;
-  border-bottom: 1px solid rgba(248, 113, 113, 0.3);
-  background: linear-gradient(90deg, #34090d 0, #171012 34%, #09090b 100%);
+  border-bottom: 1px solid rgba(52, 211, 153, 0.32);
+  background: linear-gradient(90deg, #062018 0, #0b1512 34%, #09090b 100%);
   color: #fff;
 }
 
-.transfer-radar-ticker__inner {
+.live-scores-ticker[data-empty] {
+  border-bottom-color: rgba(148, 163, 184, 0.24);
+}
+
+.live-scores-ticker__inner {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: stretch;
@@ -11169,13 +11173,14 @@ body .container {
   padding-inline: 0;
 }
 
-.transfer-radar-ticker__label {
+.live-scores-ticker__label {
   position: relative;
   z-index: 2;
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   padding: 0 clamp(14px, 2vw, 24px);
-  background: #8d111b;
+  background: #0b8f5a;
   color: #fff;
   font-size: 0.76rem;
   font-weight: 900;
@@ -11184,18 +11189,18 @@ body .container {
   white-space: nowrap;
 }
 
-.transfer-radar-ticker__label::after {
+.live-scores-ticker__label::after {
   position: absolute;
   top: 0;
   right: -12px;
   width: 13px;
   height: 100%;
-  background: #8d111b;
+  background: #0b8f5a;
   clip-path: polygon(0 0, 100% 50%, 0 100%);
   content: "";
 }
 
-.transfer-radar-ticker__viewport {
+.live-scores-ticker__viewport {
   min-width: 0;
   overflow: hidden;
   padding-left: 18px;
@@ -11203,26 +11208,28 @@ body .container {
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 18px, #000 calc(100% - 18px), transparent);
 }
 
-.transfer-radar-ticker__track {
+/* Öğe başına 5sn, 18-45sn arasında — transfer bandının 9sn/34-80sn'inden
+   belirgin biçimde daha hızlı (bkz. scripts/lib/liveScoresTicker.mjs). */
+.live-scores-ticker__track {
   display: flex;
   width: max-content;
   min-height: 42px;
-  animation: ticker-scroll var(--transfer-ticker-duration, 48s) linear infinite;
+  animation: ticker-scroll var(--live-ticker-duration, 26s) linear infinite;
   backface-visibility: hidden;
   will-change: transform;
 }
 
-.transfer-radar-ticker__track.is-static {
+.live-scores-ticker__track.is-static {
   width: 100%;
   animation: none;
 }
 
-.transfer-radar-ticker:hover .transfer-radar-ticker__track,
-.transfer-radar-ticker:focus-within .transfer-radar-ticker__track {
+.live-scores-ticker:hover .live-scores-ticker__track,
+.live-scores-ticker:focus-within .live-scores-ticker__track {
   animation-play-state: paused;
 }
 
-.transfer-radar-ticker__group {
+.live-scores-ticker__group {
   display: flex;
   align-items: center;
   flex: 0 0 auto;
@@ -11231,7 +11238,7 @@ body .container {
   white-space: nowrap;
 }
 
-.transfer-radar-ticker__item {
+.live-scores-ticker__item {
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
@@ -11244,32 +11251,53 @@ body .container {
   white-space: nowrap;
 }
 
-a.transfer-radar-ticker__item:hover,
-a.transfer-radar-ticker__item:focus-visible {
+a.live-scores-ticker__item:hover,
+a.live-scores-ticker__item:focus-visible {
   color: #fff;
   outline: 0;
 }
 
-a.transfer-radar-ticker__item:focus-visible {
-  box-shadow: inset 0 -2px #fca5a5;
+a.live-scores-ticker__item:focus-visible {
+  box-shadow: inset 0 -2px #6ee7b7;
 }
 
-.transfer-radar-ticker__item strong {
+.live-scores-ticker__league {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.live-scores-ticker__match {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: #fff;
   font-weight: 850;
 }
 
-.transfer-radar-ticker__separator {
+.live-scores-ticker__score {
+  border-radius: 4px;
+  padding: 2px 7px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.live-scores-ticker__separator {
   color: rgba(255, 255, 255, 0.32);
 }
 
-.transfer-radar-ticker__breaking,
-.transfer-radar-ticker__status {
+.live-scores-ticker__minute {
   display: inline-flex;
   align-items: center;
+  gap: 5px;
   min-height: 20px;
   border-radius: 4px;
   padding: 3px 7px;
+  background: #0b8f5a;
+  color: #f0fdf4;
   font-size: 0.64rem;
   font-weight: 900;
   letter-spacing: 0.06em;
@@ -11278,32 +11306,12 @@ a.transfer-radar-ticker__item:focus-visible {
   white-space: nowrap;
 }
 
-.transfer-radar-ticker__breaking {
-  border: 1px solid rgba(254, 202, 202, 0.42);
-  background: #b91c1c;
-  color: #fff;
+.live-scores-ticker__minute.is-halftime {
+  background: rgba(148, 163, 184, 0.22);
+  color: #e2e8f0;
 }
 
-/* Üç günden eski hareket "son dakika" değildir: kırmızı acil rozet yerine
-   sakin bir tarih etiketi taşır. Aynı kutu, farklı vaat. */
-.transfer-radar-ticker__breaking.is-dated {
-  border-color: rgba(148, 163, 184, 0.38);
-  background: rgba(148, 163, 184, 0.16);
-  color: #cbd5e1;
-}
-
-.transfer-radar-ticker__status.is-official {
-  background: #15803d;
-  color: #f0fdf4;
-}
-
-
-
-
-
-
-
-.transfer-radar-ticker__empty {
+.live-scores-ticker__empty {
   display: inline-flex;
   align-items: center;
   min-height: 42px;
@@ -11313,45 +11321,46 @@ a.transfer-radar-ticker__item:focus-visible {
 }
 
 @media (max-width: 1024px) {
-  .transfer-radar-ticker__label { padding-inline: 14px; }
-  .transfer-radar-ticker__item { font-size: 0.76rem; }
+  .live-scores-ticker__label { padding-inline: 14px; }
+  .live-scores-ticker__item { font-size: 0.76rem; }
 }
 
 @media (max-width: 640px) {
-  .transfer-radar-ticker__inner,
-.transfer-radar-ticker__track,
-.transfer-radar-ticker__item,
-.transfer-radar-ticker__empty { min-height: 38px; }
+  .live-scores-ticker__inner,
+.live-scores-ticker__track,
+.live-scores-ticker__item,
+.live-scores-ticker__empty { min-height: 38px; }
 
-  .transfer-radar-ticker__label {
+  .live-scores-ticker__label {
     padding-inline: 10px;
     font-size: 0.66rem;
     letter-spacing: 0.04em;
   }
 
-  .transfer-radar-ticker__viewport {
+  .live-scores-ticker__viewport {
     padding-left: 14px;
     mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
   }
 
-  .transfer-radar-ticker__group { gap: 22px; padding-right: 22px; }
-  .transfer-radar-ticker__item { gap: 5px; font-size: 0.7rem; }
-  .transfer-radar-ticker__breaking,
-.transfer-radar-ticker__status { min-height: 18px; padding: 2px 5px; font-size: 0.63rem; }
+  .live-scores-ticker__group { gap: 22px; padding-right: 22px; }
+  .live-scores-ticker__item { gap: 5px; font-size: 0.7rem; }
+  .live-scores-ticker__minute { min-height: 18px; padding: 2px 5px; font-size: 0.63rem; }
+  .live-scores-ticker__league { font-size: 0.66rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .transfer-radar-ticker__viewport {
+  .live-scores-ticker__viewport {
     overflow-x: auto;
     mask-image: none;
     -webkit-mask-image: none;
     scrollbar-width: thin;
   }
 
-  .transfer-radar-ticker__track { animation: none !important; }
-  .transfer-radar-ticker__group[aria-hidden="true"] { display: none; }
+  .live-scores-ticker__track { animation: none !important; }
+  .live-scores-ticker__group[aria-hidden="true"] { display: none; }
 }
+
 
 .news-ticker-tag {
   border-radius: 6px;
@@ -18715,8 +18724,8 @@ a.motm-week__card:focus-visible {
   .match-special-promo__module-kicker,
   .match-special-promo__chip,
   .live-score-team-logo-fallback,
-  .transfer-radar-ticker__breaking,
-  .transfer-radar-ticker__status { font-size: 12px; }
+  .live-scores-ticker__minute,
+  .live-scores-ticker__league { font-size: 12px; }
 }
 
 /* ── MOBİL ALT NAVİGASYON ───────────────────────────────────────────

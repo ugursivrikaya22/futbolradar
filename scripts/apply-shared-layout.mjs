@@ -16,10 +16,11 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter, newsTicker } from "./lib/layout.mjs";
 import { buildTickerFeed } from "./lib/tickerFeed.mjs";
 import { buildEnTickerItems } from "./lib/enTicker.mjs";
-import { transferTickerBlock, TRANSFER_TICKER_PAGES } from "./lib/transferTicker.mjs";
+import { liveTickerBlock, LIVE_TICKER_PAGES } from "./lib/liveScoresTicker.mjs";
 
 const { counterpartPath, localeOfPath } = createRequire(import.meta.url)("../services/i18n.js");
-const { selectTickerRecords, foldText } = createRequire(import.meta.url)("../services/transferRadarTicker.js");
+const { selectLiveTickerRecords } = createRequire(import.meta.url)("../services/liveScoresTicker.js");
+const { curatedMatches } = createRequire(import.meta.url)("../services/providers/mockProvider.js");
 
 const root = process.cwd();
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
@@ -27,7 +28,10 @@ const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
 const HEADER_RE = /<header\b[^>]*class="[^"]*\btopbar\b[^"]*"[^>]*>[\s\S]*?<\/header>/i;
 const FOOTER_RE = /<footer\b[^>]*class="[^"]*\bfooter\b[^"]*"[^>]*>[\s\S]*?<\/footer>/i;
 const TICKER_RE = /[\t ]*<!-- shared-layout:ticker:start -->[\s\S]*?<!-- shared-layout:ticker:end -->\n?/g;
-const TRANSFER_TICKER_RE = /[\t ]*<!-- shared-layout:transfer-ticker:start -->[\s\S]*?<!-- shared-layout:transfer-ticker:end -->\n?/g;
+const LIVE_TICKER_RE = /[\t ]*<!-- shared-layout:live-ticker:start -->[\s\S]*?<!-- shared-layout:live-ticker:end -->\n?/g;
+// Eski transfer bandının işaretçisi: bir önceki derlemenin bandı hâlâ
+// sayfada duruyor olabilir, bu geçiş derlemesinde de temizlenir.
+const LEGACY_TRANSFER_TICKER_RE = /[\t ]*<!-- shared-layout:transfer-ticker:start -->[\s\S]*?<!-- shared-layout:transfer-ticker:end -->\n?/g;
 
 function readGeneratedFile(file) {
   for (let attempt = 0; attempt < 12; attempt += 1) {
@@ -135,19 +139,14 @@ const tickerFeed = buildTickerFeed();
 const tickerItems = tickerFeed.items;
 const enTickerItems = buildEnTickerItems();
 
-// Bandın hangi sayfalarda çıkacağı scripts/lib/transferTicker.mjs'te —
+// Bandın hangi sayfalarda çıkacağı scripts/lib/liveScoresTicker.mjs'te —
 // enjeksiyon ve test aynı listeyi oradan okur.
-const TRANSFER_TICKER_PAGE_SET = new Set(TRANSFER_TICKER_PAGES);
+const LIVE_TICKER_PAGE_SET = new Set(LIVE_TICKER_PAGES);
 
-// Seçim servistedir; burada yapılan tek şey İngilizce sunum için kulüp
-// OLMAYAN yer tutucuyu çevirmek (generate-en-pages.mjs ile aynı kural).
-const transferRecords = selectTickerRecords(readJson("transfers.json") || {});
-const enTransferRecords = selectTickerRecords(readJson("transfers.json") || {}, { locale: "en" })
-  .map((item) => ({
-    ...item,
-    toTeam: foldText(item.toTeam) === "serbest oyuncu" ? "Free agent" : item.toTeam,
-    fromTeam: foldText(item.fromTeam) === "serbest oyuncu" ? "Free agent" : item.fromTeam
-  }));
+// Seçim servistedir (services/liveScoresTicker.js); burada yalnızca derleme
+// anındaki maç anlık görüntüsü okunur. TR/EN aynı kayıtları taşır — canlı
+// skor bir çeviri sorunu değil, takım/lig adları zaten katalogdan geliyor.
+const liveRecords = selectLiveTickerRecords(curatedMatches());
 
 const files = [...collectHtmlFiles(root), ...collectHtmlFiles(path.join(root, "public"))]
   .filter((file) => !path.relative(root, file).startsWith("node_modules"));
@@ -179,30 +178,27 @@ for (const file of files) {
   const ticker = locale === "en"
     ? newsTicker({ base, locale, items: rebaseItems(enTickerItems, base) })
     : newsTicker({ base, items: rebaseItems(tickerItems, base), badge: tickerFeed.badge });
-  // Transfer bandı haber bandının ALTINA girer ve yalnızca listedeki
-  // sayfalara. Ana sayfalarda bant zaten sayfanın KENDİ işaretlemesinde
-  // (Türkçe tarafta istemci onu canlı tazeliyor); oraya ikinci bir kopya
-  // basılmaz.
+  // Canlı skor bandı haber bandının ALTINA girer ve yalnızca listedeki
+  // sayfalara. Ana sayfalarda bant zaten sayfanın KENDİ işaretlemesinde;
+  // oraya ikinci bir kopya basılmaz.
   //
   // "Sayfanın kendi bandı var mı" sorusu, bu scriptin daha önce bastığı blok
-  // ÇIKARILDIKTAN SONRA sorulur. Doğrudan `original`e bakmak derlemeyi
-  // idempotan olmaktan çıkarırdı: ikinci çalıştırmada script kendi bastığı
-  // bandı sayfanın kendi bandı sanıp yenisini basmaz, ardından eskisini
-  // silerdi — yani bant iki derlemede bir kaybolurdu.
-  const unmanaged = original.replace(TRANSFER_TICKER_RE, "");
-  const wantsTransferTicker = TRANSFER_TICKER_PAGE_SET.has(sitePath)
-    && !unmanaged.includes('data-component="TransferRadarTicker"');
-  const transferTicker = wantsTransferTicker
-    ? transferTickerBlock(locale === "en" ? enTransferRecords : transferRecords, { locale })
+  // ÇIKARILDIKTAN SONRA sorulur — aksi hâlde derleme idempotan olmazdı
+  // (bkz. eski transfer bandındaki aynı gerekçe).
+  const unmanaged = original.replace(LIVE_TICKER_RE, "").replace(LEGACY_TRANSFER_TICKER_RE, "");
+  const wantsLiveTicker = LIVE_TICKER_PAGE_SET.has(sitePath)
+    && !unmanaged.includes('data-component="LiveScoresTicker"');
+  const liveTicker = wantsLiveTicker
+    ? liveTickerBlock(liveRecords, { locale, base })
     : "";
 
   const headerBlock = [
     siteHeader({ base, locale, altHref }),
     ticker ? `\n      <!-- shared-layout:ticker:start -->${ticker}<!-- shared-layout:ticker:end -->` : "",
-    transferTicker ? `\n      <!-- shared-layout:transfer-ticker:start -->${transferTicker}<!-- shared-layout:transfer-ticker:end -->` : ""
+    liveTicker ? `\n      <!-- shared-layout:live-ticker:start -->${liveTicker}<!-- shared-layout:live-ticker:end -->` : ""
   ].join("");
 
-  let next = original.replace(TRANSFER_TICKER_RE, "");
+  let next = original.replace(LIVE_TICKER_RE, "").replace(LEGACY_TRANSFER_TICKER_RE, "");
   next = next.replace(TICKER_RE, "");
   next = next.replace(HEADER_RE, () => headerBlock);
   next = next.replace(FOOTER_RE, () => siteFooter({ base, locale }));

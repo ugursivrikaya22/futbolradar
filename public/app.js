@@ -11479,229 +11479,142 @@
     });
   }
 
-  var TransferRadarTicker = (function () {
-    var TARGET_SELECTOR = '[data-component="TransferRadarTicker"]';
-    var PRIORITY_CLUBS = [
-      "Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor",
-      "Başakşehir", "Eyüpspor", "Samsunspor", "Göztepe"
-    ];
-    // "BREAKING" ROZETİ YALNIZCA GERÇEKTEN YENİ HAREKETE.
-    //
-    // Bant her kayda koşulsuz BREAKING basıyordu. Transfer listesi tarihe
-    // göre sıralanıp ilk 12'si alındığı için iki ay önce açıklanmış bir
-    // transfer de ana sayfanın en üstünde "BREAKING" olarak duruyordu.
-    // Eski haberi güncel gelişme gibi göstermek, bandın anlatmaya çalıştığı
-    // şeyin tam tersi. Bu eşiğin dışında kalan kayıt ana transfer veri
-    // tabanında kalır, fakat güncel ana sayfa bandında gösterilmez.
-    var BREAKING_WINDOW_MS = 3 * 24 * 60 * 60 * 1000;
+  var LiveScoresTicker = (function () {
+    var TARGET_SELECTOR = '[data-component="LiveScoresTicker"]';
+    var POLL_MS = 20000;
 
-    function clubPriority(record) {
-      var teams = [record && record.toTeam, record && record.fromTeam]
-        .filter(Boolean)
-        .map(normalizeSearchText);
-      for (var index = 0; index < PRIORITY_CLUBS.length; index += 1) {
-        if (teams.includes(normalizeSearchText(PRIORITY_CLUBS[index]))) return index;
-      }
-      return PRIORITY_CLUBS.length;
+    function minuteOrStatusLabel(match) {
+      var minute = liveMinuteLabel(match);
+      if (minute) return minute;
+      var status = String(match && match.status || "").toUpperCase();
+      var shortLabels = {
+        HT: "HT", HALFTIME: "HT", ET: "ET", BT: "BT", P: "Pen",
+        PAUSED: "Devre arası", LIVE: "Canlı", IN_PLAY: "Canlı", "1H": "Canlı", "2H": "Canlı"
+      };
+      return shortLabels[status] || "Canlı";
     }
 
-    function dateTimestamp(record) {
-      var value = record && (record.date || record.publishedAt || record.lastVerifiedAt || record.updatedAt);
-      var parsed = value ? Date.parse(value) : NaN;
-      return Number.isNaN(parsed) ? 0 : parsed;
-    }
-
-    function displayStatus(record) {
-      if (record && ["Official", "Rumor", "Talks", "Loan"].includes(record.displayStatus)) {
-        return record.displayStatus;
-      }
-      var raw = normalizeSearchText([
-        record && record.type,
-        record && record.status,
-        record && record.stage
-      ].filter(Boolean).join(" "));
-      if (/kiralik|loan/.test(raw)) return "Loan";
-      if (/talk|negotiat|gorus|temas/.test(raw)) return "Talks";
-      if (/rumou?r|iddia|reported|linked/.test(raw)) return "Rumor";
-      if (/confirm|official|complete|signed|resmi|kesin/.test(raw)) return "Official";
-      return "Rumor";
-    }
-
-    /** Sınıf anahtarı İngilizce, okuyucunun gördüğü metin Türkçe. */
-    function statusLabelTr(status) {
+    function normalizeRecord(match) {
+      if (!isLiveMatch(match)) return null;
+      var homeTeam = getTeamName(matchTeam(match, "home"));
+      var awayTeam = getTeamName(matchTeam(match, "away"));
+      if (!homeTeam || !awayTeam) return null;
+      var score = (match && match.score) || {};
       return {
-        Official: "Resmî",
-        AgreementReported: "Anlaşma iddiası",
-        Rumor: "İddia",
-        Talks: "Görüşme",
-        Loan: "Kiralık"
-      }[status] || status;
-    }
-
-    function normalizeRecord(record) {
-      var playerName = String(record && (record.playerName || record.name) || "").trim();
-      var toTeam = String(record && (record.toTeam || record.newTeam) || "").trim();
-      var fromTeam = String(record && (record.fromTeam || record.oldTeam) || "").trim();
-      if (!playerName || !toTeam || !fromTeam) return null;
-      var date = record.date || record.publishedAt || record.lastVerifiedAt || record.updatedAt || "";
-      var parsed = date ? Date.parse(date) : NaN;
-      var age = Date.now() - parsed;
-      // Ana sayfa Transfer Radarı yalnızca son üç günün doğrulanmış
-      // hareketlerini taşır. Eski kayıt ana veri tabanında kalır.
-      if (!Number.isFinite(parsed) || age < 0 || age > BREAKING_WINDOW_MS) return null;
-      return {
-        playerName: playerName,
-        toTeam: toTeam,
-        fromTeam: fromTeam,
-        date: date,
-        // Tarihi okunamayan kayıt "yeni" SAYILMAZ: bilinmeyen tarih,
-        // son dakika olduğuna dair bir kanıt değil.
-        isBreaking: true,
-        dateLabel: Number.isFinite(parsed)
-          ? new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "short", timeZone: "Europe/Istanbul" }).format(new Date(parsed))
-          : "",
-        status: displayStatus(record),
-        url: record.url || record.sourceUrl || (record.source && record.source.url) || ""
+        id: String(match.id || (homeTeam + "-" + awayTeam)),
+        league: String(match.league || "Futbol"),
+        homeTeam: homeTeam,
+        awayTeam: awayTeam,
+        homeScore: score.home !== null && score.home !== undefined ? score.home : null,
+        awayScore: score.away !== null && score.away !== undefined ? score.away : null,
+        minuteOrStatus: minuteOrStatusLabel(match),
+        isHalftime: ["HT", "HALFTIME"].includes(String(match.status || "").toUpperCase()),
+        href: matchDetailHref(match)
       };
     }
 
-    function sortedRecords(records) {
-      return (Array.isArray(records) ? records : [])
+    function selectRecords(matches) {
+      return (Array.isArray(matches) ? matches : [])
         .map(normalizeRecord)
         .filter(Boolean)
-        .sort(function (left, right) {
-          return dateTimestamp(right) - dateTimestamp(left) ||
-            clubPriority(left) - clubPriority(right) ||
-            left.playerName.localeCompare(right.playerName, "tr");
-        })
-        .slice(0, 12);
+        .slice(0, 16);
     }
 
-    function safeTransferUrl(value) {
-      if (!value) return "";
-      try {
-        var resolved = new URL(String(value), window.location.href);
-        return ["http:", "https:"].includes(resolved.protocol) ? resolved.href : "";
-      } catch (error) {
-        return "";
-      }
+    function scoreText(value) {
+      return value === null || value === undefined ? "–" : String(value);
     }
 
     function itemHtml(item, duplicate) {
-      var href = safeTransferUrl(item.url);
-      var tag = href ? "a" : "span";
-      var external = href && new URL(href).origin !== window.location.origin;
-      var attributes = href
-        ? ' href="' + escapeHtml(href) + '"' + (external ? ' target="_blank" rel="noopener noreferrer"' : "") + (duplicate ? ' tabindex="-1"' : "")
-        : "";
-      var lead = item.isBreaking ? "SON DAKİKA" : (item.dateLabel || "TRANSFER");
-      var label = lead + " | " + item.playerName + " → " + item.toTeam + " | Önceki: " + item.fromTeam + " | " + statusLabelTr(item.status);
-      return '<' + tag + ' class="transfer-radar-ticker__item"' + attributes + ' aria-label="' + escapeHtml(label) + '">' +
-        '<span class="transfer-radar-ticker__breaking' + (item.isBreaking ? "" : " is-dated") + '">' + escapeHtml(lead) + '</span>' +
-        '<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>' +
-        '<strong>' + escapeHtml(item.playerName) + ' <span aria-hidden="true">→</span> ' + escapeHtml(item.toTeam) + '</strong>' +
-        '<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>' +
-        '<span>Önceki: ' + escapeHtml(item.fromTeam) + '</span>' +
-        '<span class="transfer-radar-ticker__separator" aria-hidden="true">|</span>' +
-        // Sınıf anahtarı İngilizce kalır (CSS onunla renklendiriyor), GÖRÜNEN
-        // metin Türkçedir. Eskiden İngilizce etiket basılıyordu ve CSS'teki
-        // `text-transform: uppercase` Türkçe yerelde "Official" kelimesini
-        // "OFFİCİAL" yapıyordu — noktalı İ, İngilizce bir kelimede yanlış.
-        '<span class="transfer-radar-ticker__status is-' + item.status.toLowerCase() + '">' + escapeHtml(statusLabelTr(item.status)) + '</span>' +
-        '</' + tag + '>';
+      var attributes = ' href="' + escapeHtml(item.href) + '"' + (duplicate ? ' tabindex="-1"' : "");
+      var label = item.league + " | " + item.homeTeam + " " + scoreText(item.homeScore) + " - " +
+        scoreText(item.awayScore) + " " + item.awayTeam + " | " + item.minuteOrStatus;
+      return '<a class="live-scores-ticker__item"' + attributes + ' aria-label="' + escapeHtml(label) + '">' +
+        '<span class="live-scores-ticker__league">' + escapeHtml(item.league) + '</span>' +
+        '<span class="live-scores-ticker__separator" aria-hidden="true">|</span>' +
+        '<strong class="live-scores-ticker__match">' +
+        '<span class="live-scores-ticker__team">' + escapeHtml(item.homeTeam) + '</span>' +
+        '<span class="live-scores-ticker__score">' + escapeHtml(scoreText(item.homeScore)) + ' - ' + escapeHtml(scoreText(item.awayScore)) + '</span>' +
+        '<span class="live-scores-ticker__team">' + escapeHtml(item.awayTeam) + '</span>' +
+        '</strong>' +
+        '<span class="live-scores-ticker__separator" aria-hidden="true">|</span>' +
+        '<span class="live-scores-ticker__minute' + (item.isHalftime ? " is-halftime" : "") + '"><i class="live-pulse" aria-hidden="true"></i>' + escapeHtml(item.minuteOrStatus) + '</span>' +
+        '</a>';
     }
 
-    function render(target, records, source) {
-      var items = sortedRecords(records);
-      var track = target && target.querySelector("[data-transfer-radar-track]");
+    function render(target, matches) {
+      var items = selectRecords(matches);
+      var track = target && target.querySelector("[data-live-scores-track]");
       if (!target || !track) return;
-      target.dataset.source = source || "fallback";
+      target.toggleAttribute("data-empty", !items.length);
 
       if (!items.length) {
-        // ÖN DERLENMİŞ GERÇEK VERİ SİLİNMEZ.
-        //
-        // Bant artık derleme sırasında dolduruluyor (prerender-core-pages.mjs
-        // `transfer-radar` yuvası). Canlı istek düşerse buraya boş dizi ile
-        // gelinir; eskiden bu, ekranda duran DOĞRU transferleri silip yerine
-        // "hazırlanıyor" yazıyordu. Veri yokluğu, elimizdeki doğrulanmış
-        // veriyi çöpe atmak için bir sebep değil — bant olduğu gibi kalır.
-        if (track.querySelector(".transfer-radar-ticker__item")) return;
         track.classList.add("is-static");
-        track.innerHTML = '<div class="transfer-radar-ticker__group"><span class="transfer-radar-ticker__empty">Transfer güncellemeleri hazırlanıyor.</span></div>';
+        track.innerHTML = '<div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">Şu anda canlı maç yok.</span></div>';
         return;
       }
 
       track.classList.remove("is-static");
       var primary = items.map(function (item) { return itemHtml(item, false); }).join("");
       var duplicate = items.map(function (item) { return itemHtml(item, true); }).join("");
-      track.style.setProperty("--transfer-ticker-duration", Math.max(34, Math.min(80, items.length * 9)) + "s");
+      // Transfer bandına göre belirgin biçimde daha hızlı: öğe başına 5sn,
+      // 18-45sn arasında (transfer bandı 9sn/34-80sn kullanıyordu).
+      track.style.setProperty("--live-ticker-duration", Math.max(18, Math.min(45, items.length * 5)) + "s");
       track.innerHTML =
-        '<div class="transfer-radar-ticker__group">' + primary + '</div>' +
-        '<div class="transfer-radar-ticker__group" aria-hidden="true">' + duplicate + '</div>';
+        '<div class="live-scores-ticker__group">' + primary + '</div>' +
+        '<div class="live-scores-ticker__group" aria-hidden="true">' + duplicate + '</div>';
+    }
+
+    function refresh(target) {
+      if (window.location.protocol === "file:") return Promise.resolve();
+      // Aynı desen diğer canlı tahtanın kullandığı (app.js:4851): tam listeyi
+      // yeniden çekmek yerine yalnızca `?live=all` uç noktasını sorar ve
+      // sonucu paylaşılan `cache.matches`e birleştirir — böylece bu bant ve
+      // sayfadaki diğer canlı bileşenler aynı tazelenmiş veriyi görür.
+      return fetchJson(API_ROOT + "matches?live=all")
+        .then(function (result) {
+          var live = (result && result.data) || [];
+          if (!live.length) {
+            return loadData("matches");
+          }
+          return loadData("matches").then(function (matches) {
+            var merged = mergeLiveIntoMatches(matches, live);
+            cache.matches = Promise.resolve(merged);
+            return merged;
+          });
+        })
+        .catch(function () {
+          return forceReload("matches");
+        })
+        .then(function (matches) { render(target, matches); })
+        .catch(function (error) {
+          if (window.console && typeof window.console.error === "function") {
+            window.console.error("[futbolradar:live-scores-ticker]", error);
+          }
+        });
     }
 
     function init() {
       var target = document.querySelector(TARGET_SELECTOR);
       if (!target) return;
 
-      // API erişilemezse DEPODAKİ GERÇEK VERİYE düşülür.
-      //
-      // Buradaki yedek eskiden app.js içine gömülmüş dört transferden
-      // oluşan sabit bir diziydi. İki sorunu vardı: (1) doğrulanmış veri
-      // dosyası elimizdeyken kullanılmıyordu, (2) sabit olduğu için zamanla
-      // her koşulda bayatlıyor ve API her düştüğünde okuyucuya aylar öncesi
-      // transferleri güncel gibi gösteriyordu. Yedek artık sitenin geri
-      // kalanının kullandığı yolun aynısı: /data/transfers.json.
-      var apiSource = target.getAttribute("data-transfer-source") || (API_ROOT + "transfers");
-      var staticSource = DATA_ROOT + "transfers.json";
-      // Varsayılan kaynakta (her sayfada aynı /api/transfers) `loadData`
-      // zaten paylaşımlı bir önbellek tutuyor — ana sayfa transfer paneli
-      // ve diğer tüketiciler aynı isteği kullanıyor. Bant burada ayrıca
-      // `fetchJson(apiSource)` çağırdığı için AYNI kaynak İKİNCİ KEZ ağa
-      // çıkıyordu. Sayfa özel bir kaynak bildirdiyse (data-transfer-source)
-      // paylaşımlı önbellek o kaynağı bilmez; o durumda eski doğrudan yol
-      // korunur.
-      var isDefaultTransferSource = apiSource === (API_ROOT + "transfers");
-
-      function paint(result, source) {
-        var records = result && result.data;
-        if (!Array.isArray(records) || !records.length || !sortedRecords(records).length) {
-          render(target, [], "empty");
-          return false;
-        }
-        render(target, records, source);
-        return true;
-      }
-
       if (window.location.protocol === "file:") {
-        render(target, [], "empty");
+        render(target, []);
         return;
       }
 
-      var primaryFetch = isDefaultTransferSource
-        ? loadData("transfers").then(function (records) { return { data: records }; })
-        : fetchJson(apiSource);
-
-      primaryFetch
-        .then(function (result) { paint(result, "api"); })
-        .catch(function (apiError) {
-          return fetchJson(staticSource)
-            .then(function (result) { paint(result, "static"); })
-            .catch(function (staticError) {
-              if (window.console && typeof window.console.error === "function") {
-                window.console.error("[futbolradar:transfer-radar]", apiError, staticError);
-              }
-              // Uydurma yok: iki kaynak da yoksa bant boş durumunu yazar.
-              render(target, [], "empty");
-            });
-        });
+      // Ön render edilmiş gerçek (statik) canlı maçlar sayfa açılışında
+      // zaten ekranda; ilk istek onları hemen ez­meye çalışmaz, yalnızca
+      // periyodik tazeleme başlatır — MATCH_LIVE_POLL_MS ile aynı desen
+      // (createLivePoller, app.js:380).
+      refresh(target);
+      createLivePoller(POLL_MS, function () { return refresh(target); }).start();
     }
 
-    return { init: init, render: render, sort: sortedRecords };
+    return { init: init, render: render };
   })();
 
   function initDataLayer() {
-    TransferRadarTicker.init();
+    LiveScoresTicker.init();
     // Ön render edilmiş karusel veri gelmeden de dönmeye başlasın; ilk
     // istek yavaşsa kart donmuş görünmemeli.
     initFeaturedCarousel(document);

@@ -34,7 +34,7 @@ import {
 } from "./lib/matchCards.mjs";
 import { transferTypeEn } from "./lib/enTicker.mjs";
 import { homePollBlock, interleavePollPromo, pollPromoCardHtml, pollStickyWidgetHtml } from "./lib/homePoll.mjs";
-import { transferTickerBlock } from "./lib/transferTicker.mjs";
+import { liveTickerBlock } from "./lib/liveScoresTicker.mjs";
 
 const require = createRequire(import.meta.url);
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -62,7 +62,7 @@ const { canonicalStatus, istanbulDay, liveVerdict } = require("../services/match
 const { selectFeaturedMatches } = require("../services/featuredMatchSelector.js");
 const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
 const { publishableNews, newsHref } = require("../services/newsFeed.js");
-const { selectTickerRecords } = require("../services/transferRadarTicker.js");
+const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
 const { withRelevance } = require("../services/matchRelevance.js");
 // Maç programı sırası ve makine okunur karşılığı — Türkçe tarafla aynı servis.
 const { orderMatchProgram } = require("../services/matchProgram.js");
@@ -369,7 +369,7 @@ function sectionLinks() {
  * canonical HER DİLİN KENDİ URL'İDİR. İngilizce sayfanın canonical'ını
  * Türkçe sayfaya vermek, İngilizce sürümü indeksten silmek demek olurdu.
  */
-function pageShell({ routeKey, trPath, enPath, heroKicker, heroTitle, heroLead, heroMeta, body, schema, bare, transferTicker, stickyWidget }) {
+function pageShell({ routeKey, trPath, enPath, heroKicker, heroTitle, heroLead, heroMeta, body, schema, bare, liveTicker, stickyWidget }) {
   const meta = routeMeta(routeKey, LOCALE);
   const canonical = absoluteUrl(enPath);
   const trUrl = absoluteUrl(trPath);
@@ -438,7 +438,7 @@ ${body}
     <script type="application/ld+json">${JSON.stringify(schema)}</script>
   </head>
   <body class="${bare ? "home-page" : "subpage"}">
-    ${siteHeader({ base: BASE, locale: LOCALE, altHref })}${transferTicker ? `\n    ${transferRadarTicker()}` : ""}
+    ${siteHeader({ base: BASE, locale: LOCALE, altHref })}${liveTicker ? `\n    ${liveScoresTicker()}` : ""}
     ${main}
     ${siteFooter({ base: BASE, locale: LOCALE })}
     ${stickyWidget || ""}
@@ -493,28 +493,12 @@ const todayLabel = `${formatWeekday(`${TODAY}T12:00:00+03:00`, LOCALE)}, ${forma
 // Türkçe paragraf gösterilmez, makine çevirisi de yapılmaz. Geri kalan her
 // bölüm aynı sınıflarla, aynı sırada, aynı veriden çiziliyor.
 
-/**
- * TRANSFER BANDI — İKİNCİ BANT, İNGİLİZCE TARAFTA DA.
- *
- * Türkçe ana sayfada bandın kabuğu `index.html` içinde duruyor ve içini
- * `app.js` (TransferRadarTicker) dolduruyor. `app.js` İngilizce sayfalara
- * yüklenmiyor — yüklenseydi bandın bütün etiketleri Türkçe basılırdı — bu
- * yüzden İngilizce bant DERLEME SIRASINDA yazılır: aynı işaretleme, aynı
- * sınıflar, aynı veri (data/transfers.json), aynı sıralama; yalnızca metin
- * İngilizce. Kayan animasyon saf CSS olduğu için JavaScript'siz de çalışır.
- */
-const TRANSFER_BREAKING_WINDOW_MS = 3 * 24 * 60 * 60 * 1000;
-const TRANSFER_PRIORITY_CLUBS = [
-  "galatasaray", "fenerbahce", "besiktas", "trabzonspor",
-  "basaksehir", "eyupspor", "samsunspor", "goztepe"
-];
-
 /** app.js'teki `normalizeSearchText` ile aynı iş: aksan ve büyük harf nötr. */
 function foldText(value) {
   return String(value === undefined || value === null ? "" : value)
     .toLocaleLowerCase("tr")
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .replace(/ı/g, "i")
     .replace(/ş/g, "s")
     .replace(/ğ/g, "g")
@@ -524,21 +508,11 @@ function foldText(value) {
     .trim();
 }
 
-/** Durum anahtarı app.js ile AYNI kurallardan; görünen metin İngilizce. */
-function transferStatusKey(record) {
-  if (["Official", "Rumor", "Talks", "Loan"].includes(record.displayStatus)) return record.displayStatus;
-  const raw = foldText([record.type, record.status, record.stage].filter(Boolean).join(" "));
-  if (/kiralik|loan/.test(raw)) return "Loan";
-  if (/talk|negotiat|gorus|temas/.test(raw)) return "Talks";
-  if (/rumou?r|iddia|reported|linked/.test(raw)) return "Rumor";
-  if (/confirm|official|complete|signed|resmi|kesin/.test(raw)) return "Official";
-  return "Rumor";
-}
-
 /**
  * Kulüp adı ÇEVRİLMEZ — "Fiorentina" her dilde Fiorentina'dır. Çevrilen tek
  * şey kulüp OLMAYAN yer tutucu: kadrosuz oyuncu için veri "Serbest oyuncu"
- * yazıyor ve bu bir isim değil, bir durum.
+ * yazıyor ve bu bir isim değil, bir durum. "Transfer Takibi" paneli
+ * (transferWatchSection) bunu kullanır — bant ayrı bir bileşen.
  */
 function clubLabelEn(value) {
   const name = String(value || "").trim();
@@ -546,30 +520,32 @@ function clubLabelEn(value) {
 }
 
 /**
- * Seçim, sıralama ve durum eşlemesi SERVİSTEN gelir
- * (services/transferRadarTicker.js) — Türkçe ön derleme de aynı listeyi
- * oradan alır. Burada yapılan tek şey İngilizce sunum: kulüp adı çevrilmez,
- * yalnızca kulüp OLMAYAN yer tutucu ("Serbest oyuncu") çevrilir.
+ * CANLI SKORLAR BANDI - IKINCI BANT, INGILIZCE TARAFTA DA.
+ *
+ * Turkce ana sayfada bandin kabugu index.html icinde duruyor ve icini
+ * app.js (LiveScoresTicker) dolduruyor. app.js Ingilizce sayfalara
+ * yuklenmiyor - yuklenseydi bandin butun etiketleri Turkce basilirdi - bu
+ * yuzden Ingilizce bant DERLEME SIRASINDA yazilir: ayni isaretleme, ayni
+ * siniflar, ayni mac anlik goruntusu; takim/lig adlari zaten dilden
+ * bagimsiz. Kayan animasyon saf CSS oldugu icin JavaScript siz de calisir.
+ *
+ * Secim ve siralama SERVISTEN gelir (services/liveScoresTicker.js) -
+ * Turkce on derleme de ayni fonksiyonu kullanir.
  */
-function transferTickerRecords() {
-  return selectTickerRecords(readJson("transfers.json", {}), { locale: "en" })
-    .map((item) => ({
-      ...item,
-      toTeam: clubLabelEn(item.toTeam),
-      fromTeam: clubLabelEn(item.fromTeam)
-    }));
+function liveScoresTickerRecords() {
+  return selectLiveTickerRecords(programMatches());
 }
 
 /**
- * İşaretleme scripts/lib/transferTicker.mjs'te — Türkçe ön derleme ve bu
- * üretici aynı fonksiyondan çizer. Burada kalan tek şey İngilizce kayıtları
- * seçip bandı istemek.
+ * Isaretleme scripts/lib/liveScoresTicker.mjs te - Turkce on derleme ve bu
+ * uretici ayni fonksiyondan cizer.
  *
- * `keepEmpty`: veri gelmediğinde bant kaybolmaz, yer tutucusuyla kalır. Ana
- * sayfanın sabit bir parçası olduğu için kaybolması düzeni oynatırdı.
+ * keepEmpty: canli mac yoksa bant kaybolmaz, no live matches mesajiyla
+ * kalir. Ana sayfanin sabit bir parcasi oldugu icin kaybolmasi duzeni
+ * oynatirdi.
  */
-function transferRadarTicker() {
-  return transferTickerBlock(transferTickerRecords(), { locale: "en", keepEmpty: true });
+function liveScoresTicker() {
+  return liveTickerBlock(liveScoresTickerRecords(), { locale: "en", keepEmpty: true, base: BASE });
 }
 
 /**
@@ -1250,7 +1226,7 @@ function homePage() {
 
   return pageShell({
     routeKey: "home",
-    transferTicker: true,
+    liveTicker: true,
     trPath: "index.html",
     enPath: "en/index.html",
     heroKicker: label("en.turkishFirst"),

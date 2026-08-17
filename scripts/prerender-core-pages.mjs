@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { transferTickerTrack } from "./lib/transferTicker.mjs";
+import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
   fixtureRow as sharedFixtureRow,
@@ -37,7 +37,7 @@ const { publishableNews, newsHref, isExternalHref } = require("../services/newsF
 const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // Transfer bandının seçim/sıralama kuralı da tek yerde; İngilizce bant da
 // aynı servisi kullanıyor.
-const { selectTickerRecords } = require("../services/transferRadarTicker.js");
+const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -1231,21 +1231,18 @@ function fixtureRounds() {
  * aynı anda hem "veri yok" hem "veri var" diyordu — JavaScript yüklenene
  * kadar okuyucunun ve Googlebot'un gördüğü hâl buydu.
  *
- * Seçim ve sıralama servistedir (services/transferRadarTicker.js); İngilizce
+ * Seçim ve sıralama servistedir (services/liveScoresTicker.js); İngilizce
  * bant da aynı listeyi oradan alır. İstemci canlı veriyle üstüne yazar ama
  * aynı kuralı kullandığı için bant yerinden oynamaz.
  *
  * Kayan animasyon saf CSS; bant JavaScript olmadan da çalışır.
  *
- * İşaretleme scripts/lib/transferTicker.mjs'te — Türkçe ön derleme,
+ * İşaretleme scripts/lib/liveScoresTicker.mjs'te — Türkçe ön derleme,
  * İngilizce üretici ve ana sayfa dışındaki sayfalara basılan bant aynı
  * fonksiyondan çizilir. Burada kalan tek şey veriyi seçip şeridi istemek.
  */
-function transferRadarTrack() {
-  return transferTickerTrack(selectTickerRecords(transfers), {
-    locale: "tr",
-    sourceRel: SOURCE_LINK_REL
-  });
+function liveScoresTrack() {
+  return liveTickerTrack(selectLiveTickerRecords(curatedMatches()), { locale: "tr" });
 }
 
 /**
@@ -1450,7 +1447,7 @@ writePage("index.html", {
   "player-signals": playerSignalsSlot(),
   "news-preview": newsCards(3),
   "analysis-preview": analysisCards(),
-  "transfer-radar": transferRadarTrack()
+  "live-scores-ticker": liveScoresTrack()
 }, fixtureFreshness, {
   "official-lineup-alerts": officialLineupAlerts()
 });
