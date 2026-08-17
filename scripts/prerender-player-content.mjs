@@ -183,7 +183,13 @@ function rootLandingConfig(slug) {
     "en-iyi-kaleciler": (player) => player.positionGroup === "goalkeeper",
     "yukselen-oyuncular": (player) => {
       const trend = String(player.trendDirection || player.trend || "").toLocaleLowerCase("tr-TR");
-      return Number(player.formChange) > 0 || trend.includes("up") || trend.includes("yüksel") || trend.includes("yuksel");
+      const isTrendingUp = Number(player.formChange) > 0 || trend.includes("up") || trend.includes("yüksel") || trend.includes("yuksel");
+      if (!isTrendingUp) return false;
+      // Kulübü olmayan bir oyuncu "yükselişte" olamaz — güncel kulüp yoksa
+      // (serbest oyuncu, sözleşmesi biten) bayat form verisi yanıltıcı olur.
+      const team = String(player.currentTeam || player.team || "").trim();
+      if (!team || /serbest|free agent|kulüpsüz/i.test(team)) return false;
+      return true;
     },
     "genc-yetenekler": (player) => Number(player.computedAge || player.age || 99) < 23,
     "transfer-radari": (player) => Array.isArray(player.transferHistory) && player.transferHistory.length > 0
