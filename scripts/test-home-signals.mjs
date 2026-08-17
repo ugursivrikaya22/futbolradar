@@ -319,7 +319,15 @@ const upcomingTurkish = {
 const blockMatch = appSource.match(/\/\/ daily-headlines:start([\s\S]*?)\/\/ daily-headlines:end/);
 assert.ok(blockMatch, "app.js içinde daily-headlines bloğu bulunmalı");
 
-const clientModule = new Function(`
+// isTurkishMatch taklidi ÜRETİMLE AYNI modüle devredilir. Eskiden altı
+// büyük kulüplük elle liste taklit ediliyordu; üretimdeki istemci ve servis
+// tüm Türk takımlarını tanırken taklit Samsunspor/Batman Petrolspor gibi
+// maçları "yabancı" sayıyor ve parite testi gerçek veride (üç eşzamanlı
+// canlı maç gecesi) sahte bir ayrışma bildiriyordu. Taklidin görevi
+// üretim davranışını birebir temsil etmek — daraltmak değil.
+const { isTurkishMatch: realIsTurkishMatch } = require("../services/turkishTeams.js");
+
+const clientModule = new Function("isTurkishMatch", `
   "use strict";
   function isLiveMatch(match) {
     if (!match) return false;
@@ -331,17 +339,12 @@ const clientModule = new Function(`
     var status = String((match && (match.status || match.providerStatus)) || "").toUpperCase();
     return ["FINISHED", "FT", "AET", "PEN", "AWARDED", "WO"].indexOf(status) !== -1;
   }
-  function isTurkishMatch(match) {
-    var names = ["Trabzonspor", "Fenerbahçe", "Galatasaray", "Beşiktaş", "Başakşehir", "Çaykur Rizespor"];
-    return names.indexOf(String(match && match.homeTeam)) !== -1 ||
-      names.indexOf(String(match && match.awayTeam)) !== -1;
-  }
   ${blockMatch[1]}
   return {
     buildDailyHeadlines: buildDailyHeadlines,
     visibleQuickStats: visibleQuickStats
   };
-`)();
+`)(realIsTurkishMatch);
 
 const parityCases = [
   { label: "canlı + biten + başlayacak", list: [upcomingTurkish, finishedWithAnalysis, liveTurkish] },

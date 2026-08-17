@@ -161,9 +161,14 @@ function normalizeFixture(match) {
   return {
     id: match.id,
     fixtureId: match.id,
-    // API-Football kimliği öncelikli: providerIds.apiFootball her zaman
-    // sayısaldır; düz providerId TheSportsDB'den alfasayısal gelebilir.
-    providerId: (match.providerIds && match.providerIds.apiFootball) || match.providerId || null,
+    // YALNIZCA API-Football kimliği taşınır: providerIds.apiFootball, ya da
+    // kaydın kendisi api-football kaynaklıysa üst düzey providerId. Düz
+    // providerId'ye körlemesine düşülMEZ — TheSportsDB'nin SAYISAL etkinlik
+    // kimliği buradan sızıp resmî 11 ve canlı istatistik isteklerini yanlış
+    // maça yönlendiriyordu. Kimlik yoksa null kalır; sync-match-predictions
+    // sezon fikstüründen çözünce sonraki üretimde dolar.
+    providerId: (match.providerIds && match.providerIds.apiFootball) ||
+      (match.source === "api-football" ? match.providerId : null) || null,
     slug: match.id || `${slug(match.homeTeam)}-${slug(match.awayTeam)}-${dateOnly(match.kickoff) || "tbd"}`,
     competition: resolveCompetition(match),
     competitionType: classification.competitionType,

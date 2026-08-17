@@ -11,18 +11,27 @@ import { createRequire } from "node:module";
  * "tek durak" olacaksa ikili rekabet ve sağlayıcı yüzdeleri turdan GÜNLER
  * önce görünmeli.
  *
- * Bu adım hedef başına TEK istek atar (yalnızca /predictions) ve yalnızca
- * günlük full koşuda çalışır: hafta başına ~9 maç ≈ günde ~9 istek.
- * Tahmini zaten bugün tazelenmiş kayıt atlanır — sağlayıcı tahmini gün
- * içinde anlamlı değişmez, kota boşa yakılmaz.
+ * KİMLİK ÇÖZÜMÜ ÖNCE GELİR: yaklaşan turların takvim kayıtları TheSportsDB
+ * kaynaklıdır ve `providerId` alanları TheSportsDB'nin SAYISAL etkinlik
+ * kimliğidir — API-Football fixture kimliği DEĞİLDİR ve /predictions'a
+ * gönderilemez (yanlış maçın verisi gelebilir). API-Football kimlikleri
+ * yalnızca `providerIds.apiFootball` altında güvenilirdir; eksikse tek bir
+ * sezon-fikstürü isteğiyle (kulüp çifti + gün eşleşmesi, isSameFixture)
+ * çözülüp kayda yazılır.
  *
- * UYDURMA YOK: sağlayıcı boş dönerse kayda hiçbir şey yazılmaz; mevcut
- * (varsa) eski tahmin korunur ve yaşı `predictionFetchedAt`ten okunur.
+ * Kota: kimlik çözümü 1 istek (yalnızca eksik varsa) + hedef başına 1
+ * /predictions isteği; yalnızca günlük full koşuda çalışır. Bugün
+ * tazelenmiş kayıt atlanır — sağlayıcı tahmini gün içinde anlamlı değişmez.
+ *
+ * UYDURMA YOK: kimliği çözülemeyen maça istek atılmaz, sağlayıcı boş
+ * dönerse kayda hiçbir şey yazılmaz; mevcut (varsa) eski tahmin korunur ve
+ * yaşı `predictionFetchedAt`ten okunur.
  */
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const apiFootballProvider = require("../services/providers/apiFootballProvider.js");
+const { isSameFixture } = require("../services/fixtureCalendar.js");
 import { readJsonFile } from "./lib/readJsonFile.mjs";
 
 const CALENDAR_PATH = path.join(root, "data", "fixture-calendar.json");
@@ -43,6 +52,18 @@ function isoDay(value) {
   return String(value || "").slice(0, 10);
 }
 
+export function apiFootballFixtureId(match) {
+  const declared = match && match.providerIds && match.providerIds.apiFootball;
+  if (declared && /^\d+$/.test(String(declared))) return String(declared);
+  // Kaydın kendisi API-Football'dan geldiyse üst düzey providerId onun
+  // fixture kimliğidir; başka kaynaktan gelen sayısal kimlikler (örn.
+  // TheSportsDB etkinlik numarası) burada ASLA kabul edilmez.
+  if (match && match.source === "api-football" && /^\d+$/.test(String(match.providerId || ""))) {
+    return String(match.providerId);
+  }
+  return null;
+}
+
 export function selectPredictionTargets(matches, options = {}) {
   const now = options.now instanceof Date ? options.now : new Date();
   const nowMs = now.getTime();
@@ -52,9 +73,6 @@ export function selectPredictionTargets(matches, options = {}) {
   return (Array.isArray(matches) ? matches : [])
     .filter((match) => {
       if (!TARGET_COMPETITIONS.has(String(match.competitionId || ""))) return false;
-      const providerFixtureId = (match.providerIds && match.providerIds.apiFootball) ||
-        (/^\d+$/.test(String(match.providerId || "")) ? match.providerId : null);
-      if (!providerFixtureId) return false;
       const kickoff = Date.parse(match.kickoff);
       if (!Number.isFinite(kickoff)) return false;
       if (kickoff < nowMs || kickoff > horizonMs) return false;
@@ -66,6 +84,27 @@ export function selectPredictionTargets(matches, options = {}) {
     })
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
     .slice(0, MAX_TARGETS_PER_RUN);
+}
+
+/**
+ * Hedeflerin eksik API-Football kimliklerini tek sezon-fikstürü isteğiyle
+ * çözer ve kalıcı olarak kayda yazar (mevcut kimlikler asla ezilmez).
+ * Belirsiz/eşleşmeyen maç kimliksiz kalır — tahmin edilmez.
+ */
+async function resolveMissingProviderIds(targets) {
+  const missing = targets.filter((match) => !apiFootballFixtureId(match));
+  if (!missing.length) return 0;
+
+  const seasonFixtures = await apiFootballProvider.getSeasonFixtures({});
+  let resolved = 0;
+  for (const match of missing) {
+    const candidates = seasonFixtures.filter((fixture) => isSameFixture(fixture, match));
+    if (candidates.length !== 1 || !/^\d+$/.test(String(candidates[0].providerId || ""))) continue;
+    match.providerIds = { ...(match.providerIds || {}), apiFootball: String(candidates[0].providerId) };
+    resolved += 1;
+  }
+  console.log(`Provider identity resolution: ${resolved}/${missing.length} fixture(s) matched via season fixtures.`);
+  return resolved;
 }
 
 async function main() {
@@ -86,10 +125,20 @@ async function main() {
   }
 
   console.log(`${targets.length} fixture(s) selected for provider prediction refresh (cap ${MAX_TARGETS_PER_RUN}).`);
+
   let changed = 0;
+  try {
+    changed += await resolveMissingProviderIds(targets);
+  } catch (error) {
+    console.log(`Provider identity resolution failed (${error.code || error.message}) — fixtures without a known API-Football id will be skipped.`);
+  }
 
   for (const match of targets) {
-    const providerFixtureId = (match.providerIds && match.providerIds.apiFootball) || match.providerId;
+    const providerFixtureId = apiFootballFixtureId(match);
+    if (!providerFixtureId) {
+      console.log(`  ${match.id}: no verified API-Football fixture id — skipped (never guessed).`);
+      continue;
+    }
     try {
       const items = await apiFootballProvider.getPredictions({ fixtureId: providerFixtureId });
       const prediction = Array.isArray(items) && items.length ? items[0] : null;
@@ -112,7 +161,7 @@ async function main() {
   }
 
   if (!args.apply) {
-    console.log(`Dry run: ${changed} record(s) would be updated. No file written.`);
+    console.log(`Dry run: ${changed} record change(s) would be written. No file written.`);
     return;
   }
 
@@ -121,7 +170,7 @@ async function main() {
     fs.writeFileSync(tempPath, `${JSON.stringify(calendar, null, 2)}\n`);
     fs.renameSync(tempPath, filePath);
   }
-  console.log(`Updated ${changed} prediction record(s) in fixture-calendar.json (+ public mirror).`);
+  console.log(`Wrote ${changed} record change(s) to fixture-calendar.json (+ public mirror).`);
 }
 
 const isDirectRun = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname);

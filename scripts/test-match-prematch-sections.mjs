@@ -308,8 +308,29 @@ check("sameClub gerçek modülüyle: Süper Lig sayfası çapraz veriye bağlan�
   const sample = fs.readFileSync(path.join(root, "mac", "erzurumspor-fk-galatasaray-2026-2027-r02.html"), "utf8");
   assert.ok(sample.includes('class="match-lineups"'), "yaklaşan tur sayfası kadro bölümü taşımalı");
   assert.ok(sample.includes("match-probability"), "olasılık bölümü olmalı");
-  assert.ok(sample.includes('data-provider-fixture="2527738"'), "canlı istatistik kabuğu sağlayıcı kimliğiyle basılmalı");
   assert.ok(sameClub("Erzurumspor FK", "Erzurumspor FK"), "sameClub temel eşleşmeyi doğrulamalı");
+});
+
+check("data-provider-fixture yalnızca DOĞRULANMIŞ API-Football kimliği taşır", () => {
+  // TheSportsDB'nin sayısal etkinlik kimliği sağlayıcı kimliği DEĞİLDİR;
+  // yanlış kimlik canlı istatistik/resmî 11 isteklerini başka maça
+  // yönlendirir. Her sayfadaki kimlik, analiz kaydının (yalnızca gerçek
+  // API-Football kimliği taşıyan) providerId kümesinden gelmeli.
+  const analyses = JSON.parse(fs.readFileSync(path.join(root, "data", "match-analyses.json"), "utf8"));
+  const knownIds = new Set(analyses.map((record) => record.providerId).filter(Boolean));
+  const calendar = JSON.parse(fs.readFileSync(path.join(root, "data", "fixture-calendar.json"), "utf8"));
+  for (const match of calendar.matches || []) {
+    const declared = match.providerIds && match.providerIds.apiFootball;
+    if (declared) knownIds.add(String(declared));
+  }
+  const dir = path.join(root, "mac");
+  for (const file of fs.readdirSync(dir).filter((name) => name.endsWith(".html"))) {
+    const html = fs.readFileSync(path.join(dir, file), "utf8");
+    const found = html.match(/data-provider-fixture="(\d+)"/);
+    if (found) {
+      assert.ok(knownIds.has(found[1]), `${file}: doğrulanmamış sağlayıcı kimliği basılmış (${found[1]})`);
+    }
+  }
 });
 
 if (failures) {
