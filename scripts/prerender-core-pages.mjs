@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
+import { transferTickerBlock } from "./lib/transferTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
   fixtureRow as sharedFixtureRow,
@@ -38,6 +39,8 @@ const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // Transfer bandının seçim/sıralama kuralı da tek yerde; İngilizce bant da
 // aynı servisi kullanıyor.
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
+const { selectTickerRecords } = require("../services/transferRadarTicker.js");
+const { isTransferWindowOpen } = require("../services/transferWindow.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -1246,6 +1249,31 @@ function liveScoresTrack() {
 }
 
 /**
+ * ANA SAYFANIN EN ALTINDAKİ TRANSFER RADARI BANDI.
+ *
+ * Yalnızca gerçek TFF tescil dönemi içindeyken basılır (services/
+ * transferWindow.js, tarihler data/transfer-window.json'da — koda tarih
+ * gömülmez). Pencere kapandığında bu fonksiyon boş dize döner; site zaten
+ * saatte bir yeniden derlendiği için bant, bir sonraki derlemede koda
+ * dokunmadan kaybolur — pencere açıldığında da aynı şekilde geri gelir.
+ *
+ * Seçim kuralı services/transferRadarTicker.js'te: yalnızca son 3 günün
+ * doğrulanmış hareketleri (bkz. o dosyanın başındaki "UYDURMA YOK" kuralı).
+ * Pencere açık ama seçilecek güncel kayıt yoksa da boş dize dönülür —
+ * boş yer tutucu ya da bayat kayıt gösterilmez.
+ *
+ * Canlı Skorlar bandından (ana sayfanın TEPESİNDE) bilerek ayrı ve
+ * bağımsız: farklı konum, farklı veri, farklı görünme kuralı. Onun
+ * kodu/CSS'i burada değiştirilmez.
+ */
+function transferRadarBottomTicker() {
+  if (!isTransferWindowOpen()) return "";
+  const records = selectTickerRecords(transfers);
+  if (!records.length) return "";
+  return transferTickerBlock(records, { locale: "tr", sourceRel: SOURCE_LINK_REL });
+}
+
+/**
  * Transfer radarı bu sezonun hareketlerini gösteriyor; sınır app.js'teki
  * TRANSFER_RADAR_SINCE ile aynı olmalı. Statik ön render eski kayıtları
  * gösterip JS yüklendiğinde liste değişseydi, okuyucu sayfanın kendi
@@ -1449,7 +1477,8 @@ writePage("index.html", {
   "analysis-preview": analysisCards(),
   "live-scores-ticker": liveScoresTrack()
 }, fixtureFreshness, {
-  "official-lineup-alerts": officialLineupAlerts()
+  "official-lineup-alerts": officialLineupAlerts(),
+  "transfer-radar-bottom": transferRadarBottomTicker()
 });
 
 writePage("analizler.html", {

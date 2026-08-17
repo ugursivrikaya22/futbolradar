@@ -1,17 +1,17 @@
 /**
  * TRANSFER RADARI BANDININ TEK İŞARETLEME KAYNAĞI.
  *
- * Bant üç ayrı yerde elle yazılmıştı: Türkçe ön derleme
- * (prerender-core-pages.mjs), İngilizce üretici (generate-en-pages.mjs) ve
- * istemci (app.js). Üçü de aynı DOM'u kuruyordu ama ayrı ayrı; biri
- * değiştiğinde diğerlerinin sessizce geride kalması an meselesiydi. Bandı
- * ana sayfa dışına taşırken dördüncü bir kopya eklemek yerine işaretleme
- * buraya alındı.
+ * Bant ana sayfanın EN ALTINDA, yalnızca gerçek TFF tescil dönemi
+ * içindeyken basılır (services/transferWindow.js) — prerender-core-
+ * pages.mjs'in `transferRadarBottomTicker()`'ı tüketir. İstemci tarafında
+ * ayrı bir kopyası YOK: ana sayfa zaten saatte bir yeniden derleniyor,
+ * bant derleme anında karar veriliyor. (Ayrı bir bileşen olan Canlı
+ * Skorlar bandı — scripts/lib/liveScoresTicker.mjs — istemcide tazelenir;
+ * bu bant tazelenmez, karıştırılmamalı.)
  *
  * SEÇİM buraya AİT DEĞİL: hangi transferin banda gireceği, sıralaması ve
  * durum anahtarı services/transferRadarTicker.js'te. Burası yalnızca
- * "seçilmiş kayıtlar nasıl çizilir" sorusunu cevaplar. İki sorumluluğu
- * ayrı tutmak, dil eklemenin seçim kurallarına dokunmamasını sağlıyor.
+ * "seçilmiş kayıtlar nasıl çizilir" sorusunu cevaplar.
  *
  * Kayan animasyon saf CSS; bant JavaScript olmadan da çalışır. İkinci grup
  * (aria-hidden) kaymanın kesintisiz görünmesi için birebir kopyadır —
@@ -142,9 +142,9 @@ export function transferTickerItem(item, options = {}) {
 /**
  * Kayan şerit. Veri yoksa yer tutucu KALIR — uydurma yapılmaz.
  *
- * Süre app.js ile aynı formülden gelir: öğe başına 9 sn, 34-80 sn arasında.
- * İstemci bandı canlı veriyle tazelediğinde aynı hesabı yaptığı için şerit
- * yerinden oynamaz.
+ * Süre öğe başına 6 sn, 16-38 sn arasında — haber bandının (öğe başına 10
+ * sn, en az 36 sn) belirgin biçimde önünde: bant ana sayfanın en altında,
+ * "hızlı ve akıcı" hissettirmesi istendi.
  */
 export function transferTickerTrack(records, options = {}) {
   const { locale, sourceRel } = options;
@@ -156,7 +156,7 @@ export function transferTickerTrack(records, options = {}) {
           </div>`;
   }
 
-  const duration = Math.max(34, Math.min(80, items.length * 9));
+  const duration = Math.max(16, Math.min(38, items.length * 6));
   const primary = items.map((item) => transferTickerItem(item, { locale, duplicate: false, sourceRel })).join("");
   const duplicate = items.map((item) => transferTickerItem(item, { locale, duplicate: true, sourceRel })).join("");
   return `<div class="transfer-radar-ticker__track" style="--transfer-ticker-duration:${duration}s" data-transfer-radar-track>
