@@ -10,6 +10,7 @@ const analyses = require("../../data/analyses.json");
 const { normalizeText } = require("../../api/_utils");
 const { findCompetition, matchesCompetition, normalizeKey } = require("../competitionCatalog");
 const { normalizePlayer: normalizePlayerRecord } = require("../playerService");
+const { isFinishedStatus, isAwardedStatus } = require("../matchStatus.js");
 
 // Bu sağlayıcı artık yalnızca örnek veri sunmuyor: elle doğrulanmış
 // editoryal maç kayıtlarını ve sağlayıcıdan senkronlanan fikstür takvimini
@@ -289,6 +290,27 @@ function hasFinalScore(match) {
 }
 
 /**
+ * KAYIT GERÇEKTEN TAMAMLANMIŞ MI (durumuyla birlikte)?
+ *
+ * `hasFinalScore` yalnızca skor alanının dolu olup olmadığına bakar — canlı
+ * bir maçın 2-0'ı da bu testten geçer, çünkü devam eden bir maçın skoru da
+ * "dolu"dur, "yok" değildir. Bu ayrım bir bug'a yol açtı: iki sağlayıcı aynı
+ * maçı ayrı kayıtlarla bildirdiğinde (theSportsDb "LIVE 2-0" derken
+ * api-football "FT 3-0" diyordu), `canAdvance` hesap yalnızca skor
+ * doluluğuna bakıp `existing`i (bayat LIVE kaydı) "zaten final" sayıyor ve
+ * api-football'un gerçekten bitmiş, daha güncel kaydının maçı FINISHED'e
+ * ilerletmesini engelliyordu. Sonuç: maç bittikten saatler sonra hâlâ
+ * "Canlı 2-0" olarak ana sayfa hero'suna sabitleniyordu.
+ *
+ * Bu fonksiyon skor doluluğuna EK OLARAK durumun gerçekten
+ * tamamlanmış/hükmen sonuçlanmış olmasını da arar; yalnızca böyle bir kayıt
+ * "artık ilerletilemez, koru" sayılır.
+ */
+function isVerifiedFinalRecord(match) {
+  return hasFinalScore(match) && (isFinishedStatus(match) || isAwardedStatus(match));
+}
+
+/**
  * Elle doğrulanmış maçlar (data/matches.json) ile sağlayıcı takvimi
  * (data/fixture-calendar.json) tek listede birleşir.
  *
@@ -405,7 +427,7 @@ function curatedMatches() {
     // taşınır - arayüz isterse "sağlayıcı kaydı" etiketiyle gösterebilir.
     const providerVenue = resolveProviderVenue(existing.venue, calendarMatch.venue);
     const advances = matchStateRank(calendarMatch.status) > matchStateRank(existing.status);
-    const canAdvance = advances && !hasFinalScore(existing);
+    const canAdvance = advances && !isVerifiedFinalRecord(existing);
 
     // SAĞLAYICI KİMLİKLERİ HER ZAMAN BİRLEŞİR.
     //

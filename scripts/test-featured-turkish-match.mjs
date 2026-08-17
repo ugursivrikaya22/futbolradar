@@ -157,12 +157,31 @@ assert.equal(noTurkish.match.id, "rennes-venezia", "Türk maçı yokken canlı m
 assert.equal(noTurkish.reason, "live", "Sebep Türk maçı olmadığını göstermeli");
 assert.equal(noTurkish.turkish, false, "Yabancı maç Türk işaretlenmemeli");
 
-// Gece yarısını aşan canlı maç TSİ'de "dün" görünse de hero'ya girer.
+// Gece yarısını aşan canlı maç TSİ'de "dün" görünse de hero'ya girer — ama
+// yalnızca gerçekten yakın zamanda kalkmışsa. "23:00'te başladı" + "00:45'te
+// hâlâ canlı" bayat-canlı korumasının penceresi (150 dk) içinde kalır; bu
+// yüzden burada paylaşılan `now` (19:08) DEĞİL, gece yarısını gerçekçi bir
+// farkla aşan ayrı bir an kullanılır.
+const overnightNow = new Date(Date.parse("2026-07-30T00:45:00+03:00"));
 const overnight = selectFeaturedMatch(
   [{ ...trabzonspor, kickoff: "2026-07-29T23:00:00+03:00", status: "LIVE" }, foreignFriendly],
-  { now, today }
+  { now: overnightNow, today: "2026-07-30" }
 );
 assert.equal(overnight.reason, "turkish-live", "Canlı Türk maçı tarih filtresine takılmamalı");
+
+// Aynı maç, kalkışın üstünden bayat-canlı penceresini AŞAN bir "gece yarısını
+// aşan" an için artık canlı sayılmamalı — tam da üretimde yakalanan hata bu:
+// sağlayıcı bir maçı hiç FINISHED'e çevirmezse kayıt günlerce "canlı" kalıp
+// hero'ya sabitleniyordu.
+const staleOvernightNow = new Date(Date.parse("2026-07-30T19:08:00+03:00"));
+const staleOvernight = selectFeaturedMatch(
+  [{ ...trabzonspor, kickoff: "2026-07-29T23:00:00+03:00", status: "LIVE" }, foreignFriendly],
+  { now: staleOvernightNow, today: "2026-07-30" }
+);
+assert.notEqual(staleOvernight.reason, "turkish-live",
+  "Kalkıştan 150 dakikadan uzun süre geçmiş 'canlı' kayıt artık canlı sayılmamalı");
+assert.equal(staleOvernight.match && staleOvernight.match.id, "aek-osijek",
+  "Bayat canlı kayıt havuzdan düşünce bugünün maçı öne çıkmalı");
 
 // Bugün hiç maç yoksa hero boş kalmaz; takvimdeki sıradaki maç gösterilir.
 const emptyDay = selectFeaturedMatch(

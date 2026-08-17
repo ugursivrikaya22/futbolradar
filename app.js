@@ -2733,8 +2733,37 @@
     return { value: Number.isNaN(parsed) ? Infinity : parsed, hasTime: hasTime };
   }
 
+  /**
+   * Hero'nun bant kararı ham `isLiveMatch` yerine bu fonksiyonu kullanır:
+   * sağlayıcı bir maçı hiç "FINISHED"e çevirmezse (iki sağlayıcı aynı maçı
+   * ayrı kayıtla bildirip biri gecikince olduğu gibi) ham kontrol o maçı
+   * GÜNLERCE "canlı" sayardı. Kural `services/featuredMatchSelector.js`
+   * ile AYNI: yalnızca YAŞ denetlenir (skor kapısı burada aranmaz — o ayrı
+   * bir sözleşme ve canlı skor yüzeylerinde zaten uygulanıyor).
+   */
+  function featuredIsLiveMatch(match, nowMs) {
+    if (!match) {
+      return false;
+    }
+
+    var status = String((match && (match.status || match.providerStatus)) || "").toUpperCase();
+    var claimsLive = match.live === true ||
+      ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].indexOf(status) !== -1;
+    if (!claimsLive) {
+      return false;
+    }
+
+    var kickoff = featuredKickoffTime(match);
+    if (kickoff.hasTime && isFinite(kickoff.value) && isFinite(nowMs)
+      && nowMs - kickoff.value > FEATURED_IN_PROGRESS_WINDOW_MS) {
+      return false;
+    }
+
+    return true;
+  }
+
   function featuredBandOf(match, nowMs) {
-    if (isLiveMatch(match)) {
+    if (featuredIsLiveMatch(match, nowMs)) {
       return "live";
     }
 
@@ -2823,8 +2852,11 @@
     var list = (Array.isArray(matches) ? matches : []).filter(Boolean);
 
     // Gece yarısını aşan bir maç TSİ'de "dün" görünse de canlıysa havuzdadır.
+    // "Canlı" burada da `featuredIsLiveMatch` ile karar verilir (bayat canlı
+    // korumalı) — yoksa bir günlerdir bitmiş ama hâlâ "LIVE" işaretli kayıt
+    // yalnızca bugünün tarihine bakan filtreyi hep atlatır.
     var pool = list.filter(function (match) {
-      return (matchDateValue(match) === today || isLiveMatch(match)) && !isUnplayedMatch(match);
+      return (matchDateValue(match) === today || featuredIsLiveMatch(match, nowMs)) && !isUnplayedMatch(match);
     });
     var turkishCount = pool.filter(isTurkishMatch).length;
 

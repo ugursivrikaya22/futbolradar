@@ -107,12 +107,40 @@ function statusOf(match) {
   return String((match && (match.status || match.providerStatus)) || "").toUpperCase();
 }
 
-function isLiveMatch(match) {
+/**
+ * Maç ŞU AN gerçekten canlı mi?
+ *
+ * Sağlayıcı "LIVE" dese bile başlama saatinin üstünden `IN_PROGRESS_WINDOW_MS`
+ * (150 dk — bandOf'un "oynanıyor" penceresiyle AYNI süre) geçtiyse maç bayat
+ * sayılır ve canlı DEĞİLDİR. Bu koruma olmadan, bir sağlayıcı bir maçı hiç
+ * "FINISHED"e çevirmezse (gerçek bir olay: theSportsDb + api-football aynı
+ * maçı ayrı kayıtlarla bildirdiğinde biri gecikebiliyor) o maç ana sayfa
+ * hero'sunda GÜNLERCE "Canlı" kalırdı — havuz filtresi
+ * (`selectFeaturedMatches`) canlı maçları tarihe bakmadan içeri aldığı için
+ * "dün oynandı" ayrımı bu kapıdan geçmeden hiç devreye girmiyordu.
+ *
+ * Yalnızca YAŞ denetlenir; skor doluluğu burada aranmaz — o ayrı bir
+ * sözleşme (`services/matchStatus.js`: liveVerdict'in "skor kapısı") ve
+ * canlı skor yüzeylerinde zaten uygulanıyor. Buradaki tek iş hero'nun
+ * bayat bir "canlı" iddiasına sonsuza kadar bel bağlamaması.
+ */
+function isLiveMatch(match, nowMs) {
   if (!match) {
     return false;
   }
 
-  return match.live === true || LIVE_STATUSES.has(statusOf(match));
+  const claimsLive = match.live === true || LIVE_STATUSES.has(statusOf(match));
+  if (!claimsLive) {
+    return false;
+  }
+
+  const kickoff = kickoffTime(match);
+  if (kickoff.hasTime && Number.isFinite(kickoff.value) && Number.isFinite(nowMs)
+    && nowMs - kickoff.value > IN_PROGRESS_WINDOW_MS) {
+    return false;
+  }
+
+  return true;
 }
 
 function isFinishedMatch(match) {
@@ -121,7 +149,7 @@ function isFinishedMatch(match) {
 
 /** Maçın hangi banda düştüğü. */
 function bandOf(match, nowMs) {
-  if (isLiveMatch(match)) {
+  if (isLiveMatch(match, nowMs)) {
     return "live";
   }
 
@@ -223,7 +251,7 @@ function selectFeaturedMatches(matches, options) {
   // Oynanmayan maçlar (ertelendi/iptal/tatil) hero'ya hiç girmez: kartın
   // işi "şu anda ne var" göstermek, oynanmayacak bir eşleşme değil.
   const pool = list
-    .filter((match) => matchDateValue(match) === today || isLiveMatch(match))
+    .filter((match) => matchDateValue(match) === today || isLiveMatch(match, nowMs))
     .filter((match) => !isUnplayedStatus(match));
   const turkishCount = pool.filter(isTurkishMatch).length;
 
@@ -307,9 +335,10 @@ function selectFeaturedMatch(matches, options) {
 
   const settings = options || {};
   const now = settings.now instanceof Date ? settings.now : new Date();
+  const nowMs = now.getTime();
   const today = settings.today || istanbulToday(now);
   const list = (Array.isArray(matches) ? matches : []).filter(Boolean);
-  const pool = list.filter((match) => matchDateValue(match) === today || isLiveMatch(match));
+  const pool = list.filter((match) => matchDateValue(match) === today || isLiveMatch(match, nowMs));
 
   return describe(null, "empty", "", null, pool.length, 0);
 }
