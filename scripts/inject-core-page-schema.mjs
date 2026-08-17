@@ -45,8 +45,12 @@ const MARKER_END = "<!-- core-page-schema:end -->";
 const PAGES = {
   "analizler.html": { section: null, kind: "collection" },
   "asist-kralligi.html": { section: { name: "Oyuncu Radarı", href: "oyuncu-radari.html" }, kind: "collection" },
+  "bahis-sonuclari.html": { section: { name: "Maç Merkezi", href: "mac-merkezi.html" }, kind: "collection" },
   "bugunun-maclari.html": { section: { name: "Maç Merkezi", href: "mac-merkezi.html" }, kind: "collection" },
+  "canli-mac-sonuclari.html": { section: { name: "Maç Merkezi", href: "mac-merkezi.html" }, kind: "collection" },
   "derbi-radari.html": { section: { name: "Maç Merkezi", href: "mac-merkezi.html" }, kind: "collection" },
+  "iddaa-sonuclari.html": { section: { name: "Maç Merkezi", href: "mac-merkezi.html" }, kind: "collection" },
+  "mac-sonuclari.html": { section: { name: "Maç Merkezi", href: "mac-merkezi.html" }, kind: "collection" },
   "futbol-radar-rehberi.html": { section: null, kind: "page" },
   "gol-kralligi.html": { section: { name: "Oyuncu Radarı", href: "oyuncu-radari.html" }, kind: "collection" },
   "gunun-radar-bulteni.html": { section: null, kind: "page" },

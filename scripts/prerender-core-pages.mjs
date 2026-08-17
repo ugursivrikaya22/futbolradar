@@ -39,7 +39,7 @@ const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // aynı servisi kullanıyor.
 const { selectTickerRecords } = require("../services/transferRadarTicker.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
-const { withRelevance } = require("../services/matchRelevance.js");
+const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
 // "Bugünün Maçları" yüzeyinin kuralı — sıra, lig blokları, bağlantı, SSS.
 const {
@@ -748,11 +748,25 @@ function verifiedResultHref(match, reportsByMatch) {
   return `./canli-skor.html#${encodeURIComponent(match.id || "")}`;
 }
 
+/**
+ * "MAÇ SONUÇLARI" AİLESİNİN ORTAK BOŞ-DURUM METNİ.
+ *
+ * mac-sonuclari.html, iddaa-sonuclari.html, bahis-sonuclari.html ve
+ * canli-mac-sonuclari.html — dördü de aynı gerçek veri katmanından beslenir
+ * ve hiçbiri ham "veri yok" yazmaz: liste boşsa okuyucuya ne olacağı
+ * söylenir, sayfa donuk bir boşluk bırakmaz.
+ */
+const RESULTS_EMPTY_COPY = "Şu an listelenecek maç sonucu bulunmuyor, karşılaşmalar başladığında otomatik güncellenir.";
+
+/**
+ * Doğrulanmış sonuçlar İLGİ PUANINA göre sıralanır (Türk takımları ve Süper
+ * Lig önce), eşit puanda en yeni maç önce gelir. Eskiden yalnızca başlama
+ * saatine göre sıralanıyordu; bu, aynı gün oynanan bir hazırlık maçının
+ * Süper Lig sonucunun önüne geçmesine yol açıyordu.
+ */
 function verifiedResultMatches(limit = 18) {
-  return curatedMatches()
-    .filter(isVerifiedFinalMatch)
-    .sort((left, right) => String(right.kickoff || "").localeCompare(String(left.kickoff || "")))
-    .slice(0, limit);
+  const finished = curatedMatches().filter(isVerifiedFinalMatch);
+  return sortByRelevance(finished).slice(0, limit);
 }
 
 function verifiedResultCards(limit = 18) {
@@ -760,7 +774,7 @@ function verifiedResultCards(limit = 18) {
   const matches = verifiedResultMatches(limit);
 
   if (!matches.length) {
-    return '<article class="data-empty" data-card="empty-state"><strong>Doğrulanmış maç sonucu bulunmuyor</strong><span>Resmî veya editoryal olarak doğrulanmış sonuçlar geldiğinde bu liste güncellenir.</span></article>';
+    return `<article class="data-empty" data-card="empty-state"><strong>Doğrulanmış maç sonucu bulunmuyor</strong><span>${escapeHtml(RESULTS_EMPTY_COPY)}</span></article>`;
   }
 
   return matches.map((match) => {
@@ -775,6 +789,30 @@ function verifiedResultCards(limit = 18) {
       <div class="result-card-footer"><span class="result-verified">Doğrulanmış sonuç</span><a href="${escapeHtml(href)}" data-match-click data-match="${escapeHtml(match.id)}">Maç ayrıntısı</a></div>
     </article>`;
   }).join("");
+}
+
+/**
+ * "MAÇ SONUÇLARI" AİLESİNİN YAKLAŞAN MAÇLAR BLOĞU.
+ *
+ * `matches-page` hedefi zaten istemcide bugunun-maclari.html için canlı
+ * olarak yeniden çiziliyor (initMatchCenterIntelligence); aynı hedef adı
+ * burada da kullanılır ki istemci tarafında yeni bir bağlama noktası
+ * yazmaya gerek kalmasın — kart üretimi ve sıralama TEK yerde
+ * (matchProgramPageCards) kalır.
+ */
+function resultsUpcomingSection() {
+  const program = matchProgramPageCards();
+  if (program.html) return program.html;
+  return `<article class="data-empty" data-card="empty-state"><strong>Yaklaşan maç bulunmuyor</strong><span>${escapeHtml(RESULTS_EMPTY_COPY)}</span></article>`;
+}
+
+/**
+ * "MAÇ SONUÇLARI" AİLESİNİN CANLI BLOĞU. `live-score` hedefi canli-skor.html
+ * ile birebir aynı istemci kancasını kullanır (renderLiveScoreSection);
+ * gerçek canlı skor yalnızca istemcide, sayfa yüklendikten sonra basılır.
+ */
+function resultsLiveSection() {
+  return liveScoreProgramState();
 }
 
 /**
@@ -799,9 +837,40 @@ function verifiedResultCards(limit = 18) {
  * KARIŞMAZ (o katman resmî statü kazanamayacağını açıkça yazıyor); bu
  * ayrı, tek amaçlı bir bileşen.
  */
+/**
+ * SÜRESİ GEÇEN "RESMÎ İLK 11" UYARISI GÖSTERİLMEZ.
+ *
+ * `data/official-lineup-alerts.json` kaydı SİLİNMEZ (geçmiş maç verisi
+ * korunur) — yalnızca ekrana BASILMASI durdurulur. Kayıt hiçbir süre
+ * damgası taşımadan sonsuza kadar basılıyordu: 15 Ağustos'ta oynanan
+ * Gençlerbirliği-Fenerbahçe maçının ilk 11'i, maç bittikten günler sonra
+ * hâlâ "SON DAKİKA" rozetiyle ana sayfada duruyordu.
+ *
+ * İki bağımsız sinyal kontrol edilir; ikisinden biri "bitti" derse kart
+ * basılmaz:
+ *   1. Maç gerçek veri katmanında DOĞRULANMIŞ olarak bitmiş mi
+ *      (isVerifiedFinalMatch) — en güvenilir sinyal.
+ *   2. Başlama saatinin üzerinden makul bir maç süresinden (uzatmalar dahil
+ *      3 saat) fazla geçmiş mi — maç kaydı takvimde yoksa yedek sinyal.
+ */
+const LINEUP_ALERT_STALE_MS = 3 * 60 * 60 * 1000;
+
 function officialLineupAlerts() {
   const alerts = require("../data/official-lineup-alerts.json").records || [];
-  return alerts.map((alert) => officialLineupAlertHtml(alert, "tr")).join("");
+  const finishedIds = new Set(
+    curatedMatches().filter(isVerifiedFinalMatch).map((match) => String(match.id || ""))
+  );
+  const now = Date.now();
+
+  return alerts
+    .filter((alert) => {
+      if (finishedIds.has(String(alert.matchId || ""))) return false;
+      const kickoffMs = Date.parse(alert.kickoff || "");
+      if (Number.isFinite(kickoffMs) && now - kickoffMs > LINEUP_ALERT_STALE_MS) return false;
+      return true;
+    })
+    .map((alert) => officialLineupAlertHtml(alert, "tr"))
+    .join("");
 }
 
 /**
@@ -1411,10 +1480,84 @@ function matchListSchemaBlock(matches, name) {
   return schema ? jsonLdScript(schema) : "";
 }
 
+function faqSchemaBlock(entries) {
+  const schema = faqSchema(entries);
+  return schema ? jsonLdScript(schema) : "";
+}
+
+/**
+ * "MAÇ SONUÇLARI" AİLESİNİN SSS METİNLERİ.
+ *
+ * mac-sonuclari.html, iddaa-sonuclari.html, bahis-sonuclari.html ve
+ * canli-mac-sonuclari.html "iddaa sonuçları", "bahis sonuçları", "maç
+ * sonuçları" aramalarını karşılar ama HİÇBİRİ bahis oynatmaz: cevaplar
+ * yalnızca sonucun nasıl doğrulandığını ve ne zaman yayımlandığını anlatır.
+ * Metin sayfada GÖRÜNENLE birebir aynı olmak zorunda (services/matchSchema.js
+ * → faqSchema yorumu); ayrışırsa Google için "sayfa ile eşleşmiyor" demektir.
+ */
+const RESULTS_FAQ = {
+  macSonuclari: [
+    { question: "Maç sonuçları ne zaman güncellenir?", answer: "Bir karşılaşma bittiği ve iki takımın skoru doğrulandığı anda sonuç listeye eklenir; doğrulama bekleyen maçlar bu sayfada gösterilmez." },
+    { question: "Süper Lig ve Türk takımlarının sonuçları öncelikli mi?", answer: "Evet, Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor ve diğer Süper Lig takımlarının sonuçları listede öne çıkarılır." },
+    { question: "Canlı oynanan bir maç bu sayfada görünür mü?", answer: "Evet, oynanmakta olan maçların anlık skoru sayfanın üst kısmında canlı olarak güncellenir; maç bittiğinde doğrulanmış sonuç bölümüne taşınır." }
+  ],
+  iddaaSonuclari: [
+    { question: "Bu sayfada iddaa kuponu veya oran var mı?", answer: "Hayır; bu sayfa bahis oynatmaz, oran veya tahmin önerisi sunmaz. İddaa sonucu aramalarında ihtiyaç duyulan gerçek maç skorlarını resmî kaynaklardan doğrulanmış hâliyle listeler." },
+    { question: "Sonuçlar hangi kaynaktan doğrulanıyor?", answer: "Skorlar sağlayıcı verisi ve editoryal kontrolden geçtikten sonra yayımlanır; doğrulanmamış skor hiçbir zaman gösterilmez." },
+    { question: "Süper Lig maçları önce mi listelenir?", answer: "Evet, Türk takımlarının ve Süper Lig karşılaşmalarının sonuçları listede öncelikli olarak gösterilir." },
+    { question: "Canlı maç sonucu bu sayfada anlık güncellenir mi?", answer: "Evet, oynanmakta olan maçların skoru üst bölümde canlı olarak güncellenir; maç bitince doğrulanmış sonuç listesine geçer." }
+  ],
+  bahisSonuclari: [
+    { question: "Bu sayfada bahis oranı veya kuponu var mı?", answer: "Hayır; bu sayfa bahis oynatmaz, oran veya tahmin önerisi sunmaz. Yalnızca resmî kaynaklardan doğrulanmış futbol maç sonuçlarını listeler." },
+    { question: "Sonuçlar ne zaman yayımlanır?", answer: "Maç bittiği ve skor doğrulandığı anda listeye eklenir; doğrulama süreci tamamlanmadan hiçbir sonuç yayımlanmaz." },
+    { question: "Hangi ligler kapsanıyor?", answer: "Süper Lig ve Türk takımlarının Avrupa kupaları önceliklidir; Avrupa'nın büyük liglerindeki sonuçlar da aynı sayfada listelenir." },
+    { question: "Canlı maçlar da bu sayfada mı?", answer: "Evet, oynanmakta olan maçların anlık skoru sayfanın üst kısmında canlı olarak güncellenir." }
+  ],
+  canliMacSonuclari: [
+    { question: "Canlı maç sonuçları ne sıklıkla güncelleniyor?", answer: "Oynanmakta olan maçların skoru sayfa açıkken otomatik olarak güncellenir; maç bittiğinde doğrulanmış sonuç bölümüne taşınır." },
+    { question: "Şu anda canlı maç yoksa sayfa boş mu kalır?", answer: "Hayır; canlı maç yokken bugünün tamamlanmış sonuçları ve yaklaşan karşılaşmalar aynı sayfada gösterilmeye devam eder." },
+    { question: "Süper Lig maçları öncelikli mi gösteriliyor?", answer: "Evet, Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor ve diğer Süper Lig takımlarının maçları listede öne çıkar." }
+  ]
+};
+
 writePage("mac-sonuclari.html", {
-  "verified-results": verifiedResultCards()
+  "verified-results": verifiedResultCards(),
+  "live-score": resultsLiveSection(),
+  "matches-page": resultsUpcomingSection()
 }, fixtureFreshness, {
-  "results-schema": matchListSchemaBlock(verifiedResultMatches(), "Doğrulanmış maç sonuçları")
+  "results-schema": matchListSchemaBlock(verifiedResultMatches(), "Doğrulanmış maç sonuçları"),
+  "results-faq": faqSectionHtml(RESULTS_FAQ.macSonuclari, "Maç sonuçları hakkında sık sorulanlar"),
+  "results-faq-schema": faqSchemaBlock(RESULTS_FAQ.macSonuclari)
+});
+
+writePage("iddaa-sonuclari.html", {
+  "verified-results": verifiedResultCards(),
+  "live-score": resultsLiveSection(),
+  "matches-page": resultsUpcomingSection()
+}, fixtureFreshness, {
+  "results-schema": matchListSchemaBlock(verifiedResultMatches(), "İddaa sonucu aranan doğrulanmış maç sonuçları"),
+  "results-faq": faqSectionHtml(RESULTS_FAQ.iddaaSonuclari, "İddaa sonuçları hakkında sık sorulanlar"),
+  "results-faq-schema": faqSchemaBlock(RESULTS_FAQ.iddaaSonuclari)
+});
+
+writePage("bahis-sonuclari.html", {
+  "verified-results": verifiedResultCards(),
+  "live-score": resultsLiveSection(),
+  "matches-page": resultsUpcomingSection()
+}, fixtureFreshness, {
+  "results-schema": matchListSchemaBlock(verifiedResultMatches(), "Bahis sonucu aranan doğrulanmış maç sonuçları"),
+  "results-faq": faqSectionHtml(RESULTS_FAQ.bahisSonuclari, "Bahis sonuçları hakkında sık sorulanlar"),
+  "results-faq-schema": faqSchemaBlock(RESULTS_FAQ.bahisSonuclari)
+});
+
+writePage("canli-mac-sonuclari.html", {
+  "verified-results": verifiedResultCards(),
+  "live-score": resultsLiveSection(),
+  "matches-page": resultsUpcomingSection()
+}, fixtureFreshness, {
+  "results-schema": matchListSchemaBlock(verifiedResultMatches(), "Canlı ve doğrulanmış maç sonuçları"),
+  "results-faq": faqSectionHtml(RESULTS_FAQ.canliMacSonuclari, "Canlı maç sonuçları hakkında sık sorulanlar"),
+  "results-faq-schema": faqSchemaBlock(RESULTS_FAQ.canliMacSonuclari)
 });
 
 writePage("haberler.html", {
