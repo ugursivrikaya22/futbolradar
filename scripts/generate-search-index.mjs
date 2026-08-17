@@ -110,6 +110,24 @@ for (const page of EN_PAGES) {
   push({ type: "enPage", badge: "EN", href: page.href, title: page.title, subtitle: page.subtitle, locale: "en" });
 }
 
+// Lig sayfaları da katalogdan türer (bucket'ı dolu her kayıt bir sayfa
+// aldı, bkz. generate-league-pages.mjs). Dosya gerçekten var mı diye
+// ayrıca kontrol edilir: kimliği çözülmemiş bir lig için de sayfa
+// üretilir ama competitions.json'da bucket'ı olmayan (hazırlık maçı gibi)
+// kayıtlar hiç dizine girmez.
+for (const competition of asArray(readJson("competitions.json"))) {
+  if (!competition || !competition.bucket || !competition.id) continue;
+  const href = `lig/${competition.id}.html`;
+  if (!fs.existsSync(path.join(root, href))) continue;
+  push({
+    type: "league",
+    badge: "LİG",
+    href,
+    title: competition.name,
+    subtitle: competition.country || "Lig sayfası"
+  });
+}
+
 for (const article of asArray(readJson("news.json"), "news", "items")) {
   if (!article || String(article.status || "").toLowerCase() !== "verified" || !article.slug || !article.title || !Array.isArray(article.body)) {
     continue;
