@@ -29,6 +29,10 @@ const TEAMS_PATH = path.join(DATA_DIR, "teams.json");
 const PLAYERS_PATH = path.join(DATA_DIR, "players.json");
 const SQUAD_STATUS_PATH = path.join(DATA_DIR, "squad-statuses.json");
 const OUTPUT_PATH = path.join(DATA_DIR, "match-analyses.json");
+// Doğrulayıcı (validate-match-analyses checkPublicSync) kök dosya ile public
+// kopyanın bayt bayt aynı olmasını İSTER ve zamanlanmış akışta derlemeden
+// ÖNCE koşar — kopyayı derleme adımına bırakmak doğrulamayı düşürür.
+const PUBLIC_OUTPUT_PATH = path.join(root, "public", "data", "match-analyses.json");
 
 /**
  * Takvimden analiz hedefi olarak alınan yarışmalar. Bilinçli olarak dar:
@@ -463,10 +467,14 @@ async function main() {
   }
   const merged = [...mergedById.values()].sort((left, right) => String(left.kickoff || "").localeCompare(String(right.kickoff || "")));
 
-  const tempPath = `${OUTPUT_PATH}.tmp-${process.pid}`;
-  fs.writeFileSync(tempPath, `${JSON.stringify(merged, null, 2)}\n`);
-  fs.renameSync(tempPath, OUTPUT_PATH);
-  console.log(`Wrote ${merged.length} total record(s) to ${path.relative(root, OUTPUT_PATH)}.`);
+  const serialized = `${JSON.stringify(merged, null, 2)}\n`;
+  for (const filePath of [OUTPUT_PATH, PUBLIC_OUTPUT_PATH]) {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    const tempPath = `${filePath}.tmp-${process.pid}`;
+    fs.writeFileSync(tempPath, serialized);
+    fs.renameSync(tempPath, filePath);
+  }
+  console.log(`Wrote ${merged.length} total record(s) to ${path.relative(root, OUTPUT_PATH)} (+ public mirror).`);
 }
 
 main().catch((error) => {
