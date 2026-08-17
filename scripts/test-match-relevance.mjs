@@ -65,6 +65,24 @@ const match = (fields) => ({
   }
 }
 
+// ── 1b. Türkiye'nin alt ligleri Süper Lig'in hemen ardında, büyük Avrupa
+// liglerinin ÖNÜNDE gelmeli — ana sayfa hiyerarşisi Türkiye → Avrupa
+// kupaları → büyük Avrupa ligleri → diğer ligler sırasını izliyor.
+
+{
+  const trendyol1Lig = match({ homeTeam: "Adanaspor", awayTeam: "Bodrumspor", league: "Trendyol 1. Lig", competitionId: "1-lig" });
+  const turkiyeKupasi = match({ homeTeam: "Sakaryaspor", awayTeam: "Manisa FK", league: "Türkiye Kupası", competitionId: "turkiye-kupasi" });
+  const premierLeague = match({ homeTeam: "Aston Villa", awayTeam: "Everton", league: "Premier League", competitionId: "premier-league" });
+
+  assert.equal(tierOf(trendyol1Lig), TIER.TURKISH_DOMESTIC_OTHER, "1. Lig, Süper Lig'in hemen ardındaki kademede olmalı");
+  assert.equal(tierOf(turkiyeKupasi), TIER.TURKISH_DOMESTIC_OTHER, "Türkiye Kupası aynı kademede olmalı");
+  assert.ok(tierOf(trendyol1Lig) < TIER.TOP_EUROPEAN_LEAGUE, "Türkiye'nin alt ligi büyük Avrupa liglerinin önünde olmalı");
+  assert.ok(
+    relevanceScore(trendyol1Lig, { now: NOW }) > relevanceScore(premierLeague, { now: NOW }),
+    "1. Lig maçı, Premier League maçının önünde sıralanmalı"
+  );
+}
+
 // ── 2. Hazırlık maçı EN ALTTA, kim oynarsa oynasın ─────────────────────────
 
 {

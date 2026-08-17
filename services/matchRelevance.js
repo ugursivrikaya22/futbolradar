@@ -50,15 +50,16 @@ const TIER = Object.freeze({
   BIG_FOUR_3: 2,          // Beşiktaş
   BIG_FOUR_4: 3,          // Trabzonspor
   SUPER_LIG: 4,           // Süper Lig'in kalan maçları
-  TURKISH_EUROPEAN: 5,    // Türk kulübünün Avrupa maçı (dört büyük dışında)
-  CHAMPIONS_LEAGUE: 6,
-  EUROPA_LEAGUE: 7,
-  CONFERENCE_LEAGUE: 8,
-  TOP_EUROPEAN_LEAGUE: 9, // Premier League, La Liga, Serie A, Bundesliga, Ligue 1
-  MAJOR_CLUB: 10,         // Büyük Avrupa kulübü, yarışma tanınmasa bile
-  TURKISH_OTHER: 11,      // Türk kulübünün diğer resmî maçları
-  OTHER_LEAGUE: 12,       // Diğer resmî yarışmalar (tanınsın ya da tanınmasın)
-  FRIENDLY: 13            // Hazırlık maçları — kim oynarsa oynasın
+  TURKISH_DOMESTIC_OTHER: 5, // 1. Lig, TFF 2./3. Lig, Türkiye Kupası
+  TURKISH_EUROPEAN: 6,    // Türk kulübünün Avrupa maçı (dört büyük dışında)
+  CHAMPIONS_LEAGUE: 7,
+  EUROPA_LEAGUE: 8,
+  CONFERENCE_LEAGUE: 9,
+  TOP_EUROPEAN_LEAGUE: 10, // Premier League, La Liga, Serie A, Bundesliga, Ligue 1
+  MAJOR_CLUB: 11,         // Büyük Avrupa kulübü, yarışma tanınmasa bile
+  TURKISH_OTHER: 12,      // Türk kulübünün diğer resmî maçları
+  OTHER_LEAGUE: 13,       // Diğer resmî yarışmalar (tanınsın ya da tanınmasın)
+  FRIENDLY: 14            // Hazırlık maçları — kim oynarsa oynasın
 });
 
 /** Kademe adımı. Durum bonusu bundan küçük olmak ZORUNDA. */
@@ -77,6 +78,8 @@ const CHAMPIONS_LEAGUE_IDS = new Set(["sampiyonlar-ligi"]);
 const EUROPA_LEAGUE_IDS = new Set(["avrupa-ligi"]);
 const CONFERENCE_LEAGUE_IDS = new Set(["konferans-ligi"]);
 const SUPER_LIG_IDS = new Set(["super-lig"]);
+/** Ana sayfa hiyerarşisinde Süper Lig'in hemen ardından gelen Türkiye ligleri. */
+const TURKISH_DOMESTIC_OTHER_IDS = new Set(["1-lig", "tff-2-lig", "tff-3-lig", "turkiye-kupasi"]);
 const TOP_EUROPEAN_LEAGUE_IDS = new Set([
   "premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1"
 ]);
@@ -184,6 +187,7 @@ function tierOf(match) {
   if (bigFour >= 0) return bigFour;
 
   if (SUPER_LIG_IDS.has(competitionId)) return TIER.SUPER_LIG;
+  if (TURKISH_DOMESTIC_OTHER_IDS.has(competitionId)) return TIER.TURKISH_DOMESTIC_OTHER;
 
   const isEuropean = classification.competitionType === "europe";
   if (turkish && isEuropean) return TIER.TURKISH_EUROPEAN;
