@@ -1,9 +1,984 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-17T13:12:56.219Z",
-  "matchCount": 620,
+  "updatedAt": "2026-08-17T20:31:45.568Z",
+  "matchCount": 623,
   "records": [
+    {
+      "matchId": "samsunspor-goztepe-2026-08-17",
+      "fixtureId": "1584375",
+      "provider": "api-football",
+      "slug": "samsunspor-goztepe-2026-08-17",
+      "kickoff": "2026-08-17T21:30:00+03:00",
+      "kickoffUtc": "2026-08-17T18:30:00.000Z",
+      "kickoffLocal": "2026-08-17T21:30",
+      "date": "2026-08-17",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Süper Lig",
+      "competition": "Süper Lig",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Samsunspor",
+      "awayTeam": "Göztepe",
+      "venue": "Samsun Yeni 19 Mayıs Stadyumu",
+      "score": {
+        "home": 3,
+        "away": 3
+      },
+      "finalScore": "3-3",
+      "winner": "draw",
+      "turkish": true,
+      "turkishTeam": "Samsunspor & Göztepe",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 5
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 17
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 40
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 5,
+        "statistics": 17,
+        "lineups": 2,
+        "players": 40
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "5e819d84914a78ad",
+      "fingerprint": "5e819d84914a78ad",
+      "analysisGeneratedAt": "2026-08-17T20:31:45.532Z",
+      "analysisUpdatedAt": "2026-08-17T20:31:45.532Z",
+      "generatedAt": "2026-08-17T20:31:45.532Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Samsunspor 3-3 Göztepe maç raporu: Süper Lig istatistikleri | FutbolRadar",
+        "description": "Samsun Yeni 19 Mayıs Stadyumu'nda oynanan Süper Lig maçında Samsunspor ile Göztepe birbirini geçemedi: 3-3.",
+        "path": "mac-raporu/samsunspor-goztepe-2026-08-17.html",
+        "competition": "Süper Lig"
+      },
+      "reportUrl": "./mac-raporu/samsunspor-goztepe-2026-08-17.html",
+      "digest": {
+        "headline": "Samsunspor ile Göztepe 3-3 berabere kaldı",
+        "paragraph": "Samsun Yeni 19 Mayıs Stadyumu'nda oynanan Süper Lig maçında Samsunspor ile Göztepe birbirini geçemedi: 3-3. Golleri 3. dakikada A. Matos (Göztepe), 30. dakikada Samsunspor, 43. dakikada E. Kilinc (Samsunspor) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "3'",
+              "team": "Göztepe",
+              "type": "Gol",
+              "detail": "A. Matos",
+              "pivotal": true
+            },
+            {
+              "minute": "30'",
+              "team": "Samsunspor",
+              "type": "Penaltı",
+              "detail": "",
+              "pivotal": true
+            },
+            {
+              "minute": "43'",
+              "team": "Samsunspor",
+              "type": "Gol",
+              "detail": "E. Kilinc",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "E. Kilinc",
+              "team": "Samsunspor",
+              "contribution": "43' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. Matos",
+              "team": "Göztepe",
+              "contribution": "3' gol · 17' sarı kart",
+              "impact": "orta"
+            },
+            {
+              "name": "T. Fink",
+              "team": "Samsunspor",
+              "contribution": "4' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "ready",
+          "notes": [
+            "Samsunspor sahaya 4-3-3 dizilişiyle çıktı.",
+            "Göztepe sahaya 3-4-1-2 dizilişiyle çıktı.",
+            "Samsunspor topu elinde tutarken Göztepe derin blokta savunma yapmayı tercih etti."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
+            "3' Göztepe — A. Matos: gol",
+            "30' Samsunspor: penaltı",
+            "43' Samsunspor — E. Kilinc: gol"
+          ],
+          "goals": 3
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Samsunspor maça 4-3-3 dizilişiyle başladı.",
+            "Göztepe maça 3-4-1-2 dizilişiyle başladı."
+          ],
+          "formations": [
+            {
+              "team": "Samsunspor",
+              "formation": "4-3-3"
+            },
+            {
+              "team": "Göztepe",
+              "formation": "3-4-1-2"
+            }
+          ],
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 3-3 berabere bitti.",
+            "Göztepe, gol beklentisinin 1,10 üzerinde skor üretti."
+          ],
+          "strengths": [
+            "Samsunspor topa daha çok sahip oldu (%69).",
+            "Göztepe daha çok şut denedi (19-20)."
+          ],
+          "improvements": [
+            "Samsunspor şut isabetinde geride kaldı (%16); bitiricilik geliştirilmesi gereken alan."
+          ],
+          "closing": "3-3 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "Samsunspor",
+            "score": 74
+          },
+          "away": {
+            "team": "Göztepe",
+            "score": 72
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Samsunspor %15.8, Göztepe %35."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Samsunspor 26.6, Göztepe 11.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Samsunspor 0.137, Göztepe 0.095. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating",
+        "nextMatch"
+      ],
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
+      "publishState": "page"
+    },
+    {
+      "matchId": "batman-petrolspor-boluspor-2026-08-17",
+      "fixtureId": "1585699",
+      "provider": "api-football",
+      "slug": "batman-petrolspor-boluspor-2026-08-17",
+      "kickoff": "2026-08-17T21:30:00+03:00",
+      "kickoffUtc": "2026-08-17T18:30:00.000Z",
+      "kickoffLocal": "2026-08-17T21:30",
+      "date": "2026-08-17",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "1. Lig",
+      "competition": "1. Lig",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Batman Petrolspor",
+      "awayTeam": "Boluspor",
+      "venue": "16 Mayis Sehir Stadyumu",
+      "score": {
+        "home": 2,
+        "away": 0
+      },
+      "finalScore": "2-0",
+      "winner": "Batman Petrolspor",
+      "turkish": true,
+      "turkishTeam": "Batman Petrolspor & Boluspor",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 15
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 42
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 2,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 42
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "a18bd8086de4b45a",
+      "fingerprint": "a18bd8086de4b45a",
+      "analysisGeneratedAt": "2026-08-17T20:31:45.532Z",
+      "analysisUpdatedAt": "2026-08-17T20:31:45.532Z",
+      "generatedAt": "2026-08-17T20:31:45.532Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Batman Petrolspor 2-0 Boluspor maç raporu: 1. Lig istatistikleri | FutbolRadar",
+        "description": "Batman Petrolspor 2-0 Boluspor maç raporu, xG, şut ve pas istatistikleri, kırılma anları ve sonraki maç.",
+        "path": "mac-raporu/batman-petrolspor-boluspor-2026-08-17.html",
+        "competition": "1. Lig"
+      },
+      "reportUrl": "./mac-raporu/batman-petrolspor-boluspor-2026-08-17.html",
+      "digest": {
+        "headline": "Batman Petrolspor, Boluspor'u 2-0 yendi",
+        "paragraph": "Batman Petrolspor, 16 Mayis Sehir Stadyumu'nda oynanan 1. Lig karşılaşmasında Boluspor'u 2-0 mağlup etti. Tek golü 34. dakikada Batman Petrolspor kaydetti.",
+        "result": {
+          "winner": "Batman Petrolspor",
+          "loser": "Boluspor",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "34'",
+              "team": "Batman Petrolspor",
+              "type": "Penaltı",
+              "detail": "",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "ready",
+          "notes": [
+            "Batman Petrolspor sahaya 4-1-4-1 dizilişiyle çıktı.",
+            "Boluspor sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Batman Petrolspor topu elinde tutarken Boluspor derin blokta savunma yapmayı tercih etti."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "34' Batman Petrolspor: penaltı"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Batman Petrolspor maça 4-1-4-1 dizilişiyle başladı.",
+            "Boluspor maça 4-2-3-1 dizilişiyle başladı."
+          ],
+          "formations": [
+            {
+              "team": "Batman Petrolspor",
+              "formation": "4-1-4-1"
+            },
+            {
+              "team": "Boluspor",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Batman Petrolspor, Boluspor'u 2-0 yendi.",
+            "İsabetli şutta da öndeydi (1-0); sonuç üretilen pozisyonla uyumlu."
+          ],
+          "strengths": [
+            "Batman Petrolspor topa daha çok sahip oldu (%68).",
+            "Batman Petrolspor daha çok şut denedi (3-1)."
+          ],
+          "improvements": [
+            "Boluspor şut isabetinde geride kaldı (%0); bitiricilik geliştirilmesi gereken alan."
+          ],
+          "closing": "Batman Petrolspor sahadan 2 farkla ayrıldı.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "Batman Petrolspor",
+            "score": 56
+          },
+          "away": {
+            "team": "Boluspor",
+            "score": 19
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Batman Petrolspor %33.3, Boluspor %0."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Batman Petrolspor 44, Boluspor 62 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 79,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
+      "publishState": "page"
+    },
+    {
+      "matchId": "estudiantes-de-rio-cuarto-atletico-tucuman-2026-08-17",
+      "fixtureId": "1493067",
+      "provider": "api-football",
+      "slug": "estudiantes-de-rio-cuarto-atletico-tucuman-2026-08-17",
+      "kickoff": "2026-08-17T20:45:00+03:00",
+      "kickoffUtc": "2026-08-17T17:45:00.000Z",
+      "kickoffLocal": "2026-08-17T20:45",
+      "date": "2026-08-17",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Liga Profesional Argentina",
+      "competition": "Liga Profesional Argentina",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Estudiantes de Rio Cuarto",
+      "awayTeam": "Atletico Tucuman",
+      "venue": "Antonio Candini",
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "Atletico Tucuman",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 12
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 17
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 46
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 12,
+        "statistics": 17,
+        "lineups": 2,
+        "players": 46
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "82b7d746240f5d74",
+      "fingerprint": "82b7d746240f5d74",
+      "analysisGeneratedAt": "2026-08-17T20:31:45.532Z",
+      "analysisUpdatedAt": "2026-08-17T20:31:45.532Z",
+      "generatedAt": "2026-08-17T20:31:45.532Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Estudiantes de Rio Cuarto 0-1 Atletico Tucuman maç raporu: Liga Profesional Argentina istatistikleri | FutbolRadar",
+        "description": "Atletico Tucuman, Antonio Candini'de oynanan Liga Profesional Argentina karşılaşmasında Estudiantes de Rio Cuarto'yu 1-0 mağlup etti.",
+        "path": "mac-raporu/estudiantes-de-rio-cuarto-atletico-tucuman-2026-08-17.html",
+        "competition": "Liga Profesional Argentina"
+      },
+      "reportUrl": "./mac-raporu/estudiantes-de-rio-cuarto-atletico-tucuman-2026-08-17.html",
+      "digest": {
+        "headline": "Atletico Tucuman, Estudiantes de Rio Cuarto'yu 1-0 yendi",
+        "paragraph": "Atletico Tucuman, Antonio Candini'de oynanan Liga Profesional Argentina karşılaşmasında Estudiantes de Rio Cuarto'yu 1-0 mağlup etti. Tek golü 82. dakikada C. D. Ferreira Namandu (Atletico Tucuman) kaydetti.",
+        "result": {
+          "winner": "Atletico Tucuman",
+          "loser": "Estudiantes de Rio Cuarto",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "82'",
+              "team": "Atletico Tucuman",
+              "type": "Gol",
+              "detail": "C. D. Ferreira Namandu",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (C. D. Ferreira Namandu), sonucu belirleyen fark bu bölümde oluştu.",
+          "goals": {
+            "home": 0,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Atletico Tucuman",
+              "type": "Oyuncu değişikliği",
+              "detail": "R. Tesuri",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "Atletico Tucuman",
+              "type": "Oyuncu değişikliği",
+              "detail": "M. Brondo",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "Estudiantes de Rio Cuarto",
+              "type": "Oyuncu değişikliği",
+              "detail": "G. Gonzalez",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "Estudiantes de Rio Cuarto",
+              "type": "Oyuncu değişikliği",
+              "detail": "G. Alanis",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "C. D. Ferreira Namandu",
+              "team": "Atletico Tucuman",
+              "contribution": "77' sarı kart · 82' gol",
+              "impact": "orta"
+            },
+            {
+              "name": "I. Galvan",
+              "team": "Atletico Tucuman",
+              "contribution": "70' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "I. Hesar",
+              "team": "Estudiantes de Rio Cuarto",
+              "contribution": "23' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "L. Vega",
+              "team": "Atletico Tucuman",
+              "contribution": "44' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "Estudiantes de Rio Cuarto sahaya 3-1-4-2 dizilişiyle çıktı.",
+            "Atletico Tucuman sahaya 4-1-4-1 dizilişiyle çıktı."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (10 olay).",
+            "82' Atletico Tucuman — C. D. Ferreira Namandu: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Estudiantes de Rio Cuarto maça 3-1-4-2 dizilişiyle başladı.",
+            "Atletico Tucuman maça 4-1-4-1 dizilişiyle başladı.",
+            "57' Estudiantes de Rio Cuarto değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "57' Estudiantes de Rio Cuarto değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "76' Atletico Tucuman değişikliği (Substitution 1). Değişiklikten sonra Atletico Tucuman adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "76' Atletico Tucuman değişikliği (Substitution 2). Değişiklikten sonra Atletico Tucuman adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Estudiantes de Rio Cuarto",
+              "formation": "3-1-4-2"
+            },
+            {
+              "team": "Atletico Tucuman",
+              "formation": "4-1-4-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Atletico Tucuman, Estudiantes de Rio Cuarto'yu 0-1 yendi.",
+            "İsabetli şutta da öndeydi (3-1); sonuç üretilen pozisyonla uyumlu.",
+            "Atletico Tucuman, gol beklentisinin 0,68 üzerinde skor üretti."
+          ],
+          "strengths": [
+            "Atletico Tucuman topa daha çok sahip oldu (%53).",
+            "Atletico Tucuman daha çok şut denedi (9-9)."
+          ],
+          "improvements": [
+            "Estudiantes de Rio Cuarto şut isabetinde geride kaldı (%11); bitiricilik geliştirilmesi gereken alan.",
+            "Estudiantes de Rio Cuarto son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
+          "closing": "Atletico Tucuman sahadan 1 farkla ayrıldı.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "Estudiantes de Rio Cuarto",
+            "score": 35
+          },
+          "away": {
+            "team": "Atletico Tucuman",
+            "score": 50
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Estudiantes de Rio Cuarto %11.1, Atletico Tucuman %33.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Estudiantes de Rio Cuarto 33.9, Atletico Tucuman 37.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Estudiantes de Rio Cuarto 0.03, Atletico Tucuman 0.036. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.3333333333333333
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
+      "publishState": "page"
+    },
     {
       "matchId": "seattle-sounders-vancouver-whitecaps-2026-08-17",
       "fixtureId": "1490390",

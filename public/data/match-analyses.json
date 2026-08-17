@@ -8,7 +8,7 @@
     "isOfficialCompetition": true,
     "includeInLeagueForm": true,
     "kickoff": "2026-08-17T18:30:00.000Z",
-    "status": "halftime",
+    "status": "finished",
     "generatedAt": "2026-08-17T19:19:51.811Z",
     "preMatchFrozenAt": "2026-08-17T19:19:51.811Z",
     "modelVersion": "futbolradar-match-v1",
@@ -1422,7 +1422,7 @@
     "dataConfidence": 57,
     "analysisStatus": "complete",
     "warnings": [],
-    "updatedAt": "2026-08-17T19:31:01.163Z"
+    "updatedAt": "2026-08-17T20:31:44.675Z"
   },
   {
     "fixtureId": "erzurumspor-fk-galatasaray-2026-08-21",
@@ -1434,7 +1434,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-21T18:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-17T19:31:01.288Z",
+    "generatedAt": "2026-08-17T20:31:44.774Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -2828,7 +2828,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-17T19:31:01.288Z",
+      "generatedAt": "2026-08-17T20:31:44.774Z",
       "asOf": "2026-08-21T18:30:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 65,
@@ -2890,7 +2890,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-22T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-17T19:31:01.376Z",
+    "generatedAt": "2026-08-17T20:31:44.843Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -4075,7 +4075,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-17T19:31:01.376Z",
+      "generatedAt": "2026-08-17T20:31:44.843Z",
       "asOf": "2026-08-22T16:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 54,
@@ -4138,7 +4138,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-22T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-17T19:31:01.440Z",
+    "generatedAt": "2026-08-17T20:31:44.902Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -4306,16 +4306,28 @@
     "awayContext": {
       "teamName": "Samsunspor",
       "recentForm": {
-        "sampleSize": 2,
-        "points": 1,
+        "sampleSize": 3,
+        "points": 2,
         "wins": 0,
-        "draws": 1,
+        "draws": 2,
         "losses": 1,
-        "goalsFor": 0,
-        "goalsAgainst": 3,
+        "goalsFor": 3,
+        "goalsAgainst": 6,
         "goalDifference": -3,
-        "weightedScore": 16,
+        "weightedScore": 24,
         "results": [
+          {
+            "matchId": "samsunspor-goztepe-2026-08-17",
+            "kickoff": "2026-08-17T21:30:00+03:00",
+            "opponent": "Göztepe",
+            "venue": "home",
+            "goalsFor": 3,
+            "goalsAgainst": 3,
+            "outcome": "D",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "kasimpasa-samsunspor-2026-08-08",
             "kickoff": "2026-08-08T19:00:00+03:00",
@@ -4341,19 +4353,31 @@
             "isFriendly": true
           }
         ],
-        "dataStatus": "limited"
+        "dataStatus": "sufficient"
       },
       "homeForm": {
-        "sampleSize": 1,
-        "points": 1,
+        "sampleSize": 2,
+        "points": 2,
         "wins": 0,
-        "draws": 1,
+        "draws": 2,
         "losses": 0,
-        "goalsFor": 0,
-        "goalsAgainst": 0,
+        "goalsFor": 3,
+        "goalsAgainst": 3,
         "goalDifference": 0,
         "weightedScore": 33,
         "results": [
+          {
+            "matchId": "samsunspor-goztepe-2026-08-17",
+            "kickoff": "2026-08-17T21:30:00+03:00",
+            "opponent": "Göztepe",
+            "venue": "home",
+            "goalsFor": 3,
+            "goalsAgainst": 3,
+            "outcome": "D",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "samsunspor-raal-la-louviere-2026-07-25",
             "kickoff": "2026-07-25T15:00:00+03:00",
@@ -4396,29 +4420,26 @@
         "dataStatus": "limited"
       },
       "goalTrend": {
-        "averageGoalsFor": 0,
+        "averageGoalsFor": 1,
         "direction": "unknown",
-        "sampleSize": 2,
-        "score": 0
-      },
-      "defensiveTrend": {
-        "averageGoalsAgainst": 1.5,
-        "direction": "unknown",
-        "sampleSize": 2,
+        "sampleSize": 3,
         "score": 40
       },
-      "restDays": 14,
+      "defensiveTrend": {
+        "averageGoalsAgainst": 2,
+        "direction": "unknown",
+        "sampleSize": 3,
+        "score": 20
+      },
+      "restDays": 5,
       "scheduleLoad": {
-        "matchesInWindow": 1,
+        "matchesInWindow": 2,
         "windowDays": 14,
         "level": "low"
       },
-      "confidence": 50,
-      "dataStatus": "limited",
-      "warnings": [
-        "limited-recent-match-sample",
-        "recent-form-is-friendlies-only"
-      ]
+      "confidence": 65,
+      "dataStatus": "sufficient",
+      "warnings": []
     },
     "probableLineups": {
       "home": {
@@ -4500,7 +4521,7 @@
         "knownStarterCount": 11,
         "requiredStarterCount": 11,
         "coverage": 100,
-        "confidence": 60,
+        "confidence": 68,
         "starters": [
           {
             "id": "mehmet-karsli-samsunspor",
@@ -5092,13 +5113,13 @@
       },
       "form": {
         "home": 87,
-        "away": 16
+        "away": 24
       },
       "availability": {
         "home": 100,
         "away": 10
       },
-      "confidence": 58,
+      "confidence": 67,
       "advantages": [
         {
           "key": "goalkeepers",
@@ -5140,7 +5161,7 @@
         },
         "advantage": "away",
         "advantageScore": 36,
-        "confidence": 47,
+        "confidence": 51,
         "summary": "Tahsin Bülbül , mevcut form ve genel seviyesiyle bu eşleşmede bir adım önde görünüyor."
       },
       {
@@ -5164,43 +5185,43 @@
         },
         "advantage": "away",
         "advantageScore": 35,
-        "confidence": 32,
+        "confidence": 36,
         "summary": "Mehmet Karsli, mevcut form ve genel seviyesiyle bu eşleşmede bir adım önde görünüyor."
       }
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-17T19:31:01.440Z",
+      "generatedAt": "2026-08-17T20:31:44.901Z",
       "asOf": "2026-08-22T16:00:00.000Z",
       "predictionStatus": "available",
-      "dataConfidence": 56,
+      "dataConfidence": 63,
       "teamStrength": {
         "home": 61,
-        "away": 43
+        "away": 42
       },
       "probabilities": {
-        "homeWin": 49,
-        "draw": 30,
-        "awayWin": 21
+        "homeWin": 52,
+        "draw": 29,
+        "awayWin": 19
       },
       "prediction": {
         "primary": "home",
         "label": "Ev sahibi net önde",
-        "confidence": 56
+        "confidence": 63
       },
       "goalPotential": {
-        "score": 32,
-        "label": "low"
+        "score": 51,
+        "label": "medium"
       },
       "upsetRisk": {
-        "score": 60,
-        "label": "high"
+        "score": 55,
+        "label": "medium"
       },
       "matchBalance": {
-        "score": 64,
+        "score": 62,
         "label": "strong-home"
       },
-      "summary": "Model, ev sahibi için %49, beraberlik için %30, deplasman için %21 ihtimal hesaplıyor. Takım güç puanları 61/100 - 43/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 56/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %52, beraberlik için %29, deplasman için %19 ihtimal hesaplıyor. Takım güç puanları 61/100 - 42/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 63/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -5208,18 +5229,18 @@
       "awaySquadCoverage": 100,
       "homeStatsCoverage": 100,
       "awayStatsCoverage": 100,
-      "recentFormCoverage": 60,
+      "recentFormCoverage": 70,
       "teamAnalysisCoverage": 42.5,
       "probableLineupCoverage": 59,
       "officialLineupCoverage": 0,
-      "overallCoverage": 62,
+      "overallCoverage": 63,
       "confidenceLevel": "medium",
       "missingComponents": [
         "Ev sahibi kadro kapsamı yetersiz",
         "Resmî ilk 11 henüz açıklanmadı"
       ]
     },
-    "dataConfidence": 56,
+    "dataConfidence": 63,
     "analysisStatus": "partial",
     "warnings": []
   },
@@ -5233,7 +5254,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-22T18:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-17T19:31:01.499Z",
+    "generatedAt": "2026-08-17T20:31:44.950Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -6720,7 +6741,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-17T19:31:01.499Z",
+      "generatedAt": "2026-08-17T20:31:44.950Z",
       "asOf": "2026-08-22T18:30:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 66,
@@ -6782,7 +6803,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-23T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-17T19:31:01.554Z",
+    "generatedAt": "2026-08-17T20:31:44.996Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -7900,7 +7921,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-17T19:31:01.554Z",
+      "generatedAt": "2026-08-17T20:31:44.996Z",
       "asOf": "2026-08-23T16:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 47,
@@ -7964,7 +7985,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-23T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-17T19:31:01.638Z",
+    "generatedAt": "2026-08-17T20:31:45.066Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -9395,7 +9416,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-17T19:31:01.638Z",
+      "generatedAt": "2026-08-17T20:31:45.066Z",
       "asOf": "2026-08-23T16:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 62,
@@ -9457,22 +9478,34 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-23T18:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-17T19:31:01.710Z",
+    "generatedAt": "2026-08-17T20:31:45.138Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
       "teamName": "Göztepe",
       "recentForm": {
-        "sampleSize": 2,
-        "points": 4,
+        "sampleSize": 3,
+        "points": 5,
         "wins": 1,
-        "draws": 1,
+        "draws": 2,
         "losses": 0,
-        "goalsFor": 3,
-        "goalsAgainst": 2,
+        "goalsFor": 6,
+        "goalsAgainst": 5,
         "goalDifference": 1,
-        "weightedScore": 68,
+        "weightedScore": 51,
         "results": [
+          {
+            "matchId": "samsunspor-goztepe-2026-08-17",
+            "kickoff": "2026-08-17T21:30:00+03:00",
+            "opponent": "Samsunspor",
+            "venue": "away",
+            "goalsFor": 3,
+            "goalsAgainst": 3,
+            "outcome": "D",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "goztepe-trabzonspor-2026-08-08",
             "kickoff": "2026-08-08T20:00:00+03:00",
@@ -9498,7 +9531,7 @@
             "isFriendly": true
           }
         ],
-        "dataStatus": "limited"
+        "dataStatus": "sufficient"
       },
       "homeForm": {
         "sampleSize": 2,
@@ -9539,42 +9572,52 @@
         "dataStatus": "limited"
       },
       "awayForm": {
-        "sampleSize": 0,
-        "points": 0,
+        "sampleSize": 1,
+        "points": 1,
         "wins": 0,
-        "draws": 0,
+        "draws": 1,
         "losses": 0,
-        "goalsFor": 0,
-        "goalsAgainst": 0,
+        "goalsFor": 3,
+        "goalsAgainst": 3,
         "goalDifference": 0,
-        "weightedScore": null,
-        "results": [],
-        "dataStatus": "insufficient"
+        "weightedScore": 33,
+        "results": [
+          {
+            "matchId": "samsunspor-goztepe-2026-08-17",
+            "kickoff": "2026-08-17T21:30:00+03:00",
+            "opponent": "Samsunspor",
+            "venue": "away",
+            "goalsFor": 3,
+            "goalsAgainst": 3,
+            "outcome": "D",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          }
+        ],
+        "dataStatus": "limited"
       },
       "goalTrend": {
-        "averageGoalsFor": 1.5,
+        "averageGoalsFor": 2,
         "direction": "unknown",
-        "sampleSize": 2,
-        "score": 60
+        "sampleSize": 3,
+        "score": 80
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 1,
+        "averageGoalsAgainst": 1.67,
         "direction": "unknown",
-        "sampleSize": 2,
-        "score": 60
+        "sampleSize": 3,
+        "score": 33
       },
-      "restDays": 15,
+      "restDays": 6,
       "scheduleLoad": {
-        "matchesInWindow": 0,
+        "matchesInWindow": 1,
         "windowDays": 14,
         "level": "low"
       },
-      "confidence": 50,
-      "dataStatus": "limited",
-      "warnings": [
-        "limited-recent-match-sample",
-        "recent-form-is-friendlies-only"
-      ]
+      "confidence": 65,
+      "dataStatus": "sufficient",
+      "warnings": []
     },
     "awayContext": {
       "teamName": "Gençlerbirliği",
@@ -9678,7 +9721,7 @@
         "knownStarterCount": 11,
         "requiredStarterCount": 11,
         "coverage": 100,
-        "confidence": 60,
+        "confidence": 68,
         "starters": [
           {
             "id": "a-ozcimen-goztepe",
@@ -10119,7 +10162,7 @@
         "away": null
       },
       "form": {
-        "home": 68,
+        "home": 51,
         "away": 100
       },
       "availability": {
@@ -10168,7 +10211,7 @@
         },
         "advantage": "home",
         "advantageScore": 64,
-        "confidence": 21,
+        "confidence": 25,
         "summary": "Y. Sirin, mevcut form ve genel seviyesiyle bu eşleşmede bir adım önde görünüyor."
       },
       {
@@ -10192,7 +10235,7 @@
         },
         "advantage": "home",
         "advantageScore": 58,
-        "confidence": 21,
+        "confidence": 25,
         "summary": "A. Dennis, mevcut form ve genel seviyesiyle bu eşleşmede bir adım önde görünüyor."
       },
       {
@@ -10216,70 +10259,65 @@
         },
         "advantage": "home",
         "advantageScore": 65,
-        "confidence": 36,
+        "confidence": 40,
         "summary": "A. Özçimen, mevcut form ve genel seviyesiyle bu eşleşmede bir adım önde görünüyor."
       }
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-17T19:31:01.709Z",
+      "generatedAt": "2026-08-17T20:31:45.138Z",
       "asOf": "2026-08-23T18:30:00.000Z",
-      "predictionStatus": "low-confidence",
-      "dataConfidence": 41,
+      "predictionStatus": "available",
+      "dataConfidence": 46,
       "teamStrength": {
-        "home": 47,
+        "home": 45,
         "away": 55
       },
       "probabilities": {
-        "homeWin": 31,
+        "homeWin": 30,
         "draw": 33,
-        "awayWin": 36
+        "awayWin": 37
       },
       "prediction": {
         "primary": "away",
         "label": "Deplasman bir adım önde",
-        "confidence": 41
+        "confidence": 46
       },
       "goalPotential": {
-        "score": 61,
-        "label": "medium"
+        "score": 77,
+        "label": "high"
       },
       "upsetRisk": {
-        "score": 76,
+        "score": 74,
         "label": "high"
       },
       "matchBalance": {
-        "score": 84,
+        "score": 80,
         "label": "slight-away"
       },
-      "summary": "Model, ev sahibi için %31, beraberlik için %33, deplasman için %36 ihtimal hesaplıyor. Takım güç puanları 47/100 - 55/100 ve maç dengesi \"slight-away\" olarak okunuyor. Bu okuma 41/100 veri güveniyle üretildi; düşük güven nedeniyle temkinli değerlendirilmeli.",
-      "warnings": [
-        "low-confidence-prediction"
-      ]
+      "summary": "Model, ev sahibi için %30, beraberlik için %33, deplasman için %37 ihtimal hesaplıyor. Takım güç puanları 45/100 - 55/100 ve maç dengesi \"slight-away\" olarak okunuyor. Bu okuma 46/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "warnings": []
     },
     "coverage": {
       "homeSquadCoverage": 100,
       "awaySquadCoverage": 18,
       "homeStatsCoverage": 100,
       "awayStatsCoverage": 100,
-      "recentFormCoverage": 30,
+      "recentFormCoverage": 40,
       "teamAnalysisCoverage": 5,
       "probableLineupCoverage": 59,
       "officialLineupCoverage": 0,
-      "overallCoverage": 52,
+      "overallCoverage": 53,
       "confidenceLevel": "medium",
       "missingComponents": [
         "Deplasman kadro kapsamı yetersiz",
-        "Son maç formu hazırlanıyor",
         "Takım analizi hazırlanıyor",
         "Resmî ilk 11 henüz açıklanmadı"
       ]
     },
-    "dataConfidence": 41,
+    "dataConfidence": 46,
     "analysisStatus": "partial",
-    "warnings": [
-      "low-confidence-prediction"
-    ]
+    "warnings": []
   },
   {
     "fixtureId": "alanyaspor-besiktas-2026-08-23",
@@ -10291,7 +10329,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-23T18:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-17T19:31:01.767Z",
+    "generatedAt": "2026-08-17T20:31:45.190Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -11608,7 +11646,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-17T19:31:01.767Z",
+      "generatedAt": "2026-08-17T20:31:45.189Z",
       "asOf": "2026-08-23T18:30:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 65,
