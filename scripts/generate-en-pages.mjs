@@ -1198,10 +1198,24 @@ function pollStickySection() {
 /**
  * RESMÎ İLK 11 UYARISI — `data/official-lineup-alerts.json`den, kaynaklı.
  * services/matchSpecial.js'nin "muhtemel 11" katmanına karışmaz.
+ *
+ * Kayıt hiçbir süre damgası taşımadan sonsuza kadar basılıyordu (aynı
+ * kusur prerender-core-pages.mjs'de de vardı, gerekçesi orada). Süresi
+ * geçen (kickoff üzerinden uzatmalar dahil 3 saatten fazla geçmiş) uyarı
+ * KAYITTAN SİLİNMEZ, yalnızca bu sayfada basılmaz.
  */
+const LINEUP_ALERT_STALE_MS = 3 * 60 * 60 * 1000;
+
 function officialLineupAlertsSection() {
   const alerts = require("../data/official-lineup-alerts.json").records || [];
-  return alerts.map((alert) => officialLineupAlertHtml(alert, LOCALE)).join("");
+  const now = Date.now();
+  return alerts
+    .filter((alert) => {
+      const kickoffMs = Date.parse(alert.kickoff || "");
+      return !Number.isFinite(kickoffMs) || now - kickoffMs <= LINEUP_ALERT_STALE_MS;
+    })
+    .map((alert) => officialLineupAlertHtml(alert, LOCALE))
+    .join("");
 }
 
 function homePage() {

@@ -38,7 +38,8 @@ const freshness = createFreshnessTracker(root);
  */
 const LIVE_PAGES = new Set([
   "canli-skor.html",
-  "bugunun-maclari.html"
+  "bugunun-maclari.html",
+  "canli-mac-sonuclari.html"
 ]);
 
 const DAILY_PAGES = new Set([
@@ -49,7 +50,10 @@ const DAILY_PAGES = new Set([
   "gunun-radar-bulteni.html",
   "super-lig-fikstur.html",
   "puan-durumu.html",
-  "momentum.html"
+  "momentum.html",
+  "mac-sonuclari.html",
+  "iddaa-sonuclari.html",
+  "bahis-sonuclari.html"
 ]);
 
 function changeFrequency(file) {
@@ -550,6 +554,9 @@ function sitemapXml(files) {
     "index.html",
     "bugunun-maclari.html",
     "mac-sonuclari.html",
+    "iddaa-sonuclari.html",
+    "bahis-sonuclari.html",
+    "canli-mac-sonuclari.html",
     "super-lig-fikstur.html",
     "canli-skor.html",
     "puan-durumu.html",
