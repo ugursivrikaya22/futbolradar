@@ -1,7 +1,29 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-18T20:29:35.025Z",
+  "updatedAt": "2026-08-18T21:29:41.295Z",
   "items": [
+    {
+      "id": "auto-news-88c9a70bb33b8f88e7d1",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe 1-1 Olympique Lyon",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-18T21:02:27.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxNNTg1OUJXM0Z0M05WT0xJWFlxenQ2M1gwLVMxYjhvbE5SVmRka250UEFNLWFxcWQ2a1d4ZWpXMC1NZllOQUY2Vm5HZzlkZEpON2lfYUFGcHBTcmYwZGxxQnphc3RrYXB0RGFGaUJQT2ZuZHR6TFNRa0pja3lDQ2QtVDBlZTRDUQ?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 3,
+        "firstSeenAt": "2026-08-17T14:35:56.000Z"
+      }
+    },
     {
       "id": "auto-news-acd31b6a80cbe63e8978",
       "category": "official",
@@ -31,7 +53,7 @@
       "team": "Beşiktaş",
       "timestamp": "2026-08-18T18:41:55.000Z",
       "source": {
-        "name": "bjk.com.tr",
+        "name": "Bjk.com.tr",
         "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFAxWWNmRFRaLXREMFZzM0dTYndYTWIxUDBYb05wY0s1cUpzMkM1TFNUTi1lelg5NFE4ZXoxd3A1OTg0TXJHcnE5Mm9sZG9ESmxaU0hKS3BIOG5Zdlk?oc=5",
         "publisher": "bjk.com.tr"
       },
@@ -75,7 +97,7 @@
       "team": "Trabzonspor",
       "timestamp": "2026-08-18T17:30:08.000Z",
       "source": {
-        "name": "trabzonspor.org.tr",
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
         "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNaVcwRnRCc29pbTBYd3hlQVAwQnJBem8yQmM0TUdpa2VGRUY3UkZadkZtUjZWWVZjUWRIWkFyQ1BsdGpwclZFYkpUaTZjOV9hdTVtWE5jY2lFalRxNjVwYlktc2dRWXRIVmJTeUEyeU5pRThGX1ZwZnJCVGFfREUzbWJ1SDkxLUQ2VExsUWw5LURicE1OTHctYVVn?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
@@ -95,7 +117,7 @@
       "team": "Trabzonspor",
       "timestamp": "2026-08-18T17:15:30.000Z",
       "source": {
-        "name": "trabzonspor.org.tr",
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
         "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxOV1l0U1NmcmJadk9NOEluMTRlbmZnLTlVMW1xUElDUGtPZnpETFQwb01pVklub3BVd0I1VjVVeXpfQmVrMEtMYk5ZdUUtamYzV2JVZkhxdjB3Ul9wQ1F0eTZGcTFHRnRaUHhhTERIdnhLNHRxSkVoVnhGa19GSTFTclYyTlNZTW03UUh2Ny1RaEJqWktCZ3o5NW5nbmFxeEM4TEk2YWJ0ZENlN0NzY21GNlN5Q3ozZzBmaTEwcTViVVNxb29pZlNUYk52TE9ZUG1PcFd5VEZzaHNwR3dpV2c?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
@@ -127,28 +149,6 @@
       }
     },
     {
-      "id": "auto-news-df521ab8a4028b0d99d0",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Kulübümüz, O. Lyon yöneticilerini ve UEFA delegesini yemekte ağırladı",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-18T12:20:27.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxNalBLSlNKY09kaVYtYnhJVEhJZDR6bXNHRWs2MkhCYmV2SkcwQVoxTkpJOW5xa2NJYVgtYnRvU05fRnZsRDVRcGtDSmNwem16QlhYVzlVbXJOenA4d0REUFpod2d4cTNyVVZZV1FES0VXd2YzWDJJSkcxWFRuVVJoOHFqSThYUmR2VDdqejlCVFlNa2JsekVQZXpWaVJabF9Sa2R4alRmY0VuTWF3VHF2N1FUNVJJMmhs?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-08-17T14:35:56.000Z"
-      }
-    },
-    {
       "id": "auto-news-cb4ea93dde2ed67fc26a",
       "category": "official",
       "confidence": "confirmed",
@@ -165,9 +165,7 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-08-18T11:33:00.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -221,7 +219,7 @@
       "team": "Trabzonspor",
       "timestamp": "2026-08-18T07:57:41.000Z",
       "source": {
-        "name": "trabzonspor.org.tr",
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
         "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPaTBVSGktdERGOVdTSWNjUkJwQnJEUUsyWGI2NjJ3MmVrbkt5dmFvZmFpMTVjZjQ1RDFkSFdPZ0hRdnh3WGt0LVJhenV5bGFya3VHMmhsRUxRbzYtaUNTYkV0blZuM3Zwc1JfZzRHZTBrbUtZc2ZrX1JLZW0xeERhZmVkWEJxLTBBbkFiS2pMbTFhZW42NlE1a0tnalFsS0pqdDFkYko4WE1KZkFuWVh1TnloMA?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
@@ -241,7 +239,7 @@
       "team": "Trabzonspor",
       "timestamp": "2026-08-17T17:15:28.000Z",
       "source": {
-        "name": "trabzonspor.org.tr",
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
         "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOTk80LXM4YjNiVEc1eFJwWUZqMERoeUNlNnI3aVZNa3pfWDRpOWNpcXpMYTJRWGRneUNTbmNEMnJYUHM1Z2diTE9CWVhrbzBxdE1iU2JLMEsxQXNDclYzZUYzT25ocW52SFJXNFo2Q2VkVHBpOWVCbVZMS2FCRTdLSnA4Z3N0Ym9mVUFpczZ0eGhPUE0?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
@@ -261,7 +259,7 @@
       "team": "Beşiktaş",
       "timestamp": "2026-08-17T12:39:54.000Z",
       "source": {
-        "name": "bjk.com.tr",
+        "name": "Bjk.com.tr",
         "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5nN2YxTTQ4OWh0NWIzc2NFUXF3ckNwSW9yTkN1VzJXLWFiczJyNDdGcHJEa0laMUtubzRNUDk1cjBEcmN3ejJzRmU0RHFtSzhrQkhsU1FNTzhLb0E?oc=5",
         "publisher": "bjk.com.tr"
       },
@@ -330,6 +328,26 @@
         "feed": "fotomac",
         "priority": 8,
         "status": "REPORTED"
+      }
+    },
+    {
+      "id": "auto-news-0e50ef6d963af1a1ff9e",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Çocukların Futbolda Korunmasına Yönelik Önemli Düzenleme",
+      "team": "Süper Lig",
+      "timestamp": "2026-08-18T16:03:11.000Z",
+      "source": {
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5jWGpFSU91bWlobXNzRDQtWnBhX3FjdTh3bjJCeXFvMVk0M3NVRUFtOWN3WVpFMlhKNU1BOU00b2NZNUFPRE5pczJEOC1RbTJyWUx6WGlqSnh1TWhBWjd6S0ZuYWRzZms?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "super-lig",
+        "priority": 5,
+        "status": "OFFICIAL"
       }
     }
   ]

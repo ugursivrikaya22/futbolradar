@@ -1434,7 +1434,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-21T18:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-18T20:29:25.565Z",
+    "generatedAt": "2026-08-18T21:29:33.045Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -2828,7 +2828,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-18T20:29:25.565Z",
+      "generatedAt": "2026-08-18T21:29:33.044Z",
       "asOf": "2026-08-21T18:30:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 65,
@@ -2890,7 +2890,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-22T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-18T20:29:25.691Z",
+    "generatedAt": "2026-08-18T21:29:33.169Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -4075,7 +4075,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-18T20:29:25.691Z",
+      "generatedAt": "2026-08-18T21:29:33.168Z",
       "asOf": "2026-08-22T16:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 54,
@@ -4137,7 +4137,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-22T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-18T20:29:25.779Z",
+    "generatedAt": "2026-08-18T21:29:33.277Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -5190,7 +5190,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-18T20:29:25.779Z",
+      "generatedAt": "2026-08-18T21:29:33.277Z",
       "asOf": "2026-08-22T16:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 63,
@@ -5253,22 +5253,34 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-22T18:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-18T20:29:25.844Z",
+    "generatedAt": "2026-08-18T21:29:33.344Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
       "teamName": "Fenerbahçe",
       "recentForm": {
-        "sampleSize": 4,
-        "points": 7,
+        "sampleSize": 5,
+        "points": 8,
         "wins": 2,
-        "draws": 1,
+        "draws": 2,
         "losses": 1,
-        "goalsFor": 4,
-        "goalsAgainst": 3,
+        "goalsFor": 5,
+        "goalsAgainst": 4,
         "goalDifference": 1,
-        "weightedScore": 53,
+        "weightedScore": 48,
         "results": [
+          {
+            "matchId": "fenerbahce-lyon-2026-08-18",
+            "kickoff": "2026-08-18T22:00:00+03:00",
+            "opponent": "Lyon",
+            "venue": "home",
+            "goalsFor": 1,
+            "goalsAgainst": 1,
+            "outcome": "D",
+            "competitionType": "europe",
+            "formWeight": 0.85,
+            "isFriendly": false
+          },
           {
             "matchId": "genclerbirligi-fenerbahce-2026-08-15",
             "kickoff": "2026-08-15T21:30:00+03:00",
@@ -5321,16 +5333,28 @@
         "dataStatus": "sufficient"
       },
       "homeForm": {
-        "sampleSize": 1,
-        "points": 3,
+        "sampleSize": 2,
+        "points": 4,
         "wins": 1,
-        "draws": 0,
+        "draws": 1,
         "losses": 0,
-        "goalsFor": 1,
-        "goalsAgainst": 0,
+        "goalsFor": 2,
+        "goalsAgainst": 1,
         "goalDifference": 1,
-        "weightedScore": 100,
+        "weightedScore": 65,
         "results": [
+          {
+            "matchId": "fenerbahce-lyon-2026-08-18",
+            "kickoff": "2026-08-18T22:00:00+03:00",
+            "opponent": "Lyon",
+            "venue": "home",
+            "goalsFor": 1,
+            "goalsAgainst": 1,
+            "outcome": "D",
+            "competitionType": "europe",
+            "formWeight": 0.85,
+            "isFriendly": false
+          },
           {
             "matchId": "fenerbahce-gornik-zabrze-2026-07-21",
             "kickoff": "2026-07-21T21:00:00+03:00",
@@ -5399,22 +5423,22 @@
       "goalTrend": {
         "averageGoalsFor": 1,
         "direction": "stable",
-        "sampleSize": 4,
+        "sampleSize": 5,
         "score": 40
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 0.75,
+        "averageGoalsAgainst": 0.8,
         "direction": "down",
-        "sampleSize": 4,
-        "score": 70
+        "sampleSize": 5,
+        "score": 68
       },
-      "restDays": 7,
+      "restDays": 4,
       "scheduleLoad": {
-        "matchesInWindow": 2,
+        "matchesInWindow": 3,
         "windowDays": 14,
-        "level": "low"
+        "level": "medium"
       },
-      "confidence": 80,
+      "confidence": 95,
       "dataStatus": "sufficient",
       "warnings": []
     },
@@ -5544,7 +5568,7 @@
         "knownStarterCount": 11,
         "requiredStarterCount": 11,
         "coverage": 100,
-        "confidence": 75,
+        "confidence": 83,
         "starters": [
           {
             "id": "e-biterge-fenerbahce",
@@ -6574,7 +6598,7 @@
         "away": 23
       },
       "form": {
-        "home": 53,
+        "home": 48,
         "away": 0
       },
       "availability": {
@@ -6638,7 +6662,7 @@
         },
         "advantage": "balanced",
         "advantageScore": 48,
-        "confidence": 68,
+        "confidence": 72,
         "summary": "S. Cherif ve Egehan Sensoy arasındaki eşleşme mevcut verilerde dengeli görünüyor."
       },
       {
@@ -6662,7 +6686,7 @@
         },
         "advantage": "home",
         "advantageScore": 75,
-        "confidence": 68,
+        "confidence": 72,
         "summary": "Kerem Aktürkoğlu, mevcut form ve genel seviyesiyle bu eşleşmede bir adım önde görünüyor."
       },
       {
@@ -6686,7 +6710,7 @@
         },
         "advantage": "balanced",
         "advantageScore": 52,
-        "confidence": 68,
+        "confidence": 72,
         "summary": "Kamil Efe Üregen ve T. Elgun arasındaki eşleşme mevcut verilerde dengeli görünüyor."
       },
       {
@@ -6710,7 +6734,7 @@
         },
         "advantage": "balanced",
         "advantageScore": 50,
-        "confidence": 68,
+        "confidence": 72,
         "summary": "E. Demir ve E. Bardhi arasındaki eşleşme mevcut verilerde dengeli görünüyor."
       },
       {
@@ -6734,43 +6758,43 @@
         },
         "advantage": "balanced",
         "advantageScore": 50,
-        "confidence": 68,
+        "confidence": 72,
         "summary": "E. Biterge ve E. Aydın arasındaki eşleşme mevcut verilerde dengeli görünüyor."
       }
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-18T20:29:25.844Z",
+      "generatedAt": "2026-08-18T21:29:33.344Z",
       "asOf": "2026-08-22T18:30:00.000Z",
       "predictionStatus": "available",
-      "dataConfidence": 66,
+      "dataConfidence": 71,
       "teamStrength": {
-        "home": 51,
+        "home": 49,
         "away": 36
       },
       "probabilities": {
-        "homeWin": 49,
+        "homeWin": 50,
         "draw": 31,
-        "awayWin": 20
+        "awayWin": 19
       },
       "prediction": {
         "primary": "home",
         "label": "Ev sahibi net önde",
-        "confidence": 66
+        "confidence": 71
       },
       "goalPotential": {
-        "score": 34,
+        "score": 35,
         "label": "low"
       },
       "upsetRisk": {
-        "score": 58,
+        "score": 56,
         "label": "high"
       },
       "matchBalance": {
-        "score": 70,
+        "score": 74,
         "label": "strong-home"
       },
-      "summary": "Model, ev sahibi için %49, beraberlik için %31, deplasman için %20 ihtimal hesaplıyor. Takım güç puanları 51/100 - 36/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 66/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %50, beraberlik için %31, deplasman için %19 ihtimal hesaplıyor. Takım güç puanları 49/100 - 36/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 71/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -6778,17 +6802,17 @@
       "awaySquadCoverage": 100,
       "homeStatsCoverage": 100,
       "awayStatsCoverage": 100,
-      "recentFormCoverage": 60,
+      "recentFormCoverage": 70,
       "teamAnalysisCoverage": 67.5,
       "probableLineupCoverage": 100,
       "officialLineupCoverage": 0,
-      "overallCoverage": 84,
+      "overallCoverage": 86,
       "confidenceLevel": "high",
       "missingComponents": [
         "Resmî ilk 11 henüz açıklanmadı"
       ]
     },
-    "dataConfidence": 66,
+    "dataConfidence": 71,
     "analysisStatus": "complete",
     "warnings": []
   },
@@ -6802,7 +6826,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-23T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-18T20:29:25.899Z",
+    "generatedAt": "2026-08-18T21:29:33.401Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -7920,7 +7944,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-18T20:29:25.899Z",
+      "generatedAt": "2026-08-18T21:29:33.401Z",
       "asOf": "2026-08-23T16:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 47,
@@ -7983,7 +8007,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-23T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-18T20:29:25.968Z",
+    "generatedAt": "2026-08-18T21:29:33.465Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -9414,7 +9438,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-18T20:29:25.968Z",
+      "generatedAt": "2026-08-18T21:29:33.465Z",
       "asOf": "2026-08-23T16:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 62,
@@ -9476,7 +9500,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-23T18:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-18T20:29:26.051Z",
+    "generatedAt": "2026-08-18T21:29:33.529Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -10263,7 +10287,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-18T20:29:26.051Z",
+      "generatedAt": "2026-08-18T21:29:33.529Z",
       "asOf": "2026-08-23T18:30:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 46,
@@ -10327,7 +10351,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-23T18:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-18T20:29:26.121Z",
+    "generatedAt": "2026-08-18T21:29:33.628Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -11644,7 +11668,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-18T20:29:26.120Z",
+      "generatedAt": "2026-08-18T21:29:33.628Z",
       "asOf": "2026-08-23T18:30:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 65,
@@ -11706,7 +11730,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-24T18:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-18T20:29:26.176Z",
+    "generatedAt": "2026-08-18T21:29:33.686Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -12314,7 +12338,7 @@
     "keyDuels": [],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-18T20:29:26.176Z",
+      "generatedAt": "2026-08-18T21:29:33.686Z",
       "asOf": "2026-08-24T18:30:00.000Z",
       "predictionStatus": "low-confidence",
       "dataConfidence": 18,
