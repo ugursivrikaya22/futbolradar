@@ -20089,6 +20089,15 @@ a.motm-week__card:focus-visible {
   .home-main > #gunun-radar-maci { order: 2; }         /* maç analizleri */
   .home-main > .mini-standings { order: 3; }            /* puan durumu */
   .home-main > #radar-yorumu { order: 4; }             /* köşe yazıları */
+  /* Brifingin son basamağı: "diğer ligler/içerik". Bu dört bölüm bugünün
+     maçıyla veya Türk takımlarıyla değil, genel keşifle ilgili — trend
+     oyuncular, trend takımlar, hızlı gezinme kısayolları ve sezon arşivi.
+     Belge sırasında maçlardan hemen sonra geliyorlardı ve anketi/haberleri
+     ekranın altına itiyorlardı; en sona alınıyorlar. */
+  .home-main > #oyuncu-radar-preview { order: 5; }     /* trend oyuncular */
+  .home-main > #trend-takimlar { order: 5; }           /* trend takımlar */
+  .home-main > .home-statistics-entry { order: 5; }    /* hızlı gezinme */
+  .home-main > #arsiv-girisi { order: 6; }             /* sezon arşivi */
 }
 
 /* ── PUAN DURUMU MİNİ ───────────────────────────────────────────────
