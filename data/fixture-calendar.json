@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-18T11:29:37.343Z",
+  "fetchedAt": "2026-08-18T12:53:27.632Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -205681,14 +205681,14 @@
       "awayTeam": "Bali United",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2445.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/2448.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 23,
+      "elapsed": 23,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -205706,8 +205706,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T10:33:12.328Z",
-      "staleAfter": "2026-08-18T10:38:12.328Z",
+      "fetchedAt": "2026-08-18T12:53:28.710Z",
+      "staleAfter": "2026-08-18T12:58:28.710Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -205718,12 +205718,18 @@
       "providerLeagueId": "667",
       "referee": null,
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "title": "Canlı Radar Analizi",
+        "summary": "Skor dengede.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
