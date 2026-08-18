@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-18T03:48:56.304Z",
+  "updatedAt": "2026-08-18T04:05:17.714Z",
   "items": [
     {
       "id": "auto-news-bdde305605c57bfb2f0d",
@@ -207,26 +207,6 @@
       }
     },
     {
-      "id": "auto-news-674f88794e5bf59422a7",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Ferencvaros maçı hazırlıklarımız başladı",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-16T18:21:22.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxPSkc1TVhmdl8zc3k0c3ozNWtUbUI0ZFBjd3pidkVKRWJKX09oZjBSMUhZUWFsLWlqdFJqN0c2UHJpdGw5cHE1Zm0wXy1FdUZDTW1RNGhNVEJjbjZjVmtBNFRQeEo0dmpRZFBjWUlIQlpFbnRZS0Y2T2owY0xlS19ZX2w1OUI5a2JFYTJsQS1IeW4xZmc?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-eba28e57fb1e09b83881",
       "category": "official",
       "confidence": "confirmed",
@@ -264,6 +244,26 @@
         "feed": "galatasaray",
         "priority": 1,
         "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-ed51f2f0d92f96f6bdb2",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Kadıköy'de Avrupa gecesi! İşte Fenerbahçe'nin Lyon maçı muhtemel 11'i",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-17T21:02:16.000Z",
+      "source": {
+        "name": "fotomac",
+        "url": "https://www.fotomac.com.tr/fenerbahce/2026/08/17/kadikoyde-avrupa-gecesi-iste-fenerbahcenin-lyon-maci-muhtemel-11i",
+        "publisher": "fotomac.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fotomac",
+        "priority": 8,
+        "status": "REPORTED"
       }
     }
   ]
