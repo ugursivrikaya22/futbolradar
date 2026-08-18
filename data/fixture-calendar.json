@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-18T10:33:11.208Z",
+  "fetchedAt": "2026-08-18T11:29:37.343Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -204909,14 +204909,14 @@
       "awayTeam": "SS Reyes II",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9901.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/26545.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -204934,8 +204934,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T06:50:01.803Z",
-      "staleAfter": "2026-08-18T06:55:01.803Z",
+      "fetchedAt": "2026-08-18T11:29:38.371Z",
+      "staleAfter": "2026-08-18T11:34:38.371Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -204946,11 +204946,17 @@
       "referee": null,
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "summary": "Skor dengede.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "1-1",
+            "text": "Skor dengede."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -204989,8 +204995,8 @@
             "last_5": {
               "played": 1,
               "form": "33%",
-              "att": "7%",
-              "def": "93%",
+              "att": "6%",
+              "def": "94%",
               "goals": {
                 "for": {
                   "total": 1,
