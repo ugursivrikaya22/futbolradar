@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-18T17:31:12.541Z",
+  "fetchedAt": "2026-08-18T18:42:38.051Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -207167,14 +207167,14 @@
       "awayTeam": "Bayern München",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/180.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/157.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 76,
-      "elapsed": 76,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 2,
-        "away": 2,
+        "away": 4,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -207192,8 +207192,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T17:31:13.436Z",
-      "staleAfter": "2026-08-18T17:36:13.436Z",
+      "fetchedAt": "2026-08-18T18:42:38.746Z",
+      "staleAfter": "2026-08-18T18:47:38.746Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -207204,28 +207204,18 @@
       "providerLeagueId": "667",
       "referee": null,
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 47' A. Ibrahimovic tarafından kaydedildi. Kulübeler oyuna müdahale etti; 18 oyuncu değişikliği kayda geçti.",
-        "confidence": "Orta",
+        "title": "Maç Radar Analizi",
+        "summary": "Bayern München skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Bayern München tarafında.",
+        "confidence": "Sınırlı",
         "signals": [
           {
-            "label": "Gol akışı",
-            "value": "47'",
-            "text": "Son gol 47' A. Ibrahimovic tarafından kaydedildi."
-          },
-          {
-            "label": "Teknik hamleler",
-            "value": "18 değişiklik",
-            "text": "Kulübeler oyuna müdahale etti; 18 oyuncu değişikliği kayda geçti."
-          },
-          {
             "label": "Canlı skor",
-            "value": "2-2",
-            "text": "Skor dengede."
+            "value": "2-4",
+            "text": "Bayern München skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 24,
-        "dataPoints": 3,
+        "eventCount": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -208644,13 +208634,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/14787.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1324.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 31,
-      "elapsed": 31,
+      "providerStatus": "2H",
+      "minute": 85,
+      "elapsed": 85,
       "live": true,
       "score": {
-        "home": 1,
-        "away": 2,
+        "home": 3,
+        "away": 5,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -208668,8 +208658,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T17:31:13.436Z",
-      "staleAfter": "2026-08-18T17:36:13.436Z",
+      "fetchedAt": "2026-08-18T18:42:38.746Z",
+      "staleAfter": "2026-08-18T18:47:38.746Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -208681,17 +208671,22 @@
       "referee": null,
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "VfL Osnabrück skor üstünlüğünü elinde tutuyor. Skor üstünlüğü VfL Osnabrück tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 73' Normal Goal tarafından kaydedildi. VfL Osnabrück skor üstünlüğünü elinde tutuyor. Skor üstünlüğü VfL Osnabrück tarafında.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "73'",
+            "text": "Son gol 73' Normal Goal tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "1-2",
+            "value": "3-5",
             "text": "VfL Osnabrück skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 8,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -209428,7 +209423,89 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "4'",
+          "team": {
+            "name": "VfL Osnabrück"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "L. Raimund · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "20'",
+          "team": {
+            "name": "Spelle-Venhaus"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "D. Benke · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "28'",
+          "team": {
+            "name": "VfL Osnabrück"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "L. Opitz · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "33'",
+          "team": {
+            "name": "VfL Osnabrück"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "T. Janotta · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "35'",
+          "team": {
+            "name": "Spelle-Venhaus"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Popov · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "41'",
+          "team": {
+            "name": "VfL Osnabrück"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "L. Opitz · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "VfL Osnabrück"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "L. Opitz · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "73'",
+          "team": {
+            "name": "Spelle-Venhaus"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "unionistas-de-salamanca-alcorcon-2026-08-18",
@@ -209443,9 +209520,9 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/5281.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/711.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 30,
-      "elapsed": 30,
+      "providerStatus": "2H",
+      "minute": 86,
+      "elapsed": 86,
       "live": true,
       "score": {
         "home": 0,
@@ -209467,8 +209544,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T17:31:13.436Z",
-      "staleAfter": "2026-08-18T17:36:13.436Z",
+      "fetchedAt": "2026-08-18T18:42:38.746Z",
+      "staleAfter": "2026-08-18T18:47:38.746Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -210382,13 +210459,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9577.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9627.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 30,
-      "elapsed": 30,
+      "providerStatus": "2H",
+      "minute": 83,
+      "elapsed": 83,
       "live": true,
       "score": {
         "home": 2,
-        "away": 0,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -210406,8 +210483,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T17:31:13.436Z",
-      "staleAfter": "2026-08-18T17:36:13.436Z",
+      "fetchedAt": "2026-08-18T18:42:38.746Z",
+      "staleAfter": "2026-08-18T18:47:38.746Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -210419,17 +210496,22 @@
       "referee": null,
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Sporting Gijón II skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Sporting Gijón II tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 67' Normal Goal tarafından kaydedildi. Skor dengede.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "67'",
+            "text": "Son gol 67' Normal Goal tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "2-0",
-            "text": "Sporting Gijón II skor üstünlüğünü elinde tutuyor."
+            "value": "2-2",
+            "text": "Skor dengede."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 4,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -211586,7 +211668,49 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "9'",
+          "team": {
+            "name": "Sporting Gijón II"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "28'",
+          "team": {
+            "name": "Sporting Gijón II"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "47'",
+          "team": {
+            "name": "Llanera"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Llanera"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "laredo-athletic-club-ii-2026-08-18",
@@ -211602,13 +211726,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9394.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9579.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 28,
-      "elapsed": 28,
+      "providerStatus": "2H",
+      "minute": 83,
+      "elapsed": 83,
       "live": true,
       "score": {
         "home": 0,
-        "away": 1,
+        "away": 3,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -211626,8 +211750,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T17:31:13.436Z",
-      "staleAfter": "2026-08-18T17:36:13.436Z",
+      "fetchedAt": "2026-08-18T18:42:38.746Z",
+      "staleAfter": "2026-08-18T18:47:38.746Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -211638,21 +211762,21 @@
       "referee": null,
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Son gol 15' Normal Goal tarafından kaydedildi. Athletic Club II skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Athletic Club II tarafında.",
+        "summary": "Son gol 70' Missed Penalty tarafından kaydedildi. Athletic Club II skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Athletic Club II tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "15'",
-            "text": "Son gol 15' Normal Goal tarafından kaydedildi."
+            "value": "70'",
+            "text": "Son gol 70' Missed Penalty tarafından kaydedildi."
           },
           {
             "label": "Canlı skor",
-            "value": "0-1",
+            "value": "0-3",
             "text": "Athletic Club II skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 2,
+        "eventCount": 5,
         "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
@@ -212479,7 +212603,37 @@
           },
           "type": "Goal",
           "detail": "Normal Goal",
+          "value": "A. Pecina · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "31'",
+          "team": {
+            "name": "Athletic Club II"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Pecina · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "53'",
+          "team": {
+            "name": "Athletic Club II"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
           "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "Athletic Club II"
+          },
+          "type": "Goal",
+          "detail": "Missed Penalty",
+          "value": "Missed Penalty",
           "comments": ""
         }
       ]
@@ -212497,13 +212651,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/5270.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9406.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 31,
-      "elapsed": 31,
+      "providerStatus": "2H",
+      "minute": 85,
+      "elapsed": 85,
       "live": true,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -212521,8 +212675,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T17:31:13.436Z",
-      "staleAfter": "2026-08-18T17:36:13.436Z",
+      "fetchedAt": "2026-08-18T18:42:38.746Z",
+      "staleAfter": "2026-08-18T18:47:38.746Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -212539,7 +212693,7 @@
         "signals": [
           {
             "label": "Canlı skor",
-            "value": "0-0",
+            "value": "1-1",
             "text": "Skor dengede."
           }
         ],
@@ -214451,8 +214605,8 @@
       "goalPotential": null,
       "risk": null,
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T17:31:13.436Z",
-      "staleAfter": "2026-08-18T17:36:13.436Z",
+      "fetchedAt": "2026-08-18T18:42:38.746Z",
+      "staleAfter": "2026-08-18T18:47:38.746Z",
       "needsReview": false,
       "resource": "matches",
       "providerLeagueId": "2",
@@ -215214,7 +215368,355 @@
             }
           }
         ]
-      }
+      },
+      "lineups": [
+        {
+          "team": "Fenerbahçe",
+          "formation": "4-2-3-1",
+          "players": [
+            "Ederson",
+            "Nélson Semedo",
+            "Milan Škriniar",
+            "Nathan Aké",
+            "Archie Brown",
+            "N'Golo Kanté",
+            "Mattéo Guendouzi",
+            "Mason Greenwood",
+            "Talisca",
+            "Kerem Aktürkoğlu",
+            "Vedat Muriqi"
+          ],
+          "substitutes": [
+            "Tarık Çetin",
+            "Kuzey Sapaz",
+            "Yiğit Efe Demir",
+            "Mert Müldür",
+            "Levent Mercan",
+            "İsmail Yüksek",
+            "Marco Asensio",
+            "İrfan Can Kahveci",
+            "Bartuğ Elmaz",
+            "Oğuz Aydın",
+            "Romelu Lukaku",
+            "Dorgeles Nene"
+          ],
+          "startingDetails": [
+            {
+              "name": "Ederson",
+              "number": 31,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Nélson Semedo",
+              "number": 27,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Milan Škriniar",
+              "number": 37,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Nathan Aké",
+              "number": 15,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Archie Brown",
+              "number": 3,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "N'Golo Kanté",
+              "number": 91,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Mattéo Guendouzi",
+              "number": 6,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Mason Greenwood",
+              "number": 11,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Talisca",
+              "number": 94,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Kerem Aktürkoğlu",
+              "number": 7,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "Vedat Muriqi",
+              "number": 19,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Tarık Çetin",
+              "number": 13,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Kuzey Sapaz",
+              "number": 75,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Yiğit Efe Demir",
+              "number": 14,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Mert Müldür",
+              "number": 18,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Levent Mercan",
+              "number": 22,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "İsmail Yüksek",
+              "number": 5,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Marco Asensio",
+              "number": 10,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "İrfan Can Kahveci",
+              "number": 17,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Bartuğ Elmaz",
+              "number": 28,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Oğuz Aydın",
+              "number": 70,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Romelu Lukaku",
+              "number": 9,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Dorgeles Nene",
+              "number": 45,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        },
+        {
+          "team": "Lyon",
+          "formation": "4-3-3",
+          "players": [
+            "Dominik Greif",
+            "Ainsley Maitland-Niles",
+            "Ruben Kluivert",
+            "Moussa Niakhaté",
+            "Abner Vinícius",
+            "Corentin Tolisso",
+            "Tanner Tessmann",
+            "Tyler Morton",
+            "Ernest Nuamah",
+            "Loïs Openda",
+            "Malick Fofana"
+          ],
+          "substitutes": [
+            "Justin Bengui",
+            "Rémy Descamps",
+            "Zachary Athekame",
+            "Felix Bacher",
+            "Clinton Mata",
+            "Mads Bidstrup",
+            "Mathys de Carvalho",
+            "Mohamed Ouédraogo",
+            "Noah Nartey",
+            "Julien Duranville",
+            "Kaïl Boudache",
+            "Rémi Himbert"
+          ],
+          "startingDetails": [
+            {
+              "name": "Dominik Greif",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Ainsley Maitland-Niles",
+              "number": 98,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Ruben Kluivert",
+              "number": 21,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Moussa Niakhaté",
+              "number": 19,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Abner Vinícius",
+              "number": 16,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Corentin Tolisso",
+              "number": 8,
+              "position": "M",
+              "grid": "3:3"
+            },
+            {
+              "name": "Tanner Tessmann",
+              "number": 6,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Tyler Morton",
+              "number": 23,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Ernest Nuamah",
+              "number": 7,
+              "position": "F",
+              "grid": "4:3"
+            },
+            {
+              "name": "Loïs Openda",
+              "number": 17,
+              "position": "F",
+              "grid": "4:2"
+            },
+            {
+              "name": "Malick Fofana",
+              "number": 11,
+              "position": "F",
+              "grid": "4:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Justin Bengui",
+              "number": 25,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Rémy Descamps",
+              "number": 40,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Zachary Athekame",
+              "number": 13,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Felix Bacher",
+              "number": 20,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Clinton Mata",
+              "number": 22,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Mads Bidstrup",
+              "number": 2,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Mathys de Carvalho",
+              "number": 39,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Mohamed Ouédraogo",
+              "number": 76,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Noah Nartey",
+              "number": 99,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Julien Duranville",
+              "number": 24,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Kaïl Boudache",
+              "number": 26,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Rémi Himbert",
+              "number": 45,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "dinamo-zagreb-viking-2026-08-18",
