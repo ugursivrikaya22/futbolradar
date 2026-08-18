@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-18T18:42:38.051Z",
+  "fetchedAt": "2026-08-18T19:04:07.417Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -207192,8 +207192,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T18:42:38.746Z",
-      "staleAfter": "2026-08-18T18:47:38.746Z",
+      "fetchedAt": "2026-08-18T19:04:08.280Z",
+      "staleAfter": "2026-08-18T19:09:08.280Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -207205,17 +207205,27 @@
       "referee": null,
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Bayern München skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Bayern München tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 83' N. Brown tarafından kaydedildi. Kulübeler oyuna müdahale etti; 22 oyuncu değişikliği kayda geçti. Skor üstünlüğü Bayern München tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "83'",
+            "text": "Son gol 83' N. Brown tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "22 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 22 oyuncu değişikliği kayda geçti."
+          },
           {
             "label": "Canlı skor",
             "value": "2-4",
             "text": "Bayern München skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 31,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -208618,6 +208628,76 @@
           "detail": "Substitution 7",
           "value": "M. Breunig · Asist: M. Pieringer · Substitution 7",
           "comments": ""
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "1. FC Heidenheim"
+          },
+          "type": "subst",
+          "detail": "Substitution 8",
+          "value": "P. Hennrich · Asist: M. Zrilic · Substitution 8",
+          "comments": ""
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "1. FC Heidenheim"
+          },
+          "type": "subst",
+          "detail": "Substitution 9",
+          "value": "P. Mainka · Asist: M. Costly · Substitution 9",
+          "comments": ""
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "1. FC Heidenheim"
+          },
+          "type": "subst",
+          "detail": "Substitution 10",
+          "value": "J. Niehues · Asist: A. Kolle · Substitution 10",
+          "comments": ""
+        },
+        {
+          "time": "78'",
+          "team": {
+            "name": "Bayern München"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "L. Diaz · Asist: M. Olise · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Bayern München"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Olise · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "83'",
+          "team": {
+            "name": "Bayern München"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "N. Brown · Asist: A. Pavlovic · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "89'",
+          "team": {
+            "name": "Bayern München"
+          },
+          "type": "subst",
+          "detail": "Substitution 12",
+          "value": "N. Brown · Asist: F. Pavic · Substitution 12",
+          "comments": ""
         }
       ]
     },
@@ -208633,11 +208713,11 @@
       "awayTeam": "VfL Osnabrück",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/14787.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1324.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 85,
-      "elapsed": 85,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 3,
         "away": 5,
@@ -208658,8 +208738,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T18:42:38.746Z",
-      "staleAfter": "2026-08-18T18:47:38.746Z",
+      "fetchedAt": "2026-08-18T19:04:08.280Z",
+      "staleAfter": "2026-08-18T19:09:08.280Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -208670,23 +208750,18 @@
       "providerLeagueId": "667",
       "referee": null,
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 73' Normal Goal tarafından kaydedildi. VfL Osnabrück skor üstünlüğünü elinde tutuyor. Skor üstünlüğü VfL Osnabrück tarafında.",
-        "confidence": "Orta",
+        "title": "Maç Radar Analizi",
+        "summary": "VfL Osnabrück skor üstünlüğünü elinde tutuyor. Skor üstünlüğü VfL Osnabrück tarafında.",
+        "confidence": "Sınırlı",
         "signals": [
-          {
-            "label": "Gol akışı",
-            "value": "73'",
-            "text": "Son gol 73' Normal Goal tarafından kaydedildi."
-          },
           {
             "label": "Canlı skor",
             "value": "3-5",
             "text": "VfL Osnabrück skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 8,
-        "dataPoints": 2,
+        "eventCount": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -209519,13 +209594,13 @@
       "awayTeam": "Alcorcon",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/5281.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/711.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 86,
-      "elapsed": 86,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -209544,8 +209619,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T18:42:38.746Z",
-      "staleAfter": "2026-08-18T18:47:38.746Z",
+      "fetchedAt": "2026-08-18T19:04:08.280Z",
+      "staleAfter": "2026-08-18T19:09:08.280Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -209556,14 +209631,14 @@
       "providerLeagueId": "667",
       "referee": null,
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
+        "title": "Maç Radar Analizi",
+        "summary": "Unionistas de Salamanca skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Unionistas de Salamanca tarafında.",
         "confidence": "Sınırlı",
         "signals": [
           {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "1-0",
+            "text": "Unionistas de Salamanca skor üstünlüğünü elinde tutuyor."
           }
         ],
         "eventCount": 0,
@@ -210458,11 +210533,11 @@
       "awayTeam": "Llanera",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9577.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9627.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 83,
-      "elapsed": 83,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 2,
         "away": 2,
@@ -210483,8 +210558,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T18:42:38.746Z",
-      "staleAfter": "2026-08-18T18:47:38.746Z",
+      "fetchedAt": "2026-08-18T19:04:08.280Z",
+      "staleAfter": "2026-08-18T19:09:08.280Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -210495,23 +210570,18 @@
       "providerLeagueId": "667",
       "referee": null,
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 67' Normal Goal tarafından kaydedildi. Skor dengede.",
-        "confidence": "Orta",
+        "title": "Maç Radar Analizi",
+        "summary": "Skor dengede.",
+        "confidence": "Sınırlı",
         "signals": [
-          {
-            "label": "Gol akışı",
-            "value": "67'",
-            "text": "Son gol 67' Normal Goal tarafından kaydedildi."
-          },
           {
             "label": "Canlı skor",
             "value": "2-2",
             "text": "Skor dengede."
           }
         ],
-        "eventCount": 4,
-        "dataPoints": 2,
+        "eventCount": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -211725,11 +211795,11 @@
       "awayTeam": "Athletic Club II",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9394.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9579.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 83,
-      "elapsed": 83,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
         "away": 3,
@@ -211750,8 +211820,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T18:42:38.746Z",
-      "staleAfter": "2026-08-18T18:47:38.746Z",
+      "fetchedAt": "2026-08-18T19:04:08.280Z",
+      "staleAfter": "2026-08-18T19:09:08.280Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -211761,7 +211831,7 @@
       "competitionId": "hazirlik-maci",
       "referee": null,
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "Son gol 70' Missed Penalty tarafından kaydedildi. Athletic Club II skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Athletic Club II tarafında.",
         "confidence": "Orta",
         "signals": [
@@ -212623,7 +212693,7 @@
           },
           "type": "Goal",
           "detail": "Normal Goal",
-          "value": "Normal Goal",
+          "value": "A. Pecina · Normal Goal",
           "comments": ""
         },
         {
@@ -212650,11 +212720,11 @@
       "awayTeam": "Peña Sport",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/5270.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9406.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 85,
-      "elapsed": 85,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 1,
         "away": 1,
@@ -212675,8 +212745,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T18:42:38.746Z",
-      "staleAfter": "2026-08-18T18:47:38.746Z",
+      "fetchedAt": "2026-08-18T19:04:08.280Z",
+      "staleAfter": "2026-08-18T19:09:08.280Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -212687,7 +212757,7 @@
       "providerLeagueId": "667",
       "referee": null,
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "Skor dengede.",
         "confidence": "Sınırlı",
         "signals": [
@@ -214573,10 +214643,10 @@
       "broadcast": null,
       "homeTeam": "Fenerbahçe",
       "awayTeam": "Lyon",
-      "status": "SCHEDULED",
+      "status": "LIVE",
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -214588,10 +214658,10 @@
       ],
       "homeTeamLogo": "https://media.api-sports.io/football/teams/611.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/80.png",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "providerStatus": "1H",
+      "minute": 4,
+      "elapsed": 4,
+      "live": true,
       "homeForm": null,
       "awayForm": null,
       "homeMomentum": null,
@@ -214605,19 +214675,25 @@
       "goalPotential": null,
       "risk": null,
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T18:42:38.746Z",
-      "staleAfter": "2026-08-18T18:47:38.746Z",
+      "fetchedAt": "2026-08-18T19:04:08.280Z",
+      "staleAfter": "2026-08-18T19:09:08.280Z",
       "needsReview": false,
       "resource": "matches",
       "providerLeagueId": "2",
       "referee": "S. Jablonski",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "title": "Canlı Radar Analizi",
+        "summary": "Skor dengede.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -215730,14 +215806,14 @@
       "awayTeam": "Viking",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/620.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/759.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 3,
+      "elapsed": 3,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -215755,8 +215831,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T03:48:38.043Z",
-      "staleAfter": "2026-08-18T03:53:38.043Z",
+      "fetchedAt": "2026-08-18T19:04:08.280Z",
+      "staleAfter": "2026-08-18T19:09:08.280Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -215779,14 +215855,14 @@
       "awayTeam": "AEK Athens FC",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/646.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/575.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 4,
+      "elapsed": 4,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -215804,8 +215880,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T03:48:38.043Z",
-      "staleAfter": "2026-08-18T03:53:38.043Z",
+      "fetchedAt": "2026-08-18T19:04:08.280Z",
+      "staleAfter": "2026-08-18T19:09:08.280Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
