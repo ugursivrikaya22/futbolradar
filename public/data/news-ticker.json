@@ -1,7 +1,69 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-19T13:17:39.545Z",
+  "updatedAt": "2026-08-19T14:03:54.576Z",
   "items": [
+    {
+      "id": "auto-news-eac43734b5b34dde24e9",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "T. Konyaspor maçının Futbol Seremoni Paketleri satışa çıkıyor",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-19T13:23:08.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQREFXYUV6dXZYWHBWcVNfbDJ3RTlqaGlseVE4TDU2b09jR004M3lWZnNlWUhpLVhHTGxLVTFlSVl3cTNUT3EyaXpfMEhndDJrZk9PRGdNWFJjVDhpR29zYVhoSWRMTWlmeEtCVDRnU2VzYzU2NFFBVUVKY2tmNWs1Sl9yOGtlYnhHNVhFb2F5T0VJUjYyLWxiLWFuTGlGaWprRkxaQldlbm9LWVZaRi1j?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-aba36c410d8b06c01ff6",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Antrenman Raporu | 19 Ağustos Çarşamba",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-19T13:17:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxOcUJqSHdnWEpQRlY5T0FTY0lKS25ZaVlDY0I3YWM3S3R0LUVvRTY3R1RTdWdkUWZJbUhmZjdrS0t6cnFWZzFNV2pGSlNRbXVvSFRPdENhY3R3SmJfN2xYTDFXVFEtbGQtN3Z3eTAwQjZDUFNaTGM3dFpYWTB6Mkk0REhiN3BOb0Vhczl3?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-08-18T17:48:00.000Z"
+      }
+    },
+    {
+      "id": "auto-news-9e8014573a5819b126a2",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Papara Park’ta Yeni VIP Bordo Tribünü Hizmete Açıldı",
+      "team": "Trabzonspor",
+      "timestamp": "2026-08-19T13:04:33.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQWkR3czBvRF95WFpDT2pxVDVBU1g3dDhUU3FDQUxiMVFONVpGZXFrMUhZWUxYVVdBWHBPWVdGWW9xYmVCSXFlMFRZU19rdWNpd2lzWHZ0bWczNTJfRUM0aGxtS0pkemNObklNd1JyNm1RTkFsY0tpaTBhOVVQc21MdEV6YTZCTEYyS2FLM2FnN2hScjNISFp3UENQUDVkVVE?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-6e9f0cdb9f1a6b9fac72",
       "category": "official",
@@ -62,28 +124,6 @@
         "status": "OFFICIAL",
         "mergedReports": 4,
         "firstSeenAt": "2026-08-15T21:52:38.000Z"
-      }
-    },
-    {
-      "id": "auto-news-88c9a70bb33b8f88e7d1",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Fenerbahçe 1-1 Olympique Lyon",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-18T21:02:27.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxNNTg1OUJXM0Z0M05WT0xJWFlxenQ2M1gwLVMxYjhvbE5SVmRka250UEFNLWFxcWQ2a1d4ZWpXMC1NZllOQUY2Vm5HZzlkZEpON2lfYUFGcHBTcmYwZGxxQnphc3RrYXB0RGFGaUJQT2ZuZHR6TFNRa0pja3lDQ2QtVDBlZTRDUQ?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 3,
-        "firstSeenAt": "2026-08-17T14:35:56.000Z"
       }
     },
     {
@@ -149,26 +189,6 @@
       }
     },
     {
-      "id": "auto-news-bfbea7cfc49995aca8c4",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Antrenman Raporu | 18 Ağustos Salı",
-      "team": "Galatasaray",
-      "timestamp": "2026-08-18T17:48:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxOZXNUb0dMR0NLWi1xem9oaG5zNVZZWGQ5Uk9HeDlkZXZGblhhV2dyZW9iOE8tb21BbHFCZHpfbk5ySW5pcFJfV2Zia2c0T0lzdlA2T3g2aWtRZjZ2dTRlNkNqRlBTNkpoWXJsWUlGeVp2SVp2OGlmc3dVZEQyUHZwR1ZqRklaQQ?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-673605ce6feba6c90d93",
       "category": "official",
       "confidence": "confirmed",
@@ -179,26 +199,6 @@
       "source": {
         "name": "Trabzonspor Kulübü Resmi Web Sitesi",
         "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNaVcwRnRCc29pbTBYd3hlQVAwQnJBem8yQmM0TUdpa2VGRUY3UkZadkZtUjZWWVZjUWRIWkFyQ1BsdGpwclZFYkpUaTZjOV9hdTVtWE5jY2lFalRxNjVwYlktc2dRWXRIVmJTeUEyeU5pRThGX1ZwZnJCVGFfREUzbWJ1SDkxLUQ2VExsUWw5LURicE1OTHctYVVn?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-2993d8ab083162e0c3f0",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Platinum, Gold ve Silver kombinesi bulunan taraftarlarımız için kapalı otopark satışlarımız başladı",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-18T17:30:08.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxOV1l0U1NmcmJadk9NOEluMTRlbmZnLTlVMW1xUElDUGtPZnpETFQwb01pVklub3BVd0I1VjVVeXpfQmVrMEtMYk5ZdUUtamYzV2JVZkhxdjB3Ul9wQ1F0eTZGcTFHRnRaUHhhTERIdnhLNHRxSkVoVnhGa19GSTFTclYyTlNZTW03UUh2Ny1RaEJqWktCZ3o5NW5nbmFxeEM4TEk2YWJ0ZENlN0NzY21GNlN5Q3ozZzBmaTEwcTViVVNxb29pZlNUYk52TE9ZUG1PcFd5VEZzaHNwR3dpV2c?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
       "automation": {
@@ -331,16 +331,16 @@
       }
     },
     {
-      "id": "auto-news-7d982fc6b72bdae7ce44",
+      "id": "auto-news-d69a99d2fa302a19b00e",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Champions League qualifying play-off round: Match previews, what to look out for",
+      "text": "Levski Sofia vs AEK Athens | Stats",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-08-18T07:00:00.000Z",
+      "timestamp": "2026-08-18T13:46:10.000Z",
       "source": {
         "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNMkRlLWZULXZhOTZQSVRZSGlZQU1qZllUOW9Zck0tTE5Sa0RTbUNWYlZiZF9ZbjAxalhndDRJcXNVUjQyY3VzM3MzTkRxTWl1ZTF3ekw3Xzg2QWFqNTBWbXFab0xTYjBLNkc4VGM0WkRIYUpPRVkwS0lsR0JWUVpWSTViYTJiNXdOeFcwWE1neUl4M3daWkt0UGZGc1VxaDFXbUdNSlJiTldISW96VHhxdGd0STlvUXVCUHBBSk1YMGNNTkJNcVpOdHluVkpPcUhvMk1EeExFdmZTZw?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNU1pSdXFHLUFrUlRhM1VPRG9tWHd1d3hPcnZ2cUJQN0xaSHEyVV9yczJSU19HenhzdEZqWG5IRzJBRjJUaGVEa3VHaDRSazVTazZ0czdpWjF3eDlPdk8yNXVGaWE3ZE1Wb3dqWGFKUDZ1V3BEdFRWTWdYX0IwYVZsRnFZRlI2bUFpYmVWQTFvRjN2QWRsempjbDln?oc=5",
         "publisher": "uefa.com"
       },
       "automation": {
