@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-19T01:25:27.709Z",
+  "updatedAt": "2026-08-19T04:06:17.631Z",
   "items": [
     {
       "id": "auto-news-05b9b6b9ecbc631f58d4",
@@ -335,23 +335,23 @@
       }
     },
     {
-      "id": "auto-news-ed51f2f0d92f96f6bdb2",
-      "category": "club-agenda",
-      "confidence": "reported",
+      "id": "auto-news-7d982fc6b72bdae7ce44",
+      "category": "official",
+      "confidence": "confirmed",
       "section": "news",
-      "text": "Kadıköy'de Avrupa gecesi! İşte Fenerbahçe'nin Lyon maçı muhtemel 11'i",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-17T21:02:16.000Z",
+      "text": "Champions League qualifying play-off round: Match previews, what to look out for",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-08-19T03:35:26.000Z",
       "source": {
-        "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/fenerbahce/2026/08/17/kadikoyde-avrupa-gecesi-iste-fenerbahcenin-lyon-maci-muhtemel-11i",
-        "publisher": "fotomac.com.tr"
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNMkRlLWZULXZhOTZQSVRZSGlZQU1qZllUOW9Zck0tTE5Sa0RTbUNWYlZiZF9ZbjAxalhndDRJcXNVUjQyY3VzM3MzTkRxTWl1ZTF3ekw3Xzg2QWFqNTBWbXFab0xTYjBLNkc4VGM0WkRIYUpPRVkwS0lsR0JWUVpWSTViYTJiNXdOeFcwWE1neUl4M3daWkt0UGZGc1VxaDFXbUdNSlJiTldISW96VHhxdGd0STlvUXVCUHBBSk1YMGNNTkJNcVpOdHluVkpPcUhvMk1EeExFdmZTZw?oc=5",
+        "publisher": "uefa.com"
       },
       "automation": {
         "source": "rss",
-        "feed": "fotomac",
-        "priority": 8,
-        "status": "REPORTED"
+        "feed": "uefa",
+        "priority": 9,
+        "status": "OFFICIAL"
       }
     },
     {
