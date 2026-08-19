@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-19T21:29:41.485Z",
+  "updatedAt": "2026-08-19T22:29:24.638Z",
   "items": [
     {
       "id": "auto-news-3f10c989844471df0b15",
@@ -329,26 +329,6 @@
       }
     },
     {
-      "id": "auto-news-a4c77375da39787bb460",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Fenerbahçe-Lyon maçını yazdılar: Uzun vadede başarı için, süperstarlar yetmez!",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-19T04:50:00.000Z",
-      "source": {
-        "name": "hurriyet-spor",
-        "url": "https://www.hurriyet.com.tr/sporarena/fenerbahce-lyon-macini-yazdilar-uzun-vadede-basari-icin-superstarlar-yetmez-43277718",
-        "publisher": "hurriyet.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "hurriyet-spor",
-        "priority": 7,
-        "status": "REPORTED"
-      }
-    },
-    {
       "id": "auto-news-ef01d97cb19f808791b8",
       "category": "official",
       "confidence": "confirmed",
@@ -365,6 +345,26 @@
         "source": "rss",
         "feed": "super-lig",
         "priority": 5,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-fb0c13de8b9acc0bc057",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Champions League play-off first legs highlights: Celtic and Bodø/Glimt take control of ties",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-08-18T21:23:31.000Z",
+      "source": {
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxQS1dLMGFodFQ2VWxseTM0VTJCYWJ4V0lOT2s4UGI5eTBJNFBYWFNtaldPVUR5Y0tyRlZtOGpNT3FGbFduT2QwUE03QlZxUG14STNiZ1BTSVJzZXRpSzFVZ2xZdlNZNVlhQVJjV1NvTjM1cTJ5YU42V1oyLWVnR28yRFJYeTBWcXBUdU54c3gyTkE5ZFE5UHlNeFNUN0hqTnJXV2EzZUtGVVRQVDBlOFJ0WVotOGUyUkJibGFjN01kcDdjZ0NuY08yeXd3WGhzY2IxQWhZVHBzai1oS1F4?oc=5",
+        "publisher": "uefa.com"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "uefa",
+        "priority": 9,
         "status": "OFFICIAL"
       }
     }

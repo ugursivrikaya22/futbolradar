@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-19T21:29:22.561Z",
+  "fetchedAt": "2026-08-19T22:29:03.795Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -223092,14 +223092,14 @@
       "awayTeam": "KRC Genk II",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/19957.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/19045.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 2,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -223117,8 +223117,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T09:00:33.646Z",
-      "staleAfter": "2026-08-19T09:05:33.646Z",
+      "fetchedAt": "2026-08-19T22:29:04.544Z",
+      "staleAfter": "2026-08-19T22:34:04.544Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -224638,8 +224638,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:22.988Z",
-      "staleAfter": "2026-08-19T21:34:22.988Z",
+      "fetchedAt": "2026-08-19T22:29:04.544Z",
+      "staleAfter": "2026-08-19T22:34:04.544Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -224703,8 +224703,8 @@
             "last_5": {
               "played": 1,
               "form": "0%",
-              "att": "25%",
-              "def": "13%",
+              "att": "13%",
+              "def": "53%",
               "goals": {
                 "for": {
                   "total": 2,
@@ -225004,8 +225004,8 @@
             "last_5": {
               "played": 1,
               "form": "33%",
-              "att": "13%",
-              "def": "88%",
+              "att": "7%",
+              "def": "93%",
               "goals": {
                 "for": {
                   "total": 1,
@@ -225388,14 +225388,14 @@
       "awayTeam": "Figline",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9500.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/22108.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -225413,8 +225413,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T15:36:05.842Z",
-      "staleAfter": "2026-08-19T15:41:05.842Z",
+      "fetchedAt": "2026-08-19T22:29:04.544Z",
+      "staleAfter": "2026-08-19T22:34:04.544Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -225424,11 +225424,17 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "summary": "Skor dengede.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -227915,8 +227921,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:22.988Z",
-      "staleAfter": "2026-08-19T21:34:22.988Z",
+      "fetchedAt": "2026-08-19T22:29:04.544Z",
+      "staleAfter": "2026-08-19T22:34:04.544Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -227926,17 +227932,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Mirandes skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Mirandes tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 64' J. Martinez Landa tarafından kaydedildi. Mirandes skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Mirandes tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "64'",
+            "text": "Son gol 64' J. Martinez Landa tarafından kaydedildi."
+          },
           {
             "label": "Canlı skor",
             "value": "0-1",
             "text": "Mirandes skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 1,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -229524,8 +229535,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T20:33:05.652Z",
-      "staleAfter": "2026-08-19T20:38:05.652Z",
+      "fetchedAt": "2026-08-19T22:29:04.544Z",
+      "staleAfter": "2026-08-19T22:34:04.544Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -229535,17 +229546,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Coruxo skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Coruxo tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 74' D. Anon tarafından kaydedildi. Coruxo skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Coruxo tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "74'",
+            "text": "Son gol 74' D. Anon tarafından kaydedildi."
+          },
           {
             "label": "Canlı skor",
             "value": "3-1",
             "text": "Coruxo skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 4,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -230912,7 +230928,49 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "51'",
+          "team": {
+            "name": "Coruxo"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "J. Arruabarrena · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "57'",
+          "team": {
+            "name": "Coruxo"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "D. Anon · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Pontevedra"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "R. Pedro · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "74'",
+          "team": {
+            "name": "Coruxo"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "D. Anon · Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "ponferradina-real-madrid-ii-2026-08-19",
@@ -236548,7 +236606,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -236564,8 +236624,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -236595,7 +236655,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -236611,8 +236673,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -236642,7 +236704,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -236658,8 +236722,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -236689,7 +236753,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -236705,8 +236771,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -236736,7 +236802,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -236752,8 +236820,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -236783,7 +236851,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -236799,8 +236869,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -236830,7 +236900,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -236846,8 +236918,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -236877,7 +236949,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -236893,8 +236967,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -236924,7 +236998,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -236940,8 +237016,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -236971,7 +237047,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -236987,8 +237065,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237018,7 +237096,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237034,8 +237114,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237065,7 +237145,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237081,8 +237163,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237112,7 +237194,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237128,8 +237212,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237159,7 +237243,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237175,8 +237261,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237286,7 +237372,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237302,8 +237390,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237333,7 +237421,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237349,8 +237439,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237380,7 +237470,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237396,8 +237488,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237427,7 +237519,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237443,8 +237537,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237474,7 +237568,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237490,8 +237586,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237521,7 +237617,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237537,8 +237635,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237568,7 +237666,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237584,8 +237684,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237615,7 +237715,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237631,8 +237733,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237662,7 +237764,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237678,8 +237782,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237709,7 +237813,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237725,8 +237831,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237756,7 +237862,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237772,8 +237880,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237803,7 +237911,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237819,8 +237929,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237850,7 +237960,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237866,8 +237978,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237897,7 +238009,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237913,8 +238027,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237944,7 +238058,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -237960,8 +238076,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -237991,7 +238107,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238007,8 +238125,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238038,7 +238156,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238054,8 +238174,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238085,7 +238205,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238101,8 +238223,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238132,7 +238254,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238148,8 +238272,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238179,7 +238303,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238195,8 +238321,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238226,7 +238352,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238242,8 +238370,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238273,7 +238401,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238289,8 +238419,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238320,7 +238450,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238336,8 +238468,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238367,7 +238499,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238383,8 +238517,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238414,7 +238548,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238430,8 +238566,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238461,7 +238597,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238477,8 +238615,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238508,7 +238646,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238524,8 +238664,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238555,7 +238695,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238571,8 +238713,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238602,7 +238744,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238618,8 +238762,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238649,7 +238793,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238665,8 +238811,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238696,7 +238842,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238712,8 +238860,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -238743,7 +238891,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -238759,8 +238909,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T21:29:23.135Z",
-      "staleAfter": "2026-08-19T21:34:23.135Z",
+      "fetchedAt": "2026-08-19T22:29:04.709Z",
+      "staleAfter": "2026-08-19T22:34:04.709Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",

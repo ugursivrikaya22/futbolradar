@@ -1,8 +1,8 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-19T21:29:35.275Z",
-  "matchCount": 661,
+  "updatedAt": "2026-08-19T22:29:18.248Z",
+  "matchCount": 663,
   "records": [
     {
       "matchId": "atletico-madrid-malaga-2026-08-19",
@@ -1288,10 +1288,10 @@
       "winner": "Coruxo",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -1299,9 +1299,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 4
         },
         "statistics": {
           "present": false,
@@ -1321,19 +1321,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 4,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -1351,11 +1347,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "19f93e4f3547d0f0",
-      "fingerprint": "19f93e4f3547d0f0",
+      "analysisSourceHash": "c908860fb45782f3",
+      "fingerprint": "c908860fb45782f3",
       "analysisGeneratedAt": "2026-08-19T20:33:18.437Z",
-      "analysisUpdatedAt": "2026-08-19T20:33:18.437Z",
-      "generatedAt": "2026-08-19T20:33:18.437Z",
+      "analysisUpdatedAt": "2026-08-19T22:29:18.215Z",
+      "generatedAt": "2026-08-19T22:29:18.215Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1367,7 +1363,7 @@
       "reportUrl": "./mac-raporu/coruxo-pontevedra-2026-08-19.html",
       "digest": {
         "headline": "Coruxo, Pontevedra'yı 3-1 yendi",
-        "paragraph": "Coruxo, Friendlies Clubs karşılaşmasında Pontevedra'yı 3-1 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Coruxo, Friendlies Clubs karşılaşmasında Pontevedra'yı 3-1 mağlup etti. Golleri 51. dakikada J. Arruabarrena (Coruxo), 57. dakikada D. Anon (Coruxo), 61. dakikada R. Pedro (Pontevedra), 74. dakikada D. Anon (Coruxo) kaydetti.",
         "result": {
           "winner": "Coruxo",
           "loser": "Pontevedra",
@@ -1383,19 +1379,70 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "51'",
+              "team": "Coruxo",
+              "type": "Gol",
+              "detail": "J. Arruabarrena",
+              "pivotal": true
+            },
+            {
+              "minute": "57'",
+              "team": "Coruxo",
+              "type": "Gol",
+              "detail": "D. Anon",
+              "pivotal": true
+            },
+            {
+              "minute": "61'",
+              "team": "Pontevedra",
+              "type": "Gol",
+              "detail": "R. Pedro",
+              "pivotal": true
+            },
+            {
+              "minute": "74'",
+              "team": "Coruxo",
+              "type": "Gol",
+              "detail": "D. Anon",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
           "moments": []
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "D. Anon",
+              "team": "Coruxo",
+              "contribution": "57' gol · 74' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "J. Arruabarrena",
+              "team": "Coruxo",
+              "contribution": "51' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "R. Pedro",
+              "team": "Pontevedra",
+              "contribution": "61' gol",
+              "impact": "yüksek"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
@@ -1407,9 +1454,15 @@
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı dengeli bir olay akışı üretti (4 olay).",
+            "51' Coruxo — J. Arruabarrena: gol",
+            "57' Coruxo — D. Anon: gol",
+            "61' Pontevedra — R. Pedro: gol",
+            "74' Coruxo — D. Anon: gol"
+          ],
+          "goals": 4
         },
         "coaching": {
           "status": "unavailable",
@@ -1447,10 +1500,15 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -2615,6 +2673,200 @@
       "publishState": "page"
     },
     {
+      "matchId": "montevarchi-calcio-figline-2026-08-19",
+      "fixtureId": "1627013",
+      "provider": "api-football",
+      "slug": "montevarchi-calcio-figline-2026-08-19",
+      "kickoff": "2026-08-19T19:30:00+03:00",
+      "kickoffUtc": "2026-08-19T16:30:00.000Z",
+      "kickoffLocal": "2026-08-19T19:30",
+      "date": "2026-08-19",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Montevarchi Calcio",
+      "awayTeam": "Figline",
+      "venue": null,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "finalScore": "0-0",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "509de48a3e3aa7e9",
+      "fingerprint": "509de48a3e3aa7e9",
+      "analysisGeneratedAt": "2026-08-19T22:29:18.215Z",
+      "analysisUpdatedAt": "2026-08-19T22:29:18.215Z",
+      "generatedAt": "2026-08-19T22:29:18.215Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Montevarchi Calcio 0-0 Figline maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Montevarchi Calcio ile Figline, Friendlies Clubs karşılaşmasında 0-0 berabere kaldı.",
+        "path": "mac-raporu/montevarchi-calcio-figline-2026-08-19.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/montevarchi-calcio-figline-2026-08-19.html",
+      "digest": {
+        "headline": "Montevarchi Calcio ile Figline 0-0 berabere kaldı",
+        "paragraph": "Montevarchi Calcio ile Figline, Friendlies Clubs karşılaşmasında 0-0 berabere kaldı. İki takım da gol bulamadı.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 0-0 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "0-0 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
       "matchId": "krasava-odintsovo-ael-2026-08-19",
       "fixtureId": "1629014",
       "provider": "api-football",
@@ -3051,6 +3303,200 @@
           "strengths": [],
           "improvements": [],
           "closing": "Sestri Levante sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "oud-heverlee-leuven-ii-krc-genk-ii-2026-08-19",
+      "fixtureId": "1604794",
+      "provider": "api-football",
+      "slug": "oud-heverlee-leuven-ii-krc-genk-ii-2026-08-19",
+      "kickoff": "2026-08-19T14:00:00+03:00",
+      "kickoffUtc": "2026-08-19T11:00:00.000Z",
+      "kickoffLocal": "2026-08-19T14:00",
+      "date": "2026-08-19",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Oud-Heverlee Leuven II",
+      "awayTeam": "KRC Genk II",
+      "venue": null,
+      "score": {
+        "home": 2,
+        "away": 2
+      },
+      "finalScore": "2-2",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "945d10b888cf8d22",
+      "fingerprint": "945d10b888cf8d22",
+      "analysisGeneratedAt": "2026-08-19T22:29:18.215Z",
+      "analysisUpdatedAt": "2026-08-19T22:29:18.215Z",
+      "generatedAt": "2026-08-19T22:29:18.215Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Oud-Heverlee Leuven II 2-2 KRC Genk II maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Friendlies Clubs maçında Oud-Heverlee Leuven II ile KRC Genk II birbirini geçemedi: 2-2.",
+        "path": "mac-raporu/oud-heverlee-leuven-ii-krc-genk-ii-2026-08-19.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/oud-heverlee-leuven-ii-krc-genk-ii-2026-08-19.html",
+      "digest": {
+        "headline": "Oud-Heverlee Leuven II ile KRC Genk II 2-2 berabere kaldı",
+        "paragraph": "Friendlies Clubs maçında Oud-Heverlee Leuven II ile KRC Genk II birbirini geçemedi: 2-2. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 2-2 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "2-2 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
           "basis": "events-only"
         },
         "aiRating": null,
