@@ -39,7 +39,8 @@ const freshness = createFreshnessTracker(root);
 const LIVE_PAGES = new Set([
   "canli-skor.html",
   "bugunun-maclari.html",
-  "canli-mac-sonuclari.html"
+  "canli-mac-sonuclari.html",
+  "canli-maclar.html"
 ]);
 
 const DAILY_PAGES = new Set([
@@ -557,6 +558,7 @@ function sitemapXml(files) {
     "iddaa-sonuclari.html",
     "bahis-sonuclari.html",
     "canli-mac-sonuclari.html",
+    "canli-maclar.html",
     "super-lig-fikstur.html",
     "canli-skor.html",
     "puan-durumu.html",

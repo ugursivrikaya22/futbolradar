@@ -1543,6 +1543,11 @@ const RESULTS_FAQ = {
     { question: "Canlı maç sonuçları ne sıklıkla güncelleniyor?", answer: "Oynanmakta olan maçların skoru sayfa açıkken otomatik olarak güncellenir; maç bittiğinde doğrulanmış sonuç bölümüne taşınır." },
     { question: "Şu anda canlı maç yoksa sayfa boş mu kalır?", answer: "Hayır; canlı maç yokken bugünün tamamlanmış sonuçları ve yaklaşan karşılaşmalar aynı sayfada gösterilmeye devam eder." },
     { question: "Süper Lig maçları öncelikli mi gösteriliyor?", answer: "Evet, Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor ve diğer Süper Lig takımlarının maçları listede öne çıkar." }
+  ],
+  canliMaclar: [
+    { question: "Bu sayfada biten maçların sonuçları var mı?", answer: "Hayır; bu sayfa yalnızca şu anda oynanan canlı maçları ve bugün oynanacak maçları listeler. Biten maçların doğrulanmış sonuçları için maç sonuçları sayfasına bakın." },
+    { question: "Şu anda canlı maç yoksa sayfa boş mu kalır?", answer: "Hayır; canlı maç yokken bugünün henüz oynanacak maçları aynı sayfada gösterilmeye devam eder." },
+    { question: "Süper Lig maçları öncelikli mi gösteriliyor?", answer: "Evet, Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor ve diğer Süper Lig takımlarının maçları listede öne çıkar." }
   ]
 };
 
@@ -1584,6 +1589,22 @@ writePage("canli-mac-sonuclari.html", {
   "results-schema": matchListSchemaBlock(verifiedResultMatches(), "Canlı ve doğrulanmış maç sonuçları"),
   "results-faq": faqSectionHtml(RESULTS_FAQ.canliMacSonuclari, "Canlı maç sonuçları hakkında sık sorulanlar"),
   "results-faq-schema": faqSchemaBlock(RESULTS_FAQ.canliMacSonuclari)
+});
+
+/**
+ * "/canli-maclar" — YALNIZCA canlı ve bugünün maçları, BİTMİŞ maç YOK.
+ * Bilerek `verified-results` hedefi hiç yazılmıyor: sayfa "canlı maç sonuçları"
+ * (canli-mac-sonuclari.html) ile aynı içeriği tekrarlamasın diye kapsamı dar
+ * tutuluyor — spec'teki ayrım "şu an oynanan + bugün oynanacak", bitmiş
+ * karşılaşmalar değil.
+ */
+writePage("canli-maclar.html", {
+  "live-score": resultsLiveSection(),
+  "matches-page": resultsUpcomingSection()
+}, fixtureFreshness, {
+  "results-schema": matchListSchemaBlock(calendarProgramMatches(MATCH_LIST_INITIAL), "Canlı maçlar ve bugünün maçları"),
+  "results-faq": faqSectionHtml(RESULTS_FAQ.canliMaclar, "Canlı maçlar hakkında sık sorulanlar"),
+  "results-faq-schema": faqSchemaBlock(RESULTS_FAQ.canliMaclar)
 });
 
 writePage("haberler.html", {
