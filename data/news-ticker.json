@@ -1,24 +1,86 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-19T14:03:54.576Z",
+  "updatedAt": "2026-08-19T15:36:30.147Z",
   "items": [
     {
-      "id": "auto-news-eac43734b5b34dde24e9",
+      "id": "auto-news-9b53fdbc1edae32688a0",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "T. Konyaspor maçının Futbol Seremoni Paketleri satışa çıkıyor",
+      "text": "Corendon Alanyaspor Maçı Deplasman Tribünü Biletleri Hakkında Bilgilendirme - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-08-19T15:22:53.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1LSHZ3ckZkbDlYbm9yejY1eDFWSFI0bHQxS1JqUkY5ZE9reGdKUThSU1dNQ09mSVZDM3Z0TGVRbzlqejBuUTVweGF1YkxPd3U1UXVRNU9EczlNZ2c?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-08-18T18:41:55.000Z"
+      }
+    },
+    {
+      "id": "auto-news-e30a40cf39d2cc4bdfb5",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "transfer",
+      "text": "Transfer Bilgilendirmesi",
       "team": "Fenerbahçe",
-      "timestamp": "2026-08-19T13:23:08.000Z",
+      "timestamp": "2026-08-19T15:16:26.000Z",
       "source": {
         "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxQREFXYUV6dXZYWHBWcVNfbDJ3RTlqaGlseVE4TDU2b09jR004M3lWZnNlWUhpLVhHTGxLVTFlSVl3cTNUT3EyaXpfMEhndDJrZk9PRGdNWFJjVDhpR29zYVhoSWRMTWlmeEtCVDRnU2VzYzU2NFFBVUVKY2tmNWs1Sl9yOGtlYnhHNVhFb2F5T0VJUjYyLWxiLWFuTGlGaWprRkxaQldlbm9LWVZaRi1j?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE9UeFBsSWl4NHZlUW5kcFNfV3ZkUWhEWEh4VzdDa1JRdnRGOWN2SmtCd2M0bUg2SDE3bGZRNkdQSFVmYWh4ZDFZZ1Z0QmFEVm10R2lQdF9RYWZERjdULVJLd2p0V1JzR3U5enRLVmdMMFZSWlg1OHkwWDZDVjFMNEk?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-83d7e4f0f6f465e877fd",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Atakan Özkaya, Kanaryalar Soruyor’un konuğu oldu",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-19T15:16:26.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxNMlNaenhKWDVuN2M1VjJOeS1oaUZQZXZaWDNmSHJ5Q2FQWUZ0SnBZYkx2REN5dmVLSHl3WGJIRVpUeFRYZ1BQam9lYVRIZklIbk12MW1HQktTN1FucXp0RU9XcU9yYlQzaXAxOWt6X3hpR1A3a0gzSjFSazFSUEU5X3Q3ejZreElTa1lrZ09OdTM2TVdLVzhvMUt6UGlKUE9XblNrUEZtaFFLSGVpRzhvd0dNZEVmbGM?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-1fbab9aba41a166c0c0b",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Teknik Direktörümüz Fatih Tekke ve futbolcumuz Noah Saviolo basın toplantısı düzenledi",
+      "team": "Trabzonspor",
+      "timestamp": "2026-08-19T14:29:54.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxPTS11bEtKNFQ4djVaLXk4aWRYVVlGUkR4bWFEMlJjS3JCSW5oX09SSlFfYUNINUEtb19KUFlOZ3BkNHpBLUZkQ3VzazZ2WWlBdGQ3OU5JZ25CY3VVT2k5dXpLLUxtOWJKTVJQUmlHa3RIX0pKZ3RQTnNQbkpGQ2ZTUmhQdGprSG9vcThFLVVBU2ZucGxRWlkxY0phd2RBLS1NVVJGR2lxUzRNeDNjZ2M1T3VNLTZQaHlYN0gybWhOQklKTDU0MDNWTjhCeEFrQQ?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
         "status": "OFFICIAL"
       }
     },
@@ -105,28 +167,6 @@
       }
     },
     {
-      "id": "auto-news-05b9b6b9ecbc631f58d4",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Futbol Direktörümüz Oğuz Çetin: Lyon’a turu geçmek için gideceğiz",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-18T22:37:40.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxQajllSENpUlV2YjhqQXgyM0dWMlZoZ2dFRTJ4YUxWUmFHbHI0d0lydXVCR2ZDX1dHZHJIcHdlV3R0WWR0b3dNRWQyRnBFYjlGdWM0RVBrTDVfLWNSSVRwUzlDWVZOeHNfS0RjQURSV3d3cmcxYmNSU0hNejBUN3h0RE1vTmFkUXdIRUJvbTJmZ3YtdjZxQWh4OUN0RE0tT1NfNTVucFpQdGZPVTVkUHpVSW1QN0M?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 4,
-        "firstSeenAt": "2026-08-15T21:52:38.000Z"
-      }
-    },
-    {
       "id": "auto-news-d326af8989d75ce89440",
       "category": "official",
       "confidence": "confirmed",
@@ -147,28 +187,6 @@
       }
     },
     {
-      "id": "auto-news-080a7d1631649bb94b0a",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Kauno Zalgiris Maçı Biletleri Hakkında Taraftarlarımıza Önemli Duyuru - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-08-18T18:41:55.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFAxWWNmRFRaLXREMFZzM0dTYndYTWIxUDBYb05wY0s1cUpzMkM1TFNUTi1lelg5NFE4ZXoxd3A1OTg0TXJHcnE5Mm9sZG9ESmxaU0hKS3BIOG5Zdlk?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-08-16T13:10:56.000Z"
-      }
-    },
-    {
       "id": "auto-news-c3c994c9130114345502",
       "category": "official",
       "confidence": "confirmed",
@@ -185,26 +203,6 @@
         "source": "rss",
         "feed": "besiktas",
         "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-673605ce6feba6c90d93",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Ferencvaros maçı hazırlıklarımız devam ediyor",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-18T17:30:08.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxNaVcwRnRCc29pbTBYd3hlQVAwQnJBem8yQmM0TUdpa2VGRUY3UkZadkZtUjZWWVZjUWRIWkFyQ1BsdGpwclZFYkpUaTZjOV9hdTVtWE5jY2lFalRxNjVwYlktc2dRWXRIVmJTeUEyeU5pRThGX1ZwZnJCVGFfREUzbWJ1SDkxLUQ2VExsUWw5LURicE1OTHctYVVn?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
         "status": "OFFICIAL"
       }
     },
