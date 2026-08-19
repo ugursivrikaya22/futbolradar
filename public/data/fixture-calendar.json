@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-19T16:36:42.714Z",
+  "fetchedAt": "2026-08-19T17:30:13.422Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -224608,13 +224608,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/16859.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3396.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 33,
-      "elapsed": 33,
+      "providerStatus": "2H",
+      "minute": 70,
+      "elapsed": 70,
       "live": true,
       "score": {
         "home": 0,
-        "away": 0,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -224632,8 +224632,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T16:36:43.770Z",
-      "staleAfter": "2026-08-19T16:41:43.770Z",
+      "fetchedAt": "2026-08-19T17:30:14.234Z",
+      "staleAfter": "2026-08-19T17:35:14.234Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -224643,17 +224643,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 62' H. Catakovic tarafından kaydedildi. AEL skor üstünlüğünü elinde tutuyor. Skor üstünlüğü AEL tarafında.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "62'",
+            "text": "Son gol 62' H. Catakovic tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "0-2",
+            "text": "AEL skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 2,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -225319,7 +225324,29 @@
           }
         },
         "h2h": []
-      }
+      },
+      "events": [
+        {
+          "time": "43'",
+          "team": {
+            "name": "AEL"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "H. Catakovic · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "62'",
+          "team": {
+            "name": "AEL"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "H. Catakovic · Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "montevarchi-calcio-figline-2026-08-19",
@@ -227831,14 +227858,14 @@
       "awayTeam": "Mirandes",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9867.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/799.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 30,
+      "elapsed": 30,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -227856,8 +227883,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T15:36:05.842Z",
-      "staleAfter": "2026-08-19T15:41:05.842Z",
+      "fetchedAt": "2026-08-19T17:30:14.234Z",
+      "staleAfter": "2026-08-19T17:35:14.234Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -227866,12 +227893,18 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "title": "Canlı Radar Analizi",
+        "summary": "Skor dengede.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -229441,8 +229474,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T16:36:43.770Z",
-      "staleAfter": "2026-08-19T16:41:43.770Z",
+      "fetchedAt": "2026-08-19T17:30:14.234Z",
+      "staleAfter": "2026-08-19T17:35:14.234Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -229458,6 +229491,1371 @@
         "eventCount": 0,
         "dataPoints": 0,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 9407,
+            "name": "Pontevedra",
+            "comment": null
+          },
+          "win_or_draw": false,
+          "under_over": null,
+          "goals": {
+            "home": "-1.5",
+            "away": "-3.5"
+          },
+          "advice": "Winner : Pontevedra",
+          "percent": {
+            "home": "10%",
+            "draw": "45%",
+            "away": "45%"
+          }
+        },
+        "league": {
+          "id": 667,
+          "name": "Friendlies Clubs",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/667.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 9385,
+            "name": "Coruxo",
+            "logo": "https://media.api-sports.io/football/teams/9385.png",
+            "last_5": {
+              "played": 1,
+              "form": "0%",
+              "att": "13%",
+              "def": "75%",
+              "goals": {
+                "for": {
+                  "total": 1,
+                  "average": "1.0"
+                },
+                "against": {
+                  "total": 2,
+                  "average": "2.0"
+                }
+              }
+            },
+            "league": {
+              "form": "L",
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 1,
+                    "total": 1
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 1
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 2,
+                    "total": 2
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "2.0",
+                    "total": "2.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 1
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": "2-1"
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 1
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 2
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 9407,
+            "name": "Pontevedra",
+            "logo": "https://media.api-sports.io/football/teams/9407.png",
+            "last_5": {
+              "played": 4,
+              "form": "75%",
+              "att": "100%",
+              "def": "38%",
+              "goals": {
+                "for": {
+                  "total": 10,
+                  "average": "2.5"
+                },
+                "against": {
+                  "total": 5,
+                  "average": "1.3"
+                }
+              }
+            },
+            "league": {
+              "form": "WLWW",
+              "fixtures": {
+                "played": {
+                  "home": 2,
+                  "away": 2,
+                  "total": 4
+                },
+                "wins": {
+                  "home": 2,
+                  "away": 1,
+                  "total": 3
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 4,
+                    "away": 6,
+                    "total": 10
+                  },
+                  "average": {
+                    "home": "2.0",
+                    "away": "3.0",
+                    "total": "2.5"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 2,
+                      "percentage": "66.67%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 4,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 3,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 1,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 1,
+                      "under": 3
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 2,
+                    "away": 3,
+                    "total": 5
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "1.5",
+                    "total": "1.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 3
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 4
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 1,
+                  "draws": 0,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": "2-1",
+                  "away": "0-5"
+                },
+                "loses": {
+                  "home": null,
+                  "away": "3-1"
+                },
+                "goals": {
+                  "for": {
+                    "home": 2,
+                    "away": 5
+                  },
+                  "against": {
+                    "home": 1,
+                    "away": 3
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "att": {
+            "home": "9%",
+            "away": "91%"
+          },
+          "def": {
+            "home": "71%",
+            "away": "29%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "20%",
+            "away": "80%"
+          },
+          "goals": {
+            "home": "22%",
+            "away": "78%"
+          },
+          "total": {
+            "home": "30.5%",
+            "away": "69.5%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1264437,
+              "referee": "Alexandre López",
+              "timezone": "UTC",
+              "date": "2025-03-23T16:00:00+00:00",
+              "timestamp": 1742745600,
+              "periods": {
+                "first": 1742745600,
+                "second": 1742749200
+              },
+              "venue": {
+                "id": 6508,
+                "name": "Estadio Municipal de Pasarón",
+                "city": "Pontevedra"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 4
+              }
+            },
+            "league": {
+              "id": 875,
+              "name": "Segunda División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/875.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2024,
+              "round": "Group 1 - 28",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": true
+              },
+              "away": {
+                "id": 9385,
+                "name": "Coruxo",
+                "logo": "https://media.api-sports.io/football/teams/9385.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1264284,
+              "referee": "Jesús López",
+              "timezone": "UTC",
+              "date": "2024-11-10T18:00:00+00:00",
+              "timestamp": 1731261600,
+              "periods": {
+                "first": 1731261600,
+                "second": 1731265200
+              },
+              "venue": {
+                "id": 6487,
+                "name": "Campo do Vao",
+                "city": "Vigo"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 7
+              }
+            },
+            "league": {
+              "id": 875,
+              "name": "Segunda División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/875.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2024,
+              "round": "Group 1 - 11",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9385,
+                "name": "Coruxo",
+                "logo": "https://media.api-sports.io/football/teams/9385.png",
+                "winner": false
+              },
+              "away": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1087383,
+              "referee": "Álvaro Sahelices",
+              "timezone": "UTC",
+              "date": "2024-02-18T16:00:00+00:00",
+              "timestamp": 1708272000,
+              "periods": {
+                "first": 1708272000,
+                "second": 1708275600
+              },
+              "venue": {
+                "id": 6508,
+                "name": "Estadio Municipal de Pasarón",
+                "city": "Pontevedra"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 875,
+              "name": "Segunda División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/875.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2023,
+              "round": "Group 1 - 23",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": true
+              },
+              "away": {
+                "id": 9385,
+                "name": "Coruxo",
+                "logo": "https://media.api-sports.io/football/teams/9385.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 3,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1087230,
+              "referee": "Alberto Sánchez",
+              "timezone": "UTC",
+              "date": "2023-10-08T15:00:00+00:00",
+              "timestamp": 1696777200,
+              "periods": {
+                "first": 1696777200,
+                "second": 1696780800
+              },
+              "venue": {
+                "id": 6487,
+                "name": "Campo do Vao",
+                "city": "Vigo"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 875,
+              "name": "Segunda División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/875.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2023,
+              "round": "Group 1 - 6",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9385,
+                "name": "Coruxo",
+                "logo": "https://media.api-sports.io/football/teams/9385.png",
+                "winner": false
+              },
+              "away": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1117225,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2023-08-02T19:00:00+00:00",
+              "timestamp": 1691002800,
+              "periods": {
+                "first": 1691002800,
+                "second": 1691006400
+              },
+              "venue": {
+                "id": null,
+                "name": null,
+                "city": null
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 667,
+              "name": "Friendlies Clubs",
+              "country": "World",
+              "logo": "https://media.api-sports.io/football/leagues/667.png",
+              "flag": null,
+              "season": 2023,
+              "round": "Club Friendlies 4",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 9385,
+                "name": "Coruxo",
+                "logo": "https://media.api-sports.io/football/teams/9385.png",
+                "winner": true
+              },
+              "away": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": null,
+                "away": null
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 798021,
+              "referee": "Omar Álvarez",
+              "timezone": "UTC",
+              "date": "2022-03-20T17:00:00+00:00",
+              "timestamp": 1647795600,
+              "periods": {
+                "first": 1647795600,
+                "second": 1647799200
+              },
+              "venue": {
+                "id": 6487,
+                "name": "Campo do Vao",
+                "city": "Vigo"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 875,
+              "name": "Segunda División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/875.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2021,
+              "round": "Group 1 - 26",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9385,
+                "name": "Coruxo",
+                "logo": "https://media.api-sports.io/football/teams/9385.png",
+                "winner": null
+              },
+              "away": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 797868,
+              "referee": "Eder Mallo",
+              "timezone": "UTC",
+              "date": "2021-10-31T16:00:00+00:00",
+              "timestamp": 1635696000,
+              "periods": {
+                "first": 1635696000,
+                "second": 1635699600
+              },
+              "venue": {
+                "id": 6508,
+                "name": "Estadio Municipal de Pasarón",
+                "city": "Pontevedra"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 875,
+              "name": "Segunda División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/875.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2021,
+              "round": "Group 1 - 9",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": true
+              },
+              "away": {
+                "id": 9385,
+                "name": "Coruxo",
+                "logo": "https://media.api-sports.io/football/teams/9385.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 778338,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2021-08-14T00:00:00+00:00",
+              "timestamp": 1628899200,
+              "periods": {
+                "first": null,
+                "second": null
+              },
+              "venue": {
+                "id": null,
+                "name": null,
+                "city": null
+              },
+              "status": {
+                "long": "Match Cancelled",
+                "short": "CANC",
+                "elapsed": null,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 667,
+              "name": "Friendlies Clubs",
+              "country": "World",
+              "logo": "https://media.api-sports.io/football/leagues/667.png",
+              "flag": null,
+              "season": 2021,
+              "round": "Club Friendlies 4",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": null
+              },
+              "away": {
+                "id": 9385,
+                "name": "Coruxo",
+                "logo": "https://media.api-sports.io/football/teams/9385.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": null,
+              "away": null
+            },
+            "score": {
+              "halftime": {
+                "home": null,
+                "away": null
+              },
+              "fulltime": {
+                "home": null,
+                "away": null
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 631130,
+              "referee": "Leandro Carbajales",
+              "timezone": "UTC",
+              "date": "2021-03-14T16:00:00+00:00",
+              "timestamp": 1615737600,
+              "periods": {
+                "first": 1615737600,
+                "second": 1615741200
+              },
+              "venue": {
+                "id": 6508,
+                "name": "Estadio Municipal de Pasarón",
+                "city": "Pontevedra"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 435,
+              "name": "Primera División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/435.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2020,
+              "round": "Group 1 - 17",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": true
+              },
+              "away": {
+                "id": 9385,
+                "name": "Coruxo",
+                "logo": "https://media.api-sports.io/football/teams/9385.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 2,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 631049,
+              "referee": "Gorka Mazo",
+              "timezone": "UTC",
+              "date": "2020-12-13T11:00:00+00:00",
+              "timestamp": 1607857200,
+              "periods": {
+                "first": 1607857200,
+                "second": 1607860800
+              },
+              "venue": {
+                "id": 6487,
+                "name": "Campo do Vao",
+                "city": "Vigo"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 435,
+              "name": "Primera División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/435.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2020,
+              "round": "Group 1 - 8",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9385,
+                "name": "Coruxo",
+                "logo": "https://media.api-sports.io/football/teams/9385.png",
+                "winner": true
+              },
+              "away": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 2,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
       }
     },
     {
@@ -229499,15 +230897,829 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T22:27:50.593Z",
-      "staleAfter": "2026-08-18T22:32:50.593Z",
+      "fetchedAt": "2026-08-19T17:30:14.234Z",
+      "staleAfter": "2026-08-19T17:35:14.234Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1604796"
       },
-      "competitionId": "hazirlik-maci"
+      "competitionId": "hazirlik-maci",
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "confidence": "Sınırlı",
+        "signals": [],
+        "eventCount": 0,
+        "dataPoints": 0,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 9575,
+            "name": "Real Madrid II",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": null,
+          "goals": {
+            "home": "-1.5",
+            "away": "-2.5"
+          },
+          "advice": "Double chance : draw or Real Madrid II",
+          "percent": {
+            "home": "10%",
+            "draw": "45%",
+            "away": "45%"
+          }
+        },
+        "league": {
+          "id": 667,
+          "name": "Friendlies Clubs",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/667.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 4907,
+            "name": "Ponferradina",
+            "logo": "https://media.api-sports.io/football/teams/4907.png",
+            "last_5": {
+              "played": 3,
+              "form": "44%",
+              "att": "50%",
+              "def": "38%",
+              "goals": {
+                "for": {
+                  "total": 4,
+                  "average": "1.3"
+                },
+                "against": {
+                  "total": 5,
+                  "average": "1.7"
+                }
+              }
+            },
+            "league": {
+              "form": "LDW",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 2,
+                  "total": 3
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "draws": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 1,
+                    "away": 3,
+                    "total": 4
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "1.5",
+                    "total": "1.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 1,
+                    "away": 4,
+                    "total": 5
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "2.0",
+                    "total": "1.7"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 2,
+                      "percentage": "40.00%"
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 2,
+                      "percentage": "40.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 1,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": null,
+                  "away": "0-3"
+                },
+                "loses": {
+                  "home": null,
+                  "away": "4-0"
+                },
+                "goals": {
+                  "for": {
+                    "home": 1,
+                    "away": 3
+                  },
+                  "against": {
+                    "home": 1,
+                    "away": 4
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 1,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 1
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 9575,
+            "name": "Real Madrid II",
+            "logo": "https://media.api-sports.io/football/teams/9575.png",
+            "last_5": {
+              "played": 4,
+              "form": "67%",
+              "att": "63%",
+              "def": "63%",
+              "goals": {
+                "for": {
+                  "total": 5,
+                  "average": "1.3"
+                },
+                "against": {
+                  "total": 3,
+                  "average": "0.8"
+                }
+              }
+            },
+            "league": {
+              "form": "WWDD",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 3,
+                  "total": 4
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 2,
+                  "total": 2
+                },
+                "draws": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 5,
+                    "total": 5
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "1.7",
+                    "total": "1.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 4
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 3,
+                    "total": 3
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "1.0",
+                    "total": "0.8"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "100.00%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 2
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 3
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 4
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 2,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": "1-2"
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 2
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 2
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 1,
+                "away": 1,
+                "total": 2
+              },
+              "failed_to_score": {
+                "home": 1,
+                "away": 0,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 1,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 1
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "33%",
+            "away": "67%"
+          },
+          "att": {
+            "home": "44%",
+            "away": "56%"
+          },
+          "def": {
+            "home": "38%",
+            "away": "63%"
+          },
+          "poisson_distribution": {
+            "home": "33%",
+            "away": "67%"
+          },
+          "h2h": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "goals": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "total": {
+            "home": "41.3%",
+            "away": "58.8%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1431766,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2026-03-01T11:00:00+00:00",
+              "timestamp": 1772362800,
+              "periods": {
+                "first": 1772362800,
+                "second": 1772366400
+              },
+              "venue": {
+                "id": 6669,
+                "name": "Estadio Alfredo Di Stéfano",
+                "city": "Madrid"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 11
+              }
+            },
+            "league": {
+              "id": 435,
+              "name": "Primera División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/435.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2025,
+              "round": "Group 1 - 26",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9575,
+                "name": "Real Madrid II",
+                "logo": "https://media.api-sports.io/football/teams/9575.png",
+                "winner": false
+              },
+              "away": {
+                "id": 4907,
+                "name": "Ponferradina",
+                "logo": "https://media.api-sports.io/football/teams/4907.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1431564,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2025-10-05T16:15:00+00:00",
+              "timestamp": 1759680900,
+              "periods": {
+                "first": 1759680900,
+                "second": 1759684500
+              },
+              "venue": {
+                "id": 3708,
+                "name": "Estadio El Toralín",
+                "city": "Ponferrada"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 435,
+              "name": "Primera División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/435.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2025,
+              "round": "Group 1 - 6",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 4907,
+                "name": "Ponferradina",
+                "logo": "https://media.api-sports.io/football/teams/4907.png",
+                "winner": false
+              },
+              "away": {
+                "id": 9575,
+                "name": "Real Madrid II",
+                "logo": "https://media.api-sports.io/football/teams/9575.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 3
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 3
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "barcelona-al-ahly-2026-08-19",
@@ -229548,15 +231760,688 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T22:27:50.593Z",
-      "staleAfter": "2026-08-18T22:32:50.593Z",
+      "fetchedAt": "2026-08-19T17:30:14.234Z",
+      "staleAfter": "2026-08-19T17:35:14.234Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1604797"
       },
-      "competitionId": "hazirlik-maci"
+      "competitionId": "hazirlik-maci",
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "confidence": "Sınırlı",
+        "signals": [],
+        "eventCount": 0,
+        "dataPoints": 0,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": null,
+            "name": null,
+            "comment": null
+          },
+          "win_or_draw": false,
+          "under_over": null,
+          "goals": {
+            "home": null,
+            "away": null
+          },
+          "advice": "No predictions available",
+          "percent": {
+            "home": "33%",
+            "draw": "33%",
+            "away": "33%"
+          }
+        },
+        "league": {
+          "id": 667,
+          "name": "Friendlies Clubs",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/667.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 529,
+            "name": "Barcelona",
+            "logo": "https://media.api-sports.io/football/teams/529.png",
+            "last_5": {
+              "played": 5,
+              "form": "60%",
+              "att": "60%",
+              "def": "65%",
+              "goals": {
+                "for": {
+                  "total": 12,
+                  "average": "2.4"
+                },
+                "against": {
+                  "total": 7,
+                  "average": "1.4"
+                }
+              }
+            },
+            "league": {
+              "form": "WLWLW",
+              "fixtures": {
+                "played": {
+                  "home": 2,
+                  "away": 3,
+                  "total": 5
+                },
+                "wins": {
+                  "home": 2,
+                  "away": 1,
+                  "total": 3
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 2,
+                  "total": 2
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 5,
+                    "away": 7,
+                    "total": 12
+                  },
+                  "average": {
+                    "home": "2.5",
+                    "away": "2.3",
+                    "total": "2.4"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 3,
+                      "percentage": "30.00%"
+                    },
+                    "46-60": {
+                      "total": 2,
+                      "percentage": "20.00%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 3,
+                      "percentage": "30.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": 2,
+                      "percentage": "20.00%"
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 4,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 3,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 2,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 2,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 1,
+                      "under": 4
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 1,
+                    "away": 6,
+                    "total": 7
+                  },
+                  "average": {
+                    "home": "0.5",
+                    "away": "2.0",
+                    "total": "1.4"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 3,
+                      "percentage": "37.50%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "12.50%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "12.50%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": 3,
+                      "percentage": "37.50%"
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 4,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 3
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 4
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 5
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 5
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 1,
+                  "draws": 0,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": "4-1",
+                  "away": "2-5"
+                },
+                "loses": {
+                  "home": null,
+                  "away": "3-2"
+                },
+                "goals": {
+                  "for": {
+                    "home": 4,
+                    "away": 5
+                  },
+                  "against": {
+                    "home": 1,
+                    "away": 3
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 1,
+                "away": 0,
+                "total": 1
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 5,
+                  "percentage": "62.50%"
+                },
+                "missed": {
+                  "total": 3,
+                  "percentage": "37.50%"
+                },
+                "total": 8
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 1577,
+            "name": "Al Ahly",
+            "logo": "https://media.api-sports.io/football/teams/1577.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "att": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "def": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "goals": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "total": {
+            "home": "0%",
+            "away": "0%"
+          }
+        },
+        "h2h": []
+      }
     },
     {
       "id": "getafe-ii-cf-talavera-2026-08-19",
@@ -229597,15 +232482,969 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T10:33:33.692Z",
-      "staleAfter": "2026-08-19T10:38:33.692Z",
+      "fetchedAt": "2026-08-19T17:30:14.234Z",
+      "staleAfter": "2026-08-19T17:35:14.234Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1627011"
       },
-      "competitionId": "hazirlik-maci"
+      "competitionId": "hazirlik-maci",
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "confidence": "Sınırlı",
+        "signals": [],
+        "eventCount": 0,
+        "dataPoints": 0,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 5253,
+            "name": "CF Talavera",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": "-3.5",
+          "goals": {
+            "home": null,
+            "away": "-1.5"
+          },
+          "advice": "Combo Double chance : draw or CF Talavera and -3.5 goals",
+          "percent": {
+            "home": "0%",
+            "draw": "50%",
+            "away": "50%"
+          }
+        },
+        "league": {
+          "id": 667,
+          "name": "Friendlies Clubs",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/667.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 9572,
+            "name": "Getafe II",
+            "logo": "https://media.api-sports.io/football/teams/9572.png",
+            "last_5": {
+              "played": 1,
+              "form": "0%",
+              "att": "0%",
+              "def": "88%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 2,
+                  "average": "2.0"
+                }
+              }
+            },
+            "league": {
+              "form": "L",
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 1
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 2,
+                    "total": 2
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "2.0",
+                    "total": "2.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 1
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": "2-0"
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 2
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 5253,
+            "name": "CF Talavera",
+            "logo": "https://media.api-sports.io/football/teams/5253.png",
+            "last_5": {
+              "played": 1,
+              "form": "33%",
+              "att": "6%",
+              "def": "94%",
+              "goals": {
+                "for": {
+                  "total": 1,
+                  "average": "1.0"
+                },
+                "against": {
+                  "total": 1,
+                  "average": "1.0"
+                }
+              }
+            },
+            "league": {
+              "form": "D",
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 1,
+                    "total": 1
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "100.00%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 1
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 1,
+                    "total": 1
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "100.00%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 1
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 1,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 1
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 1
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "att": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "def": {
+            "home": "33%",
+            "away": "67%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "25%",
+            "away": "75%"
+          },
+          "goals": {
+            "home": "25%",
+            "away": "75%"
+          },
+          "total": {
+            "home": "27.7%",
+            "away": "72.3%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1264787,
+              "referee": "Miguel Oliveira",
+              "timezone": "UTC",
+              "date": "2025-04-27T10:00:00+00:00",
+              "timestamp": 1745748000,
+              "periods": {
+                "first": 1745748000,
+                "second": 1745751600
+              },
+              "venue": {
+                "id": null,
+                "name": "Ciudad Deportiva Fernando Santos de la Parra",
+                "city": "Getafe"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 6
+              }
+            },
+            "league": {
+              "id": 879,
+              "name": "Segunda División RFEF - Group 5",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/879.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2024,
+              "round": "Group 5 - 33",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9572,
+                "name": "Getafe II",
+                "logo": "https://media.api-sports.io/football/teams/9572.png",
+                "winner": false
+              },
+              "away": {
+                "id": 5253,
+                "name": "CF Talavera",
+                "logo": "https://media.api-sports.io/football/teams/5253.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1264634,
+              "referee": "Aitor Barrio",
+              "timezone": "UTC",
+              "date": "2024-12-14T17:00:00+00:00",
+              "timestamp": 1734195600,
+              "periods": {
+                "first": 1734195600,
+                "second": 1734199200
+              },
+              "venue": {
+                "id": 3967,
+                "name": "Estadio El Prado",
+                "city": "Talavera de la Reina"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 9
+              }
+            },
+            "league": {
+              "id": 879,
+              "name": "Segunda División RFEF - Group 5",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/879.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2024,
+              "round": "Group 5 - 16",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 5253,
+                "name": "CF Talavera",
+                "logo": "https://media.api-sports.io/football/teams/5253.png",
+                "winner": false
+              },
+              "away": {
+                "id": 9572,
+                "name": "Getafe II",
+                "logo": "https://media.api-sports.io/football/teams/9572.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1088543,
+              "referee": "Víctor Broncano",
+              "timezone": "UTC",
+              "date": "2024-01-21T16:00:00+00:00",
+              "timestamp": 1705852800,
+              "periods": {
+                "first": 1705852800,
+                "second": 1705856400
+              },
+              "venue": {
+                "id": 3967,
+                "name": "Estadio El Prado",
+                "city": "Talavera de la Reina"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 879,
+              "name": "Segunda División RFEF - Group 5",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/879.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2023,
+              "round": "Group 5 - 19",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 5253,
+                "name": "CF Talavera",
+                "logo": "https://media.api-sports.io/football/teams/5253.png",
+                "winner": true
+              },
+              "away": {
+                "id": 9572,
+                "name": "Getafe II",
+                "logo": "https://media.api-sports.io/football/teams/9572.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1088407,
+              "referee": "Alfonso Méndez",
+              "timezone": "UTC",
+              "date": "2023-09-10T09:30:00+00:00",
+              "timestamp": 1694338200,
+              "periods": {
+                "first": 1694338200,
+                "second": 1694341800
+              },
+              "venue": {
+                "id": 19145,
+                "name": "Ciudad Deportiva de Getafe - Campo 1",
+                "city": "Getafe"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 879,
+              "name": "Segunda División RFEF - Group 5",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/879.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2023,
+              "round": "Group 5 - 2",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9572,
+                "name": "Getafe II",
+                "logo": "https://media.api-sports.io/football/teams/9572.png",
+                "winner": false
+              },
+              "away": {
+                "id": 5253,
+                "name": "CF Talavera",
+                "logo": "https://media.api-sports.io/football/teams/5253.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 4
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 3
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 4
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "atletico-madrid-malaga-2026-08-19",
