@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-19T10:33:32.647Z",
+  "fetchedAt": "2026-08-19T11:30:06.536Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -220875,14 +220875,14 @@
       "awayTeam": "Gimnástica Segoviana",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9714.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9387.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 1,
-        "away": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -220900,8 +220900,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T10:33:33.692Z",
-      "staleAfter": "2026-08-19T10:38:33.692Z",
+      "fetchedAt": "2026-08-19T11:30:07.450Z",
+      "staleAfter": "2026-08-19T11:35:07.450Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -220910,18 +220910,23 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "RSD Alcalá skor üstünlüğünü elinde tutuyor. Skor üstünlüğü RSD Alcalá tarafında.",
-        "confidence": "Sınırlı",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 90+2' Luhe tarafından kaydedildi. Skor dengede.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "90+2'",
+            "text": "Son gol 90+2' Luhe tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "1-0",
-            "text": "RSD Alcalá skor üstünlüğünü elinde tutuyor."
+            "value": "1-1",
+            "text": "Skor dengede."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 2,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -221587,7 +221592,29 @@
           }
         },
         "h2h": []
-      }
+      },
+      "events": [
+        {
+          "time": "25'",
+          "team": {
+            "name": "RSD Alcalá"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "K. Manzano · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "90+2'",
+          "team": {
+            "name": "Gimnástica Segoviana"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Luhe · Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "long-an-binh-duong-2026-08-19",
@@ -221604,13 +221631,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9165.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3668.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 15,
-      "elapsed": 15,
+      "providerStatus": "2H",
+      "minute": 53,
+      "elapsed": 53,
       "live": true,
       "score": {
         "home": 0,
-        "away": 0,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -221628,8 +221655,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T10:33:33.692Z",
-      "staleAfter": "2026-08-19T10:38:33.692Z",
+      "fetchedAt": "2026-08-19T11:30:07.450Z",
+      "staleAfter": "2026-08-19T11:35:07.450Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -221639,13 +221666,13 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
+        "summary": "Binh Duong skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Binh Duong tarafında.",
         "confidence": "Sınırlı",
         "signals": [
           {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "0-2",
+            "text": "Binh Duong skor üstünlüğünü elinde tutuyor."
           }
         ],
         "eventCount": 0,
