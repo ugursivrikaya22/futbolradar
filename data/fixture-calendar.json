@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-19T17:30:13.422Z",
+  "fetchedAt": "2026-08-19T18:42:26.297Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -224607,14 +224607,14 @@
       "awayTeam": "AEL",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/16859.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3396.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 70,
-      "elapsed": 70,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
-        "away": 2,
+        "away": 4,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -224632,8 +224632,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T17:30:14.234Z",
-      "staleAfter": "2026-08-19T17:35:14.234Z",
+      "fetchedAt": "2026-08-19T18:42:27.027Z",
+      "staleAfter": "2026-08-19T18:47:27.027Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -224642,22 +224642,22 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 62' H. Catakovic tarafından kaydedildi. AEL skor üstünlüğünü elinde tutuyor. Skor üstünlüğü AEL tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 89' Normal Goal tarafından kaydedildi. AEL skor üstünlüğünü elinde tutuyor. Skor üstünlüğü AEL tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "62'",
-            "text": "Son gol 62' H. Catakovic tarafından kaydedildi."
+            "value": "89'",
+            "text": "Son gol 89' Normal Goal tarafından kaydedildi."
           },
           {
             "label": "Canlı skor",
-            "value": "0-2",
+            "value": "0-4",
             "text": "AEL skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 2,
+        "eventCount": 4,
         "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
@@ -225344,6 +225344,26 @@
           "type": "Goal",
           "detail": "Normal Goal",
           "value": "H. Catakovic · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "AEL"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Y. Gomis · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "89'",
+          "team": {
+            "name": "AEL"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
           "comments": ""
         }
       ]
@@ -227859,13 +227879,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9867.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/799.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 30,
-      "elapsed": 30,
+      "providerStatus": "2H",
+      "minute": 88,
+      "elapsed": 88,
       "live": true,
       "score": {
         "home": 0,
-        "away": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -227883,8 +227903,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T17:30:14.234Z",
-      "staleAfter": "2026-08-19T17:35:14.234Z",
+      "fetchedAt": "2026-08-19T18:42:27.027Z",
+      "staleAfter": "2026-08-19T18:47:27.027Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -227894,17 +227914,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 64' Normal Goal tarafından kaydedildi. Mirandes skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Mirandes tarafında.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "64'",
+            "text": "Son gol 64' Normal Goal tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "0-1",
+            "text": "Mirandes skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 1,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -228570,7 +228595,19 @@
           }
         },
         "h2h": []
-      }
+      },
+      "events": [
+        {
+          "time": "64'",
+          "team": {
+            "name": "Mirandes"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "guijuelo-ribert-2026-08-19",
@@ -229449,14 +229486,14 @@
       "awayTeam": "Pontevedra",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9385.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9407.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 42,
+      "elapsed": 42,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -229474,8 +229511,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T17:30:14.234Z",
-      "staleAfter": "2026-08-19T17:35:14.234Z",
+      "fetchedAt": "2026-08-19T18:42:27.027Z",
+      "staleAfter": "2026-08-19T18:47:27.027Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -229484,12 +229521,18 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "title": "Canlı Radar Analizi",
+        "summary": "Skor dengede.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -230872,14 +230915,14 @@
       "awayTeam": "Real Madrid II",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/4907.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9575.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 39,
+      "elapsed": 39,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -230897,8 +230940,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T17:30:14.234Z",
-      "staleAfter": "2026-08-19T17:35:14.234Z",
+      "fetchedAt": "2026-08-19T18:42:27.027Z",
+      "staleAfter": "2026-08-19T18:47:27.027Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -230907,12 +230950,18 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "title": "Canlı Radar Analizi",
+        "summary": "Real Madrid II skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Real Madrid II tarafında.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "1-2",
+            "text": "Real Madrid II skor üstünlüğünü elinde tutuyor."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -231735,14 +231784,14 @@
       "awayTeam": "Al Ahly",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/529.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1577.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 36,
+      "elapsed": 36,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -231760,8 +231809,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T17:30:14.234Z",
-      "staleAfter": "2026-08-19T17:35:14.234Z",
+      "fetchedAt": "2026-08-19T18:42:27.027Z",
+      "staleAfter": "2026-08-19T18:47:27.027Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -231770,12 +231819,23 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
-        "confidence": "Sınırlı",
-        "signals": [],
-        "eventCount": 0,
-        "dataPoints": 0,
+        "title": "Canlı Radar Analizi",
+        "summary": "Son gol 30' H. Abdelkarim tarafından kaydedildi. Barcelona skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Barcelona tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "30'",
+            "text": "Son gol 30' H. Abdelkarim tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-0",
+            "text": "Barcelona skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 1,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -232441,7 +232501,19 @@
           }
         },
         "h2h": []
-      }
+      },
+      "events": [
+        {
+          "time": "30'",
+          "team": {
+            "name": "Barcelona"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "H. Abdelkarim · Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "getafe-ii-cf-talavera-2026-08-19",
@@ -232457,14 +232529,14 @@
       "awayTeam": "Getafe II",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/5253.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9572.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 11,
+      "elapsed": 11,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -232482,8 +232554,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T17:30:14.234Z",
-      "staleAfter": "2026-08-19T17:35:14.234Z",
+      "fetchedAt": "2026-08-19T18:42:27.027Z",
+      "staleAfter": "2026-08-19T18:47:27.027Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -232492,12 +232564,18 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "title": "Canlı Radar Analizi",
+        "summary": "Skor dengede.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -233485,15 +233563,1730 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T04:05:52.019Z",
-      "staleAfter": "2026-08-19T04:10:52.019Z",
+      "fetchedAt": "2026-08-19T18:42:27.027Z",
+      "staleAfter": "2026-08-19T18:47:27.027Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1570334"
       },
-      "competitionId": "la-liga"
+      "competitionId": "la-liga",
+      "lineups": [
+        {
+          "team": "Atletico Madrid",
+          "formation": "4-4-2",
+          "players": [
+            "Jan Oblak",
+            "Jorge Domínguez",
+            "Robin Le Normand",
+            "Dávid Hancko",
+            "Dani Martinez",
+            "Carlos Martín",
+            "Koke",
+            "Pablo Barrios",
+            "Rodrigo Mendoza",
+            "Arnau Ortiz",
+            "Ademola Lookman"
+          ],
+          "substitutes": [
+            "Juan Musso",
+            "Marc Pubill",
+            "Marcos Llorente",
+            "José María Giménez",
+            "Alejandro Grimaldo",
+            "Alex Baena",
+            "Kang-in Lee",
+            "Morten Hjulmand",
+            "Giuliano Simeone",
+            "Johnny Cardoso",
+            "Jorge Castillo",
+            "Miguel Cubo"
+          ],
+          "startingDetails": [
+            {
+              "name": "Jan Oblak",
+              "number": 13,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Jorge Domínguez",
+              "number": 27,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Robin Le Normand",
+              "number": 24,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Dávid Hancko",
+              "number": 17,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Dani Martinez",
+              "number": 30,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Carlos Martín",
+              "number": 12,
+              "position": "M",
+              "grid": "3:4"
+            },
+            {
+              "name": "Koke",
+              "number": 6,
+              "position": "M",
+              "grid": "3:3"
+            },
+            {
+              "name": "Pablo Barrios",
+              "number": 8,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Rodrigo Mendoza",
+              "number": 4,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Arnau Ortiz",
+              "number": 16,
+              "position": "F",
+              "grid": "4:2"
+            },
+            {
+              "name": "Ademola Lookman",
+              "number": 11,
+              "position": "F",
+              "grid": "4:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Juan Musso",
+              "number": 1,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Marc Pubill",
+              "number": 18,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Marcos Llorente",
+              "number": 14,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "José María Giménez",
+              "number": 2,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Alejandro Grimaldo",
+              "number": 22,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Alex Baena",
+              "number": 10,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Kang-in Lee",
+              "number": 7,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Morten Hjulmand",
+              "number": 23,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Giuliano Simeone",
+              "number": 20,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Johnny Cardoso",
+              "number": 5,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Jorge Castillo",
+              "number": 46,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Miguel Cubo",
+              "number": 29,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        },
+        {
+          "team": "Malaga",
+          "formation": "4-4-2",
+          "players": [
+            "Alfonso Herrero",
+            "Carlos Puga",
+            "Ángel Recio",
+            "Einar Galilea",
+            "Rafa Garrido",
+            "David Larrubia",
+            "Dani Lorenzo",
+            "Izan Merino",
+            "Joaquín Muñoz",
+            "Chupete",
+            "Carlos Dotor"
+          ],
+          "substitutes": [
+            "Carlos Lopez",
+            "Jose Salinas",
+            "Álex Pastor",
+            "Rafa Rodriguez",
+            "Joseph Otunenche",
+            "Ramón Enríquez",
+            "Juan Cruz",
+            "Juan Fernandéz",
+            "Julen Lobete",
+            "Haitam Abaida",
+            "Eneko Jauregi"
+          ],
+          "startingDetails": [
+            {
+              "name": "Alfonso Herrero",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Carlos Puga",
+              "number": 3,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Ángel Recio",
+              "number": 15,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Einar Galilea",
+              "number": 4,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Rafa Garrido",
+              "number": 31,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "David Larrubia",
+              "number": 10,
+              "position": "M",
+              "grid": "3:4"
+            },
+            {
+              "name": "Dani Lorenzo",
+              "number": 22,
+              "position": "M",
+              "grid": "3:3"
+            },
+            {
+              "name": "Izan Merino",
+              "number": 23,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Joaquín Muñoz",
+              "number": 11,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Chupete",
+              "number": 9,
+              "position": "F",
+              "grid": "4:2"
+            },
+            {
+              "name": "Carlos Dotor",
+              "number": 8,
+              "position": "F",
+              "grid": "4:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Carlos Lopez",
+              "number": 13,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Jose Salinas",
+              "number": 12,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Álex Pastor",
+              "number": 5,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Rafa Rodriguez",
+              "number": 14,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Joseph Otunenche",
+              "number": 28,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Ramón Enríquez",
+              "number": 6,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Juan Cruz",
+              "number": 19,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Juan Fernandéz",
+              "number": 32,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Julen Lobete",
+              "number": 24,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Haitam Abaida",
+              "number": 7,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Eneko Jauregi",
+              "number": 17,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        }
+      ],
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "confidence": "Sınırlı",
+        "signals": [],
+        "eventCount": 0,
+        "dataPoints": 0,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 530,
+            "name": "Atletico Madrid",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": null,
+          "goals": {
+            "home": null,
+            "away": null
+          },
+          "advice": "Double chance : Atletico Madrid or draw",
+          "percent": {
+            "home": "50%",
+            "draw": "50%",
+            "away": "0%"
+          }
+        },
+        "league": {
+          "id": 140,
+          "name": "La Liga",
+          "country": "Spain",
+          "logo": "https://media.api-sports.io/football/leagues/140.png",
+          "flag": "https://media.api-sports.io/flags/es.svg",
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 530,
+            "name": "Atletico Madrid",
+            "logo": "https://media.api-sports.io/football/teams/530.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 535,
+            "name": "Malaga",
+            "logo": "https://media.api-sports.io/football/teams/535.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "att": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "def": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "goals": {
+            "home": "82%",
+            "away": "18%"
+          },
+          "total": {
+            "home": "82.0%",
+            "away": "18.0%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 9666,
+              "referee": "Jose Maria Sanchez Martinez, Spain",
+              "timezone": "UTC",
+              "date": "2018-02-10T15:15:00+00:00",
+              "timestamp": 1518275700,
+              "periods": {
+                "first": 1518275700,
+                "second": 1518279300
+              },
+              "venue": {
+                "id": null,
+                "name": "La Rosaleda",
+                "city": "Malaga"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 140,
+              "name": "La Liga",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/140.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2017,
+              "round": "Regular Season - 23",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 535,
+                "name": "Malaga",
+                "logo": "https://media.api-sports.io/football/teams/535.png",
+                "winner": false
+              },
+              "away": {
+                "id": 530,
+                "name": "Atletico Madrid",
+                "logo": "https://media.api-sports.io/football/teams/530.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 9853,
+              "referee": "Jose Maria Sanchez Martinez, Spain",
+              "timezone": "UTC",
+              "date": "2017-09-16T18:45:00+00:00",
+              "timestamp": 1505587500,
+              "periods": {
+                "first": 1505587500,
+                "second": 1505591100
+              },
+              "venue": {
+                "id": 1461,
+                "name": "Estadio Wanda Metropolitano",
+                "city": "Madrid"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 140,
+              "name": "La Liga",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/140.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2017,
+              "round": "Regular Season - 4",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 530,
+                "name": "Atletico Madrid",
+                "logo": "https://media.api-sports.io/football/teams/530.png",
+                "winner": true
+              },
+              "away": {
+                "id": 535,
+                "name": "Malaga",
+                "logo": "https://media.api-sports.io/football/teams/535.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 20540,
+              "referee": "Daniel Jesus Trujillo Suarez, Spain",
+              "timezone": "UTC",
+              "date": "2017-04-01T18:45:00+00:00",
+              "timestamp": 1491072300,
+              "periods": {
+                "first": 1491072300,
+                "second": 1491075900
+              },
+              "venue": {
+                "id": null,
+                "name": "La Rosaleda",
+                "city": "Malaga"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 140,
+              "name": "La Liga",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/140.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2016,
+              "round": "Regular Season - 29",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 535,
+                "name": "Malaga",
+                "logo": "https://media.api-sports.io/football/teams/535.png",
+                "winner": false
+              },
+              "away": {
+                "id": 530,
+                "name": "Atletico Madrid",
+                "logo": "https://media.api-sports.io/football/teams/530.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 20730,
+              "referee": "Javier Estrada Fernandez, Spain",
+              "timezone": "UTC",
+              "date": "2016-10-29T16:30:00+00:00",
+              "timestamp": 1477758600,
+              "periods": {
+                "first": 1477758600,
+                "second": 1477762200
+              },
+              "venue": {
+                "id": null,
+                "name": "Vicente Calderón",
+                "city": "Madrid"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 140,
+              "name": "La Liga",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/140.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2016,
+              "round": "Regular Season - 10",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 530,
+                "name": "Atletico Madrid",
+                "logo": "https://media.api-sports.io/football/teams/530.png",
+                "winner": true
+              },
+              "away": {
+                "id": 535,
+                "name": "Malaga",
+                "logo": "https://media.api-sports.io/football/teams/535.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 4,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 3,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 4,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 203679,
+              "referee": "Antonio Mateu, Spain",
+              "timezone": "UTC",
+              "date": "2016-04-23T16:15:00+00:00",
+              "timestamp": 1461428100,
+              "periods": {
+                "first": 1461428100,
+                "second": 1461431700
+              },
+              "venue": {
+                "id": null,
+                "name": "Vicente Calderón",
+                "city": "Madrid"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 140,
+              "name": "La Liga",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/140.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2015,
+              "round": "Regular Season - 35",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 530,
+                "name": "Atletico Madrid",
+                "logo": "https://media.api-sports.io/football/teams/530.png",
+                "winner": true
+              },
+              "away": {
+                "id": 535,
+                "name": "Malaga",
+                "logo": "https://media.api-sports.io/football/teams/535.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 203495,
+              "referee": "Antonio Mateu, Spain",
+              "timezone": "UTC",
+              "date": "2015-12-20T19:30:00+00:00",
+              "timestamp": 1450639800,
+              "periods": {
+                "first": 1450639800,
+                "second": 1450643400
+              },
+              "venue": {
+                "id": null,
+                "name": "La Rosaleda",
+                "city": "Malaga"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 140,
+              "name": "La Liga",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/140.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2015,
+              "round": "Regular Season - 16",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 535,
+                "name": "Malaga",
+                "logo": "https://media.api-sports.io/football/teams/535.png",
+                "winner": true
+              },
+              "away": {
+                "id": 530,
+                "name": "Atletico Madrid",
+                "logo": "https://media.api-sports.io/football/teams/530.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 204018,
+              "referee": "Antonio Mateu, Spain",
+              "timezone": "UTC",
+              "date": "2015-04-11T16:00:00+00:00",
+              "timestamp": 1428768000,
+              "periods": {
+                "first": 1428768000,
+                "second": 1428771600
+              },
+              "venue": {
+                "id": null,
+                "name": "La Rosaleda",
+                "city": "Malaga"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 140,
+              "name": "La Liga",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/140.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2014,
+              "round": "Regular Season - 31",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 535,
+                "name": "Malaga",
+                "logo": "https://media.api-sports.io/football/teams/535.png",
+                "winner": null
+              },
+              "away": {
+                "id": 530,
+                "name": "Atletico Madrid",
+                "logo": "https://media.api-sports.io/football/teams/530.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 203828,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2014-11-22T15:00:00+00:00",
+              "timestamp": 1416668400,
+              "periods": {
+                "first": 1416668400,
+                "second": 1416672000
+              },
+              "venue": {
+                "id": null,
+                "name": "Estadio Vicente Calderón (Madrid)",
+                "city": null
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 140,
+              "name": "La Liga",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/140.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2014,
+              "round": "Regular Season - 12",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 530,
+                "name": "Atletico Madrid",
+                "logo": "https://media.api-sports.io/football/teams/530.png",
+                "winner": true
+              },
+              "away": {
+                "id": 535,
+                "name": "Malaga",
+                "logo": "https://media.api-sports.io/football/teams/535.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 2,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 204460,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2014-05-11T17:00:00+00:00",
+              "timestamp": 1399827600,
+              "periods": {
+                "first": 1399827600,
+                "second": 1399831200
+              },
+              "venue": {
+                "id": null,
+                "name": "Estadio Vicente Calderón (Madrid)",
+                "city": null
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 140,
+              "name": "La Liga",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/140.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2013,
+              "round": "Regular Season - 37",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 530,
+                "name": "Atletico Madrid",
+                "logo": "https://media.api-sports.io/football/teams/530.png",
+                "winner": null
+              },
+              "away": {
+                "id": 535,
+                "name": "Malaga",
+                "logo": "https://media.api-sports.io/football/teams/535.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 204267,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2014-01-04T15:00:00+00:00",
+              "timestamp": 1388847600,
+              "periods": {
+                "first": 1388847600,
+                "second": 1388851200
+              },
+              "venue": {
+                "id": null,
+                "name": "Estadio La Rosaleda (Málaga)",
+                "city": null
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 140,
+              "name": "La Liga",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/140.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2013,
+              "round": "Regular Season - 18",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 535,
+                "name": "Malaga",
+                "logo": "https://media.api-sports.io/football/teams/535.png",
+                "winner": false
+              },
+              "away": {
+                "id": 530,
+                "name": "Atletico Madrid",
+                "logo": "https://media.api-sports.io/football/teams/530.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "celtic-lask-linz-2026-08-19",
@@ -233534,15 +235327,24 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-18T22:27:50.593Z",
-      "staleAfter": "2026-08-18T22:32:50.593Z",
+      "fetchedAt": "2026-08-19T18:42:27.027Z",
+      "staleAfter": "2026-08-19T18:47:27.027Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1610923"
       },
-      "competitionId": "sampiyonlar-ligi"
+      "competitionId": "sampiyonlar-ligi",
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "confidence": "Sınırlı",
+        "signals": [],
+        "eventCount": 0,
+        "dataPoints": 0,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      }
     },
     {
       "id": "hapoel-beer-sheva-sabah-fa-2026-08-19",
