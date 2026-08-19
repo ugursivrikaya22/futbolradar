@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-19T11:30:06.536Z",
+  "fetchedAt": "2026-08-19T12:54:45.379Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -219247,14 +219247,14 @@
       "awayTeam": "Ho Chi Minh",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9164.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3672.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -219272,8 +219272,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T06:50:41.672Z",
-      "staleAfter": "2026-08-19T06:55:41.672Z",
+      "fetchedAt": "2026-08-19T12:54:46.260Z",
+      "staleAfter": "2026-08-19T12:59:46.260Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -219283,11 +219283,17 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "summary": "Ho Chi Minh skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Ho Chi Minh tarafında.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-1",
+            "text": "Ho Chi Minh skor üstünlüğünü elinde tutuyor."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -220135,8 +220141,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T10:33:33.692Z",
-      "staleAfter": "2026-08-19T10:38:33.692Z",
+      "fetchedAt": "2026-08-19T12:54:46.260Z",
+      "staleAfter": "2026-08-19T12:59:46.260Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -220146,22 +220152,17 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Son gol 39' M. Sciancalepore tarafından kaydedildi. Elche II skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Elche II tarafında.",
-        "confidence": "Orta",
+        "summary": "Elche II skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Elche II tarafında.",
+        "confidence": "Sınırlı",
         "signals": [
-          {
-            "label": "Gol akışı",
-            "value": "39'",
-            "text": "Son gol 39' M. Sciancalepore tarafından kaydedildi."
-          },
           {
             "label": "Canlı skor",
             "value": "2-0",
             "text": "Elche II skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 2,
-        "dataPoints": 2,
+        "eventCount": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -221630,11 +221631,11 @@
       "awayTeam": "Binh Duong",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9165.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3668.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 53,
-      "elapsed": 53,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
         "away": 2,
@@ -221655,8 +221656,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-19T11:30:07.450Z",
-      "staleAfter": "2026-08-19T11:35:07.450Z",
+      "fetchedAt": "2026-08-19T12:54:46.260Z",
+      "staleAfter": "2026-08-19T12:59:46.260Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -221665,18 +221666,23 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Binh Duong skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Binh Duong tarafında.",
-        "confidence": "Sınırlı",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 43' Normal Goal tarafından kaydedildi. Binh Duong skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Binh Duong tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "43'",
+            "text": "Son gol 43' Normal Goal tarafından kaydedildi."
+          },
           {
             "label": "Canlı skor",
             "value": "0-2",
             "text": "Binh Duong skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 2,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -223043,7 +223049,29 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "40'",
+          "team": {
+            "name": "Binh Duong"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "43'",
+          "team": {
+            "name": "Binh Duong"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "oud-heverlee-leuven-ii-krc-genk-ii-2026-08-19",

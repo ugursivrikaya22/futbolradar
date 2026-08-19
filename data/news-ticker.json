@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-19T11:30:28.288Z",
+  "updatedAt": "2026-08-19T12:55:06.532Z",
   "items": [
+    {
+      "id": "auto-news-6e9f0cdb9f1a6b9fac72",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Suwen Kadın Futbol Süper Ligi'nde fikstür belli oldu",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-19T12:17:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNV3JkaEJ5Z1RQQ2htVEFhVnYyOTQ5SmR0WXVwY2dKMXhEZXJTOW9SVi00RlNUcThiaGlXWkdpcWtOWUtUWlQwWnBPV0dQTjFFMXg0RkxOVWNYZm5IVG11VzF3azc1VjlES21NYnpfR19iSzcwb2NQVy1OMGY5ZWVnLVUzVm1pNmw1Rm50d1VnMTRSeVVXTUJ2VjZPT2tDeDRRZ3o5R0ttNk94Yy1wSmRlNg?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-7fc2dc9e4d0a31c7172f",
       "category": "official",
@@ -145,9 +165,7 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-08-17T17:41:00.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -253,28 +271,6 @@
       }
     },
     {
-      "id": "auto-news-8c4b8c586ae15bfee7b1",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Galatasaray Çağdaş Faktoring Yeni Sezon Kombineleri Satışta!",
-      "team": "Galatasaray",
-      "timestamp": "2026-08-18T10:56:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQSDUxN2xfemJkeWlmMEtIeE1rZ3pZZTYzWF9IR3IwOU5QZzhydE1PMzVqWmNmU3NJYVNvNDNucTA2b2RDV2RtcnI0aE95QnJKajJpOFUyTkVFOEVNUkRnT1ZLcmFaWHRIQURRcDYzMzh2eHdCbTFaOGJEbmdicHBuYWJmZDA0M2kxQk5seTd1QUJZbzhUbmRtNmpBMmpqNlVkaDhMTzlPbncwb05JQS1VRFlaYmJ5UjMwdF9OdndnNXRvdw?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-08-18T10:56:00.000Z"
-      }
-    },
-    {
       "id": "auto-news-a9bdd5d3a6cbc12342e1",
       "category": "official",
       "confidence": "confirmed",
@@ -315,43 +311,23 @@
       }
     },
     {
-      "id": "auto-news-7d982fc6b72bdae7ce44",
-      "category": "official",
-      "confidence": "confirmed",
+      "id": "auto-news-a4c77375da39787bb460",
+      "category": "club-agenda",
+      "confidence": "reported",
       "section": "news",
-      "text": "Champions League qualifying play-off round: Match previews, what to look out for",
-      "team": "Avrupa futbolu",
-      "timestamp": "2026-08-19T09:39:40.000Z",
+      "text": "Fenerbahçe-Lyon maçını yazdılar: Uzun vadede başarı için, süperstarlar yetmez!",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-19T04:50:00.000Z",
       "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNMkRlLWZULXZhOTZQSVRZSGlZQU1qZllUOW9Zck0tTE5Sa0RTbUNWYlZiZF9ZbjAxalhndDRJcXNVUjQyY3VzM3MzTkRxTWl1ZTF3ekw3Xzg2QWFqNTBWbXFab0xTYjBLNkc4VGM0WkRIYUpPRVkwS0lsR0JWUVpWSTViYTJiNXdOeFcwWE1neUl4M3daWkt0UGZGc1VxaDFXbUdNSlJiTldISW96VHhxdGd0STlvUXVCUHBBSk1YMGNNTkJNcVpOdHluVkpPcUhvMk1EeExFdmZTZw?oc=5",
-        "publisher": "uefa.com"
+        "name": "hurriyet-spor",
+        "url": "https://www.hurriyet.com.tr/sporarena/fenerbahce-lyon-macini-yazdilar-uzun-vadede-basari-icin-superstarlar-yetmez-43277718",
+        "publisher": "hurriyet.com.tr"
       },
       "automation": {
         "source": "rss",
-        "feed": "uefa",
-        "priority": 9,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-a087afb796e2f2acac44",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Suwen Kadın Futbol Süper Ligi Fikstürü Bugün Çekilecek",
-      "team": "Süper Lig",
-      "timestamp": "2026-08-19T06:28:35.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9qaVNzbUdMUWFmVFNWZ1VTMmdUVmI1OXZQcmFPT3lnMnlDbEE3NHNBeGN2QVNveVBxY2k1UVhLYXJGdXdtWE4yaGFYU1ZLR3ZIRWpNNXN2YkliTF9iVVdfTkNwQnlhWEE?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
-        "status": "OFFICIAL"
+        "feed": "hurriyet-spor",
+        "priority": 7,
+        "status": "REPORTED"
       }
     }
   ]
