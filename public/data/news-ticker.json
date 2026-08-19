@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-18T23:26:26.317Z",
+  "updatedAt": "2026-08-19T01:25:27.709Z",
   "items": [
     {
       "id": "auto-news-05b9b6b9ecbc631f58d4",
@@ -44,6 +44,26 @@
         "status": "OFFICIAL",
         "mergedReports": 3,
         "firstSeenAt": "2026-08-17T14:35:56.000Z"
+      }
+    },
+    {
+      "id": "auto-news-d326af8989d75ce89440",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Trabzonspor Kulübü Resmi Web Sitesi",
+      "team": "Trabzonspor",
+      "timestamp": "2026-08-18T20:37:10.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE5Sc0wzLThyLXpKQ2IyOVBweVRNd2FPbDhheEpWRk9jQU1SVkRwR2ZBbzhKeHFUT0YwcllVN3pVZzc4YU9OMjJHb0xVTHdsX0dCcUxpZWV3Rnd6VXNTU0FiS3BkV0RtNklOXzQxLWdjNA?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
       }
     },
     {
@@ -97,7 +117,7 @@
       "team": "Galatasaray",
       "timestamp": "2026-08-18T17:48:00.000Z",
       "source": {
-        "name": "galatasaray.org",
+        "name": "GALATASARAY.ORG",
         "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxOZXNUb0dMR0NLWi1xem9oaG5zNVZZWGQ5Uk9HeDlkZXZGblhhV2dyZW9iOE8tb21BbHFCZHpfbk5ySW5pcFJfV2Zia2c0T0lzdlA2T3g2aWtRZjZ2dTRlNkNqRlBTNkpoWXJsWUlGeVp2SVp2OGlmc3dVZEQyUHZwR1ZqRklaQQ?oc=5",
         "publisher": "galatasaray.org"
       },
@@ -179,7 +199,7 @@
       "team": "Galatasaray",
       "timestamp": "2026-08-18T11:43:00.000Z",
       "source": {
-        "name": "galatasaray.org",
+        "name": "GALATASARAY.ORG",
         "url": "https://news.google.com/rss/articles/CBMijwFBVV95cUxOTWtybXZ1TmRPX3Z0WHBKby1wNFFLYldpSmFyTWhoTGFpbnl1YlBNRXRUT3N2Ul9VNDlQeUVzdl9TS3ZiWnVBQi1WdzkxSFlfRnVpdmVfNEhyY2wtWWw4TFdQczNieEQtRUl5NnVBUk5PUnFJR2ZYM0lUUWtqYXJ5X01kMzhlQmZlclpuODRuRQ?oc=5",
         "publisher": "galatasaray.org"
       },
@@ -187,7 +207,9 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1,
-        "status": "OFFICIAL"
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-08-18T11:33:00.000Z"
       }
     },
     {
@@ -199,7 +221,7 @@
       "team": "Galatasaray",
       "timestamp": "2026-08-18T11:41:00.000Z",
       "source": {
-        "name": "galatasaray.org",
+        "name": "GALATASARAY.ORG",
         "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE1VSlBIcVdnUXFmcmhjZlY3QzY0d3FkeVhiWDRZNXRwV0Rvd25naHdYQUY0bG45NlhHc3JwTUJyZF9fRTRWZ0M2M2RlZy1RYmltS1dadHdjaXNLQVVoejk3X245VktybldGczRoZ0hINk42S2s?oc=5",
         "publisher": "galatasaray.org"
       },
@@ -243,26 +265,6 @@
       "source": {
         "name": "Trabzonspor Kulübü Resmi Web Sitesi",
         "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPaTBVSGktdERGOVdTSWNjUkJwQnJEUUsyWGI2NjJ3MmVrbkt5dmFvZmFpMTVjZjQ1RDFkSFdPZ0hRdnh3WGt0LVJhenV5bGFya3VHMmhsRUxRbzYtaUNTYkV0blZuM3Zwc1JfZzRHZTBrbUtZc2ZrX1JLZW0xeERhZmVkWEJxLTBBbkFiS2pMbTFhZW42NlE1a0tnalFsS0pqdDFkYko4WE1KZkFuWVh1TnloMA?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-8dd8bbfdf0267fa9acd6",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Ferencvaros maçı hazırlıklarımız sürüyor",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-17T17:15:28.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOTk80LXM4YjNiVEc1eFJwWUZqMERoeUNlNnI3aVZNa3pfWDRpOWNpcXpMYTJRWGRneUNTbmNEMnJYUHM1Z2diTE9CWVhrbzBxdE1iU2JLMEsxQXNDclYzZUYzT25ocW52SFJXNFo2Q2VkVHBpOWVCbVZMS2FCRTdLSnA4Z3N0Ym9mVUFpczZ0eGhPUE0?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
       "automation": {
