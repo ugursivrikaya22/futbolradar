@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-19T12:55:06.532Z",
+  "updatedAt": "2026-08-19T13:17:39.545Z",
   "items": [
     {
       "id": "auto-news-6e9f0cdb9f1a6b9fac72",
@@ -328,6 +328,26 @@
         "feed": "hurriyet-spor",
         "priority": 7,
         "status": "REPORTED"
+      }
+    },
+    {
+      "id": "auto-news-7d982fc6b72bdae7ce44",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Champions League qualifying play-off round: Match previews, what to look out for",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-08-18T07:00:00.000Z",
+      "source": {
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxNMkRlLWZULXZhOTZQSVRZSGlZQU1qZllUOW9Zck0tTE5Sa0RTbUNWYlZiZF9ZbjAxalhndDRJcXNVUjQyY3VzM3MzTkRxTWl1ZTF3ekw3Xzg2QWFqNTBWbXFab0xTYjBLNkc4VGM0WkRIYUpPRVkwS0lsR0JWUVpWSTViYTJiNXdOeFcwWE1neUl4M3daWkt0UGZGc1VxaDFXbUdNSlJiTldISW96VHhxdGd0STlvUXVCUHBBSk1YMGNNTkJNcVpOdHluVkpPcUhvMk1EeExFdmZTZw?oc=5",
+        "publisher": "uefa.com"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "uefa",
+        "priority": 9,
+        "status": "OFFICIAL"
       }
     }
   ]
