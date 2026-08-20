@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-20T08:02:31.383Z",
+  "updatedAt": "2026-08-20T09:02:12.245Z",
   "matchCount": 678,
   "records": [
     {
@@ -32,10 +32,10 @@
       "winner": "Los Angeles Galaxy",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 70,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 90,
       "dataSources": {
         "score": {
           "present": true,
@@ -53,9 +53,9 @@
           "count": 18
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": false,
@@ -67,17 +67,13 @@
       "availability": {
         "events": 17,
         "statistics": 18,
-        "lineups": 0,
+        "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
         {
           "field": "players",
           "label": "Oyuncu istatistikleri"
@@ -87,11 +83,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "7f17b255681d446d",
-      "fingerprint": "7f17b255681d446d",
+      "analysisSourceHash": "c87e8a461d0645f0",
+      "fingerprint": "c87e8a461d0645f0",
       "analysisGeneratedAt": "2026-08-20T05:36:20.254Z",
-      "analysisUpdatedAt": "2026-08-20T08:02:31.336Z",
-      "generatedAt": "2026-08-20T08:02:31.336Z",
+      "analysisUpdatedAt": "2026-08-20T09:02:12.210Z",
+      "generatedAt": "2026-08-20T09:02:12.210Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -206,8 +202,10 @@
           ]
         },
         "tactical": {
-          "status": "partial",
+          "status": "ready",
           "notes": [
+            "Los Angeles Galaxy sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "San Jose Earthquakes sahaya 4-2-3-1 dizilişiyle çıktı.",
             "San Jose Earthquakes topu elinde tutarken Los Angeles Galaxy derin blokta savunma yapmayı tercih etti."
           ]
         },
@@ -230,14 +228,23 @@
         "coaching": {
           "status": "ready",
           "notes": [
+            "Los Angeles Galaxy maça 4-2-3-1 dizilişiyle başladı.",
+            "San Jose Earthquakes maça 4-2-3-1 dizilişiyle başladı.",
             "46' San Jose Earthquakes değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
             "46' San Jose Earthquakes değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
             "61' San Jose Earthquakes değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "61' San Jose Earthquakes değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "68' Los Angeles Galaxy değişikliği (Substitution 1). Değişiklikten sonra Los Angeles Galaxy adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "74' San Jose Earthquakes değişikliği (Substitution 5). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "61' San Jose Earthquakes değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
-          "formations": [],
+          "formations": [
+            {
+              "team": "Los Angeles Galaxy",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "San Jose Earthquakes",
+              "formation": "4-2-3-1"
+            }
+          ],
           "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
@@ -355,6 +362,7 @@
         "momentum",
         "signals",
         "statistics",
+        "tactical",
         "firstHalf",
         "secondHalf",
         "turningPoints",
@@ -363,7 +371,7 @@
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
+      "coverage": 93,
       "dataStatus": "complete",
       "intelligenceCoverage": 70,
       "publishState": "page"
@@ -961,10 +969,10 @@
       "winner": "Colorado Rapids",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 70,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -982,45 +990,36 @@
           "count": 17
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
         "events": 18,
         "statistics": 17,
-        "lineups": 0,
-        "players": 0
+        "lineups": 2,
+        "players": 40
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "dda41e272e458a15",
-      "fingerprint": "dda41e272e458a15",
+      "analysisSourceHash": "860ec032b368c9f6",
+      "fingerprint": "860ec032b368c9f6",
       "analysisGeneratedAt": "2026-08-20T03:51:13.917Z",
-      "analysisUpdatedAt": "2026-08-20T08:02:31.336Z",
-      "generatedAt": "2026-08-20T08:02:31.336Z",
+      "analysisUpdatedAt": "2026-08-20T09:02:12.210Z",
+      "generatedAt": "2026-08-20T09:02:12.210Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1135,8 +1134,11 @@
           ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Colorado Rapids sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Los Angeles FC sahaya 4-3-3 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
           "status": "ready",
@@ -1158,14 +1160,23 @@
         "coaching": {
           "status": "ready",
           "notes": [
+            "Colorado Rapids maça 4-2-3-1 dizilişiyle başladı.",
+            "Los Angeles FC maça 4-3-3 dizilişiyle başladı.",
             "46' Los Angeles FC değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
             "55' Colorado Rapids değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
             "62' Colorado Rapids değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "64' Los Angeles FC değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "64' Los Angeles FC değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "75' Los Angeles FC değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "64' Los Angeles FC değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
-          "formations": [],
+          "formations": [
+            {
+              "team": "Colorado Rapids",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Los Angeles FC",
+              "formation": "4-3-3"
+            }
+          ],
           "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
@@ -3090,7 +3101,7 @@
       "season": null,
       "homeTeam": "Columbus Crew",
       "awayTeam": "CF Montreal",
-      "venue": "Lower.com Field",
+      "venue": "ScottsMiracle-Gro Field",
       "score": {
         "home": 1,
         "away": 2
@@ -3162,23 +3173,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "9822c3c4d00d00e7",
-      "fingerprint": "9822c3c4d00d00e7",
+      "analysisSourceHash": "cc8f3b19efea76c4",
+      "fingerprint": "cc8f3b19efea76c4",
       "analysisGeneratedAt": "2026-08-20T03:51:13.917Z",
-      "analysisUpdatedAt": "2026-08-20T03:51:13.917Z",
-      "generatedAt": "2026-08-20T03:51:13.917Z",
+      "analysisUpdatedAt": "2026-08-20T09:02:12.210Z",
+      "generatedAt": "2026-08-20T09:02:12.210Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Columbus Crew 1-2 CF Montreal maç raporu: Major League Soccer istatistikleri | FutbolRadar",
-        "description": "CF Montreal, Lower.com Field'de oynanan Major League Soccer karşılaşmasında Columbus Crew'i 2-1 mağlup etti.",
+        "description": "CF Montreal, ScottsMiracle-Gro Field'de oynanan Major League Soccer karşılaşmasında Columbus Crew'i 2-1 mağlup etti.",
         "path": "mac-raporu/columbus-crew-cf-montreal-2026-08-20.html",
         "competition": "Major League Soccer"
       },
       "reportUrl": "./mac-raporu/columbus-crew-cf-montreal-2026-08-20.html",
       "digest": {
         "headline": "CF Montreal, Columbus Crew'i 2-1 yendi",
-        "paragraph": "CF Montreal, Lower.com Field'de oynanan Major League Soccer karşılaşmasında Columbus Crew'i 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "CF Montreal, ScottsMiracle-Gro Field'de oynanan Major League Soccer karşılaşmasında Columbus Crew'i 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
         "result": {
           "winner": "CF Montreal",
           "loser": "Columbus Crew",
