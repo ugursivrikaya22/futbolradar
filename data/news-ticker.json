@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-20T05:36:28.509Z",
+  "updatedAt": "2026-08-20T06:52:38.773Z",
   "items": [
     {
       "id": "auto-news-3f10c989844471df0b15",
@@ -309,22 +309,42 @@
       }
     },
     {
-      "id": "auto-news-7c8d9bb0ecb80723ae0c",
+      "id": "auto-news-ff056eb55f249a2cb1d1",
       "category": "club-agenda",
       "confidence": "reported",
       "section": "news",
-      "text": "Fenerbahçe'de ayrılık rüzgarı sürüyor",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-19T19:11:00.000Z",
+      "text": "Trabzonspor evinde avantaj peşinde! İşte Fatih Tekke'nin muhtemel 11'i",
+      "team": "Trabzonspor",
+      "timestamp": "2026-08-19T18:17:41.000Z",
       "source": {
-        "name": "trt-spor",
-        "url": "https://www.trtspor.com.tr/haber/futbol/fenerbahcede-ayrilik-ruzgari-suruyor-32699288",
-        "publisher": "trtspor.com.tr"
+        "name": "fotomac",
+        "url": "https://www.fotomac.com.tr/trabzonspor/2026/08/20/trabzonspor-evinde-avantaj-pesinde-iste-fatih-tekkenin-muhtemel-11i",
+        "publisher": "fotomac.com.tr"
       },
       "automation": {
         "source": "rss",
-        "feed": "trt-spor",
-        "priority": 6,
+        "feed": "fotomac",
+        "priority": 8,
+        "status": "REPORTED"
+      }
+    },
+    {
+      "id": "auto-news-9020f5e5ce4ab2b6e34b",
+      "category": "transfer-rumour",
+      "confidence": "reported",
+      "section": "transfer",
+      "text": "Galatasaray'dan transferde gözünü kararttı! Bu hamle çok konuşulur",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-19T18:35:16.000Z",
+      "source": {
+        "name": "fotomac",
+        "url": "https://www.fotomac.com.tr/galatasaray/2026/08/20/galatasaraydan-transferde-gozunu-karartti-bu-hamle-cok-konusulur",
+        "publisher": "fotomac.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fotomac",
+        "priority": 8,
         "status": "REPORTED"
       }
     },
@@ -337,7 +357,7 @@
       "team": "Avrupa futbolu",
       "timestamp": "2026-08-19T21:24:24.000Z",
       "source": {
-        "name": "UEFA.com",
+        "name": "uefa.com",
         "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxQS1dLMGFodFQ2VWxseTM0VTJCYWJ4V0lOT2s4UGI5eTBJNFBYWFNtaldPVUR5Y0tyRlZtOGpNT3FGbFduT2QwUE03QlZxUG14STNiZ1BTSVJzZXRpSzFVZ2xZdlNZNVlhQVJjV1NvTjM1cTJ5YU42V1oyLWVnR28yRFJYeTBWcXBUdU54c3gyTkE5ZFE5UHlNeFNUN0hqTnJXV2EzZUtGVVRQVDBlOFJ0WVotOGUyUkJibGFjN01kcDdjZ0NuY08yeXd3WGhzY2IxQWhZVHBzai1oS1F4?oc=5",
         "publisher": "uefa.com"
       },
@@ -345,26 +365,6 @@
         "source": "rss",
         "feed": "uefa",
         "priority": 9,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-ef01d97cb19f808791b8",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Ebubekir Uçar Anısına Saygı Duruşunda Bulunulacak",
-      "team": "Süper Lig",
-      "timestamp": "2026-08-19T13:47:57.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBsaHdfN2ZxVVN5LU1wNjFuUV9JQkQ2dnU1TV9YWG5fSjViQ2R6amNaUHd6aDhTUkhtSWgtM2V2aTlmZ0lkOWd5ZXdSRlNFT19CVGIwcHVMLUdPRG5WVlZCbTU5aVZGMmM?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
         "status": "OFFICIAL"
       }
     }
