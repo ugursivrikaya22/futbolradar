@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-20T19:08:03.186Z",
+  "fetchedAt": "2026-08-20T20:33:20.698Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -261635,8 +261635,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -261646,9 +261646,19 @@
       "competitionId": "avrupa-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Kairat Almaty kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 45+1' D. Sikan tarafından kaydedildi. Skor üstünlüğü Anderlecht tarafında.",
+        "summary": "Anderlecht topa sahip olma oranında önde. Anderlecht isabetli şutlarda önde. Skor üstünlüğü Anderlecht tarafında.",
         "confidence": "Orta",
         "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "33%-67%",
+            "text": "Anderlecht topa sahip olma oranında önde."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "2-4",
+            "text": "Anderlecht isabetli şutlarda önde."
+          },
           {
             "label": "Disiplin dengesi",
             "value": "1 kırmızı kart",
@@ -261671,7 +261681,7 @@
           }
         ],
         "eventCount": 19,
-        "dataPoints": 4,
+        "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -262538,6 +262548,65 @@
           "value": "E. Llansana · Asist: N. Ojea · Substitution 5",
           "comments": ""
         }
+      ],
+      "statistics": [
+        {
+          "category": "Hücum",
+          "type": "İsabetli şut",
+          "home": 2,
+          "away": 4,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 2,
+          "away": 2
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 1,
+          "away": 5
+        },
+        {
+          "category": "Disiplin",
+          "type": "Faul",
+          "home": 11,
+          "away": 17
+        },
+        {
+          "category": "Genel",
+          "type": "Korner",
+          "home": 2,
+          "away": 8
+        },
+        {
+          "category": "Genel",
+          "type": "Ofsayt",
+          "home": 1,
+          "away": 2
+        },
+        {
+          "category": "Genel",
+          "type": "Topla oynama",
+          "home": 33,
+          "away": 67,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 1,
+          "away": 4
+        },
+        {
+          "category": "Disiplin",
+          "type": "Kırmızı kart",
+          "home": 1,
+          "away": 0
+        }
       ]
     },
     {
@@ -262579,8 +262648,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T18:44:04.903Z",
-      "staleAfter": "2026-08-20T18:49:04.903Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -262590,9 +262659,24 @@
       "competitionId": "konferans-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti. Skor dengede.",
-        "confidence": "Orta",
+        "summary": "Inter Turku topa sahip olma oranında önde. FC Copenhagen daha fazla şut üretti.",
+        "confidence": "Yüksek",
         "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "58%-42%",
+            "text": "Inter Turku topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "10-11",
+            "text": "FC Copenhagen daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "2-3",
+            "text": "FC Copenhagen isabetli şutlarda önde."
+          },
           {
             "label": "Teknik hamleler",
             "value": "8 değişiklik",
@@ -262605,7 +262689,7 @@
           }
         ],
         "eventCount": 8,
-        "dataPoints": 2,
+        "dataPoints": 5,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -263371,6 +263455,1096 @@
           "value": "M. Madsen · Asist: V. Dadason · Substitution 4",
           "comments": ""
         }
+      ],
+      "lineups": [
+        {
+          "team": "Inter Turku",
+          "formation": "4-3-3",
+          "players": [
+            "Eetu Huuhtanen",
+            "Seth Saarinen",
+            "Luka Kuittinen",
+            "Juuso Hämäläinen",
+            "Jussi Niska",
+            "Jasse Tuominen",
+            "Janne-Pekka Laine",
+            "Bismark Ampofo",
+            "Antoin Loic Essomba",
+            "Alie Conteh",
+            "Clinton Jephta"
+          ],
+          "substitutes": [
+            "Prosper Ahiabu",
+            "Lauri Laine",
+            "Yeboah Amankwah",
+            "Johannes Yli-Kokko",
+            "Eero Vuorjoki",
+            "Albin Granlund",
+            "Axel Sandler",
+            "Julius Tauriainen",
+            "Iiro Järvinen",
+            "Vilho Huovila",
+            "Eeli Kiiskila",
+            "Jean Fiacre Kouamé Botué"
+          ],
+          "startingDetails": [
+            {
+              "name": "Eetu Huuhtanen",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Seth Saarinen",
+              "number": 18,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Luka Kuittinen",
+              "number": 22,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Juuso Hämäläinen",
+              "number": 3,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Jussi Niska",
+              "number": 2,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Jasse Tuominen",
+              "number": 9,
+              "position": "M",
+              "grid": "3:3"
+            },
+            {
+              "name": "Janne-Pekka Laine",
+              "number": 14,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Bismark Ampofo",
+              "number": 17,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Antoin Loic Essomba",
+              "number": 23,
+              "position": "F",
+              "grid": "4:3"
+            },
+            {
+              "name": "Alie Conteh",
+              "number": 10,
+              "position": "F",
+              "grid": "4:2"
+            },
+            {
+              "name": "Clinton Jephta",
+              "number": 16,
+              "position": "F",
+              "grid": "4:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Prosper Ahiabu",
+              "number": 4,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Lauri Laine",
+              "number": 28,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Yeboah Amankwah",
+              "number": 30,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Johannes Yli-Kokko",
+              "number": 8,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Eero Vuorjoki",
+              "number": 12,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Albin Granlund",
+              "number": 5,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Axel Sandler",
+              "number": 20,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Julius Tauriainen",
+              "number": 24,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Iiro Järvinen",
+              "number": 19,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Vilho Huovila",
+              "number": 26,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Eeli Kiiskila",
+              "number": 35,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Jean Fiacre Kouamé Botué",
+              "number": 11,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        },
+        {
+          "team": "FC Copenhagen",
+          "formation": "4-2-3-1",
+          "players": [
+            "Rúnar Alex Rúnarsson",
+            "Junnosuke Suzuki",
+            "Gabriel Pereira",
+            "Felix Beijmo",
+            "Marcos López",
+            "Alex Král",
+            "William Clem",
+            "Mohamed Elyounoussi",
+            "Mads Emil Madsen",
+            "Robert",
+            "Geovanni Vianney"
+          ],
+          "substitutes": [
+            "Thomas Delaney",
+            "Youssoufa Moukoko",
+            "Marvin Nasnas",
+            "Viktor Bjarki Dadason",
+            "Tobias Breum-Harild",
+            "Gustav Fritz",
+            "Ákos Markgráf",
+            "Kenay Myrie",
+            "Birger Meling",
+            "Mustapha Nyassi",
+            "Gunnar Orri Olsen",
+            "Liam West"
+          ],
+          "startingDetails": [
+            {
+              "name": "Rúnar Alex Rúnarsson",
+              "number": 31,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Junnosuke Suzuki",
+              "number": 20,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Gabriel Pereira",
+              "number": 5,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Felix Beijmo",
+              "number": 2,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Marcos López",
+              "number": 15,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Alex Král",
+              "number": 33,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "William Clem",
+              "number": 36,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Mohamed Elyounoussi",
+              "number": 10,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Mads Emil Madsen",
+              "number": 21,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Robert",
+              "number": 16,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "Geovanni Vianney",
+              "number": 44,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Thomas Delaney",
+              "number": 27,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Youssoufa Moukoko",
+              "number": 9,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Marvin Nasnas",
+              "number": 34,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Viktor Bjarki Dadason",
+              "number": 39,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Tobias Breum-Harild",
+              "number": 51,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Gustav Fritz",
+              "number": 61,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Ákos Markgráf",
+              "number": 6,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Kenay Myrie",
+              "number": 18,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Birger Meling",
+              "number": 24,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Mustapha Nyassi",
+              "number": 37,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Gunnar Orri Olsen",
+              "number": 45,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Liam West",
+              "number": 26,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        }
+      ],
+      "statistics": [
+        {
+          "category": "Hücum",
+          "type": "İsabetli şut",
+          "home": 2,
+          "away": 3,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 7,
+          "away": 5
+        },
+        {
+          "category": "Hücum",
+          "type": "Toplam şut",
+          "home": 10,
+          "away": 11,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 1,
+          "away": 3
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası içinden şut",
+          "home": 7,
+          "away": 8,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası dışından şut",
+          "home": 3,
+          "away": 3
+        },
+        {
+          "category": "Disiplin",
+          "type": "Faul",
+          "home": 10,
+          "away": 13
+        },
+        {
+          "category": "Genel",
+          "type": "Korner",
+          "home": 9,
+          "away": 8
+        },
+        {
+          "category": "Genel",
+          "type": "Ofsayt",
+          "home": 1,
+          "away": 2
+        },
+        {
+          "category": "Genel",
+          "type": "Topla oynama",
+          "home": 58,
+          "away": 42,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Savunma",
+          "type": "Kurtarış",
+          "home": 3,
+          "away": 2
+        },
+        {
+          "category": "Pas",
+          "type": "Toplam pas",
+          "home": 482,
+          "away": 355,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "İsabetli pas",
+          "home": 413,
+          "away": 288,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "Pas isabeti",
+          "home": 86,
+          "away": 81,
+          "unit": "%",
+          "higherIsBetter": true
+        }
+      ],
+      "players": [
+        {
+          "name": "Eetu Huuhtanen",
+          "team": "Inter Turku",
+          "providerPlayerId": "173908",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "G",
+          "providerRating": 8,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "saves": 3,
+          "passes": 31,
+          "passAccuracy": 28,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Seth Saarinen",
+          "team": "Inter Turku",
+          "providerPlayerId": "83470",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 51,
+          "passAccuracy": 44,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Luka Kuittinen",
+          "team": "Inter Turku",
+          "providerPlayerId": "263877",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 92,
+          "passAccuracy": 86,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Juuso Hämäläinen",
+          "team": "Inter Turku",
+          "providerPlayerId": "55442",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "D",
+          "providerRating": 7.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 82,
+          "passAccuracy": 75,
+          "tackles": 5,
+          "duelsWon": 8,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jussi Niska",
+          "team": "Inter Turku",
+          "providerPlayerId": "196359",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 40,
+          "passAccuracy": 33,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jasse Tuominen",
+          "team": "Inter Turku",
+          "providerPlayerId": "2318",
+          "source": "api-football",
+          "minutes": 70,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 20,
+          "passAccuracy": 14,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Janne-Pekka Laine",
+          "team": "Inter Turku",
+          "providerPlayerId": "55315",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 59,
+          "passAccuracy": 47,
+          "tackles": 2,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Bismark Ampofo",
+          "team": "Inter Turku",
+          "providerPlayerId": "417205",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 50,
+          "passAccuracy": 44,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Antoin Loic Essomba",
+          "team": "Inter Turku",
+          "providerPlayerId": "379115",
+          "source": "api-football",
+          "minutes": 70,
+          "position": "F",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 14,
+          "passAccuracy": 8,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Alie Conteh",
+          "team": "Inter Turku",
+          "providerPlayerId": "387209",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "F",
+          "providerRating": 7.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 2,
+          "shotsOnTarget": 2,
+          "passes": 14,
+          "passAccuracy": 12,
+          "duelsWon": 8,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Clinton Jephta",
+          "team": "Inter Turku",
+          "providerPlayerId": "464530",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "F",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 3,
+          "passes": 18,
+          "passAccuracy": 14,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Prosper Ahiabu",
+          "team": "Inter Turku",
+          "providerPlayerId": "214279",
+          "source": "api-football",
+          "minutes": 20,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 3,
+          "passAccuracy": 1,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lauri Laine",
+          "team": "Inter Turku",
+          "providerPlayerId": "333683",
+          "source": "api-football",
+          "minutes": 20,
+          "position": "F",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 1,
+          "passAccuracy": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Yeboah Amankwah",
+          "team": "Inter Turku",
+          "providerPlayerId": "144728",
+          "source": "api-football",
+          "minutes": 4,
+          "position": "D",
+          "assists": 0,
+          "shots": 1,
+          "passes": 5,
+          "passAccuracy": 5,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Johannes Yli-Kokko",
+          "team": "Inter Turku",
+          "providerPlayerId": "173537",
+          "source": "api-football",
+          "minutes": 4,
+          "position": "M",
+          "assists": 0,
+          "passes": 2,
+          "passAccuracy": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Eero Vuorjoki",
+          "team": "Inter Turku",
+          "providerPlayerId": "401688",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Albin Granlund",
+          "team": "Inter Turku",
+          "providerPlayerId": "48296",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Axel Sandler",
+          "team": "Inter Turku",
+          "providerPlayerId": "619403",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Julius Tauriainen",
+          "team": "Inter Turku",
+          "providerPlayerId": "64198",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Iiro Järvinen",
+          "team": "Inter Turku",
+          "providerPlayerId": "55314",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Vilho Huovila",
+          "team": "Inter Turku",
+          "providerPlayerId": "370734",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Eeli Kiiskila",
+          "team": "Inter Turku",
+          "providerPlayerId": "549234",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jean Fiacre Kouamé Botué",
+          "team": "Inter Turku",
+          "providerPlayerId": "214283",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Rúnar Alex Rúnarsson",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "2784",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "G",
+          "providerRating": 7.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "saves": 2,
+          "passes": 25,
+          "passAccuracy": 10,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Junnosuke Suzuki",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "351014",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 30,
+          "passAccuracy": 24,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gabriel Pereira",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "159511",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 7.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 51,
+          "passAccuracy": 45,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Felix Beijmo",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "25312",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 47,
+          "passAccuracy": 43,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Marcos López",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "2431",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 2,
+          "shotsOnTarget": 2,
+          "passes": 18,
+          "passAccuracy": 16,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Alex Král",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "1234",
+          "source": "api-football",
+          "minutes": 72,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 35,
+          "passAccuracy": 30,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "William Clem",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "349212",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 45,
+          "passAccuracy": 42,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mohamed Elyounoussi",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "18946",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "M",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 26,
+          "passAccuracy": 20,
+          "tackles": 2,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mads Emil Madsen",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "15934",
+          "source": "api-football",
+          "minutes": 89,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 25,
+          "passAccuracy": 21,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Robert",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "422779",
+          "source": "api-football",
+          "minutes": 81,
+          "position": "M",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 24,
+          "passAccuracy": 14,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Geovanni Vianney",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "633096",
+          "source": "api-football",
+          "minutes": 72,
+          "position": "F",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 11,
+          "passAccuracy": 9,
+          "tackles": 1,
+          "duelsWon": 8,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Thomas Delaney",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "15",
+          "source": "api-football",
+          "minutes": 18,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 14,
+          "passAccuracy": 10,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Youssoufa Moukoko",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "161919",
+          "source": "api-football",
+          "minutes": 18,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 3,
+          "passAccuracy": 3,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Marvin Nasnas",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "567953",
+          "source": "api-football",
+          "minutes": 9,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 1,
+          "passAccuracy": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Viktor Bjarki Dadason",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "426288",
+          "source": "api-football",
+          "minutes": 1,
+          "position": "F",
+          "assists": 0,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Tobias Breum-Harild",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "568382",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gustav Fritz",
+          "team": "FC Copenhagen",
+          "providerPlayerId": null,
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ákos Markgráf",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "443849",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Kenay Myrie",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "504208",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Birger Meling",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "1173",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mustapha Nyassi",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "666429",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gunnar Orri Olsen",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "567955",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Liam West",
+          "team": "FC Copenhagen",
+          "providerPlayerId": "416088",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        }
       ]
     },
     {
@@ -263379,7 +264553,7 @@
       "league": "UEFA Europa Conference League",
       "providerLeagueId": "848",
       "round": null,
-      "venue": "Victoria Stadium",
+      "venue": "Europa Point Stadium",
       "referee": "Kristo Tohver, Estonia",
       "kickoff": "2026-08-20T19:00:00+03:00",
       "time": "19:00",
@@ -263412,8 +264586,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T18:44:04.903Z",
-      "staleAfter": "2026-08-20T18:49:04.903Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -263423,35 +264597,369 @@
       "competitionId": "konferans-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Larne skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Larne tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Larne topa sahip olma oranında önde. Larne isabetli şutlarda önde. Skor üstünlüğü Larne tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "45%-55%",
+            "text": "Larne topa sahip olma oranında önde."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "3-7",
+            "text": "Larne isabetli şutlarda önde."
+          },
+          {
+            "label": "Disiplin dengesi",
+            "value": "1 kırmızı kart",
+            "text": "Lincoln Red Imps FC kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "90+3'",
+            "text": "Son gol 90+3' K. O'Hara tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
+          },
           {
             "label": "Canlı skor",
             "value": "0-2",
             "text": "Larne skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 19,
+        "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "lineups": [
         {
           "team": "Lincoln Red Imps FC",
-          "formation": null,
-          "players": [],
-          "substitutes": [],
-          "startingDetails": [],
-          "substituteDetails": []
+          "formation": "3-5-2",
+          "players": [
+            "Jaylan Hankins",
+            "Bernardo Lopes",
+            "Christian Rutjens",
+            "Nano",
+            "Julliani Eersteling",
+            "Yussef Flalhi Idrissi",
+            "Mandi",
+            "Joe",
+            "Álex Mula",
+            "Facundo Alvarez",
+            "Manuel Toledano"
+          ],
+          "substitutes": [
+            "Alvaro Romero",
+            "Gabri Garcia",
+            "Graeme Torrilla",
+            "Kike Gómez",
+            "Aly Coulibaly",
+            "Mark Hamm",
+            "Nauzet Garcia",
+            "Ethan Britto",
+            "Ethan Jolley",
+            "Nico Pinto",
+            "Lee Casciaro"
+          ],
+          "startingDetails": [
+            {
+              "name": "Jaylan Hankins",
+              "number": 13,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Bernardo Lopes",
+              "number": 6,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Christian Rutjens",
+              "number": 3,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Nano",
+              "number": 21,
+              "position": "M",
+              "grid": "2:1"
+            },
+            {
+              "name": "Julliani Eersteling",
+              "number": 66,
+              "position": "D",
+              "grid": "3:5"
+            },
+            {
+              "name": "Yussef Flalhi Idrissi",
+              "number": 19,
+              "position": "F",
+              "grid": "3:4"
+            },
+            {
+              "name": "Mandi",
+              "number": 8,
+              "position": "M",
+              "grid": "3:3"
+            },
+            {
+              "name": "Joe",
+              "number": 23,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Álex Mula",
+              "number": 10,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Facundo Alvarez",
+              "number": 32,
+              "position": "F",
+              "grid": "4:2"
+            },
+            {
+              "name": "Manuel Toledano",
+              "number": 44,
+              "position": "F",
+              "grid": "4:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Alvaro Romero",
+              "number": 11,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Gabri Garcia",
+              "number": 5,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Graeme Torrilla",
+              "number": 22,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Kike Gómez",
+              "number": 9,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Aly Coulibaly",
+              "number": 17,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Mark Hamm",
+              "number": 27,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Nauzet Garcia",
+              "number": 1,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Ethan Britto",
+              "number": 20,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Ethan Jolley",
+              "number": 2,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Nico Pinto",
+              "number": 4,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Lee Casciaro",
+              "number": 7,
+              "position": "F",
+              "grid": null
+            }
+          ]
         },
         {
           "team": "Larne",
-          "formation": null,
-          "players": [],
-          "substitutes": [],
-          "startingDetails": [],
-          "substituteDetails": []
+          "formation": "4-3-3",
+          "players": [
+            "Rohan Ferguson",
+            "Tomas Cosgrove",
+            "Dan Bent",
+            "Matt Ridley",
+            "Aaron Donnelly",
+            "Ronan Doherty",
+            "Chris Gallagher",
+            "Sean Graham",
+            "Dylan Sloan",
+            "Montel Gibson",
+            "Matthew Lusty"
+          ],
+          "substitutes": [
+            "Kevin O'Hara",
+            "Jordan McEneff",
+            "James Simpson",
+            "Conor McKendry",
+            "Paul O'Neill",
+            "Jacob Carney",
+            "Logan Wallace",
+            "Benji Magee",
+            "Mark Randall",
+            "Joshua Ukek"
+          ],
+          "startingDetails": [
+            {
+              "name": "Rohan Ferguson",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Tomas Cosgrove",
+              "number": 23,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Dan Bent",
+              "number": 26,
+              "position": "M",
+              "grid": "2:3"
+            },
+            {
+              "name": "Matt Ridley",
+              "number": 3,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Aaron Donnelly",
+              "number": 4,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Ronan Doherty",
+              "number": 15,
+              "position": "M",
+              "grid": "3:3"
+            },
+            {
+              "name": "Chris Gallagher",
+              "number": 6,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Sean Graham",
+              "number": 11,
+              "position": "D",
+              "grid": "3:1"
+            },
+            {
+              "name": "Dylan Sloan",
+              "number": 25,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Montel Gibson",
+              "number": 45,
+              "position": "F",
+              "grid": "4:2"
+            },
+            {
+              "name": "Matthew Lusty",
+              "number": 30,
+              "position": "F",
+              "grid": "4:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Kevin O'Hara",
+              "number": 19,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Jordan McEneff",
+              "number": 22,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "James Simpson",
+              "number": 47,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Conor McKendry",
+              "number": 7,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Paul O'Neill",
+              "number": 9,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Jacob Carney",
+              "number": 16,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Logan Wallace",
+              "number": 2,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Benji Magee",
+              "number": 14,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Mark Randall",
+              "number": 8,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Joshua Ukek",
+              "number": 17,
+              "position": "M",
+              "grid": null
+            }
+          ]
         }
       ],
       "events": [
@@ -263516,7 +265024,7 @@
           "comments": ""
         },
         {
-          "time": "59'",
+          "time": "58'",
           "team": {
             "name": "Larne"
           },
@@ -263556,13 +265064,13 @@
           "comments": ""
         },
         {
-          "time": "69'",
+          "time": "68'",
           "team": {
             "name": "Larne"
           },
           "type": "subst",
           "detail": "Substitution 2",
-          "value": "C. Gallagher · Asist: J. McEneff · Substitution 2",
+          "value": "S. Graham · Asist: J. Simpson · Substitution 2",
           "comments": ""
         },
         {
@@ -263572,7 +265080,7 @@
           },
           "type": "subst",
           "detail": "Substitution 3",
-          "value": "S. Graham · Asist: J. Simpson · Substitution 3",
+          "value": "C. Gallagher · Asist: J. McEneff · Substitution 3",
           "comments": ""
         },
         {
@@ -263593,6 +265101,56 @@
           "type": "Card",
           "detail": "Yellow Card",
           "value": "J. McEneff · Yellow Card",
+          "comments": ""
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "Larne"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "D. Sloan · Asist: C. McKendry · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "Larne"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "M. Lusty · Asist: P. O'Neill · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "82'",
+          "team": {
+            "name": "Lincoln Red Imps FC"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "Mandi · Asist: A. Coulibaly · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "84'",
+          "team": {
+            "name": "Larne"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "P. O'Neill · Asist: J. Simpson · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "90+3'",
+          "team": {
+            "name": "Larne"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "K. O'Hara · Asist: P. O'Neill · Normal Goal",
           "comments": ""
         }
       ],
@@ -264400,7 +265958,66 @@
             }
           }
         ]
-      }
+      },
+      "statistics": [
+        {
+          "category": "Hücum",
+          "type": "İsabetli şut",
+          "home": 3,
+          "away": 7,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 2,
+          "away": 2
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 1,
+          "away": 3
+        },
+        {
+          "category": "Disiplin",
+          "type": "Faul",
+          "home": 10,
+          "away": 16
+        },
+        {
+          "category": "Genel",
+          "type": "Korner",
+          "home": 3,
+          "away": 9
+        },
+        {
+          "category": "Genel",
+          "type": "Ofsayt",
+          "home": 0,
+          "away": 3
+        },
+        {
+          "category": "Genel",
+          "type": "Topla oynama",
+          "home": 45,
+          "away": 55,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 2,
+          "away": 4
+        },
+        {
+          "category": "Disiplin",
+          "type": "Kırmızı kart",
+          "home": 1,
+          "away": 0
+        }
+      ]
     },
     {
       "id": "jagiellonia-saburtalo-2026-08-20",
@@ -264441,8 +266058,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -264452,35 +266069,354 @@
       "competitionId": "avrupa-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Jagiellonia skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Jagiellonia tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 90+2' S. Lozano tarafından kaydedildi. Kulübeler oyuna müdahale etti; 9 oyuncu değişikliği kayda geçti. Skor üstünlüğü Jagiellonia tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "90+2'",
+            "text": "Son gol 90+2' S. Lozano tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "9 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 9 oyuncu değişikliği kayda geçti."
+          },
           {
             "label": "Canlı skor",
             "value": "4-0",
             "text": "Jagiellonia skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 21,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "lineups": [
         {
           "team": "Jagiellonia",
-          "formation": null,
-          "players": [],
-          "substitutes": [],
-          "startingDetails": [],
-          "substituteDetails": []
+          "formation": "4-3-3",
+          "players": [
+            "Sławomir Abramowicz",
+            "Norbert Wojtuszek",
+            "Bernardo Vital",
+            "Yuki Kobayashi",
+            "Guilherme Montóia",
+            "Jesús Imaz",
+            "Taras Romanczuk",
+            "Ferslev Anders Klynge",
+            "Jeremy Agbonifo",
+            "Nik Prelec",
+            "Kajetan Szmyt"
+          ],
+          "substitutes": [
+            "Ousmane Sow",
+            "Sergio Lozano",
+            "Rodrigo Conceição",
+            "Youssuf Sylla",
+            "Michał Perchel",
+            "Apostolos Konstantopoulos",
+            "Bartlomiej Krasiewicz",
+            "Cezary Polak",
+            "Dawid Drachal",
+            "Eryk Kozłowski",
+            "Dimitris Rallis",
+            "Zachary Zalewski"
+          ],
+          "startingDetails": [
+            {
+              "name": "Sławomir Abramowicz",
+              "number": 50,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Norbert Wojtuszek",
+              "number": 15,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Bernardo Vital",
+              "number": 5,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Yuki Kobayashi",
+              "number": 4,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Guilherme Montóia",
+              "number": 23,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Jesús Imaz",
+              "number": 11,
+              "position": "M",
+              "grid": "3:3"
+            },
+            {
+              "name": "Taras Romanczuk",
+              "number": 6,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Ferslev Anders Klynge",
+              "number": 19,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Jeremy Agbonifo",
+              "number": 10,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Nik Prelec",
+              "number": 99,
+              "position": "F",
+              "grid": "4:2"
+            },
+            {
+              "name": "Kajetan Szmyt",
+              "number": 7,
+              "position": "M",
+              "grid": "4:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Ousmane Sow",
+              "number": 30,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Sergio Lozano",
+              "number": 21,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Rodrigo Conceição",
+              "number": 27,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Youssuf Sylla",
+              "number": 17,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Michał Perchel",
+              "number": 1,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Apostolos Konstantopoulos",
+              "number": 44,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Bartlomiej Krasiewicz",
+              "number": 61,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Cezary Polak",
+              "number": 2,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Dawid Drachal",
+              "number": 8,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Eryk Kozłowski",
+              "number": 85,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Dimitris Rallis",
+              "number": 9,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Zachary Zalewski",
+              "number": 80,
+              "position": "F",
+              "grid": null
+            }
+          ]
         },
         {
           "team": "FC Iberia 1999",
-          "formation": null,
-          "players": [],
-          "substitutes": [],
-          "startingDetails": [],
-          "substituteDetails": []
+          "formation": "4-3-3",
+          "players": [
+            "Giorgi Makaridze",
+            "Jemali Giorgi Jinjolava",
+            "Vahid Selimović",
+            "Aleksandre Amisulashvili",
+            "Giorgi Kobuladze",
+            "Nikoloz Dadiani",
+            "Abdullahi Ibrahim Alhassan",
+            "Bakar Kardava",
+            "Stephen Ende",
+            "Nika Sikharulashvili",
+            "Zviad Natchkebia"
+          ],
+          "substitutes": [
+            "Giorgi Kutsia",
+            "Amiran Dzagania",
+            "Sebastián Figueredo",
+            "Nikoloz Bochorishvili",
+            "Eldar Kuliiev",
+            "Tornike Megrelishvili",
+            "Saba Avdoevi",
+            "Davit Gogilashvili",
+            "Lado Chikhradze"
+          ],
+          "startingDetails": [
+            {
+              "name": "Giorgi Makaridze",
+              "number": 31,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Jemali Giorgi Jinjolava",
+              "number": 5,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Vahid Selimović",
+              "number": 4,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Aleksandre Amisulashvili",
+              "number": 25,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Giorgi Kobuladze",
+              "number": 40,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Nikoloz Dadiani",
+              "number": 6,
+              "position": "M",
+              "grid": "3:3"
+            },
+            {
+              "name": "Abdullahi Ibrahim Alhassan",
+              "number": 14,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Bakar Kardava",
+              "number": 8,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Stephen Ende",
+              "number": 17,
+              "position": "F",
+              "grid": "4:3"
+            },
+            {
+              "name": "Nika Sikharulashvili",
+              "number": 19,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Zviad Natchkebia",
+              "number": 10,
+              "position": "M",
+              "grid": "4:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Giorgi Kutsia",
+              "number": 27,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Amiran Dzagania",
+              "number": 9,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Sebastián Figueredo",
+              "number": 22,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Nikoloz Bochorishvili",
+              "number": 30,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Eldar Kuliiev",
+              "number": 23,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Tornike Megrelishvili",
+              "number": 1,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Saba Avdoevi",
+              "number": 35,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Davit Gogilashvili",
+              "number": 32,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Lado Chikhradze",
+              "number": 29,
+              "position": "F",
+              "grid": null
+            }
+          ]
         }
       ],
       "events": [
@@ -265409,8 +267345,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -266213,6 +268149,354 @@
           "value": "T. Pettersson · Own Goal",
           "comments": ""
         }
+      ],
+      "lineups": [
+        {
+          "team": "Mjallby AIF",
+          "formation": "3-4-3",
+          "players": [
+            "Robin Wallinder",
+            "Abdullah Iqbal",
+            "Max Nielsen",
+            "Tom Pettersson",
+            "Tony Miettinen",
+            "Jesper Gustavsson",
+            "Viktor Gustafson",
+            "Olle Lindberg",
+            "Jeppe Kjaer",
+            "Áki Samuelsen",
+            "Jacob Bergström"
+          ],
+          "substitutes": [
+            "Ian Hoffmann",
+            "Villiam Granath",
+            "Mads Enggård",
+            "Ludvig Tidstrand",
+            "Melker Ahlstrand",
+            "Alexander Lundin",
+            "Ludvig Svanberg",
+            "Axel Norén",
+            "Martin Agnarsson",
+            "Villum Dalsgaard",
+            "Romeo Leandersson",
+            "Bork Bang-Kittilsen"
+          ],
+          "startingDetails": [
+            {
+              "name": "Robin Wallinder",
+              "number": 13,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Abdullah Iqbal",
+              "number": 5,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Max Nielsen",
+              "number": 25,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Tom Pettersson",
+              "number": 24,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Tony Miettinen",
+              "number": 33,
+              "position": "D",
+              "grid": "3:4"
+            },
+            {
+              "name": "Jesper Gustavsson",
+              "number": 22,
+              "position": "M",
+              "grid": "3:3"
+            },
+            {
+              "name": "Viktor Gustafson",
+              "number": 7,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Olle Lindberg",
+              "number": 29,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Jeppe Kjaer",
+              "number": 10,
+              "position": "F",
+              "grid": "4:3"
+            },
+            {
+              "name": "Áki Samuelsen",
+              "number": 23,
+              "position": "F",
+              "grid": "4:2"
+            },
+            {
+              "name": "Jacob Bergström",
+              "number": 18,
+              "position": "F",
+              "grid": "4:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Ian Hoffmann",
+              "number": 26,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Villiam Granath",
+              "number": 14,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Mads Enggård",
+              "number": 6,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Ludvig Tidstrand",
+              "number": 27,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Melker Ahlstrand",
+              "number": 30,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Alexander Lundin",
+              "number": 35,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Ludvig Svanberg",
+              "number": 2,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Axel Norén",
+              "number": 4,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Martin Agnarsson",
+              "number": 3,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Villum Dalsgaard",
+              "number": 21,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Romeo Leandersson",
+              "number": 39,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Bork Bang-Kittilsen",
+              "number": 15,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        },
+        {
+          "team": "Red Bull Salzburg",
+          "formation": "4-2-3-1",
+          "players": [
+            "Christian Zawieschitzky",
+            "Nikolas Veratschnig",
+            "Kévin Boma",
+            "Valentin Zabransky",
+            "Dominik Schmid",
+            "Bartosz Mazurek",
+            "Abubakr Barry",
+            "Damir Redzic",
+            "Yorbe Vertessen",
+            "Edmund Baidoo",
+            "Haris Tabaković"
+          ],
+          "substitutes": [
+            "Maurits Kjaergaard",
+            "Karim Konaté",
+            "Sota Kitano",
+            "Aboubacar Camara",
+            "Umut Tohumcu",
+            "Nikola Sarcevic",
+            "Christian Früchtl",
+            "John Mellberg",
+            "Tim Drexler",
+            "Hendry Blank",
+            "Leandro Morgalla",
+            "Filip Matijašević"
+          ],
+          "startingDetails": [
+            {
+              "name": "Christian Zawieschitzky",
+              "number": 52,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Nikolas Veratschnig",
+              "number": 18,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Kévin Boma",
+              "number": 44,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Valentin Zabransky",
+              "number": 47,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Dominik Schmid",
+              "number": 31,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Bartosz Mazurek",
+              "number": 15,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Abubakr Barry",
+              "number": 32,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Damir Redzic",
+              "number": 23,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Yorbe Vertessen",
+              "number": 11,
+              "position": "F",
+              "grid": "4:2"
+            },
+            {
+              "name": "Edmund Baidoo",
+              "number": 20,
+              "position": "F",
+              "grid": "4:1"
+            },
+            {
+              "name": "Haris Tabaković",
+              "number": 9,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Maurits Kjaergaard",
+              "number": 14,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Karim Konaté",
+              "number": 19,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Sota Kitano",
+              "number": 8,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Aboubacar Camara",
+              "number": 33,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Umut Tohumcu",
+              "number": 7,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Nikola Sarcevic",
+              "number": 41,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Christian Früchtl",
+              "number": 1,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "John Mellberg",
+              "number": 4,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Tim Drexler",
+              "number": 21,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Hendry Blank",
+              "number": 34,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Leandro Morgalla",
+              "number": 39,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Filip Matijašević",
+              "number": 28,
+              "position": "M",
+              "grid": null
+            }
+          ]
+        }
       ]
     },
     {
@@ -266290,8 +268574,8 @@
       "goalPotential": null,
       "risk": null,
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "needsReview": false,
       "resource": "matches",
       "analysis": {
@@ -267001,19 +269285,342 @@
       "lineups": [
         {
           "team": "Beşiktaş",
-          "formation": null,
-          "players": [],
-          "substitutes": [],
-          "startingDetails": [],
-          "substituteDetails": []
+          "formation": "4-1-4-1",
+          "players": [
+            "Alexander Nübel",
+            "Emirhan Topçu",
+            "Amir Murillo",
+            "Tiago Djaló",
+            "Rıdvan Yılmaz",
+            "Salih Özcan",
+            "Václav Černý",
+            "Junior Olaitan",
+            "Orkun Kökçü",
+            "Leandro Trossard",
+            "Hyeon-gyu Oh"
+          ],
+          "substitutes": [
+            "İlhan Fakılı",
+            "Amir Hadžiahmetović",
+            "Dušan Vlahović",
+            "Doğan Alemdar",
+            "Kassoum Ouattara",
+            "Emmanuel Agbadou",
+            "Taylan Bulut",
+            "Yasin Özcan",
+            "Wilfred Ndidi",
+            "Kartal Kayra Yılmaz",
+            "Milot Rashica",
+            "Semih Kılıçsoy"
+          ],
+          "startingDetails": [
+            {
+              "name": "Alexander Nübel",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Emirhan Topçu",
+              "number": 53,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Amir Murillo",
+              "number": 62,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Tiago Djaló",
+              "number": 35,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Rıdvan Yılmaz",
+              "number": 33,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Salih Özcan",
+              "number": 6,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Václav Černý",
+              "number": 18,
+              "position": "M",
+              "grid": "4:4"
+            },
+            {
+              "name": "Junior Olaitan",
+              "number": 15,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Orkun Kökçü",
+              "number": 10,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Leandro Trossard",
+              "number": 19,
+              "position": "F",
+              "grid": "4:1"
+            },
+            {
+              "name": "Hyeon-gyu Oh",
+              "number": 9,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "İlhan Fakılı",
+              "number": 29,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Amir Hadžiahmetović",
+              "number": 5,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Dušan Vlahović",
+              "number": 24,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Doğan Alemdar",
+              "number": 80,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Kassoum Ouattara",
+              "number": 11,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Emmanuel Agbadou",
+              "number": 12,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Taylan Bulut",
+              "number": 22,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Yasin Özcan",
+              "number": 58,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Wilfred Ndidi",
+              "number": 4,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Kartal Kayra Yılmaz",
+              "number": 8,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Milot Rashica",
+              "number": 7,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Semih Kılıçsoy",
+              "number": 90,
+              "position": "F",
+              "grid": null
+            }
+          ]
         },
         {
           "team": "Kauno Žalgiris",
-          "formation": null,
-          "players": [],
-          "substitutes": [],
-          "startingDetails": [],
-          "substituteDetails": []
+          "formation": "4-2-3-1",
+          "players": [
+            "Tomas Švedkauskas",
+            "Joris Moutachy",
+            "Anton Tolordava",
+            "Rokas Lekiatas",
+            "Marko Konatar",
+            "Vykintas Slivka",
+            "Anthony Kalik",
+            "Amine Benchaib",
+            "Franco Baldassarra",
+            "Leon Kreković",
+            "Gabriel Debeljuh"
+          ],
+          "substitutes": [
+            "Lirim Kastrati",
+            "Motiejus Burba",
+            "Fabien Ourega",
+            "Renan Oliveira",
+            "Deividas Mikelionis",
+            "Aldayr Hernández",
+            "Nosa Iyobosa Edokpolor",
+            "Yukiyoshi Karashima",
+            "Léo Ribeiro",
+            "Gratas Sirgėdas",
+            "Ivan Fiolić"
+          ],
+          "startingDetails": [
+            {
+              "name": "Tomas Švedkauskas",
+              "number": 55,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Joris Moutachy",
+              "number": 45,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Anton Tolordava",
+              "number": 3,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Rokas Lekiatas",
+              "number": 77,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Marko Konatar",
+              "number": 33,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Vykintas Slivka",
+              "number": 14,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Anthony Kalik",
+              "number": 20,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Amine Benchaib",
+              "number": 7,
+              "position": "F",
+              "grid": "4:3"
+            },
+            {
+              "name": "Franco Baldassarra",
+              "number": 32,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Leon Kreković",
+              "number": 9,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "Gabriel Debeljuh",
+              "number": 27,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Lirim Kastrati",
+              "number": 62,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Motiejus Burba",
+              "number": 24,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Fabien Ourega",
+              "number": 70,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Renan Oliveira",
+              "number": 19,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Deividas Mikelionis",
+              "number": 22,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Aldayr Hernández",
+              "number": 23,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Nosa Iyobosa Edokpolor",
+              "number": 37,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Yukiyoshi Karashima",
+              "number": 8,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Léo Ribeiro",
+              "number": 15,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Gratas Sirgėdas",
+              "number": 10,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Ivan Fiolić",
+              "number": 17,
+              "position": "M",
+              "grid": null
+            }
+          ]
         }
       ],
       "events": [
@@ -267291,8 +269898,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -267302,9 +269909,24 @@
       "competitionId": "konferans-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Son gol 49' S. Johannesen tarafından kaydedildi. Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti. Skor üstünlüğü FC Midtjylland tarafında.",
-        "confidence": "Orta",
+        "summary": "FC Midtjylland topa sahip olma oranında önde. FC Midtjylland daha fazla şut üretti. Skor üstünlüğü FC Midtjylland tarafında.",
+        "confidence": "Yüksek",
         "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "60%-40%",
+            "text": "FC Midtjylland topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "18-9",
+            "text": "FC Midtjylland daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "10-1",
+            "text": "FC Midtjylland isabetli şutlarda önde."
+          },
           {
             "label": "Gol akışı",
             "value": "49'",
@@ -267322,7 +269944,7 @@
           }
         ],
         "eventCount": 16,
-        "dataPoints": 3,
+        "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -268168,6 +270790,784 @@
           "value": "D. Osorio · Asist: A. Gabriel · Substitution 5",
           "comments": ""
         }
+      ],
+      "statistics": [
+        {
+          "category": "Hücum",
+          "type": "İsabetli şut",
+          "home": 10,
+          "away": 1,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 5,
+          "away": 3
+        },
+        {
+          "category": "Hücum",
+          "type": "Toplam şut",
+          "home": 18,
+          "away": 9,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 3,
+          "away": 5
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası içinden şut",
+          "home": 15,
+          "away": 6,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası dışından şut",
+          "home": 3,
+          "away": 3
+        },
+        {
+          "category": "Disiplin",
+          "type": "Faul",
+          "home": 17,
+          "away": 19
+        },
+        {
+          "category": "Genel",
+          "type": "Korner",
+          "home": 5,
+          "away": 4
+        },
+        {
+          "category": "Genel",
+          "type": "Ofsayt",
+          "home": 2,
+          "away": 2
+        },
+        {
+          "category": "Genel",
+          "type": "Topla oynama",
+          "home": 60,
+          "away": 40,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 1,
+          "away": 3
+        },
+        {
+          "category": "Savunma",
+          "type": "Kurtarış",
+          "home": 1,
+          "away": 8
+        },
+        {
+          "category": "Pas",
+          "type": "Toplam pas",
+          "home": 457,
+          "away": 298,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "İsabetli pas",
+          "home": 371,
+          "away": 207,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "Pas isabeti",
+          "home": 81,
+          "away": 69,
+          "unit": "%",
+          "higherIsBetter": true
+        }
+      ],
+      "players": [
+        {
+          "name": "Elías Ólafsson",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "89754",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "G",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "saves": 1,
+          "passes": 36,
+          "passAccuracy": 24,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Philip Billing",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "2734",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 8.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 74,
+          "passAccuracy": 62,
+          "tackles": 3,
+          "duelsWon": 11,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Magnus Jensen",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "81132",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 8.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 2,
+          "shotsOnTarget": 2,
+          "passes": 61,
+          "passAccuracy": 50,
+          "tackles": 2,
+          "duelsWon": 13,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mads Bech Sørensen",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "19345",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 57,
+          "passAccuracy": 52,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Darío Osorio",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "307117",
+          "source": "api-football",
+          "minutes": 89,
+          "position": "M",
+          "providerRating": 7.6,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 30,
+          "passAccuracy": 24,
+          "tackles": 1,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Rasmus Kristensen",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "533",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "M",
+          "providerRating": 7.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 52,
+          "passAccuracy": 46,
+          "tackles": 4,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Pedro Bravo",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "311432",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "M",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 23,
+          "passAccuracy": 18,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Denil Castillo",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "338045",
+          "source": "api-football",
+          "minutes": 59,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 2,
+          "passes": 21,
+          "passAccuracy": 17,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Valdemar Byskov",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "371909",
+          "source": "api-football",
+          "minutes": 45,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 26,
+          "passAccuracy": 20,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Franculino Djú",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "340625",
+          "source": "api-football",
+          "minutes": 45,
+          "position": "F",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "passes": 12,
+          "passAccuracy": 10,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gue-sung Cho",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "34211",
+          "source": "api-football",
+          "minutes": 74,
+          "position": "F",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "assists": 0,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 23,
+          "passAccuracy": 15,
+          "tackles": 2,
+          "duelsWon": 12,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Sofus Johannesen",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "443703",
+          "source": "api-football",
+          "minutes": 45,
+          "position": "M",
+          "providerRating": 7.9,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "assists": 0,
+          "shots": 2,
+          "shotsOnTarget": 2,
+          "passes": 14,
+          "passAccuracy": 11,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Stanley Iheanacho",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "438628",
+          "source": "api-football",
+          "minutes": 45,
+          "position": "F",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 2,
+          "shotsOnTarget": 1,
+          "passes": 8,
+          "passAccuracy": 6,
+          "tackles": 1,
+          "duelsWon": 7,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Kjell Wätjen",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "397740",
+          "source": "api-football",
+          "minutes": 31,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 14,
+          "passAccuracy": 13,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Friday Etim",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "351146",
+          "source": "api-football",
+          "minutes": 16,
+          "position": "F",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 2,
+          "shotsOnTarget": 2,
+          "passes": 2,
+          "passAccuracy": 1,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Adam Gabriel",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "287565",
+          "source": "api-football",
+          "minutes": 1,
+          "position": "D",
+          "assists": 0,
+          "passes": 4,
+          "passAccuracy": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nordin Bakker",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "37729",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Martin Erlić",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "30827",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Beni Junior",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "435266",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Abdou Aziz Ndiaye",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "634852",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dani Silva",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "42007",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Edward Chilufya",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "48056",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Julius Emefile",
+          "team": "FC Midtjylland",
+          "providerPlayerId": "585845",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Aleksa Todorović",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "263846",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "G",
+          "providerRating": 8.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "saves": 8,
+          "passes": 30,
+          "passAccuracy": 9,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ante Oreč",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "271067",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 36,
+          "passAccuracy": 27,
+          "tackles": 6,
+          "duelsWon": 11,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ante Majstorović",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "14389",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 35,
+          "passAccuracy": 24,
+          "tackles": 4,
+          "duelsWon": 9,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Alfonso Barco",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "39838",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 35,
+          "passAccuracy": 26,
+          "duelsWon": 3,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Mladen Devetak",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "45932",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "D",
+          "providerRating": 6,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 21,
+          "passAccuracy": 13,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ivan Ćubelić",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "270203",
+          "source": "api-football",
+          "minutes": 74,
+          "position": "M",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 28,
+          "passAccuracy": 19,
+          "tackles": 1,
+          "duelsWon": 6,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Branko Pavić",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "558088",
+          "source": "api-football",
+          "minutes": 90,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 33,
+          "passAccuracy": 28,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Toni Fruk",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "284869",
+          "source": "api-football",
+          "minutes": 87,
+          "position": "M",
+          "providerRating": 5.9,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 14,
+          "passAccuracy": 7,
+          "duelsWon": 1,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Tiago Dantas",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "41582",
+          "source": "api-football",
+          "minutes": 67,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 14,
+          "passAccuracy": 12,
+          "tackles": 4,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Niko Janković",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "14705",
+          "source": "api-football",
+          "minutes": 74,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 2,
+          "shotsOnTarget": 1,
+          "passes": 15,
+          "passAccuracy": 14,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Daniel Adu-Adjei",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "382160",
+          "source": "api-football",
+          "minutes": 87,
+          "position": "F",
+          "providerRating": 5.5,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 12,
+          "passAccuracy": 10,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jakov Puljić",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "14289",
+          "source": "api-football",
+          "minutes": 23,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 5,
+          "passAccuracy": 3,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Yusuf Kabadayi",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "322508",
+          "source": "api-football",
+          "minutes": 16,
+          "position": "F",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 5,
+          "passAccuracy": 4,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Amer Gojak",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "1320",
+          "source": "api-football",
+          "minutes": 16,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 11,
+          "passAccuracy": 9,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Justas Lasickas",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "40477",
+          "source": "api-football",
+          "minutes": 9,
+          "position": "D",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "shots": 1,
+          "passes": 3,
+          "passAccuracy": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ante Matej Jurić",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "337630",
+          "source": "api-football",
+          "minutes": 9,
+          "position": "F",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 0,
+          "passes": 1,
+          "passAccuracy": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Vito Kovač",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "501856",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Igor Vekić",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "109939",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Moreno Živković",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "295540",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Anel Husić",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "314849",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Noel Bodetić",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "362494",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gabriel Rukavina",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "329285",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Samuele Vignato",
+          "team": "HNK Rijeka",
+          "providerPlayerId": "312985",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        }
       ]
     },
     {
@@ -268356,8 +271756,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -268367,9 +271767,19 @@
       "competitionId": "avrupa-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Trabzonspor kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 17' K. Zachariassen tarafından kaydedildi. Skor üstünlüğü Ferencvarosi TC tarafında.",
+        "summary": "Trabzonspor topa sahip olma oranında önde. Ferencvarosi TC isabetli şutlarda önde. Skor üstünlüğü Ferencvarosi TC tarafında.",
         "confidence": "Orta",
         "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "66%-34%",
+            "text": "Trabzonspor topa sahip olma oranında önde."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "3-4",
+            "text": "Ferencvarosi TC isabetli şutlarda önde."
+          },
           {
             "label": "Disiplin dengesi",
             "value": "1 kırmızı kart",
@@ -268392,7 +271802,7 @@
           }
         ],
         "eventCount": 16,
-        "dataPoints": 4,
+        "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -269372,32 +272782,32 @@
           "category": "Hücum",
           "type": "İsabetli şut",
           "home": 3,
-          "away": 2,
+          "away": 4,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 14,
+          "home": 15,
           "away": 3
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 3,
+          "home": 6,
           "away": 4
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 2,
-          "away": 21
+          "home": 3,
+          "away": 24
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 6,
-          "away": 4
+          "home": 7,
+          "away": 5
         },
         {
           "category": "Genel",
@@ -269408,8 +272818,8 @@
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 64,
-          "away": 36,
+          "home": 66,
+          "away": 34,
           "unit": "%",
           "higherIsBetter": true
         },
@@ -269417,7 +272827,354 @@
           "category": "Disiplin",
           "type": "Sarı kart",
           "home": 0,
-          "away": 3
+          "away": 5
+        },
+        {
+          "category": "Disiplin",
+          "type": "Kırmızı kart",
+          "home": 1,
+          "away": 0
+        }
+      ],
+      "lineups": [
+        {
+          "team": "Trabzonspor",
+          "formation": "4-2-3-1",
+          "players": [
+            "André Onana",
+            "Wagner Pina",
+            "Chibuike Nwaiwu",
+            "Cenk Özkaçar",
+            "Sidny Lopes Cabral",
+            "Benjamin Bouchouari",
+            "Melih Kabasakal",
+            "Mohamed Salah",
+            "Umut Nayir",
+            "Noah Saviolo",
+            "Paul Onuachu"
+          ],
+          "substitutes": [
+            "Ruslan Malinovskyi",
+            "Aral Şimşir",
+            "Ernest Muçi",
+            "Mustafa Eskihellaç",
+            "Ahmet Doğan Yıldırım",
+            "Onuralp Çevikkan",
+            "Samet Akaydın",
+            "Stefan Savić",
+            "Ozan Tufan",
+            "Metehan Mimaroğlu",
+            "René Mitongo"
+          ],
+          "startingDetails": [
+            {
+              "name": "André Onana",
+              "number": 24,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Wagner Pina",
+              "number": 20,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Chibuike Nwaiwu",
+              "number": 27,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Cenk Özkaçar",
+              "number": 39,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Sidny Lopes Cabral",
+              "number": 55,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Benjamin Bouchouari",
+              "number": 8,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Melih Kabasakal",
+              "number": 57,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Mohamed Salah",
+              "number": 10,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Umut Nayir",
+              "number": 18,
+              "position": "F",
+              "grid": "4:2"
+            },
+            {
+              "name": "Noah Saviolo",
+              "number": 70,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "Paul Onuachu",
+              "number": 30,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Ruslan Malinovskyi",
+              "number": 17,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Aral Şimşir",
+              "number": 58,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Ernest Muçi",
+              "number": 7,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Mustafa Eskihellaç",
+              "number": 19,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Ahmet Doğan Yıldırım",
+              "number": 88,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Onuralp Çevikkan",
+              "number": 25,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Samet Akaydın",
+              "number": 4,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Stefan Savić",
+              "number": 15,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Ozan Tufan",
+              "number": 11,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Metehan Mimaroğlu",
+              "number": 77,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "René Mitongo",
+              "number": 49,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        },
+        {
+          "team": "Ferencvarosi TC",
+          "formation": "4-4-2",
+          "players": [
+            "Dénes Dibusz",
+            "Olivér Nagy",
+            "Mariano Gómez",
+            "Toon Raemaekers",
+            "Cadu",
+            "Kristoffer Zachariassen",
+            "Philippe Rommens",
+            "Marius Corbu",
+            "Callum O'Dowda",
+            "Yusuf Bamidele",
+            "Lenny Joseph"
+          ],
+          "substitutes": [
+            "Ádám Nagy",
+            "Gabi Kanichowsky",
+            "Attila Osváth",
+            "Krisztián Lisztes",
+            "Nathan Zohoré",
+            "Ádám Varga",
+            "Csongor Lakatos",
+            "Jonathan Levi",
+            "Daniel Arzani",
+            "Aleksandar Ćirković",
+            "Kenan Kodro",
+            "Zétény Varga"
+          ],
+          "startingDetails": [
+            {
+              "name": "Dénes Dibusz",
+              "number": 90,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Olivér Nagy",
+              "number": 54,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Mariano Gómez",
+              "number": 4,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Toon Raemaekers",
+              "number": 28,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Cadu",
+              "number": 20,
+              "position": "M",
+              "grid": "2:1"
+            },
+            {
+              "name": "Kristoffer Zachariassen",
+              "number": 16,
+              "position": "M",
+              "grid": "3:4"
+            },
+            {
+              "name": "Philippe Rommens",
+              "number": 88,
+              "position": "M",
+              "grid": "3:3"
+            },
+            {
+              "name": "Marius Corbu",
+              "number": 17,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Callum O'Dowda",
+              "number": 47,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Yusuf Bamidele",
+              "number": 11,
+              "position": "F",
+              "grid": "4:2"
+            },
+            {
+              "name": "Lenny Joseph",
+              "number": 75,
+              "position": "F",
+              "grid": "4:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Ádám Nagy",
+              "number": 6,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Gabi Kanichowsky",
+              "number": 36,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Attila Osváth",
+              "number": 14,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Krisztián Lisztes",
+              "number": 76,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Nathan Zohoré",
+              "number": 5,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Ádám Varga",
+              "number": 1,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Csongor Lakatos",
+              "number": 71,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Jonathan Levi",
+              "number": 10,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Daniel Arzani",
+              "number": 15,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Aleksandar Ćirković",
+              "number": 32,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Kenan Kodro",
+              "number": 24,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Zétény Varga",
+              "number": 68,
+              "position": "F",
+              "grid": null
+            }
+          ]
         }
       ]
     },
@@ -269533,11 +273290,11 @@
       "awayTeam": "Riga",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/701.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/10124.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 80,
-      "elapsed": 80,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
         "away": 0,
@@ -269558,8 +273315,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -269575,20 +273332,20 @@
       "providerLeagueId": "848",
       "round": null,
       "venue": "Toumba Stadium",
-      "referee": "Antonio Nobre, Portugal",
+      "referee": "Daniel Siebert, Germany",
       "kickoff": "2026-08-20T20:45:00+03:00",
       "time": "20:45",
       "homeTeam": "PAOK",
       "awayTeam": "Brann",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/619.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/319.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 65,
-      "elapsed": 65,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
@@ -269607,8 +273364,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -269680,13 +273437,13 @@
       "awayTeam": "Plzen",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/598.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/567.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 46,
-      "elapsed": 46,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
+        "home": 3,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -269705,8 +273462,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -269729,14 +273486,14 @@
       "awayTeam": "Inter Club d'Escaldes",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/14281.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3342.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 52,
-      "elapsed": 52,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 2,
-        "away": 1,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -269754,8 +273511,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -269778,14 +273535,14 @@
       "awayTeam": "Monaco",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/340.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/91.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 49,
-      "elapsed": 49,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
-        "away": 1,
+        "home": 2,
+        "away": 3,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -269803,8 +273560,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -269827,14 +273584,14 @@
       "awayTeam": "Qarabag",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/415.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/556.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 50,
-      "elapsed": 50,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
-        "away": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -269852,8 +273609,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -269876,14 +273633,14 @@
       "awayTeam": "Borac Banja Luka",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/278.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3364.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
-        "away": 2,
+        "home": 1,
+        "away": 3,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -269901,8 +273658,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -269917,7 +273674,7 @@
       "league": "UEFA Europa League",
       "providerLeagueId": "3",
       "round": null,
-      "venue": "Theodoros Vardinogiannis Stadium",
+      "venue": "Pagritio",
       "referee": "Srdan Jovanovic, Serbia",
       "kickoff": "2026-08-20T21:00:00+03:00",
       "time": "21:00",
@@ -269925,13 +273682,13 @@
       "awayTeam": "CSKA Sofia",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/1124.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/853.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 49,
-      "elapsed": 49,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
+        "home": 3,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -269950,8 +273707,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -269974,13 +273731,13 @@
       "awayTeam": "Omonia Nicosia",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/735.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3402.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 47,
-      "elapsed": 47,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -269999,8 +273756,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -270023,14 +273780,14 @@
       "awayTeam": "Ajax",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/630.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/194.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
-        "away": 0,
+        "home": 2,
+        "away": 4,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -270048,8 +273805,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -270072,11 +273829,11 @@
       "awayTeam": "Hapoel Tel Aviv",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/499.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/4501.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 38,
-      "elapsed": 38,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
         "away": 0,
@@ -270097,8 +273854,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -270121,11 +273878,11 @@
       "awayTeam": "Hibernian",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/631.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/249.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 38,
-      "elapsed": 38,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
         "away": 0,
@@ -270146,8 +273903,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -270170,14 +273927,14 @@
       "awayTeam": "Maccabi Tel Aviv",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/606.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/604.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 38,
-      "elapsed": 38,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
-        "away": 0,
+        "home": 2,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -270195,8 +273952,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -270219,14 +273976,14 @@
       "awayTeam": "SC Freiburg",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/256.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/160.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 38,
-      "elapsed": 38,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 1,
-        "away": 1,
+        "away": 3,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -270244,8 +274001,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -270268,14 +274025,14 @@
       "awayTeam": "Hradec Králové",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/617.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3723.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 38,
-      "elapsed": 38,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 2,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -270293,8 +274050,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -270310,7 +274067,7 @@
       "providerLeagueId": "848",
       "round": null,
       "venue": "Tynecastle Park",
-      "referee": "M. Lukjancukas",
+      "referee": "Manfredas Lukjancukas, Lithuania",
       "kickoff": "2026-08-20T21:45:00+03:00",
       "time": "21:45",
       "homeTeam": "Heart Of Midlothian",
@@ -270318,13 +274075,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/254.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/781.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 22,
-      "elapsed": 22,
+      "providerStatus": "2H",
+      "minute": 89,
+      "elapsed": 89,
       "live": true,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 2,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -270342,8 +274099,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -270358,8 +274115,8 @@
       "league": "UEFA Europa Conference League",
       "providerLeagueId": "848",
       "round": null,
-      "venue": "Ibrox Stadium",
-      "referee": "M. Barbu",
+      "venue": "Ibrox",
+      "referee": "Marian Barbu, Romania",
       "kickoff": "2026-08-20T21:45:00+03:00",
       "time": "21:45",
       "homeTeam": "Rangers",
@@ -270367,352 +274124,9 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/257.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1122.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 24,
-      "elapsed": 24,
-      "live": true,
-      "score": {
-        "home": 0,
-        "away": 0,
-        "halftimeHome": null,
-        "halftimeAway": null
-      },
-      "homeForm": null,
-      "awayForm": null,
-      "homeMomentum": null,
-      "awayMomentum": null,
-      "momentum": {
-        "side": "neutral",
-        "value": null
-      },
-      "aiPrediction": null,
-      "goalExpectation": null,
-      "goalPotential": null,
-      "risk": null,
-      "source": "api-football",
-      "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
-      "dataStatus": "provider",
-      "needsReview": false,
-      "resource": "matches",
-      "providerIds": {
-        "apiFootball": "1623403"
-      },
-      "competitionId": "konferans-ligi"
-    },
-    {
-      "id": "rayo-vallecano-alaves-2026-08-20",
-      "providerId": "1570351",
-      "league": "La Liga",
-      "providerLeagueId": "140",
-      "round": 2,
-      "venue": "Estadio Municipal de Butarque",
-      "referee": "J. Munuera",
-      "kickoff": "2026-08-20T22:00:00+03:00",
-      "time": "22:00",
-      "homeTeam": "Rayo Vallecano",
-      "awayTeam": "Alaves",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/728.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/542.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 6,
-      "elapsed": 6,
-      "live": true,
-      "score": {
-        "home": 0,
-        "away": 0,
-        "halftimeHome": null,
-        "halftimeAway": null
-      },
-      "homeForm": null,
-      "awayForm": null,
-      "homeMomentum": null,
-      "awayMomentum": null,
-      "momentum": {
-        "side": "neutral",
-        "value": null
-      },
-      "aiPrediction": null,
-      "goalExpectation": null,
-      "goalPotential": null,
-      "risk": null,
-      "source": "api-football",
-      "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
-      "dataStatus": "provider",
-      "needsReview": false,
-      "resource": "matches",
-      "providerIds": {
-        "apiFootball": "1570351"
-      },
-      "competitionId": "la-liga"
-    },
-    {
-      "id": "sc-braga-austria-vienna-2026-08-20",
-      "providerId": "1623387",
-      "league": "UEFA Europa Conference League",
-      "providerLeagueId": "848",
-      "round": null,
-      "venue": null,
-      "referee": "I. Barbara",
-      "kickoff": "2026-08-20T22:00:00+03:00",
-      "time": "22:00",
-      "homeTeam": "SC Braga",
-      "awayTeam": "Austria Vienna",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/217.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/601.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 8,
-      "elapsed": 8,
-      "live": true,
-      "score": {
-        "home": 0,
-        "away": 0,
-        "halftimeHome": null,
-        "halftimeAway": null
-      },
-      "homeForm": null,
-      "awayForm": null,
-      "homeMomentum": null,
-      "awayMomentum": null,
-      "momentum": {
-        "side": "neutral",
-        "value": null
-      },
-      "aiPrediction": null,
-      "goalExpectation": null,
-      "goalPotential": null,
-      "risk": null,
-      "source": "api-football",
-      "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
-      "dataStatus": "provider",
-      "needsReview": false,
-      "resource": "matches",
-      "providerIds": {
-        "apiFootball": "1623387"
-      },
-      "competitionId": "konferans-ligi"
-    },
-    {
-      "id": "dinamo-tirana-pafos-2026-08-20",
-      "providerId": "1623388",
-      "league": "UEFA Europa Conference League",
-      "providerLeagueId": "848",
-      "round": null,
-      "venue": "Elbasan Arena",
-      "referee": "L. Visser",
-      "kickoff": "2026-08-20T22:00:00+03:00",
-      "time": "22:00",
-      "homeTeam": "Dinamo Tirana",
-      "awayTeam": "Pafos",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/3326.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/3403.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 6,
-      "elapsed": 6,
-      "live": true,
-      "score": {
-        "home": 0,
-        "away": 0,
-        "halftimeHome": null,
-        "halftimeAway": null
-      },
-      "homeForm": null,
-      "awayForm": null,
-      "homeMomentum": null,
-      "awayMomentum": null,
-      "momentum": {
-        "side": "neutral",
-        "value": null
-      },
-      "aiPrediction": null,
-      "goalExpectation": null,
-      "goalPotential": null,
-      "risk": null,
-      "source": "api-football",
-      "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
-      "dataStatus": "provider",
-      "needsReview": false,
-      "resource": "matches",
-      "providerIds": {
-        "apiFootball": "1623388"
-      },
-      "competitionId": "konferans-ligi"
-    },
-    {
-      "id": "getafe-fk-partizan-2026-08-20",
-      "providerId": "1623391",
-      "league": "UEFA Europa Conference League",
-      "providerLeagueId": "848",
-      "round": null,
-      "venue": "Coliseum",
-      "referee": "A. Treimanis",
-      "kickoff": "2026-08-20T22:00:00+03:00",
-      "time": "22:00",
-      "homeTeam": "Getafe",
-      "awayTeam": "FK Partizan",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/546.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/573.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 8,
-      "elapsed": 8,
-      "live": true,
-      "score": {
-        "home": 0,
-        "away": 0,
-        "halftimeHome": null,
-        "halftimeAway": null
-      },
-      "homeForm": null,
-      "awayForm": null,
-      "homeMomentum": null,
-      "awayMomentum": null,
-      "momentum": {
-        "side": "neutral",
-        "value": null
-      },
-      "aiPrediction": null,
-      "goalExpectation": null,
-      "goalPotential": null,
-      "risk": null,
-      "source": "api-football",
-      "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
-      "dataStatus": "provider",
-      "needsReview": false,
-      "resource": "matches",
-      "providerIds": {
-        "apiFootball": "1623391"
-      },
-      "competitionId": "konferans-ligi"
-    },
-    {
-      "id": "hnk-hajduk-split-rakow-czestochowa-2026-08-20",
-      "providerId": "1623393",
-      "league": "UEFA Europa Conference League",
-      "providerLeagueId": "848",
-      "round": null,
-      "venue": "Stadion Poljud",
-      "referee": "M. Ocenas",
-      "kickoff": "2026-08-20T22:00:00+03:00",
-      "time": "22:00",
-      "homeTeam": "HNK Hajduk Split",
-      "awayTeam": "Raków Częstochowa",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/608.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/3491.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 8,
-      "elapsed": 8,
-      "live": true,
-      "score": {
-        "home": 0,
-        "away": 0,
-        "halftimeHome": null,
-        "halftimeAway": null
-      },
-      "homeForm": null,
-      "awayForm": null,
-      "homeMomentum": null,
-      "awayMomentum": null,
-      "momentum": {
-        "side": "neutral",
-        "value": null
-      },
-      "aiPrediction": null,
-      "goalExpectation": null,
-      "goalPotential": null,
-      "risk": null,
-      "source": "api-football",
-      "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
-      "dataStatus": "provider",
-      "needsReview": false,
-      "resource": "matches",
-      "providerIds": {
-        "apiFootball": "1623393"
-      },
-      "competitionId": "konferans-ligi"
-    },
-    {
-      "id": "shamrock-rovers-kups-2026-08-20",
-      "providerId": "1623404",
-      "league": "UEFA Europa Conference League",
-      "providerLeagueId": "848",
-      "round": null,
-      "venue": "Tallaght Stadium",
-      "referee": "M. Krogh",
-      "kickoff": "2026-08-20T22:00:00+03:00",
-      "time": "22:00",
-      "homeTeam": "Shamrock Rovers",
-      "awayTeam": "KuPS",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/652.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/1165.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 8,
-      "elapsed": 8,
-      "live": true,
-      "score": {
-        "home": 0,
-        "away": 0,
-        "halftimeHome": null,
-        "halftimeAway": null
-      },
-      "homeForm": null,
-      "awayForm": null,
-      "homeMomentum": null,
-      "awayMomentum": null,
-      "momentum": {
-        "side": "neutral",
-        "value": null
-      },
-      "aiPrediction": null,
-      "goalExpectation": null,
-      "goalPotential": null,
-      "risk": null,
-      "source": "api-football",
-      "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
-      "dataStatus": "provider",
-      "needsReview": false,
-      "resource": "matches",
-      "providerIds": {
-        "apiFootball": "1623404"
-      },
-      "competitionId": "konferans-ligi"
-    },
-    {
-      "id": "benfica-aarhus-2026-08-20",
-      "providerId": "1623431",
-      "league": "UEFA Europa League",
-      "providerLeagueId": "3",
-      "round": null,
-      "venue": null,
-      "referee": null,
-      "kickoff": "2026-08-20T22:00:00+03:00",
-      "time": "22:00",
-      "homeTeam": "Benfica",
-      "awayTeam": "Aarhus",
-      "homeTeamLogo": "https://media.api-sports.io/football/teams/211.png",
-      "awayTeamLogo": "https://media.api-sports.io/football/teams/406.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 6,
-      "elapsed": 6,
+      "providerStatus": "2H",
+      "minute": 90,
+      "elapsed": 90,
       "live": true,
       "score": {
         "home": 1,
@@ -270734,8 +274148,351 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T19:08:04.044Z",
-      "staleAfter": "2026-08-20T19:13:04.044Z",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1623403"
+      },
+      "competitionId": "konferans-ligi"
+    },
+    {
+      "id": "rayo-vallecano-alaves-2026-08-20",
+      "providerId": "1570351",
+      "league": "La Liga",
+      "providerLeagueId": "140",
+      "round": 2,
+      "venue": "Estadio Municipal de Butarque",
+      "referee": "José Luis Munuera Montero, Spain",
+      "kickoff": "2026-08-20T22:00:00+03:00",
+      "time": "22:00",
+      "homeTeam": "Rayo Vallecano",
+      "awayTeam": "Alaves",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/728.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/542.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 71,
+      "elapsed": 71,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 0,
+        "halftimeHome": null,
+        "halftimeAway": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1570351"
+      },
+      "competitionId": "la-liga"
+    },
+    {
+      "id": "sc-braga-austria-vienna-2026-08-20",
+      "providerId": "1623387",
+      "league": "UEFA Europa Conference League",
+      "providerLeagueId": "848",
+      "round": null,
+      "venue": "Estádio Municipal de Braga",
+      "referee": "Ishmael Barbara, Malta",
+      "kickoff": "2026-08-20T22:00:00+03:00",
+      "time": "22:00",
+      "homeTeam": "SC Braga",
+      "awayTeam": "Austria Vienna",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/217.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/601.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 75,
+      "elapsed": 75,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 0,
+        "halftimeHome": null,
+        "halftimeAway": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1623387"
+      },
+      "competitionId": "konferans-ligi"
+    },
+    {
+      "id": "dinamo-tirana-pafos-2026-08-20",
+      "providerId": "1623388",
+      "league": "UEFA Europa Conference League",
+      "providerLeagueId": "848",
+      "round": null,
+      "venue": "Elbasan Arena",
+      "referee": "Lawrence Visser, Belgium",
+      "kickoff": "2026-08-20T22:00:00+03:00",
+      "time": "22:00",
+      "homeTeam": "Dinamo Tirana",
+      "awayTeam": "Pafos",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/3326.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/3403.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 73,
+      "elapsed": 73,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0,
+        "halftimeHome": null,
+        "halftimeAway": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1623388"
+      },
+      "competitionId": "konferans-ligi"
+    },
+    {
+      "id": "getafe-fk-partizan-2026-08-20",
+      "providerId": "1623391",
+      "league": "UEFA Europa Conference League",
+      "providerLeagueId": "848",
+      "round": null,
+      "venue": "Coliseum Alfonso Pérez",
+      "referee": "Andris Treimanis, Latvia",
+      "kickoff": "2026-08-20T22:00:00+03:00",
+      "time": "22:00",
+      "homeTeam": "Getafe",
+      "awayTeam": "FK Partizan",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/546.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/573.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 75,
+      "elapsed": 75,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 1,
+        "halftimeHome": null,
+        "halftimeAway": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1623391"
+      },
+      "competitionId": "konferans-ligi"
+    },
+    {
+      "id": "hnk-hajduk-split-rakow-czestochowa-2026-08-20",
+      "providerId": "1623393",
+      "league": "UEFA Europa Conference League",
+      "providerLeagueId": "848",
+      "round": null,
+      "venue": "Stadion Poljud",
+      "referee": "Michal Očenáš, Slovakia",
+      "kickoff": "2026-08-20T22:00:00+03:00",
+      "time": "22:00",
+      "homeTeam": "HNK Hajduk Split",
+      "awayTeam": "Raków Częstochowa",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/608.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/3491.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 74,
+      "elapsed": 74,
+      "live": true,
+      "score": {
+        "home": 2,
+        "away": 1,
+        "halftimeHome": null,
+        "halftimeAway": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1623393"
+      },
+      "competitionId": "konferans-ligi"
+    },
+    {
+      "id": "shamrock-rovers-kups-2026-08-20",
+      "providerId": "1623404",
+      "league": "UEFA Europa Conference League",
+      "providerLeagueId": "848",
+      "round": null,
+      "venue": "Tallaght Stadium",
+      "referee": "Morten Krogh, Denmark",
+      "kickoff": "2026-08-20T22:00:00+03:00",
+      "time": "22:00",
+      "homeTeam": "Shamrock Rovers",
+      "awayTeam": "KuPS",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/652.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/1165.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 77,
+      "elapsed": 77,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 0,
+        "halftimeHome": null,
+        "halftimeAway": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1623404"
+      },
+      "competitionId": "konferans-ligi"
+    },
+    {
+      "id": "benfica-aarhus-2026-08-20",
+      "providerId": "1623431",
+      "league": "UEFA Europa League",
+      "providerLeagueId": "3",
+      "round": null,
+      "venue": "Estádio da Luz",
+      "referee": "Marco Guida, Italy",
+      "kickoff": "2026-08-20T22:00:00+03:00",
+      "time": "22:00",
+      "homeTeam": "Benfica",
+      "awayTeam": "Aarhus",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/211.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/406.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 71,
+      "elapsed": 71,
+      "live": true,
+      "score": {
+        "home": 3,
+        "away": 1,
+        "halftimeHome": null,
+        "halftimeAway": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-08-20T20:33:21.612Z",
+      "staleAfter": "2026-08-20T20:38:21.612Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
