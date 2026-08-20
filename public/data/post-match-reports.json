@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-19T22:29:18.248Z",
+  "updatedAt": "2026-08-20T01:24:14.663Z",
   "matchCount": 663,
   "records": [
     {
@@ -32,10 +32,10 @@
       "winner": "Atletico Madrid",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 30,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -43,14 +43,14 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 17
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 17
         },
         "lineups": {
           "present": true,
@@ -58,44 +58,31 @@
           "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 45
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
+        "events": 17,
+        "statistics": 17,
         "lineups": 2,
-        "players": 0
+        "players": 45
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "cfd76d8fcae2cdf0",
-      "fingerprint": "cfd76d8fcae2cdf0",
+      "analysisSourceHash": "b4de454ede3a2c73",
+      "fingerprint": "b4de454ede3a2c73",
       "analysisGeneratedAt": "2026-08-19T21:29:35.239Z",
-      "analysisUpdatedAt": "2026-08-19T21:29:35.239Z",
-      "generatedAt": "2026-08-19T21:29:35.239Z",
+      "analysisUpdatedAt": "2026-08-20T01:24:14.603Z",
+      "generatedAt": "2026-08-20T01:24:14.603Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -107,7 +94,7 @@
       "reportUrl": "./mac-raporu/atletico-madrid-malaga-2026-08-19.html",
       "digest": {
         "headline": "Atletico Madrid, Malaga'yı 2-0 yendi",
-        "paragraph": "Atletico Madrid, Riyadh Air Metropolitano'da oynanan La Liga karşılaşmasında Malaga'yı 2-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Atletico Madrid, Riyadh Air Metropolitano'da oynanan La Liga karşılaşmasında Malaga'yı 2-0 mağlup etti. Golleri 70. dakikada Lee Kang-In (Atletico Madrid), 85. dakikada A. Baena (Atletico Madrid) kaydetti.",
         "result": {
           "winner": "Atletico Madrid",
           "loser": "Malaga",
@@ -123,78 +110,242 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "70'",
+              "team": "Atletico Madrid",
+              "type": "Gol",
+              "detail": "Lee Kang-In",
+              "pivotal": true
+            },
+            {
+              "minute": "85'",
+              "team": "Atletico Madrid",
+              "type": "Gol",
+              "detail": "A. Baena",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (A. Baena).",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Atletico Madrid",
+              "type": "Oyuncu değişikliği",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Malaga",
+              "type": "Sarı kart",
+              "detail": "J. Cruz",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Malaga",
+              "type": "Oyuncu değişikliği",
+              "detail": "E. Galilea",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Malaga",
+              "type": "Oyuncu değişikliği",
+              "detail": "D. Lorenzo",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Baena",
+              "team": "Atletico Madrid",
+              "contribution": "85' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Lee Kang-In",
+              "team": "Atletico Madrid",
+              "contribution": "70' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "C. Puga",
+              "team": "Malaga",
+              "contribution": "45+4' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "D. Hancko",
+              "team": "Atletico Madrid",
+              "contribution": "15' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
           "status": "partial",
           "notes": [
-            "Atletico Madrid sahaya 4-4-2 dizilişiyle çıktı.",
-            "Malaga sahaya 4-4-2 dizilişiyle çıktı."
+            "Atletico Madrid sahaya 4-1-4-1 dizilişiyle çıktı.",
+            "Malaga sahaya 4-1-4-1 dizilişiyle çıktı."
           ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
+            "70' Atletico Madrid — Lee Kang-In: gol",
+            "85' Atletico Madrid — A. Baena: gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
           "status": "ready",
           "notes": [
-            "Atletico Madrid maça 4-4-2 dizilişiyle başladı.",
-            "Malaga maça 4-4-2 dizilişiyle başladı."
+            "Atletico Madrid maça 4-1-4-1 dizilişiyle başladı.",
+            "Malaga maça 4-1-4-1 dizilişiyle başladı.",
+            "46' Atletico Madrid değişikliği (Substitution 1). Değişiklikten sonra Atletico Madrid adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "57' Atletico Madrid değişikliği (Substitution 2). Değişiklikten sonra Atletico Madrid adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "57' Atletico Madrid değişikliği (Substitution 3). Değişiklikten sonra Atletico Madrid adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "57' Atletico Madrid değişikliği (Substitution 4). Değişiklikten sonra Atletico Madrid adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
           ],
           "formations": [
             {
               "team": "Atletico Madrid",
-              "formation": "4-4-2"
+              "formation": "4-1-4-1"
             },
             {
               "team": "Malaga",
-              "formation": "4-4-2"
+              "formation": "4-1-4-1"
             }
           ],
-          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Atletico Madrid, Malaga'yı 2-0 yendi."
+            "Atletico Madrid, Malaga'yı 2-0 yendi.",
+            "İsabetli şutta da öndeydi (6-1); sonuç üretilen pozisyonla uyumlu.",
+            "Atletico Madrid, gol beklentisinin 1,18 üzerinde skor üretti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Atletico Madrid topa daha çok sahip oldu (%53).",
+            "Atletico Madrid daha çok şut denedi (15-5)."
+          ],
+          "improvements": [
+            "Malaga şut isabetinde geride kaldı (%20); bitiricilik geliştirilmesi gereken alan.",
+            "Malaga son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
           "closing": "Atletico Madrid sahadan 2 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Atletico Madrid",
+            "score": 73
+          },
+          "away": {
+            "team": "Malaga",
+            "score": 27
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Atletico Madrid %40, Malaga %20."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Atletico Madrid 34.7, Malaga 93.2 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Atletico Madrid 0.055, Malaga 0.03. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -202,12 +353,21 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 21,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
@@ -238,10 +398,10 @@
       "winner": "Celtic",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 30,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -249,14 +409,14 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 11
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
           "present": true,
@@ -264,44 +424,31 @@
           "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 44
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
+        "events": 11,
+        "statistics": 15,
         "lineups": 2,
-        "players": 0
+        "players": 44
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "dea1af928fdde514",
-      "fingerprint": "dea1af928fdde514",
+      "analysisSourceHash": "5fa5cd35d2e4e308",
+      "fingerprint": "5fa5cd35d2e4e308",
       "analysisGeneratedAt": "2026-08-19T21:29:35.239Z",
-      "analysisUpdatedAt": "2026-08-19T21:29:35.239Z",
-      "generatedAt": "2026-08-19T21:29:35.239Z",
+      "analysisUpdatedAt": "2026-08-20T01:24:14.603Z",
+      "generatedAt": "2026-08-20T01:24:14.603Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -313,7 +460,7 @@
       "reportUrl": "./mac-raporu/celtic-lask-linz-2026-08-19.html",
       "digest": {
         "headline": "Celtic, Lask Linz'i 3-0 yendi",
-        "paragraph": "Celtic Park'ta oynanan UEFA Champions League maçını Celtic 3-0 kazandı; Lask Linz sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Celtic Park'ta oynanan UEFA Champions League maçını Celtic 3-0 kazandı; Lask Linz sahadan puansız ayrıldı. Golleri 26. dakikada B. Nygren (Celtic), 38. dakikada C. Duran (Celtic), 67. dakikada C. Duran (Celtic) kaydetti.",
         "result": {
           "winner": "Celtic",
           "loser": "Lask Linz",
@@ -329,42 +476,128 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "26'",
+              "team": "Celtic",
+              "type": "Gol",
+              "detail": "B. Nygren",
+              "pivotal": true
+            },
+            {
+              "minute": "38'",
+              "team": "Celtic",
+              "type": "Gol",
+              "detail": "C. Duran",
+              "pivotal": true
+            },
+            {
+              "minute": "67'",
+              "team": "Celtic",
+              "type": "Gol",
+              "detail": "C. Duran",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Celtic",
+              "type": "Oyuncu değişikliği",
+              "detail": "K. Tierney",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "Celtic",
+              "type": "Oyuncu değişikliği",
+              "detail": "Yang Hyun-Jun",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Lask Linz",
+              "type": "Sarı kart",
+              "detail": "K. P. Molgaard Jorgensen",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Celtic",
+              "type": "Oyuncu değişikliği",
+              "detail": "C. Duran",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "C. Duran",
+              "team": "Celtic",
+              "contribution": "38' gol · 67' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "B. Nygren",
+              "team": "Celtic",
+              "contribution": "26' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "K. P. Molgaard Jorgensen",
+              "team": "Lask Linz",
+              "contribution": "82' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "partial",
+          "status": "ready",
           "notes": [
             "Celtic sahaya 4-3-3 dizilişiyle çıktı.",
-            "Lask Linz sahaya 3-5-2 dizilişiyle çıktı."
+            "Lask Linz sahaya 3-5-2 dizilişiyle çıktı.",
+            "Celtic topu elinde tutarken Lask Linz derin blokta savunma yapmayı tercih etti."
           ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "26' Celtic — B. Nygren: gol",
+            "38' Celtic — C. Duran: gol"
+          ],
+          "goals": 2
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (9 olay).",
+            "67' Celtic — C. Duran: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Celtic maça 4-3-3 dizilişiyle başladı.",
-            "Lask Linz maça 3-5-2 dizilişiyle başladı."
+            "Lask Linz maça 3-5-2 dizilişiyle başladı.",
+            "65' Celtic değişikliği (Substitution 1). Değişiklikten sonra Celtic adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "65' Lask Linz değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "73' Lask Linz değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "76' Celtic değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
           "formations": [
             {
@@ -376,30 +609,99 @@
               "formation": "3-5-2"
             }
           ],
-          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Celtic, Lask Linz'i 3-0 yendi."
+            "Celtic, Lask Linz'i 3-0 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (7-8); eldeki veri sonucun verimlilikle geldiğini gösteriyor."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Celtic topa daha çok sahip oldu (%64).",
+            "Lask Linz daha çok şut denedi (17-20)."
+          ],
+          "improvements": [
+            "Lask Linz şut isabetinde geride kaldı (%40); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Celtic sahadan 3 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Celtic",
+            "score": 95
+          },
+          "away": {
+            "team": "Lask Linz",
+            "score": 58
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Celtic %41.2, Lask Linz %40."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Celtic 38.7, Lask Linz 17.9 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -408,12 +710,22 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 21,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -444,10 +756,10 @@
       "winner": "Hapoel Beer Sheva",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -455,63 +767,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 13
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 13,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "32251d931fcba16a",
-      "fingerprint": "32251d931fcba16a",
+      "analysisSourceHash": "2ee50d90a8fb8fae",
+      "fingerprint": "2ee50d90a8fb8fae",
       "analysisGeneratedAt": "2026-08-19T21:29:35.239Z",
-      "analysisUpdatedAt": "2026-08-19T21:29:35.239Z",
-      "generatedAt": "2026-08-19T21:29:35.239Z",
+      "analysisUpdatedAt": "2026-08-20T01:24:14.603Z",
+      "generatedAt": "2026-08-20T01:24:14.603Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -523,7 +818,7 @@
       "reportUrl": "./mac-raporu/hapoel-beer-sheva-sabah-fa-2026-08-19.html",
       "digest": {
         "headline": "Hapoel Beer Sheva, Sabah FA'yı 2-1 yendi",
-        "paragraph": "Rapid-Giulesti Stadium'da oynanan UEFA Champions League maçını Hapoel Beer Sheva 2-1 kazandı; Sabah FA sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Rapid-Giulesti Stadium'da oynanan UEFA Champions League maçını Hapoel Beer Sheva 2-1 kazandı; Sabah FA sahadan puansız ayrıldı. Golleri 6. dakikada V. Simic (Sabah FA), 43. dakikada J. East (Hapoel Beer Sheva), 79. dakikada I. Zlatanovic (Hapoel Beer Sheva) kaydetti.",
         "result": {
           "winner": "Hapoel Beer Sheva",
           "loser": "Sabah FA",
@@ -539,62 +834,239 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "6'",
+              "team": "Sabah FA",
+              "type": "Gol",
+              "detail": "V. Simic",
+              "pivotal": true
+            },
+            {
+              "minute": "43'",
+              "team": "Hapoel Beer Sheva",
+              "type": "Gol",
+              "detail": "J. East",
+              "pivotal": true
+            },
+            {
+              "minute": "79'",
+              "team": "Hapoel Beer Sheva",
+              "type": "Gol",
+              "detail": "I. Zlatanovic",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (I. Zlatanovic), sonucu belirleyen fark bu bölümde oluştu.",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Hapoel Beer Sheva",
+              "type": "Sarı kart",
+              "detail": "Miguel Vitor",
+              "decisive": false
+            },
+            {
+              "minute": "77'",
+              "team": "Hapoel Beer Sheva",
+              "type": "Sarı kart",
+              "detail": "I. Rotman",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Hapoel Beer Sheva",
+              "type": "Gol",
+              "detail": "I. Zlatanovic",
+              "decisive": true
+            },
+            {
+              "minute": "84'",
+              "team": "Hapoel Beer Sheva",
+              "type": "Sarı kart",
+              "detail": "A. C. Ganah",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "I. Zlatanovic",
+              "team": "Hapoel Beer Sheva",
+              "contribution": "79' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "J. East",
+              "team": "Hapoel Beer Sheva",
+              "contribution": "43' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "V. Simic",
+              "team": "Sabah FA",
+              "contribution": "6' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. C. Ganah",
+              "team": "Hapoel Beer Sheva",
+              "contribution": "84' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "Hapoel Beer Sheva sahaya 4-3-3 dizilişiyle çıktı.",
+            "Sabah FA sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Hapoel Beer Sheva topu elinde tutarken Sabah FA derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "6' Sabah FA — V. Simic: gol",
+            "43' Hapoel Beer Sheva — J. East: gol"
+          ],
+          "goals": 2
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
+            "79' Hapoel Beer Sheva — I. Zlatanovic: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Hapoel Beer Sheva maça 4-3-3 dizilişiyle başladı.",
+            "Sabah FA maça 4-2-3-1 dizilişiyle başladı.",
+            "56' Sabah FA değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' Hapoel Beer Sheva değişikliği (Substitution 1). Değişiklikten sonra Hapoel Beer Sheva adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "71' Hapoel Beer Sheva değişikliği (Substitution 2). Değişiklikten sonra Hapoel Beer Sheva adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "74' Sabah FA değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Hapoel Beer Sheva",
+              "formation": "4-3-3"
+            },
+            {
+              "team": "Sabah FA",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Hapoel Beer Sheva, Sabah FA'yı 2-1 yendi."
+            "Hapoel Beer Sheva, Sabah FA'yı 2-1 yendi.",
+            "İsabetli şutta da öndeydi (7-5); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Hapoel Beer Sheva topa daha çok sahip oldu (%67).",
+            "Hapoel Beer Sheva daha çok şut denedi (18-8)."
+          ],
+          "improvements": [
+            "Hapoel Beer Sheva şut isabetinde geride kaldı (%39); bitiricilik geliştirilmesi gereken alan.",
+            "Sabah FA son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
           "closing": "Hapoel Beer Sheva sahadan 1 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Hapoel Beer Sheva",
+            "score": 86
+          },
+          "away": {
+            "team": "Sabah FA",
+            "score": 50
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Hapoel Beer Sheva %38.9, Sabah FA %62.5."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Hapoel Beer Sheva 36.6, Sabah FA 38.1 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -603,11 +1075,22 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
