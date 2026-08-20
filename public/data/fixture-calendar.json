@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-20T21:32:27.378Z",
+  "fetchedAt": "2026-08-20T22:32:03.674Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -261635,8 +261635,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:27.843Z",
-      "staleAfter": "2026-08-20T21:37:27.843Z",
+      "fetchedAt": "2026-08-20T22:32:04.456Z",
+      "staleAfter": "2026-08-20T22:37:04.456Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -261646,9 +261646,19 @@
       "competitionId": "avrupa-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Kairat Almaty kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 45+1' D. Sikan tarafından kaydedildi. Skor üstünlüğü Anderlecht tarafında.",
+        "summary": "Anderlecht topa sahip olma oranında önde. Anderlecht isabetli şutlarda önde. Skor üstünlüğü Anderlecht tarafında.",
         "confidence": "Orta",
         "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "33%-67%",
+            "text": "Anderlecht topa sahip olma oranında önde."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "2-4",
+            "text": "Anderlecht isabetli şutlarda önde."
+          },
           {
             "label": "Disiplin dengesi",
             "value": "1 kırmızı kart",
@@ -261671,7 +261681,7 @@
           }
         ],
         "eventCount": 19,
-        "dataPoints": 4,
+        "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -262979,8 +262989,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:27.843Z",
-      "staleAfter": "2026-08-20T21:37:27.843Z",
+      "fetchedAt": "2026-08-20T22:32:04.456Z",
+      "staleAfter": "2026-08-20T22:37:04.456Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -262990,17 +263000,22 @@
       "competitionId": "konferans-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "summary": "Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti. Skor dengede.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Teknik hamleler",
+            "value": "8 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti."
+          },
           {
             "label": "Canlı skor",
             "value": "0-0",
             "text": "Skor dengede."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 8,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -264897,8 +264912,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:27.843Z",
-      "staleAfter": "2026-08-20T21:37:27.843Z",
+      "fetchedAt": "2026-08-20T22:32:04.456Z",
+      "staleAfter": "2026-08-20T22:37:04.456Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -264908,32 +264923,17 @@
       "competitionId": "konferans-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Lincoln Red Imps FC kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 90+3' K. O'Hara tarafından kaydedildi. Skor üstünlüğü Larne tarafında.",
-        "confidence": "Orta",
+        "summary": "Larne skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Larne tarafında.",
+        "confidence": "Sınırlı",
         "signals": [
-          {
-            "label": "Disiplin dengesi",
-            "value": "1 kırmızı kart",
-            "text": "Lincoln Red Imps FC kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
-          },
-          {
-            "label": "Gol akışı",
-            "value": "90+3'",
-            "text": "Son gol 90+3' K. O'Hara tarafından kaydedildi."
-          },
-          {
-            "label": "Teknik hamleler",
-            "value": "10 değişiklik",
-            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
-          },
           {
             "label": "Canlı skor",
             "value": "0-2",
             "text": "Larne skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 19,
-        "dataPoints": 4,
+        "eventCount": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "lineups": [
@@ -266359,8 +266359,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:27.843Z",
-      "staleAfter": "2026-08-20T21:37:27.843Z",
+      "fetchedAt": "2026-08-20T22:32:04.456Z",
+      "staleAfter": "2026-08-20T22:37:04.456Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -266370,17 +266370,27 @@
       "competitionId": "avrupa-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Jagiellonia skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Jagiellonia tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 90+2' S. Lozano tarafından kaydedildi. Kulübeler oyuna müdahale etti; 9 oyuncu değişikliği kayda geçti. Skor üstünlüğü Jagiellonia tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "90+2'",
+            "text": "Son gol 90+2' S. Lozano tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "9 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 9 oyuncu değişikliği kayda geçti."
+          },
           {
             "label": "Canlı skor",
             "value": "4-0",
             "text": "Jagiellonia skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 21,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "lineups": [
@@ -267636,8 +267646,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:27.843Z",
-      "staleAfter": "2026-08-20T21:37:27.843Z",
+      "fetchedAt": "2026-08-20T22:32:04.456Z",
+      "staleAfter": "2026-08-20T22:37:04.456Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -267647,19 +267657,9 @@
       "competitionId": "avrupa-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Red Bull Salzburg topa sahip olma oranında önde. Red Bull Salzburg isabetli şutlarda önde. Skor üstünlüğü Red Bull Salzburg tarafında.",
+        "summary": "Son gol 90+1' T. Pettersson tarafından kaydedildi. Kulübeler oyuna müdahale etti; 9 oyuncu değişikliği kayda geçti. Skor üstünlüğü Red Bull Salzburg tarafında.",
         "confidence": "Orta",
         "signals": [
-          {
-            "label": "Top hakimiyeti",
-            "value": "31%-69%",
-            "text": "Red Bull Salzburg topa sahip olma oranında önde."
-          },
-          {
-            "label": "Kaleyi bulan",
-            "value": "1-8",
-            "text": "Red Bull Salzburg isabetli şutlarda önde."
-          },
           {
             "label": "Gol akışı",
             "value": "90+1'",
@@ -267677,7 +267677,7 @@
           }
         ],
         "eventCount": 11,
-        "dataPoints": 5,
+        "dataPoints": 3,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -270274,8 +270274,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:27.843Z",
-      "staleAfter": "2026-08-20T21:37:27.843Z",
+      "fetchedAt": "2026-08-20T22:32:04.456Z",
+      "staleAfter": "2026-08-20T22:37:04.456Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -270285,9 +270285,24 @@
       "competitionId": "konferans-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "FC Midtjylland skor üstünlüğünü elinde tutuyor. Skor üstünlüğü FC Midtjylland tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "FC Midtjylland topa sahip olma oranında önde. FC Midtjylland daha fazla şut üretti. Skor üstünlüğü FC Midtjylland tarafında.",
+        "confidence": "Yüksek",
         "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "60%-40%",
+            "text": "FC Midtjylland topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "18-9",
+            "text": "FC Midtjylland daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "10-1",
+            "text": "FC Midtjylland isabetli şutlarda önde."
+          },
           {
             "label": "Canlı skor",
             "value": "2-0",
@@ -270295,7 +270310,7 @@
           }
         ],
         "eventCount": 0,
-        "dataPoints": 1,
+        "dataPoints": 4,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -272455,8 +272470,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:27.843Z",
-      "staleAfter": "2026-08-20T21:37:27.843Z",
+      "fetchedAt": "2026-08-20T22:32:04.456Z",
+      "staleAfter": "2026-08-20T22:37:04.456Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -272466,17 +272481,42 @@
       "competitionId": "avrupa-ligi",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Ferencvarosi TC skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Ferencvarosi TC tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Trabzonspor topa sahip olma oranında önde. Ferencvarosi TC isabetli şutlarda önde. Skor üstünlüğü Ferencvarosi TC tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "66%-34%",
+            "text": "Trabzonspor topa sahip olma oranında önde."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "3-4",
+            "text": "Ferencvarosi TC isabetli şutlarda önde."
+          },
+          {
+            "label": "Disiplin dengesi",
+            "value": "1 kırmızı kart",
+            "text": "Trabzonspor kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "17'",
+            "text": "Son gol 17' K. Zachariassen tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "9 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 9 oyuncu değişikliği kayda geçti."
+          },
           {
             "label": "Canlı skor",
             "value": "0-1",
             "text": "Ferencvarosi TC skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 16,
+        "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -275196,7 +275236,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -275212,8 +275254,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -275243,7 +275285,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -275259,8 +275303,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -275290,7 +275334,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -275306,8 +275352,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -275337,7 +275383,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -275353,8 +275401,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -275384,7 +275432,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -275400,8 +275450,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -275431,7 +275481,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -275447,8 +275499,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -275478,7 +275530,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -275494,8 +275548,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -275525,7 +275579,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -275541,8 +275597,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -276582,7 +276638,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -276598,8 +276656,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -276629,7 +276687,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -276645,8 +276705,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -276676,7 +276736,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -276692,8 +276754,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -276723,7 +276785,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -276739,8 +276803,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -276770,7 +276834,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -276786,8 +276852,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -276817,7 +276883,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -276833,8 +276901,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T21:32:28.022Z",
-      "staleAfter": "2026-08-20T21:37:28.022Z",
+      "fetchedAt": "2026-08-20T22:32:04.650Z",
+      "staleAfter": "2026-08-20T22:37:04.650Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
