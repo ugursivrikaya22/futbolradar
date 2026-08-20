@@ -1,9 +1,295 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-20T09:02:12.245Z",
-  "matchCount": 678,
+  "updatedAt": "2026-08-20T17:33:55.873Z",
+  "matchCount": 679,
   "records": [
+    {
+      "matchId": "kairat-almaty-anderlecht-2026-08-20",
+      "fixtureId": "1623435",
+      "provider": "api-football",
+      "slug": "kairat-almaty-anderlecht-2026-08-20",
+      "kickoff": "2026-08-20T18:00:00+03:00",
+      "kickoffUtc": "2026-08-20T15:00:00.000Z",
+      "kickoffLocal": "2026-08-20T18:00",
+      "date": "2026-08-20",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "UEFA Europa League",
+      "competition": "UEFA Europa League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Kairat Almaty",
+      "awayTeam": "Anderlecht",
+      "venue": "Central Stadium",
+      "score": {
+        "home": 0,
+        "away": 3
+      },
+      "finalScore": "0-3",
+      "winner": "Anderlecht",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 19
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 19,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "46f43b86187fbea3",
+      "fingerprint": "46f43b86187fbea3",
+      "analysisGeneratedAt": "2026-08-20T17:33:55.842Z",
+      "analysisUpdatedAt": "2026-08-20T17:33:55.842Z",
+      "generatedAt": "2026-08-20T17:33:55.842Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Kairat Almaty 0-3 Anderlecht maç raporu: UEFA Europa League istatistikleri | FutbolRadar",
+        "description": "Central Stadium'da oynanan UEFA Europa League maçını Anderlecht 3-0 kazandı; Kairat Almaty sahadan puansız ayrıldı.",
+        "path": "mac-raporu/kairat-almaty-anderlecht-2026-08-20.html",
+        "competition": "UEFA Europa League"
+      },
+      "reportUrl": "./mac-raporu/kairat-almaty-anderlecht-2026-08-20.html",
+      "digest": {
+        "headline": "Anderlecht, Kairat Almaty'yı 3-0 yendi",
+        "paragraph": "Central Stadium'da oynanan UEFA Europa League maçını Anderlecht 3-0 kazandı; Kairat Almaty sahadan puansız ayrıldı. Golleri 2. dakikada J. Oksanen (Anderlecht), 24. dakikada L. Ambros (Anderlecht), 45+1. dakikada D. Sikan (Anderlecht) kaydetti.",
+        "result": {
+          "winner": "Anderlecht",
+          "loser": "Kairat Almaty",
+          "draw": false,
+          "margin": 3
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "2'",
+              "team": "Anderlecht",
+              "type": "Kendi kalesine gol",
+              "detail": "J. Oksanen",
+              "pivotal": true
+            },
+            {
+              "minute": "24'",
+              "team": "Anderlecht",
+              "type": "Gol",
+              "detail": "L. Ambros",
+              "pivotal": true
+            },
+            {
+              "minute": "38'",
+              "team": "Kairat Almaty",
+              "type": "Kırmızı kart",
+              "detail": "A. Shirobokov",
+              "pivotal": true
+            },
+            {
+              "minute": "45+1'",
+              "team": "Anderlecht",
+              "type": "Gol",
+              "detail": "D. Sikan",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 2 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "84'",
+              "team": "Anderlecht",
+              "type": "Oyuncu değişikliği",
+              "detail": "D. Sikan",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Anderlecht",
+              "type": "Oyuncu değişikliği",
+              "detail": "E. Llansana",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "D. Sikan",
+              "team": "Anderlecht",
+              "contribution": "45+1' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "J. Oksanen",
+              "team": "Anderlecht",
+              "contribution": "2' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "L. Ambros",
+              "team": "Anderlecht",
+              "contribution": "24' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. Maamar",
+              "team": "Anderlecht",
+              "contribution": "49' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
+            "2' Anderlecht — J. Oksanen: kendi kalesine gol",
+            "24' Anderlecht — L. Ambros: gol",
+            "45+1' Anderlecht — D. Sikan: gol"
+          ],
+          "goals": 3
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "46' Kairat Almaty değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Anderlecht değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "60' Kairat Almaty değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "60' Kairat Almaty değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "63' Anderlecht değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "72' Kairat Almaty değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Anderlecht, Kairat Almaty'yı 0-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Kırmızı kart maçın seyrini etkiledi (38' Kairat Almaty)."
+          ],
+          "closing": "Anderlecht sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "los-angeles-galaxy-san-jose-earthquakes-2026-08-20",
       "fixtureId": "1490403",

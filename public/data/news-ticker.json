@@ -1,13 +1,13 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-20T16:40:09.711Z",
+  "updatedAt": "2026-08-20T17:34:05.375Z",
   "items": [
     {
       "id": "auto-news-99006ed4621b2b8805d8",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Maça Doğru | Erzurumspor",
+      "text": "Maça Doğru | Erzurumspor - Galatasaray",
       "team": "Galatasaray",
       "timestamp": "2026-08-20T16:30:00.000Z",
       "source": {
@@ -307,16 +307,36 @@
       }
     },
     {
-      "id": "auto-news-1f5205afc4f837c9121b",
+      "id": "auto-news-83d4c8efd4396f4731b7",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Trendyol Süper Lig'de 2. Hafta Müsabaka Görevlileri Açıklandı",
+      "text": "Hakemlerimiz 2026 Akdeniz Oyunları'nda Görev Alacak",
       "team": "Süper Lig",
-      "timestamp": "2026-08-20T10:21:07.000Z",
+      "timestamp": "2026-08-20T15:20:06.000Z",
       "source": {
         "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9yT3dGdThCdzVIRkQ3V3JYTDdmZTZwX1h4Q2J5MUhKSnhzRS1LRzcxNWxULXVvOVRWTzhzZHlLeXFIdVFRU1p1cmFuU2VScjVGT1lGLVNSWDBjYW5JN1dJVnNUdWctVHM?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9mdE05UURLNGp5NkxlNldXVkV5VW8wT3NjVDZ5TWxRLTZXOXVJU28xTmFpdFJwNnFIU0kyUGE5RldRb0Uyc01EbUF5ajZxWXI0bE1WdUpDRU5XbDItT1JDUV9iQnhUWTg?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "super-lig",
+        "priority": 5,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-a3fc99bc2397090d245c",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "ZTK Turlara Göre Katılım Durumları Açıklandı",
+      "team": "Süper Lig",
+      "timestamp": "2026-08-20T13:24:34.000Z",
+      "source": {
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE12YU9YU2d6WDdoV3BHeXg0aEZEeXEzRkduZXFNNFJCbzE1R0Rad1dHYWpjb2FlY2MwYXlJZWJha2o4Q050S19YdjRucTRwUTIxbUl5d1hHTjVFRUoxNG5faWh4T3NRYnM?oc=5",
         "publisher": "tff.org"
       },
       "automation": {
@@ -326,26 +346,6 @@
         "status": "OFFICIAL",
         "mergedReports": 3,
         "firstSeenAt": "2026-08-20T10:21:07.000Z"
-      }
-    },
-    {
-      "id": "auto-news-4fbaeb5aba6c78fc9baa",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "U15 Kızlar Gelişim Ligi Grupları Belli Oldu",
-      "team": "Süper Lig",
-      "timestamp": "2026-08-20T07:29:16.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE42SkM4UGY1dmUtdFJTU3JYT0c1RVU3YnRHMVpRNC15TkpuZlZqSHVlbFIwcG5tXzJZVXotX3NwY29VVFBNMllOUHZTQlVIMWh5QTRhUjFnaUNKYnVkbkJwdmhKTEZTRFE?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
-        "status": "OFFICIAL"
       }
     }
   ]
