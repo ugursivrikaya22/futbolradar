@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-21T15:38:16.897Z",
+  "updatedAt": "2026-08-21T16:40:00.300Z",
   "items": [
+    {
+      "id": "auto-news-c81e492b170931e31dfb",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Basketboldan Sorumlu Fenerbahçe Futbol A.Ş. Yönetim Kurulu Üyemiz Ömer Onan, yeni sezon öncesi açıklamalarda bulundu",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-21T14:09:45.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMi5wFBVV95cUxQb0VkclBFbEFsQTlYbkpESGxic2txdkduT1otT21BakxIN242ZHh0QnlzMEh2SUFZaTZfLXd3ZzV1YjdUY3RCMG5QVW1VWllGbHE5RVllTzZ5UUx3bnI5SG16Nlc1a3N5Z253TU5nT1ZKcXRwNjJvOUxTeVZqT0JMTEJ6Nk1NSFNIdWZTUGxQaW9LbzZpcXlNenByOVRSckl5M09pZlpLTkFIUWoyVVFCNXBZUXdPWkRleWF2MVJNdGpfLWduVFhteVZjVHQxaDVORWNrSXZmcXVBRVhJZTF4bkdtS2xEeHc?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-063197de15b572fb2f8a",
       "category": "official",
@@ -123,26 +143,6 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-d9ada784e365907975f1",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Kamuoyu Bilgilendirme",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-20T12:28:46.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE1CQ0VLSEplOFlidTZHSVBRS0RfemdNc1JPRlVWamhVWGtSX3N6T0RfemFXLXhDQkZTSmdaZ000RXlKVDZFLUVPbGstSUxfVGx3bV91VVRObWNnbW5nQWxtdndkQjFuS3U4eDVUazBIYmlKNmhaQ3ZuRUZMa0tzZw?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
         "status": "OFFICIAL"
       }
     },
