@@ -44,5 +44,14 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  // Maç CANLIYSA önbellek politikası no-store'a geçer — bitmiş/başlamamış
+  // maçta üstteki normal politika (kısa CDN önbelleği) geçerli kalır,
+  // çünkü orada içerik dakikalarca değişmiyor ve önbellek gerçek bir
+  // fayda sağlıyor.
+  const status = String((detail && (detail.status || detail.providerStatus)) || "").toUpperCase();
+  if (["LIVE", "HALFTIME", "1H", "2H", "ET", "P", "BT", "IN_PLAY", "PAUSED"].includes(status)) {
+    setCachePolicy(res, "match-detail-live");
+  }
+
   return sendSuccess(res, data, source);
 };

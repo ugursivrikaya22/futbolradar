@@ -2,11 +2,22 @@ const BROWSER_CACHE_CONTROL = "public, max-age=0";
 const CACHE_POLICIES = Object.freeze({
   default: { maxAge: 300, stale: 600 },
   matches: { maxAge: 60, stale: 180 },
-  // Canlı sorgu ayrı politika: 60 saniyelik CDN önbelleği + 180 saniyelik
-  // stale-while-revalidate, oynanan bir maçta dört dakikaya kadar eski skor
-  // servis edebiliyordu. Canlı yanıt kısa ömürlü olmalı.
-  "matches-live": { maxAge: 10, stale: 20 },
+  // CANLI SORGU HİÇ ÖNBELLEKLENMEZ. Önceki politika (10sn CDN + 20sn
+  // stale-while-revalidate) hâlâ oynanan bir maçta yarım dakikaya kadar
+  // eski skor servis edebiliyordu — istemci 5-10 saniyede bir yokladığında
+  // CDN'in kendisi darboğaz oluyordu. İstemci zaten kısa aralıkla
+  // yokluyor (app.js MATCH_LIVE_POLL_MS); CDN'in araya ikinci bir
+  // gecikme katmanı eklemesine gerek yok.
+  "matches-live": { noStore: true },
   "match-detail": { maxAge: 30, stale: 120 },
+  // Maç detayı CANLIYSA no-store'a geçer (server/liveLatencyRoute.js ve
+  // api/match-detail.js bu politikayı seçer); bitmiş/başlamamış maçta
+  // yukarıdaki normal politika geçerli kalır.
+  "match-detail-live": { noStore: true },
+  // Canlı skor gecikme kütüğü: her çağrı sağlayıcıya taze sorar (yeni gol
+  // var mı diye), CDN/tarayıcı önbelleği "yeni gol yok" cevabını
+  // dondurursa yeni golü asla göremez.
+  "live-latency": { noStore: true },
   standings: { maxAge: 300, stale: 900 },
   teams: { maxAge: 1800, stale: 7200 },
   players: { maxAge: 3600, stale: 21600 },

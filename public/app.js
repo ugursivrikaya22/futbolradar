@@ -6,6 +6,14 @@
   var FETCH_TIMEOUT_MS = 6500;
   var MATCH_LIVE_POLL_MS = 20000;
   var MATCH_DETAIL_POLL_MS = 15000;
+  // CANLI MAÇTA HIZLI YOKLAMA — kullanıcı talebi: "canlı maçta 5-10
+  // saniyelik polling yap". 7sn bu aralığın ortasında: skorun ekranda
+  // geç kalma payını küçültürken sağlayıcı kotasını (API-Football'ın
+  // ücretsiz/düşük katmanlarında dakikalık istek sınırı var, bkz.
+  // services/liveDataService.js PROVIDER_PLAN_ERROR günlükleri) 5sn'ye
+  // göre daha az zorluyor. Canlı maç yokken bu hıza gerek yok; ilgili
+  // bölümler MATCH_LIVE_POLL_MS/POLL_MS'e (20sn) geri döner.
+  var LIVE_MATCH_FAST_POLL_MS = 7000;
   // Son düdükten sonra nihai istatistiklerin yayımlanması için beklenen süre.
   // Yoklama aralığıyla birlikte maç sonu analizi ~30-60 saniyede tam veriye
   // oturur; sağlayıcı geç yayımlarsa sonraki yoklama tamamlar.
@@ -54,7 +62,9 @@
     players: { api: "players", fallback: "players", reportSource: true },
     transfers: { api: "transfers", fallback: "transfers", reportSource: false },
     squad: { api: "squad", fallback: "players", reportSource: true },
-    matchDetail: { api: "match-detail", fallback: "matches", reportSource: true },
+    // Maç detayı canlı takip için açılır; taze kalması önbellekten daha
+    // değerli — bkz. api/_utils.js "match-detail-live" no-store politikası.
+    matchDetail: { api: "match-detail", fallback: "matches", reportSource: true, noStore: true },
     momentum: { api: "momentum", fallback: "momentum", reportSource: true },
     signals: { api: "signals", fallback: "signals", reportSource: true },
     analyses: { api: "analyses", fallback: "analyses", reportSource: true },
@@ -188,13 +198,17 @@
     };
   }
 
-  function fetchJson(url) {
+  function fetchJson(url, options) {
     var controller = window.AbortController ? new AbortController() : null;
     var timer = controller
       ? window.setTimeout(function () { controller.abort(); }, FETCH_TIMEOUT_MS)
       : null;
-    // Revalidate dynamic JSON so transfer and match updates do not remain stale in the browser cache.
-    var options = { cache: "no-cache" };
+    // Revalidate dynamic JSON so transfer and match updates do not remain stale
+    // in the browser cache. Canlı uç noktalar (`noStore: true`) tarayıcı
+    // önbelleğine hiç düşmesin ister — CDN zaten no-store döndürüyor
+    // (api/_utils.js "matches-live"/"match-detail-live"/"live-latency"),
+    // burada da aynı niyet fetch() seviyesinde tekrarlanır.
+    options = { cache: (options && options.noStore) ? "no-store" : "no-cache" };
 
     if (controller) {
       options.signal = controller.signal;
@@ -338,7 +352,7 @@
       };
 
       if (config.api) {
-        cache[name] = fetchJson(getApiUrl(config))
+        cache[name] = fetchJson(getApiUrl(config), { noStore: config.noStore })
           .then(function (result) {
             if (config.reportSource) {
               // Tazelik değerlendirmesi sunucuda, verinin kendi zaman
@@ -377,15 +391,26 @@
 
   // Recursive setTimeout (not setInterval) so a slow fetch can never stack requests;
   // the next poll is only scheduled once the previous one settles.
+  //
+  // `intervalMs` bir sayı OLABİLİR ya da bir sayı döndüren fonksiyon:
+  // canlı maç varken 5-10 saniyede bir, yokken daha seyrek yoklamak
+  // isteyen çağıranlar (initLiveMatchPolling, LiveScoresTicker,
+  // initMatchDetailPolling) her `schedule()` çağrısında güncel aralığı
+  // sorar — sabit bir sayı geçmek eski davranışı bozmadan çalışmaya
+  // devam eder.
   function createLivePoller(intervalMs, task) {
     var timer = null;
     var running = false;
+
+    function currentInterval() {
+      return typeof intervalMs === "function" ? Number(intervalMs()) || 20000 : intervalMs;
+    }
 
     function schedule() {
       if (timer) {
         return;
       }
-      timer = window.setTimeout(run, intervalMs);
+      timer = window.setTimeout(run, currentInterval());
     }
 
     function run() {
@@ -4839,8 +4864,11 @@
     }
 
     var tick = 0;
+    var hasLiveMatchNow = false;
 
     function paint(matches) {
+      hasLiveMatchNow = Array.isArray(matches) && matches.some(function (match) { return isLiveMatch(match); });
+
       activeBindings.forEach(function (binding) {
         var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
         var html = binding.renderer(matches);
@@ -4857,14 +4885,14 @@
       });
     }
 
-    createLivePoller(MATCH_LIVE_POLL_MS, function () {
+    createLivePoller(function () { return hasLiveMatchNow ? LIVE_MATCH_FAST_POLL_MS : MATCH_LIVE_POLL_MS; }, function () {
       tick += 1;
 
       if (tick % LIVE_FULL_RELOAD_EVERY === 0) {
         return forceReload("matches").then(paint);
       }
 
-      return fetchJson(API_ROOT + "matches?live=all")
+      return fetchJson(API_ROOT + "matches?live=all", { noStore: true })
         .then(function (result) {
           var live = (result && result.data) || [];
           if (!live.length) {
@@ -4915,8 +4943,13 @@
 
     var lastSignature = null;
     var lastStatus = null;
+    var LIVE_STATUSES = ["LIVE", "HALFTIME", "1H", "2H", "ET", "P", "BT", "IN_PLAY", "PAUSED"];
 
-    createLivePoller(MATCH_DETAIL_POLL_MS, function () {
+    createLivePoller(function () {
+      return lastStatus !== null && LIVE_STATUSES.indexOf(lastStatus) !== -1
+        ? LIVE_MATCH_FAST_POLL_MS
+        : MATCH_DETAIL_POLL_MS;
+    }, function () {
       return forceReload("matchDetail").then(function (data) {
         var detail = Array.isArray(data) ? data[0] : data;
         if (!detail) {
@@ -11495,6 +11528,7 @@
   var LiveScoresTicker = (function () {
     var TARGET_SELECTOR = '[data-component="LiveScoresTicker"]';
     var POLL_MS = 20000;
+    var hasLiveItemNow = false;
 
     function minuteOrStatusLabel(match) {
       var minute = liveMinuteLabel(match);
@@ -11557,6 +11591,7 @@
     function render(target, matches) {
       var items = selectRecords(matches);
       var track = target && target.querySelector("[data-live-scores-track]");
+      hasLiveItemNow = Boolean(items.length);
       if (!target || !track) return;
       target.toggleAttribute("data-empty", !items.length);
 
@@ -11583,7 +11618,7 @@
       // yeniden çekmek yerine yalnızca `?live=all` uç noktasını sorar ve
       // sonucu paylaşılan `cache.matches`e birleştirir — böylece bu bant ve
       // sayfadaki diğer canlı bileşenler aynı tazelenmiş veriyi görür.
-      return fetchJson(API_ROOT + "matches?live=all")
+      return fetchJson(API_ROOT + "matches?live=all", { noStore: true })
         .then(function (result) {
           var live = (result && result.data) || [];
           if (!live.length) {
@@ -11620,7 +11655,7 @@
       // periyodik tazeleme başlatır — MATCH_LIVE_POLL_MS ile aynı desen
       // (createLivePoller, app.js:380).
       refresh(target);
-      createLivePoller(POLL_MS, function () { return refresh(target); }).start();
+      createLivePoller(function () { return hasLiveItemNow ? LIVE_MATCH_FAST_POLL_MS : POLL_MS; }, function () { return refresh(target); }).start();
     }
 
     return { init: init, render: render };

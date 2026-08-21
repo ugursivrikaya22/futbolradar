@@ -28,6 +28,7 @@ for (const file of [
   "404.html",
   "index.html",
   "admin-updates.html",
+  "canli-veri-testi.html",
   "canli-skor.html",
   "bugunun-maclari.html",
   "mac-sonuclari.html",
