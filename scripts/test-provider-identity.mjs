@@ -182,13 +182,19 @@ function testLiveFixtureNormalization() {
   assert.equal(done.live, false);
 }
 
-/** Canlı yanıt, günlük listeden belirgin şekilde kısa ömürlü olmalı. */
+/**
+ * Canlı yanıt hiç önbelleklenmemeli — günlük listeden kısa ömürlü olmak
+ * yetmez. Önceki politika (10sn CDN önbelleği) bir maçta yarım dakikaya
+ * kadar eski skor servis edebiliyordu; istemci zaten 5-10 saniyede bir
+ * yokluyor (app.js LIVE_MATCH_FAST_POLL_MS), CDN'in araya ikinci bir
+ * gecikme katmanı eklemesine gerek yok — bkz. api/_utils.js "matches-live".
+ */
 function testLiveCachePolicy() {
   const daily = utils.cacheControlFor("matches");
   const live = utils.cacheControlFor("matches-live");
-  const age = (value) => Number(String(value).match(/s-maxage=(\d+)/)[1]);
-  assert.ok(age(live.cdn) < age(daily.cdn), "canli yanit gunluk listeden kisa onbelleklenmeli");
-  assert.ok(age(live.cdn) <= 15, "canli skor icin 15 saniyeden uzun CDN onbellegi kabul edilemez");
+  assert.equal(live.cdn, "no-store", "canli skor CDN'de hic onbelleklenmemeli");
+  assert.equal(live.browser, "no-store", "canli skor tarayicida da hic onbelleklenmemeli");
+  assert.notEqual(daily.cdn, "no-store", "gunluk liste onbellekli kalmali — yalnizca canli sorgu no-store");
 }
 
 

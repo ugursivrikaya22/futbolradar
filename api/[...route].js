@@ -8,6 +8,7 @@ const { handleMotmVote } = require("../server/motmVoteRoute");
 const { handleMotmWeek } = require("../server/motmWeekRoute");
 const { handleHomePoll } = require("../server/homePollRoute");
 const { handleMatchLineup } = require("../server/matchLineupRoute");
+const { handleLiveLatency } = require("../server/liveLatencyRoute");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -282,6 +283,13 @@ module.exports = async function handler(req, res) {
   // bu yüzden alttaki tek politikalı kapıya sokulmuyor.
   if (routeName(req) === "match-lineup") {
     return handleMatchLineup(req, res);
+  }
+
+  // Canlı skor gecikme kütüğü: GET tazeler+loglar, POST istemcinin
+  // render zamanını işler — ikisi de kendi önbellek politikasını (no-store)
+  // ve hız sınırını taşıyor, alttaki tek politikalı GET kapısına girmiyor.
+  if (routeName(req) === "live-latency") {
+    return handleLiveLatency(req, res);
   }
 
   if (rejectUnsupportedMethod(req, res)) {

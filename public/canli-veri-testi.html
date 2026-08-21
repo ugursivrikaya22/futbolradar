@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>FutbolRadar Canlı Veri Gecikme Testi</title>
+  <style>
+    :root{color-scheme:dark;--bg:#07101d;--panel:#101d2e;--line:#263a51;--text:#edf5ff;--muted:#93a8be;--ok:#35d07f;--warn:#ffbd4a;--bad:#ff6675;--accent:#4da8ff}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}
+    .wrap{width:min(1200px,calc(100% - 32px));margin:34px auto}
+    .head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:18px;flex-wrap:wrap}
+    h1,h2{margin:0}
+    .muted{color:var(--muted)}
+    .note{background:#1b2a1a;border:1px solid #2f4a2c;border-radius:12px;padding:12px 16px;margin-bottom:18px;font-size:13.5px;color:#c9e8c4}
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+    select,button{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font:inherit}
+    button{cursor:pointer}
+    button:hover{border-color:var(--accent)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:18px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+    .card h2{font-size:12px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+    .value{font-size:22px;font-weight:750}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
+    th{color:var(--muted);font-size:11px;text-transform:uppercase;position:sticky;top:0;background:var(--panel)}
+    .table-wrap{overflow:auto;max-height:60vh;border:1px solid var(--line);border-radius:14px}
+    .pending{color:var(--warn)}
+    .ready{color:var(--ok)}
+    .estimated{color:var(--muted);font-style:italic}
+    .empty{padding:18px;color:var(--muted)}
+    .pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:750;background:#123b2a;color:var(--ok)}
+    .pill.live{background:#451d27;color:var(--bad)}
+    footer{margin-top:20px;color:var(--muted);font-size:12px}
+    @media(max-width:720px){.head{display:block}.table-wrap{max-height:none}}
+  </style>
+<!-- favicon:start -->
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<!-- favicon:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+    <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
+  </head>
+<body>
+<main class="wrap">
+  <div class="head">
+    <div>
+      <h1>Canlı Veri Gecikme Testi</h1>
+      <p class="muted">Sağlayıcı → biz → DB → API → ekran arasındaki gerçek gecikmeyi gol olayları üzerinden ölçer.</p>
+    </div>
+    <div id="poll-status" class="muted">Başlatılıyor…</div>
+  </div>
+
+  <div class="note">
+    <strong>Okuma notu:</strong> API-Football gol olayı için mutlak saat vermiyor, yalnızca maçın kaçıncı dakikası. "Tahmini sağlayıcı zamanı" sütunu bu yüzden GERÇEK bir sağlayıcı damgası değil, başlama saatinden türetilmiş bir tahmindir (kickoff + dakika). Diğer dört sütun (çekme, DB yazma, API yanıtı, ekran) gerçek ölçülmüş zaman damgalarıdır.
+  </div>
+
+  <div class="controls">
+    <label for="match-select" class="muted">Canlı maç:</label>
+    <select id="match-select"><option value="">Yükleniyor…</option></select>
+    <button id="refresh-matches" type="button">Canlı maç listesini tazele</button>
+    <button id="refresh-now" type="button">Şimdi yokla</button>
+  </div>
+
+  <section class="grid">
+    <article class="card"><h2>Skor</h2><div id="score" class="value">—</div></article>
+    <article class="card"><h2>Durum / Dakika</h2><div id="minute" class="value">—</div></article>
+    <article class="card"><h2>Sağlayıcı yanıt süresi</h2><div id="fetch-duration" class="value">—</div></article>
+    <article class="card"><h2>Yoklama aralığı</h2><div id="poll-interval" class="value">7 sn</div></article>
+  </section>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Takım</th><th>Oyuncu</th><th>Dakika</th>
+          <th>Tahmini sağlayıcı zamanı</th>
+          <th>Bizim çekme zamanı</th>
+          <th>DB yazılma zamanı</th>
+          <th>API yanıt zamanı</th>
+          <th>Ekrana düşme zamanı</th>
+          <th>Çekme→DB</th><th>DB→API</th><th>API→Ekran</th><th>Toplam (tahmini→ekran)</th>
+        </tr>
+      </thead>
+      <tbody id="events-body"><tr><td colspan="12" class="empty">Canlı maç seçildiğinde gol olayları burada listelenir.</td></tr></tbody>
+    </table>
+  </div>
+
+  <footer>
+    Bu sayfa <code>/api/live-latency</code> uç noktasını <code>cache:"no-store"</code> ile 7 saniyede bir yoklar; her yeni gol olayı görüldüğü anda ekrana düşme zamanı sunucuya geri yazılır. Arama motorlarına kapalı (noindex), yalnızca teşhis amaçlıdır.
+  </footer>
+</main>
+<script>
+(function () {
+  "use strict";
+
+  var POLL_MS = 7000;
+  var renderedKeys = Object.create(null);
+  var pollTimer = null;
+  var currentMatchId = "";
+
+  function esc(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (ch) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch];
+    });
+  }
+
+  function fmtTime(iso) {
+    if (!iso) return '<span class="pending">bekleniyor</span>';
+    var date = new Date(iso);
+    if (isNaN(date.getTime())) return esc(iso);
+    return '<span class="ready">' + esc(new Intl.DateTimeFormat("tr-TR", {
+      timeZone: "Europe/Istanbul", hour: "2-digit", minute: "2-digit", second: "2-digit"
+    }).format(date)) + '</span>';
+  }
+
+  function fmtEstimated(iso) {
+    if (!iso) return '<span class="pending">—</span>';
+    var date = new Date(iso);
+    if (isNaN(date.getTime())) return esc(iso);
+    return '<span class="estimated">~' + esc(new Intl.DateTimeFormat("tr-TR", {
+      timeZone: "Europe/Istanbul", hour: "2-digit", minute: "2-digit", second: "2-digit"
+    }).format(date)) + '</span>';
+  }
+
+  function deltaMs(fromIso, toIso) {
+    if (!fromIso || !toIso) return null;
+    var from = Date.parse(fromIso);
+    var to = Date.parse(toIso);
+    if (!isFinite(from) || !isFinite(to)) return null;
+    return to - from;
+  }
+
+  function fmtDelta(ms) {
+    return ms === null ? '<span class="pending">—</span>' : (ms >= 0 ? ms : "—") + " ms";
+  }
+
+  function fetchJson(url) {
+    return fetch(url, { cache: "no-store" }).then(function (response) {
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      return response.json();
+    });
+  }
+
+  function beaconRendered(eventKey) {
+    if (renderedKeys[eventKey]) return;
+    renderedKeys[eventKey] = true;
+    fetch("/api/live-latency", {
+      method: "POST",
+      cache: "no-store",
+      keepalive: true,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ eventKey: eventKey })
+    }).catch(function () { /* Beacon başarısız olursa bir sonraki yoklamada tekrar denenir. */ delete renderedKeys[eventKey]; });
+  }
+
+  function renderEvents(events) {
+    var body = document.getElementById("events-body");
+    if (!events || !events.length) {
+      body.innerHTML = '<tr><td colspan="12" class="empty">Bu maçta henüz gol yok.</td></tr>';
+      return;
+    }
+
+    body.innerHTML = events.map(function (event) {
+      // İstemcinin ilk gördüğü an "ekrana düşme zamanı"dır — sunucudan
+      // gelmez, burada üretilir. Aynı olay ikinci kez görüldüğünde
+      // (sunucu client_rendered_at'ı geri yazınca) sunucudaki değer
+      // kullanılır; yerel tahminle çakışmasın diye.
+      var clientRenderedAt = event.clientRenderedAt;
+      if (!clientRenderedAt && !renderedKeys[event.eventKey]) {
+        clientRenderedAt = new Date().toISOString();
+        beaconRendered(event.eventKey);
+      }
+
+      var fetchToDb = deltaMs(event.firstSeenAt, event.dbWrittenAt);
+      var dbToApi = deltaMs(event.dbWrittenAt, event.apiResponseAt);
+      var apiToScreen = deltaMs(event.apiResponseAt, clientRenderedAt);
+      var estimatedToScreen = deltaMs(event.providerTimeEstimated, clientRenderedAt);
+
+      return "<tr>" +
+        "<td>" + esc(event.teamSide === "home" ? "Ev sahibi" : event.teamSide === "away" ? "Deplasman" : "—") + "</td>" +
+        "<td>" + esc(event.playerName || "Bilinmiyor") + "</td>" +
+        "<td>" + esc(event.providerElapsedMinute || "—") + "</td>" +
+        "<td>" + fmtEstimated(event.providerTimeEstimated) + "</td>" +
+        "<td>" + fmtTime(event.firstSeenAt) + "</td>" +
+        "<td>" + fmtTime(event.dbWrittenAt) + "</td>" +
+        "<td>" + fmtTime(event.apiResponseAt) + "</td>" +
+        "<td>" + fmtTime(clientRenderedAt) + "</td>" +
+        "<td>" + fmtDelta(fetchToDb) + "</td>" +
+        "<td>" + fmtDelta(dbToApi) + "</td>" +
+        "<td>" + fmtDelta(apiToScreen) + "</td>" +
+        "<td>" + fmtDelta(estimatedToScreen) + "</td>" +
+        "</tr>";
+    }).join("");
+  }
+
+  function renderSummary(payload) {
+    document.getElementById("score").textContent = payload.score
+      ? (payload.score.home == null ? "–" : payload.score.home) + " - " + (payload.score.away == null ? "–" : payload.score.away)
+      : "—";
+    document.getElementById("minute").textContent = [payload.status, payload.minute].filter(Boolean).join(" · ") || "—";
+    document.getElementById("fetch-duration").textContent = Number.isFinite(payload.fetchDurationMs) ? payload.fetchDurationMs + " ms" : "—";
+  }
+
+  function poll() {
+    if (!currentMatchId) return Promise.resolve();
+    var startedAt = Date.now();
+    document.getElementById("poll-status").textContent = "Yokluyor…";
+    return fetchJson("/api/live-latency?id=" + encodeURIComponent(currentMatchId))
+      .then(function (result) {
+        if (!result || result.ok === false) {
+          document.getElementById("poll-status").textContent = "Hata: " + ((result && result.error && result.error.message) || "bilinmiyor");
+          return;
+        }
+        renderSummary(result.data || {});
+        renderEvents((result.data && result.data.events) || []);
+        document.getElementById("poll-status").textContent =
+          "Son yoklama " + new Date().toLocaleTimeString("tr-TR") + " (" + (Date.now() - startedAt) + " ms sürdü)";
+      })
+      .catch(function (error) {
+        document.getElementById("poll-status").textContent = "Yoklama başarısız: " + error.message;
+      });
+  }
+
+  function startPolling() {
+    if (pollTimer) window.clearInterval(pollTimer);
+    poll();
+    pollTimer = window.setInterval(poll, POLL_MS);
+  }
+
+  function loadLiveMatches() {
+    var select = document.getElementById("match-select");
+    select.innerHTML = '<option value="">Yükleniyor…</option>';
+    return fetchJson("/api/matches?live=all").then(function (result) {
+      var matches = (result && result.data) || [];
+      if (!matches.length) {
+        select.innerHTML = '<option value="">Şu anda canlı maç yok</option>';
+        currentMatchId = "";
+        return;
+      }
+      select.innerHTML = matches.map(function (match) {
+        var label = (match.league || "Maç") + " · " + match.homeTeam + " " +
+          (match.score ? (match.score.home + "-" + match.score.away) : "") + " " + match.awayTeam;
+        return '<option value="' + esc(match.id) + '">' + esc(label) + "</option>";
+      }).join("");
+      currentMatchId = matches[0].id;
+      select.value = currentMatchId;
+      startPolling();
+    }).catch(function (error) {
+      select.innerHTML = '<option value="">Liste alınamadı</option>';
+      document.getElementById("poll-status").textContent = "Canlı maç listesi alınamadı: " + error.message;
+    });
+  }
+
+  document.getElementById("match-select").addEventListener("change", function (event) {
+    currentMatchId = event.target.value;
+    renderedKeys = Object.create(null);
+    if (currentMatchId) startPolling();
+  });
+  document.getElementById("refresh-matches").addEventListener("click", loadLiveMatches);
+  document.getElementById("refresh-now").addEventListener("click", poll);
+
+  loadLiveMatches();
+})();
+</script>
+</body>
+</html>

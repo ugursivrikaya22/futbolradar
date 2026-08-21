@@ -50,8 +50,16 @@ const env = require("../services/supabase/env.js");
 
 // ── 1. Şema/kod paritesi ────────────────────────────────────────────────
 
-const migrationPath = path.join(root, "supabase", "migrations", "0001_core_schema.sql");
-const migrationSql = fs.readFileSync(migrationPath, "utf8");
+// TÜM GÖÇ DOSYALARI — yalnızca 0001 değil. Şema ilk sürümden sonra
+// `NNNN_*.sql` göçleriyle büyüyor (bkz. 0002_live_event_latency.sql);
+// yeni bir tablo yalnızca en son göçte var olabilir ve tek dosya
+// okunduğunda test "tablo bulunamadı" diye YANLIŞ pozitif verir.
+const migrationsDir = path.join(root, "supabase", "migrations");
+const migrationSql = fs.readdirSync(migrationsDir)
+  .filter((file) => file.endsWith(".sql"))
+  .sort()
+  .map((file) => fs.readFileSync(path.join(migrationsDir, file), "utf8"))
+  .join("\n");
 
 function columnsInCreateTable(sql, tableName) {
   const pattern = new RegExp(`create table if not exists ${tableName} \\(([\\s\\S]*?)\\n\\);`, "m");

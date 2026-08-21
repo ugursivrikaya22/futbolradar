@@ -120,6 +120,19 @@ const TABLES = {
     name: "user_interactions",
     conflict: "id",
     columns: ["occurred_at", "kind", "subject_type", "subject_id", "locale", "session_key", "meta"]
+  },
+  // Canlı skor veri hattı gecikme kütüğü — bkz. services/liveEventLatency.js
+  // başlığındaki mimari notu. `event_key` üzerinden upsert edilir: satır
+  // önce sunucu zaman damgalarıyla yazılır, istemci ekrana bastığında aynı
+  // satır `client_rendered_at` ile güncellenir (iki ayrı yazma, aynı satır).
+  liveEventLatency: {
+    name: "live_event_latency",
+    conflict: "event_key",
+    columns: [
+      "match_id", "event_key", "event_kind", "team_side", "player_name",
+      "provider_elapsed_minute", "provider_time_estimated", "first_seen_at",
+      "db_written_at", "api_response_at", "client_rendered_at"
+    ]
   }
 };
 
