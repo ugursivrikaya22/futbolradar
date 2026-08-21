@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-21T17:32:58.392Z",
+  "fetchedAt": "2026-08-21T18:41:37.502Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -288300,12 +288300,12 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/716.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9612.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 31,
-      "elapsed": 31,
+      "providerStatus": "2H",
+      "minute": 84,
+      "elapsed": 84,
       "live": true,
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -288324,8 +288324,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T17:32:59.253Z",
-      "staleAfter": "2026-08-21T17:37:59.253Z",
+      "fetchedAt": "2026-08-21T18:41:38.670Z",
+      "staleAfter": "2026-08-21T18:46:38.670Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -288335,17 +288335,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 42' Normal Goal tarafından kaydedildi. Lugo skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Lugo tarafında.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "42'",
+            "text": "Son gol 42' Normal Goal tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "1-0",
+            "text": "Lugo skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 1,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -289362,7 +289367,19 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "42'",
+          "team": {
+            "name": "Lugo"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "ud-logrones-mirandes-2026-08-21",
@@ -289379,9 +289396,9 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/5280.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/799.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 31,
-      "elapsed": 31,
+      "providerStatus": "2H",
+      "minute": 79,
+      "elapsed": 79,
       "live": true,
       "score": {
         "home": 3,
@@ -289403,8 +289420,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T17:32:59.253Z",
-      "staleAfter": "2026-08-21T17:37:59.253Z",
+      "fetchedAt": "2026-08-21T18:41:38.670Z",
+      "staleAfter": "2026-08-21T18:46:38.670Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -289414,13 +289431,13 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Son gol 19' Normal Goal tarafından kaydedildi. UD Logroñés skor üstünlüğünü elinde tutuyor. Skor üstünlüğü UD Logroñés tarafında.",
+        "summary": "Son gol 18' I. Asenjo tarafından kaydedildi. UD Logroñés skor üstünlüğünü elinde tutuyor. Skor üstünlüğü UD Logroñés tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "19'",
-            "text": "Son gol 19' Normal Goal tarafından kaydedildi."
+            "value": "18'",
+            "text": "Son gol 18' I. Asenjo tarafından kaydedildi."
           },
           {
             "label": "Canlı skor",
@@ -290249,23 +290266,23 @@
           "comments": ""
         },
         {
-          "time": "8'",
+          "time": "7'",
           "team": {
             "name": "UD Logroñés"
           },
           "type": "Goal",
           "detail": "Normal Goal",
-          "value": "Normal Goal",
+          "value": "A. Morales · Normal Goal",
           "comments": ""
         },
         {
-          "time": "19'",
+          "time": "18'",
           "team": {
             "name": "UD Logroñés"
           },
           "type": "Goal",
           "detail": "Normal Goal",
-          "value": "Normal Goal",
+          "value": "I. Asenjo · Normal Goal",
           "comments": ""
         }
       ]
@@ -290285,13 +290302,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9632.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9577.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 3,
-      "elapsed": 3,
+      "providerStatus": "2H",
+      "minute": 52,
+      "elapsed": 52,
       "live": true,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -290309,8 +290326,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T17:32:59.253Z",
-      "staleAfter": "2026-08-21T17:37:59.253Z",
+      "fetchedAt": "2026-08-21T18:41:38.670Z",
+      "staleAfter": "2026-08-21T18:46:38.670Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -290320,17 +290337,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 41' Normal Goal tarafından kaydedildi. Skor dengede.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "41'",
+            "text": "Son gol 41' Normal Goal tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
+            "value": "1-1",
             "text": "Skor dengede."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 2,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -291067,7 +291089,29 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "23'",
+          "team": {
+            "name": "Real Avilés"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "N. Poquet · Penalty",
+          "comments": ""
+        },
+        {
+          "time": "41'",
+          "team": {
+            "name": "Sporting Gijón II"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "aldosivi-union-santa-fe-2026-08-21",
@@ -291084,13 +291128,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/463.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/441.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 3,
-      "elapsed": 3,
+      "providerStatus": "2H",
+      "minute": 52,
+      "elapsed": 52,
       "live": true,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -291108,8 +291152,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T17:32:59.253Z",
-      "staleAfter": "2026-08-21T17:37:59.253Z",
+      "fetchedAt": "2026-08-21T18:41:38.670Z",
+      "staleAfter": "2026-08-21T18:46:38.670Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -291119,17 +291163,42 @@
       "competitionId": "arjantin-primera",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "summary": "Union Santa Fe topa sahip olma oranında önde. Aldosivi daha fazla şut üretti.",
+        "confidence": "Yüksek",
         "signals": [
           {
+            "label": "Top hakimiyeti",
+            "value": "34%-66%",
+            "text": "Union Santa Fe topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "8-2",
+            "text": "Aldosivi daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "2-1",
+            "text": "Aldosivi isabetli şutlarda önde."
+          },
+          {
+            "label": "Gol beklentisi",
+            "value": "0.36-0.09",
+            "text": "Aldosivi daha yüksek pozisyon kalitesi üretti."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "51'",
+            "text": "Son gol 51' L. Menossi tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
+            "value": "1-1",
             "text": "Skor dengede."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 3,
+        "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -291585,12 +291654,12 @@
                       "percentage": "15.63%"
                     },
                     "76-90": {
-                      "total": 7,
-                      "percentage": "21.88%"
+                      "total": 6,
+                      "percentage": "18.75%"
                     },
                     "91-105": {
-                      "total": null,
-                      "percentage": null
+                      "total": 1,
+                      "percentage": "3.13%"
                     },
                     "106-120": {
                       "total": null,
@@ -291641,24 +291710,24 @@
                       "percentage": "3.33%"
                     },
                     "31-45": {
-                      "total": 6,
-                      "percentage": "20.00%"
+                      "total": 4,
+                      "percentage": "13.33%"
                     },
                     "46-60": {
-                      "total": 9,
-                      "percentage": "30.00%"
+                      "total": 11,
+                      "percentage": "36.67%"
                     },
                     "61-75": {
                       "total": 6,
                       "percentage": "20.00%"
                     },
                     "76-90": {
-                      "total": 7,
-                      "percentage": "23.33%"
+                      "total": 6,
+                      "percentage": "20.00%"
                     },
                     "91-105": {
-                      "total": null,
-                      "percentage": null
+                      "total": 1,
+                      "percentage": "3.33%"
                     },
                     "106-120": {
                       "total": null,
@@ -292558,26 +292627,26 @@
       "lineups": [
         {
           "team": "Aldosivi",
-          "formation": "4-4-2",
+          "formation": "4-2-3-1",
           "players": [
             "Lucas Acosta",
             "Elías López",
             "Néstor Breitenbruch",
             "Joaquin Pombo",
-            "Braian Cufré",
-            "Nicolás Gaitán",
+            "Mateo Vales",
             "Lucas Castro",
             "Alan Sosa",
-            "Matías Godoy",
             "Andrés Vombergar",
+            "Nicolás Gaitán",
+            "Matías Godoy",
             "Andrés Chávez"
           ],
           "substitutes": [
             "Ignacio Chicco",
+            "Braian Cufré",
             "Nicolás Zalazar",
             "Rodrigo González",
             "Santiago Moya",
-            "Mateo Vales",
             "Nathanael Guzmán",
             "Francisco Perruzzi",
             "Blas Agustín Palavecino",
@@ -292612,46 +292681,46 @@
               "grid": "2:2"
             },
             {
-              "name": "Braian Cufré",
-              "number": 13,
+              "name": "Mateo Vales",
+              "number": 38,
               "position": "D",
               "grid": "2:1"
-            },
-            {
-              "name": "Nicolás Gaitán",
-              "number": 10,
-              "position": "M",
-              "grid": "3:4"
             },
             {
               "name": "Lucas Castro",
               "number": 19,
               "position": "M",
-              "grid": "3:3"
+              "grid": "3:2"
             },
             {
               "name": "Alan Sosa",
               "number": 22,
-              "position": "M",
-              "grid": "3:2"
-            },
-            {
-              "name": "Matías Godoy",
-              "number": 21,
               "position": "M",
               "grid": "3:1"
             },
             {
               "name": "Andrés Vombergar",
               "number": 29,
-              "position": "F",
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Nicolás Gaitán",
+              "number": 10,
+              "position": "M",
               "grid": "4:2"
+            },
+            {
+              "name": "Matías Godoy",
+              "number": 21,
+              "position": "M",
+              "grid": "4:1"
             },
             {
               "name": "Andrés Chávez",
               "number": 18,
               "position": "F",
-              "grid": "4:1"
+              "grid": "5:1"
             }
           ],
           "substituteDetails": [
@@ -292659,6 +292728,12 @@
               "name": "Ignacio Chicco",
               "number": 23,
               "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Braian Cufré",
+              "number": 13,
+              "position": "D",
               "grid": null
             },
             {
@@ -292676,12 +292751,6 @@
             {
               "name": "Santiago Moya",
               "number": 28,
-              "position": "D",
-              "grid": null
-            },
-            {
-              "name": "Mateo Vales",
-              "number": 38,
               "position": "D",
               "grid": null
             },
@@ -292740,8 +292809,8 @@
             "Lucas Ayala",
             "Julián Palacios",
             "Lucas Menossi",
-            "Mauro Luna",
             "Emilio Giaccone",
+            "Mauro Luna",
             "Cristian Tarragona",
             "Marcelo Estigarribia"
           ],
@@ -292803,14 +292872,14 @@
               "grid": "3:3"
             },
             {
-              "name": "Mauro Luna",
-              "number": 11,
+              "name": "Emilio Giaccone",
+              "number": 8,
               "position": "M",
               "grid": "3:2"
             },
             {
-              "name": "Emilio Giaccone",
-              "number": 8,
+              "name": "Mauro Luna",
+              "number": 11,
               "position": "M",
               "grid": "3:1"
             },
@@ -292902,6 +292971,149 @@
             }
           ]
         }
+      ],
+      "events": [
+        {
+          "time": "18'",
+          "team": {
+            "name": "Aldosivi"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Vombergar · Asist: A. Sosa · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "45+2'",
+          "team": {
+            "name": "Union Santa Fe"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "J. Pintado · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "51'",
+          "team": {
+            "name": "Union Santa Fe"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "L. Menossi · Normal Goal",
+          "comments": ""
+        }
+      ],
+      "statistics": [
+        {
+          "category": "Hücum",
+          "type": "İsabetli şut",
+          "home": 2,
+          "away": 1,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 3,
+          "away": 0
+        },
+        {
+          "category": "Hücum",
+          "type": "Toplam şut",
+          "home": 8,
+          "away": 2,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 3,
+          "away": 1
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası içinden şut",
+          "home": 4,
+          "away": 2,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası dışından şut",
+          "home": 4,
+          "away": 0
+        },
+        {
+          "category": "Disiplin",
+          "type": "Faul",
+          "home": 3,
+          "away": 4
+        },
+        {
+          "category": "Genel",
+          "type": "Korner",
+          "home": 4,
+          "away": 2
+        },
+        {
+          "category": "Genel",
+          "type": "Ofsayt",
+          "home": 2,
+          "away": 0
+        },
+        {
+          "category": "Genel",
+          "type": "Topla oynama",
+          "home": 34,
+          "away": 66,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Savunma",
+          "type": "Kurtarış",
+          "home": 1,
+          "away": 1
+        },
+        {
+          "category": "Pas",
+          "type": "Toplam pas",
+          "home": 100,
+          "away": 203,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "İsabetli pas",
+          "home": 75,
+          "away": 173,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "Pas isabeti",
+          "home": 75,
+          "away": 85,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Genel",
+          "type": "Gol beklentisi (xG)",
+          "home": 0.36,
+          "away": 0.09,
+          "decimals": 2,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Savunma",
+          "type": "Önlenen gol",
+          "home": -0.01,
+          "away": -0.01,
+          "decimals": 2,
+          "higherIsBetter": true
+        }
       ]
     },
     {
@@ -292919,13 +293131,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9723.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/725.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 5,
-      "elapsed": 5,
+      "providerStatus": "2H",
+      "minute": 59,
+      "elapsed": 59,
       "live": true,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -292943,8 +293155,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T17:32:59.253Z",
-      "staleAfter": "2026-08-21T17:37:59.253Z",
+      "fetchedAt": "2026-08-21T18:41:38.670Z",
+      "staleAfter": "2026-08-21T18:46:38.670Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -292954,17 +293166,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 39' Normal Goal tarafından kaydedildi. Skor dengede.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "39'",
+            "text": "Son gol 39' Normal Goal tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
+            "value": "1-1",
             "text": "Skor dengede."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 2,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -293701,7 +293918,29 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "8'",
+          "team": {
+            "name": "Cultural Leonesa"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "39'",
+          "team": {
+            "name": "Atlético Astorga"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "zaragoza-athletic-club-2026-08-21",
@@ -294861,9 +295100,9 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/5281.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9384.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 1,
-      "elapsed": 1,
+      "providerStatus": "2H",
+      "minute": 51,
+      "elapsed": 51,
       "live": true,
       "score": {
         "home": 0,
@@ -294885,8 +295124,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T17:32:59.253Z",
-      "staleAfter": "2026-08-21T17:37:59.253Z",
+      "fetchedAt": "2026-08-21T18:41:38.670Z",
+      "staleAfter": "2026-08-21T18:46:38.670Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -295775,14 +296014,14 @@
       "league": "Süper Lig",
       "kickoff": "2026-08-21T21:30:00+03:00",
       "time": "21:30",
-      "venue": null,
+      "venue": "Kazim Karabekir Stadyumu",
       "broadcast": null,
       "homeTeam": "Erzurumspor FK",
       "awayTeam": "Galatasaray",
-      "status": "SCHEDULED",
+      "status": "LIVE",
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -296749,13 +296988,13 @@
       },
       "predictionFetchedAt": "2026-08-17T19:30:16.611Z",
       "providerLeagueId": "203",
-      "referee": "C. Altay",
+      "referee": "Cagdas Altay, Türkiye",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/1009.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/645.png",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "providerStatus": "1H",
+      "minute": 11,
+      "elapsed": 11,
+      "live": true,
       "homeForm": null,
       "awayForm": null,
       "homeMomentum": null,
@@ -296769,19 +297008,362 @@
       "goalPotential": null,
       "risk": null,
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T16:39:36.535Z",
-      "staleAfter": "2026-08-21T16:44:36.535Z",
+      "fetchedAt": "2026-08-21T18:41:38.670Z",
+      "staleAfter": "2026-08-21T18:46:38.670Z",
       "needsReview": false,
       "resource": "matches",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
-        "confidence": "Sınırlı",
-        "signals": [],
-        "eventCount": 0,
-        "dataPoints": 0,
+        "title": "Canlı Radar Analizi",
+        "summary": "Son gol 12' Normal Goal tarafından kaydedildi. Skor dengede.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "12'",
+            "text": "Son gol 12' Normal Goal tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
+        "eventCount": 1,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
-      }
+      },
+      "lineups": [
+        {
+          "team": "Erzurumspor FK",
+          "formation": "4-1-4-1",
+          "players": [
+            "Matija Orbanić",
+            "Orhan Ovacıklı",
+            "Amar Gerxhaliu",
+            "Yakup Kırtay",
+            "Nihad Mujakić",
+            "Brandon Baiye",
+            "Eren Tozlu",
+            "Elisha Owusu",
+            "Martín Rodríguez",
+            "Mustafa Fettahoglu",
+            "Gyrano Kerk"
+          ],
+          "substitutes": [
+            "Ertuğrul Taşkıran",
+            "Guram Giorbelidze",
+            "Mustafa Yumlu",
+            "Festy Ebosele",
+            "Sefa Akgün",
+            "Murat Cem Akpinar",
+            "Fernando Andrade",
+            "Miguel Cardoso",
+            "İlkan Sever",
+            "Nariman Akhundzade"
+          ],
+          "startingDetails": [
+            {
+              "name": "Matija Orbanić",
+              "number": 31,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Orhan Ovacıklı",
+              "number": 53,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Amar Gerxhaliu",
+              "number": 4,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Yakup Kırtay",
+              "number": 3,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Nihad Mujakić",
+              "number": 18,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Brandon Baiye",
+              "number": 6,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Eren Tozlu",
+              "number": 10,
+              "position": "M",
+              "grid": "4:4"
+            },
+            {
+              "name": "Elisha Owusu",
+              "number": 42,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Martín Rodríguez",
+              "number": 65,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Mustafa Fettahoglu",
+              "number": 99,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "Gyrano Kerk",
+              "number": 9,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Ertuğrul Taşkıran",
+              "number": 1,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Guram Giorbelidze",
+              "number": 15,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Mustafa Yumlu",
+              "number": 22,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Festy Ebosele",
+              "number": 2,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Sefa Akgün",
+              "number": 8,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Murat Cem Akpinar",
+              "number": 5,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Fernando Andrade",
+              "number": 11,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Miguel Cardoso",
+              "number": 20,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "İlkan Sever",
+              "number": 7,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Nariman Akhundzade",
+              "number": 90,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        },
+        {
+          "team": "Galatasaray",
+          "formation": "4-2-3-1",
+          "players": [
+            "Uğurcan Çakır",
+            "Roland Sallai",
+            "Abdülkerim Bardakcı",
+            "Davinson Sánchez",
+            "Ismail Jakobs",
+            "Lucas Torreira",
+            "Gabriel Sara",
+            "Mario Lemina",
+            "Yunus Akgün",
+            "Barış Alper Yılmaz",
+            "Victor Osimhen"
+          ],
+          "substitutes": [
+            "Jankat Yılmaz",
+            "Kaan Ayhan",
+            "Eren Elmalı",
+            "Kazımcan Karataş",
+            "Arda Ünyay",
+            "Wilfried Singo",
+            "Lesley Ugochukwu",
+            "İlkay Gündoğan",
+            "Renato Nhaga",
+            "Leroy Sané"
+          ],
+          "startingDetails": [
+            {
+              "name": "Uğurcan Çakır",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Roland Sallai",
+              "number": 7,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Abdülkerim Bardakcı",
+              "number": 42,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Davinson Sánchez",
+              "number": 6,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Ismail Jakobs",
+              "number": 4,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Lucas Torreira",
+              "number": 34,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Gabriel Sara",
+              "number": 8,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Mario Lemina",
+              "number": 99,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Yunus Akgün",
+              "number": 11,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Barış Alper Yılmaz",
+              "number": 53,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "Victor Osimhen",
+              "number": 45,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Jankat Yılmaz",
+              "number": 24,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Kaan Ayhan",
+              "number": 23,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Eren Elmalı",
+              "number": 17,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Kazımcan Karataş",
+              "number": 88,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Arda Ünyay",
+              "number": 91,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Wilfried Singo",
+              "number": 90,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Lesley Ugochukwu",
+              "number": 18,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "İlkay Gündoğan",
+              "number": 20,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Renato Nhaga",
+              "number": 74,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Leroy Sané",
+              "number": 10,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        }
+      ],
+      "events": [
+        {
+          "time": "12'",
+          "team": {
+            "name": "Galatasaray"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "fatih-karagumruk-bursaspor-2026-08-21",
@@ -296789,22 +297371,22 @@
       "league": "1. Lig",
       "providerLeagueId": "204",
       "round": 3,
-      "venue": "Ataturk Olimpiyat",
-      "referee": null,
+      "venue": "Atatürk Olympic Stadium",
+      "referee": "Gurcan Hasova, Türkiye",
       "kickoff": "2026-08-21T21:30:00+03:00",
       "time": "21:30",
       "homeTeam": "Fatih Karagümrük",
       "awayTeam": "Bursaspor",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3589.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1003.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 12,
+      "elapsed": 12,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -296822,15 +297404,1094 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-20T22:32:04.650Z",
-      "staleAfter": "2026-08-20T22:37:04.650Z",
+      "fetchedAt": "2026-08-21T18:41:38.670Z",
+      "staleAfter": "2026-08-21T18:46:38.670Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1585714"
       },
-      "competitionId": "1-lig"
+      "competitionId": "1-lig",
+      "lineups": [
+        {
+          "team": "Fatih Karagümrük",
+          "formation": null,
+          "players": [],
+          "substitutes": [],
+          "startingDetails": [],
+          "substituteDetails": []
+        },
+        {
+          "team": "Bursaspor",
+          "formation": null,
+          "players": [],
+          "substitutes": [],
+          "startingDetails": [],
+          "substituteDetails": []
+        }
+      ],
+      "events": [
+        {
+          "time": "8'",
+          "team": {
+            "name": "Fatih Karagümrük"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Pesic · Asist: T. Cukur · Normal Goal",
+          "comments": ""
+        }
+      ],
+      "analysis": {
+        "title": "Canlı Radar Analizi",
+        "summary": "Son gol 8' A. Pesic tarafından kaydedildi. Fatih Karagümrük skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Fatih Karagümrük tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "8'",
+            "text": "Son gol 8' A. Pesic tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-0",
+            "text": "Fatih Karagümrük skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 1,
+        "dataPoints": 2,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 1003,
+            "name": "Bursaspor",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": null,
+          "goals": {
+            "home": "-1.5",
+            "away": "-2.5"
+          },
+          "advice": "Double chance : draw or Bursaspor",
+          "percent": {
+            "home": "10%",
+            "draw": "45%",
+            "away": "45%"
+          }
+        },
+        "league": {
+          "id": 204,
+          "name": "1. Lig",
+          "country": "Turkey",
+          "logo": "https://media.api-sports.io/football/leagues/204.png",
+          "flag": "https://media.api-sports.io/flags/tr.svg",
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 3589,
+            "name": "Fatih Karagümrük",
+            "logo": "https://media.api-sports.io/football/teams/3589.png",
+            "last_5": {
+              "played": 2,
+              "form": "50%",
+              "att": "18%",
+              "def": "73%",
+              "goals": {
+                "for": {
+                  "total": 2,
+                  "average": "1.0"
+                },
+                "against": {
+                  "total": 3,
+                  "average": "1.5"
+                }
+              }
+            },
+            "league": {
+              "form": "LW",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                },
+                "wins": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 2,
+                    "away": 0,
+                    "total": 2
+                  },
+                  "average": {
+                    "home": "2.0",
+                    "away": "0.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 1,
+                    "away": 2,
+                    "total": 3
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "2.0",
+                    "total": "1.5"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": "2-1",
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": "2-0"
+                },
+                "goals": {
+                  "for": {
+                    "home": 2,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 1,
+                    "away": 2
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [
+                {
+                  "formation": "4-2-3-1",
+                  "played": 2
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": 1,
+                    "percentage": "50.00%"
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "50.00%"
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 1003,
+            "name": "Bursaspor",
+            "logo": "https://media.api-sports.io/football/teams/1003.png",
+            "last_5": {
+              "played": 2,
+              "form": "100%",
+              "att": "27%",
+              "def": "100%",
+              "goals": {
+                "for": {
+                  "total": 3,
+                  "average": "1.5"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": "WW",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                },
+                "wins": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 1,
+                    "away": 2,
+                    "total": 3
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "2.0",
+                    "total": "1.5"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 2,
+                      "percentage": "66.67%"
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 2,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": "1-0",
+                  "away": "0-2"
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 1,
+                    "away": 2
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 1,
+                "away": 1,
+                "total": 2
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [
+                {
+                  "formation": "4-4-2",
+                  "played": 1
+                },
+                {
+                  "formation": "4-2-3-1",
+                  "played": 1
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": 1,
+                    "percentage": "50.00%"
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": 1,
+                    "percentage": "50.00%"
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "33%",
+            "away": "67%"
+          },
+          "att": {
+            "home": "40%",
+            "away": "60%"
+          },
+          "def": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "h2h": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "goals": {
+            "home": "46%",
+            "away": "54%"
+          },
+          "total": {
+            "home": "42.3%",
+            "away": "57.8%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 811886,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2021-10-10T00:00:00+00:00",
+              "timestamp": 1633824000,
+              "periods": {
+                "first": 1633824000,
+                "second": 1633827600
+              },
+              "venue": {
+                "id": 1968,
+                "name": "Atatürk Olimpiyat Stadı",
+                "city": "İstanbul"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 667,
+              "name": "Friendlies Clubs",
+              "country": "World",
+              "logo": "https://media.api-sports.io/football/leagues/667.png",
+              "flag": null,
+              "season": 2021,
+              "round": "Club Friendlies 2",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 3589,
+                "name": "Fatih Karagümrük",
+                "logo": "https://media.api-sports.io/football/teams/3589.png",
+                "winner": true
+              },
+              "away": {
+                "id": 1003,
+                "name": "Bursaspor",
+                "logo": "https://media.api-sports.io/football/teams/1003.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 215401,
+              "referee": "H. Ceylan",
+              "timezone": "UTC",
+              "date": "2020-01-19T16:00:00+00:00",
+              "timestamp": 1579449600,
+              "periods": {
+                "first": 1579449600,
+                "second": 1579453200
+              },
+              "venue": {
+                "id": 1579,
+                "name": "Bursa Büyükşehir Belediye Stadyumu",
+                "city": "Bursa"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 204,
+              "name": "1. Lig",
+              "country": "Turkey",
+              "logo": "https://media.api-sports.io/football/leagues/204.png",
+              "flag": "https://media.api-sports.io/flags/tr.svg",
+              "season": 2019,
+              "round": "Regular Season - 18",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 1003,
+                "name": "Bursaspor",
+                "logo": "https://media.api-sports.io/football/teams/1003.png",
+                "winner": true
+              },
+              "away": {
+                "id": 3589,
+                "name": "Fatih Karagümrük",
+                "logo": "https://media.api-sports.io/football/teams/3589.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 215248,
+              "referee": "K. Bilgiç",
+              "timezone": "UTC",
+              "date": "2019-08-17T16:15:00+00:00",
+              "timestamp": 1566058500,
+              "periods": {
+                "first": 1566058500,
+                "second": 1566062100
+              },
+              "venue": {
+                "id": 2380,
+                "name": "Necmi Kadıoğlu Stadyumu",
+                "city": "İstanbul"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 204,
+              "name": "1. Lig",
+              "country": "Turkey",
+              "logo": "https://media.api-sports.io/football/leagues/204.png",
+              "flag": "https://media.api-sports.io/flags/tr.svg",
+              "season": 2019,
+              "round": "Regular Season - 1",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 3589,
+                "name": "Fatih Karagümrük",
+                "logo": "https://media.api-sports.io/football/teams/3589.png",
+                "winner": true
+              },
+              "away": {
+                "id": 1003,
+                "name": "Bursaspor",
+                "logo": "https://media.api-sports.io/football/teams/1003.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 515054,
+              "referee": "A. Ulusoy",
+              "timezone": "UTC",
+              "date": "2015-02-05T16:00:00+00:00",
+              "timestamp": 1423152000,
+              "periods": {
+                "first": 1423152000,
+                "second": 1423155600
+              },
+              "venue": {
+                "id": null,
+                "name": "Bursa Atatürk Stadyumu",
+                "city": "Bursa"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 206,
+              "name": "Türkiye Kupası",
+              "country": "Turkey",
+              "logo": "https://media.api-sports.io/football/leagues/206.png",
+              "flag": "https://media.api-sports.io/flags/tr.svg",
+              "season": 2014,
+              "round": "Group Stage - 6",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 1003,
+                "name": "Bursaspor",
+                "logo": "https://media.api-sports.io/football/teams/1003.png",
+                "winner": true
+              },
+              "away": {
+                "id": 3589,
+                "name": "Fatih Karagümrük",
+                "logo": "https://media.api-sports.io/football/teams/3589.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 514983,
+              "referee": "K. Gençerler",
+              "timezone": "UTC",
+              "date": "2014-12-17T10:00:00+00:00",
+              "timestamp": 1418810400,
+              "periods": {
+                "first": 1418810400,
+                "second": 1418814000
+              },
+              "venue": {
+                "id": 2391,
+                "name": "Vefa Stadı",
+                "city": "İstanbul"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 206,
+              "name": "Türkiye Kupası",
+              "country": "Turkey",
+              "logo": "https://media.api-sports.io/football/leagues/206.png",
+              "flag": "https://media.api-sports.io/flags/tr.svg",
+              "season": 2014,
+              "round": "Group Stage - 2",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 3589,
+                "name": "Fatih Karagümrük",
+                "logo": "https://media.api-sports.io/football/teams/3589.png",
+                "winner": null
+              },
+              "away": {
+                "id": 1003,
+                "name": "Bursaspor",
+                "logo": "https://media.api-sports.io/football/teams/1003.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "marseille-strasbourg-2026-08-21",
