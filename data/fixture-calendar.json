@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-21T19:04:19.766Z",
+  "fetchedAt": "2026-08-21T20:30:33.138Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -288324,8 +288324,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T19:04:20.819Z",
-      "staleAfter": "2026-08-21T19:09:20.819Z",
+      "fetchedAt": "2026-08-21T20:30:33.913Z",
+      "staleAfter": "2026-08-21T20:35:33.913Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -288335,22 +288335,17 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Son gol 42' Normal Goal tarafından kaydedildi. Lugo skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Lugo tarafında.",
-        "confidence": "Orta",
+        "summary": "Lugo skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Lugo tarafında.",
+        "confidence": "Sınırlı",
         "signals": [
-          {
-            "label": "Gol akışı",
-            "value": "42'",
-            "text": "Son gol 42' Normal Goal tarafından kaydedildi."
-          },
           {
             "label": "Canlı skor",
             "value": "1-0",
             "text": "Lugo skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 1,
-        "dataPoints": 2,
+        "eventCount": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -290311,14 +290306,14 @@
       "awayTeam": "Sporting Gijón II",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9632.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9577.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 75,
-      "elapsed": 75,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 3,
-        "away": 1,
+        "home": 4,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -290336,8 +290331,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T19:04:20.819Z",
-      "staleAfter": "2026-08-21T19:09:20.819Z",
+      "fetchedAt": "2026-08-21T20:30:33.913Z",
+      "staleAfter": "2026-08-21T20:35:33.913Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -290346,22 +290341,22 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 64' Normal Goal tarafından kaydedildi. Real Avilés skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Real Avilés tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 90+3' Normal Goal tarafından kaydedildi. Real Avilés skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Real Avilés tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "64'",
-            "text": "Son gol 64' Normal Goal tarafından kaydedildi."
+            "value": "90+3'",
+            "text": "Son gol 90+3' Normal Goal tarafından kaydedildi."
           },
           {
             "label": "Canlı skor",
-            "value": "3-1",
+            "value": "4-2",
             "text": "Real Avilés skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 4,
+        "eventCount": 6,
         "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
@@ -290401,8 +290396,8 @@
             "last_5": {
               "played": 5,
               "form": "40%",
-              "att": "40%",
-              "def": "67%",
+              "att": "60%",
+              "def": "50%",
               "goals": {
                 "for": {
                   "total": 6,
@@ -290702,8 +290697,8 @@
             "last_5": {
               "played": 4,
               "form": "67%",
-              "att": "47%",
-              "def": "80%",
+              "att": "70%",
+              "def": "70%",
               "goals": {
                 "for": {
                   "total": 7,
@@ -291140,6 +291135,26 @@
           "detail": "Normal Goal",
           "value": "Normal Goal",
           "comments": ""
+        },
+        {
+          "time": "86'",
+          "team": {
+            "name": "Sporting Gijón II"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "90+3'",
+          "team": {
+            "name": "Real Avilés"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
         }
       ]
     },
@@ -291157,11 +291172,11 @@
       "awayTeam": "Union Santa Fe",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/463.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/441.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 74,
-      "elapsed": 74,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 1,
         "away": 3,
@@ -291182,8 +291197,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T19:04:20.819Z",
-      "staleAfter": "2026-08-21T19:09:20.819Z",
+      "fetchedAt": "2026-08-21T20:30:33.913Z",
+      "staleAfter": "2026-08-21T20:35:33.913Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -291192,7 +291207,7 @@
       },
       "competitionId": "arjantin-primera",
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "Union Santa Fe topa sahip olma oranında önde. Union Santa Fe daha fazla şut üretti. Skor üstünlüğü Union Santa Fe tarafında.",
         "confidence": "Yüksek",
         "signals": [
@@ -291217,14 +291232,19 @@
             "text": "Union Santa Fe daha yüksek pozisyon kalitesi üretti."
           },
           {
+            "label": "Disiplin dengesi",
+            "value": "1 kırmızı kart",
+            "text": "Union Santa Fe kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+          },
+          {
             "label": "Gol akışı",
             "value": "64'",
             "text": "Son gol 64' C. Tarragona tarafından kaydedildi."
           },
           {
             "label": "Teknik hamleler",
-            "value": "4 değişiklik",
-            "text": "Kulübeler oyuna müdahale etti; 4 oyuncu değişikliği kayda geçti."
+            "value": "8 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
@@ -291232,8 +291252,8 @@
             "text": "Union Santa Fe skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 10,
-        "dataPoints": 7,
+        "eventCount": 17,
+        "dataPoints": 8,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -293107,6 +293127,76 @@
           "detail": "Substitution 4",
           "value": "M. Vales · Asist: M. Garcia · Substitution 4",
           "comments": ""
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "Aldosivi"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "B. Dadin · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "80'",
+          "team": {
+            "name": "Union Santa Fe"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "M. Estigarribia · Asist: E. Ramirez · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "82'",
+          "team": {
+            "name": "Aldosivi"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "N. Breitenbruch · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "82'",
+          "team": {
+            "name": "Aldosivi"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "A. Vombergar · Asist: N. Guzman · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "Union Santa Fe"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "J. Palacios · Red Card",
+          "comments": "Serious foul"
+        },
+        {
+          "time": "86'",
+          "team": {
+            "name": "Union Santa Fe"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "C. Tarragona · Asist: B. Cuello · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "90+2'",
+          "team": {
+            "name": "Union Santa Fe"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "J. Pintado · Asist: M. Rocha · Substitution 3",
+          "comments": ""
         }
       ],
       "statistics": [
@@ -293225,6 +293315,590 @@
           "decimals": 2,
           "higherIsBetter": true
         }
+      ],
+      "players": [
+        {
+          "name": "Lucas Acosta",
+          "team": "Aldosivi",
+          "providerPlayerId": "6563",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "G",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "saves": 2,
+          "passes": 16,
+          "passAccuracy": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Elías López",
+          "team": "Aldosivi",
+          "providerPlayerId": "125333",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "D",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 18,
+          "passAccuracy": 14,
+          "tackles": 2,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Néstor Breitenbruch",
+          "team": "Aldosivi",
+          "providerPlayerId": "36357",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "D",
+          "providerRating": 5.6,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 16,
+          "passAccuracy": 8,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Joaquin Pombo",
+          "team": "Aldosivi",
+          "providerPlayerId": "296493",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "D",
+          "providerRating": 5.9,
+          "ratingSource": "api-football",
+          "passes": 16,
+          "passAccuracy": 13,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mateo Vales",
+          "team": "Aldosivi",
+          "providerPlayerId": "669471",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "D",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 9,
+          "passAccuracy": 7,
+          "tackles": 2,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lucas Castro",
+          "team": "Aldosivi",
+          "providerPlayerId": "30567",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 21,
+          "passAccuracy": 13,
+          "tackles": 2,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Alan Sosa",
+          "team": "Aldosivi",
+          "providerPlayerId": "405692",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "M",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 37,
+          "passAccuracy": 32,
+          "tackles": 3,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Andrés Vombergar",
+          "team": "Aldosivi",
+          "providerPlayerId": "53722",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "M",
+          "providerRating": 8.3,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 3,
+          "shotsOnTarget": 1,
+          "passes": 15,
+          "passAccuracy": 8,
+          "tackles": 5,
+          "duelsWon": 12,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nicolás Gaitán",
+          "team": "Aldosivi",
+          "providerPlayerId": "50907",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 15,
+          "passAccuracy": 12,
+          "tackles": 4,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Matías Godoy",
+          "team": "Aldosivi",
+          "providerPlayerId": "5654",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "M",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "passes": 13,
+          "passAccuracy": 12,
+          "tackles": 3,
+          "duelsWon": 11,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Andrés Chávez",
+          "team": "Aldosivi",
+          "providerPlayerId": "6190",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "F",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 12,
+          "passAccuracy": 7,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ignacio Chicco",
+          "team": "Aldosivi",
+          "providerPlayerId": "6634",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Braian Cufré",
+          "team": "Aldosivi",
+          "providerPlayerId": "6048",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nicolás Zalazar",
+          "team": "Aldosivi",
+          "providerPlayerId": "5632",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Rodrigo González",
+          "team": "Aldosivi",
+          "providerPlayerId": "6502",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Santiago Moya",
+          "team": "Aldosivi",
+          "providerPlayerId": "310986",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nathanael Guzmán",
+          "team": "Aldosivi",
+          "providerPlayerId": "195757",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Francisco Perruzzi",
+          "team": "Aldosivi",
+          "providerPlayerId": "311320",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Blas Agustín Palavecino",
+          "team": "Aldosivi",
+          "providerPlayerId": "344891",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Martin Garcia",
+          "team": "Aldosivi",
+          "providerPlayerId": "475004",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Felipe Anso",
+          "team": "Aldosivi",
+          "providerPlayerId": "560365",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nicolás Cordero",
+          "team": "Aldosivi",
+          "providerPlayerId": "6191",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Juan Bautista Dadín",
+          "team": "Aldosivi",
+          "providerPlayerId": "524235",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Matías Mansilla",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "59258",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "G",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "saves": 2,
+          "passes": 6,
+          "passAccuracy": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Juan Pintado",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "51522",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "D",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 38,
+          "passAccuracy": 32,
+          "tackles": 2,
+          "duelsWon": 5,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Maizon Rodriguez",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "381266",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 37,
+          "passAccuracy": 35,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Juan Pablo Ludueña",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "376599",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "D",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "passes": 46,
+          "passAccuracy": 40,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lucas Ayala",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "560263",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "D",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 22,
+          "passAccuracy": 19,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Julián Palacios",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "167652",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "M",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "shots": 2,
+          "shotsOnTarget": 1,
+          "passes": 54,
+          "passAccuracy": 38,
+          "tackles": 6,
+          "duelsWon": 9,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lucas Menossi",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "6152",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "M",
+          "providerRating": 7.6,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 49,
+          "passAccuracy": 42,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Emilio Giaccone",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "503765",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "M",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 32,
+          "passAccuracy": 29,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mauro Luna",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "51409",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 35,
+          "passAccuracy": 30,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Cristian Tarragona",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "5312",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "F",
+          "providerRating": 7.6,
+          "ratingSource": "api-football",
+          "goals": 2,
+          "shots": 6,
+          "shotsOnTarget": 2,
+          "passes": 27,
+          "passAccuracy": 25,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Marcelo Estigarribia",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "27613",
+          "source": "api-football",
+          "minutes": 65,
+          "position": "F",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "shots": 1,
+          "passes": 14,
+          "passAccuracy": 11,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lucas Meuli",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "363348",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Bruno Pittón",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "6110",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Matías Rocha",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "283338",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Tomás Fagioli",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "645359",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nazareno Fazzi",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "660323",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Valentín Cerrudo",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "560310",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Santino Vera",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "415032",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Brahian Cuello",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "58684",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Santiago Grella",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "538364",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mateo Peresutti",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "560448",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Misael Aguirre",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "555909",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Eric Ramírez",
+          "team": "Union Santa Fe",
+          "providerPlayerId": "5687",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        }
       ]
     },
     {
@@ -293241,11 +293915,11 @@
       "awayTeam": "Cultural Leonesa",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9723.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/725.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 82,
-      "elapsed": 82,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 1,
         "away": 1,
@@ -293266,8 +293940,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T19:04:20.819Z",
-      "staleAfter": "2026-08-21T19:09:20.819Z",
+      "fetchedAt": "2026-08-21T20:30:33.913Z",
+      "staleAfter": "2026-08-21T20:35:33.913Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -293276,23 +293950,18 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 39' Normal Goal tarafından kaydedildi. Skor dengede.",
-        "confidence": "Orta",
+        "title": "Maç Radar Analizi",
+        "summary": "Skor dengede.",
+        "confidence": "Sınırlı",
         "signals": [
-          {
-            "label": "Gol akışı",
-            "value": "39'",
-            "text": "Son gol 39' Normal Goal tarafından kaydedildi."
-          },
           {
             "label": "Canlı skor",
             "value": "1-1",
             "text": "Skor dengede."
           }
         ],
-        "eventCount": 2,
-        "dataPoints": 2,
+        "eventCount": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -293331,8 +294000,8 @@
             "last_5": {
               "played": 2,
               "form": "17%",
-              "att": "13%",
-              "def": "73%",
+              "att": "20%",
+              "def": "60%",
               "goals": {
                 "for": {
                   "total": 2,
@@ -293632,8 +294301,8 @@
             "last_5": {
               "played": 4,
               "form": "33%",
-              "att": "40%",
-              "def": "73%",
+              "att": "60%",
+              "def": "60%",
               "goals": {
                 "for": {
                   "total": 6,
@@ -295210,13 +295879,13 @@
       "awayTeam": "Cacereño",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/5281.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9384.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 74,
-      "elapsed": 74,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -295235,8 +295904,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T19:04:20.819Z",
-      "staleAfter": "2026-08-21T19:09:20.819Z",
+      "fetchedAt": "2026-08-21T20:30:33.913Z",
+      "staleAfter": "2026-08-21T20:35:33.913Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -295245,14 +295914,14 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
+        "title": "Maç Radar Analizi",
+        "summary": "Unionistas de Salamanca skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Unionistas de Salamanca tarafında.",
         "confidence": "Sınırlı",
         "signals": [
           {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "1-0",
+            "text": "Unionistas de Salamanca skor üstünlüğünü elinde tutuyor."
           }
         ],
         "eventCount": 0,
@@ -296079,14 +296748,14 @@
       "awayTeam": "Atlético Baleares",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9575.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9381.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -296104,15 +296773,1255 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T10:34:56.478Z",
-      "staleAfter": "2026-08-21T10:39:56.478Z",
+      "fetchedAt": "2026-08-21T20:30:33.913Z",
+      "staleAfter": "2026-08-21T20:35:33.913Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1627015"
       },
-      "competitionId": "hazirlik-maci"
+      "competitionId": "hazirlik-maci",
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Atlético Baleares skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Atlético Baleares tarafında.",
+        "confidence": "Sınırlı",
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-2",
+            "text": "Atlético Baleares skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 0,
+        "dataPoints": 1,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 9575,
+            "name": "Real Madrid II",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": null,
+          "goals": {
+            "home": "-2.5",
+            "away": "-2.5"
+          },
+          "advice": "Double chance : Real Madrid II or draw",
+          "percent": {
+            "home": "45%",
+            "draw": "45%",
+            "away": "10%"
+          }
+        },
+        "league": {
+          "id": 667,
+          "name": "Friendlies Clubs",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/667.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 9575,
+            "name": "Real Madrid II",
+            "logo": "https://media.api-sports.io/football/teams/9575.png",
+            "last_5": {
+              "played": 5,
+              "form": "60%",
+              "att": "47%",
+              "def": "67%",
+              "goals": {
+                "for": {
+                  "total": 7,
+                  "average": "1.4"
+                },
+                "against": {
+                  "total": 5,
+                  "average": "1.0"
+                }
+              }
+            },
+            "league": {
+              "form": "WWDDD",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 4,
+                  "total": 5
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 2,
+                  "total": 2
+                },
+                "draws": {
+                  "home": 1,
+                  "away": 2,
+                  "total": 3
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 7,
+                    "total": 7
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "1.8",
+                    "total": "1.4"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 2,
+                      "percentage": "50.00%"
+                    },
+                    "31-45": {
+                      "total": 2,
+                      "percentage": "50.00%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 4,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 3,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 5
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 5
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 5
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 5,
+                    "total": 5
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "1.3",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 2
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 3
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 5
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 5
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 5
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 2,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": "1-2"
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 2
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 2
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 1,
+                "away": 1,
+                "total": 2
+              },
+              "failed_to_score": {
+                "home": 1,
+                "away": 0,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 1,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 1
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 9381,
+            "name": "Atlético Baleares",
+            "logo": "https://media.api-sports.io/football/teams/9381.png",
+            "last_5": {
+              "played": 4,
+              "form": "75%",
+              "att": "53%",
+              "def": "73%",
+              "goals": {
+                "for": {
+                  "total": 8,
+                  "average": "2.0"
+                },
+                "against": {
+                  "total": 4,
+                  "average": "1.0"
+                }
+              }
+            },
+            "league": {
+              "form": "WWLW",
+              "fixtures": {
+                "played": {
+                  "home": 2,
+                  "away": 2,
+                  "total": 4
+                },
+                "wins": {
+                  "home": 2,
+                  "away": 1,
+                  "total": 3
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 5,
+                    "away": 3,
+                    "total": 8
+                  },
+                  "average": {
+                    "home": "2.5",
+                    "away": "1.5",
+                    "total": "2.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 3,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 2,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 4
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 2,
+                    "away": 2,
+                    "total": 4
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "100.00%"
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 4,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 4
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 2,
+                  "draws": 0,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": "3-1",
+                  "away": "1-3"
+                },
+                "loses": {
+                  "home": null,
+                  "away": "1-0"
+                },
+                "goals": {
+                  "for": {
+                    "home": 3,
+                    "away": 3
+                  },
+                  "against": {
+                    "home": 1,
+                    "away": 1
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "att": {
+            "home": "47%",
+            "away": "53%"
+          },
+          "def": {
+            "home": "44%",
+            "away": "56%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "62%",
+            "away": "38%"
+          },
+          "goals": {
+            "home": "67%",
+            "away": "33%"
+          },
+          "total": {
+            "home": "54.0%",
+            "away": "46.0%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1084472,
+              "referee": "Juan Manrique",
+              "timezone": "UTC",
+              "date": "2024-03-31T10:00:00+00:00",
+              "timestamp": 1711879200,
+              "periods": {
+                "first": 1711879200,
+                "second": 1711882800
+              },
+              "venue": {
+                "id": 6483,
+                "name": "Estadio Balear",
+                "city": "Palma de Mallorca, Illes Balears"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 436,
+              "name": "Primera División RFEF - Group 2",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/436.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2023,
+              "round": "Group 2 - 30",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9381,
+                "name": "Atlético Baleares",
+                "logo": "https://media.api-sports.io/football/teams/9381.png",
+                "winner": false
+              },
+              "away": {
+                "id": 9575,
+                "name": "Real Madrid II",
+                "logo": "https://media.api-sports.io/football/teams/9575.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1084288,
+              "referee": "Manuel García",
+              "timezone": "UTC",
+              "date": "2023-11-05T11:00:00+00:00",
+              "timestamp": 1699182000,
+              "periods": {
+                "first": 1699182000,
+                "second": 1699185600
+              },
+              "venue": {
+                "id": 6669,
+                "name": "Estadio Alfredo Di Stéfano",
+                "city": "Madrid"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 436,
+              "name": "Primera División RFEF - Group 2",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/436.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2023,
+              "round": "Group 2 - 11",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9575,
+                "name": "Real Madrid II",
+                "logo": "https://media.api-sports.io/football/teams/9575.png",
+                "winner": true
+              },
+              "away": {
+                "id": 9381,
+                "name": "Atlético Baleares",
+                "logo": "https://media.api-sports.io/football/teams/9381.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 5,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 2,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 5,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 741475,
+              "referee": "Abraham Domínguez",
+              "timezone": "UTC",
+              "date": "2022-04-24T10:00:00+00:00",
+              "timestamp": 1650794400,
+              "periods": {
+                "first": 1650794400,
+                "second": 1650798000
+              },
+              "venue": {
+                "id": 6483,
+                "name": "Estadio Balear",
+                "city": "Palma de Mallorca, Illes Balears"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 436,
+              "name": "Primera División RFEF - Group 2",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/436.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2021,
+              "round": "Group 2 - 33",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9381,
+                "name": "Atlético Baleares",
+                "logo": "https://media.api-sports.io/football/teams/9381.png",
+                "winner": null
+              },
+              "away": {
+                "id": 9575,
+                "name": "Real Madrid II",
+                "logo": "https://media.api-sports.io/football/teams/9575.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 741202,
+              "referee": "Gorka Etayo",
+              "timezone": "UTC",
+              "date": "2021-10-03T10:00:00+00:00",
+              "timestamp": 1633255200,
+              "periods": {
+                "first": 1633255200,
+                "second": 1633258800
+              },
+              "venue": {
+                "id": 6669,
+                "name": "Estadio Alfredo Di Stéfano",
+                "city": "Madrid"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 436,
+              "name": "Primera División RFEF - Group 2",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/436.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2021,
+              "round": "Group 2 - 6",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9575,
+                "name": "Real Madrid II",
+                "logo": "https://media.api-sports.io/football/teams/9575.png",
+                "winner": null
+              },
+              "away": {
+                "id": 9381,
+                "name": "Atlético Baleares",
+                "logo": "https://media.api-sports.io/football/teams/9381.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 2,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 631664,
+              "referee": "Andrés Fuentes",
+              "timezone": "UTC",
+              "date": "2021-02-07T11:00:00+00:00",
+              "timestamp": 1612695600,
+              "periods": {
+                "first": 1612695600,
+                "second": 1612699200
+              },
+              "venue": {
+                "id": 6483,
+                "name": "Estadio Balear",
+                "city": "Palma de Mallorca, Illes Balears"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 692,
+              "name": "Primera División RFEF - Group 5",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/692.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2020,
+              "round": "Group 5 - 13",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9381,
+                "name": "Atlético Baleares",
+                "logo": "https://media.api-sports.io/football/teams/9381.png",
+                "winner": true
+              },
+              "away": {
+                "id": 9575,
+                "name": "Real Madrid II",
+                "logo": "https://media.api-sports.io/football/teams/9575.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 631574,
+              "referee": "José Guzmán",
+              "timezone": "UTC",
+              "date": "2020-11-25T11:00:00+00:00",
+              "timestamp": 1606302000,
+              "periods": {
+                "first": 1606302000,
+                "second": 1606305600
+              },
+              "venue": {
+                "id": null,
+                "name": "Ciudad Deportiva Real Madrid Campo 7",
+                "city": "Madrid"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 692,
+              "name": "Primera División RFEF - Group 5",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/692.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2020,
+              "round": "Group 5 - 4",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9575,
+                "name": "Real Madrid II",
+                "logo": "https://media.api-sports.io/football/teams/9575.png",
+                "winner": null
+              },
+              "away": {
+                "id": 9381,
+                "name": "Atlético Baleares",
+                "logo": "https://media.api-sports.io/football/teams/9381.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 297842,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2020-04-05T16:30:00+00:00",
+              "timestamp": 1586104200,
+              "periods": {
+                "first": null,
+                "second": null
+              },
+              "venue": {
+                "id": 6669,
+                "name": "Estadio Alfredo Di Stéfano",
+                "city": "Madrid"
+              },
+              "status": {
+                "long": "Match Cancelled",
+                "short": "Canc",
+                "elapsed": null,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 435,
+              "name": "Primera División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/435.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2019,
+              "round": "Group 1 - 32",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9575,
+                "name": "Real Madrid II",
+                "logo": "https://media.api-sports.io/football/teams/9575.png",
+                "winner": null
+              },
+              "away": {
+                "id": 9381,
+                "name": "Atlético Baleares",
+                "logo": "https://media.api-sports.io/football/teams/9381.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": null,
+              "away": null
+            },
+            "score": {
+              "halftime": {
+                "home": null,
+                "away": null
+              },
+              "fulltime": {
+                "home": null,
+                "away": null
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 297653,
+              "referee": "Jorge Díaz",
+              "timezone": "UTC",
+              "date": "2019-11-17T11:00:00+00:00",
+              "timestamp": 1573988400,
+              "periods": {
+                "first": 1573988400,
+                "second": 1573992000
+              },
+              "venue": {
+                "id": 6483,
+                "name": "Estadio Balear",
+                "city": "Palma de Mallorca, Illes Balears"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 435,
+              "name": "Primera División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/435.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2019,
+              "round": "Group 1 - 13",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9381,
+                "name": "Atlético Baleares",
+                "logo": "https://media.api-sports.io/football/teams/9381.png",
+                "winner": null
+              },
+              "away": {
+                "id": 9575,
+                "name": "Real Madrid II",
+                "logo": "https://media.api-sports.io/football/teams/9575.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "erzurumspor-fk-galatasaray-2026-08-21",
@@ -296129,10 +298038,10 @@
       "broadcast": null,
       "homeTeam": "Erzurumspor FK",
       "awayTeam": "Galatasaray",
-      "status": "LIVE",
+      "status": "FINISHED",
       "score": {
         "home": 0,
-        "away": 2,
+        "away": 4,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -297102,10 +299011,10 @@
       "referee": "Cagdas Altay, Türkiye",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/1009.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/645.png",
-      "providerStatus": "1H",
-      "minute": 34,
-      "elapsed": 34,
-      "live": true,
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "homeForm": null,
       "awayForm": null,
       "homeMomentum": null,
@@ -297119,48 +299028,53 @@
       "goalPotential": null,
       "risk": null,
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T19:04:20.819Z",
-      "staleAfter": "2026-08-21T19:09:20.819Z",
+      "fetchedAt": "2026-08-21T20:30:33.913Z",
+      "staleAfter": "2026-08-21T20:35:33.913Z",
       "needsReview": false,
       "resource": "matches",
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Erzurumspor FK topa sahip olma oranında önde. Galatasaray daha fazla şut üretti. Skor üstünlüğü Galatasaray tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "Erzurumspor FK topa sahip olma oranında önde. Erzurumspor FK daha fazla şut üretti. Skor üstünlüğü Galatasaray tarafında.",
         "confidence": "Yüksek",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "58%-42%",
+            "value": "50%-50%",
             "text": "Erzurumspor FK topa sahip olma oranında önde."
           },
           {
             "label": "Şut hacmi",
-            "value": "2-3",
-            "text": "Galatasaray daha fazla şut üretti."
+            "value": "10-9",
+            "text": "Erzurumspor FK daha fazla şut üretti."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "0-2",
+            "value": "2-4",
             "text": "Galatasaray isabetli şutlarda önde."
           },
           {
             "label": "Gol beklentisi",
-            "value": "0.14-0.62",
+            "value": "0.36-2.47",
             "text": "Galatasaray daha yüksek pozisyon kalitesi üretti."
           },
           {
             "label": "Gol akışı",
-            "value": "20'",
-            "text": "Son gol 20' Y. Akgun tarafından kaydedildi."
+            "value": "79'",
+            "text": "Son gol 79' V. Osimhen tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "0-2",
+            "value": "0-4",
             "text": "Galatasaray skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 2,
-        "dataPoints": 6,
+        "eventCount": 15,
+        "dataPoints": 7,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "lineups": [
@@ -297174,11 +299088,11 @@
             "Yakup Kırtay",
             "Nihad Mujakić",
             "Brandon Baiye",
-            "Eren Tozlu",
+            "Mustafa Fettahoglu",
             "Elisha Owusu",
             "Martín Rodríguez",
-            "Mustafa Fettahoglu",
-            "Gyrano Kerk"
+            "Gyrano Kerk",
+            "Eren Tozlu"
           ],
           "substitutes": [
             "Ertuğrul Taşkıran",
@@ -297230,8 +299144,8 @@
               "grid": "3:1"
             },
             {
-              "name": "Eren Tozlu",
-              "number": 10,
+              "name": "Mustafa Fettahoglu",
+              "number": 99,
               "position": "M",
               "grid": "4:4"
             },
@@ -297248,14 +299162,14 @@
               "grid": "4:2"
             },
             {
-              "name": "Mustafa Fettahoglu",
-              "number": 99,
+              "name": "Gyrano Kerk",
+              "number": 9,
               "position": "M",
               "grid": "4:1"
             },
             {
-              "name": "Gyrano Kerk",
-              "number": 9,
+              "name": "Eren Tozlu",
+              "number": 10,
               "position": "F",
               "grid": "5:1"
             }
@@ -297329,13 +299243,13 @@
           "players": [
             "Uğurcan Çakır",
             "Roland Sallai",
-            "Abdülkerim Bardakcı",
             "Davinson Sánchez",
+            "Abdülkerim Bardakcı",
             "Ismail Jakobs",
             "Lucas Torreira",
-            "Gabriel Sara",
             "Mario Lemina",
             "Yunus Akgün",
+            "Gabriel Sara",
             "Barış Alper Yılmaz",
             "Victor Osimhen"
           ],
@@ -297365,14 +299279,14 @@
               "grid": "2:4"
             },
             {
-              "name": "Abdülkerim Bardakcı",
-              "number": 42,
+              "name": "Davinson Sánchez",
+              "number": 6,
               "position": "D",
               "grid": "2:3"
             },
             {
-              "name": "Davinson Sánchez",
-              "number": 6,
+              "name": "Abdülkerim Bardakcı",
+              "number": 42,
               "position": "D",
               "grid": "2:2"
             },
@@ -297389,20 +299303,20 @@
               "grid": "3:2"
             },
             {
-              "name": "Gabriel Sara",
-              "number": 8,
+              "name": "Mario Lemina",
+              "number": 99,
               "position": "M",
               "grid": "3:1"
             },
             {
-              "name": "Mario Lemina",
-              "number": 99,
+              "name": "Yunus Akgün",
+              "number": 11,
               "position": "M",
               "grid": "4:3"
             },
             {
-              "name": "Yunus Akgün",
-              "number": 11,
+              "name": "Gabriel Sara",
+              "number": 8,
               "position": "M",
               "grid": "4:2"
             },
@@ -297503,111 +299417,850 @@
           "detail": "Normal Goal",
           "value": "Y. Akgun · Asist: V. Osimhen · Normal Goal",
           "comments": ""
+        },
+        {
+          "time": "45'",
+          "team": {
+            "name": "Galatasaray"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "V. Osimhen · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "55'",
+          "team": {
+            "name": "Erzurumspor FK"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "G. Kerk · Asist: N. Akhundzade · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Galatasaray"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "M. Lemina · Asist: L. Ugochukwu · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Galatasaray"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Y. Akgun · Asist: L. Sane · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Galatasaray"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "I. Jakobs · Asist: E. Elmali · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Galatasaray"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "R. Sallai · Asist: W. Singo · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "Erzurumspor FK"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "E. Tozlu · Asist: Fernando Andrade · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "Erzurumspor FK"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "O. Ovacikli · Asist: F. Ebosele · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "Erzurumspor FK"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "M. Fettahoglu · Asist: S. Akgun · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "Erzurumspor FK"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "M. Rodriguez · Asist: M. Cardoso · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Galatasaray"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "V. Osimhen · Asist: Gabriel Sara · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "81'",
+          "team": {
+            "name": "Galatasaray"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "L. Torreira · Asist: R. Nhaga · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "84'",
+          "team": {
+            "name": "Erzurumspor FK"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "N. Akhundzade · Yellow Card",
+          "comments": "Holding"
         }
       ],
       "statistics": [
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 0,
-          "away": 2,
+          "home": 2,
+          "away": 4,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 1,
-          "away": 0
+          "home": 3,
+          "away": 3
         },
         {
           "category": "Hücum",
           "type": "Toplam şut",
-          "home": 2,
-          "away": 3,
+          "home": 10,
+          "away": 9,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 1,
-          "away": 1
+          "home": 5,
+          "away": 2
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
-          "home": 0,
-          "away": 3,
+          "home": 5,
+          "away": 8,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 2,
-          "away": 0
+          "home": 5,
+          "away": 1
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 2,
-          "away": 5
+          "home": 11,
+          "away": 12
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 0,
-          "away": 1
+          "home": 2,
+          "away": 2
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
           "home": 2,
-          "away": 1
+          "away": 2
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 58,
-          "away": 42,
+          "home": 50,
+          "away": 50,
           "unit": "%",
           "higherIsBetter": true
         },
         {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 1,
+          "away": 0
+        },
+        {
+          "category": "Savunma",
+          "type": "Kurtarış",
+          "home": 0,
+          "away": 2
+        },
+        {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 135,
-          "away": 94,
+          "home": 478,
+          "away": 468,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 120,
-          "away": 84,
+          "home": 419,
+          "away": 419,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
-          "home": 89,
-          "away": 89,
+          "home": 88,
+          "away": 90,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Genel",
           "type": "Gol beklentisi (xG)",
-          "home": 0.14,
-          "away": 0.62,
+          "home": 0.36,
+          "away": 2.47,
           "decimals": 2,
           "higherIsBetter": true
         },
         {
           "category": "Savunma",
           "type": "Önlenen gol",
-          "home": 0,
-          "away": 0,
+          "home": 0.17,
+          "away": 0.17,
           "decimals": 2,
           "higherIsBetter": true
+        }
+      ],
+      "players": [
+        {
+          "name": "Matija Orbanić",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "80125",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "G",
+          "providerRating": 5.2,
+          "ratingSource": "api-football",
+          "passes": 34,
+          "passAccuracy": 28,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Orhan Ovacıklı",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "50029",
+          "source": "api-football",
+          "minutes": 71,
+          "position": "D",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "passes": 36,
+          "passAccuracy": 28,
+          "tackles": 6,
+          "duelsWon": 10,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Amar Gerxhaliu",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "382221",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "D",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 56,
+          "passAccuracy": 49,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Yakup Kırtay",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "353894",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "D",
+          "providerRating": 5.9,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 53,
+          "passAccuracy": 46,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nihad Mujakić",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "76867",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "D",
+          "providerRating": 6,
+          "ratingSource": "api-football",
+          "passes": 39,
+          "passAccuracy": 34,
+          "tackles": 3,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Brandon Baiye",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "75",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "M",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 67,
+          "passAccuracy": 65,
+          "tackles": 2,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mustafa Fettahoglu",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "162002",
+          "source": "api-football",
+          "minutes": 76,
+          "position": "M",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 27,
+          "passAccuracy": 21,
+          "tackles": 1,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Elisha Owusu",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "21010",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 38,
+          "passAccuracy": 34,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Martín Rodríguez",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "35925",
+          "source": "api-football",
+          "minutes": 76,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 45,
+          "passAccuracy": 43,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gyrano Kerk",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "37188",
+          "source": "api-football",
+          "minutes": 55,
+          "position": "M",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 11,
+          "passAccuracy": 7,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Eren Tozlu",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "49925",
+          "source": "api-football",
+          "minutes": 70,
+          "position": "F",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 22,
+          "passAccuracy": 17,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nariman Akhundzade",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "375811",
+          "source": "api-football",
+          "minutes": 31,
+          "position": "F",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 16,
+          "passAccuracy": 15,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Fernando Andrade",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "387",
+          "source": "api-football",
+          "minutes": 16,
+          "position": "F",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 6,
+          "passAccuracy": 6,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Festy Ebosele",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "161638",
+          "source": "api-football",
+          "minutes": 15,
+          "position": "D",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 10,
+          "passAccuracy": 8,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Sefa Akgün",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "50201",
+          "source": "api-football",
+          "minutes": 10,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 12,
+          "passAccuracy": 12,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Miguel Cardoso",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "53659",
+          "source": "api-football",
+          "minutes": 10,
+          "position": "F",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 6,
+          "passAccuracy": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ertuğrul Taşkıran",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "49991",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Guram Giorbelidze",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "24669",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mustafa Yumlu",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "2140",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Murat Cem Akpinar",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "49877",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "İlkan Sever",
+          "team": "Erzurumspor FK",
+          "providerPlayerId": "436393",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Uğurcan Çakır",
+          "team": "Galatasaray",
+          "providerPlayerId": "49866",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "G",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "saves": 2,
+          "passes": 37,
+          "passAccuracy": 35,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Roland Sallai",
+          "team": "Galatasaray",
+          "providerPlayerId": "26252",
+          "source": "api-football",
+          "minutes": 66,
+          "position": "D",
+          "providerRating": 7.7,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 26,
+          "passAccuracy": 23,
+          "tackles": 2,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Davinson Sánchez",
+          "team": "Galatasaray",
+          "providerPlayerId": "168",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "D",
+          "providerRating": 7.5,
+          "ratingSource": "api-football",
+          "passes": 77,
+          "passAccuracy": 72,
+          "tackles": 1,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Abdülkerim Bardakcı",
+          "team": "Galatasaray",
+          "providerPlayerId": "61837",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "D",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 80,
+          "passAccuracy": 71,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ismail Jakobs",
+          "team": "Galatasaray",
+          "providerPlayerId": "158121",
+          "source": "api-football",
+          "minutes": 66,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 18,
+          "passAccuracy": 17,
+          "tackles": 3,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lucas Torreira",
+          "team": "Galatasaray",
+          "providerPlayerId": "1462",
+          "source": "api-football",
+          "minutes": 81,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "passes": 54,
+          "passAccuracy": 48,
+          "tackles": 4,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mario Lemina",
+          "team": "Galatasaray",
+          "providerPlayerId": "18947",
+          "source": "api-football",
+          "minutes": 66,
+          "position": "M",
+          "providerRating": 7,
+          "ratingSource": "api-football",
+          "passes": 56,
+          "passAccuracy": 54,
+          "tackles": 3,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Yunus Akgün",
+          "team": "Galatasaray",
+          "providerPlayerId": "454",
+          "source": "api-football",
+          "minutes": 66,
+          "position": "M",
+          "providerRating": 7.2,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 25,
+          "passAccuracy": 20,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Gabriel Sara",
+          "team": "Galatasaray",
+          "providerPlayerId": "80552",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "passes": 35,
+          "passAccuracy": 24,
+          "tackles": 2,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Barış Alper Yılmaz",
+          "team": "Galatasaray",
+          "providerPlayerId": "63274",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 16,
+          "passAccuracy": 15,
+          "tackles": 2,
+          "duelsWon": 7,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Victor Osimhen",
+          "team": "Galatasaray",
+          "providerPlayerId": "2780",
+          "source": "api-football",
+          "minutes": 86,
+          "position": "F",
+          "providerRating": 9.2,
+          "ratingSource": "api-football",
+          "goals": 2,
+          "assists": 1,
+          "shots": 2,
+          "shotsOnTarget": 2,
+          "passes": 7,
+          "passAccuracy": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Eren Elmalı",
+          "team": "Galatasaray",
+          "providerPlayerId": "50057",
+          "source": "api-football",
+          "minutes": 20,
+          "position": "D",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 8,
+          "passAccuracy": 8,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Wilfried Singo",
+          "team": "Galatasaray",
+          "providerPlayerId": "30504",
+          "source": "api-football",
+          "minutes": 20,
+          "position": "D",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 7,
+          "passAccuracy": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lesley Ugochukwu",
+          "team": "Galatasaray",
+          "providerPlayerId": "270508",
+          "source": "api-football",
+          "minutes": 20,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "passes": 12,
+          "passAccuracy": 12,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Leroy Sané",
+          "team": "Galatasaray",
+          "providerPlayerId": "644",
+          "source": "api-football",
+          "minutes": 20,
+          "position": "F",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 9,
+          "passAccuracy": 7,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Renato Nhaga",
+          "team": "Galatasaray",
+          "providerPlayerId": "518567",
+          "source": "api-football",
+          "minutes": 5,
+          "position": "M",
+          "passes": 1,
+          "passAccuracy": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jankat Yılmaz",
+          "team": "Galatasaray",
+          "providerPlayerId": "327517",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Kaan Ayhan",
+          "team": "Galatasaray",
+          "providerPlayerId": "25448",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Kazımcan Karataş",
+          "team": "Galatasaray",
+          "providerPlayerId": "145057",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Arda Ünyay",
+          "team": "Galatasaray",
+          "providerPlayerId": "404443",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "İlkay Gündoğan",
+          "team": "Galatasaray",
+          "providerPlayerId": "633",
+          "source": "api-football",
+          "position": "M",
+          "yellowCards": 0,
+          "redCards": 0
         }
       ]
     },
@@ -297625,13 +300278,13 @@
       "awayTeam": "Bursaspor",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3589.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1003.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 34,
-      "elapsed": 34,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 1,
+        "home": 2,
         "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
@@ -297650,8 +300303,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T19:04:20.819Z",
-      "staleAfter": "2026-08-21T19:09:20.819Z",
+      "fetchedAt": "2026-08-21T20:30:33.913Z",
+      "staleAfter": "2026-08-21T20:35:33.913Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -298765,8 +301418,8 @@
       "league": "Ligue 1",
       "providerLeagueId": "61",
       "round": 1,
-      "venue": null,
-      "referee": "R. Buquet",
+      "venue": "CEPAC Vélodrome",
+      "referee": "Ruddy Buquet, France",
       "kickoff": "2026-08-21T21:45:00+03:00",
       "time": "21:45",
       "homeTeam": "Marseille",
@@ -298774,12 +301427,12 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/81.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/95.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 18,
-      "elapsed": 18,
+      "providerStatus": "2H",
+      "minute": 86,
+      "elapsed": 86,
       "live": true,
       "score": {
-        "home": 0,
+        "home": 2,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -298798,8 +301451,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T19:04:20.819Z",
-      "staleAfter": "2026-08-21T19:09:20.819Z",
+      "fetchedAt": "2026-08-21T20:30:33.913Z",
+      "staleAfter": "2026-08-21T20:35:33.913Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -298814,8 +301467,8 @@
       "league": "Jupiler Pro League",
       "providerLeagueId": "144",
       "round": 3,
-      "venue": "Maurice Dufrasnestadion",
-      "referee": "N. Verboomen",
+      "venue": "Maurice Dufrasne",
+      "referee": "Nathan Verboomen, Belgium",
       "kickoff": "2026-08-21T21:45:00+03:00",
       "time": "21:45",
       "homeTeam": "Standard Liege",
@@ -298823,12 +301476,12 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/733.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/5902.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 17,
-      "elapsed": 17,
+      "providerStatus": "2H",
+      "minute": 87,
+      "elapsed": 87,
       "live": true,
       "score": {
-        "home": 0,
+        "home": 2,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -298847,8 +301500,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T19:04:20.819Z",
-      "staleAfter": "2026-08-21T19:09:20.819Z",
+      "fetchedAt": "2026-08-21T20:30:33.913Z",
+      "staleAfter": "2026-08-21T20:35:33.913Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -298864,7 +301517,7 @@
       "providerLeagueId": "39",
       "round": 1,
       "venue": "Emirates Stadium",
-      "referee": "T. Bramall",
+      "referee": "Thomas Bramall, England",
       "kickoff": "2026-08-21T22:00:00+03:00",
       "time": "22:00",
       "homeTeam": "Arsenal",
@@ -298872,12 +301525,12 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/42.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1346.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 4,
-      "elapsed": 4,
+      "providerStatus": "2H",
+      "minute": 73,
+      "elapsed": 73,
       "live": true,
       "score": {
-        "home": 0,
+        "home": 3,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -298896,8 +301549,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T19:04:20.819Z",
-      "staleAfter": "2026-08-21T19:09:20.819Z",
+      "fetchedAt": "2026-08-21T20:30:33.913Z",
+      "staleAfter": "2026-08-21T20:35:33.913Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -298912,8 +301565,8 @@
       "league": "La Liga",
       "providerLeagueId": "140",
       "round": 2,
-      "venue": "Estadio de La Cartuja",
-      "referee": "I. Diaz",
+      "venue": "Estadio de la Cartuja",
+      "referee": "Isidro Diaz de Mera Escuderos, Spain",
       "kickoff": "2026-08-21T22:00:00+03:00",
       "time": "22:00",
       "homeTeam": "Real Betis",
@@ -298921,12 +301574,12 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/543.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/548.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 2,
-      "elapsed": 2,
+      "providerStatus": "2H",
+      "minute": 70,
+      "elapsed": 70,
       "live": true,
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -298945,8 +301598,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T19:04:20.819Z",
-      "staleAfter": "2026-08-21T19:09:20.819Z",
+      "fetchedAt": "2026-08-21T20:30:33.913Z",
+      "staleAfter": "2026-08-21T20:35:33.913Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
