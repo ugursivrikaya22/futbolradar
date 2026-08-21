@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-20T23:30:07.616Z",
+  "updatedAt": "2026-08-21T01:28:39.506Z",
   "matchCount": 715,
   "records": [
     {
@@ -2942,10 +2942,10 @@
       "winner": "FK Crvena Zvezda",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -2953,9 +2953,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 19
         },
         "statistics": {
           "present": false,
@@ -2975,19 +2975,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 19,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -3005,11 +3001,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "7877d93feae76a0b",
-      "fingerprint": "7877d93feae76a0b",
+      "analysisSourceHash": "787f6e4007f86e1a",
+      "fingerprint": "787f6e4007f86e1a",
       "analysisGeneratedAt": "2026-08-20T20:33:35.829Z",
-      "analysisUpdatedAt": "2026-08-20T20:33:35.829Z",
-      "generatedAt": "2026-08-20T20:33:35.829Z",
+      "analysisUpdatedAt": "2026-08-21T01:28:39.431Z",
+      "generatedAt": "2026-08-21T01:28:39.431Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3021,7 +3017,7 @@
       "reportUrl": "./mac-raporu/fk-crvena-zvezda-plzen-2026-08-20.html",
       "digest": {
         "headline": "FK Crvena Zvezda, Plzen'i 3-0 yendi",
-        "paragraph": "Stadium Rajko Mitić'de oynanan UEFA Europa League maçını FK Crvena Zvezda 3-0 kazandı; Plzen sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Stadium Rajko Mitić'de oynanan UEFA Europa League maçını FK Crvena Zvezda 3-0 kazandı; Plzen sahadan puansız ayrıldı. Golleri 36. dakikada M. Ivanic (FK Crvena Zvezda), 53. dakikada M. Ivanic (FK Crvena Zvezda), 89. dakikada A. Katai (FK Crvena Zvezda) kaydetti.",
         "result": {
           "winner": "FK Crvena Zvezda",
           "loser": "Plzen",
@@ -3037,39 +3033,133 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "36'",
+              "team": "FK Crvena Zvezda",
+              "type": "Gol",
+              "detail": "M. Ivanic",
+              "pivotal": true
+            },
+            {
+              "minute": "53'",
+              "team": "FK Crvena Zvezda",
+              "type": "Gol",
+              "detail": "M. Ivanic",
+              "pivotal": true
+            },
+            {
+              "minute": "89'",
+              "team": "FK Crvena Zvezda",
+              "type": "Penaltı",
+              "detail": "A. Katai",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (A. Katai).",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "Plzen",
+              "type": "Sarı kart",
+              "detail": "P. Hrosovsky",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "FK Crvena Zvezda",
+              "type": "Sarı kart",
+              "detail": "V. Kostov",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Plzen",
+              "type": "Sarı kart",
+              "detail": "S. Dweh",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "FK Crvena Zvezda",
+              "type": "Oyuncu değişikliği",
+              "detail": "V. Kostov",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "M. Ivanic",
+              "team": "FK Crvena Zvezda",
+              "contribution": "36' gol · 53' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. Katai",
+              "team": "FK Crvena Zvezda",
+              "contribution": "89' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "C. Souare",
+              "team": "Plzen",
+              "contribution": "45+3' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "K. Spacil",
+              "team": "Plzen",
+              "contribution": "88' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "36' FK Crvena Zvezda — M. Ivanic: gol"
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (16 olay).",
+            "53' FK Crvena Zvezda — M. Ivanic: gol",
+            "89' FK Crvena Zvezda — A. Katai: penaltı",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "46' Plzen değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "61' Plzen değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "72' FK Crvena Zvezda değişikliği (Substitution 1). Değişiklikten sonra FK Crvena Zvezda adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "72' FK Crvena Zvezda değişikliği (Substitution 2). Değişiklikten sonra FK Crvena Zvezda adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "73' Plzen değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "73' Plzen değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -3077,7 +3167,9 @@
             "FK Crvena Zvezda, Plzen'i 3-0 yendi."
           ],
           "strengths": [],
-          "improvements": [],
+          "improvements": [
+            "Plzen son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
           "closing": "FK Crvena Zvezda sahadan 3 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -3101,10 +3193,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -3136,10 +3235,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 60,
       "dataSources": {
         "score": {
           "present": true,
@@ -3147,9 +3246,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 21
         },
         "statistics": {
           "present": false,
@@ -3157,9 +3256,9 @@
           "count": 0
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": false,
@@ -3169,26 +3268,18 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 21,
         "statistics": 0,
-        "lineups": 0,
+        "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
           "field": "statistics",
           "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
         },
         {
           "field": "players",
@@ -3199,11 +3290,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "497a9d3c1abb58d0",
-      "fingerprint": "497a9d3c1abb58d0",
+      "analysisSourceHash": "7f29d23481e0071d",
+      "fingerprint": "7f29d23481e0071d",
       "analysisGeneratedAt": "2026-08-20T20:33:35.829Z",
-      "analysisUpdatedAt": "2026-08-20T20:33:35.829Z",
-      "generatedAt": "2026-08-20T20:33:35.829Z",
+      "analysisUpdatedAt": "2026-08-21T01:28:39.431Z",
+      "generatedAt": "2026-08-21T01:28:39.431Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3215,7 +3306,7 @@
       "reportUrl": "./mac-raporu/drita-inter-club-d-escaldes-2026-08-20.html",
       "digest": {
         "headline": "Drita ile Inter Club d'Escaldes 2-2 berabere kaldı",
-        "paragraph": "Stadiumi Fadil Vokrri'de oynanan UEFA Europa Conference League maçında Drita ile Inter Club d'Escaldes birbirini geçemedi: 2-2. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Stadiumi Fadil Vokrri'de oynanan UEFA Europa Conference League maçında Drita ile Inter Club d'Escaldes birbirini geçemedi: 2-2. Golleri 4. dakikada H. Salihu (Drita), 13. dakikada D. Berlanga (Inter Club d'Escaldes), 42. dakikada B. Krasniqi (Drita), 56. dakikada David Lopez (Inter Club d'Escaldes) kaydetti.",
         "result": {
           "winner": null,
           "loser": null,
@@ -3231,39 +3322,153 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "4'",
+              "team": "Drita",
+              "type": "Gol",
+              "detail": "H. Salihu",
+              "pivotal": true
+            },
+            {
+              "minute": "13'",
+              "team": "Inter Club d'Escaldes",
+              "type": "Gol",
+              "detail": "D. Berlanga",
+              "pivotal": true
+            },
+            {
+              "minute": "42'",
+              "team": "Drita",
+              "type": "Gol",
+              "detail": "B. Krasniqi",
+              "pivotal": true
+            },
+            {
+              "minute": "56'",
+              "team": "Inter Club d'Escaldes",
+              "type": "Gol",
+              "detail": "David Lopez",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 7 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Drita",
+              "type": "Oyuncu değişikliği",
+              "detail": "A. Bytyci",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Drita",
+              "type": "Sarı kart",
+              "detail": "R. Broja",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Inter Club d'Escaldes",
+              "type": "Oyuncu değişikliği",
+              "detail": "D. Berlanga",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Inter Club d'Escaldes",
+              "type": "Oyuncu değişikliği",
+              "detail": "Substitution 3",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "B. Krasniqi",
+              "team": "Drita",
+              "contribution": "42' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "D. Berlanga",
+              "team": "Inter Club d'Escaldes",
+              "contribution": "13' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "David Lopez",
+              "team": "Inter Club d'Escaldes",
+              "contribution": "56' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "H. Salihu",
+              "team": "Drita",
+              "contribution": "4' gol",
+              "impact": "yüksek"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Drita sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Inter Club d'Escaldes sahaya 4-3-3 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (8 olay).",
+            "4' Drita — H. Salihu: gol",
+            "13' Inter Club d'Escaldes — D. Berlanga: gol",
+            "42' Drita — B. Krasniqi: gol"
+          ],
+          "goals": 3
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "56' Inter Club d'Escaldes — David Lopez: gol",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Drita maça 4-2-3-1 dizilişiyle başladı.",
+            "Inter Club d'Escaldes maça 4-3-3 dizilişiyle başladı.",
+            "46' Drita değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "56' Inter Club d'Escaldes değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "65' Drita değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "76' Drita değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Drita",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Inter Club d'Escaldes",
+              "formation": "4-3-3"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -3295,10 +3500,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -3330,10 +3542,10 @@
       "winner": "Monaco",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -3341,9 +3553,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 18
         },
         "statistics": {
           "present": false,
@@ -3363,19 +3575,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 18,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -3393,23 +3601,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "62fab3c0b225d9c5",
-      "fingerprint": "62fab3c0b225d9c5",
+      "analysisSourceHash": "4ded1a05f312c1cf",
+      "fingerprint": "4ded1a05f312c1cf",
       "analysisGeneratedAt": "2026-08-20T20:33:35.829Z",
-      "analysisUpdatedAt": "2026-08-20T20:33:35.829Z",
-      "generatedAt": "2026-08-20T20:33:35.829Z",
+      "analysisUpdatedAt": "2026-08-21T01:28:39.431Z",
+      "generatedAt": "2026-08-21T01:28:39.431Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Gornik Zabrze 2-3 Monaco maç raporu: UEFA Europa Conference League istatistikleri | FutbolRadar",
-        "description": "Gornik Zabrze 2-3 Monaco maç raporu, kırılma anları ve sonraki maç.",
+        "description": "Gornik Zabrze 2-3 Monaco maç raporu, goller: M. Biereth, L. Camara, E. Prekop, P. Brunner, S. Liseth, kırılma anları ve sonraki maç.",
         "path": "mac-raporu/gornik-zabrze-monaco-2026-08-20.html",
         "competition": "UEFA Europa Conference League"
       },
       "reportUrl": "./mac-raporu/gornik-zabrze-monaco-2026-08-20.html",
       "digest": {
         "headline": "Monaco, Gornik Zabrze'yi 3-2 yendi",
-        "paragraph": "Monaco, Stadion im. Ernesta Pohla'da oynanan UEFA Europa Conference League karşılaşmasında Gornik Zabrze'yi 3-2 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Monaco, Stadion im. Ernesta Pohla'da oynanan UEFA Europa Conference League karşılaşmasında Gornik Zabrze'yi 3-2 mağlup etti. Golleri 9. dakikada M. Biereth (Monaco), 51. dakikada L. Camara (Monaco), 53. dakikada E. Prekop (Gornik Zabrze), 58. dakikada P. Brunner (Monaco), 74. dakikada S. Liseth (Gornik Zabrze) kaydetti.",
         "result": {
           "winner": "Monaco",
           "loser": "Gornik Zabrze",
@@ -3422,42 +3630,152 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "9'",
+              "team": "Monaco",
+              "type": "Gol",
+              "detail": "M. Biereth",
+              "pivotal": true
+            },
+            {
+              "minute": "51'",
+              "team": "Monaco",
+              "type": "Gol",
+              "detail": "L. Camara",
+              "pivotal": true
+            },
+            {
+              "minute": "53'",
+              "team": "Gornik Zabrze",
+              "type": "Gol",
+              "detail": "E. Prekop",
+              "pivotal": true
+            },
+            {
+              "minute": "58'",
+              "team": "Monaco",
+              "type": "Gol",
+              "detail": "P. Brunner",
+              "pivotal": true
+            },
+            {
+              "minute": "74'",
+              "team": "Gornik Zabrze",
+              "type": "Gol",
+              "detail": "S. Liseth",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "80'",
+              "team": "Monaco",
+              "type": "Oyuncu değişikliği",
+              "detail": "C. Mawissa",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "Monaco",
+              "type": "Oyuncu değişikliği",
+              "detail": "M. Biereth",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "Gornik Zabrze",
+              "type": "Oyuncu değişikliği",
+              "detail": "P. Bernardo",
+              "decisive": false
+            },
+            {
+              "minute": "89'",
+              "team": "Monaco",
+              "type": "Oyuncu değişikliği",
+              "detail": "D. Zakaria",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "E. Prekop",
+              "team": "Gornik Zabrze",
+              "contribution": "53' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "L. Camara",
+              "team": "Monaco",
+              "contribution": "51' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "M. Biereth",
+              "team": "Monaco",
+              "contribution": "9' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "P. Brunner",
+              "team": "Monaco",
+              "contribution": "58' gol",
+              "impact": "yüksek"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "9' Monaco — M. Biereth: gol"
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (16 olay).",
+            "51' Monaco — L. Camara: gol",
+            "53' Gornik Zabrze — E. Prekop: gol",
+            "58' Monaco — P. Brunner: gol",
+            "74' Gornik Zabrze — S. Liseth: gol",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 4
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "55' Monaco değişikliği (Substitution 1). Değişiklikten sonra Monaco adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "55' Monaco değişikliği (Substitution 2). Değişiklikten sonra Monaco adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "66' Gornik Zabrze değişikliği (Substitution 1). Değişiklikten sonra Gornik Zabrze adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "66' Gornik Zabrze değişikliği (Substitution 2). Değişiklikten sonra Gornik Zabrze adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "74' Gornik Zabrze değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "80' Monaco değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -3489,10 +3807,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -3524,10 +3849,10 @@
       "winner": "Qarabag",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -3535,63 +3860,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 13
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 41
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 13,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 41
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "afab397759207ea5",
-      "fingerprint": "afab397759207ea5",
+      "analysisSourceHash": "de0d35122e5b7aef",
+      "fingerprint": "de0d35122e5b7aef",
       "analysisGeneratedAt": "2026-08-20T20:33:35.829Z",
-      "analysisUpdatedAt": "2026-08-20T20:33:35.829Z",
-      "generatedAt": "2026-08-20T20:33:35.829Z",
+      "analysisUpdatedAt": "2026-08-21T01:28:39.431Z",
+      "generatedAt": "2026-08-21T01:28:39.431Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3603,7 +3911,7 @@
       "reportUrl": "./mac-raporu/twente-qarabag-2026-08-20.html",
       "digest": {
         "headline": "Qarabag, Twente'yi 1-0 yendi",
-        "paragraph": "Qarabag, De Grolsch Veste'de oynanan UEFA Europa Conference League karşılaşmasında Twente'yi 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Qarabag, De Grolsch Veste'de oynanan UEFA Europa Conference League karşılaşmasında Twente'yi 1-0 mağlup etti. Tek golü 52. dakikada Kady Borges (Qarabag) kaydetti.",
         "result": {
           "winner": "Qarabag",
           "loser": "Twente",
@@ -3619,62 +3927,215 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "52'",
+              "team": "Qarabag",
+              "type": "Gol",
+              "detail": "Kady Borges",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 3 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "Qarabag",
+              "type": "Oyuncu değişikliği",
+              "detail": "M. Qurbanly",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Twente",
+              "type": "Oyuncu değişikliği",
+              "detail": "A. Adelgaard",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Twente",
+              "type": "Oyuncu değişikliği",
+              "detail": "D. Weidmann",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Kady Borges",
+              "team": "Qarabag",
+              "contribution": "52' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. Adelgaard",
+              "team": "Twente",
+              "contribution": "28' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "D. Rots",
+              "team": "Twente",
+              "contribution": "66' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "D. Weidmann",
+              "team": "Twente",
+              "contribution": "34' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "Twente sahaya 4-1-4-1 dizilişiyle çıktı.",
+            "Qarabag sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Twente topu elinde tutarken Qarabag derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (9 olay).",
+            "52' Qarabag — Kady Borges: gol",
+            "İkinci yarı içinde 6 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Twente maça 4-1-4-1 dizilişiyle başladı.",
+            "Qarabag maça 4-2-3-1 dizilişiyle başladı.",
+            "46' Twente değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "61' Twente değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "61' Twente değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "75' Qarabag değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Twente",
+              "formation": "4-1-4-1"
+            },
+            {
+              "team": "Qarabag",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Qarabag, Twente'yi 0-1 yendi."
+            "Qarabag, Twente'yi 0-1 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (4-5); eldeki veri sonucun verimlilikle geldiğini gösteriyor."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Twente topa daha çok sahip oldu (%61).",
+            "Twente daha çok şut denedi (21-7)."
+          ],
+          "improvements": [
+            "Twente şut isabetinde geride kaldı (%24); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Qarabag sahadan 1 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Twente",
+            "score": 67
+          },
+          "away": {
+            "team": "Qarabag",
+            "score": 58
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Twente %23.8, Qarabag %57.1."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Twente 24.9, Qarabag 49 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -3683,11 +4144,22 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -3718,10 +4190,10 @@
       "winner": "Borac Banja Luka",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -3729,9 +4201,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "statistics": {
           "present": false,
@@ -3751,19 +4223,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 15,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -3781,11 +4249,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "ef8930c22ddf606a",
-      "fingerprint": "ef8930c22ddf606a",
+      "analysisSourceHash": "3e3d60d664f14b2c",
+      "fingerprint": "3e3d60d664f14b2c",
       "analysisGeneratedAt": "2026-08-20T20:33:35.829Z",
-      "analysisUpdatedAt": "2026-08-20T20:33:35.829Z",
-      "generatedAt": "2026-08-20T20:33:35.829Z",
+      "analysisUpdatedAt": "2026-08-21T01:28:39.431Z",
+      "generatedAt": "2026-08-21T01:28:39.431Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3797,7 +4265,7 @@
       "reportUrl": "./mac-raporu/vikingur-reykjavik-borac-banja-luka-2026-08-20.html",
       "digest": {
         "headline": "Borac Banja Luka, Vikingur Reykjavik'i 3-1 yendi",
-        "paragraph": "Borac Banja Luka, Víkingsvollur Stadium'da oynanan UEFA Europa Conference League karşılaşmasında Vikingur Reykjavik'i 3-1 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Borac Banja Luka, Víkingsvollur Stadium'da oynanan UEFA Europa Conference League karşılaşmasında Vikingur Reykjavik'i 3-1 mağlup etti. Golleri 21. dakikada L. Juricic (Borac Banja Luka), 23. dakikada M. Jojic (Borac Banja Luka), 75. dakikada G. Sigurdsson (Vikingur Reykjavik), 86. dakikada L. Juricic (Borac Banja Luka) kaydetti.",
         "result": {
           "winner": "Borac Banja Luka",
           "loser": "Vikingur Reykjavik",
@@ -3810,42 +4278,144 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 2
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "21'",
+              "team": "Borac Banja Luka",
+              "type": "Gol",
+              "detail": "L. Juricic",
+              "pivotal": true
+            },
+            {
+              "minute": "23'",
+              "team": "Borac Banja Luka",
+              "type": "Gol",
+              "detail": "M. Jojic",
+              "pivotal": true
+            },
+            {
+              "minute": "75'",
+              "team": "Vikingur Reykjavik",
+              "type": "Penaltı",
+              "detail": "G. Sigurdsson",
+              "pivotal": true
+            },
+            {
+              "minute": "86'",
+              "team": "Borac Banja Luka",
+              "type": "Gol",
+              "detail": "L. Juricic",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 2 gol kaydedildi, (G. Sigurdsson, L. Juricic), sonucu belirleyen fark bu bölümde oluştu.",
+          "goals": {
+            "home": 1,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "Vikingur Reykjavik",
+              "type": "Penaltı",
+              "detail": "G. Sigurdsson",
+              "decisive": true
+            },
+            {
+              "minute": "79'",
+              "team": "Borac Banja Luka",
+              "type": "Sarı kart",
+              "detail": "A. Hiros",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Vikingur Reykjavik",
+              "type": "Oyuncu değişikliği",
+              "detail": "G. Vatnhamar",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Borac Banja Luka",
+              "type": "Oyuncu değişikliği",
+              "detail": "A. Hiros",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "L. Juricic",
+              "team": "Borac Banja Luka",
+              "contribution": "21' gol · 86' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "G. Sigurdsson",
+              "team": "Vikingur Reykjavik",
+              "contribution": "75' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "M. Jojic",
+              "team": "Borac Banja Luka",
+              "contribution": "23' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. Esiti",
+              "team": "Borac Banja Luka",
+              "contribution": "73' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "21' Borac Banja Luka — L. Juricic: gol",
+            "23' Borac Banja Luka — M. Jojic: gol"
+          ],
+          "goals": 2
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
+            "75' Vikingur Reykjavik — G. Sigurdsson: penaltı",
+            "86' Borac Banja Luka — L. Juricic: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "67' Vikingur Reykjavik değişikliği (Substitution 1). Değişiklikten sonra Vikingur Reykjavik adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "67' Vikingur Reykjavik değişikliği (Substitution 2). Değişiklikten sonra Vikingur Reykjavik adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "74' Borac Banja Luka değişikliği (Substitution 1). Değişiklikten sonra Borac Banja Luka adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "82' Vikingur Reykjavik değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "83' Borac Banja Luka değişikliği (Substitution 2). Değişiklikten sonra Borac Banja Luka adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "83' Borac Banja Luka değişikliği (Substitution 3). Değişiklikten sonra Borac Banja Luka adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -3853,7 +4423,9 @@
             "Borac Banja Luka, Vikingur Reykjavik'i 1-3 yendi."
           ],
           "strengths": [],
-          "improvements": [],
+          "improvements": [
+            "Vikingur Reykjavik son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
           "closing": "Borac Banja Luka sahadan 2 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -3877,10 +4449,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -3912,10 +4491,10 @@
       "winner": "OFI",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -3923,9 +4502,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "statistics": {
           "present": false,
@@ -3945,19 +4524,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 15,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -3975,11 +4550,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "3928b326c0f38290",
-      "fingerprint": "3928b326c0f38290",
+      "analysisSourceHash": "434a790abfe355dc",
+      "fingerprint": "434a790abfe355dc",
       "analysisGeneratedAt": "2026-08-20T20:33:35.829Z",
-      "analysisUpdatedAt": "2026-08-20T20:33:35.829Z",
-      "generatedAt": "2026-08-20T20:33:35.829Z",
+      "analysisUpdatedAt": "2026-08-21T01:28:39.431Z",
+      "generatedAt": "2026-08-21T01:28:39.431Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3991,7 +4566,7 @@
       "reportUrl": "./mac-raporu/ofi-cska-sofia-2026-08-20.html",
       "digest": {
         "headline": "OFI, CSKA Sofia'yı 3-0 yendi",
-        "paragraph": "Pagritio'da oynanan UEFA Europa League maçını OFI 3-0 kazandı; CSKA Sofia sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Pagritio'da oynanan UEFA Europa League maçını OFI 3-0 kazandı; CSKA Sofia sahadan puansız ayrıldı. Golleri 19. dakikada T. Fountas (OFI), 51. dakikada T. Fountas (OFI), 90+5. dakikada L. Dickmann (OFI) kaydetti.",
         "result": {
           "winner": "OFI",
           "loser": "CSKA Sofia",
@@ -4004,42 +4579,143 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "19'",
+              "team": "OFI",
+              "type": "Gol",
+              "detail": "T. Fountas",
+              "pivotal": true
+            },
+            {
+              "minute": "51'",
+              "team": "OFI",
+              "type": "Penaltı",
+              "detail": "T. Fountas",
+              "pivotal": true
+            },
+            {
+              "minute": "81'",
+              "team": "CSKA Sofia",
+              "type": "Kırmızı kart",
+              "detail": "M. Brahimi",
+              "pivotal": true
+            },
+            {
+              "minute": "90+5'",
+              "team": "OFI",
+              "type": "Gol",
+              "detail": "L. Dickmann",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (L. Dickmann), 1 kırmızı kart bu bölümde görüldü.",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "CSKA Sofia",
+              "type": "Oyuncu değişikliği",
+              "detail": "A. Yordanov",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "OFI",
+              "type": "Oyuncu değişikliği",
+              "detail": "T. Nuss",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "OFI",
+              "type": "Oyuncu değişikliği",
+              "detail": "A. Androutsos",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "CSKA Sofia",
+              "type": "Kırmızı kart",
+              "detail": "M. Brahimi",
+              "decisive": true
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "T. Fountas",
+              "team": "OFI",
+              "contribution": "19' gol · 51' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "L. Dickmann",
+              "team": "OFI",
+              "contribution": "90+5' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "S. Sensi",
+              "team": "CSKA Sofia",
+              "contribution": "53' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "T. Ivanov",
+              "team": "CSKA Sofia",
+              "contribution": "54' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "19' OFI — T. Fountas: gol"
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
+            "51' OFI — T. Fountas: penaltı",
+            "90+5' OFI — L. Dickmann: gol",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "56' CSKA Sofia değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "56' CSKA Sofia değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "64' CSKA Sofia değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' OFI değişikliği (Substitution 1). Değişiklikten sonra OFI adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "66' OFI değişikliği (Substitution 2). Değişiklikten sonra OFI adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "75' CSKA Sofia değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -4047,7 +4723,10 @@
             "OFI, CSKA Sofia'yı 3-0 yendi."
           ],
           "strengths": [],
-          "improvements": [],
+          "improvements": [
+            "CSKA Sofia son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun.",
+            "Kırmızı kart maçın seyrini etkiledi (81' CSKA Sofia)."
+          ],
           "closing": "OFI sahadan 3 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -4071,10 +4750,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -4300,10 +4986,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -4311,14 +4997,14 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 14
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
           "present": false,
@@ -4333,23 +5019,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
+        "events": 14,
+        "statistics": 15,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
         {
           "field": "lineups",
           "label": "Kadrolar"
@@ -4363,11 +5041,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "cac46a53af117369",
-      "fingerprint": "cac46a53af117369",
+      "analysisSourceHash": "a23945be01136d57",
+      "fingerprint": "a23945be01136d57",
       "analysisGeneratedAt": "2026-08-20T20:33:35.829Z",
-      "analysisUpdatedAt": "2026-08-20T20:33:35.829Z",
-      "generatedAt": "2026-08-20T20:33:35.829Z",
+      "analysisUpdatedAt": "2026-08-21T01:28:39.431Z",
+      "generatedAt": "2026-08-21T01:28:39.431Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -4379,7 +5057,7 @@
       "reportUrl": "./mac-raporu/paok-brann-2026-08-20.html",
       "digest": {
         "headline": "PAOK ile Brann 1-1 berabere kaldı",
-        "paragraph": "PAOK ile Brann, Toumba Stadium'da oynanan UEFA Europa Conference League karşılaşmasında 1-1 berabere kaldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "PAOK ile Brann, Toumba Stadium'da oynanan UEFA Europa Conference League karşılaşmasında 1-1 berabere kaldı. Golleri 57. dakikada K. Eriksen (Brann), 80. dakikada A. Baba (PAOK) kaydetti.",
         "result": {
           "winner": null,
           "loser": null,
@@ -4392,65 +5070,219 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 2
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "57'",
+              "team": "Brann",
+              "type": "Gol",
+              "detail": "K. Eriksen",
+              "pivotal": true
+            },
+            {
+              "minute": "80'",
+              "team": "PAOK",
+              "type": "Gol",
+              "detail": "A. Baba",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (A. Baba).",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "PAOK",
+              "type": "Oyuncu değişikliği",
+              "detail": "M. Camara",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "PAOK",
+              "type": "Gol",
+              "detail": "A. Baba",
+              "decisive": true
+            },
+            {
+              "minute": "86'",
+              "team": "Brann",
+              "type": "Oyuncu değişikliği",
+              "detail": "T. Pedersen",
+              "decisive": false
+            },
+            {
+              "minute": "90+3'",
+              "team": "Brann",
+              "type": "Oyuncu değişikliği",
+              "detail": "B. Finne",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Baba",
+              "team": "PAOK",
+              "contribution": "80' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "K. Eriksen",
+              "team": "Brann",
+              "contribution": "57' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "B. Finne",
+              "team": "Brann",
+              "contribution": "58' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "C. Zafeiris",
+              "team": "PAOK",
+              "contribution": "63' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "57' Brann — K. Eriksen: gol",
+            "80' PAOK — A. Baba: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "56' PAOK değişikliği (Substitution 1). Değişiklikten sonra PAOK adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "65' PAOK değişikliği (Substitution 2). Değişiklikten sonra PAOK adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "65' PAOK değişikliği (Substitution 3). Değişiklikten sonra PAOK adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "65' PAOK değişikliği (Substitution 4). Değişiklikten sonra PAOK adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "77' PAOK değişikliği (Substitution 5). Değişiklikten sonra PAOK adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "86' Brann değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
             "Maç 1-1 berabere bitti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Brann topa daha çok sahip oldu (%57).",
+            "PAOK daha çok şut denedi (23-6)."
+          ],
+          "improvements": [
+            "Brann şut isabetinde geride kaldı (%17); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "PAOK",
+            "score": 71
+          },
+          "away": {
+            "team": "Brann",
+            "score": 46
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti PAOK %26.1, Brann %16.7."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için PAOK 15, Brann 79.7 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -4459,11 +5291,21 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -4494,10 +5336,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 60,
       "dataSources": {
         "score": {
           "present": true,
@@ -4505,9 +5347,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 10
         },
         "statistics": {
           "present": false,
@@ -4515,9 +5357,9 @@
           "count": 0
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": false,
@@ -4527,26 +5369,18 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 10,
         "statistics": 0,
-        "lineups": 0,
+        "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
           "field": "statistics",
           "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
         },
         {
           "field": "players",
@@ -4557,11 +5391,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "ef463b708c941946",
-      "fingerprint": "ef463b708c941946",
+      "analysisSourceHash": "e56d74e9b9dc3dc7",
+      "fingerprint": "e56d74e9b9dc3dc7",
       "analysisGeneratedAt": "2026-08-20T20:33:35.829Z",
-      "analysisUpdatedAt": "2026-08-20T20:33:35.829Z",
-      "generatedAt": "2026-08-20T20:33:35.829Z",
+      "analysisUpdatedAt": "2026-08-21T01:28:39.431Z",
+      "generatedAt": "2026-08-21T01:28:39.431Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -4586,42 +5420,133 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 2
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "36'",
+              "team": "KI Klaksvik",
+              "type": "Sarı kart",
+              "detail": "O. Ali",
+              "pivotal": false
+            },
+            {
+              "minute": "58'",
+              "team": "Riga",
+              "type": "Oyuncu değişikliği",
+              "detail": "M. Diop",
+              "pivotal": false
+            },
+            {
+              "minute": "61'",
+              "team": "Riga",
+              "type": "Sarı kart",
+              "detail": "A. Ankrah",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 6 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "79'",
+              "team": "KI Klaksvik",
+              "type": "Oyuncu değişikliği",
+              "detail": "H. Hansson",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "KI Klaksvik",
+              "type": "Oyuncu değişikliği",
+              "detail": "P. Klettskard",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Riga",
+              "type": "Oyuncu değişikliği",
+              "detail": "R. Aouani",
+              "decisive": false
+            },
+            {
+              "minute": "88'",
+              "team": "KI Klaksvik",
+              "type": "Oyuncu değişikliği",
+              "detail": "O. Ali",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Ankrah",
+              "team": "Riga",
+              "contribution": "61' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "O. Ali",
+              "team": "KI Klaksvik",
+              "contribution": "36' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "KI Klaksvik sahaya 3-4-2-1 dizilişiyle çıktı.",
+            "Riga sahaya 4-3-3 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (9 olay).",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "KI Klaksvik maça 3-4-2-1 dizilişiyle başladı.",
+            "Riga maça 4-3-3 dizilişiyle başladı.",
+            "58' Riga değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' KI Klaksvik değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "79' KI Klaksvik değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "80' KI Klaksvik değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "KI Klaksvik",
+              "formation": "3-4-2-1"
+            },
+            {
+              "team": "Riga",
+              "formation": "4-3-3"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -4653,10 +5578,16 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 57,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
