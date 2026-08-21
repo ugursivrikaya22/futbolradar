@@ -13267,6 +13267,53 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   color: var(--live);
 }
 
+/*
+ * CANLI MAÇ VARSA BÜYÜK ALAN, YOKSA KÜÇÜK KARTLAR.
+ *
+ * `.featured-carousel.is-live-mode` bugünün seçilmiş maçları arasında canlı
+ * bir maç olduğunda sunucu/istemci tarafından eklenir (bkz. prerender-core-
+ * pages.mjs staticFeaturedFixture, app.js renderFeaturedMatch) — o maç zaten
+ * ilk slayt olarak seçiliyor (services/featuredMatchSelection), burada
+ * yalnızca kartı görsel olarak büyütüyoruz. Canlı maç yoksa
+ * `.is-compact-mode` eklenir ve aynı kart daha küçük, "hızlı taranan" bir
+ * özet kartına döner.
+ */
+.featured-carousel.is-live-mode .featured-fixture.is-live {
+  border-color: rgba(200, 30, 45, 0.35);
+  box-shadow: 0 0 0 1px rgba(200, 30, 45, 0.18), var(--shadow-lg);
+}
+
+.featured-carousel.is-live-mode .featured-fixture.is-live .featured-fixture-score b {
+  font-size: clamp(2.4rem, 6vw, 3.4rem);
+  color: var(--live);
+}
+
+.featured-carousel.is-compact-mode .featured-fixture {
+  gap: var(--sp-2);
+  padding: clamp(12px, 1.8vw, 16px);
+}
+
+.featured-carousel.is-compact-mode .featured-fixture-team img,
+.featured-carousel.is-compact-mode .featured-fixture-team .team-logo-fallback,
+.featured-carousel.is-compact-mode .featured-fixture-team .fixture-row-fallback {
+  width: clamp(32px, 5vw, 44px);
+  height: clamp(32px, 5vw, 44px);
+  border-radius: 12px;
+}
+
+.featured-carousel.is-compact-mode .featured-fixture-team strong {
+  font-size: var(--fs-sm);
+}
+
+.featured-carousel.is-compact-mode .featured-fixture-score b {
+  font-size: clamp(1.3rem, 3.4vw, 1.7rem);
+}
+
+.featured-carousel.is-compact-mode .home-match-command-actions.featured-match-actions .button {
+  padding-block: 8px;
+  font-size: var(--fs-xs);
+}
+
 /* --- Hero karuseli ----------------------------------------------------------
    Kart tasarımı değişmedi: her slayt aynı `.featured-fixture` panosunu taşır.
    Karusel yalnızca bir kap, gezinme ve "aktif slayt" durumu ekler. Slaytlar
@@ -20197,5 +20244,56 @@ a.motm-week__card:focus-visible {
     align-items: center;
     min-height: 44px;
     font-weight: 900;
+  }
+}
+
+/* ── MOBİL: KART VE PARMAK HEDEFİ SIKILAŞTIRMA ──────────────────────
+   Ana sayfa temizliğinin mobil ayağı. Ölçüm: dar ekranda kartlar
+   masaüstüyle aynı iç boşluğu taşıyordu, bu da tek ekranda 1-2 kart
+   sığdırıyordu ve birincil tıklama alanları (kart linki, CTA butonu)
+   parmak ucundan küçük kalıyordu. İki değişiklik ayrı: kart yoğunluğu
+   (padding/font) ve dokunma hedefi (min-height/min-width 44px, WCAG
+   2.5.5 eşiği). İçerik kaybı yok — yalnızca daha sık, daha kolay
+   tıklanan bir düzen. */
+@media (max-width: 640px) {
+  .fixture-card,
+  .home-report-card,
+  .player-detail-card,
+  .trend-card,
+  .news-card,
+  .featured-fixture {
+    padding: clamp(10px, 3vw, 14px);
+    border-radius: 14px;
+  }
+
+  .fixture-card-league,
+  .fixture-card-state,
+  .news-card-meta time,
+  .trend-card-head span span {
+    font-size: var(--fs-xs);
+  }
+
+  .fixture-row-name,
+  .player-detail-card h2,
+  .trend-card-head strong {
+    font-size: var(--fs-sm);
+  }
+
+  /* Tıklanabilir kart eylemleri ve gezinme öğeleri: en az 44x44px. */
+  .fixture-card-action,
+  .detail-link,
+  .home-report-card,
+  .news-card,
+  .button,
+  .bottom-nav a,
+  .featured-carousel-arrow,
+  .featured-carousel-dot,
+  .slider-nav button {
+    min-height: 44px;
+  }
+
+  .featured-carousel-arrow,
+  .bottom-nav a {
+    min-width: 44px;
   }
 }

@@ -163,35 +163,45 @@ function profileContent(player) {
   </section>`;
 }
 
+/**
+ * Kulübü olmayan bir oyuncu güncel bir "en iyi" ya da "trend" listesinde
+ * duramaz — serbest oyuncu ya da sözleşmesi biten oyuncunun bayat formu,
+ * hâlâ oynuyormuş izlenimi verir. Kural önce yalnızca "yukselen-oyuncular"
+ * için yazılmıştı; aynı sorun mevki bazlı "en iyi" sayfalarında da vardı
+ * (ör. serbest kalan bir santrforun "en iyi forvetler" sayfasında görünmesi).
+ */
+function hasActiveClub(player) {
+  const team = String(player.currentTeam || player.team || "").trim();
+  return Boolean(team) && !/serbest|free agent|kulüpsüz|released/i.test(team);
+}
+
 function landingConfig(slug) {
   return {
-    forvetler: (player) => /forvet|santrfor|kanat/i.test(`${player.position} ${player.positionGroup}`),
-    kaleciler: (player) => /kaleci|goalkeeper/i.test(`${player.position} ${player.positionGroup}`),
-    defanslar: (player) => /def|stoper|bek|savun/i.test(`${player.position} ${player.positionGroup}`),
-    "orta-sahalar": (player) => /orta|mid/i.test(`${player.position} ${player.positionGroup}`),
-    "genc-yetenekler": (player) => Number(player.computedAge || player.age || 99) < 23,
-    "en-iyi-oyuncular": (player) => Number(rating(player)) >= 80
+    forvetler: (player) => /forvet|santrfor|kanat/i.test(`${player.position} ${player.positionGroup}`) && hasActiveClub(player),
+    kaleciler: (player) => /kaleci|goalkeeper/i.test(`${player.position} ${player.positionGroup}`) && hasActiveClub(player),
+    defanslar: (player) => /def|stoper|bek|savun/i.test(`${player.position} ${player.positionGroup}`) && hasActiveClub(player),
+    "orta-sahalar": (player) => /orta|mid/i.test(`${player.position} ${player.positionGroup}`) && hasActiveClub(player),
+    "genc-yetenekler": (player) => Number(player.computedAge || player.age || 99) < 23 && hasActiveClub(player),
+    "en-iyi-oyuncular": (player) => Number(rating(player)) >= 80 && hasActiveClub(player)
   }[slug];
 }
 
 function rootLandingConfig(slug) {
   const configs = {
-    "en-iyi-super-lig-oyunculari": (player) => /süper lig|super lig/i.test(player.league || "") && Number(rating(player)) >= 75,
-    "en-iyi-forvetler": (player) => ["forward", "winger"].includes(player.positionGroup),
-    "en-iyi-orta-sahalar": (player) => player.positionGroup === "midfielder",
-    "en-iyi-defanslar": (player) => player.positionGroup === "defender",
-    "en-iyi-kaleciler": (player) => player.positionGroup === "goalkeeper",
+    "en-iyi-super-lig-oyunculari": (player) => /süper lig|super lig/i.test(player.league || "") && Number(rating(player)) >= 75 && hasActiveClub(player),
+    "en-iyi-forvetler": (player) => ["forward", "winger"].includes(player.positionGroup) && hasActiveClub(player),
+    "en-iyi-orta-sahalar": (player) => player.positionGroup === "midfielder" && hasActiveClub(player),
+    "en-iyi-defanslar": (player) => player.positionGroup === "defender" && hasActiveClub(player),
+    "en-iyi-kaleciler": (player) => player.positionGroup === "goalkeeper" && hasActiveClub(player),
     "yukselen-oyuncular": (player) => {
       const trend = String(player.trendDirection || player.trend || "").toLocaleLowerCase("tr-TR");
       const isTrendingUp = Number(player.formChange) > 0 || trend.includes("up") || trend.includes("yüksel") || trend.includes("yuksel");
       if (!isTrendingUp) return false;
       // Kulübü olmayan bir oyuncu "yükselişte" olamaz — güncel kulüp yoksa
       // (serbest oyuncu, sözleşmesi biten) bayat form verisi yanıltıcı olur.
-      const team = String(player.currentTeam || player.team || "").trim();
-      if (!team || /serbest|free agent|kulüpsüz/i.test(team)) return false;
-      return true;
+      return hasActiveClub(player);
     },
-    "genc-yetenekler": (player) => Number(player.computedAge || player.age || 99) < 23,
+    "genc-yetenekler": (player) => Number(player.computedAge || player.age || 99) < 23 && hasActiveClub(player),
     "transfer-radari": (player) => Array.isArray(player.transferHistory) && player.transferHistory.length > 0
   };
   return configs[slug];

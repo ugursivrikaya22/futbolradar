@@ -566,7 +566,15 @@ function staticFeaturedFixture() {
       <button type="button" class="featured-carousel-arrow" data-featured-next aria-label="Sonraki maç"><span aria-hidden="true">›</span></button>
     </div>`;
 
-  return `<div class="featured-carousel" data-featured-carousel data-featured-interval="${ROTATION_INTERVAL_MS}" data-featured-count="${selections.length}" aria-roledescription="karusel" aria-label="Öne çıkan maçlar">
+  // Canlı maç varsa büyük/vurgulu, yoksa küçük kart modu — bkz. page.css
+  // `.featured-carousel.is-live-mode` / `.is-compact-mode` yorumu. Kural
+  // istemcide de aynı: renderFeaturedMatch (app.js) yeniden çizerken kart
+  // yerinden oynamasın diye aynı koşulu kullanır.
+  const carouselMode = selections.some((entry) => String(entry.match.status || "").toUpperCase() === "LIVE")
+    ? "is-live-mode"
+    : "is-compact-mode";
+
+  return `<div class="featured-carousel ${carouselMode}" data-featured-carousel data-featured-interval="${ROTATION_INTERVAL_MS}" data-featured-count="${selections.length}" aria-roledescription="karusel" aria-label="Öne çıkan maçlar">
       <div class="featured-carousel-viewport">${slides}</div>
       ${nav}
     </div>${quickStats}`;

@@ -3109,7 +3109,16 @@
       "</div>"
     );
 
-    return '<div class="featured-carousel" data-featured-carousel' +
+    // Canlı maç varsa büyük/vurgulu, yoksa küçük kart modu — sunucu
+    // tarafındaki aynı kural (prerender-core-pages.mjs staticFeaturedFixture)
+    // ile birebir, bkz. page.css `.featured-carousel.is-live-mode` /
+    // `.is-compact-mode`. Aynı koşul kullanılmazsa kart JS yüklendiğinde
+    // boyut değiştirir.
+    var carouselMode = list.some(function (selection) {
+      return fixtureStatusMeta(selection.match).live;
+    }) ? "is-live-mode" : "is-compact-mode";
+
+    return '<div class="featured-carousel ' + carouselMode + '" data-featured-carousel' +
       ' data-featured-interval="' + FEATURED_ROTATION_MS + '"' +
       ' data-featured-count="' + list.length + '"' +
       ' aria-roledescription="karusel" aria-label="Öne çıkan maçlar">' +

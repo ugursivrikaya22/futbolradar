@@ -16,7 +16,10 @@ const PUBLIC_OUTPUT_PATH = path.join(root, "public", "data", "news-ticker.json")
 const REQUEST_TIMEOUT_MS = 12_000;
 const REQUEST_RETRIES = 2;
 const MAX_AUTOMATED_ITEMS = 18;
-const MAX_AGE_MS = 96 * 60 * 60 * 1000;
+// Üç gün — ana sayfa/haberler.html sırasıyla bu pencerenin dışına düşen
+// habere hiç yer vermez. Önceki 96 saatlik pencere kullanıcı isteğiyle
+// "üç günden eski haberler otomatik gizlensin" kuralına indirildi.
+const MAX_AGE_MS = 72 * 60 * 60 * 1000;
 
 // KAYNAK LİSTESİ TEK YERDE: services/sourceTrust.js.
 //
