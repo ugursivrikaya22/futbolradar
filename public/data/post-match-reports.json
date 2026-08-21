@@ -1,9 +1,495 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-21T18:41:57.130Z",
-  "matchCount": 716,
+  "updatedAt": "2026-08-21T19:04:36.780Z",
+  "matchCount": 718,
   "records": [
+    {
+      "matchId": "lugo-ourense-cf-2026-08-21",
+      "fixtureId": "1604799",
+      "provider": "api-football",
+      "slug": "lugo-ourense-cf-2026-08-21",
+      "kickoff": "2026-08-21T20:00:00+03:00",
+      "kickoffUtc": "2026-08-21T17:00:00.000Z",
+      "kickoffLocal": "2026-08-21T20:00",
+      "date": "2026-08-21",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Lugo",
+      "awayTeam": "Ourense CF",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "finalScore": "1-0",
+      "winner": "Lugo",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 1,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "88c3a461bb866a06",
+      "fingerprint": "88c3a461bb866a06",
+      "analysisGeneratedAt": "2026-08-21T19:04:36.742Z",
+      "analysisUpdatedAt": "2026-08-21T19:04:36.742Z",
+      "generatedAt": "2026-08-21T19:04:36.742Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Lugo 1-0 Ourense CF maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Friendlies Clubs maçını Lugo 1-0 kazandı; Ourense CF sahadan puansız ayrıldı.",
+        "path": "mac-raporu/lugo-ourense-cf-2026-08-21.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/lugo-ourense-cf-2026-08-21.html",
+      "digest": {
+        "headline": "Lugo, Ourense CF'i 1-0 yendi",
+        "paragraph": "Friendlies Clubs maçını Lugo 1-0 kazandı; Ourense CF sahadan puansız ayrıldı. Tek golü 42. dakikada Normal Goal (Lugo) kaydetti.",
+        "result": {
+          "winner": "Lugo",
+          "loser": "Ourense CF",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "42'",
+              "team": "Lugo",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Normal Goal",
+              "team": "Lugo",
+              "contribution": "42' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "42' Lugo — Normal Goal: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Lugo, Ourense CF'i 1-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Lugo sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 43,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "ud-logrones-mirandes-2026-08-21",
+      "fixtureId": "1618954",
+      "provider": "api-football",
+      "slug": "ud-logrones-mirandes-2026-08-21",
+      "kickoff": "2026-08-21T20:00:00+03:00",
+      "kickoffUtc": "2026-08-21T17:00:00.000Z",
+      "kickoffLocal": "2026-08-21T20:00",
+      "date": "2026-08-21",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "UD Logroñés",
+      "awayTeam": "Mirandes",
+      "venue": null,
+      "score": {
+        "home": 4,
+        "away": 0
+      },
+      "finalScore": "4-0",
+      "winner": "UD Logroñés",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 4
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 4,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "4414babfe1fa9478",
+      "fingerprint": "4414babfe1fa9478",
+      "analysisGeneratedAt": "2026-08-21T19:04:36.742Z",
+      "analysisUpdatedAt": "2026-08-21T19:04:36.742Z",
+      "generatedAt": "2026-08-21T19:04:36.742Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "UD Logroñés 4-0 Mirandes maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Friendlies Clubs maçını UD Logroñés 4-0 kazandı; Mirandes sahadan puansız ayrıldı.",
+        "path": "mac-raporu/ud-logrones-mirandes-2026-08-21.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/ud-logrones-mirandes-2026-08-21.html",
+      "digest": {
+        "headline": "UD Logroñés, Mirandes'i 4-0 yendi",
+        "paragraph": "Friendlies Clubs maçını UD Logroñés 4-0 kazandı; Mirandes sahadan puansız ayrıldı. Golleri 5. dakikada M. Baselga (UD Logroñés), 7. dakikada A. Morales (UD Logroñés), 18. dakikada I. Asenjo (UD Logroñés), 89. dakikada Normal Goal (UD Logroñés) kaydetti.",
+        "result": {
+          "winner": "UD Logroñés",
+          "loser": "Mirandes",
+          "draw": false,
+          "margin": 4
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "5'",
+              "team": "UD Logroñés",
+              "type": "Gol",
+              "detail": "M. Baselga",
+              "pivotal": true
+            },
+            {
+              "minute": "7'",
+              "team": "UD Logroñés",
+              "type": "Gol",
+              "detail": "A. Morales",
+              "pivotal": true
+            },
+            {
+              "minute": "18'",
+              "team": "UD Logroñés",
+              "type": "Gol",
+              "detail": "I. Asenjo",
+              "pivotal": true
+            },
+            {
+              "minute": "89'",
+              "team": "UD Logroñés",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (Normal Goal).",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "89'",
+              "team": "UD Logroñés",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "decisive": true
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Morales",
+              "team": "UD Logroñés",
+              "contribution": "7' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "I. Asenjo",
+              "team": "UD Logroñés",
+              "contribution": "18' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "M. Baselga",
+              "team": "UD Logroñés",
+              "contribution": "5' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Normal Goal",
+              "team": "UD Logroñés",
+              "contribution": "89' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "5' UD Logroñés — M. Baselga: gol",
+            "7' UD Logroñés — A. Morales: gol",
+            "18' UD Logroñés — I. Asenjo: gol"
+          ],
+          "goals": 3
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "89' UD Logroñés — Normal Goal: gol"
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "UD Logroñés, Mirandes'i 4-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Mirandes son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
+          "closing": "UD Logroñés sahadan 4 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "rayo-vallecano-alaves-2026-08-20",
       "fixtureId": "1570351",
