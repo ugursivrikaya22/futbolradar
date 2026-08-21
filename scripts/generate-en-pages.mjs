@@ -880,39 +880,6 @@ function radarMatchSection() {
         </section>`;
 }
 
-/** Son maç raporu — Türkçe .home-post-match ile aynı yapı; cümle skordan üretilir. */
-function postMatchSection() {
-  const last = finishedMatches(1)[0];
-  if (!last) return "";
-  const competition = competitionLabel(last.league, LOCALE);
-  const home = Number(last.score.home);
-  const away = Number(last.score.away);
-  const line = home === away
-    ? `${last.homeTeam} and ${last.awayTeam} drew ${home}–${away}.`
-    : home > away
-      ? `${last.homeTeam} beat ${last.awayTeam} ${home}–${away}.`
-      : `${last.awayTeam} beat ${last.homeTeam} ${away}–${home}.`;
-  return `<section class="container section home-post-match" aria-labelledby="home-post-match-title">
-          ${sectionHead("Latest result", "home-post-match-title", `${last.homeTeam} ${home}-${away} ${last.awayTeam}`, "", "./analysis.html", label("common.viewAll"))}
-          <div class="home-post-match-shell"><div><span>${escapeHtml(competition)}</span><strong>${escapeHtml(statusLabelFor("FINISHED", LOCALE))}</strong></div><p>${escapeHtml(line)} Played on ${escapeHtml(formatDate(last.kickoff, LOCALE))}.</p><a class="detail-link" href="./analysis.html">${escapeHtml(label("common.viewAll"))}</a></div>
-        </section>`;
-}
-
-/** Son raporlar — Türkçe .home-recent-reports ile aynı kart ızgarası. */
-function recentReportsSection() {
-  const recent = finishedMatches(4);
-  if (!recent.length) return "";
-  const cards = recent.map((match) => `<a class="home-report-card is-turkish" href="./analysis.html">
-      <span class="home-report-meta">${escapeHtml(competitionLabel(match.league, LOCALE))} · ${escapeHtml(formatDate(match.kickoff, LOCALE))}</span>
-      <strong class="home-report-score">${escapeHtml(match.homeTeam)} ${escapeHtml(match.score.home)}-${escapeHtml(match.score.away)} ${escapeHtml(match.awayTeam)}</strong>
-      <p class="home-report-line">${escapeHtml(statusLabelFor("FINISHED", LOCALE))}</p>
-    </a>`).join("");
-  return `<section class="container section home-recent-reports" aria-labelledby="home-recent-reports-title">
-          ${sectionHead("Post-match", "home-recent-reports-title", "Recently completed matches", "Verified final scores for Turkish clubs at home and in Europe.", "./analysis.html", label("common.viewAll"))}
-          <div class="home-report-grid">${cards}</div>
-        </section>`;
-}
-
 /**
  * OYUNCU RADARI — Türkçe .section-player-radar ile aynı kartlar.
  *
@@ -1210,8 +1177,6 @@ function homePage() {
       ${todaySection()}
       ${radarMatchSection()}
       ${pollPromoSection("#tahmin-anketi")}
-      ${postMatchSection()}
-      ${recentReportsSection()}
       ${playerRadarSection()}
       ${trendTeamsSection()}
       ${quickNavSection()}
