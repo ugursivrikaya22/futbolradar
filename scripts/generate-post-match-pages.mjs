@@ -883,11 +883,20 @@ for (const match of finished) {
   generated.push({ report, match });
 }
 
+// Ana sayfa temizliği: bu iki işaretleyici arasında kalan eski "tamamlanmış
+// maç" vitrini KOŞULSUZ boşaltılır — `generated.length` sıfır olduğu bir
+// koşuda bile. Önceki hâl yalnızca yeni rapor üretildiğinde işaretleyiciye
+// dokunuyordu; bu da üretim durmuşken (ör. o gün yeni rapor yoksa) eski
+// bloğun sayfada sonsuza dek kalmasına yol açıyordu — tam olarak
+// scripts/test-hero-freshness.mjs'in yakalamak için var olduğu bayatlık.
+replaceOrInsert("index.html", "<!-- post-match-feature:start -->", "<!-- post-match-feature:end -->", "", null);
+replaceOrInsert("index.html", "<!-- post-match-recent:start -->", "<!-- post-match-recent:end -->", "", null);
+
 if (generated.length) {
   addInternalLinks(generated[0].report, generated[0].match);
-  // Ana sayfa temizliği: tamamlanmış maçların rapor vitrini artık ana
-  // sayfaya enjekte edilmiyor (bkz. addInternalLinks yorumu). Raporlar
-  // `mac-merkezi.html`de (addReportIndex, aşağıda) tam liste olarak kalıyor.
+  // Rapor vitrini ana sayfaya enjekte edilmiyor (yukarıda temizlendi).
+  // Raporlar `mac-merkezi.html`de (addReportIndex, aşağıda) tam liste
+  // olarak kalıyor.
   addReportIndex(generated);
   upsertSitemap(generated.map((entry) => entry.report.seo.path));
 }
