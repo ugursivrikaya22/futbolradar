@@ -166,13 +166,21 @@ async function handleLiveLatency(req, res) {
   const method = String(req.method || "GET").toUpperCase();
 
   if (method === "OPTIONS") {
-    res.setHeader("Allow", "GET, POST, OPTIONS");
+    res.setHeader("Allow", "GET, HEAD, POST, OPTIONS");
     res.statusCode = 204;
     return res.end();
   }
-  if (method !== "GET" && method !== "POST") {
-    res.setHeader("Allow", "GET, POST, OPTIONS");
-    return sendError(res, 405, "Bu uc nokta yalnizca GET ve POST kabul eder.", "METHOD_NOT_ALLOWED", SOURCE);
+  // HEAD, GET'in gövdesiz hâlidir — uptime kontrolleri ve bazı CDN/tarayıcı
+  // ön istekleri kullanır. `api/_utils.js` rejectUnsupportedMethod'un GET
+  // yanında HEAD'i de kabul etmesiyle AYNI gerekçe (bkz. o dosyadaki yorum):
+  // reddedilirse izleme araçlarında sahte "endpoint kapalı" alarmı üretir.
+  // Ayrıca burada set edilmeden önce 405 dönmek `setCachePolicy`in hiç
+  // çağrılmamasına, yanıtın varsayılan (önbelleklenebilir) politikayla
+  // gitmesine yol açardı — canlı bir uç nokta için yanlış.
+  if (method !== "GET" && method !== "HEAD" && method !== "POST") {
+    res.setHeader("Allow", "GET, HEAD, POST, OPTIONS");
+    setCachePolicy(res, "live-latency");
+    return sendError(res, 405, "Bu uc nokta yalnizca GET, HEAD ve POST kabul eder.", "METHOD_NOT_ALLOWED", SOURCE);
   }
 
   setCachePolicy(res, "live-latency");
