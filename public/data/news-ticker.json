@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-21T20:30:58.092Z",
+  "updatedAt": "2026-08-21T21:29:04.478Z",
   "items": [
+    {
+      "id": "auto-news-a38a6919c910ed95d6a7",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Teknik Direktörümüz Okan Buruk'tan açıklamalar",
+      "team": "Galatasaray",
+      "timestamp": "2026-08-21T21:12:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOUkROUFBvYTU1OVppMkFCenNHX3Axd0tzMkNPbnNpVU1CclpIZXQtQkxpb1M2SUVBUUZmOUxIUTFqdzhJRXVSc1M5R24xczV5aGlRcnVRLXU4eUhHV2dxZUcwLUNTWDQyQmY2R19USWUtY2pRanF3YngydGI5VktTMFlRTWc3dm0tY3N5TWUyVTNleTZTb3ZZ?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-91274293db069458886b",
       "category": "official",
@@ -20,8 +40,28 @@
         "feed": "galatasaray",
         "priority": 1,
         "status": "OFFICIAL",
-        "mergedReports": 4,
+        "mergedReports": 3,
         "firstSeenAt": "2026-08-20T16:30:00.000Z"
+      }
+    },
+    {
+      "id": "auto-news-9163c639a671784f43af",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Başakşehir maçı hazırlıklarımız başladı",
+      "team": "Trabzonspor",
+      "timestamp": "2026-08-21T18:03:39.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxPNlZPb1dLdFNYVGtiWkxnZEtFeWEtYV9rSHlNaDdWTTJOREprTVdJaFF0OFlqN3RielFLb2YtWFdrQzdOMXdtbkZNTlRJNXVBd3k0bGxsMXRSS1BlcWo4UGhzUGdpc2hvWEFzVzVDODVJY2x0RnZLUEJqdTY1WWdmUE8yaTRPN2hNUHc5QkFvdHlaQQ?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
       }
     },
     {
@@ -127,28 +167,6 @@
       }
     },
     {
-      "id": "auto-news-abe9549938fe2429895e",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Aleksei Batrakov sağlık kontrollerinden geçti",
-      "team": "Galatasaray",
-      "timestamp": "2026-08-20T20:14:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxPVjlvQ01WRFFUQldXcEQxbUQzZW9KVzNMaVBoaHNHWUhYcWZZaGFvdHlxWDlCQU12OFpOekxJbVBmb0FuQTJ3UTlOcWNoTWE1S0hKd2IxeWhXTEF3Z1U5M3V0VjRUY29rZDl2TWJOeXA5S082ZElDS2hnRXZmWEVUWVFRRU5XdVlZeUJZcnlsOXhuZGVsRjFoVmdJdG5fbWRNbk1fbENPQ3ZGSzBRNU93RS0zODNaZw?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL",
-        "mergedReports": 3,
-        "firstSeenAt": "2026-08-20T19:34:00.000Z"
-      }
-    },
-    {
       "id": "auto-news-74976f597ebc7945808e",
       "category": "official",
       "confidence": "confirmed",
@@ -185,26 +203,6 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-3f10c989844471df0b15",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Ferencvaros maçı hazırlıklarımız tamamlandı",
-      "team": "Trabzonspor",
-      "timestamp": "2026-08-19T17:45:38.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQSzFWSTNjSzRSck8zTmRFTlQwQS1TT0J4VldlMDctckVaQmNIcWVxSTFDVGVtUmsxNWRzT3Bpd3BUTEtDblp4bTU5bzBLNEpfZVZ4RUpwQWJOdkJMdkdvY3NuSEFzeVh4bDQ3YzFkdW5TUlFYY2xpcmZmN1pXMG9EWjhvQzkxNFBRVlk4S2RxU05qbWhrNEFR?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
         "status": "OFFICIAL"
       }
     },
