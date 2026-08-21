@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-21T22:29:34.396Z",
+  "fetchedAt": "2026-08-21T23:28:32.123Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -290336,8 +290336,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T22:29:35.083Z",
-      "staleAfter": "2026-08-21T22:34:35.083Z",
+      "fetchedAt": "2026-08-21T23:28:33.090Z",
+      "staleAfter": "2026-08-21T23:33:33.090Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -290347,17 +290347,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Real Avilés skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Real Avilés tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 90+3' Normal Goal tarafından kaydedildi. Real Avilés skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Real Avilés tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "90+3'",
+            "text": "Son gol 90+3' Normal Goal tarafından kaydedildi."
+          },
           {
             "label": "Canlı skor",
             "value": "4-2",
             "text": "Real Avilés skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 6,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -301755,14 +301760,14 @@
       "awayTeam": "San Lorenzo",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2424.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/460.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 29,
+      "elapsed": 29,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -301780,8 +301785,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-21T02:03:14.722Z",
-      "staleAfter": "2026-08-21T02:08:14.722Z",
+      "fetchedAt": "2026-08-21T23:28:33.090Z",
+      "staleAfter": "2026-08-21T23:33:33.090Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
