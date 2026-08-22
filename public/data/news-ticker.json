@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-22T15:26:14.794Z",
+  "updatedAt": "2026-08-22T16:30:32.444Z",
   "items": [
     {
       "id": "auto-news-7933f5dfedd69aaabc2a",
@@ -223,16 +223,16 @@
       }
     },
     {
-      "id": "auto-news-45f90146d48dbe8da2e8",
+      "id": "auto-news-eb31356dc1b0f6815c26",
       "category": "official",
       "confidence": "confirmed",
-      "section": "transfer",
-      "text": "Omar Fayed’in transferi hakkında",
+      "section": "news",
+      "text": "Akdeniz Oyunları’nda Fenerbahçeli 47 milli sporcu",
       "team": "Fenerbahçe",
-      "timestamp": "2026-08-19T15:33:10.000Z",
+      "timestamp": "2026-08-20T10:48:41.000Z",
       "source": {
         "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOOTNDZ2MwdUhKRzlQN0dsZVczNUIwRkVrREx0YjFVZEFYSERIWl9yTlNTd3FRMUZJRTNxLVZ1OWhncVVWWnd6a21SMnAycVY2ZVdRaVFIcUpMckR3S0I5Q2U2Qlg4dmMxcHc5VXpqa0J3M1JPeHRtbDRveU9SS19RVFVVSzcxX1dnRXc?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxONmxHYmZUck8zRHNrX0k1MkRXNnpTYXQyQkZmaFlGRkVWRldfSHJWTTRwdExHdld3UWhqbndkRzdZN3hYOVFMYjg5eW4zUWthMkFDVVdwWVVGWGhTMUN6NFhZN3FPOVY3TmdocUVuUGh0a1pScTJrNU5HZzJCZkZxV1o4M2RYTWUxUWNFY0lNT21aaHdzQU9XRzdNSjBkazg?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
@@ -341,6 +341,26 @@
         "source": "rss",
         "feed": "super-lig",
         "priority": 5,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-fb0c13de8b9acc0bc057",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Champions League play-off first legs highlights: Celtic and Bodø/Glimt take control of ties",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-08-19T21:24:24.000Z",
+      "source": {
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMi3AFBVV95cUxQS1dLMGFodFQ2VWxseTM0VTJCYWJ4V0lOT2s4UGI5eTBJNFBYWFNtaldPVUR5Y0tyRlZtOGpNT3FGbFduT2QwUE03QlZxUG14STNiZ1BTSVJzZXRpSzFVZ2xZdlNZNVlhQVJjV1NvTjM1cTJ5YU42V1oyLWVnR28yRFJYeTBWcXBUdU54c3gyTkE5ZFE5UHlNeFNUN0hqTnJXV2EzZUtGVVRQVDBlOFJ0WVotOGUyUkJibGFjN01kcDdjZ0NuY08yeXd3WGhzY2IxQWhZVHBzai1oS1F4?oc=5",
+        "publisher": "uefa.com"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "uefa",
+        "priority": 9,
         "status": "OFFICIAL"
       }
     }
