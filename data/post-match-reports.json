@@ -1,9 +1,224 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-22T10:27:58.075Z",
-  "matchCount": 732,
+  "updatedAt": "2026-08-22T11:25:16.396Z",
+  "matchCount": 734,
   "records": [
+    {
+      "matchId": "gimnastica-segoviana-rayo-majadahonda-2026-08-22",
+      "fixtureId": "1618952",
+      "provider": "api-football",
+      "slug": "gimnastica-segoviana-rayo-majadahonda-2026-08-22",
+      "kickoff": "2026-08-22T12:00:00+03:00",
+      "kickoffUtc": "2026-08-22T09:00:00.000Z",
+      "kickoffLocal": "2026-08-22T12:00",
+      "date": "2026-08-22",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Gimnástica Segoviana",
+      "awayTeam": "Rayo Majadahonda",
+      "venue": null,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "Rayo Majadahonda",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 1,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "8b30bc8e685c8dc3",
+      "fingerprint": "8b30bc8e685c8dc3",
+      "analysisGeneratedAt": "2026-08-22T11:25:16.361Z",
+      "analysisUpdatedAt": "2026-08-22T11:25:16.361Z",
+      "generatedAt": "2026-08-22T11:25:16.361Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Gimnástica Segoviana 0-1 Rayo Majadahonda maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Rayo Majadahonda, Friendlies Clubs karşılaşmasında Gimnástica Segoviana'yı 1-0 mağlup etti.",
+        "path": "mac-raporu/gimnastica-segoviana-rayo-majadahonda-2026-08-22.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/gimnastica-segoviana-rayo-majadahonda-2026-08-22.html",
+      "digest": {
+        "headline": "Rayo Majadahonda, Gimnástica Segoviana'yı 1-0 yendi",
+        "paragraph": "Rayo Majadahonda, Friendlies Clubs karşılaşmasında Gimnástica Segoviana'yı 1-0 mağlup etti. Tek golü 5. dakikada J. Cambra (Rayo Majadahonda) kaydetti.",
+        "result": {
+          "winner": "Rayo Majadahonda",
+          "loser": "Gimnástica Segoviana",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "5'",
+              "team": "Rayo Majadahonda",
+              "type": "Gol",
+              "detail": "J. Cambra",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "J. Cambra",
+              "team": "Rayo Majadahonda",
+              "contribution": "5' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "5' Rayo Majadahonda — J. Cambra: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Rayo Majadahonda, Gimnástica Segoviana'yı 0-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Rayo Majadahonda sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 43,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "espanyol-ii-gimnastic-2026-08-22",
       "fixtureId": "1627017",
@@ -252,6 +467,200 @@
       ],
       "coverage": 57,
       "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "unionistas-ii-guijuelo-2026-08-22",
+      "fixtureId": "1627018",
+      "provider": "api-football",
+      "slug": "unionistas-ii-guijuelo-2026-08-22",
+      "kickoff": "2026-08-22T11:30:00+03:00",
+      "kickoffUtc": "2026-08-22T08:30:00.000Z",
+      "kickoffLocal": "2026-08-22T11:30",
+      "date": "2026-08-22",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Clubs",
+      "competition": "Friendlies Clubs",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Unionistas II",
+      "awayTeam": "Guijuelo",
+      "venue": null,
+      "score": {
+        "home": 4,
+        "away": 1
+      },
+      "finalScore": "4-1",
+      "winner": "Unionistas II",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "722f079d5d02b743",
+      "fingerprint": "722f079d5d02b743",
+      "analysisGeneratedAt": "2026-08-22T11:25:16.361Z",
+      "analysisUpdatedAt": "2026-08-22T11:25:16.361Z",
+      "generatedAt": "2026-08-22T11:25:16.361Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Unionistas II 4-1 Guijuelo maç raporu: Friendlies Clubs istatistikleri | FutbolRadar",
+        "description": "Unionistas II, Friendlies Clubs karşılaşmasında Guijuelo'yu 4-1 mağlup etti.",
+        "path": "mac-raporu/unionistas-ii-guijuelo-2026-08-22.html",
+        "competition": "Friendlies Clubs"
+      },
+      "reportUrl": "./mac-raporu/unionistas-ii-guijuelo-2026-08-22.html",
+      "digest": {
+        "headline": "Unionistas II, Guijuelo'yu 4-1 yendi",
+        "paragraph": "Unionistas II, Friendlies Clubs karşılaşmasında Guijuelo'yu 4-1 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Unionistas II",
+          "loser": "Guijuelo",
+          "draw": false,
+          "margin": 3
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Unionistas II, Guijuelo'yu 4-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Unionistas II sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },

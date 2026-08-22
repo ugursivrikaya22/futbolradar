@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-22T10:27:43.444Z",
+  "fetchedAt": "2026-08-22T11:25:00.381Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -303145,14 +303145,14 @@
       "awayTeam": "Guijuelo",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/26546.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9388.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 4,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -303170,8 +303170,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T06:45:16.114Z",
-      "staleAfter": "2026-08-22T06:50:16.114Z",
+      "fetchedAt": "2026-08-22T11:25:01.540Z",
+      "staleAfter": "2026-08-22T11:30:01.540Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -303181,11 +303181,17 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "summary": "Unionistas II skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Unionistas II tarafında.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "4-1",
+            "text": "Unionistas II skor üstünlüğünü elinde tutuyor."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -304008,11 +304014,11 @@
       "awayTeam": "Rayo Majadahonda",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9387.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/861.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 68,
-      "elapsed": 68,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
         "away": 1,
@@ -304033,8 +304039,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T10:27:44.694Z",
-      "staleAfter": "2026-08-22T10:32:44.694Z",
+      "fetchedAt": "2026-08-22T11:25:01.540Z",
+      "staleAfter": "2026-08-22T11:30:01.540Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -304043,7 +304049,7 @@
       },
       "competitionId": "hazirlik-maci",
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "Son gol 5' J. Cambra tarafından kaydedildi. Rayo Majadahonda skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Rayo Majadahonda tarafında.",
         "confidence": "Orta",
         "signals": [
@@ -304824,14 +304830,14 @@
       "awayTeam": "Atlético Tordesillas",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9728.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9724.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 89,
+      "elapsed": 89,
       "live": true,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -304849,8 +304855,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T10:27:44.694Z",
-      "staleAfter": "2026-08-22T10:32:44.694Z",
+      "fetchedAt": "2026-08-22T11:25:01.540Z",
+      "staleAfter": "2026-08-22T11:30:01.540Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -304860,17 +304866,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 85' Normal Goal tarafından kaydedildi. Skor dengede.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "85'",
+            "text": "Son gol 85' Normal Goal tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
+            "value": "1-1",
             "text": "Skor dengede."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 2,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -306237,7 +306248,29 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "52'",
+          "team": {
+            "name": "Atlético Tordesillas"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "Cristo Atlético"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "ud-logrones-huesca-ii-2026-08-22",
@@ -306976,13 +307009,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/9412.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/9381.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 25,
-      "elapsed": 25,
+      "providerStatus": "2H",
+      "minute": 62,
+      "elapsed": 62,
       "live": true,
       "score": {
         "home": 0,
-        "away": 1,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -307000,8 +307033,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T10:27:44.694Z",
-      "staleAfter": "2026-08-22T10:32:44.694Z",
+      "fetchedAt": "2026-08-22T11:25:01.540Z",
+      "staleAfter": "2026-08-22T11:30:01.540Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -307011,21 +307044,21 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Son gol 10' R. Caballero tarafından kaydedildi. Atlético Baleares skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Atlético Baleares tarafında.",
+        "summary": "Son gol 47' R. Catala tarafından kaydedildi. Atlético Baleares skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Atlético Baleares tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "10'",
-            "text": "Son gol 10' R. Caballero tarafından kaydedildi."
+            "value": "47'",
+            "text": "Son gol 47' R. Catala tarafından kaydedildi."
           },
           {
             "label": "Canlı skor",
-            "value": "0-1",
+            "value": "0-2",
             "text": "Atlético Baleares skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 1,
+        "eventCount": 2,
         "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
@@ -307984,6 +308017,16 @@
           "detail": "Normal Goal",
           "value": "R. Caballero · Normal Goal",
           "comments": ""
+        },
+        {
+          "time": "47'",
+          "team": {
+            "name": "Atlético Baleares"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "R. Catala · Normal Goal",
+          "comments": ""
         }
       ]
     },
@@ -308026,8 +308069,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T09:31:20.520Z",
-      "staleAfter": "2026-08-22T09:36:20.520Z",
+      "fetchedAt": "2026-08-22T11:25:01.540Z",
+      "staleAfter": "2026-08-22T11:30:01.540Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -309268,7 +309311,313 @@
             }
           }
         ]
-      }
+      },
+      "lineups": [
+        {
+          "team": "Hull City",
+          "formation": "3-4-2-1",
+          "players": [
+            "Konstantinos Tzolakis",
+            "Nobel Mendy",
+            "John Egan",
+            "Semi Ajayi",
+            "Lewie Coyle",
+            "Matt Crooks",
+            "Regan Slater",
+            "Ryan Giles",
+            "Elliot Stroud",
+            "Mohamed Belloumi",
+            "Oli McBurnie"
+          ],
+          "substitutes": [
+            "Dillon Phillips",
+            "Lucas Herrington",
+            "Matt Targett",
+            "Paddy McNair",
+            "Cody Drameh",
+            "Liam Millar",
+            "Jens Hjertø-Dahl",
+            "Lucas Gourna-Douath",
+            "Kieran Dowell"
+          ],
+          "startingDetails": [
+            {
+              "name": "Konstantinos Tzolakis",
+              "number": 19,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Nobel Mendy",
+              "number": 32,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "John Egan",
+              "number": 15,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Semi Ajayi",
+              "number": 6,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Lewie Coyle",
+              "number": 2,
+              "position": "M",
+              "grid": "3:4"
+            },
+            {
+              "name": "Matt Crooks",
+              "number": 25,
+              "position": "M",
+              "grid": "3:3"
+            },
+            {
+              "name": "Regan Slater",
+              "number": 27,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Ryan Giles",
+              "number": 3,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Elliot Stroud",
+              "number": 21,
+              "position": "F",
+              "grid": "4:2"
+            },
+            {
+              "name": "Mohamed Belloumi",
+              "number": 10,
+              "position": "F",
+              "grid": "4:1"
+            },
+            {
+              "name": "Oli McBurnie",
+              "number": 9,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Dillon Phillips",
+              "number": 12,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Lucas Herrington",
+              "number": 22,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Matt Targett",
+              "number": 23,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Paddy McNair",
+              "number": 17,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Cody Drameh",
+              "number": 18,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Liam Millar",
+              "number": 7,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Jens Hjertø-Dahl",
+              "number": 14,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Lucas Gourna-Douath",
+              "number": 29,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Kieran Dowell",
+              "number": 26,
+              "position": "M",
+              "grid": null
+            }
+          ]
+        },
+        {
+          "team": "Manchester United",
+          "formation": "4-2-3-1",
+          "players": [
+            "Senne Lammens",
+            "Noussair Mazraoui",
+            "Harry Maguire",
+            "Ayden Heaven",
+            "Luke Shaw",
+            "Andrey Santos",
+            "Youri Tielemans",
+            "Bryan Mbeumo",
+            "Bruno Fernandes",
+            "Patrick Dorgu",
+            "Matheus Cunha"
+          ],
+          "substitutes": [
+            "Karl Darlow",
+            "Diogo Dalot",
+            "Leny Yoro",
+            "Lisandro Martínez",
+            "Kobbie Mainoo",
+            "Benjamin Šeško",
+            "Marcus Rashford",
+            "Joshua Zirkzee",
+            "Shea Lacey"
+          ],
+          "startingDetails": [
+            {
+              "name": "Senne Lammens",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Noussair Mazraoui",
+              "number": 3,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Harry Maguire",
+              "number": 5,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Ayden Heaven",
+              "number": 26,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Luke Shaw",
+              "number": 23,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Andrey Santos",
+              "number": 17,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Youri Tielemans",
+              "number": 18,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Bryan Mbeumo",
+              "number": 19,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Bruno Fernandes",
+              "number": 8,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Patrick Dorgu",
+              "number": 13,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "Matheus Cunha",
+              "number": 10,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Karl Darlow",
+              "number": 12,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Diogo Dalot",
+              "number": 2,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Leny Yoro",
+              "number": 15,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Lisandro Martínez",
+              "number": 6,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Kobbie Mainoo",
+              "number": 37,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Benjamin Šeško",
+              "number": 30,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Marcus Rashford",
+              "number": 9,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Joshua Zirkzee",
+              "number": 11,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Shea Lacey",
+              "number": 31,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "birmingham-bristol-city-2026-08-22",
@@ -309309,8 +309658,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T09:31:20.520Z",
-      "staleAfter": "2026-08-22T09:36:20.520Z",
+      "fetchedAt": "2026-08-22T11:25:01.540Z",
+      "staleAfter": "2026-08-22T11:30:01.540Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -310701,7 +311050,313 @@
             }
           }
         ]
-      }
+      },
+      "lineups": [
+        {
+          "team": "Birmingham",
+          "formation": "4-2-3-1",
+          "players": [
+            "James Beadle",
+            "Bright Osayi-Samuel",
+            "Phil Neumann",
+            "Christoph Klarer",
+            "Alex Cochrane",
+            "Tomoki Iwata",
+            "Jhon Solís",
+            "Carlos Vicente",
+            "Seung Ho Paik",
+            "Jay Stansfield",
+            "August Priske"
+          ],
+          "substitutes": [
+            "Ryan Allsop",
+            "Ethan Laird",
+            "Kristoffer Lund",
+            "Dael Fry",
+            "Kanya Fujimoto",
+            "Patrick Roberts",
+            "Demarai Gray",
+            "Luis Vázquez",
+            "Marvin Ducksch"
+          ],
+          "startingDetails": [
+            {
+              "name": "James Beadle",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Bright Osayi-Samuel",
+              "number": 26,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Phil Neumann",
+              "number": 5,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Christoph Klarer",
+              "number": 4,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Alex Cochrane",
+              "number": 20,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Tomoki Iwata",
+              "number": 24,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Jhon Solís",
+              "number": 14,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Carlos Vicente",
+              "number": 7,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Seung Ho Paik",
+              "number": 8,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Jay Stansfield",
+              "number": 28,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "August Priske",
+              "number": 9,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Ryan Allsop",
+              "number": 21,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Ethan Laird",
+              "number": 2,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Kristoffer Lund",
+              "number": 25,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Dael Fry",
+              "number": 23,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Kanya Fujimoto",
+              "number": 27,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Patrick Roberts",
+              "number": 16,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Demarai Gray",
+              "number": 10,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Luis Vázquez",
+              "number": 32,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Marvin Ducksch",
+              "number": 33,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        },
+        {
+          "team": "Bristol City",
+          "formation": "4-2-3-1",
+          "players": [
+            "Sam Tickle",
+            "Rio Cardines",
+            "George Tanner",
+            "Lisav Naif Eissat",
+            "Rob Dickie",
+            "Jason Knight",
+            "Joe Williams",
+            "Yu Hirakawa",
+            "Jed Wallace",
+            "Scott Twine",
+            "Lorent Tolaj"
+          ],
+          "substitutes": [
+            "Brad Collins",
+            "Noah Eile",
+            "Robert Atkinson",
+            "Tomi Horvat",
+            "Gibson Yah",
+            "Sam Greenwood",
+            "Sam Bell",
+            "Emil Riis Jacobsen",
+            "Dominic Ballard"
+          ],
+          "startingDetails": [
+            {
+              "name": "Sam Tickle",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Rio Cardines",
+              "number": 21,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "George Tanner",
+              "number": 19,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Lisav Naif Eissat",
+              "number": 2,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Rob Dickie",
+              "number": 16,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Jason Knight",
+              "number": 12,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Joe Williams",
+              "number": 8,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Yu Hirakawa",
+              "number": 7,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Jed Wallace",
+              "number": 17,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Scott Twine",
+              "number": 10,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "Lorent Tolaj",
+              "number": 9,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Brad Collins",
+              "number": 40,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Noah Eile",
+              "number": 38,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Robert Atkinson",
+              "number": 5,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Tomi Horvat",
+              "number": 14,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Gibson Yah",
+              "number": 27,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Sam Greenwood",
+              "number": 20,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Sam Bell",
+              "number": 11,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Emil Riis Jacobsen",
+              "number": 18,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Dominic Ballard",
+              "number": 23,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "lincoln-portsmouth-2026-08-22",
@@ -310742,8 +311397,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T09:31:20.520Z",
-      "staleAfter": "2026-08-22T09:36:20.520Z",
+      "fetchedAt": "2026-08-22T11:25:01.540Z",
+      "staleAfter": "2026-08-22T11:30:01.540Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -312129,7 +312784,313 @@
             }
           }
         ]
-      }
+      },
+      "lineups": [
+        {
+          "team": "Lincoln",
+          "formation": "4-2-3-1",
+          "players": [
+            "George Wickens",
+            "Tendayi Darikwa",
+            "Tom Hamer",
+            "Deji Elerewe",
+            "Adam Reach",
+            "Conor McGrandles",
+            "Ivan Varfolomeev",
+            "Reeco Hackett-Fairchild",
+            "Ben House",
+            "Dom Jefferies",
+            "Freddie Draper"
+          ],
+          "substitutes": [
+            "Joe Gauci",
+            "Ryley Towler",
+            "Andrei Coubiș",
+            "Yunus Konak",
+            "Tom Bayliss",
+            "Callum Elder",
+            "Mason Melia",
+            "Robert Street",
+            "Tanto Olaofe"
+          ],
+          "startingDetails": [
+            {
+              "name": "George Wickens",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Tendayi Darikwa",
+              "number": 2,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Tom Hamer",
+              "number": 22,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Deji Elerewe",
+              "number": 25,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Adam Reach",
+              "number": 3,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Conor McGrandles",
+              "number": 14,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Ivan Varfolomeev",
+              "number": 24,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Reeco Hackett-Fairchild",
+              "number": 7,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Ben House",
+              "number": 18,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Dom Jefferies",
+              "number": 16,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "Freddie Draper",
+              "number": 34,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Joe Gauci",
+              "number": 46,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Ryley Towler",
+              "number": 6,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Andrei Coubiș",
+              "number": 4,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Yunus Konak",
+              "number": 26,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Tom Bayliss",
+              "number": 8,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Callum Elder",
+              "number": 20,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Mason Melia",
+              "number": 10,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Robert Street",
+              "number": 17,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Tanto Olaofe",
+              "number": 19,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        },
+        {
+          "team": "Portsmouth",
+          "formation": "4-2-3-1",
+          "players": [
+            "Nicolas Schmid",
+            "Terry Devlin",
+            "Benjamin Arthur",
+            "Conor Shaughnessy",
+            "Zak Swanson",
+            "Marlon Pack",
+            "Rocco Robert Shein",
+            "Abu Kamara",
+            "Adrian Segečić",
+            "Ryan Kavuma-McQueen",
+            "Colby Bishop"
+          ],
+          "substitutes": [
+            "Daniel Bielica",
+            "Madiodio Dia",
+            "Josh Knight",
+            "Ebou Adams",
+            "Odin Bailey",
+            "John Swift",
+            "Josh Murphy",
+            "Marko Milovanović",
+            "Luke Brooke-Smith"
+          ],
+          "startingDetails": [
+            {
+              "name": "Nicolas Schmid",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Terry Devlin",
+              "number": 24,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Benjamin Arthur",
+              "number": 2,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Conor Shaughnessy",
+              "number": 6,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Zak Swanson",
+              "number": 22,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Marlon Pack",
+              "number": 7,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Rocco Robert Shein",
+              "number": 19,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Abu Kamara",
+              "number": 11,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Adrian Segečić",
+              "number": 10,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Ryan Kavuma-McQueen",
+              "number": 25,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "Colby Bishop",
+              "number": 9,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Daniel Bielica",
+              "number": 31,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Madiodio Dia",
+              "number": 55,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Josh Knight",
+              "number": 4,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Ebou Adams",
+              "number": 38,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Odin Bailey",
+              "number": 27,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "John Swift",
+              "number": 8,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Josh Murphy",
+              "number": 23,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Marko Milovanović",
+              "number": 29,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Luke Brooke-Smith",
+              "number": 28,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        }
+      ]
     },
     {
       "id": "millwall-norwich-2026-08-22",
