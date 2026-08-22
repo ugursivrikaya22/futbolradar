@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-22T22:27:24.614Z",
+  "updatedAt": "2026-08-22T23:25:41.037Z",
   "items": [
+    {
+      "id": "auto-news-32b2d715f76da3a45a53",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Başkanımız ve Yöneticilerimiz, Kerem Aktürkoğlu’nu ziyaret etti",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-22T23:17:41.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNdzZzeGgxNlNCRFBfd0sxNk9DVzh2V1R2TWY2SkNBdzdCVlZxNEVsS25DWkF0ZDAxeDVjUkVyNVp6QWNON2M1ci1yaG5Cczd1emxJZUp6VTh0NlQwaU91bmxxYkFfazQ1MUludnphWW5OTC00SVRSWmU3T2szSXpYVmMtSUh3MU5nN3F0LUpmYnVUQ1RzUS1WZUI0c0gxWW5ya0p5TlNSR0dMcXlucTlEcHdn?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-ba2e5e420583efe82546",
       "category": "official",
@@ -19,9 +39,7 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 3,
-        "firstSeenAt": "2026-08-22T20:37:26.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -77,26 +95,6 @@
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBnWjc3UWpfcHBlRzc1UGhmdFhiWm42SGxqd3RKXzRDSjdHeGJleFdSekZSMnROdkFpb2prTHM2cS15YXJNVUw1ajltN25nRXRua3kteEstajhuTGVOZldxblFlOGhzZVJJZE9wRFB4NllWdHNp?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-ba6661740413756c3e31",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Olympique Lyon Maçı Deplasman Tribünü Bilet Satışı Hakkında",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-22T12:37:06.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNcTZIYklqRXBONU9ZNDlzME80ZXpwREQ5bl9oN0pGTWc1dG9MWmZsbnQ0c1lwdHg3cnRqVGU4QWNPMXNHd080OWpScE1fWmJsdTBHejFGaS00UGJuZ1FUaE8xSElSYU1NempDZUJSbEQ2bUEyT0dUOWpJZFVIQVJ6WXY0NndrRHN1TUhsNXE3RTQ4ajJzNnJCR2tIMkNLdGh1eVRHbWpycU5GMXhvY3c?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
@@ -244,6 +242,26 @@
         "feed": "trabzonspor",
         "priority": 4,
         "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-309f9809e813f75200ce",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "İlhan Palut'tan Adil Demirbağ için Fenerbahçe iddiasına yanıt!",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-22T22:15:21.000Z",
+      "source": {
+        "name": "fotomac",
+        "url": "https://www.fotomac.com.tr/konyaspor/2026/08/22/ilhan-paluttan-adil-demirbag-icin-fenerbahce-iddiasina-yanit",
+        "publisher": "fotomac.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fotomac",
+        "priority": 8,
+        "status": "RUMOUR"
       }
     },
     {
