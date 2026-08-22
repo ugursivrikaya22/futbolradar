@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-22T04:02:51.705Z",
+  "updatedAt": "2026-08-22T05:32:16.159Z",
   "items": [
     {
       "id": "auto-news-a38a6919c910ed95d6a7",
@@ -267,6 +267,26 @@
       }
     },
     {
+      "id": "auto-news-db43118b61b54bf52457",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Fenerbahçe, Konyaspor karşısında telafi peşinde! İşte muhtemel 11'ler",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-22T04:00:00.000Z",
+      "source": {
+        "name": "hurriyet-spor",
+        "url": "https://www.hurriyet.com.tr/sporarena/fenerbahce-konyaspor-karsisinda-telafi-pesinde-iste-muhtemel-11ler-43281193",
+        "publisher": "hurriyet.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "hurriyet-spor",
+        "priority": 7,
+        "status": "REPORTED"
+      }
+    },
+    {
       "id": "auto-news-90de59d913f279c497d6",
       "category": "club-agenda",
       "confidence": "reported",
@@ -343,26 +363,6 @@
         "source": "rss",
         "feed": "uefa",
         "priority": 9,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-a3fc99bc2397090d245c",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Ziraat Türkiye Kupası Turlara Göre Katılım Durumları Açıklandı",
-      "team": "Süper Lig",
-      "timestamp": "2026-08-20T19:13:05.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE12YU9YU2d6WDdoV3BHeXg0aEZEeXEzRkduZXFNNFJCbzE1R0Rad1dHYWpjb2FlY2MwYXlJZWJha2o4Q050S19YdjRucTRwUTIxbUl5d1hHTjVFRUoxNG5faWh4T3NRYnM?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
         "status": "OFFICIAL"
       }
     }
