@@ -1,8 +1,8 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-22T21:26:45.084Z",
-  "matchCount": 789,
+  "updatedAt": "2026-08-22T22:27:15.394Z",
+  "matchCount": 790,
   "records": [
     {
       "matchId": "espanyol-real-madrid-2026-08-22",
@@ -169,6 +169,200 @@
           "strengths": [],
           "improvements": [],
           "closing": "Real Madrid sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "sporting-cp-alverca-2026-08-22",
+      "fixtureId": "1575471",
+      "provider": "api-football",
+      "slug": "sporting-cp-alverca-2026-08-22",
+      "kickoff": "2026-08-22T22:30:00+03:00",
+      "kickoffUtc": "2026-08-22T19:30:00.000Z",
+      "kickoffLocal": "2026-08-22T22:30",
+      "date": "2026-08-22",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primeira Liga",
+      "competition": "Primeira Liga",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Sporting CP",
+      "awayTeam": "Alverca",
+      "venue": "Estádio José Alvalade",
+      "score": {
+        "home": 3,
+        "away": 1
+      },
+      "finalScore": "3-1",
+      "winner": "Sporting CP",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "feae1d1fe699672e",
+      "fingerprint": "feae1d1fe699672e",
+      "analysisGeneratedAt": "2026-08-22T22:27:15.329Z",
+      "analysisUpdatedAt": "2026-08-22T22:27:15.329Z",
+      "generatedAt": "2026-08-22T22:27:15.329Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Sporting CP 3-1 Alverca maç raporu: Primeira Liga istatistikleri | FutbolRadar",
+        "description": "Sporting CP, Estádio José Alvalade'de oynanan Primeira Liga karşılaşmasında Alverca'yı 3-1 mağlup etti.",
+        "path": "mac-raporu/sporting-cp-alverca-2026-08-22.html",
+        "competition": "Primeira Liga"
+      },
+      "reportUrl": "./mac-raporu/sporting-cp-alverca-2026-08-22.html",
+      "digest": {
+        "headline": "Sporting CP, Alverca'yı 3-1 yendi",
+        "paragraph": "Sporting CP, Estádio José Alvalade'de oynanan Primeira Liga karşılaşmasında Alverca'yı 3-1 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Sporting CP",
+          "loser": "Alverca",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Sporting CP, Alverca'yı 3-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Sporting CP sahadan 2 farkla ayrıldı.",
           "basis": "events-only"
         },
         "aiRating": null,
@@ -6962,10 +7156,10 @@
       "winner": "Lens",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -6973,63 +7167,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 20
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 18
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 20,
+        "statistics": 18,
+        "lineups": 2,
+        "players": 40
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "1e0ecb77600d7054",
-      "fingerprint": "1e0ecb77600d7054",
+      "analysisSourceHash": "6f4bdc075e614adf",
+      "fingerprint": "6f4bdc075e614adf",
       "analysisGeneratedAt": "2026-08-22T17:25:19.657Z",
-      "analysisUpdatedAt": "2026-08-22T17:25:19.657Z",
-      "generatedAt": "2026-08-22T17:25:19.657Z",
+      "analysisUpdatedAt": "2026-08-22T22:27:15.329Z",
+      "generatedAt": "2026-08-22T22:27:15.329Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -7041,7 +7218,7 @@
       "reportUrl": "./mac-raporu/lens-auxerre-2026-08-22.html",
       "digest": {
         "headline": "Lens, Auxerre'yi 5-2 yendi",
-        "paragraph": "Lens, Stade Bollaert-Delelis'te oynanan Ligue 1 karşılaşmasında Auxerre'yi 5-2 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Lens, Stade Bollaert-Delelis'te oynanan Ligue 1 karşılaşmasında Auxerre'yi 5-2 mağlup etti. Golleri 12. dakikada F. Thauvin (Lens), 49. dakikada F. Ivanovic (Lens), 54. dakikada S. Abdulhamid (Lens), 61. dakikada D. Namaso (Auxerre), 66. dakikada I. Ganiou (Lens), 69. dakikada L. Sy (Auxerre), 88. dakikada F. Thauvin (Lens) kaydetti.",
         "result": {
           "winner": "Lens",
           "loser": "Auxerre",
@@ -7057,63 +7234,267 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "12'",
+              "team": "Lens",
+              "type": "Penaltı",
+              "detail": "F. Thauvin",
+              "pivotal": true
+            },
+            {
+              "minute": "35'",
+              "team": "Auxerre",
+              "type": "Kırmızı kart",
+              "detail": "C. Makosso",
+              "pivotal": true
+            },
+            {
+              "minute": "49'",
+              "team": "Lens",
+              "type": "Gol",
+              "detail": "F. Ivanovic",
+              "pivotal": true
+            },
+            {
+              "minute": "61'",
+              "team": "Auxerre",
+              "type": "Penaltı",
+              "detail": "D. Namaso",
+              "pivotal": true
+            },
+            {
+              "minute": "88'",
+              "team": "Lens",
+              "type": "Penaltı",
+              "detail": "F. Thauvin",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (F. Thauvin).",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "Auxerre",
+              "type": "Oyuncu değişikliği",
+              "detail": "N. Ahamada",
+              "decisive": false
+            },
+            {
+              "minute": "77'",
+              "team": "Auxerre",
+              "type": "Oyuncu değişikliği",
+              "detail": "D. Namaso",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Lens",
+              "type": "Oyuncu değişikliği",
+              "detail": "I. Ganiou",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Lens",
+              "type": "Sarı kart",
+              "detail": "M. Nawrocki",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "F. Thauvin",
+              "team": "Lens",
+              "contribution": "12' gol · 88' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "D. Namaso",
+              "team": "Auxerre",
+              "contribution": "61' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "F. Ivanovic",
+              "team": "Lens",
+              "contribution": "49' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "I. Ganiou",
+              "team": "Lens",
+              "contribution": "66' gol",
+              "impact": "yüksek"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Lens sahaya 3-4-2-1 dizilişiyle çıktı.",
+            "Auxerre sahaya 4-3-3 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "12' Lens — F. Thauvin: penaltı"
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (18 olay).",
+            "49' Lens — F. Ivanovic: gol",
+            "54' Lens — S. Abdulhamid: gol",
+            "61' Auxerre — D. Namaso: penaltı",
+            "66' Lens — I. Ganiou: gol",
+            "69' Auxerre — L. Sy: gol"
+          ],
+          "goals": 6
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Lens maça 3-4-2-1 dizilişiyle başladı.",
+            "Auxerre maça 4-3-3 dizilişiyle başladı.",
+            "62' Lens değişikliği (Substitution 1). Değişiklikten sonra Lens adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "62' Lens değişikliği (Substitution 2). Değişiklikten sonra Lens adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "67' Auxerre değişikliği (Substitution 1). Değişiklikten sonra Auxerre adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "67' Auxerre değişikliği (Substitution 2). Değişiklikten sonra Auxerre adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Lens",
+              "formation": "3-4-2-1"
+            },
+            {
+              "team": "Auxerre",
+              "formation": "4-3-3"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Lens, Auxerre'yi 5-2 yendi."
+            "Lens, Auxerre'yi 5-2 yendi.",
+            "İsabetli şutta da öndeydi (9-4); sonuç üretilen pozisyonla uyumlu.",
+            "Lens, gol beklentisinin 0,55 üzerinde skor üretti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Lens topa daha çok sahip oldu (%53).",
+            "Lens daha çok şut denedi (12-10)."
+          ],
+          "improvements": [
+            "Auxerre şut isabetinde geride kaldı (%40); bitiricilik geliştirilmesi gereken alan.",
+            "Auxerre son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun.",
+            "Kırmızı kart maçın seyrini etkiledi (35' Auxerre)."
+          ],
           "closing": "Lens sahadan 3 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Lens",
+            "score": 90
+          },
+          "away": {
+            "team": "Auxerre",
+            "score": 49
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Lens %75, Auxerre %40."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Lens 39.2, Auxerre 41.5 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Lens 0.371, Auxerre 0.179. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -7121,11 +7502,21 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
@@ -7156,10 +7547,10 @@
       "winner": "Sevilla",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -7167,63 +7558,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 22
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 18
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 22,
+        "statistics": 18,
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "11619ddcfe275a09",
-      "fingerprint": "11619ddcfe275a09",
+      "analysisSourceHash": "efa9327ce0b28070",
+      "fingerprint": "efa9327ce0b28070",
       "analysisGeneratedAt": "2026-08-22T17:25:19.657Z",
-      "analysisUpdatedAt": "2026-08-22T17:25:19.657Z",
-      "generatedAt": "2026-08-22T17:25:19.657Z",
+      "analysisUpdatedAt": "2026-08-22T22:27:15.329Z",
+      "generatedAt": "2026-08-22T22:27:15.329Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -7235,7 +7609,7 @@
       "reportUrl": "./mac-raporu/athletic-club-sevilla-2026-08-22.html",
       "digest": {
         "headline": "Sevilla, Athletic Club'u 3-1 yendi",
-        "paragraph": "San Mamés'ta oynanan La Liga maçını Sevilla 3-1 kazandı; Athletic Club sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "San Mamés'ta oynanan La Liga maçını Sevilla 3-1 kazandı; Athletic Club sahadan puansız ayrıldı. Golleri 15. dakikada Sevilla, 50. dakikada C. Ejuke (Sevilla), 57. dakikada I. Romero (Sevilla), 70. dakikada A. Paredes (Athletic Club) kaydetti.",
         "result": {
           "winner": "Sevilla",
           "loser": "Athletic Club",
@@ -7248,66 +7622,269 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "11'",
+              "team": "Athletic Club",
+              "type": "Kırmızı kart",
+              "detail": "Y. Berchiche",
+              "pivotal": true
+            },
+            {
+              "minute": "15'",
+              "team": "Sevilla",
+              "type": "Gol",
+              "detail": "",
+              "pivotal": true
+            },
+            {
+              "minute": "50'",
+              "team": "Sevilla",
+              "type": "Gol",
+              "detail": "C. Ejuke",
+              "pivotal": true
+            },
+            {
+              "minute": "57'",
+              "team": "Sevilla",
+              "type": "Gol",
+              "detail": "I. Romero",
+              "pivotal": true
+            },
+            {
+              "minute": "70'",
+              "team": "Athletic Club",
+              "type": "Gol",
+              "detail": "A. Paredes",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Sevilla",
+              "type": "Oyuncu değişikliği",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Athletic Club",
+              "type": "Oyuncu değişikliği",
+              "detail": "B. Gerenabarrena",
+              "decisive": false
+            },
+            {
+              "minute": "87'",
+              "team": "Athletic Club",
+              "type": "Sarı kart",
+              "detail": "I. Ruiz",
+              "decisive": false
+            },
+            {
+              "minute": "90'",
+              "team": "Sevilla",
+              "type": "Sarı kart",
+              "detail": "I. Romero",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Paredes",
+              "team": "Athletic Club",
+              "contribution": "70' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "C. Ejuke",
+              "team": "Sevilla",
+              "contribution": "50' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "I. Romero",
+              "team": "Sevilla",
+              "contribution": "57' gol · 90' sarı kart",
+              "impact": "orta"
+            },
+            {
+              "name": "G. Guruzeta",
+              "team": "Athletic Club",
+              "contribution": "25' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "Athletic Club sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Sevilla sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Athletic Club topu elinde tutarken Sevilla derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
+            "15' Sevilla: gol"
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (16 olay).",
+            "50' Sevilla — C. Ejuke: gol",
+            "57' Sevilla — I. Romero: gol",
+            "70' Athletic Club — A. Paredes: gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 3
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Athletic Club maça 4-2-3-1 dizilişiyle başladı.",
+            "Sevilla maça 4-2-3-1 dizilişiyle başladı.",
+            "46' Sevilla değişikliği (Substitution 1). Değişiklikten sonra Sevilla adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "46' Sevilla değişikliği (Substitution 2). Değişiklikten sonra Sevilla adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "46' Sevilla değişikliği (Substitution 3). Değişiklikten sonra Sevilla adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "58' Athletic Club değişikliği (Substitution 1). Değişiklikten sonra Athletic Club adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Athletic Club",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Sevilla",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Sevilla, Athletic Club'u 1-3 yendi."
+            "Sevilla, Athletic Club'u 1-3 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (4-8); eldeki veri sonucun verimlilikle geldiğini gösteriyor.",
+            "Sevilla, gol beklentisinin 2,59 üzerinde skor üretti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Athletic Club topa daha çok sahip oldu (%65).",
+            "Athletic Club daha çok şut denedi (18-7)."
+          ],
+          "improvements": [
+            "Athletic Club şut isabetinde geride kaldı (%44); bitiricilik geliştirilmesi gereken alan.",
+            "Kırmızı kart maçın seyrini etkiledi (11' Athletic Club)."
+          ],
           "closing": "Sevilla sahadan 2 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Athletic Club",
+            "score": 65
+          },
+          "away": {
+            "team": "Sevilla",
+            "score": 53
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Athletic Club %44.4, Sevilla %57.1."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Athletic Club 28.7, Sevilla 40.7 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Athletic Club 0.069, Sevilla 0.059. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -7315,11 +7892,22 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
@@ -7350,10 +7938,10 @@
       "winner": "AZ Alkmaar",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -7361,63 +7949,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 14
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 18
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 43
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 14,
+        "statistics": 18,
+        "lineups": 2,
+        "players": 43
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "e7d3bb32fc047f6f",
-      "fingerprint": "e7d3bb32fc047f6f",
+      "analysisSourceHash": "ae1c3b09e3e49859",
+      "fingerprint": "ae1c3b09e3e49859",
       "analysisGeneratedAt": "2026-08-22T16:29:43.695Z",
-      "analysisUpdatedAt": "2026-08-22T16:29:43.695Z",
-      "generatedAt": "2026-08-22T16:29:43.695Z",
+      "analysisUpdatedAt": "2026-08-22T22:27:15.329Z",
+      "generatedAt": "2026-08-22T22:27:15.329Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -7429,7 +8000,7 @@
       "reportUrl": "./mac-raporu/fortuna-sittard-az-alkmaar-2026-08-22.html",
       "digest": {
         "headline": "AZ Alkmaar, Fortuna Sittard'ı 2-0 yendi",
-        "paragraph": "AZ Alkmaar, Fortuna Sittard Stadion'da oynanan Eredivisie karşılaşmasında Fortuna Sittard'ı 2-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "AZ Alkmaar, Fortuna Sittard Stadion'da oynanan Eredivisie karşılaşmasında Fortuna Sittard'ı 2-0 mağlup etti. Golleri 58. dakikada J. Hornkamp (AZ Alkmaar), 90+4. dakikada J. Hornkamp (AZ Alkmaar) kaydetti.",
         "result": {
           "winner": "AZ Alkmaar",
           "loser": "Fortuna Sittard",
@@ -7442,66 +8013,247 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 2
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "5'",
+              "team": "Fortuna Sittard",
+              "type": "Kırmızı kart",
+              "detail": "O. Romeny",
+              "pivotal": true
+            },
+            {
+              "minute": "58'",
+              "team": "AZ Alkmaar",
+              "type": "Gol",
+              "detail": "J. Hornkamp",
+              "pivotal": true
+            },
+            {
+              "minute": "90+4'",
+              "team": "AZ Alkmaar",
+              "type": "Gol",
+              "detail": "J. Hornkamp",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (J. Hornkamp).",
+          "goals": {
+            "home": 0,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "Fortuna Sittard",
+              "type": "Oyuncu değişikliği",
+              "detail": "S. Wylin",
+              "decisive": false
+            },
+            {
+              "minute": "86'",
+              "team": "AZ Alkmaar",
+              "type": "Oyuncu değişikliği",
+              "detail": "E. Dijkstra",
+              "decisive": false
+            },
+            {
+              "minute": "86'",
+              "team": "AZ Alkmaar",
+              "type": "Oyuncu değişikliği",
+              "detail": "M. Meerdink",
+              "decisive": false
+            },
+            {
+              "minute": "90+3'",
+              "team": "AZ Alkmaar",
+              "type": "Sarı kart",
+              "detail": "A. Oufkir",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "J. Hornkamp",
+              "team": "AZ Alkmaar",
+              "contribution": "58' gol · 90+4' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. Oufkir",
+              "team": "AZ Alkmaar",
+              "contribution": "90+3' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "O. Romeny",
+              "team": "Fortuna Sittard",
+              "contribution": "5' kırmızı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "Fortuna Sittard sahaya 4-3-3 dizilişiyle çıktı.",
+            "AZ Alkmaar sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "AZ Alkmaar topu elinde tutarken Fortuna Sittard derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "58' AZ Alkmaar — J. Hornkamp: gol",
+            "90+4' AZ Alkmaar — J. Hornkamp: gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Fortuna Sittard maça 4-3-3 dizilişiyle başladı.",
+            "AZ Alkmaar maça 4-2-3-1 dizilişiyle başladı.",
+            "46' AZ Alkmaar değişikliği (Substitution 1). Değişiklikten sonra AZ Alkmaar adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "46' AZ Alkmaar değişikliği (Substitution 2). Değişiklikten sonra AZ Alkmaar adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "46' Fortuna Sittard değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' Fortuna Sittard değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Fortuna Sittard",
+              "formation": "4-3-3"
+            },
+            {
+              "team": "AZ Alkmaar",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "AZ Alkmaar, Fortuna Sittard'ı 0-2 yendi."
+            "AZ Alkmaar, Fortuna Sittard'ı 0-2 yendi.",
+            "İsabetli şutta da öndeydi (11-2); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "AZ Alkmaar topa daha çok sahip oldu (%72).",
+            "AZ Alkmaar daha çok şut denedi (4-26)."
+          ],
+          "improvements": [
+            "AZ Alkmaar şut isabetinde geride kaldı (%42); bitiricilik geliştirilmesi gereken alan.",
+            "Fortuna Sittard son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun.",
+            "Kırmızı kart maçın seyrini etkiledi (5' Fortuna Sittard)."
+          ],
           "closing": "AZ Alkmaar sahadan 2 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Fortuna Sittard",
+            "score": 26
+          },
+          "away": {
+            "team": "AZ Alkmaar",
+            "score": 94
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Fortuna Sittard %50, AZ Alkmaar %42.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Fortuna Sittard 62.5, AZ Alkmaar 24.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Fortuna Sittard 0.11, AZ Alkmaar 0.167. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -7509,11 +8261,22 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
@@ -7544,10 +8307,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -7555,63 +8318,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 21
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 17
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 21,
+        "statistics": 17,
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "39a1a7682be3b969",
-      "fingerprint": "39a1a7682be3b969",
+      "analysisSourceHash": "1cd40c4ba5247c11",
+      "fingerprint": "1cd40c4ba5247c11",
       "analysisGeneratedAt": "2026-08-22T16:29:43.695Z",
-      "analysisUpdatedAt": "2026-08-22T16:29:43.695Z",
-      "generatedAt": "2026-08-22T16:29:43.695Z",
+      "analysisUpdatedAt": "2026-08-22T22:27:15.329Z",
+      "generatedAt": "2026-08-22T22:27:15.329Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -7623,7 +8369,7 @@
       "reportUrl": "./mac-raporu/maritimo-academico-viseu-2026-08-22.html",
       "digest": {
         "headline": "Maritimo ile Academico Viseu 2-2 berabere kaldı",
-        "paragraph": "Estadio do Maritimo'da oynanan Primeira Liga maçında Maritimo ile Academico Viseu birbirini geçemedi: 2-2. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Estadio do Maritimo'da oynanan Primeira Liga maçında Maritimo ile Academico Viseu birbirini geçemedi: 2-2. Golleri 25. dakikada Andre Clovis (Academico Viseu), 45+1. dakikada S. Messeguem (Academico Viseu), 70. dakikada P. Henrique (Maritimo), 88. dakikada A. Butzke (Maritimo) kaydetti.",
         "result": {
           "winner": null,
           "loser": null,
@@ -7639,63 +8385,256 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "25'",
+              "team": "Academico Viseu",
+              "type": "Gol",
+              "detail": "Andre Clovis",
+              "pivotal": true
+            },
+            {
+              "minute": "70'",
+              "team": "Maritimo",
+              "type": "Gol",
+              "detail": "P. Henrique",
+              "pivotal": true
+            },
+            {
+              "minute": "88'",
+              "team": "Maritimo",
+              "type": "Penaltı",
+              "detail": "A. Butzke",
+              "pivotal": true
+            },
+            {
+              "minute": "45+1'",
+              "team": "Academico Viseu",
+              "type": "Gol",
+              "detail": "S. Messeguem",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (A. Butzke).",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "Maritimo",
+              "type": "Oyuncu değişikliği",
+              "detail": "V. Danilovic",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Academico Viseu",
+              "type": "Oyuncu değişikliği",
+              "detail": "S. Messeguem",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Academico Viseu",
+              "type": "Oyuncu değişikliği",
+              "detail": "Pedro Barcelos",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "Academico Viseu",
+              "type": "Sarı kart",
+              "detail": "A. Ceitil",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Butzke",
+              "team": "Maritimo",
+              "contribution": "88' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Andre Clovis",
+              "team": "Academico Viseu",
+              "contribution": "25' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "P. Henrique",
+              "team": "Maritimo",
+              "contribution": "70' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "S. Messeguem",
+              "team": "Academico Viseu",
+              "contribution": "45+1' gol · 49' sarı kart",
+              "impact": "orta"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Maritimo sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Academico Viseu sahaya 4-3-3 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "25' Academico Viseu — Andre Clovis: gol",
+            "45+1' Academico Viseu — S. Messeguem: gol"
+          ],
+          "goals": 2
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (17 olay).",
+            "70' Maritimo — P. Henrique: gol",
+            "88' Maritimo — A. Butzke: penaltı",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Maritimo maça 4-2-3-1 dizilişiyle başladı.",
+            "Academico Viseu maça 4-3-3 dizilişiyle başladı.",
+            "59' Maritimo değişikliği (Substitution 1). Değişiklikten sonra Maritimo adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "60' Maritimo değişikliği (Substitution 2). Değişiklikten sonra Maritimo adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "64' Academico Viseu değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "69' Academico Viseu değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Maritimo",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Academico Viseu",
+              "formation": "4-3-3"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Maç 2-2 berabere bitti."
+            "Maç 2-2 berabere bitti.",
+            "Maritimo, gol beklentisinin 0,72 üzerinde skor üretti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Maritimo topa daha çok sahip oldu (%53).",
+            "Academico Viseu daha çok şut denedi (11-13)."
+          ],
+          "improvements": [
+            "Maritimo şut isabetinde geride kaldı (%36); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "2-2 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Maritimo",
+            "score": 59
+          },
+          "away": {
+            "team": "Academico Viseu",
+            "score": 72
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Maritimo %36.4, Academico Viseu %53.8."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Maritimo 33.5, Academico Viseu 25.5 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Maritimo 0.116, Academico Viseu 0.142. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -7703,11 +8642,21 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
