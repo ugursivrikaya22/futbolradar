@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-22T11:25:25.892Z",
+  "updatedAt": "2026-08-22T12:46:04.192Z",
   "items": [
+    {
+      "id": "auto-news-ba6661740413756c3e31",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Olympique Lyon Maçı Deplasman Tribünü Bilet Satışı Hakkında",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-22T12:37:51.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNcTZIYklqRXBONU9ZNDlzME80ZXpwREQ5bl9oN0pGTWc1dG9MWmZsbnQ0c1lwdHg3cnRqVGU4QWNPMXNHd080OWpScE1fWmJsdTBHejFGaS00UGJuZ1FUaE8xSElSYU1NempDZUJSbEQ2bUEyT0dUOWpJZFVIQVJ6WXY0NndrRHN1TUhsNXE3RTQ4ajJzNnJCR2tIMkNLdGh1eVRHbWpycU5GMXhvY3c?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-3b7123253abdebb90ccb",
       "category": "official",
@@ -13,26 +33,6 @@
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxNVmtfM1BYU01xQWc0WWJYZmQtajRid2NqSmFSRnc5RVZHMU5meF9zVWZjeTRocWQ1RmJyU0g5OHgtdU5FTmJrZ0Y1dko2eWM1OGFEYWNLNXRteWw1aGNZRUhVckRHRGFKUkdJd0pnN2pHd1dPSWJORkxwbGNwMTdUUGpsVTl4dw?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-2ec77bfbf04378974108",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Vefat ve Başsağlığı: Erk Dinçman",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-22T09:36:24.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxQSExQdDRwRjBUcTJkeGtGbVlINTA1WTJqaXhBUnZxNWJzVkNLWS1QZG1maUZUTkZsVnUyWEl5S2VQWUlEbGc2aDJyT2RfWjFXSzJMaHRycEc4ZHhKOU0xZ0NhSWtoQmZfRm5JMXNGRjE2WjJ2SUp6b0xHN1NuSGZETGF3cUpFcmM?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
@@ -283,9 +283,7 @@
         "source": "rss",
         "feed": "hurriyet-spor",
         "priority": 7,
-        "status": "REPORTED",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-08-21T21:10:16.000Z"
+        "status": "REPORTED"
       }
     },
     {
