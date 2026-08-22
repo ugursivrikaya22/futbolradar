@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-22T12:45:37.099Z",
+  "fetchedAt": "2026-08-22T13:07:15.941Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -308066,8 +308066,8 @@
       "awayTeamLogo": "https://media.api-sports.io/football/teams/33.png",
       "status": "LIVE",
       "providerStatus": "2H",
-      "minute": 57,
-      "elapsed": 57,
+      "minute": 79,
+      "elapsed": 79,
       "live": true,
       "score": {
         "home": 2,
@@ -308089,8 +308089,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T12:45:38.588Z",
-      "staleAfter": "2026-08-22T12:50:38.588Z",
+      "fetchedAt": "2026-08-22T13:07:17.131Z",
+      "staleAfter": "2026-08-22T13:12:17.131Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -308100,27 +308100,27 @@
       "competitionId": "premier-league",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Manchester United topa sahip olma oranında önde. Hull City daha fazla şut üretti. Skor üstünlüğü Hull City tarafında.",
+        "summary": "Manchester United topa sahip olma oranında önde. Manchester United daha fazla şut üretti. Skor üstünlüğü Hull City tarafında.",
         "confidence": "Yüksek",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "38%-62%",
+            "value": "31%-69%",
             "text": "Manchester United topa sahip olma oranında önde."
           },
           {
             "label": "Şut hacmi",
-            "value": "4-3",
-            "text": "Hull City daha fazla şut üretti."
+            "value": "7-13",
+            "text": "Manchester United daha fazla şut üretti."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "3-2",
+            "value": "4-3",
             "text": "Hull City isabetli şutlarda önde."
           },
           {
             "label": "Gol beklentisi",
-            "value": "0.85-0.16",
+            "value": "1.24-1.14",
             "text": "Hull City daha yüksek pozisyon kalitesi üretti."
           },
           {
@@ -308129,13 +308129,18 @@
             "text": "Son gol 38' N. Mendy tarafından kaydedildi."
           },
           {
+            "label": "Teknik hamleler",
+            "value": "7 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 7 oyuncu değişikliği kayda geçti."
+          },
+          {
             "label": "Canlı skor",
             "value": "2-0",
             "text": "Hull City skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 5,
-        "dataPoints": 6,
+        "eventCount": 11,
+        "dataPoints": 7,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -309719,115 +309724,181 @@
           "detail": "Substitution 1",
           "value": "P. Dorgu · Asist: M. Rashford · Substitution 1",
           "comments": ""
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Hull City"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "N. Mendy · Asist: L. Herrington · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Hull City"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "S. Ajayi · Asist: P. McNair · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Manchester United"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Andrey Santos · Asist: B. Sesko · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Manchester United"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "Y. Tielemans · Asist: K. Mainoo · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "Hull City"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "L. Coyle · Asist: C. Drameh · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "Hull City"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "E. Stroud · Asist: L. Millar · Substitution 4",
+          "comments": ""
         }
       ],
       "statistics": [
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 3,
-          "away": 2,
-          "higherIsBetter": true
-        },
-        {
-          "category": "Hücum",
-          "type": "İsabetsiz şut",
-          "home": 1,
-          "away": 0
-        },
-        {
-          "category": "Hücum",
-          "type": "Toplam şut",
           "home": 4,
           "away": 3,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 3,
+          "away": 5
+        },
+        {
+          "category": "Hücum",
+          "type": "Toplam şut",
+          "home": 7,
+          "away": 13,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
           "type": "Engellenen şut",
           "home": 0,
-          "away": 1
+          "away": 5
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
-          "home": 4,
-          "away": 2,
+          "home": 5,
+          "away": 10,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 0,
-          "away": 1
+          "home": 2,
+          "away": 3
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 1,
-          "away": 4
+          "home": 9,
+          "away": 8
         },
         {
           "category": "Genel",
           "type": "Korner",
           "home": 1,
-          "away": 0
+          "away": 3
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
           "home": 0,
-          "away": 1
+          "away": 2
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 38,
-          "away": 62,
+          "home": 31,
+          "away": 69,
           "unit": "%",
           "higherIsBetter": true
         },
         {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 1,
+          "away": 1
+        },
+        {
           "category": "Savunma",
           "type": "Kurtarış",
-          "home": 2,
+          "home": 3,
           "away": 2
         },
         {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 65,
-          "away": 114,
+          "home": 209,
+          "away": 496,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 49,
-          "away": 101,
+          "home": 151,
+          "away": 436,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
-          "home": 75,
-          "away": 89,
+          "home": 72,
+          "away": 88,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Genel",
           "type": "Gol beklentisi (xG)",
-          "home": 0.85,
-          "away": 0.16,
+          "home": 1.24,
+          "away": 1.14,
           "decimals": 2,
           "higherIsBetter": true
         },
         {
           "category": "Savunma",
           "type": "Önlenen gol",
-          "home": 0.18,
-          "away": 0.18,
+          "home": -0.28,
+          "away": -0.28,
           "decimals": 2,
           "higherIsBetter": true
         }
@@ -309849,8 +309920,8 @@
       "awayTeamLogo": "https://media.api-sports.io/football/teams/56.png",
       "status": "LIVE",
       "providerStatus": "2H",
-      "minute": 58,
-      "elapsed": 58,
+      "minute": 80,
+      "elapsed": 80,
       "live": true,
       "score": {
         "home": 1,
@@ -309872,8 +309943,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T12:45:38.588Z",
-      "staleAfter": "2026-08-22T12:50:38.588Z",
+      "fetchedAt": "2026-08-22T13:07:17.131Z",
+      "staleAfter": "2026-08-22T13:12:17.131Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -309883,27 +309954,27 @@
       "competitionId": "championship",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Birmingham topa sahip olma oranında önde. Birmingham daha fazla şut üretti.",
+        "summary": "Birmingham topa sahip olma oranında önde. Bristol City daha fazla şut üretti.",
         "confidence": "Yüksek",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "58%-42%",
+            "value": "63%-37%",
             "text": "Birmingham topa sahip olma oranında önde."
           },
           {
             "label": "Şut hacmi",
-            "value": "2-2",
-            "text": "Birmingham daha fazla şut üretti."
+            "value": "4-11",
+            "text": "Bristol City daha fazla şut üretti."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "0-0",
-            "text": "Birmingham isabetli şutlarda önde."
+            "value": "1-3",
+            "text": "Bristol City isabetli şutlarda önde."
           },
           {
             "label": "Gol beklentisi",
-            "value": "0.03-0.10",
+            "value": "0.65-1.22",
             "text": "Bristol City daha yüksek pozisyon kalitesi üretti."
           },
           {
@@ -309912,13 +309983,18 @@
             "text": "Son gol 42' S. Tickle tarafından kaydedildi."
           },
           {
+            "label": "Teknik hamleler",
+            "value": "8 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti."
+          },
+          {
             "label": "Canlı skor",
             "value": "1-1",
             "text": "Skor dengede."
           }
         ],
-        "eventCount": 4,
-        "dataPoints": 6,
+        "eventCount": 12,
+        "dataPoints": 7,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -311642,95 +311718,201 @@
           "detail": "Substitution 1",
           "value": "B. Osayi-Samuel · Asist: E. Laird · Substitution 1",
           "comments": ""
+        },
+        {
+          "time": "62'",
+          "team": {
+            "name": "Birmingham"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Paik Seung-Ho · Asist: P. Roberts · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "Birmingham"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "C. Vicente · Asist: D. Gray · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "65'",
+          "team": {
+            "name": "Bristol City"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "L. Tolaj · Asist: D. Ballard · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "65'",
+          "team": {
+            "name": "Bristol City"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "J. Wallace · Asist: T. Horvat · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "Bristol City"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "J. Williams · Asist: G. Yah · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "Bristol City"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "S. Twine · Asist: S. Greenwood · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "78'",
+          "team": {
+            "name": "Birmingham"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "P. Roberts · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Birmingham"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "A. Priske · Asist: L. Vazquez · Substitution 4",
+          "comments": ""
         }
       ],
       "statistics": [
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 0,
-          "away": 0,
+          "home": 1,
+          "away": 3,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 2,
-          "away": 1
+          "home": 4,
+          "away": 6
         },
         {
           "category": "Hücum",
           "type": "Toplam şut",
-          "home": 2,
-          "away": 2,
+          "home": 4,
+          "away": 11,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
           "home": 0,
-          "away": 1
+          "away": 2
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
-          "home": 1,
-          "away": 2,
+          "home": 2,
+          "away": 10,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 1,
-          "away": 0
+          "home": 2,
+          "away": 1
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 2,
-          "away": 2
+          "home": 10,
+          "away": 7
         },
         {
           "category": "Genel",
           "type": "Korner",
+          "home": 5,
+          "away": 2
+        },
+        {
+          "category": "Genel",
+          "type": "Ofsayt",
           "home": 1,
-          "away": 0
+          "away": 1
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 58,
-          "away": 42,
+          "home": 63,
+          "away": 37,
           "unit": "%",
           "higherIsBetter": true
         },
         {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 1,
+          "away": 0
+        },
+        {
+          "category": "Savunma",
+          "type": "Kurtarış",
+          "home": 2,
+          "away": 0
+        },
+        {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 86,
-          "away": 60,
+          "home": 364,
+          "away": 211,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 58,
-          "away": 32,
+          "home": 272,
+          "away": 135,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
-          "home": 67,
-          "away": 53,
+          "home": 75,
+          "away": 64,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Genel",
           "type": "Gol beklentisi (xG)",
-          "home": 0.03,
-          "away": 0.1,
+          "home": 0.65,
+          "away": 1.22,
+          "decimals": 2,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Savunma",
+          "type": "Önlenen gol",
+          "home": -1,
+          "away": -1,
           "decimals": 2,
           "higherIsBetter": true
         }
@@ -311752,12 +311934,12 @@
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1355.png",
       "status": "LIVE",
       "providerStatus": "2H",
-      "minute": 57,
-      "elapsed": 57,
+      "minute": 79,
+      "elapsed": 79,
       "live": true,
       "score": {
         "home": 1,
-        "away": 2,
+        "away": 3,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -311775,8 +311957,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T12:45:38.588Z",
-      "staleAfter": "2026-08-22T12:50:38.588Z",
+      "fetchedAt": "2026-08-22T13:07:17.131Z",
+      "staleAfter": "2026-08-22T13:12:17.131Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -311791,37 +311973,42 @@
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "41%-59%",
+            "value": "39%-61%",
             "text": "Portsmouth topa sahip olma oranında önde."
           },
           {
             "label": "Şut hacmi",
-            "value": "5-5",
+            "value": "13-11",
             "text": "Lincoln daha fazla şut üretti."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "3-3",
-            "text": "Lincoln isabetli şutlarda önde."
+            "value": "5-6",
+            "text": "Portsmouth isabetli şutlarda önde."
           },
           {
             "label": "Gol beklentisi",
-            "value": "0.67-0.39",
+            "value": "2.09-0.71",
             "text": "Lincoln daha yüksek pozisyon kalitesi üretti."
           },
           {
             "label": "Gol akışı",
-            "value": "32'",
-            "text": "Son gol 32' R. Hackett-Fairchild tarafından kaydedildi."
+            "value": "69'",
+            "text": "Son gol 69' E. Adams tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "8 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 8 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
-            "value": "1-2",
+            "value": "1-3",
             "text": "Portsmouth skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 6,
-        "dataPoints": 6,
+        "eventCount": 16,
+        "dataPoints": 7,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -313560,115 +313747,221 @@
           "detail": "Yellow Card",
           "value": "R. R. Shein · Yellow Card",
           "comments": "Foul"
+        },
+        {
+          "time": "58'",
+          "team": {
+            "name": "Portsmouth"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "R. Kavuma McQueen · Asist: J. Murphy · Substitution 1",
+          "comments": ""
+        },
+        {
+          "time": "58'",
+          "team": {
+            "name": "Portsmouth"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "R. R. Shein · Asist: E. Adams · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Lincoln"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "I. Varfolomeev · Asist: T. Bayliss · Substitution 2",
+          "comments": ""
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Lincoln"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "D. Jefferies · Asist: R. Street · Substitution 3",
+          "comments": ""
+        },
+        {
+          "time": "68'",
+          "team": {
+            "name": "Lincoln"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "T. Bayliss · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "69'",
+          "team": {
+            "name": "Portsmouth"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "E. Adams · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "71'",
+          "team": {
+            "name": "Lincoln"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "T. Hamer · Yellow Card",
+          "comments": "Foul"
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "Lincoln"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "B. House · Asist: M. Melia · Substitution 4",
+          "comments": ""
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "Lincoln"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "F. Draper · Asist: T. Olaofe · Substitution 5",
+          "comments": ""
+        },
+        {
+          "time": "77'",
+          "team": {
+            "name": "Portsmouth"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "J. Murphy · Asist: Marezi · Substitution 3",
+          "comments": ""
         }
       ],
       "statistics": [
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 3,
-          "away": 3,
+          "home": 5,
+          "away": 6,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 1,
-          "away": 1
+          "home": 4,
+          "away": 2
         },
         {
           "category": "Hücum",
           "type": "Toplam şut",
-          "home": 5,
-          "away": 5,
+          "home": 13,
+          "away": 11,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 1,
-          "away": 1
+          "home": 4,
+          "away": 3
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
-          "home": 3,
-          "away": 2,
+          "home": 9,
+          "away": 6,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 2,
-          "away": 3
+          "home": 4,
+          "away": 5
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 1,
-          "away": 3
+          "home": 14,
+          "away": 10
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 3,
-          "away": 1
+          "home": 7,
+          "away": 3
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
-          "home": 1,
-          "away": 0
+          "home": 7,
+          "away": 2
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 41,
-          "away": 59,
+          "home": 39,
+          "away": 61,
           "unit": "%",
           "higherIsBetter": true
         },
         {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 2,
+          "away": 1
+        },
+        {
           "category": "Savunma",
           "type": "Kurtarış",
-          "home": 1,
-          "away": 3
+          "home": 3,
+          "away": 4
         },
         {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 35,
-          "away": 53,
+          "home": 154,
+          "away": 249,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 18,
-          "away": 36,
+          "home": 95,
+          "away": 181,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
-          "home": 51,
-          "away": 68,
+          "home": 62,
+          "away": 73,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Genel",
           "type": "Gol beklentisi (xG)",
-          "home": 0.67,
-          "away": 0.39,
+          "home": 2.09,
+          "away": 0.71,
           "decimals": 2,
           "higherIsBetter": true
         },
         {
           "category": "Savunma",
           "type": "Önlenen gol",
-          "home": 0.51,
-          "away": 0.51,
+          "home": 0.38,
+          "away": 0.38,
           "decimals": 2,
           "higherIsBetter": true
         }
@@ -313690,11 +313983,11 @@
       "awayTeamLogo": "https://media.api-sports.io/football/teams/71.png",
       "status": "LIVE",
       "providerStatus": "2H",
-      "minute": 58,
-      "elapsed": 58,
+      "minute": 80,
+      "elapsed": 80,
       "live": true,
       "score": {
-        "home": 1,
+        "home": 2,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -313713,8 +314006,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T12:45:38.588Z",
-      "staleAfter": "2026-08-22T12:50:38.588Z",
+      "fetchedAt": "2026-08-22T13:07:17.131Z",
+      "staleAfter": "2026-08-22T13:12:17.131Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
