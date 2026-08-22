@@ -1,7 +1,29 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-22T16:30:32.444Z",
+  "updatedAt": "2026-08-22T17:25:29.440Z",
   "items": [
+    {
+      "id": "auto-news-41f7892e6b8f5a293d96",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe 4-1 T. Konyaspor (U-19)",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-22T16:52:25.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxONXJEM1MzaFlNTkg1c0tPTHFaRVZGTjZRNm04RFNTMTRETXZvQVBBNVBoLWs5S2c5ZHBELWFic2hzNm9SNDBUdnlvM3o0WnNUNE5sYnkwZ095UEp5OWxvcTdLeHk0UnZZbUpjWWNqZUVpNVZUSFVaeHBpRUNTeTBuYTJPX0U0c1pwWEtGX2czbWwzQ09mc3c?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-08-22T04:00:00.000Z"
+      }
+    },
     {
       "id": "auto-news-7933f5dfedd69aaabc2a",
       "category": "official",
@@ -219,26 +241,6 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-eb31356dc1b0f6815c26",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Akdeniz Oyunları’nda Fenerbahçeli 47 milli sporcu",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-20T10:48:41.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxONmxHYmZUck8zRHNrX0k1MkRXNnpTYXQyQkZmaFlGRkVWRldfSHJWTTRwdExHdld3UWhqbndkRzdZN3hYOVFMYjg5eW4zUWthMkFDVVdwWVVGWGhTMUN6NFhZN3FPOVY3TmdocUVuUGh0a1pScTJrNU5HZzJCZkZxV1o4M2RYTWUxUWNFY0lNT21aaHdzQU9XRzdNSjBkazg?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
         "status": "OFFICIAL"
       }
     },
