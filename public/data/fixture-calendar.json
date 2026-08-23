@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-23T12:46:53.729Z",
+  "fetchedAt": "2026-08-23T13:09:04.902Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -388257,8 +388257,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-23T12:46:55.051Z",
-      "staleAfter": "2026-08-23T12:51:55.051Z",
+      "fetchedAt": "2026-08-23T13:09:06.191Z",
+      "staleAfter": "2026-08-23T13:14:06.191Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -388268,9 +388268,29 @@
       "competitionId": "eredivisie",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Son gol 90+1' S. I. Sigurdarson tarafından kaydedildi. Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti. Skor üstünlüğü GO Ahead Eagles tarafında.",
-        "confidence": "Orta",
+        "summary": "ADO Den Haag topa sahip olma oranında önde. ADO Den Haag daha fazla şut üretti. Skor üstünlüğü GO Ahead Eagles tarafında.",
+        "confidence": "Yüksek",
         "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "47%-53%",
+            "text": "ADO Den Haag topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "11-16",
+            "text": "ADO Den Haag daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "5-3",
+            "text": "GO Ahead Eagles isabetli şutlarda önde."
+          },
+          {
+            "label": "Gol beklentisi",
+            "value": "1.01-0.99",
+            "text": "GO Ahead Eagles daha yüksek pozisyon kalitesi üretti."
+          },
           {
             "label": "Gol akışı",
             "value": "90+1'",
@@ -388288,7 +388308,7 @@
           }
         ],
         "eventCount": 17,
-        "dataPoints": 3,
+        "dataPoints": 7,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "lineups": [
@@ -389973,65 +389993,65 @@
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 1,
-          "away": 1,
+          "home": 5,
+          "away": 3,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 0,
-          "away": 1
+          "home": 3,
+          "away": 8
         },
         {
           "category": "Hücum",
           "type": "Toplam şut",
-          "home": 1,
-          "away": 5,
+          "home": 11,
+          "away": 16,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
-          "home": 0,
-          "away": 3
+          "home": 3,
+          "away": 5
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
-          "home": 1,
-          "away": 2,
+          "home": 6,
+          "away": 7,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 0,
-          "away": 3
+          "home": 5,
+          "away": 9
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 6,
-          "away": 6
+          "home": 10,
+          "away": 13
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 1,
-          "away": 2
+          "home": 5,
+          "away": 3
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
-          "home": 0,
+          "home": 2,
           "away": 1
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 55,
-          "away": 45,
+          "home": 47,
+          "away": 53,
           "unit": "%",
           "higherIsBetter": true
         },
@@ -390039,49 +390059,49 @@
           "category": "Disiplin",
           "type": "Sarı kart",
           "home": 1,
-          "away": 0
+          "away": 2
         },
         {
           "category": "Savunma",
           "type": "Kurtarış",
-          "home": 1,
-          "away": 0
+          "home": 2,
+          "away": 2
         },
         {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 261,
-          "away": 215,
+          "home": 429,
+          "away": 498,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 216,
-          "away": 175,
+          "home": 346,
+          "away": 411,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
-          "home": 83,
-          "away": 81,
+          "home": 81,
+          "away": 83,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Genel",
           "type": "Gol beklentisi (xG)",
-          "home": 0.18,
-          "away": 0.25,
+          "home": 1.01,
+          "away": 0.99,
           "decimals": 2,
           "higherIsBetter": true
         },
         {
           "category": "Savunma",
           "type": "Önlenen gol",
-          "home": -0.48,
-          "away": -0.48,
+          "home": -1.03,
+          "away": -1.03,
           "decimals": 2,
           "higherIsBetter": true
         }
@@ -392259,11 +392279,11 @@
       "awayTeam": "Burnley",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/60.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/44.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 88,
-      "elapsed": 88,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 3,
         "away": 1,
@@ -392284,8 +392304,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-23T12:46:55.051Z",
-      "staleAfter": "2026-08-23T12:51:55.051Z",
+      "fetchedAt": "2026-08-23T13:09:06.191Z",
+      "staleAfter": "2026-08-23T13:14:06.191Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -392294,39 +392314,29 @@
       },
       "competitionId": "championship",
       "analysis": {
-        "title": "Canlı Radar Analizi",
+        "title": "Maç Radar Analizi",
         "summary": "West Brom topa sahip olma oranında önde. West Brom daha fazla şut üretti. Skor üstünlüğü West Brom tarafında.",
         "confidence": "Yüksek",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "54%-46%",
+            "value": "51%-49%",
             "text": "West Brom topa sahip olma oranında önde."
           },
           {
             "label": "Şut hacmi",
-            "value": "10-5",
+            "value": "11-10",
             "text": "West Brom daha fazla şut üretti."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "7-2",
+            "value": "7-3",
             "text": "West Brom isabetli şutlarda önde."
           },
           {
             "label": "Gol beklentisi",
-            "value": "1.46-1.00",
+            "value": "1.64-1.12",
             "text": "West Brom daha yüksek pozisyon kalitesi üretti."
-          },
-          {
-            "label": "Gol akışı",
-            "value": "65'",
-            "text": "Son gol 65' I. Price tarafından kaydedildi."
-          },
-          {
-            "label": "Teknik hamleler",
-            "value": "7 değişiklik",
-            "text": "Kulübeler oyuna müdahale etti; 7 oyuncu değişikliği kayda geçti."
           },
           {
             "label": "Canlı skor",
@@ -392334,8 +392344,8 @@
             "text": "West Brom skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 14,
-        "dataPoints": 7,
+        "eventCount": 0,
+        "dataPoints": 5,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -394161,64 +394171,64 @@
           "category": "Hücum",
           "type": "İsabetli şut",
           "home": 7,
-          "away": 2,
+          "away": 3,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 1,
-          "away": 2
+          "home": 2,
+          "away": 3
         },
         {
           "category": "Hücum",
           "type": "Toplam şut",
-          "home": 10,
-          "away": 5,
+          "home": 11,
+          "away": 10,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Engellenen şut",
           "home": 2,
-          "away": 1
+          "away": 4
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
-          "home": 8,
-          "away": 4,
+          "home": 9,
+          "away": 5,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
           "home": 2,
-          "away": 1
+          "away": 5
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 5,
-          "away": 10
+          "home": 8,
+          "away": 13
         },
         {
           "category": "Genel",
           "type": "Korner",
-          "home": 2,
-          "away": 2
+          "home": 3,
+          "away": 4
         },
         {
           "category": "Genel",
           "type": "Ofsayt",
-          "home": 6,
+          "home": 8,
           "away": 0
         },
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 54,
-          "away": 46,
+          "home": 51,
+          "away": 49,
           "unit": "%",
           "higherIsBetter": true
         },
@@ -394231,36 +394241,36 @@
         {
           "category": "Savunma",
           "type": "Kurtarış",
-          "home": 2,
+          "home": 3,
           "away": 4
         },
         {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 441,
-          "away": 367,
+          "home": 507,
+          "away": 478,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 394,
-          "away": 308,
+          "home": 446,
+          "away": 404,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
-          "home": 89,
-          "away": 84,
+          "home": 88,
+          "away": 85,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Genel",
           "type": "Gol beklentisi (xG)",
-          "home": 1.46,
-          "away": 1,
+          "home": 1.64,
+          "away": 1.12,
           "decimals": 2,
           "higherIsBetter": true
         },
@@ -394271,6 +394281,577 @@
           "away": -0.37,
           "decimals": 2,
           "higherIsBetter": true
+        }
+      ],
+      "players": [
+        {
+          "name": "Max O'Leary",
+          "team": "West Brom",
+          "providerPlayerId": "19258",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "G",
+          "providerRating": 7.9,
+          "ratingSource": "api-football",
+          "saves": 3,
+          "passes": 41,
+          "passAccuracy": 30,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nolan Galves",
+          "team": "West Brom",
+          "providerPlayerId": "333078",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 30,
+          "passAccuracy": 28,
+          "tackles": 4,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Nathaniel Phillips",
+          "team": "West Brom",
+          "providerPlayerId": "127472",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "passes": 70,
+          "passAccuracy": 62,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "George Campbell",
+          "team": "West Brom",
+          "providerPlayerId": "102508",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "D",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 79,
+          "passAccuracy": 73,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Callum Styles",
+          "team": "West Brom",
+          "providerPlayerId": "19806",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "D",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 55,
+          "passAccuracy": 49,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Harry Whitwell",
+          "team": "West Brom",
+          "providerPlayerId": "355226",
+          "source": "api-football",
+          "minutes": 81,
+          "position": "M",
+          "providerRating": 8.9,
+          "ratingSource": "api-football",
+          "goals": 1,
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 30,
+          "passAccuracy": 23,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jayson Molumby",
+          "team": "West Brom",
+          "providerPlayerId": "18974",
+          "source": "api-football",
+          "minutes": 94,
+          "position": "M",
+          "providerRating": 7.3,
+          "ratingSource": "api-football",
+          "passes": 69,
+          "passAccuracy": 63,
+          "tackles": 1,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ousmane Diakité",
+          "team": "West Brom",
+          "providerPlayerId": "7338",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "M",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "shots": 2,
+          "shotsOnTarget": 1,
+          "passes": 41,
+          "passAccuracy": 37,
+          "tackles": 2,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Isaac Price",
+          "team": "West Brom",
+          "providerPlayerId": "284267",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "M",
+          "providerRating": 8.7,
+          "ratingSource": "api-football",
+          "goals": 2,
+          "shots": 4,
+          "shotsOnTarget": 4,
+          "passes": 43,
+          "passAccuracy": 39,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Felix Horn Myhre",
+          "team": "West Brom",
+          "providerPlayerId": "39066",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "F",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 22,
+          "passAccuracy": 19,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jimmy Morgan",
+          "team": "West Brom",
+          "providerPlayerId": "330982",
+          "source": "api-football",
+          "minutes": 78,
+          "position": "F",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "assists": 1,
+          "passes": 16,
+          "passAccuracy": 14,
+          "tackles": 3,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Barney Stewart",
+          "team": "West Brom",
+          "providerPlayerId": "539152",
+          "source": "api-football",
+          "minutes": 17,
+          "position": "F",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 4,
+          "passAccuracy": 3,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Rabby Nzingoula",
+          "team": "West Brom",
+          "providerPlayerId": "387120",
+          "source": "api-football",
+          "minutes": 14,
+          "position": "M",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 7,
+          "passAccuracy": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Chris Mepham",
+          "team": "West Brom",
+          "providerPlayerId": "18866",
+          "source": "api-football",
+          "minutes": 1,
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Matt Ingram",
+          "team": "West Brom",
+          "providerPlayerId": "19572",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Alex Williams",
+          "team": "West Brom",
+          "providerPlayerId": "288132",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Krystian Bielik",
+          "team": "West Brom",
+          "providerPlayerId": "19826",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Conor Townsend",
+          "team": "West Brom",
+          "providerPlayerId": "19152",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Oliver Bostock",
+          "team": "West Brom",
+          "providerPlayerId": "413499",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Tammer Bany",
+          "team": "West Brom",
+          "providerPlayerId": "294978",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Max Weiss",
+          "team": "Burnley",
+          "providerPlayerId": "328273",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "G",
+          "providerRating": 7.9,
+          "ratingSource": "api-football",
+          "saves": 4,
+          "passes": 38,
+          "passAccuracy": 35,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Oliver Sonne",
+          "team": "Burnley",
+          "providerPlayerId": "128895",
+          "source": "api-football",
+          "minutes": 45,
+          "position": "D",
+          "providerRating": 6,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 18,
+          "passAccuracy": 14,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Kyle Walker",
+          "team": "Burnley",
+          "providerPlayerId": "627",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "D",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "passes": 79,
+          "passAccuracy": 70,
+          "tackles": 2,
+          "duelsWon": 4,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Max Alleyne",
+          "team": "Burnley",
+          "providerPlayerId": "293168",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "D",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "passes": 86,
+          "passAccuracy": 81,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Bashir Humphreys",
+          "team": "Burnley",
+          "providerPlayerId": "181797",
+          "source": "api-football",
+          "minutes": 78,
+          "position": "D",
+          "providerRating": 5.2,
+          "ratingSource": "api-football",
+          "passes": 43,
+          "passAccuracy": 34,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Josh Laurent",
+          "team": "Burnley",
+          "providerPlayerId": "20303",
+          "source": "api-football",
+          "minutes": 57,
+          "position": "M",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "passes": 22,
+          "passAccuracy": 18,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Hannibal Mejbri",
+          "team": "Burnley",
+          "providerPlayerId": "180560",
+          "source": "api-football",
+          "minutes": 57,
+          "position": "M",
+          "providerRating": 6,
+          "ratingSource": "api-football",
+          "passes": 34,
+          "passAccuracy": 26,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Marcus Edwards",
+          "team": "Burnley",
+          "providerPlayerId": "37882",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "M",
+          "providerRating": 6.5,
+          "ratingSource": "api-football",
+          "passes": 27,
+          "passAccuracy": 22,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 1,
+          "redCards": 0
+        },
+        {
+          "name": "Aaron Ramsey",
+          "team": "Burnley",
+          "providerPlayerId": "278079",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "M",
+          "providerRating": 6.2,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 22,
+          "passAccuracy": 17,
+          "tackles": 1,
+          "duelsWon": 1,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Jacob Bruun Larsen",
+          "team": "Burnley",
+          "providerPlayerId": "22",
+          "source": "api-football",
+          "minutes": 95,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "passes": 24,
+          "passAccuracy": 22,
+          "tackles": 1,
+          "duelsWon": 3,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Armando Broja",
+          "team": "Burnley",
+          "providerPlayerId": "138822",
+          "source": "api-football",
+          "minutes": 57,
+          "position": "F",
+          "providerRating": 6.9,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 11,
+          "passAccuracy": 5,
+          "tackles": 1,
+          "duelsWon": 6,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Connor Roberts",
+          "team": "Burnley",
+          "providerPlayerId": "19331",
+          "source": "api-football",
+          "minutes": 50,
+          "position": "D",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "passes": 30,
+          "passAccuracy": 24,
+          "tackles": 2,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Ugo Raghouber",
+          "team": "Burnley",
+          "providerPlayerId": "334878",
+          "source": "api-football",
+          "minutes": 38,
+          "position": "M",
+          "providerRating": 6.7,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 12,
+          "passAccuracy": 7,
+          "tackles": 1,
+          "duelsWon": 5,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Zeki Amdouni",
+          "team": "Burnley",
+          "providerPlayerId": "123469",
+          "source": "api-football",
+          "minutes": 38,
+          "position": "F",
+          "providerRating": 6.3,
+          "ratingSource": "api-football",
+          "shots": 1,
+          "shotsOnTarget": 1,
+          "passes": 4,
+          "passAccuracy": 4,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Dastan Satpaev",
+          "team": "Burnley",
+          "providerPlayerId": "445472",
+          "source": "api-football",
+          "minutes": 38,
+          "position": "F",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "passes": 16,
+          "passAccuracy": 14,
+          "tackles": 1,
+          "duelsWon": 2,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Lucas Pires",
+          "team": "Burnley",
+          "providerPlayerId": "330238",
+          "source": "api-football",
+          "minutes": 17,
+          "position": "D",
+          "providerRating": 6.6,
+          "ratingSource": "api-football",
+          "passes": 12,
+          "passAccuracy": 11,
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Grégoire Coudert",
+          "team": "Burnley",
+          "providerPlayerId": "21248",
+          "source": "api-football",
+          "position": "G",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Anel Ahmedhodžić",
+          "team": "Burnley",
+          "providerPlayerId": "1949",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Joe Worrall",
+          "team": "Burnley",
+          "providerPlayerId": "1746",
+          "source": "api-football",
+          "position": "D",
+          "yellowCards": 0,
+          "redCards": 0
+        },
+        {
+          "name": "Mike Trésor",
+          "team": "Burnley",
+          "providerPlayerId": "37381",
+          "source": "api-football",
+          "position": "F",
+          "yellowCards": 0,
+          "redCards": 0
         }
       ]
     },
@@ -395293,11 +395874,11 @@
       "awayTeamLogo": "https://media.api-sports.io/football/teams/202.png",
       "status": "LIVE",
       "providerStatus": "1H",
-      "minute": 16,
-      "elapsed": 16,
+      "minute": 38,
+      "elapsed": 38,
       "live": true,
       "score": {
-        "home": 1,
+        "home": 2,
         "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
@@ -395316,8 +395897,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-23T12:46:55.051Z",
-      "staleAfter": "2026-08-23T12:51:55.051Z",
+      "fetchedAt": "2026-08-23T13:09:06.191Z",
+      "staleAfter": "2026-08-23T13:14:06.191Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -395327,41 +395908,41 @@
       "competitionId": "eredivisie",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "PSV Eindhoven topa sahip olma oranında önde. PSV Eindhoven daha fazla şut üretti.",
+        "summary": "PSV Eindhoven topa sahip olma oranında önde. PSV Eindhoven daha fazla şut üretti. Skor üstünlüğü PSV Eindhoven tarafında.",
         "confidence": "Yüksek",
         "signals": [
           {
             "label": "Top hakimiyeti",
-            "value": "57%-43%",
+            "value": "66%-34%",
             "text": "PSV Eindhoven topa sahip olma oranında önde."
           },
           {
             "label": "Şut hacmi",
-            "value": "1-1",
+            "value": "5-4",
             "text": "PSV Eindhoven daha fazla şut üretti."
           },
           {
             "label": "Kaleyi bulan",
-            "value": "0-0",
+            "value": "2-2",
             "text": "PSV Eindhoven isabetli şutlarda önde."
           },
           {
             "label": "Gol beklentisi",
-            "value": "0.07-0.11",
+            "value": "0.77-0.87",
             "text": "Groningen daha yüksek pozisyon kalitesi üretti."
           },
           {
             "label": "Gol akışı",
-            "value": "11'",
-            "text": "Son gol 11' T. Blokzijl tarafından kaydedildi."
+            "value": "35'",
+            "text": "Son gol 35' I. Perisic tarafından kaydedildi."
           },
           {
             "label": "Canlı skor",
-            "value": "1-1",
-            "text": "Skor dengede."
+            "value": "2-1",
+            "text": "PSV Eindhoven skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 2,
+        "eventCount": 4,
         "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
@@ -397105,27 +397686,47 @@
           "detail": "Own Goal",
           "value": "T. Blokzijl · Own Goal",
           "comments": ""
+        },
+        {
+          "time": "21'",
+          "team": {
+            "name": "PSV Eindhoven"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "R. van Bommel · Yellow Card",
+          "comments": "Tripping"
+        },
+        {
+          "time": "35'",
+          "team": {
+            "name": "PSV Eindhoven"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "I. Perisic · Normal Goal",
+          "comments": ""
         }
       ],
       "statistics": [
         {
           "category": "Hücum",
           "type": "İsabetli şut",
-          "home": 0,
-          "away": 0,
+          "home": 2,
+          "away": 2,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "İsabetsiz şut",
-          "home": 1,
-          "away": 0
+          "home": 3,
+          "away": 1
         },
         {
           "category": "Hücum",
           "type": "Toplam şut",
-          "home": 1,
-          "away": 1,
+          "home": 5,
+          "away": 4,
           "higherIsBetter": true
         },
         {
@@ -397137,20 +397738,20 @@
         {
           "category": "Hücum",
           "type": "Ceza sahası içinden şut",
-          "home": 0,
-          "away": 1,
+          "home": 3,
+          "away": 4,
           "higherIsBetter": true
         },
         {
           "category": "Hücum",
           "type": "Ceza sahası dışından şut",
-          "home": 1,
+          "home": 2,
           "away": 0
         },
         {
           "category": "Disiplin",
           "type": "Faul",
-          "home": 0,
+          "home": 2,
           "away": 0
         },
         {
@@ -397162,38 +397763,58 @@
         {
           "category": "Genel",
           "type": "Topla oynama",
-          "home": 57,
-          "away": 43,
+          "home": 66,
+          "away": 34,
           "unit": "%",
           "higherIsBetter": true
         },
         {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 1,
+          "away": 0
+        },
+        {
+          "category": "Savunma",
+          "type": "Kurtarış",
+          "home": 1,
+          "away": 1
+        },
+        {
           "category": "Pas",
           "type": "Toplam pas",
-          "home": 24,
-          "away": 19,
+          "home": 175,
+          "away": 95,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 23,
-          "away": 17,
+          "home": 161,
+          "away": 79,
           "higherIsBetter": true
         },
         {
           "category": "Pas",
           "type": "Pas isabeti",
-          "home": 96,
-          "away": 89,
+          "home": 92,
+          "away": 83,
           "unit": "%",
           "higherIsBetter": true
         },
         {
           "category": "Genel",
           "type": "Gol beklentisi (xG)",
-          "home": 0.07,
-          "away": 0.11,
+          "home": 0.77,
+          "away": 0.87,
+          "decimals": 2,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Savunma",
+          "type": "Önlenen gol",
+          "home": -0.25,
+          "away": -0.25,
           "decimals": 2,
           "higherIsBetter": true
         }
@@ -397213,14 +397834,14 @@
       "awayTeam": "Lille",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/77.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/79.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 9,
+      "elapsed": 9,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -397238,8 +397859,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-23T12:46:55.051Z",
-      "staleAfter": "2026-08-23T12:51:55.051Z",
+      "fetchedAt": "2026-08-23T13:09:06.191Z",
+      "staleAfter": "2026-08-23T13:14:06.191Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -397248,12 +397869,18 @@
       },
       "competitionId": "ligue-1",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "title": "Canlı Radar Analizi",
+        "summary": "Skor dengede.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -398942,14 +399569,14 @@
       "awayTeam": "Aston Villa",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/51.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/66.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 9,
+      "elapsed": 9,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -398967,8 +399594,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-23T11:25:26.102Z",
-      "staleAfter": "2026-08-23T11:30:26.102Z",
+      "fetchedAt": "2026-08-23T13:09:06.191Z",
+      "staleAfter": "2026-08-23T13:14:06.191Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -398977,12 +399604,23 @@
       },
       "competitionId": "premier-league",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
-        "confidence": "Sınırlı",
-        "signals": [],
-        "eventCount": 0,
-        "dataPoints": 0,
+        "title": "Canlı Radar Analizi",
+        "summary": "Son gol 8' V. Lindelof tarafından kaydedildi. Brighton skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Brighton tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "8'",
+            "text": "Son gol 8' V. Lindelof tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-0",
+            "text": "Brighton skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 1,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -400349,7 +400987,325 @@
             }
           }
         ]
-      }
+      },
+      "lineups": [
+        {
+          "team": "Brighton",
+          "formation": "4-2-3-1",
+          "players": [
+            "Bart Verbruggen",
+            "Mats Wieffer",
+            "Luka Vušković",
+            "Olivier Boscagli",
+            "Lewis Dunk",
+            "Pascal Groß",
+            "Yasin Ayari",
+            "Diego Gómez",
+            "Jack Hinshelwood",
+            "Maxim De Cuyper",
+            "Georginio Rutter"
+          ],
+          "substitutes": [
+            "Jason Steele",
+            "Pascal Struijk",
+            "Costinha",
+            "Michael Svoboda",
+            "Ibrahim Osman",
+            "Malick Yalcouyé",
+            "Promise David",
+            "Charalampos Kostoulas",
+            "Zadok Yohanna"
+          ],
+          "startingDetails": [
+            {
+              "name": "Bart Verbruggen",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Mats Wieffer",
+              "number": 27,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Luka Vušković",
+              "number": 44,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Olivier Boscagli",
+              "number": 21,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Lewis Dunk",
+              "number": 5,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Pascal Groß",
+              "number": 13,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Yasin Ayari",
+              "number": 26,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Diego Gómez",
+              "number": 25,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Jack Hinshelwood",
+              "number": 8,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Maxim De Cuyper",
+              "number": 29,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "Georginio Rutter",
+              "number": 10,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Jason Steele",
+              "number": 23,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Pascal Struijk",
+              "number": 4,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Costinha",
+              "number": 20,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Michael Svoboda",
+              "number": 30,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Ibrahim Osman",
+              "number": 15,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Malick Yalcouyé",
+              "number": 35,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Promise David",
+              "number": 12,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Charalampos Kostoulas",
+              "number": 19,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Zadok Yohanna",
+              "number": 36,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        },
+        {
+          "team": "Aston Villa",
+          "formation": "4-2-3-1",
+          "players": [
+            "Marco Bizot",
+            "Matty Cash",
+            "Pau Torres",
+            "Victor Lindelöf",
+            "Ian Maatsen",
+            "Ross Barkley",
+            "Boubacar Kamara",
+            "John McGinn",
+            "João Gomes",
+            "George Hemmings",
+            "Emiliano Buendía"
+          ],
+          "substitutes": [
+            "Zion Suzuki",
+            "Tyrone Mings",
+            "Matteo Ruggeri",
+            "Lamare Bogarde",
+            "Alysson",
+            "Triston Rowe",
+            "Bradley Burrowes",
+            "Alejandro Garnacho",
+            "Luka Lynch"
+          ],
+          "startingDetails": [
+            {
+              "name": "Marco Bizot",
+              "number": 40,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Matty Cash",
+              "number": 2,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Pau Torres",
+              "number": 14,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Victor Lindelöf",
+              "number": 3,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Ian Maatsen",
+              "number": 22,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Ross Barkley",
+              "number": 6,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Boubacar Kamara",
+              "number": 8,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "John McGinn",
+              "number": 7,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "João Gomes",
+              "number": 35,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "George Hemmings",
+              "number": 53,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "Emiliano Buendía",
+              "number": 10,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Zion Suzuki",
+              "number": 1,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Tyrone Mings",
+              "number": 5,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Matteo Ruggeri",
+              "number": 13,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Lamare Bogarde",
+              "number": 26,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Alysson",
+              "number": 47,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Triston Rowe",
+              "number": 45,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Bradley Burrowes",
+              "number": 49,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Alejandro Garnacho",
+              "number": 17,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Luka Lynch",
+              "number": 74,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        }
+      ],
+      "events": [
+        {
+          "time": "8'",
+          "team": {
+            "name": "Brighton"
+          },
+          "type": "Goal",
+          "detail": "Own Goal",
+          "value": "V. Lindelof · Own Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "manchester-city-bournemouth-2026-08-23",
@@ -400365,14 +401321,14 @@
       "awayTeam": "Bournemouth",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/50.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/35.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 5,
+      "elapsed": 5,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -400390,8 +401346,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-23T12:46:55.051Z",
-      "staleAfter": "2026-08-23T12:51:55.051Z",
+      "fetchedAt": "2026-08-23T13:09:06.191Z",
+      "staleAfter": "2026-08-23T13:14:06.191Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -400706,12 +401662,18 @@
         }
       ],
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "title": "Canlı Radar Analizi",
+        "summary": "Skor dengede.",
         "confidence": "Sınırlı",
-        "signals": [],
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
         "eventCount": 0,
-        "dataPoints": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {

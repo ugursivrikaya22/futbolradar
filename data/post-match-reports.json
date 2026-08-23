@@ -1,9 +1,383 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-23T12:49:35.778Z",
-  "matchCount": 811,
+  "updatedAt": "2026-08-23T13:09:20.090Z",
+  "matchCount": 812,
   "records": [
+    {
+      "matchId": "west-brom-burnley-2026-08-23",
+      "fixtureId": "1563104",
+      "provider": "api-football",
+      "slug": "west-brom-burnley-2026-08-23",
+      "kickoff": "2026-08-23T14:00:00+03:00",
+      "kickoffUtc": "2026-08-23T11:00:00.000Z",
+      "kickoffLocal": "2026-08-23T14:00",
+      "date": "2026-08-23",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Championship",
+      "competition": "Championship",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "West Brom",
+      "awayTeam": "Burnley",
+      "venue": "The Hawthorns",
+      "score": {
+        "home": 3,
+        "away": 1
+      },
+      "finalScore": "3-1",
+      "winner": "West Brom",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 14
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 17
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 40
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 14,
+        "statistics": 17,
+        "lineups": 2,
+        "players": 40
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "9e96d3ce67586d83",
+      "fingerprint": "9e96d3ce67586d83",
+      "analysisGeneratedAt": "2026-08-23T13:09:20.043Z",
+      "analysisUpdatedAt": "2026-08-23T13:09:20.043Z",
+      "generatedAt": "2026-08-23T13:09:20.043Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "West Brom 3-1 Burnley maç raporu: Championship istatistikleri | FutbolRadar",
+        "description": "West Brom, The Hawthorns'ta oynanan Championship karşılaşmasında Burnley'i 3-1 mağlup etti.",
+        "path": "mac-raporu/west-brom-burnley-2026-08-23.html",
+        "competition": "Championship"
+      },
+      "reportUrl": "./mac-raporu/west-brom-burnley-2026-08-23.html",
+      "digest": {
+        "headline": "West Brom, Burnley'i 3-1 yendi",
+        "paragraph": "West Brom, The Hawthorns'ta oynanan Championship karşılaşmasında Burnley'i 3-1 mağlup etti. Golleri 8. dakikada C. Styles (Burnley), 18. dakikada H. Whitwell (West Brom), 46. dakikada I. Price (West Brom), 65. dakikada I. Price (West Brom) kaydetti.",
+        "result": {
+          "winner": "West Brom",
+          "loser": "Burnley",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "8'",
+              "team": "Burnley",
+              "type": "Kendi kalesine gol",
+              "detail": "C. Styles",
+              "pivotal": true
+            },
+            {
+              "minute": "18'",
+              "team": "West Brom",
+              "type": "Gol",
+              "detail": "H. Whitwell",
+              "pivotal": true
+            },
+            {
+              "minute": "46'",
+              "team": "West Brom",
+              "type": "Gol",
+              "detail": "I. Price",
+              "pivotal": true
+            },
+            {
+              "minute": "65'",
+              "team": "West Brom",
+              "type": "Penaltı",
+              "detail": "I. Price",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 3 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "West Brom",
+              "type": "Oyuncu değişikliği",
+              "detail": "J. Morgan",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Burnley",
+              "type": "Oyuncu değişikliği",
+              "detail": "B. Humphreys",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "West Brom",
+              "type": "Oyuncu değişikliği",
+              "detail": "H. Whitwell",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "I. Price",
+              "team": "West Brom",
+              "contribution": "46' gol · 65' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "C. Styles",
+              "team": "Burnley",
+              "contribution": "8' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "H. Whitwell",
+              "team": "West Brom",
+              "contribution": "18' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "G. Campbell",
+              "team": "West Brom",
+              "contribution": "33' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "West Brom sahaya 4-4-1-1 dizilişiyle çıktı.",
+            "Burnley sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "8' Burnley — C. Styles: kendi kalesine gol",
+            "18' West Brom — H. Whitwell: gol"
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (10 olay).",
+            "46' West Brom — I. Price: gol",
+            "65' West Brom — I. Price: penaltı",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "West Brom maça 4-4-1-1 dizilişiyle başladı.",
+            "Burnley maça 4-2-3-1 dizilişiyle başladı.",
+            "46' Burnley değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "57' Burnley değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "57' Burnley değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "57' Burnley değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "West Brom",
+              "formation": "4-4-1-1"
+            },
+            {
+              "team": "Burnley",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "West Brom, Burnley'i 3-1 yendi.",
+            "İsabetli şutta da öndeydi (7-3); sonuç üretilen pozisyonla uyumlu.",
+            "West Brom, gol beklentisinin 1,36 üzerinde skor üretti."
+          ],
+          "strengths": [
+            "West Brom topa daha çok sahip oldu (%51).",
+            "West Brom daha çok şut denedi (11-10)."
+          ],
+          "improvements": [
+            "Burnley şut isabetinde geride kaldı (%30); bitiricilik geliştirilmesi gereken alan."
+          ],
+          "closing": "West Brom sahadan 2 farkla ayrıldı.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "West Brom",
+            "score": 78
+          },
+          "away": {
+            "team": "Burnley",
+            "score": 45
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti West Brom %63.6, Burnley %30."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için West Brom 46.1, Burnley 47.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG West Brom 0.149, Burnley 0.112. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
+      "publishState": "page"
+    },
     {
       "matchId": "go-ahead-eagles-ado-den-haag-2026-08-23",
       "fixtureId": "1552139",
@@ -78,11 +452,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "b2817a24cb9dfa27",
-      "fingerprint": "b2817a24cb9dfa27",
+      "analysisSourceHash": "afa5e67ae231cda0",
+      "fingerprint": "afa5e67ae231cda0",
       "analysisGeneratedAt": "2026-08-23T12:49:35.733Z",
-      "analysisUpdatedAt": "2026-08-23T12:49:35.733Z",
-      "generatedAt": "2026-08-23T12:49:35.733Z",
+      "analysisUpdatedAt": "2026-08-23T13:09:20.043Z",
+      "generatedAt": "2026-08-23T13:09:20.043Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -262,15 +636,15 @@
           "status": "ready",
           "verdict": [
             "GO Ahead Eagles, ADO Den Haag'ı 3-1 yendi.",
-            "İsabetli şutta geride kalmasına rağmen kazandı (1-1); eldeki veri sonucun verimlilikle geldiğini gösteriyor.",
-            "GO Ahead Eagles, gol beklentisinin 2,82 üzerinde skor üretti."
+            "İsabetli şutta da öndeydi (5-3); sonuç üretilen pozisyonla uyumlu.",
+            "GO Ahead Eagles, gol beklentisinin 1,99 üzerinde skor üretti."
           ],
           "strengths": [
-            "GO Ahead Eagles topa daha çok sahip oldu (%55).",
-            "ADO Den Haag daha çok şut denedi (1-5)."
+            "ADO Den Haag topa daha çok sahip oldu (%53).",
+            "ADO Den Haag daha çok şut denedi (11-16)."
           ],
           "improvements": [
-            "ADO Den Haag şut isabetinde geride kaldı (%20); bitiricilik geliştirilmesi gereken alan.",
+            "ADO Den Haag şut isabetinde geride kaldı (%19); bitiricilik geliştirilmesi gereken alan.",
             "ADO Den Haag son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
           ],
           "closing": "GO Ahead Eagles sahadan 2 farkla ayrıldı.",
@@ -279,11 +653,11 @@
         "aiRating": {
           "home": {
             "team": "GO Ahead Eagles",
-            "score": 42
+            "score": 67
           },
           "away": {
             "team": "ADO Den Haag",
-            "score": 27
+            "score": 50
           },
           "confidence": 100
         },
@@ -292,7 +666,7 @@
             "id": "hucum",
             "title": "Hücum analizi",
             "readings": [
-              "Şut isabeti GO Ahead Eagles %100, ADO Den Haag %20."
+              "Şut isabeti GO Ahead Eagles %45.5, ADO Den Haag %18.8."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -312,7 +686,7 @@
             "id": "kurulus",
             "title": "Kuruluş verimliliği",
             "readings": [
-              "Bir şut üretmek için GO Ahead Eagles 261, ADO Den Haag 43 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+              "Bir şut üretmek için GO Ahead Eagles 39, ADO Den Haag 31.1 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -332,7 +706,7 @@
             "id": "sutkalitesi",
             "title": "Şut kalitesi",
             "readings": [
-              "Şut başına xG GO Ahead Eagles 0.18, ADO Den Haag 0.05. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+              "Şut başına xG GO Ahead Eagles 0.092, ADO Den Haag 0.062. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
             ],
             "confidence": {
               "level": "orta",
