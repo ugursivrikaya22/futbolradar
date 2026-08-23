@@ -1,9 +1,785 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-23T02:06:18.727Z",
-  "matchCount": 801,
+  "updatedAt": "2026-08-23T03:55:20.254Z",
+  "matchCount": 805,
   "records": [
+    {
+      "matchId": "vancouver-whitecaps-fc-dallas-2026-08-23",
+      "fixtureId": "1490415",
+      "provider": "api-football",
+      "slug": "vancouver-whitecaps-fc-dallas-2026-08-23",
+      "kickoff": "2026-08-23T04:30:00+03:00",
+      "kickoffUtc": "2026-08-23T01:30:00.000Z",
+      "kickoffLocal": "2026-08-23T04:30",
+      "date": "2026-08-23",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Major League Soccer",
+      "competition": "Major League Soccer",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Vancouver Whitecaps",
+      "awayTeam": "FC Dallas",
+      "venue": "BC Place",
+      "score": {
+        "home": 5,
+        "away": 0
+      },
+      "finalScore": "5-0",
+      "winner": "Vancouver Whitecaps",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "acb26c2f9ff85b86",
+      "fingerprint": "acb26c2f9ff85b86",
+      "analysisGeneratedAt": "2026-08-23T03:55:20.208Z",
+      "analysisUpdatedAt": "2026-08-23T03:55:20.208Z",
+      "generatedAt": "2026-08-23T03:55:20.208Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Vancouver Whitecaps 5-0 FC Dallas maç raporu: Major League Soccer istatistikleri | FutbolRadar",
+        "description": "Vancouver Whitecaps, BC Place'de oynanan Major League Soccer karşılaşmasında FC Dallas'ı 5-0 mağlup etti.",
+        "path": "mac-raporu/vancouver-whitecaps-fc-dallas-2026-08-23.html",
+        "competition": "Major League Soccer"
+      },
+      "reportUrl": "./mac-raporu/vancouver-whitecaps-fc-dallas-2026-08-23.html",
+      "digest": {
+        "headline": "Vancouver Whitecaps, FC Dallas'ı 5-0 yendi",
+        "paragraph": "Vancouver Whitecaps, BC Place'de oynanan Major League Soccer karşılaşmasında FC Dallas'ı 5-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Vancouver Whitecaps",
+          "loser": "FC Dallas",
+          "draw": false,
+          "margin": 5
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Vancouver Whitecaps, FC Dallas'ı 5-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Vancouver Whitecaps sahadan 5 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "austin-philadelphia-union-2026-08-23",
+      "fixtureId": "1490413",
+      "provider": "api-football",
+      "slug": "austin-philadelphia-union-2026-08-23",
+      "kickoff": "2026-08-23T04:00:00+03:00",
+      "kickoffUtc": "2026-08-23T01:00:00.000Z",
+      "kickoffLocal": "2026-08-23T04:00",
+      "date": "2026-08-23",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Major League Soccer",
+      "competition": "Major League Soccer",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Austin",
+      "awayTeam": "Philadelphia Union",
+      "venue": "Q2 Stadium",
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "finalScore": "1-1",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "77d60b0ab8f5f127",
+      "fingerprint": "77d60b0ab8f5f127",
+      "analysisGeneratedAt": "2026-08-23T03:55:20.208Z",
+      "analysisUpdatedAt": "2026-08-23T03:55:20.208Z",
+      "generatedAt": "2026-08-23T03:55:20.208Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Austin 1-1 Philadelphia Union maç raporu: Major League Soccer istatistikleri | FutbolRadar",
+        "description": "Austin ile Philadelphia Union, Q2 Stadium'da oynanan Major League Soccer karşılaşmasında 1-1 berabere kaldı.",
+        "path": "mac-raporu/austin-philadelphia-union-2026-08-23.html",
+        "competition": "Major League Soccer"
+      },
+      "reportUrl": "./mac-raporu/austin-philadelphia-union-2026-08-23.html",
+      "digest": {
+        "headline": "Austin ile Philadelphia Union 1-1 berabere kaldı",
+        "paragraph": "Austin ile Philadelphia Union, Q2 Stadium'da oynanan Major League Soccer karşılaşmasında 1-1 berabere kaldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 1-1 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "nashville-sc-columbus-crew-2026-08-23",
+      "fixtureId": "1490412",
+      "provider": "api-football",
+      "slug": "nashville-sc-columbus-crew-2026-08-23",
+      "kickoff": "2026-08-23T03:30:00+03:00",
+      "kickoffUtc": "2026-08-23T00:30:00.000Z",
+      "kickoffLocal": "2026-08-23T03:30",
+      "date": "2026-08-23",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Major League Soccer",
+      "competition": "Major League Soccer",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Nashville SC",
+      "awayTeam": "Columbus Crew",
+      "venue": "Geodis Park",
+      "score": {
+        "home": 3,
+        "away": 2
+      },
+      "finalScore": "3-2",
+      "winner": "Nashville SC",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "578bf31b0367b6b5",
+      "fingerprint": "578bf31b0367b6b5",
+      "analysisGeneratedAt": "2026-08-23T03:55:20.208Z",
+      "analysisUpdatedAt": "2026-08-23T03:55:20.208Z",
+      "generatedAt": "2026-08-23T03:55:20.208Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Nashville SC 3-2 Columbus Crew maç raporu: Major League Soccer istatistikleri | FutbolRadar",
+        "description": "Nashville SC, Geodis Park'ta oynanan Major League Soccer karşılaşmasında Columbus Crew'i 3-2 mağlup etti.",
+        "path": "mac-raporu/nashville-sc-columbus-crew-2026-08-23.html",
+        "competition": "Major League Soccer"
+      },
+      "reportUrl": "./mac-raporu/nashville-sc-columbus-crew-2026-08-23.html",
+      "digest": {
+        "headline": "Nashville SC, Columbus Crew'i 3-2 yendi",
+        "paragraph": "Nashville SC, Geodis Park'ta oynanan Major League Soccer karşılaşmasında Columbus Crew'i 3-2 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Nashville SC",
+          "loser": "Columbus Crew",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Nashville SC, Columbus Crew'i 3-2 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Nashville SC sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "st-louis-city-houston-dynamo-2026-08-23",
+      "fixtureId": "1490414",
+      "provider": "api-football",
+      "slug": "st-louis-city-houston-dynamo-2026-08-23",
+      "kickoff": "2026-08-23T03:30:00+03:00",
+      "kickoffUtc": "2026-08-23T00:30:00.000Z",
+      "kickoffLocal": "2026-08-23T03:30",
+      "date": "2026-08-23",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Major League Soccer",
+      "competition": "Major League Soccer",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "St. Louis City",
+      "awayTeam": "Houston Dynamo",
+      "venue": "Energizer Park",
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "finalScore": "2-1",
+      "winner": "St. Louis City",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "e19b980135b14ebe",
+      "fingerprint": "e19b980135b14ebe",
+      "analysisGeneratedAt": "2026-08-23T03:55:20.208Z",
+      "analysisUpdatedAt": "2026-08-23T03:55:20.208Z",
+      "generatedAt": "2026-08-23T03:55:20.208Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "St. Louis City 2-1 Houston Dynamo maç raporu: Major League Soccer istatistikleri | FutbolRadar",
+        "description": "St. Louis City 2-1 Houston Dynamo maç raporu, kırılma anları ve sonraki maç.",
+        "path": "mac-raporu/st-louis-city-houston-dynamo-2026-08-23.html",
+        "competition": "Major League Soccer"
+      },
+      "reportUrl": "./mac-raporu/st-louis-city-houston-dynamo-2026-08-23.html",
+      "digest": {
+        "headline": "St. Louis City, Houston Dynamo'yu 2-1 yendi",
+        "paragraph": "St. Louis City, Energizer Park'ta oynanan Major League Soccer karşılaşmasında Houston Dynamo'yu 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "St. Louis City",
+          "loser": "Houston Dynamo",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "St. Louis City, Houston Dynamo'yu 2-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "St. Louis City sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "huracan-deportivo-riestra-2026-08-23",
       "fixtureId": "1493083",
