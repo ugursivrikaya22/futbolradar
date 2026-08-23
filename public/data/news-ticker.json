@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-23T13:09:30.345Z",
+  "updatedAt": "2026-08-23T14:28:46.782Z",
   "items": [
+    {
+      "id": "auto-news-37d35a456e9f36e391d2",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Rövanş maçının hazırlıkları başladı",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-08-23T13:27:51.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQZi1HbGtDSUtFNTJ1b2FZSHNVZlNoN0JaczFrbHpyZW1tdTY3V3R2WWczWmhuSkNyYzJzd09neTBTMTRDbXlGaTRGdVNJNkoyeTloTlN6djFSRFl2ZkJ6TmNueG1nXzR3YU1DNGMzSC1RSDZsM1hIWUxPY21rcjVFNFFaSnU1NGpLRngySjNR?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-2cad23e2e7c4338518f4",
       "category": "official",
@@ -42,26 +62,6 @@
         "status": "OFFICIAL",
         "mergedReports": 2,
         "firstSeenAt": "2026-08-22T14:52:20.000Z"
-      }
-    },
-    {
-      "id": "auto-news-32b2d715f76da3a45a53",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Başkanımız ve Yöneticilerimiz, Kerem Aktürkoğlu’nu ziyaret etti",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-22T23:17:41.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNdzZzeGgxNlNCRFBfd0sxNk9DVzh2V1R2TWY2SkNBdzdCVlZxNEVsS25DWkF0ZDAxeDVjUkVyNVp6QWNON2M1ci1yaG5Cczd1emxJZUp6VTh0NlQwaU91bmxxYkFfazQ1MUludnphWW5OTC00SVRSWmU3T2szSXpYVmMtSUh3MU5nN3F0LUpmYnVUQ1RzUS1WZUI0c0gxWW5ya0p5TlNSR0dMcXlucTlEcHdn?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
       }
     },
     {

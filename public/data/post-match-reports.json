@@ -1,9 +1,406 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-23T13:09:20.090Z",
-  "matchCount": 812,
+  "updatedAt": "2026-08-23T14:28:36.889Z",
+  "matchCount": 813,
   "records": [
+    {
+      "matchId": "psv-eindhoven-groningen-2026-08-23",
+      "fixtureId": "1552140",
+      "provider": "api-football",
+      "slug": "psv-eindhoven-groningen-2026-08-23",
+      "kickoff": "2026-08-23T15:30:00+03:00",
+      "kickoffUtc": "2026-08-23T12:30:00.000Z",
+      "kickoffLocal": "2026-08-23T15:30",
+      "date": "2026-08-23",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Eredivisie",
+      "competition": "Eredivisie",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "PSV Eindhoven",
+      "awayTeam": "Groningen",
+      "venue": "Philips Stadion",
+      "score": {
+        "home": 5,
+        "away": 1
+      },
+      "finalScore": "5-1",
+      "winner": "PSV Eindhoven",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 90,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 18
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 16
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 18,
+        "statistics": 16,
+        "lineups": 2,
+        "players": 0
+      },
+      "dataCompleteness": 0.8,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "66450f3a5c2df9b9",
+      "fingerprint": "66450f3a5c2df9b9",
+      "analysisGeneratedAt": "2026-08-23T14:28:36.844Z",
+      "analysisUpdatedAt": "2026-08-23T14:28:36.844Z",
+      "generatedAt": "2026-08-23T14:28:36.844Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "PSV Eindhoven 5-1 Groningen maç raporu: Eredivisie istatistikleri | FutbolRadar",
+        "description": "PSV Eindhoven, Philips Stadion'da oynanan Eredivisie karşılaşmasında Groningen'i 5-1 mağlup etti.",
+        "path": "mac-raporu/psv-eindhoven-groningen-2026-08-23.html",
+        "competition": "Eredivisie"
+      },
+      "reportUrl": "./mac-raporu/psv-eindhoven-groningen-2026-08-23.html",
+      "digest": {
+        "headline": "PSV Eindhoven, Groningen'i 5-1 yendi",
+        "paragraph": "PSV Eindhoven, Philips Stadion'da oynanan Eredivisie karşılaşmasında Groningen'i 5-1 mağlup etti. Golleri 9. dakikada B. Willumsson (Groningen), 11. dakikada T. Blokzijl (PSV Eindhoven), 35. dakikada I. Perisic (PSV Eindhoven), 45+3. dakikada R. Pepi (PSV Eindhoven), 53. dakikada I. Perisic (PSV Eindhoven), 56. dakikada S. Dest (PSV Eindhoven) kaydetti.",
+        "result": {
+          "winner": "PSV Eindhoven",
+          "loser": "Groningen",
+          "draw": false,
+          "margin": 4
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "45+3'",
+              "team": "PSV Eindhoven",
+              "type": "Penaltı",
+              "detail": "R. Pepi",
+              "pivotal": true
+            },
+            {
+              "minute": "9'",
+              "team": "Groningen",
+              "type": "Gol",
+              "detail": "B. Willumsson",
+              "pivotal": true
+            },
+            {
+              "minute": "11'",
+              "team": "PSV Eindhoven",
+              "type": "Kendi kalesine gol",
+              "detail": "T. Blokzijl",
+              "pivotal": true
+            },
+            {
+              "minute": "35'",
+              "team": "PSV Eindhoven",
+              "type": "Gol",
+              "detail": "I. Perisic",
+              "pivotal": true
+            },
+            {
+              "minute": "53'",
+              "team": "PSV Eindhoven",
+              "type": "Gol",
+              "detail": "I. Perisic",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "PSV Eindhoven",
+              "type": "Oyuncu değişikliği",
+              "detail": "Mauro Junior",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "PSV Eindhoven",
+              "type": "Oyuncu değişikliği",
+              "detail": "I. Perisic",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "PSV Eindhoven",
+              "type": "Oyuncu değişikliği",
+              "detail": "A. Obispo",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "Groningen",
+              "type": "Oyuncu değişikliği",
+              "detail": "Substitution 5",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "I. Perisic",
+              "team": "PSV Eindhoven",
+              "contribution": "35' gol · 53' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "B. Willumsson",
+              "team": "Groningen",
+              "contribution": "9' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "R. Pepi",
+              "team": "PSV Eindhoven",
+              "contribution": "45+3' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "S. Dest",
+              "team": "PSV Eindhoven",
+              "contribution": "56' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "ready",
+          "notes": [
+            "PSV Eindhoven sahaya 4-3-3 dizilişiyle çıktı.",
+            "Groningen sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "PSV Eindhoven topu elinde tutarken Groningen derin blokta savunma yapmayı tercih etti."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
+            "9' Groningen — B. Willumsson: gol",
+            "11' PSV Eindhoven — T. Blokzijl: kendi kalesine gol",
+            "35' PSV Eindhoven — I. Perisic: gol",
+            "45+3' PSV Eindhoven — R. Pepi: penaltı"
+          ],
+          "goals": 4
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
+            "53' PSV Eindhoven — I. Perisic: gol",
+            "56' PSV Eindhoven — S. Dest: gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "PSV Eindhoven maça 4-3-3 dizilişiyle başladı.",
+            "Groningen maça 4-2-3-1 dizilişiyle başladı.",
+            "46' Groningen değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "54' Groningen değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "67' Groningen değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "67' Groningen değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "PSV Eindhoven",
+              "formation": "4-3-3"
+            },
+            {
+              "team": "Groningen",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "PSV Eindhoven, Groningen'i 5-1 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (2-2); eldeki veri sonucun verimlilikle geldiğini gösteriyor.",
+            "PSV Eindhoven, gol beklentisinin 4,23 üzerinde skor üretti."
+          ],
+          "strengths": [
+            "PSV Eindhoven topa daha çok sahip oldu (%66).",
+            "PSV Eindhoven daha çok şut denedi (5-4)."
+          ],
+          "improvements": [
+            "PSV Eindhoven şut isabetinde geride kaldı (%40); bitiricilik geliştirilmesi gereken alan."
+          ],
+          "closing": "PSV Eindhoven sahadan 4 farkla ayrıldı.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "PSV Eindhoven",
+            "score": 59
+          },
+          "away": {
+            "team": "Groningen",
+            "score": 29
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti PSV Eindhoven %40, Groningen %50."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için PSV Eindhoven 35, Groningen 23.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG PSV Eindhoven 0.154, Groningen 0.218. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
+      "publishState": "page"
+    },
     {
       "matchId": "west-brom-burnley-2026-08-23",
       "fixtureId": "1563104",
@@ -45,7 +442,7 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 14
+          "count": 15
         },
         "statistics": {
           "present": true,
@@ -65,7 +462,7 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 14,
+        "events": 15,
         "statistics": 17,
         "lineups": 2,
         "players": 40
@@ -78,11 +475,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "9e96d3ce67586d83",
-      "fingerprint": "9e96d3ce67586d83",
+      "analysisSourceHash": "63e05c0796731d46",
+      "fingerprint": "63e05c0796731d46",
       "analysisGeneratedAt": "2026-08-23T13:09:20.043Z",
-      "analysisUpdatedAt": "2026-08-23T13:09:20.043Z",
-      "generatedAt": "2026-08-23T13:09:20.043Z",
+      "analysisUpdatedAt": "2026-08-23T14:28:36.844Z",
+      "generatedAt": "2026-08-23T14:28:36.844Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -107,7 +504,7 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
           "status": "ready",
@@ -145,7 +542,7 @@
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Son bölümde 3 olay kaydedildi, gol yok.",
+          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
           "goals": {
             "home": 0,
             "away": 0
@@ -170,6 +567,13 @@
               "team": "West Brom",
               "type": "Oyuncu değişikliği",
               "detail": "H. Whitwell",
+              "decisive": false
+            },
+            {
+              "minute": "90+4'",
+              "team": "West Brom",
+              "type": "Oyuncu değişikliği",
+              "detail": "J. Molumby",
               "decisive": false
             }
           ]
@@ -222,10 +626,10 @@
         "secondHalf": {
           "status": "ready",
           "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (10 olay).",
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
             "46' West Brom — I. Price: gol",
             "65' West Brom — I. Price: penaltı",
-            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
           ],
           "goals": 2
         },
@@ -260,10 +664,10 @@
           ],
           "strengths": [
             "West Brom topa daha çok sahip oldu (%51).",
-            "West Brom daha çok şut denedi (11-10)."
+            "Burnley daha çok şut denedi (11-11)."
           ],
           "improvements": [
-            "Burnley şut isabetinde geride kaldı (%30); bitiricilik geliştirilmesi gereken alan."
+            "Burnley şut isabetinde geride kaldı (%27); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "West Brom sahadan 2 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -275,7 +679,7 @@
           },
           "away": {
             "team": "Burnley",
-            "score": 45
+            "score": 46
           },
           "confidence": 100
         },
@@ -284,7 +688,7 @@
             "id": "hucum",
             "title": "Hücum analizi",
             "readings": [
-              "Şut isabeti West Brom %63.6, Burnley %30."
+              "Şut isabeti West Brom %63.6, Burnley %27.3."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -304,7 +708,7 @@
             "id": "kurulus",
             "title": "Kuruluş verimliliği",
             "readings": [
-              "Bir şut üretmek için West Brom 46.1, Burnley 47.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+              "Bir şut üretmek için West Brom 46.2, Burnley 43.5 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -324,7 +728,7 @@
             "id": "sutkalitesi",
             "title": "Şut kalitesi",
             "readings": [
-              "Şut başına xG West Brom 0.149, Burnley 0.112. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+              "Şut başına xG West Brom 0.149, Burnley 0.105. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
             ],
             "confidence": {
               "level": "orta",
@@ -336,8 +740,8 @@
             "title": "Taktik özet",
             "readings": [],
             "confidence": {
-              "level": "orta",
-              "ratio": 0.6666666666666666
+              "level": "sınırlı",
+              "ratio": 0.3333333333333333
             }
           },
           {
