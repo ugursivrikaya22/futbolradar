@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-23T08:35:04.465Z",
+  "updatedAt": "2026-08-23T09:32:47.560Z",
   "matchCount": 808,
   "records": [
     {
@@ -32,10 +32,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 60,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -43,9 +43,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 16
         },
         "statistics": {
           "present": true,
@@ -58,40 +58,31 @@
           "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 16,
         "statistics": 18,
         "lineups": 2,
-        "players": 0
+        "players": 40
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "cab98d33ee99c7ed",
-      "fingerprint": "cab98d33ee99c7ed",
+      "analysisSourceHash": "1b8cc2e1f082af4e",
+      "fingerprint": "1b8cc2e1f082af4e",
       "analysisGeneratedAt": "2026-08-23T05:34:29.530Z",
-      "analysisUpdatedAt": "2026-08-23T08:35:04.414Z",
-      "generatedAt": "2026-08-23T08:35:04.414Z",
+      "analysisUpdatedAt": "2026-08-23T09:32:47.457Z",
+      "generatedAt": "2026-08-23T09:32:47.457Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -103,7 +94,7 @@
       "reportUrl": "./mac-raporu/los-angeles-fc-portland-timbers-2026-08-23.html",
       "digest": {
         "headline": "Los Angeles FC ile Portland Timbers 1-1 berabere kaldı",
-        "paragraph": "Los Angeles FC ile Portland Timbers, BMO Stadium'da oynanan Major League Soccer karşılaşmasında 1-1 berabere kaldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Los Angeles FC ile Portland Timbers, BMO Stadium'da oynanan Major League Soccer karşılaşmasında 1-1 berabere kaldı. Golleri 4. dakikada D. Da Costa (Portland Timbers), 79. dakikada D. Bouanga (Los Angeles FC) kaydetti.",
         "result": {
           "winner": null,
           "loser": null,
@@ -116,22 +107,101 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 2
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "90+3'",
+              "team": "Portland Timbers",
+              "type": "Kırmızı kart",
+              "detail": "V. Janssen",
+              "pivotal": true
+            },
+            {
+              "minute": "4'",
+              "team": "Portland Timbers",
+              "type": "Gol",
+              "detail": "D. Da Costa",
+              "pivotal": true
+            },
+            {
+              "minute": "79'",
+              "team": "Los Angeles FC",
+              "type": "Gol",
+              "detail": "D. Bouanga",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (D. Bouanga), 1 kırmızı kart bu bölümde görüldü.",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Los Angeles FC",
+              "type": "Oyuncu değişikliği",
+              "detail": "M. Choiniere",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "Los Angeles FC",
+              "type": "Oyuncu değişikliği",
+              "detail": "Y. Cheberko",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Los Angeles FC",
+              "type": "Gol",
+              "detail": "D. Bouanga",
+              "decisive": true
+            },
+            {
+              "minute": "86'",
+              "team": "Los Angeles FC",
+              "type": "Sarı kart",
+              "detail": "D. Bouanga",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "D. Da Costa",
+              "team": "Portland Timbers",
+              "contribution": "4' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "D. Bouanga",
+              "team": "Los Angeles FC",
+              "contribution": "79' gol · 86' sarı kart",
+              "impact": "orta"
+            },
+            {
+              "name": "K. Kelsy",
+              "team": "Portland Timbers",
+              "contribution": "31' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "M. Choiniere",
+              "team": "Los Angeles FC",
+              "contribution": "16' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
           "status": "ready",
@@ -142,20 +212,32 @@
           ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "4' Portland Timbers — D. Da Costa: gol",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
+            "79' Los Angeles FC — D. Bouanga: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Los Angeles FC maça 4-3-3 dizilişiyle başladı.",
-            "Portland Timbers maça 4-2-3-1 dizilişiyle başladı."
+            "Portland Timbers maça 4-2-3-1 dizilişiyle başladı.",
+            "20' Los Angeles FC değişikliği (Substitution 1). Değişiklikten sonra Los Angeles FC adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "54' Portland Timbers değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "54' Portland Timbers değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "56' Portland Timbers değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
           "formations": [
             {
@@ -167,7 +249,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -179,7 +261,8 @@
             "Los Angeles FC daha çok şut denedi (34-8)."
           ],
           "improvements": [
-            "Portland Timbers şut isabetinde geride kaldı (%25); bitiricilik geliştirilmesi gereken alan."
+            "Portland Timbers şut isabetinde geride kaldı (%25); bitiricilik geliştirilmesi gereken alan.",
+            "Kırmızı kart maçın seyrini etkiledi (90+3' Portland Timbers)."
           ],
           "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
           "basis": "statistics+events"
@@ -277,15 +360,21 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
         "signals",
         "statistics",
         "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 50,
-      "dataStatus": "partial",
+      "coverage": 93,
+      "dataStatus": "complete",
       "intelligenceCoverage": 70,
       "publishState": "page"
     },
@@ -317,10 +406,10 @@
       "winner": "San Diego",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 60,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -333,9 +422,9 @@
           "count": 16
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 17
         },
         "lineups": {
           "present": true,
@@ -343,40 +432,31 @@
           "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
         "events": 16,
-        "statistics": 0,
+        "statistics": 17,
         "lineups": 2,
-        "players": 0
+        "players": 40
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "b6ec872b68492889",
-      "fingerprint": "b6ec872b68492889",
+      "analysisSourceHash": "cf16d79e09f9d6bd",
+      "fingerprint": "cf16d79e09f9d6bd",
       "analysisGeneratedAt": "2026-08-23T05:34:29.530Z",
-      "analysisUpdatedAt": "2026-08-23T08:35:04.414Z",
-      "generatedAt": "2026-08-23T08:35:04.414Z",
+      "analysisUpdatedAt": "2026-08-23T09:32:47.457Z",
+      "generatedAt": "2026-08-23T09:32:47.457Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -547,26 +627,106 @@
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "San Diego, Colorado Rapids'i 3-0 yendi."
+            "San Diego, Colorado Rapids'i 3-0 yendi.",
+            "İsabetli şutta da öndeydi (4-2); sonuç üretilen pozisyonla uyumlu.",
+            "San Diego, gol beklentisinin 1,81 üzerinde skor üretti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Colorado Rapids topa daha çok sahip oldu (%50).",
+            "Colorado Rapids daha çok şut denedi (6-9)."
+          ],
+          "improvements": [
+            "Colorado Rapids şut isabetinde geride kaldı (%22); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "San Diego sahadan 3 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "San Diego",
+            "score": 65
+          },
+          "away": {
+            "team": "Colorado Rapids",
+            "score": 32
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti San Diego %66.7, Colorado Rapids %22.2."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için San Diego 84.5, Colorado Rapids 55.9 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG San Diego 0.198, Colorado Rapids 0.048. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.3333333333333333
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -576,16 +736,19 @@
         "summary",
         "standoutPlayers",
         "momentum",
+        "signals",
+        "statistics",
         "firstHalf",
         "secondHalf",
         "turningPoints",
         "lateGame",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 64,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
@@ -667,11 +830,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "e4a50d830c8795d1",
-      "fingerprint": "e4a50d830c8795d1",
+      "analysisSourceHash": "97a9ac8dbce2cf3c",
+      "fingerprint": "97a9ac8dbce2cf3c",
       "analysisGeneratedAt": "2026-08-23T05:34:29.530Z",
-      "analysisUpdatedAt": "2026-08-23T08:35:04.414Z",
-      "generatedAt": "2026-08-23T08:35:04.414Z",
+      "analysisUpdatedAt": "2026-08-23T09:32:47.457Z",
+      "generatedAt": "2026-08-23T09:32:47.457Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
