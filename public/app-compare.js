@@ -2561,6 +2561,33 @@
   }
 
   /**
+   * BAYAT CANLI KORUMASI — services/featuredMatchSelector.js ve
+   * services/matchStatus.js#liveVerdict ile AYNI eşik (150 dk).
+   *
+   * Sağlayıcı bir maçı hiç "FINISHED"e çevirmezse ham `isLiveMatch` o maçı
+   * GÜNLERCE canlı sayar ve "günün başlıkları" bölümünde en üstte asılı
+   * kalır — tam olarak eski maçın güncelmiş gibi gösterilmesi hatası.
+   * Burada da yalnızca YAŞ denetlenir; skor kapısı `isLiveMatch` içinde var.
+   */
+  var DAILY_HEADLINE_LIVE_GRACE_MS = 150 * 60 * 1000;
+
+  function dailyHeadlineKickoffMs(match) {
+    var raw = headlineText(match && (match.kickoff || match.date || match.utcDate));
+    if (!raw || (raw.indexOf("T") === -1 && raw.indexOf(":") === -1)) {
+      return NaN;
+    }
+    var parsed = Date.parse(raw);
+    return Number.isNaN(parsed) ? NaN : parsed;
+  }
+
+  function isFreshLiveMatch(match, nowMs) {
+    if (!isLiveMatch(match)) return false;
+    var kickoff = dailyHeadlineKickoffMs(match);
+    if (!isFinite(kickoff) || !isFinite(nowMs)) return true;
+    return nowMs - kickoff <= DAILY_HEADLINE_LIVE_GRACE_MS;
+  }
+
+  /**
    * GÜNÜN ÜÇ BAŞLIĞI — kural services/dailyHeadlines.js ile aynı.
    *
    * Kancası olmayan aday DÜŞER: "analiz yakında" gibi içi boş bir satır
@@ -2572,18 +2599,22 @@
     var reports = Array.isArray(settings.reports) ? settings.reports : [];
     var day = headlineText(settings.today);
     var limit = isFinite(settings.limit) ? Math.max(0, settings.limit) : DAILY_HEADLINE_LIMIT;
+    var nowMs = isFinite(settings.nowMs) ? settings.nowMs : Date.now();
     var candidates = [];
 
     list.forEach(function (match) {
       if (!match || typeof match !== "object") return;
 
-      if (isLiveMatch(match)) {
+      if (isFreshLiveMatch(match, nowMs)) {
         var live = withHeadlineRelevance(liveHeadlineOf(match, reports), match);
         if (live) candidates.push(live);
         return;
       }
 
-      if (isFinishedMatch(match)) {
+      // Bayat canlı (sağlayıcı hâlâ "LIVE" diyor ama başlama üzerinden 150
+      // dakikadan uzun süre geçmiş) biten maç muamelesi görür: bu artık
+      // güvenilir bir "canlı" iddiası değil, muhtemelen bitmiş bir sonuçtur.
+      if (isFinishedMatch(match) || isLiveMatch(match)) {
         if (!headlineIsOnDay(match, day)) return;
         var finished = withHeadlineRelevance(finishedHeadlineOf(match, reports), match);
         if (finished) candidates.push(finished);
@@ -3094,10 +3125,22 @@
     return '<span class="superlig-strip-kicker">Süper Lig\'de Bugün</span><div class="superlig-strip-rail">' + rows + '</div>';
   }
 
+  /**
+   * Mobilde ekran dar: "daha fazla göster"e basmadan görünen pencere
+   * masaüstünden çok daha az kart taşır. 760px eşiği page.css'teki baskın
+   * mobil kırılma noktasıyla aynı (bkz. `.fixture-card` @media kuralları).
+   */
+  function isMobileViewport() {
+    return typeof window !== "undefined" && typeof window.matchMedia === "function" &&
+      window.matchMedia("(max-width: 760px)").matches;
+  }
+
   function renderTodayMatchesPreview(matches) {
     if (!Array.isArray(matches) || !matches.length) {
       return "";
     }
+
+    var prioritizeTurkish = isMobileViewport();
 
     var ordered = matches.slice().sort(function (left, right) {
       function rank(match) {
@@ -3107,7 +3150,18 @@
         return 2;
       }
 
-      return rank(left) - rank(right) || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
+      var rankGap = rank(left) - rank(right);
+      if (rankGap !== 0) return rankGap;
+
+      // Mobilde dar pencere Türk takımı maçlarını "daha fazla göster"
+      // düğmesinin arkasına düşürebiliyordu; aynı bantta Türk takımı
+      // maçı önce gelir. Masaüstünde davranış değişmez.
+      if (prioritizeTurkish) {
+        var turkishGap = (isTurkishMatch(left) ? 0 : 1) - (isTurkishMatch(right) ? 0 : 1);
+        if (turkishGap !== 0) return turkishGap;
+      }
+
+      return String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
     });
 
     // Sekiz kart, yoğun bir Avrupa gecesinde günün yarısını gizliyordu. On iki
