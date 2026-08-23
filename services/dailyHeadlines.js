@@ -30,7 +30,7 @@
 // değil — içeride `matchState(match)` çağırıyorlar ve o da canlı-zaman aşımı
 // gibi kayda bağlı kuralları uyguluyor. Bunlara kanonik durum dizesi
 // geçirmek sessizce her zaman `false` döndürür.
-const { isFinishedStatus, isLiveStatus, istanbulDay } = require("./matchStatus");
+const { isFinishedStatus, isLiveStatus, istanbulDay, liveVerdict } = require("./matchStatus");
 const { isTurkishMatch } = require("./turkishTeams");
 
 /** Ekranda en fazla kaç başlık? Üç, "seçilmiş" ile "liste" arasındaki sınır. */
@@ -313,6 +313,7 @@ function buildDailyHeadlines(matches, options = {}) {
   const reports = Array.isArray(options.reports) ? options.reports : [];
   const day = text(options.today);
   const limit = Number.isFinite(options.limit) ? Math.max(0, options.limit) : MAX_HEADLINES;
+  const nowMs = Number.isFinite(options.nowMs) ? options.nowMs : Date.now();
 
   const candidates = [];
 
@@ -328,15 +329,19 @@ function buildDailyHeadlines(matches, options = {}) {
     if (!match || typeof match !== "object") continue;
 
     // Canlı maç güne bakılmaksızın alınır: gece yarısını geçen bir maç hâlâ
-    // sahadadır ve "bugün" filtresi onu haksız yere elerdi.
-    if (isLiveStatus(match)) {
+    // sahadadır ve "bugün" filtresi onu haksız yere elerdi. Ama BAYAT canlı
+    // (sağlayıcı bir maçı hiç "FINISHED"e çevirmemiş) aynı korumadan geçer:
+    // services/matchStatus.js#liveVerdict, başlama üzerinden 150 dakikadan
+    // uzun süre geçmişse canlı iddiasını reddeder.
+    if (isLiveStatus(match) && liveVerdict(match, { nowMs }).live) {
       const headline = withRelevance(liveHeadline(match, reports), match);
       if (headline) candidates.push(headline);
       continue;
     }
 
-    if (isFinishedStatus(match)) {
+    if (isFinishedStatus(match) || isLiveStatus(match)) {
       // Biten maç için pencere bugün: dünkü sonuçlar "günün başlığı" değil.
+      // Bayat canlı da buraya düşer — muhtemelen bitmiş, sonucu güvenilmez.
       if (!isOnDay(match, day)) continue;
       const headline = withRelevance(finishedHeadline(match, reports), match);
       if (headline) candidates.push(headline);
