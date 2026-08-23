@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-23T03:56:05.324Z",
+  "updatedAt": "2026-08-23T04:08:21.538Z",
   "items": [
     {
       "id": "auto-news-32b2d715f76da3a45a53",
@@ -245,33 +245,13 @@
       }
     },
     {
-      "id": "auto-news-309f9809e813f75200ce",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "İlhan Palut'tan Adil Demirbağ için Fenerbahçe iddiasına yanıt!",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-22T22:15:21.000Z",
-      "source": {
-        "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/konyaspor/2026/08/22/ilhan-paluttan-adil-demirbag-icin-fenerbahce-iddiasina-yanit",
-        "publisher": "fotomac.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fotomac",
-        "priority": 8,
-        "status": "RUMOUR"
-      }
-    },
-    {
       "id": "auto-news-0a6dabc0ac42abfa11d2",
       "category": "club-agenda",
       "confidence": "reported",
       "section": "news",
       "text": "Fenerbahçe'de Yıldırım-Kartal-Asensio toplantısı! İşte konuşulanlar...",
       "team": "Fenerbahçe",
-      "timestamp": "2026-08-22T13:47:57.000Z",
+      "timestamp": "2026-08-22T22:49:59.000Z",
       "source": {
         "name": "fotomac",
         "url": "https://www.fotomac.com.tr/fenerbahce/2026/08/22/fenerbahcede-yildirim-kartal-asensio-toplantisi-iste-konusulanlar",
@@ -305,6 +285,46 @@
       }
     },
     {
+      "id": "auto-news-e957ea2d64801e3ee0ab",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Fırtına galibiyet peşinde! Başakşehir maçının muhtemel 11'i belli oldu",
+      "team": "Başakşehir",
+      "timestamp": "2026-08-22T20:42:44.000Z",
+      "source": {
+        "name": "fotomac",
+        "url": "https://www.fotomac.com.tr/trabzonspor/2026/08/23/firtina-galibiyet-pesinde-basaksehir-macinin-muhtemel-11i-belli-oldu",
+        "publisher": "fotomac.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fotomac",
+        "priority": 8,
+        "status": "REPORTED"
+      }
+    },
+    {
+      "id": "auto-news-e303649efa691af0924c",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Beşiktaş'ta hedef ligde 2'de 2! İşte Italiano'nun Corendon Alanyaspor maçı muhtemel 11'i",
+      "team": "Alanyaspor",
+      "timestamp": "2026-08-22T20:36:07.000Z",
+      "source": {
+        "name": "fotomac",
+        "url": "https://www.fotomac.com.tr/besiktas/2026/08/23/besiktasta-hedef-ligde-2de-2-iste-italianonun-corendon-alanyaspor-maci-muhtemel-11i",
+        "publisher": "fotomac.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fotomac",
+        "priority": 8,
+        "status": "REPORTED"
+      }
+    },
+    {
       "id": "auto-news-2f419d464e45b141d23d",
       "category": "official",
       "confidence": "confirmed",
@@ -321,26 +341,6 @@
         "source": "rss",
         "feed": "super-lig",
         "priority": 5,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-0a227ecccfbc84a830a1",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "First timers one step away from league phases after play-off first legs",
-      "team": "Avrupa futbolu",
-      "timestamp": "2026-08-21T14:54:43.000Z",
-      "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxOempEc01nZjdiTWRramMwZjhSclo4Tkt1VTIwSGloMEpCZ0c0emJoLWpoYlc3ODZkXzNEak9XTmlMbFpQTFU0d000Rmw4ZUhGc2theTNXTnpGX2dHcG81enVYVW01RXVRWndVX1pJM0pBeFRsdENDTl91Tnd3MXJTS1NRY2VFaHZycTVaVWxMTVl2b25vSVdPSmJIWmt6X3dPZjEtMTJjYm90ZDFBXzU4Rm9wUWZySkcxaWV6c3FoT0pvLV90T0dGdU1XNA?oc=5",
-        "publisher": "uefa.com"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "uefa",
-        "priority": 9,
         "status": "OFFICIAL"
       }
     },
