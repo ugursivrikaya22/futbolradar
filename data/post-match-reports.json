@@ -1,9 +1,814 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-23T14:28:36.889Z",
-  "matchCount": 813,
+  "updatedAt": "2026-08-23T15:27:35.587Z",
+  "matchCount": 816,
   "records": [
+    {
+      "matchId": "angers-lille-2026-08-23",
+      "fixtureId": "1552729",
+      "provider": "api-football",
+      "slug": "angers-lille-2026-08-23",
+      "kickoff": "2026-08-23T16:00:00+03:00",
+      "kickoffUtc": "2026-08-23T13:00:00.000Z",
+      "kickoffLocal": "2026-08-23T16:00",
+      "date": "2026-08-23",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Ligue 1",
+      "competition": "Ligue 1",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Angers",
+      "awayTeam": "Lille",
+      "venue": "Stade Raymond-Kopa",
+      "score": {
+        "home": 0,
+        "away": 2
+      },
+      "finalScore": "0-2",
+      "winner": "Lille",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 17
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 17
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 40
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 17,
+        "statistics": 17,
+        "lineups": 2,
+        "players": 40
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "1584a8a9d38bf312",
+      "fingerprint": "1584a8a9d38bf312",
+      "analysisGeneratedAt": "2026-08-23T15:27:35.533Z",
+      "analysisUpdatedAt": "2026-08-23T15:27:35.533Z",
+      "generatedAt": "2026-08-23T15:27:35.533Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Angers 0-2 Lille maç raporu: Ligue 1 istatistikleri | FutbolRadar",
+        "description": "Stade Raymond-Kopa'da oynanan Ligue 1 maçını Lille 2-0 kazandı; Angers sahadan puansız ayrıldı.",
+        "path": "mac-raporu/angers-lille-2026-08-23.html",
+        "competition": "Ligue 1"
+      },
+      "reportUrl": "./mac-raporu/angers-lille-2026-08-23.html",
+      "digest": {
+        "headline": "Lille, Angers'i 2-0 yendi",
+        "paragraph": "Stade Raymond-Kopa'da oynanan Ligue 1 maçını Lille 2-0 kazandı; Angers sahadan puansız ayrıldı. Golleri 11. dakikada O. Giroud (Lille), 31. dakikada T. Santos (Lille) kaydetti.",
+        "result": {
+          "winner": "Lille",
+          "loser": "Angers",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "11'",
+              "team": "Lille",
+              "type": "Gol",
+              "detail": "O. Giroud",
+              "pivotal": true
+            },
+            {
+              "minute": "31'",
+              "team": "Lille",
+              "type": "Gol",
+              "detail": "T. Santos",
+              "pivotal": true
+            },
+            {
+              "minute": "79'",
+              "team": "Lille",
+              "type": "Gol",
+              "detail": "T. Santos",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 6 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Lille",
+              "type": "Oyuncu değişikliği",
+              "detail": "H. Haraldsson",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "Lille",
+              "type": "Oyuncu değişikliği",
+              "detail": "R. Perraud",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Lille",
+              "type": "Gol",
+              "detail": "T. Santos",
+              "decisive": true
+            },
+            {
+              "minute": "85'",
+              "team": "Angers",
+              "type": "Oyuncu değişikliği",
+              "detail": "L. Raolisoa",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "T. Santos",
+              "team": "Lille",
+              "contribution": "31' gol · 79' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "O. Giroud",
+              "team": "Lille",
+              "contribution": "11' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. Bermont",
+              "team": "Angers",
+              "contribution": "22' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "H. Haraldsson",
+              "team": "Lille",
+              "contribution": "72' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "Angers sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Lille sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "11' Lille — O. Giroud: gol",
+            "31' Lille — T. Santos: gol"
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Angers maça 4-2-3-1 dizilişiyle başladı.",
+            "Lille maça 4-2-3-1 dizilişiyle başladı.",
+            "57' Lille değişikliği (Substitution 1). Değişiklikten sonra Lille adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "57' Angers değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "63' Lille değişikliği (Substitution 2). Değişiklikten sonra Lille adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "63' Lille değişikliği (Substitution 3). Değişiklikten sonra Lille adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Angers",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Lille",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Lille, Angers'i 0-2 yendi.",
+            "İsabetli şutta da öndeydi (6-2); sonuç üretilen pozisyonla uyumlu.",
+            "Lille, gol beklentisinin 0,99 üzerinde skor üretti."
+          ],
+          "strengths": [
+            "Angers topa daha çok sahip oldu (%55).",
+            "Angers daha çok şut denedi (12-9)."
+          ],
+          "improvements": [
+            "Angers şut isabetinde geride kaldı (%17); bitiricilik geliştirilmesi gereken alan."
+          ],
+          "closing": "Lille sahadan 2 farkla ayrıldı.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "Angers",
+            "score": 48
+          },
+          "away": {
+            "team": "Lille",
+            "score": 67
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Angers %16.7, Lille %66.7."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Angers 29.8, Lille 34.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Angers 0.112, Lille 0.112. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
+      "publishState": "page"
+    },
+    {
+      "matchId": "brighton-aston-villa-2026-08-23",
+      "fixtureId": "1557373",
+      "provider": "api-football",
+      "slug": "brighton-aston-villa-2026-08-23",
+      "kickoff": "2026-08-23T16:00:00+03:00",
+      "kickoffUtc": "2026-08-23T13:00:00.000Z",
+      "kickoffLocal": "2026-08-23T16:00",
+      "date": "2026-08-23",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Premier League",
+      "competition": "Premier League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Brighton",
+      "awayTeam": "Aston Villa",
+      "venue": "American Express Stadium",
+      "score": {
+        "home": 4,
+        "away": 0
+      },
+      "finalScore": "4-0",
+      "winner": "Brighton",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 60,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 1,
+        "statistics": 0,
+        "lineups": 2,
+        "players": 0
+      },
+      "dataCompleteness": 0.6,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "c33f125c25d3ed23",
+      "fingerprint": "c33f125c25d3ed23",
+      "analysisGeneratedAt": "2026-08-23T15:27:35.533Z",
+      "analysisUpdatedAt": "2026-08-23T15:27:35.533Z",
+      "generatedAt": "2026-08-23T15:27:35.533Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Brighton 4-0 Aston Villa maç raporu: Premier League istatistikleri | FutbolRadar",
+        "description": "Brighton, American Express Stadium'da oynanan Premier League karşılaşmasında Aston Villa'yı 4-0 mağlup etti.",
+        "path": "mac-raporu/brighton-aston-villa-2026-08-23.html",
+        "competition": "Premier League"
+      },
+      "reportUrl": "./mac-raporu/brighton-aston-villa-2026-08-23.html",
+      "digest": {
+        "headline": "Brighton, Aston Villa'yı 4-0 yendi",
+        "paragraph": "Brighton, American Express Stadium'da oynanan Premier League karşılaşmasında Aston Villa'yı 4-0 mağlup etti. Tek golü 8. dakikada V. Lindelof (Brighton) kaydetti.",
+        "result": {
+          "winner": "Brighton",
+          "loser": "Aston Villa",
+          "draw": false,
+          "margin": 4
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "8'",
+              "team": "Brighton",
+              "type": "Kendi kalesine gol",
+              "detail": "V. Lindelof",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "V. Lindelof",
+              "team": "Brighton",
+              "contribution": "8' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "Brighton sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Aston Villa sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "8' Brighton — V. Lindelof: kendi kalesine gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Brighton maça 4-2-3-1 dizilişiyle başladı.",
+            "Aston Villa maça 4-2-3-1 dizilişiyle başladı."
+          ],
+          "formations": [
+            {
+              "team": "Brighton",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Aston Villa",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Brighton, Aston Villa'yı 4-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Brighton sahadan 4 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 50,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "manchester-city-bournemouth-2026-08-23",
+      "fixtureId": "1557374",
+      "provider": "api-football",
+      "slug": "manchester-city-bournemouth-2026-08-23",
+      "kickoff": "2026-08-23T16:00:00+03:00",
+      "kickoffUtc": "2026-08-23T13:00:00.000Z",
+      "kickoffLocal": "2026-08-23T16:00",
+      "date": "2026-08-23",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Premier League",
+      "competition": "Premier League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Manchester City",
+      "awayTeam": "Bournemouth",
+      "venue": "Etihad Stadium",
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "finalScore": "2-1",
+      "winner": "Manchester City",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 30,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 2,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "f71e95f0c785a9ee",
+      "fingerprint": "f71e95f0c785a9ee",
+      "analysisGeneratedAt": "2026-08-23T15:27:35.533Z",
+      "analysisUpdatedAt": "2026-08-23T15:27:35.533Z",
+      "generatedAt": "2026-08-23T15:27:35.533Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Manchester City 2-1 Bournemouth maç raporu: Premier League istatistikleri | FutbolRadar",
+        "description": "Etihad Stadium'da oynanan Premier League maçını Manchester City 2-1 kazandı; Bournemouth sahadan puansız ayrıldı.",
+        "path": "mac-raporu/manchester-city-bournemouth-2026-08-23.html",
+        "competition": "Premier League"
+      },
+      "reportUrl": "./mac-raporu/manchester-city-bournemouth-2026-08-23.html",
+      "digest": {
+        "headline": "Manchester City, Bournemouth'u 2-1 yendi",
+        "paragraph": "Etihad Stadium'da oynanan Premier League maçını Manchester City 2-1 kazandı; Bournemouth sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Manchester City",
+          "loser": "Bournemouth",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "Manchester City sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Bournemouth sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Manchester City maça 4-2-3-1 dizilişiyle başladı.",
+            "Bournemouth maça 4-2-3-1 dizilişiyle başladı."
+          ],
+          "formations": [
+            {
+              "team": "Manchester City",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Bournemouth",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Manchester City, Bournemouth'u 2-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Manchester City sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 21,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "psv-eindhoven-groningen-2026-08-23",
       "fixtureId": "1552140",
@@ -35,7 +840,7 @@
       "coverageGrade": "full",
       "coverageLabel": "Tam analiz",
       "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 90,
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -58,9 +863,9 @@
           "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 45
         }
       },
       "apiKeyPresent": true,
@@ -68,26 +873,21 @@
         "events": 18,
         "statistics": 16,
         "lineups": 2,
-        "players": 0
+        "players": 45
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "66450f3a5c2df9b9",
-      "fingerprint": "66450f3a5c2df9b9",
+      "analysisSourceHash": "c8915d4cdfd8c6b5",
+      "fingerprint": "c8915d4cdfd8c6b5",
       "analysisGeneratedAt": "2026-08-23T14:28:36.844Z",
-      "analysisUpdatedAt": "2026-08-23T14:28:36.844Z",
-      "generatedAt": "2026-08-23T14:28:36.844Z",
+      "analysisUpdatedAt": "2026-08-23T15:27:35.533Z",
+      "generatedAt": "2026-08-23T15:27:35.533Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -277,15 +1077,15 @@
           "status": "ready",
           "verdict": [
             "PSV Eindhoven, Groningen'i 5-1 yendi.",
-            "İsabetli şutta geride kalmasına rağmen kazandı (2-2); eldeki veri sonucun verimlilikle geldiğini gösteriyor.",
-            "PSV Eindhoven, gol beklentisinin 4,23 üzerinde skor üretti."
+            "İsabetli şutta da öndeydi (12-4); sonuç üretilen pozisyonla uyumlu.",
+            "PSV Eindhoven, gol beklentisinin 0,58 üzerinde skor üretti."
           ],
           "strengths": [
-            "PSV Eindhoven topa daha çok sahip oldu (%66).",
-            "PSV Eindhoven daha çok şut denedi (5-4)."
+            "PSV Eindhoven topa daha çok sahip oldu (%62).",
+            "PSV Eindhoven daha çok şut denedi (24-7)."
           ],
           "improvements": [
-            "PSV Eindhoven şut isabetinde geride kaldı (%40); bitiricilik geliştirilmesi gereken alan."
+            "PSV Eindhoven şut isabetinde geride kaldı (%50); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "PSV Eindhoven sahadan 4 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -293,11 +1093,11 @@
         "aiRating": {
           "home": {
             "team": "PSV Eindhoven",
-            "score": 59
+            "score": 97
           },
           "away": {
             "team": "Groningen",
-            "score": 29
+            "score": 39
           },
           "confidence": 100
         },
@@ -306,7 +1106,7 @@
             "id": "hucum",
             "title": "Hücum analizi",
             "readings": [
-              "Şut isabeti PSV Eindhoven %40, Groningen %50."
+              "Şut isabeti PSV Eindhoven %50, Groningen %57.1."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -326,7 +1126,7 @@
             "id": "kurulus",
             "title": "Kuruluş verimliliği",
             "readings": [
-              "Bir şut üretmek için PSV Eindhoven 35, Groningen 23.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+              "Bir şut üretmek için PSV Eindhoven 23.7, Groningen 50.6 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -346,7 +1146,7 @@
             "id": "sutkalitesi",
             "title": "Şut kalitesi",
             "readings": [
-              "Şut başına xG PSV Eindhoven 0.154, Groningen 0.218. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+              "Şut başına xG PSV Eindhoven 0.184, Groningen 0.156. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
             ],
             "confidence": {
               "level": "orta",
