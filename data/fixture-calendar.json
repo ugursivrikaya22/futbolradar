@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-08-23T10:28:51.692Z",
+  "fetchedAt": "2026-08-23T11:25:24.982Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -388225,7 +388225,7 @@
       "providerLeagueId": "88",
       "round": 3,
       "venue": "De Adelaarshorst",
-      "referee": "S. van der Eijk",
+      "referee": "Sander van der Eijk, Netherlands",
       "kickoff": "2026-08-23T13:15:00+03:00",
       "time": "13:15",
       "homeTeam": "GO Ahead Eagles",
@@ -388233,12 +388233,12 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/410.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/198.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 14,
-      "elapsed": 14,
+      "providerStatus": "2H",
+      "minute": 52,
+      "elapsed": 52,
       "live": true,
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -388257,8 +388257,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-23T10:28:52.778Z",
-      "staleAfter": "2026-08-23T10:33:52.778Z",
+      "fetchedAt": "2026-08-23T11:25:26.102Z",
+      "staleAfter": "2026-08-23T11:30:26.102Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -388268,17 +388268,42 @@
       "competitionId": "eredivisie",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "summary": "GO Ahead Eagles topa sahip olma oranında önde. ADO Den Haag daha fazla şut üretti. Skor üstünlüğü GO Ahead Eagles tarafında.",
+        "confidence": "Yüksek",
         "signals": [
           {
+            "label": "Top hakimiyeti",
+            "value": "55%-45%",
+            "text": "GO Ahead Eagles topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "1-5",
+            "text": "ADO Den Haag daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "1-1",
+            "text": "GO Ahead Eagles isabetli şutlarda önde."
+          },
+          {
+            "label": "Gol beklentisi",
+            "value": "0.18-0.25",
+            "text": "ADO Den Haag daha yüksek pozisyon kalitesi üretti."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "38'",
+            "text": "Son gol 38' S. Tengstedt tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "1-0",
+            "text": "GO Ahead Eagles skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 2,
+        "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "lineups": [
@@ -389786,7 +389811,146 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "38'",
+          "team": {
+            "name": "GO Ahead Eagles"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "S. Tengstedt · Asist: A. Sampsted · Normal Goal",
+          "comments": ""
+        },
+        {
+          "time": "44'",
+          "team": {
+            "name": "GO Ahead Eagles"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "J. Dirksen · Yellow Card",
+          "comments": "Tripping"
+        }
+      ],
+      "statistics": [
+        {
+          "category": "Hücum",
+          "type": "İsabetli şut",
+          "home": 1,
+          "away": 1,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 0,
+          "away": 1
+        },
+        {
+          "category": "Hücum",
+          "type": "Toplam şut",
+          "home": 1,
+          "away": 5,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 0,
+          "away": 3
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası içinden şut",
+          "home": 1,
+          "away": 2,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası dışından şut",
+          "home": 0,
+          "away": 3
+        },
+        {
+          "category": "Disiplin",
+          "type": "Faul",
+          "home": 6,
+          "away": 6
+        },
+        {
+          "category": "Genel",
+          "type": "Korner",
+          "home": 1,
+          "away": 2
+        },
+        {
+          "category": "Genel",
+          "type": "Ofsayt",
+          "home": 0,
+          "away": 1
+        },
+        {
+          "category": "Genel",
+          "type": "Topla oynama",
+          "home": 55,
+          "away": 45,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Disiplin",
+          "type": "Sarı kart",
+          "home": 1,
+          "away": 0
+        },
+        {
+          "category": "Savunma",
+          "type": "Kurtarış",
+          "home": 1,
+          "away": 0
+        },
+        {
+          "category": "Pas",
+          "type": "Toplam pas",
+          "home": 261,
+          "away": 215,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "İsabetli pas",
+          "home": 216,
+          "away": 175,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "Pas isabeti",
+          "home": 83,
+          "away": 81,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Genel",
+          "type": "Gol beklentisi (xG)",
+          "home": 0.18,
+          "away": 0.25,
+          "decimals": 2,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Savunma",
+          "type": "Önlenen gol",
+          "home": -0.48,
+          "away": -0.48,
+          "decimals": 2,
+          "higherIsBetter": true
+        }
+      ]
     },
     {
       "id": "binh-duong-ho-chi-minh-2026-08-23",
@@ -389802,13 +389966,13 @@
       "awayTeam": "Ho Chi Minh",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3668.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3672.png",
-      "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 4,
-      "elapsed": 4,
+      "status": "HALFTIME",
+      "providerStatus": "HT",
+      "minute": 45,
+      "elapsed": 45,
       "live": true,
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -389827,8 +389991,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-23T10:28:52.778Z",
-      "staleAfter": "2026-08-23T10:33:52.778Z",
+      "fetchedAt": "2026-08-23T11:25:26.102Z",
+      "staleAfter": "2026-08-23T11:30:26.102Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -389838,17 +390002,22 @@
       "competitionId": "hazirlik-maci",
       "analysis": {
         "title": "Canlı Radar Analizi",
-        "summary": "Skor dengede.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 34' Normal Goal tarafından kaydedildi. Binh Duong skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Binh Duong tarafında.",
+        "confidence": "Orta",
         "signals": [
           {
+            "label": "Gol akışı",
+            "value": "34'",
+            "text": "Son gol 34' Normal Goal tarafından kaydedildi."
+          },
+          {
             "label": "Canlı skor",
-            "value": "0-0",
-            "text": "Skor dengede."
+            "value": "1-0",
+            "text": "Binh Duong skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 1,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -391215,7 +391384,19 @@
             }
           }
         ]
-      }
+      },
+      "events": [
+        {
+          "time": "34'",
+          "team": {
+            "name": "Binh Duong"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": ""
+        }
+      ]
     },
     {
       "id": "west-brom-burnley-2026-08-23",
@@ -391231,14 +391412,14 @@
       "awayTeam": "Burnley",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/60.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/44.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 25,
+      "elapsed": 25,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -391256,8 +391437,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-23T10:28:52.778Z",
-      "staleAfter": "2026-08-23T10:33:52.778Z",
+      "fetchedAt": "2026-08-23T11:25:26.102Z",
+      "staleAfter": "2026-08-23T11:30:26.102Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -391266,12 +391447,43 @@
       },
       "competitionId": "championship",
       "analysis": {
-        "title": "Maç Radar Analizi",
-        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
-        "confidence": "Sınırlı",
-        "signals": [],
-        "eventCount": 0,
-        "dataPoints": 0,
+        "title": "Canlı Radar Analizi",
+        "summary": "Burnley topa sahip olma oranında önde. West Brom daha fazla şut üretti.",
+        "confidence": "Yüksek",
+        "signals": [
+          {
+            "label": "Top hakimiyeti",
+            "value": "44%-56%",
+            "text": "Burnley topa sahip olma oranında önde."
+          },
+          {
+            "label": "Şut hacmi",
+            "value": "1-0",
+            "text": "West Brom daha fazla şut üretti."
+          },
+          {
+            "label": "Kaleyi bulan",
+            "value": "1-0",
+            "text": "West Brom isabetli şutlarda önde."
+          },
+          {
+            "label": "Gol beklentisi",
+            "value": "0.12-0.00",
+            "text": "West Brom daha yüksek pozisyon kalitesi üretti."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "18'",
+            "text": "Son gol 18' H. Whitwell tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-1",
+            "text": "Skor dengede."
+          }
+        ],
+        "eventCount": 2,
+        "dataPoints": 6,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -392643,7 +392855,434 @@
             }
           }
         ]
-      }
+      },
+      "lineups": [
+        {
+          "team": "West Brom",
+          "formation": "4-4-2",
+          "players": [
+            "Max O'Leary",
+            "Nolan Galves",
+            "Nathaniel Phillips",
+            "George Campbell",
+            "Callum Styles",
+            "Jayson Molumby",
+            "Ousmane Diakité",
+            "Felix Horn Myhre",
+            "Isaac Price",
+            "Harry Whitwell",
+            "Jimmy Morgan"
+          ],
+          "substitutes": [
+            "Matt Ingram",
+            "Alex Williams",
+            "Chris Mepham",
+            "Krystian Bielik",
+            "Conor Townsend",
+            "Rabby Nzingoula",
+            "Oliver Bostock",
+            "Barney Stewart",
+            "Tammer Bany"
+          ],
+          "startingDetails": [
+            {
+              "name": "Max O'Leary",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Nolan Galves",
+              "number": 25,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Nathaniel Phillips",
+              "number": 3,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "George Campbell",
+              "number": 6,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Callum Styles",
+              "number": 4,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Jayson Molumby",
+              "number": 8,
+              "position": "M",
+              "grid": "3:4"
+            },
+            {
+              "name": "Ousmane Diakité",
+              "number": 17,
+              "position": "M",
+              "grid": "3:3"
+            },
+            {
+              "name": "Felix Horn Myhre",
+              "number": 7,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Isaac Price",
+              "number": 21,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Harry Whitwell",
+              "number": 29,
+              "position": "F",
+              "grid": "4:2"
+            },
+            {
+              "name": "Jimmy Morgan",
+              "number": 11,
+              "position": "F",
+              "grid": "4:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Matt Ingram",
+              "number": 13,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Alex Williams",
+              "number": 28,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Chris Mepham",
+              "number": 2,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Krystian Bielik",
+              "number": 5,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Conor Townsend",
+              "number": 22,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Rabby Nzingoula",
+              "number": 20,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Oliver Bostock",
+              "number": 37,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Barney Stewart",
+              "number": 9,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Tammer Bany",
+              "number": 23,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        },
+        {
+          "team": "Burnley",
+          "formation": "4-2-3-1",
+          "players": [
+            "Max Weiss",
+            "Oliver Sonne",
+            "Kyle Walker",
+            "Max Alleyne",
+            "Bashir Humphreys",
+            "Josh Laurent",
+            "Hannibal Mejbri",
+            "Marcus Edwards",
+            "Aaron Ramsey",
+            "Jacob Bruun Larsen",
+            "Armando Broja"
+          ],
+          "substitutes": [
+            "Grégoire Coudert",
+            "Anel Ahmedhodžić",
+            "Joe Worrall",
+            "Connor Roberts",
+            "Lucas Pires",
+            "Mike Trésor",
+            "Ugo Raghouber",
+            "Zeki Amdouni",
+            "Dastan Satpaev"
+          ],
+          "startingDetails": [
+            {
+              "name": "Max Weiss",
+              "number": 1,
+              "position": "G",
+              "grid": "1:1"
+            },
+            {
+              "name": "Oliver Sonne",
+              "number": 22,
+              "position": "D",
+              "grid": "2:4"
+            },
+            {
+              "name": "Kyle Walker",
+              "number": 2,
+              "position": "D",
+              "grid": "2:3"
+            },
+            {
+              "name": "Max Alleyne",
+              "number": 3,
+              "position": "D",
+              "grid": "2:2"
+            },
+            {
+              "name": "Bashir Humphreys",
+              "number": 6,
+              "position": "D",
+              "grid": "2:1"
+            },
+            {
+              "name": "Josh Laurent",
+              "number": 29,
+              "position": "M",
+              "grid": "3:2"
+            },
+            {
+              "name": "Hannibal Mejbri",
+              "number": 28,
+              "position": "M",
+              "grid": "3:1"
+            },
+            {
+              "name": "Marcus Edwards",
+              "number": 10,
+              "position": "M",
+              "grid": "4:3"
+            },
+            {
+              "name": "Aaron Ramsey",
+              "number": 21,
+              "position": "M",
+              "grid": "4:2"
+            },
+            {
+              "name": "Jacob Bruun Larsen",
+              "number": 7,
+              "position": "M",
+              "grid": "4:1"
+            },
+            {
+              "name": "Armando Broja",
+              "number": 27,
+              "position": "F",
+              "grid": "5:1"
+            }
+          ],
+          "substituteDetails": [
+            {
+              "name": "Grégoire Coudert",
+              "number": 37,
+              "position": "G",
+              "grid": null
+            },
+            {
+              "name": "Anel Ahmedhodžić",
+              "number": 15,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Joe Worrall",
+              "number": 4,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Connor Roberts",
+              "number": 14,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Lucas Pires",
+              "number": 23,
+              "position": "D",
+              "grid": null
+            },
+            {
+              "name": "Mike Trésor",
+              "number": 31,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Ugo Raghouber",
+              "number": 8,
+              "position": "M",
+              "grid": null
+            },
+            {
+              "name": "Zeki Amdouni",
+              "number": 11,
+              "position": "F",
+              "grid": null
+            },
+            {
+              "name": "Dastan Satpaev",
+              "number": 12,
+              "position": "F",
+              "grid": null
+            }
+          ]
+        }
+      ],
+      "events": [
+        {
+          "time": "8'",
+          "team": {
+            "name": "Burnley"
+          },
+          "type": "Goal",
+          "detail": "Own Goal",
+          "value": "C. Styles · Own Goal",
+          "comments": ""
+        },
+        {
+          "time": "18'",
+          "team": {
+            "name": "West Brom"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "H. Whitwell · Asist: J. Morgan · Normal Goal",
+          "comments": ""
+        }
+      ],
+      "statistics": [
+        {
+          "category": "Hücum",
+          "type": "İsabetli şut",
+          "home": 1,
+          "away": 0,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "İsabetsiz şut",
+          "home": 0,
+          "away": 0
+        },
+        {
+          "category": "Hücum",
+          "type": "Toplam şut",
+          "home": 1,
+          "away": 0,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Engellenen şut",
+          "home": 0,
+          "away": 0
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası içinden şut",
+          "home": 1,
+          "away": 0,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Hücum",
+          "type": "Ceza sahası dışından şut",
+          "home": 0,
+          "away": 0
+        },
+        {
+          "category": "Disiplin",
+          "type": "Faul",
+          "home": 0,
+          "away": 1
+        },
+        {
+          "category": "Genel",
+          "type": "Topla oynama",
+          "home": 44,
+          "away": 56,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Savunma",
+          "type": "Kurtarış",
+          "home": 0,
+          "away": 1
+        },
+        {
+          "category": "Pas",
+          "type": "Toplam pas",
+          "home": 45,
+          "away": 55,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "İsabetli pas",
+          "home": 39,
+          "away": 45,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Pas",
+          "type": "Pas isabeti",
+          "home": 87,
+          "away": 82,
+          "unit": "%",
+          "higherIsBetter": true
+        },
+        {
+          "category": "Genel",
+          "type": "Gol beklentisi (xG)",
+          "home": 0.12,
+          "away": 0,
+          "decimals": 2,
+          "higherIsBetter": true
+        },
+        {
+          "category": "Savunma",
+          "type": "Önlenen gol",
+          "home": 0.54,
+          "away": 0.54,
+          "decimals": 2,
+          "higherIsBetter": true
+        }
+      ]
     },
     {
       "id": "bergantinos-pontevedra-2026-08-23",
@@ -392684,8 +393323,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-23T10:28:52.778Z",
-      "staleAfter": "2026-08-23T10:33:52.778Z",
+      "fetchedAt": "2026-08-23T11:25:26.102Z",
+      "staleAfter": "2026-08-23T11:30:26.102Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -392701,6 +393340,951 @@
         "eventCount": 0,
         "dataPoints": 0,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": null,
+            "name": null,
+            "comment": null
+          },
+          "win_or_draw": false,
+          "under_over": null,
+          "goals": {
+            "home": null,
+            "away": null
+          },
+          "advice": "No predictions available",
+          "percent": {
+            "home": "33%",
+            "draw": "33%",
+            "away": "33%"
+          }
+        },
+        "league": {
+          "id": 667,
+          "name": "Friendlies Clubs",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/667.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 9383,
+            "name": "Bergantiños",
+            "logo": "https://media.api-sports.io/football/teams/9383.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 9407,
+            "name": "Pontevedra",
+            "logo": "https://media.api-sports.io/football/teams/9407.png",
+            "last_5": {
+              "played": 5,
+              "form": "60%",
+              "att": "100%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 11,
+                  "average": "2.2"
+                },
+                "against": {
+                  "total": 8,
+                  "average": "1.6"
+                }
+              }
+            },
+            "league": {
+              "form": "WLWWL",
+              "fixtures": {
+                "played": {
+                  "home": 2,
+                  "away": 3,
+                  "total": 5
+                },
+                "wins": {
+                  "home": 2,
+                  "away": 1,
+                  "total": 3
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 2,
+                  "total": 2
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 4,
+                    "away": 7,
+                    "total": 11
+                  },
+                  "average": {
+                    "home": "2.0",
+                    "away": "2.3",
+                    "total": "2.2"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 3,
+                      "percentage": "75.00%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 5,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 3,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 4
+                    },
+                    "3.5": {
+                      "over": 1,
+                      "under": 4
+                    },
+                    "4.5": {
+                      "over": 1,
+                      "under": 4
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 2,
+                    "away": 6,
+                    "total": 8
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "2.0",
+                    "total": "1.6"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "46-60": {
+                      "total": 3,
+                      "percentage": "42.86%"
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 4,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 3
+                    },
+                    "2.5": {
+                      "over": 2,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 5
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 5
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 2,
+                  "draws": 0,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": "2-1",
+                  "away": "0-5"
+                },
+                "loses": {
+                  "home": null,
+                  "away": "3-1"
+                },
+                "goals": {
+                  "for": {
+                    "home": 2,
+                    "away": 5
+                  },
+                  "against": {
+                    "home": 1,
+                    "away": 3
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "att": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "def": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "goals": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "total": {
+            "home": "50.0%",
+            "away": "50.0%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1264446,
+              "referee": "Ignacio Bordons",
+              "timezone": "UTC",
+              "date": "2025-03-30T15:00:00+00:00",
+              "timestamp": 1743346800,
+              "periods": {
+                "first": 1743346800,
+                "second": 1743350400
+              },
+              "venue": {
+                "id": 6485,
+                "name": "Estadio As Eiroas",
+                "city": "Carballo"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 2
+              }
+            },
+            "league": {
+              "id": 875,
+              "name": "Segunda División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/875.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2024,
+              "round": "Group 1 - 29",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9383,
+                "name": "Bergantiños",
+                "logo": "https://media.api-sports.io/football/teams/9383.png",
+                "winner": null
+              },
+              "away": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1264293,
+              "referee": "Ignacio Bordons",
+              "timezone": "UTC",
+              "date": "2024-11-16T19:00:00+00:00",
+              "timestamp": 1731783600,
+              "periods": {
+                "first": 1731783600,
+                "second": 1731787200
+              },
+              "venue": {
+                "id": 6508,
+                "name": "Estadio Municipal de Pasarón",
+                "city": "Pontevedra"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 6
+              }
+            },
+            "league": {
+              "id": 875,
+              "name": "Segunda División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/875.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2024,
+              "round": "Group 1 - 12",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": true
+              },
+              "away": {
+                "id": 9383,
+                "name": "Bergantiños",
+                "logo": "https://media.api-sports.io/football/teams/9383.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 797974,
+              "referee": "Sergio Álvarez",
+              "timezone": "UTC",
+              "date": "2022-02-13T16:00:00+00:00",
+              "timestamp": 1644768000,
+              "periods": {
+                "first": 1644768000,
+                "second": 1644771600
+              },
+              "venue": {
+                "id": 6508,
+                "name": "Estadio Municipal de Pasarón",
+                "city": "Pontevedra"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 875,
+              "name": "Segunda División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/875.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2021,
+              "round": "Group 1 - 21",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": false
+              },
+              "away": {
+                "id": 9383,
+                "name": "Bergantiños",
+                "logo": "https://media.api-sports.io/football/teams/9383.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 797827,
+              "referee": "Roberto Carralero",
+              "timezone": "UTC",
+              "date": "2021-09-26T17:00:00+00:00",
+              "timestamp": 1632675600,
+              "periods": {
+                "first": 1632675600,
+                "second": 1632679200
+              },
+              "venue": {
+                "id": 6485,
+                "name": "Estadio As Eiroas",
+                "city": "Carballo"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 875,
+              "name": "Segunda División RFEF - Group 1",
+              "country": "Spain",
+              "logo": "https://media.api-sports.io/football/leagues/875.png",
+              "flag": "https://media.api-sports.io/flags/es.svg",
+              "season": 2021,
+              "round": "Group 1 - 4",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 9383,
+                "name": "Bergantiños",
+                "logo": "https://media.api-sports.io/football/teams/9383.png",
+                "winner": null
+              },
+              "away": {
+                "id": 9407,
+                "name": "Pontevedra",
+                "logo": "https://media.api-sports.io/football/teams/9407.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
       }
     },
     {
@@ -392742,15 +394326,1403 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T22:27:00.751Z",
-      "staleAfter": "2026-08-22T22:32:00.751Z",
+      "fetchedAt": "2026-08-23T11:25:26.102Z",
+      "staleAfter": "2026-08-23T11:30:26.102Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1552140"
       },
-      "competitionId": "eredivisie"
+      "competitionId": "eredivisie",
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "confidence": "Sınırlı",
+        "signals": [],
+        "eventCount": 0,
+        "dataPoints": 0,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 202,
+            "name": "Groningen",
+            "comment": null
+          },
+          "win_or_draw": false,
+          "under_over": "+1.5",
+          "goals": {
+            "home": "-2.5",
+            "away": "-4.5"
+          },
+          "advice": "Combo Winner : Groningen and +1.5 goals",
+          "percent": {
+            "home": "10%",
+            "draw": "45%",
+            "away": "45%"
+          }
+        },
+        "league": {
+          "id": 88,
+          "name": "Eredivisie",
+          "country": "Netherlands",
+          "logo": "https://media.api-sports.io/football/leagues/88.png",
+          "flag": "https://media.api-sports.io/flags/nl.svg",
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 197,
+            "name": "PSV Eindhoven",
+            "logo": "https://media.api-sports.io/football/teams/197.png",
+            "last_5": {
+              "played": 2,
+              "form": "67%",
+              "att": "19%",
+              "def": "86%",
+              "goals": {
+                "for": {
+                  "total": 4,
+                  "average": "2.0"
+                },
+                "against": {
+                  "total": 3,
+                  "average": "1.5"
+                }
+              }
+            },
+            "league": {
+              "form": "DW",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "draws": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 2,
+                    "away": 2,
+                    "total": 4
+                  },
+                  "average": {
+                    "home": "2.0",
+                    "away": "2.0",
+                    "total": "2.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": 2,
+                      "percentage": "50.00%"
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 2,
+                    "away": 1,
+                    "total": 3
+                  },
+                  "average": {
+                    "home": "2.0",
+                    "away": "1.0",
+                    "total": "1.5"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 1,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": "1-2"
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 2,
+                    "away": 2
+                  },
+                  "against": {
+                    "home": 2,
+                    "away": 1
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [
+                {
+                  "formation": "4-2-3-1",
+                  "played": 1
+                },
+                {
+                  "formation": "4-3-3",
+                  "played": 1
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 202,
+            "name": "Groningen",
+            "logo": "https://media.api-sports.io/football/teams/202.png",
+            "last_5": {
+              "played": 2,
+              "form": "100%",
+              "att": "29%",
+              "def": "90%",
+              "goals": {
+                "for": {
+                  "total": 6,
+                  "average": "3.0"
+                },
+                "against": {
+                  "total": 2,
+                  "average": "1.0"
+                }
+              }
+            },
+            "league": {
+              "form": "WW",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                },
+                "wins": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 2,
+                    "away": 4,
+                    "total": 6
+                  },
+                  "average": {
+                    "home": "2.0",
+                    "away": "4.0",
+                    "total": "3.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 2,
+                      "percentage": "33.33%"
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "16.67%"
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "16.67%"
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "16.67%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "16.67%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "3.5": {
+                      "over": 1,
+                      "under": 1
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 1,
+                    "away": 1,
+                    "total": 2
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "50.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 2
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 2
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 2,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": "2-1",
+                  "away": "1-4"
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 2,
+                    "away": 4
+                  },
+                  "against": {
+                    "home": 1,
+                    "away": 1
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [
+                {
+                  "formation": "4-2-3-1",
+                  "played": 2
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "40%",
+            "away": "60%"
+          },
+          "att": {
+            "home": "40%",
+            "away": "60%"
+          },
+          "def": {
+            "home": "40%",
+            "away": "60%"
+          },
+          "poisson_distribution": {
+            "home": "25%",
+            "away": "75%"
+          },
+          "h2h": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "goals": {
+            "home": "83%",
+            "away": "17%"
+          },
+          "total": {
+            "home": "45.6%",
+            "away": "54.4%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1381058,
+              "referee": "M. Nagtegaal",
+              "timezone": "UTC",
+              "date": "2026-02-08T15:45:00+00:00",
+              "timestamp": 1770565500,
+              "periods": {
+                "first": 1770565500,
+                "second": 1770569100
+              },
+              "venue": {
+                "id": 12276,
+                "name": "Euroborg",
+                "city": "Groningen"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 4
+              }
+            },
+            "league": {
+              "id": 88,
+              "name": "Eredivisie",
+              "country": "Netherlands",
+              "logo": "https://media.api-sports.io/football/leagues/88.png",
+              "flag": "https://media.api-sports.io/flags/nl.svg",
+              "season": 2025,
+              "round": "Regular Season - 22",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 202,
+                "name": "Groningen",
+                "logo": "https://media.api-sports.io/football/teams/202.png",
+                "winner": false
+              },
+              "away": {
+                "id": 197,
+                "name": "PSV Eindhoven",
+                "logo": "https://media.api-sports.io/football/teams/197.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1380886,
+              "referee": "D. Makkelie",
+              "timezone": "UTC",
+              "date": "2025-08-23T16:45:00+00:00",
+              "timestamp": 1755967500,
+              "periods": {
+                "first": 1755967500,
+                "second": 1755971100
+              },
+              "venue": {
+                "id": 1143,
+                "name": "Philips Stadion",
+                "city": "Eindhoven"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 4
+              }
+            },
+            "league": {
+              "id": 88,
+              "name": "Eredivisie",
+              "country": "Netherlands",
+              "logo": "https://media.api-sports.io/football/leagues/88.png",
+              "flag": "https://media.api-sports.io/flags/nl.svg",
+              "season": 2025,
+              "round": "Regular Season - 3",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 197,
+                "name": "PSV Eindhoven",
+                "logo": "https://media.api-sports.io/football/teams/197.png",
+                "winner": true
+              },
+              "away": {
+                "id": 202,
+                "name": "Groningen",
+                "logo": "https://media.api-sports.io/football/teams/202.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 4,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 4,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1213687,
+              "referee": "B. Nijhuis",
+              "timezone": "UTC",
+              "date": "2025-04-05T18:00:00+00:00",
+              "timestamp": 1743876000,
+              "periods": {
+                "first": 1743876000,
+                "second": 1743879600
+              },
+              "venue": {
+                "id": 12276,
+                "name": "Euroborg",
+                "city": "Groningen"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 8
+              }
+            },
+            "league": {
+              "id": 88,
+              "name": "Eredivisie",
+              "country": "Netherlands",
+              "logo": "https://media.api-sports.io/football/leagues/88.png",
+              "flag": "https://media.api-sports.io/flags/nl.svg",
+              "season": 2024,
+              "round": "Regular Season - 28",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 202,
+                "name": "Groningen",
+                "logo": "https://media.api-sports.io/football/teams/202.png",
+                "winner": false
+              },
+              "away": {
+                "id": 197,
+                "name": "PSV Eindhoven",
+                "logo": "https://media.api-sports.io/football/teams/197.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 3
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 2
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 3
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1213549,
+              "referee": "J. Kooij",
+              "timezone": "UTC",
+              "date": "2024-11-23T20:00:00+00:00",
+              "timestamp": 1732392000,
+              "periods": {
+                "first": 1732392000,
+                "second": 1732395600
+              },
+              "venue": {
+                "id": 1143,
+                "name": "Philips Stadion",
+                "city": "Eindhoven"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 4
+              }
+            },
+            "league": {
+              "id": 88,
+              "name": "Eredivisie",
+              "country": "Netherlands",
+              "logo": "https://media.api-sports.io/football/leagues/88.png",
+              "flag": "https://media.api-sports.io/flags/nl.svg",
+              "season": 2024,
+              "round": "Regular Season - 13",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 197,
+                "name": "PSV Eindhoven",
+                "logo": "https://media.api-sports.io/football/teams/197.png",
+                "winner": true
+              },
+              "away": {
+                "id": 202,
+                "name": "Groningen",
+                "logo": "https://media.api-sports.io/football/teams/202.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 5,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 2,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 5,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 872409,
+              "referee": "D. Higler",
+              "timezone": "UTC",
+              "date": "2023-02-11T19:00:00+00:00",
+              "timestamp": 1676142000,
+              "periods": {
+                "first": 1676142000,
+                "second": 1676145600
+              },
+              "venue": {
+                "id": 1143,
+                "name": "Philips Stadion",
+                "city": "Eindhoven"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 88,
+              "name": "Eredivisie",
+              "country": "Netherlands",
+              "logo": "https://media.api-sports.io/football/leagues/88.png",
+              "flag": "https://media.api-sports.io/flags/nl.svg",
+              "season": 2022,
+              "round": "Regular Season - 21",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 197,
+                "name": "PSV Eindhoven",
+                "logo": "https://media.api-sports.io/football/teams/197.png",
+                "winner": true
+              },
+              "away": {
+                "id": 202,
+                "name": "Groningen",
+                "logo": "https://media.api-sports.io/football/teams/202.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 6,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 6,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 872318,
+              "referee": "D. Higler",
+              "timezone": "UTC",
+              "date": "2022-10-23T12:30:00+00:00",
+              "timestamp": 1666528200,
+              "periods": {
+                "first": 1666528200,
+                "second": 1666531800
+              },
+              "venue": {
+                "id": 12276,
+                "name": "Euroborg",
+                "city": "Groningen"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 88,
+              "name": "Eredivisie",
+              "country": "Netherlands",
+              "logo": "https://media.api-sports.io/football/leagues/88.png",
+              "flag": "https://media.api-sports.io/flags/nl.svg",
+              "season": 2022,
+              "round": "Regular Season - 11",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 202,
+                "name": "Groningen",
+                "logo": "https://media.api-sports.io/football/teams/202.png",
+                "winner": true
+              },
+              "away": {
+                "id": 197,
+                "name": "PSV Eindhoven",
+                "logo": "https://media.api-sports.io/football/teams/197.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 4,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 3,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 4,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 707345,
+              "referee": "B. Nijhuis",
+              "timezone": "UTC",
+              "date": "2022-01-16T13:30:00+00:00",
+              "timestamp": 1642339800,
+              "periods": {
+                "first": 1642339800,
+                "second": 1642343400
+              },
+              "venue": {
+                "id": 12276,
+                "name": "Euroborg",
+                "city": "Groningen"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 88,
+              "name": "Eredivisie",
+              "country": "Netherlands",
+              "logo": "https://media.api-sports.io/football/leagues/88.png",
+              "flag": "https://media.api-sports.io/flags/nl.svg",
+              "season": 2021,
+              "round": "Regular Season - 19",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 202,
+                "name": "Groningen",
+                "logo": "https://media.api-sports.io/football/teams/202.png",
+                "winner": false
+              },
+              "away": {
+                "id": 197,
+                "name": "PSV Eindhoven",
+                "logo": "https://media.api-sports.io/football/teams/197.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 707200,
+              "referee": "S. Gözübüyük",
+              "timezone": "UTC",
+              "date": "2021-08-28T18:00:00+00:00",
+              "timestamp": 1630173600,
+              "periods": {
+                "first": 1630173600,
+                "second": 1630177200
+              },
+              "venue": {
+                "id": 1143,
+                "name": "Philips Stadion",
+                "city": "Eindhoven"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 88,
+              "name": "Eredivisie",
+              "country": "Netherlands",
+              "logo": "https://media.api-sports.io/football/leagues/88.png",
+              "flag": "https://media.api-sports.io/flags/nl.svg",
+              "season": 2021,
+              "round": "Regular Season - 3",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 197,
+                "name": "PSV Eindhoven",
+                "logo": "https://media.api-sports.io/football/teams/197.png",
+                "winner": true
+              },
+              "away": {
+                "id": 202,
+                "name": "Groningen",
+                "logo": "https://media.api-sports.io/football/teams/202.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 5,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 3,
+                "away": 2
+              },
+              "fulltime": {
+                "home": 5,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 573432,
+              "referee": "J. Manschot",
+              "timezone": "UTC",
+              "date": "2021-04-24T16:45:00+00:00",
+              "timestamp": 1619282700,
+              "periods": {
+                "first": 1619282700,
+                "second": 1619286300
+              },
+              "venue": {
+                "id": 1143,
+                "name": "Philips Stadion",
+                "city": "Eindhoven"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 88,
+              "name": "Eredivisie",
+              "country": "Netherlands",
+              "logo": "https://media.api-sports.io/football/leagues/88.png",
+              "flag": "https://media.api-sports.io/flags/nl.svg",
+              "season": 2020,
+              "round": "Regular Season - 30",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 197,
+                "name": "PSV Eindhoven",
+                "logo": "https://media.api-sports.io/football/teams/197.png",
+                "winner": true
+              },
+              "away": {
+                "id": 202,
+                "name": "Groningen",
+                "logo": "https://media.api-sports.io/football/teams/202.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 573171,
+              "referee": "S. Gözübüyük",
+              "timezone": "UTC",
+              "date": "2020-09-13T14:45:00+00:00",
+              "timestamp": 1600008300,
+              "periods": {
+                "first": 1600008300,
+                "second": 1600011900
+              },
+              "venue": {
+                "id": 1131,
+                "name": "Hitachi Capital Mobility Stadium",
+                "city": "Groningen"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 88,
+              "name": "Eredivisie",
+              "country": "Netherlands",
+              "logo": "https://media.api-sports.io/football/leagues/88.png",
+              "flag": "https://media.api-sports.io/flags/nl.svg",
+              "season": 2020,
+              "round": "Regular Season - 1",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 202,
+                "name": "Groningen",
+                "logo": "https://media.api-sports.io/football/teams/202.png",
+                "winner": false
+              },
+              "away": {
+                "id": 197,
+                "name": "PSV Eindhoven",
+                "logo": "https://media.api-sports.io/football/teams/197.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 3
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 3
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "angers-lille-2026-08-23",
@@ -392791,15 +395763,1389 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T22:27:00.751Z",
-      "staleAfter": "2026-08-22T22:32:00.751Z",
+      "fetchedAt": "2026-08-23T11:25:26.102Z",
+      "staleAfter": "2026-08-23T11:30:26.102Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1552729"
       },
-      "competitionId": "ligue-1"
+      "competitionId": "ligue-1",
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "confidence": "Sınırlı",
+        "signals": [],
+        "eventCount": 0,
+        "dataPoints": 0,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 79,
+            "name": "Lille",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": null,
+          "goals": {
+            "home": null,
+            "away": null
+          },
+          "advice": "Double chance : draw or Lille",
+          "percent": {
+            "home": "0%",
+            "draw": "50%",
+            "away": "50%"
+          }
+        },
+        "league": {
+          "id": 61,
+          "name": "Ligue 1",
+          "country": "France",
+          "logo": "https://media.api-sports.io/football/leagues/61.png",
+          "flag": "https://media.api-sports.io/flags/fr.svg",
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 77,
+            "name": "Angers",
+            "logo": "https://media.api-sports.io/football/teams/77.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 79,
+            "name": "Lille",
+            "logo": "https://media.api-sports.io/football/teams/79.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "att": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "def": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "20%",
+            "away": "80%"
+          },
+          "goals": {
+            "home": "14%",
+            "away": "86%"
+          },
+          "total": {
+            "home": "17.0%",
+            "away": "83.0%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1387896,
+              "referee": "M. Vernice",
+              "timezone": "UTC",
+              "date": "2026-02-22T16:15:00+00:00",
+              "timestamp": 1771776900,
+              "periods": {
+                "first": 1771776900,
+                "second": 1771780500
+              },
+              "venue": {
+                "id": 634,
+                "name": "Stade Raymond-Kopa",
+                "city": "Angers"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 4
+              }
+            },
+            "league": {
+              "id": 61,
+              "name": "Ligue 1",
+              "country": "France",
+              "logo": "https://media.api-sports.io/football/leagues/61.png",
+              "flag": "https://media.api-sports.io/flags/fr.svg",
+              "season": 2025,
+              "round": "Regular Season - 23",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 77,
+                "name": "Angers",
+                "logo": "https://media.api-sports.io/football/teams/77.png",
+                "winner": false
+              },
+              "away": {
+                "id": 79,
+                "name": "Lille",
+                "logo": "https://media.api-sports.io/football/teams/79.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1387791,
+              "referee": "Jérôme Brisard, France",
+              "timezone": "UTC",
+              "date": "2025-11-02T16:15:00+00:00",
+              "timestamp": 1762100100,
+              "periods": {
+                "first": 1762100100,
+                "second": 1762103700
+              },
+              "venue": {
+                "id": null,
+                "name": "Stade Pierre-Mauroy",
+                "city": "Lille"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 5
+              }
+            },
+            "league": {
+              "id": 61,
+              "name": "Ligue 1",
+              "country": "France",
+              "logo": "https://media.api-sports.io/football/leagues/61.png",
+              "flag": "https://media.api-sports.io/flags/fr.svg",
+              "season": 2025,
+              "round": "Regular Season - 11",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 79,
+                "name": "Lille",
+                "logo": "https://media.api-sports.io/football/teams/79.png",
+                "winner": true
+              },
+              "away": {
+                "id": 77,
+                "name": "Angers",
+                "logo": "https://media.api-sports.io/football/teams/77.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1214022,
+              "referee": "H. Ben El Hadj",
+              "timezone": "UTC",
+              "date": "2025-04-27T13:00:00+00:00",
+              "timestamp": 1745758800,
+              "periods": {
+                "first": 1745758800,
+                "second": 1745762400
+              },
+              "venue": {
+                "id": 634,
+                "name": "Stade Raymond Kopa",
+                "city": "Angers"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 6
+              }
+            },
+            "league": {
+              "id": 61,
+              "name": "Ligue 1",
+              "country": "France",
+              "logo": "https://media.api-sports.io/football/leagues/61.png",
+              "flag": "https://media.api-sports.io/flags/fr.svg",
+              "season": 2024,
+              "round": "Regular Season - 31",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 77,
+                "name": "Angers",
+                "logo": "https://media.api-sports.io/football/teams/77.png",
+                "winner": false
+              },
+              "away": {
+                "id": 79,
+                "name": "Lille",
+                "logo": "https://media.api-sports.io/football/teams/79.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1213760,
+              "referee": "A. Kherradji",
+              "timezone": "UTC",
+              "date": "2024-08-24T17:00:00+00:00",
+              "timestamp": 1724518800,
+              "periods": {
+                "first": 1724518800,
+                "second": 1724522400
+              },
+              "venue": {
+                "id": null,
+                "name": "Decathlon Arena - Stade Pierre-Mauroy",
+                "city": "Villeneuve d'Ascq"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 61,
+              "name": "Ligue 1",
+              "country": "France",
+              "logo": "https://media.api-sports.io/football/leagues/61.png",
+              "flag": "https://media.api-sports.io/flags/fr.svg",
+              "season": 2024,
+              "round": "Regular Season - 2",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 79,
+                "name": "Lille",
+                "logo": "https://media.api-sports.io/football/teams/79.png",
+                "winner": true
+              },
+              "away": {
+                "id": 77,
+                "name": "Angers",
+                "logo": "https://media.api-sports.io/football/teams/77.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 871761,
+              "referee": "M. Vernice",
+              "timezone": "UTC",
+              "date": "2023-04-08T15:00:00+00:00",
+              "timestamp": 1680966000,
+              "periods": {
+                "first": 1680966000,
+                "second": 1680969600
+              },
+              "venue": {
+                "id": 634,
+                "name": "Stade Raymond-Kopa",
+                "city": "Angers"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 61,
+              "name": "Ligue 1",
+              "country": "France",
+              "logo": "https://media.api-sports.io/football/leagues/61.png",
+              "flag": "https://media.api-sports.io/flags/fr.svg",
+              "season": 2022,
+              "round": "Regular Season - 30",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 77,
+                "name": "Angers",
+                "logo": "https://media.api-sports.io/football/teams/77.png",
+                "winner": true
+              },
+              "away": {
+                "id": 79,
+                "name": "Lille",
+                "logo": "https://media.api-sports.io/football/teams/79.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 871612,
+              "referee": "Miguel Nogueira",
+              "timezone": "UTC",
+              "date": "2022-11-13T14:00:00+00:00",
+              "timestamp": 1668348000,
+              "periods": {
+                "first": 1668348000,
+                "second": 1668351600
+              },
+              "venue": {
+                "id": 19207,
+                "name": "Decathlon Arena – Stade Pierre-Mauroy",
+                "city": "Villeneuve d'Ascq"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 61,
+              "name": "Ligue 1",
+              "country": "France",
+              "logo": "https://media.api-sports.io/football/leagues/61.png",
+              "flag": "https://media.api-sports.io/flags/fr.svg",
+              "season": 2022,
+              "round": "Regular Season - 15",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 79,
+                "name": "Lille",
+                "logo": "https://media.api-sports.io/football/teams/79.png",
+                "winner": true
+              },
+              "away": {
+                "id": 77,
+                "name": "Angers",
+                "logo": "https://media.api-sports.io/football/teams/77.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 718651,
+              "referee": "T. Léonard",
+              "timezone": "UTC",
+              "date": "2022-04-10T13:00:00+00:00",
+              "timestamp": 1649595600,
+              "periods": {
+                "first": 1649595600,
+                "second": 1649599200
+              },
+              "venue": {
+                "id": 634,
+                "name": "Stade Raymond-Kopa",
+                "city": "Angers"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 61,
+              "name": "Ligue 1",
+              "country": "France",
+              "logo": "https://media.api-sports.io/football/leagues/61.png",
+              "flag": "https://media.api-sports.io/flags/fr.svg",
+              "season": 2021,
+              "round": "Regular Season - 31",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 77,
+                "name": "Angers",
+                "logo": "https://media.api-sports.io/football/teams/77.png",
+                "winner": null
+              },
+              "away": {
+                "id": 79,
+                "name": "Lille",
+                "logo": "https://media.api-sports.io/football/teams/79.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 718473,
+              "referee": "F. Letexier",
+              "timezone": "UTC",
+              "date": "2021-11-06T16:00:00+00:00",
+              "timestamp": 1636214400,
+              "periods": {
+                "first": 1636214400,
+                "second": 1636218000
+              },
+              "venue": {
+                "id": 655,
+                "name": "Stade Pierre-Mauroy",
+                "city": "Villeneuve d'Ascq"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 61,
+              "name": "Ligue 1",
+              "country": "France",
+              "logo": "https://media.api-sports.io/football/leagues/61.png",
+              "flag": "https://media.api-sports.io/flags/fr.svg",
+              "season": 2021,
+              "round": "Regular Season - 13",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 79,
+                "name": "Lille",
+                "logo": "https://media.api-sports.io/football/teams/79.png",
+                "winner": null
+              },
+              "away": {
+                "id": 77,
+                "name": "Angers",
+                "logo": "https://media.api-sports.io/football/teams/77.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 571845,
+              "referee": "B. Bastien",
+              "timezone": "UTC",
+              "date": "2021-05-23T19:00:00+00:00",
+              "timestamp": 1621796400,
+              "periods": {
+                "first": 1621796400,
+                "second": 1621800000
+              },
+              "venue": {
+                "id": 634,
+                "name": "Stade Raymond-Kopa",
+                "city": "Angers"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 61,
+              "name": "Ligue 1",
+              "country": "France",
+              "logo": "https://media.api-sports.io/football/leagues/61.png",
+              "flag": "https://media.api-sports.io/flags/fr.svg",
+              "season": 2020,
+              "round": "Regular Season - 38",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 77,
+                "name": "Angers",
+                "logo": "https://media.api-sports.io/football/teams/77.png",
+                "winner": false
+              },
+              "away": {
+                "id": 79,
+                "name": "Lille",
+                "logo": "https://media.api-sports.io/football/teams/79.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 2
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 571644,
+              "referee": "T. Léonard",
+              "timezone": "UTC",
+              "date": "2021-01-06T20:00:00+00:00",
+              "timestamp": 1609963200,
+              "periods": {
+                "first": 1609963200,
+                "second": 1609966800
+              },
+              "venue": {
+                "id": 655,
+                "name": "Stade Pierre-Mauroy",
+                "city": "Villeneuve d'Ascq"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 61,
+              "name": "Ligue 1",
+              "country": "France",
+              "logo": "https://media.api-sports.io/football/leagues/61.png",
+              "flag": "https://media.api-sports.io/flags/fr.svg",
+              "season": 2020,
+              "round": "Regular Season - 18",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 79,
+                "name": "Lille",
+                "logo": "https://media.api-sports.io/football/teams/79.png",
+                "winner": false
+              },
+              "away": {
+                "id": 77,
+                "name": "Angers",
+                "logo": "https://media.api-sports.io/football/teams/77.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 2
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "brighton-aston-villa-2026-08-23",
@@ -392840,15 +397186,1389 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-22T22:27:00.751Z",
-      "staleAfter": "2026-08-22T22:32:00.751Z",
+      "fetchedAt": "2026-08-23T11:25:26.102Z",
+      "staleAfter": "2026-08-23T11:30:26.102Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1557373"
       },
-      "competitionId": "premier-league"
+      "competitionId": "premier-league",
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
+        "confidence": "Sınırlı",
+        "signals": [],
+        "eventCount": 0,
+        "dataPoints": 0,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 66,
+            "name": "Aston Villa",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": null,
+          "goals": {
+            "home": null,
+            "away": null
+          },
+          "advice": "Double chance : draw or Aston Villa",
+          "percent": {
+            "home": "0%",
+            "draw": "50%",
+            "away": "50%"
+          }
+        },
+        "league": {
+          "id": 39,
+          "name": "Premier League",
+          "country": "England",
+          "logo": "https://media.api-sports.io/football/leagues/39.png",
+          "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 51,
+            "name": "Brighton",
+            "logo": "https://media.api-sports.io/football/teams/51.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 66,
+            "name": "Aston Villa",
+            "logo": "https://media.api-sports.io/football/teams/66.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "att": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "def": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "29%",
+            "away": "71%"
+          },
+          "goals": {
+            "home": "38%",
+            "away": "63%"
+          },
+          "total": {
+            "home": "33.5%",
+            "away": "67.0%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1379219,
+              "referee": "P. Bankes",
+              "timezone": "UTC",
+              "date": "2026-02-11T19:30:00+00:00",
+              "timestamp": 1770838200,
+              "periods": {
+                "first": 1770838200,
+                "second": 1770841800
+              },
+              "venue": {
+                "id": 495,
+                "name": "Villa Park",
+                "city": "Birmingham"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 6
+              }
+            },
+            "league": {
+              "id": 39,
+              "name": "Premier League",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/39.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2025,
+              "round": "Regular Season - 26",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 66,
+                "name": "Aston Villa",
+                "logo": "https://media.api-sports.io/football/teams/66.png",
+                "winner": true
+              },
+              "away": {
+                "id": 51,
+                "name": "Brighton",
+                "logo": "https://media.api-sports.io/football/teams/51.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1379101,
+              "referee": "A. Madley",
+              "timezone": "UTC",
+              "date": "2025-12-03T19:30:00+00:00",
+              "timestamp": 1764790200,
+              "periods": {
+                "first": 1764790200,
+                "second": 1764793800
+              },
+              "venue": {
+                "id": 508,
+                "name": "Amex Stadium",
+                "city": "Brighton"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 7
+              }
+            },
+            "league": {
+              "id": 39,
+              "name": "Premier League",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/39.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2025,
+              "round": "Regular Season - 14",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 51,
+                "name": "Brighton",
+                "logo": "https://media.api-sports.io/football/teams/51.png",
+                "winner": false
+              },
+              "away": {
+                "id": 66,
+                "name": "Aston Villa",
+                "logo": "https://media.api-sports.io/football/teams/66.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 3,
+              "away": 4
+            },
+            "score": {
+              "halftime": {
+                "home": 2,
+                "away": 2
+              },
+              "fulltime": {
+                "home": 3,
+                "away": 4
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1208315,
+              "referee": "S. Attwell",
+              "timezone": "UTC",
+              "date": "2025-04-02T18:45:00+00:00",
+              "timestamp": 1743619500,
+              "periods": {
+                "first": 1743619500,
+                "second": 1743623100
+              },
+              "venue": {
+                "id": 508,
+                "name": "American Express Stadium",
+                "city": "Falmer, East Sussex"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 11
+              }
+            },
+            "league": {
+              "id": 39,
+              "name": "Premier League",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/39.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2024,
+              "round": "Regular Season - 30",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 51,
+                "name": "Brighton",
+                "logo": "https://media.api-sports.io/football/teams/51.png",
+                "winner": false
+              },
+              "away": {
+                "id": 66,
+                "name": "Aston Villa",
+                "logo": "https://media.api-sports.io/football/teams/66.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 3
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 3
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1208203,
+              "referee": "C. Pawson",
+              "timezone": "UTC",
+              "date": "2024-12-30T19:45:00+00:00",
+              "timestamp": 1735587900,
+              "periods": {
+                "first": 1735587900,
+                "second": 1735591500
+              },
+              "venue": {
+                "id": 495,
+                "name": "Villa Park",
+                "city": "Birmingham"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 6
+              }
+            },
+            "league": {
+              "id": 39,
+              "name": "Premier League",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/39.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2024,
+              "round": "Regular Season - 19",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 66,
+                "name": "Aston Villa",
+                "logo": "https://media.api-sports.io/football/teams/66.png",
+                "winner": null
+              },
+              "away": {
+                "id": 51,
+                "name": "Brighton",
+                "logo": "https://media.api-sports.io/football/teams/51.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1035526,
+              "referee": "R. Jones",
+              "timezone": "UTC",
+              "date": "2024-05-05T13:00:00+00:00",
+              "timestamp": 1714914000,
+              "periods": {
+                "first": 1714914000,
+                "second": 1714917600
+              },
+              "venue": {
+                "id": 508,
+                "name": "American Express Stadium",
+                "city": "Falmer, East Sussex"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 39,
+              "name": "Premier League",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/39.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2023,
+              "round": "Regular Season - 36",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 51,
+                "name": "Brighton",
+                "logo": "https://media.api-sports.io/football/teams/51.png",
+                "winner": true
+              },
+              "away": {
+                "id": 66,
+                "name": "Aston Villa",
+                "logo": "https://media.api-sports.io/football/teams/66.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1035098,
+              "referee": "A. Madley",
+              "timezone": "UTC",
+              "date": "2023-09-30T11:30:00+00:00",
+              "timestamp": 1696073400,
+              "periods": {
+                "first": 1696073400,
+                "second": 1696077000
+              },
+              "venue": {
+                "id": 495,
+                "name": "Villa Park",
+                "city": "Birmingham"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 39,
+              "name": "Premier League",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/39.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2023,
+              "round": "Regular Season - 7",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 66,
+                "name": "Aston Villa",
+                "logo": "https://media.api-sports.io/football/teams/66.png",
+                "winner": true
+              },
+              "away": {
+                "id": 51,
+                "name": "Brighton",
+                "logo": "https://media.api-sports.io/football/teams/51.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 6,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 3,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 6,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 868317,
+              "referee": "D. Coote",
+              "timezone": "UTC",
+              "date": "2023-05-28T15:30:00+00:00",
+              "timestamp": 1685287800,
+              "periods": {
+                "first": 1685287800,
+                "second": 1685291400
+              },
+              "venue": {
+                "id": 495,
+                "name": "Villa Park",
+                "city": "Birmingham"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 39,
+              "name": "Premier League",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/39.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2022,
+              "round": "Regular Season - 38",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 66,
+                "name": "Aston Villa",
+                "logo": "https://media.api-sports.io/football/teams/66.png",
+                "winner": true
+              },
+              "away": {
+                "id": 51,
+                "name": "Brighton",
+                "logo": "https://media.api-sports.io/football/teams/51.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 2,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 979542,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2022-12-08T13:00:00+00:00",
+              "timestamp": 1670504400,
+              "periods": {
+                "first": 1670504400,
+                "second": 1670508000
+              },
+              "venue": {
+                "id": null,
+                "name": "Jebel Ali Centre of Excellence",
+                "city": "Dubai"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 667,
+              "name": "Friendlies Clubs",
+              "country": "World",
+              "logo": "https://media.api-sports.io/football/leagues/667.png",
+              "flag": null,
+              "season": 2022,
+              "round": "Club Friendlies 3",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 66,
+                "name": "Aston Villa",
+                "logo": "https://media.api-sports.io/football/teams/66.png",
+                "winner": null
+              },
+              "away": {
+                "id": 51,
+                "name": "Brighton",
+                "logo": "https://media.api-sports.io/football/teams/51.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": null,
+                "away": null
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 868097,
+              "referee": "C. Kavanagh",
+              "timezone": "UTC",
+              "date": "2022-11-13T14:00:00+00:00",
+              "timestamp": 1668348000,
+              "periods": {
+                "first": 1668348000,
+                "second": 1668351600
+              },
+              "venue": {
+                "id": 508,
+                "name": "The American Express Community Stadium",
+                "city": "Falmer, East Sussex"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 39,
+              "name": "Premier League",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/39.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2022,
+              "round": "Regular Season - 16",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 51,
+                "name": "Brighton",
+                "logo": "https://media.api-sports.io/football/teams/51.png",
+                "winner": false
+              },
+              "away": {
+                "id": 66,
+                "name": "Aston Villa",
+                "logo": "https://media.api-sports.io/football/teams/66.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 710818,
+              "referee": "J. Brooks",
+              "timezone": "UTC",
+              "date": "2022-02-26T15:30:00+00:00",
+              "timestamp": 1645889400,
+              "periods": {
+                "first": 1645889400,
+                "second": 1645893000
+              },
+              "venue": {
+                "id": 508,
+                "name": "The American Express Community Stadium",
+                "city": "Falmer, East Sussex"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 39,
+              "name": "Premier League",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/39.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2021,
+              "round": "Regular Season - 27",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 51,
+                "name": "Brighton",
+                "logo": "https://media.api-sports.io/football/teams/51.png",
+                "winner": false
+              },
+              "away": {
+                "id": 66,
+                "name": "Aston Villa",
+                "logo": "https://media.api-sports.io/football/teams/66.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "manchester-city-bournemouth-2026-08-23",
