@@ -7140,9 +7140,9 @@
     "isOfficialCompetition": true,
     "includeInLeagueForm": true,
     "kickoff": "2026-08-23T16:00:00.000Z",
-    "status": "scheduled",
+    "status": "live",
     "generatedAt": "2026-08-23T15:27:34.556Z",
-    "preMatchFrozenAt": null,
+    "preMatchFrozenAt": "2026-08-23T16:31:20.181Z",
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
       "teamName": "Eyüpspor",
@@ -8297,7 +8297,9 @@
         "label": "slight-away"
       },
       "summary": "Model, ev sahibi için %32, beraberlik için %34, deplasman için %34 ihtimal hesaplıyor. Takım güç puanları 39/100 - 44/100 ve maç dengesi \"slight-away\" olarak okunuyor. Bu okuma 47/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
-      "warnings": []
+      "warnings": [],
+      "frozenAt": "2026-08-23T16:31:20.181Z",
+      "frozenKickoff": "2026-08-23T16:00:00.000Z"
     },
     "coverage": {
       "homeSquadCoverage": 100,
@@ -8317,7 +8319,8 @@
     },
     "dataConfidence": 47,
     "analysisStatus": "complete",
-    "warnings": []
+    "warnings": [],
+    "updatedAt": "2026-08-23T16:31:20.181Z"
   },
   {
     "fixtureId": "trabzonspor-basaksehir-2026-08-23",
@@ -8328,9 +8331,9 @@
     "isOfficialCompetition": true,
     "includeInLeagueForm": true,
     "kickoff": "2026-08-23T16:00:00.000Z",
-    "status": "scheduled",
+    "status": "live",
     "generatedAt": "2026-08-23T15:27:34.694Z",
-    "preMatchFrozenAt": null,
+    "preMatchFrozenAt": "2026-08-23T16:31:20.307Z",
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
       "teamName": "Trabzonspor",
@@ -9815,7 +9818,9 @@
         "label": "balanced"
       },
       "summary": "Model, ev sahibi için %33, beraberlik için %34, deplasman için %33 ihtimal hesaplıyor. Takım güç puanları 42/100 - 46/100 ve maç dengesi \"balanced\" olarak okunuyor. Bu okuma 66/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
-      "warnings": []
+      "warnings": [],
+      "frozenAt": "2026-08-23T16:31:20.307Z",
+      "frozenKickoff": "2026-08-23T16:00:00.000Z"
     },
     "coverage": {
       "homeSquadCoverage": 100,
@@ -9834,7 +9839,8 @@
     },
     "dataConfidence": 66,
     "analysisStatus": "complete",
-    "warnings": []
+    "warnings": [],
+    "updatedAt": "2026-08-23T16:31:20.307Z"
   },
   {
     "fixtureId": "goztepe-genclerbirligi-2026-08-23",
@@ -9846,7 +9852,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-23T18:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-23T15:27:34.811Z",
+    "generatedAt": "2026-08-23T16:31:20.420Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -10154,17 +10160,6 @@
             "profileUrl": "./oyuncular/e-bekiroglu-goztepe.html"
           },
           {
-            "id": "a-dennis-goztepe",
-            "name": "A. Dennis",
-            "position": "Midfielder",
-            "slot": "WING",
-            "assignedGroup": "winger",
-            "outOfPosition": true,
-            "overallRating": 15,
-            "formRating": 18,
-            "profileUrl": "./oyuncular/a-dennis-goztepe.html"
-          },
-          {
             "id": "rhaldney-goztepe",
             "name": "Rhaldney",
             "position": "Midfielder",
@@ -10174,6 +10169,17 @@
             "overallRating": 15,
             "formRating": 18,
             "profileUrl": "./oyuncular/rhaldney-goztepe.html"
+          },
+          {
+            "id": "guilherme-luiz-goztepe",
+            "name": "Guilherme Luiz",
+            "position": "Midfielder",
+            "slot": "WING",
+            "assignedGroup": "winger",
+            "outOfPosition": true,
+            "overallRating": 15,
+            "formRating": 18,
+            "profileUrl": "./oyuncular/guilherme-luiz-goztepe.html"
           },
           {
             "id": "y-sirin-goztepe",
@@ -10190,9 +10196,22 @@
         "availability": {
           "fixtureId": "goztepe-genclerbirligi-2026-08-23",
           "totalKnownPlayers": 27,
-          "unavailableCount": 0,
-          "unavailable": [],
-          "knownAvailabilityCoverage": 0,
+          "unavailableCount": 2,
+          "unavailable": [
+            {
+              "playerId": "n-sonko-sundberg-goztepe",
+              "name": "N. Sonko-Sundberg",
+              "status": "injured",
+              "note": "Inactive"
+            },
+            {
+              "playerId": "a-dennis-goztepe",
+              "name": "A. Dennis",
+              "status": "injured",
+              "note": "Inactive"
+            }
+          ],
+          "knownAvailabilityCoverage": 11,
           "rows": [
             {
               "playerId": "a-ozcimen-goztepe",
@@ -10227,8 +10246,8 @@
             {
               "playerId": "m-bokele-goztepe",
               "name": "M. Bokele",
-              "status": "unknown",
-              "note": null
+              "status": "doubtful",
+              "note": "Inactive"
             },
             {
               "playerId": "a-cherni-goztepe",
@@ -10245,8 +10264,8 @@
             {
               "playerId": "n-sonko-sundberg-goztepe",
               "name": "N. Sonko-Sundberg",
-              "status": "unknown",
-              "note": null
+              "status": "injured",
+              "note": "Inactive"
             },
             {
               "playerId": "ege-yildirim-goztepe",
@@ -10275,8 +10294,8 @@
             {
               "playerId": "a-dennis-goztepe",
               "name": "A. Dennis",
-              "status": "unknown",
-              "note": null
+              "status": "injured",
+              "note": "Inactive"
             },
             {
               "playerId": "rhaldney-goztepe",
@@ -10395,7 +10414,7 @@
             "O. Bayrak",
             "M. Bokele",
             "N. Sonko-Sundberg",
-            "Guilherme Luiz",
+            "A. Dennis",
             "M. Mohammed",
             "B. Sarigul",
             "André Henrique",
@@ -10816,7 +10835,7 @@
         "away": null
       },
       "availability": {
-        "home": 100,
+        "home": 70,
         "away": 100
       },
       "confidence": 58,
@@ -10844,10 +10863,10 @@
         {
           "key": "availability",
           "label": "Kadro devamlılığı",
-          "advantage": "balanced"
+          "advantage": "away"
         }
       ],
-      "summary": "Takımlar mevcut bileşenlerde birbirini dengeliyor; maç öncesi net bir üstünlük yok."
+      "summary": "Deplasman mevcut verilerde Kadro devamlılığı alanlarında bir adım önde görünüyor."
     },
     "keyDuels": [
       {
@@ -10878,12 +10897,12 @@
         "id": "wide-vs-fullback",
         "title": "Kanat - bek eşleşmesi",
         "homePlayer": {
-          "id": "a-dennis-goztepe",
-          "name": "A. Dennis",
+          "id": "rhaldney-goztepe",
+          "name": "Rhaldney",
           "position": "Midfielder",
           "overall": 15,
           "form": 18,
-          "profileUrl": "./oyuncular/a-dennis-goztepe.html"
+          "profileUrl": "./oyuncular/rhaldney-goztepe.html"
         },
         "awayPlayer": {
           "id": "u-ii-slamoa-lu-genclerbirligi-s-k",
@@ -10973,18 +10992,18 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-23T15:27:34.811Z",
+      "generatedAt": "2026-08-23T16:31:20.420Z",
       "asOf": "2026-08-23T18:30:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 45,
       "teamStrength": {
-        "home": 45,
+        "home": 47,
         "away": 47
       },
       "probabilities": {
         "homeWin": 34,
-        "draw": 35,
-        "awayWin": 31
+        "draw": 36,
+        "awayWin": 30
       },
       "prediction": {
         "primary": "balanced",
@@ -11000,10 +11019,10 @@
         "label": "high"
       },
       "matchBalance": {
-        "score": 96,
+        "score": 100,
         "label": "balanced"
       },
-      "summary": "Model, ev sahibi için %34, beraberlik için %35, deplasman için %31 ihtimal hesaplıyor. Takım güç puanları 45/100 - 47/100 ve maç dengesi \"balanced\" olarak okunuyor. Bu okuma 45/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %34, beraberlik için %36, deplasman için %30 ihtimal hesaplıyor. Takım güç puanları 47/100 - 47/100 ve maç dengesi \"balanced\" olarak okunuyor. Bu okuma 45/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -11012,10 +11031,10 @@
       "homeStatsCoverage": 100,
       "awayStatsCoverage": 100,
       "recentFormCoverage": 30,
-      "teamAnalysisCoverage": 42.5,
+      "teamAnalysisCoverage": 50,
       "probableLineupCoverage": 100,
       "officialLineupCoverage": 0,
-      "overallCoverage": 76,
+      "overallCoverage": 77,
       "confidenceLevel": "high",
       "missingComponents": [
         "Son maç formu hazırlanıyor",
@@ -11036,7 +11055,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-23T18:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-23T15:27:34.898Z",
+    "generatedAt": "2026-08-23T16:31:20.512Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -12365,7 +12384,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-23T15:27:34.898Z",
+      "generatedAt": "2026-08-23T16:31:20.512Z",
       "asOf": "2026-08-23T18:30:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 65,
@@ -12427,7 +12446,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-08-24T18:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-08-23T15:27:34.963Z",
+    "generatedAt": "2026-08-23T16:31:20.568Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -13029,7 +13048,7 @@
     "keyDuels": [],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-08-23T15:27:34.963Z",
+      "generatedAt": "2026-08-23T16:31:20.568Z",
       "asOf": "2026-08-24T18:30:00.000Z",
       "predictionStatus": "low-confidence",
       "dataConfidence": 18,

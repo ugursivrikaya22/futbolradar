@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-23T15:27:46.547Z",
+  "updatedAt": "2026-08-23T16:32:08.279Z",
   "items": [
     {
       "id": "auto-news-37d35a456e9f36e391d2",
@@ -307,26 +307,6 @@
       }
     },
     {
-      "id": "auto-news-e957ea2d64801e3ee0ab",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Fırtına galibiyet peşinde! Başakşehir maçının muhtemel 11'i belli oldu",
-      "team": "Başakşehir",
-      "timestamp": "2026-08-22T20:42:44.000Z",
-      "source": {
-        "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/trabzonspor/2026/08/23/firtina-galibiyet-pesinde-basaksehir-macinin-muhtemel-11i-belli-oldu",
-        "publisher": "fotomac.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fotomac",
-        "priority": 8,
-        "status": "REPORTED"
-      }
-    },
-    {
       "id": "auto-news-e303649efa691af0924c",
       "category": "club-agenda",
       "confidence": "reported",
@@ -357,6 +337,26 @@
       "source": {
         "name": "TFF",
         "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5oWFJpRmFyUHdvbHdEU09ST1dycFNySkNLZkx6b2Y4TGhOLWpDbmNILWxGbThqMmU1OWxTdnlhdDVDajJCZlk4bjdzNzBJaTVQY2hybU5rTmFPX29RNF9Iamphd1RTemM?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "super-lig",
+        "priority": 5,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-e81f74020e0e005532c6",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "ALEKSEI BATRAKOV",
+      "team": "Süper Lig",
+      "timestamp": "2026-08-20T17:58:46.000Z",
+      "source": {
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE04MDVDWWoyM2hySmZZVUo1TnJJRENUQmxnT1N6S1VEUzY0ZVJoM0NkSTlZOWZZcGF1bU9kWFZLM3Z6empyTmhsY3p2RzkwX2Vwak1ia2dHREVaUVBjVjJOTjdjeTNoSHBU?oc=5",
         "publisher": "tff.org"
       },
       "automation": {
