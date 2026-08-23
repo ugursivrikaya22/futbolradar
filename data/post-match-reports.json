@@ -1,9 +1,785 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-08-23T16:31:21.158Z",
-  "matchCount": 818,
+  "updatedAt": "2026-08-23T17:24:17.287Z",
+  "matchCount": 822,
   "records": [
+    {
+      "matchId": "le-havre-monaco-2026-08-23",
+      "fixtureId": "1552730",
+      "provider": "api-football",
+      "slug": "le-havre-monaco-2026-08-23",
+      "kickoff": "2026-08-23T18:15:00+03:00",
+      "kickoffUtc": "2026-08-23T15:15:00.000Z",
+      "kickoffLocal": "2026-08-23T18:15",
+      "date": "2026-08-23",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Ligue 1",
+      "competition": "Ligue 1",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Le Havre",
+      "awayTeam": "Monaco",
+      "venue": "Stade Oceane",
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "Monaco",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "145de95edf913bfa",
+      "fingerprint": "145de95edf913bfa",
+      "analysisGeneratedAt": "2026-08-23T17:24:17.257Z",
+      "analysisUpdatedAt": "2026-08-23T17:24:17.257Z",
+      "generatedAt": "2026-08-23T17:24:17.257Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Le Havre 0-1 Monaco maç raporu: Ligue 1 istatistikleri | FutbolRadar",
+        "description": "Monaco, Stade Oceane'de oynanan Ligue 1 karşılaşmasında Le Havre'yi 1-0 mağlup etti.",
+        "path": "mac-raporu/le-havre-monaco-2026-08-23.html",
+        "competition": "Ligue 1"
+      },
+      "reportUrl": "./mac-raporu/le-havre-monaco-2026-08-23.html",
+      "digest": {
+        "headline": "Monaco, Le Havre'yi 1-0 yendi",
+        "paragraph": "Monaco, Stade Oceane'de oynanan Ligue 1 karşılaşmasında Le Havre'yi 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Monaco",
+          "loser": "Le Havre",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Monaco, Le Havre'yi 0-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Monaco sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "atletico-madrid-villarreal-2026-08-23",
+      "fixtureId": "1570344",
+      "provider": "api-football",
+      "slug": "atletico-madrid-villarreal-2026-08-23",
+      "kickoff": "2026-08-23T18:00:00+03:00",
+      "kickoffUtc": "2026-08-23T15:00:00.000Z",
+      "kickoffLocal": "2026-08-23T18:00",
+      "date": "2026-08-23",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "La Liga",
+      "competition": "La Liga",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Atletico Madrid",
+      "awayTeam": "Villarreal",
+      "venue": "Riyadh Air Metropolitano",
+      "score": {
+        "home": 2,
+        "away": 2
+      },
+      "finalScore": "2-2",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "2b912ae6d1f4bc85",
+      "fingerprint": "2b912ae6d1f4bc85",
+      "analysisGeneratedAt": "2026-08-23T17:24:17.257Z",
+      "analysisUpdatedAt": "2026-08-23T17:24:17.257Z",
+      "generatedAt": "2026-08-23T17:24:17.257Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Atletico Madrid 2-2 Villarreal maç raporu: La Liga istatistikleri | FutbolRadar",
+        "description": "Atletico Madrid ile Villarreal, Riyadh Air Metropolitano'da oynanan La Liga karşılaşmasında 2-2 berabere kaldı.",
+        "path": "mac-raporu/atletico-madrid-villarreal-2026-08-23.html",
+        "competition": "La Liga"
+      },
+      "reportUrl": "./mac-raporu/atletico-madrid-villarreal-2026-08-23.html",
+      "digest": {
+        "headline": "Atletico Madrid ile Villarreal 2-2 berabere kaldı",
+        "paragraph": "Atletico Madrid ile Villarreal, Riyadh Air Metropolitano'da oynanan La Liga karşılaşmasında 2-2 berabere kaldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 2-2 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "2-2 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "cambuur-feyenoord-2026-08-23",
+      "fixtureId": "1552141",
+      "provider": "api-football",
+      "slug": "cambuur-feyenoord-2026-08-23",
+      "kickoff": "2026-08-23T17:45:00+03:00",
+      "kickoffUtc": "2026-08-23T14:45:00.000Z",
+      "kickoffLocal": "2026-08-23T17:45",
+      "date": "2026-08-23",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Eredivisie",
+      "competition": "Eredivisie",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Cambuur",
+      "awayTeam": "Feyenoord",
+      "venue": "Kooi Stadion",
+      "score": {
+        "home": 2,
+        "away": 5
+      },
+      "finalScore": "2-5",
+      "winner": "Feyenoord",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "d6dae37d27866a63",
+      "fingerprint": "d6dae37d27866a63",
+      "analysisGeneratedAt": "2026-08-23T17:24:17.257Z",
+      "analysisUpdatedAt": "2026-08-23T17:24:17.257Z",
+      "generatedAt": "2026-08-23T17:24:17.257Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Cambuur 2-5 Feyenoord maç raporu: Eredivisie istatistikleri | FutbolRadar",
+        "description": "Kooi Stadion'da oynanan Eredivisie maçını Feyenoord 5-2 kazandı; Cambuur sahadan puansız ayrıldı.",
+        "path": "mac-raporu/cambuur-feyenoord-2026-08-23.html",
+        "competition": "Eredivisie"
+      },
+      "reportUrl": "./mac-raporu/cambuur-feyenoord-2026-08-23.html",
+      "digest": {
+        "headline": "Feyenoord, Cambuur'u 5-2 yendi",
+        "paragraph": "Kooi Stadion'da oynanan Eredivisie maçını Feyenoord 5-2 kazandı; Cambuur sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Feyenoord",
+          "loser": "Cambuur",
+          "draw": false,
+          "margin": 3
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Feyenoord, Cambuur'u 2-5 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Feyenoord sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "vitoria-sc-nacional-2026-08-23",
+      "fixtureId": "1575472",
+      "provider": "api-football",
+      "slug": "vitoria-sc-nacional-2026-08-23",
+      "kickoff": "2026-08-23T17:30:00+03:00",
+      "kickoffUtc": "2026-08-23T14:30:00.000Z",
+      "kickoffLocal": "2026-08-23T17:30",
+      "date": "2026-08-23",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primeira Liga",
+      "competition": "Primeira Liga",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Vitória SC",
+      "awayTeam": "Nacional",
+      "venue": "Estádio Dom Afonso Henriques",
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "finalScore": "1-0",
+      "winner": "Vitória SC",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "49969e7ad261d85a",
+      "fingerprint": "49969e7ad261d85a",
+      "analysisGeneratedAt": "2026-08-23T17:24:17.257Z",
+      "analysisUpdatedAt": "2026-08-23T17:24:17.257Z",
+      "generatedAt": "2026-08-23T17:24:17.257Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Vitória SC 1-0 Nacional maç raporu: Primeira Liga istatistikleri | FutbolRadar",
+        "description": "Estádio Dom Afonso Henriques'te oynanan Primeira Liga maçını Vitória SC 1-0 kazandı; Nacional sahadan puansız ayrıldı.",
+        "path": "mac-raporu/vitoria-sc-nacional-2026-08-23.html",
+        "competition": "Primeira Liga"
+      },
+      "reportUrl": "./mac-raporu/vitoria-sc-nacional-2026-08-23.html",
+      "digest": {
+        "headline": "Vitória SC, Nacional'ı 1-0 yendi",
+        "paragraph": "Estádio Dom Afonso Henriques'te oynanan Primeira Liga maçını Vitória SC 1-0 kazandı; Nacional sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Vitória SC",
+          "loser": "Nacional",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Vitória SC, Nacional'ı 1-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Vitória SC sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "lommel-united-kvc-westerlo-2026-08-23",
       "fixtureId": "1558605",
