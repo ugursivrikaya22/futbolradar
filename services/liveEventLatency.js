@@ -270,6 +270,54 @@ async function listRecent({ matchId, limit = 50 } = {}) {
 }
 
 /**
+ * BİRDEN FAZLA MAÇIN bilinen gol kayıtlarını TEK sorguda döner.
+ *
+ * `listRecent` tek maça bakıyor; günlük sağlık kontrolü (services/
+ * dailyHealthCheckService.js) "son bir-iki günün genel gecikmesi nedir"
+ * sorusunu soruyor ve bunun için maç başına ayrı istek atmak (onlarca maç
+ * olabilir) gereksiz ağ turu demek. Supabase yapılandırılıysa PostgREST'in
+ * `in.(...)` operatörüyle TEK istekte çekilir; değilse bellek-içi
+ * arabellekler (yalnızca bu sıcak örnekte kalıcı) birleştirilir.
+ */
+async function listRecentAcrossMatches({ matchIds, limit = 500 } = {}) {
+  const ids = Array.from(new Set((Array.isArray(matchIds) ? matchIds : []).map(String).filter(Boolean)));
+  if (!ids.length) return [];
+
+  if (supabaseEnv.isConfigured()) {
+    try {
+      const client = require_("./supabase/client.js");
+      const rows = await client.select(TABLE, {
+        filters: { match_id: `in.(${ids.join(",")})` },
+        order: "first_seen_at.desc",
+        limit
+      });
+      return rows.map((row) => ({
+        matchId: row.match_id,
+        eventKey: row.event_key,
+        eventKind: row.event_kind,
+        teamSide: row.team_side,
+        playerName: row.player_name,
+        providerElapsedMinute: row.provider_elapsed_minute,
+        providerTimeEstimated: row.provider_time_estimated,
+        firstSeenAt: row.first_seen_at,
+        dbWrittenAt: row.db_written_at,
+        apiResponseAt: row.api_response_at,
+        clientRenderedAt: row.client_rendered_at,
+        store: "supabase"
+      }));
+    } catch (error) {
+      console.warn(`[futbolradar:live-latency] supabase-read-failed matches=${ids.length}: ${error.message}`);
+      // Okuma başarısızsa bellek-içi yola düş — aşağıda devam eder.
+    }
+  }
+
+  const combined = ids.flatMap((matchId) => Array.from(memoryListFor(matchId).values()));
+  return combined
+    .sort((left, right) => Date.parse(right.firstSeenAt) - Date.parse(left.firstSeenAt))
+    .slice(0, limit);
+}
+
+/**
  * İstemcinin "ekrana bastım" işaretini aynı satıra yazar. Anahtar
  * bilinmiyorsa (ör. Supabase'e daha önce yazılamadıysa) `null` döner —
  * uydurma bir eşleşme aranmaz.
@@ -343,6 +391,7 @@ module.exports = {
   computeEventKey,
   estimateProviderTime,
   listRecent,
+  listRecentAcrossMatches,
   markApiResponded,
   markRendered,
   parseElapsedMinutes,

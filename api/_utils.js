@@ -18,6 +18,10 @@ const CACHE_POLICIES = Object.freeze({
   // var mı diye), CDN/tarayıcı önbelleği "yeni gol yok" cevabını
   // dondurursa yeni golü asla göremez.
   "live-latency": { noStore: true },
+  // Günlük sağlık kontrolü her çağrıda taze ölçüm yapar (sayfa erişimi,
+  // canlı gecikme) — önbelleklenmiş bir "her şey yolunda" yanıtı, gerçek
+  // bir kesintiyi saatlerce gizleyebilir.
+  "daily-health-check": { noStore: true },
   standings: { maxAge: 300, stale: 900 },
   teams: { maxAge: 1800, stale: 7200 },
   players: { maxAge: 3600, stale: 21600 },
