@@ -84,10 +84,10 @@ function injectBlock(html, { name, anchorRe, block, position = "after", requireA
  *    `position: fixed` olduğu için DOM sırası görünürlüğü etkilemez;
  *    görünürlüğü istemci yönetir.
  */
-const HERO_END_RE = /(<section class="container hero" id="hero-canli-skor"[\s\S]*?<\/section>\n)/;
-const RADAR_MATCH_END_RE = /(<section class="container section home-radar-matches" id="gunun-radar-maci"[\s\S]*?<\/section>\n)/;
-const TRANSFER_WATCH_END_RE = /(<section class="container section home-transfer-watch" id="transfer-izleme-paneli"[\s\S]*?<\/section>\n)/;
-const FOOTER_END_RE = /(<\/footer>\n)/;
+const HERO_END_RE = /(<section class="container hero" id="hero-canli-skor"[\s\S]*?<\/section>\r?\n)/;
+const RADAR_MATCH_END_RE = /(<section class="container section home-radar-matches" id="gunun-radar-maci"[\s\S]*?<\/section>\r?\n)/;
+const TRANSFER_WATCH_END_RE = /(<section class="container section home-transfer-watch" id="transfer-izleme-paneli"[\s\S]*?<\/section>\r?\n)/;
+const FOOTER_END_RE = /(<\/footer>\r?\n)/;
 
 const selection = selectHomePoll({
   polls: readJson("data/home-polls.json") || {},
