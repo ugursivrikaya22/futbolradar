@@ -1,39 +1,23 @@
 /**
  * ANA SAYFA HERO KARUSELİ — MAÇ SIRASI
  *
- * Hero'daki büyük kart 10 saniyede bir dönen bir karusel. Hangi maçın hangi
- * sırada geleceği tek bir yerde, burada belirlenir; kürasyonlu liste,
- * sağlayıcı takvimi veya statik yedek içerik bu sırayı ezemez.
+ * Hero'daki büyük kart yalnızca doğrulanmış CANLI maçları döndürür. Hangi
+ * maçın hangi sırada geleceği tek bir yerde, burada belirlenir; kürasyonlu
+ * liste, sağlayıcı takvimi veya statik yedek içerik bu kapıyı ezemez.
  *
  * KADEME (tier) sırası — ilk kart daima kademe 0'ın en iyisidir:
  *
  *   0. Canlı Türk takımı maçı        → ilk karta sabitlenir
- *   1. Bugünün diğer Türk maçları    → canlı Türk maçı yoksa ilk kart
  *   2. Büyük kulüplerin canlı maçı   → Real Madrid, Bayern ve benzerleri
  *   3. Diğer canlı maçlar
- *   4. Bugünün kalan maçları
  *
- * Kademe 1, kademe 2'nin önünde: bugün bir Türk takımı oynuyorsa hero'nun
- * ilk kartı o maçtır, yabancı bir maç canlı olsa bile. Karusel zaten
- * hepsini gösteriyor — değişen yalnızca hangisinin ilk açılacağı.
- *
- * BANT — her kademe içinde durum önceliği:
- *   live        → sağlayıcı canlı diyor
- *   in-progress → başlama saati geçmiş, bitmemiş (durum henüz güncellenmemiş
- *                 olabilir; sağlayıcı gecikmesi bir maçı hero'dan düşürmemeli)
- *   upcoming    → başlayacak, en yakın olan önce
- *   played      → oynanmış, en yenisi önce
- *
- * "in-progress" bandı neden var: sağlayıcı takvimi günde birkaç kez
- * tazeleniyor ve saat 19:08'de 18:30 maçı hâlâ "SCHEDULED" görünebiliyor.
- * Sadece duruma bakan bir sıralama o maçı "başlayacak" saymayıp atlıyor ve
- * hero'da o an oynanan maç yerine daha geç bir karşılaşma kalıyordu. Bant,
- * skor veya dakika UYDURMAZ — yalnızca kart sırasını etkiler.
+ * Canlı maç yoksa seçim boş döner ve arayüz canlı skor boş durumunu
+ * gösterir. Başlamamış veya bitmiş bir maç artık büyük kartı dolduramaz.
  */
 
 const { isTurkishMatch, turkishSideOf } = require("./turkishTeams");
 const { isMajorClubMatch, majorClubSideOf } = require("./majorClubs");
-const { isAwardedStatus, isUnplayedStatus } = require("./matchStatus");
+const { hasReadableScore, isAwardedStatus, isUnplayedStatus } = require("./matchStatus");
 
 const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"]);
 const FINISHED_STATUSES = new Set(["FINISHED", "FT", "AET", "PEN", "AWARDED", "WO"]);
@@ -119,10 +103,8 @@ function statusOf(match) {
  * (`selectFeaturedMatches`) canlı maçları tarihe bakmadan içeri aldığı için
  * "dün oynandı" ayrımı bu kapıdan geçmeden hiç devreye girmiyordu.
  *
- * Yalnızca YAŞ denetlenir; skor doluluğu burada aranmaz — o ayrı bir
- * sözleşme (`services/matchStatus.js`: liveVerdict'in "skor kapısı") ve
- * canlı skor yüzeylerinde zaten uygulanıyor. Buradaki tek iş hero'nun
- * bayat bir "canlı" iddiasına sonsuza kadar bel bağlamaması.
+ * Skor kapısı da burada uygulanır: büyük kart "canlı" diyorsa okunabilir
+ * skor gösterebilmelidir. Skorsuz sağlayıcı sinyali doğrulanmış sayılmaz.
  */
 function isLiveMatch(match, nowMs) {
   if (!match) {
@@ -130,7 +112,7 @@ function isLiveMatch(match, nowMs) {
   }
 
   const claimsLive = match.live === true || LIVE_STATUSES.has(statusOf(match));
-  if (!claimsLive) {
+  if (!claimsLive || !hasReadableScore(match)) {
     return false;
   }
 
@@ -242,17 +224,14 @@ function selectFeaturedMatches(matches, options) {
   const settings = options || {};
   const now = settings.now instanceof Date ? settings.now : new Date();
   const nowMs = now.getTime();
-  const today = settings.today || istanbulToday(now);
   const limit = Number.isFinite(settings.limit) ? Math.max(1, settings.limit) : MAX_FEATURED_SLIDES;
   const list = (Array.isArray(matches) ? matches : []).filter(Boolean);
 
-  // Havuz: bugünün maçları + tarihi ne olursa olsun canlı maçlar. Gece
-  // yarısını aşan bir maç TSİ'de "dün" görünse de canlıysa hero'ya girer.
-  // Oynanmayan maçlar (ertelendi/iptal/tatil) hero'ya hiç girmez: kartın
-  // işi "şu anda ne var" göstermek, oynanmayacak bir eşleşme değil.
-  const pool = list
-    .filter((match) => matchDateValue(match) === today || isLiveMatch(match, nowMs))
-    .filter((match) => !isUnplayedStatus(match));
+  // Büyük kart bir canlı skor yüzeyidir: yalnızca okunabilir skorlu,
+  // sağlayıcı tarafından canlı işaretli ve bayatlık penceresini aşmamış
+  // maçlar havuza girer. Tarih filtresi kullanılmaz; gece yarısını aşan
+  // gerçek bir canlı maç yine görünür.
+  const pool = list.filter((match) => isLiveMatch(match, nowMs));
   const turkishCount = pool.filter(isTurkishMatch).length;
 
   const ordered = pool.slice().sort((left, right) => {
@@ -270,53 +249,8 @@ function selectFeaturedMatches(matches, options) {
     return compareWithinBand(leftBand, left, right);
   });
 
-  if (ordered.length) {
-    const cards = ordered.slice(0, limit).map((match) => describe(
-      match, reasonFor(match, nowMs), bandOf(match, nowMs), tierOf(match, nowMs), pool.length, turkishCount
-    ));
-
-    // BUGÜN TÜRK MAÇI YOKSA HERO'YU YABANCI MAÇA BIRAKMA.
-    //
-    // Kademe sırası bugün bir Türk maçı VARSA doğru çalışıyordu. Hiç yoksa
-    // havuz doluydu (22 yabancı maç) ve "bugün maç yok" yedeği hiç
-    // devreye girmiyordu; ana sayfanın en büyük kartı Fakel-Akhmat ya da
-    // Volos-Kalamata oluyordu. Türkiye'den gelen okuyucu ilk ekranda
-    // Türk futboluna dair hiçbir şey görmüyor, oysa ertesi gün
-    // Sturm Graz-Fenerbahçe oynanıyordu.
-    //
-    // Çözüm takvimde ZATEN OLAN bir maçı öne almak: en yakın Türk takımı
-    // karşılaşması ilk karta geçer. Kart "bugün oynanıyor" DEMEZ — kendi
-    // tarihiyle ve "sıradaki" gerekçesiyle görünür; uydurma yok, günün
-    // maçları da karuselden düşmez, yalnızca bir sıra geri kayar.
-    if (!turkishCount) {
-      const nextTurkish = list
-        .filter((match) => isTurkishMatch(match) &&
-          matchDateValue(match) > today &&
-          !isUnplayedStatus(match))
-        .sort((left, right) => kickoffTime(left).value - kickoffTime(right).value)[0];
-
-      if (nextTurkish) {
-        cards.unshift(describe(
-          nextTurkish, "turkish-next", "upcoming", tierOf(nextTurkish, nowMs), pool.length, turkishCount
-        ));
-        cards.length = Math.min(cards.length, limit);
-      }
-    }
-
-    return cards;
-  }
-
-  // Bugün maç yoksa karusel boş kalmasın: takvimdeki sıradaki karşılaşmalar.
-  // Türk takımı maçları yine öne alınır.
-  const upcoming = list
-    .filter((match) => matchDateValue(match) > today)
-    .sort((left, right) => {
-      const turkishGap = Number(isTurkishMatch(right)) - Number(isTurkishMatch(left));
-      return turkishGap || kickoffTime(left).value - kickoffTime(right).value;
-    });
-
-  return upcoming.slice(0, limit).map((match) => describe(
-    match, "next-fixture", "upcoming", tierOf(match, nowMs), pool.length, turkishCount
+  return ordered.slice(0, limit).map((match) => describe(
+    match, reasonFor(match, nowMs), bandOf(match, nowMs), tierOf(match, nowMs), pool.length, turkishCount
   ));
 }
 
@@ -333,14 +267,7 @@ function selectFeaturedMatch(matches, options) {
     return ordered[0];
   }
 
-  const settings = options || {};
-  const now = settings.now instanceof Date ? settings.now : new Date();
-  const nowMs = now.getTime();
-  const today = settings.today || istanbulToday(now);
-  const list = (Array.isArray(matches) ? matches : []).filter(Boolean);
-  const pool = list.filter((match) => matchDateValue(match) === today || isLiveMatch(match, nowMs));
-
-  return describe(null, "empty", "", null, pool.length, 0);
+  return describe(null, "empty", "", null, 0, 0);
 }
 
 function describe(match, reason, band, tier, candidateCount, turkishCandidateCount) {
