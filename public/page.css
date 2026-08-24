@@ -20318,3 +20318,51 @@ a.motm-week__card:focus-visible {
     min-width: 44px;
   }
 }
+/* Evergreen SEO pages: server-rendered standings, form, profiles and comparisons. */
+.evergreen-page { padding: 28px 0 64px; }
+.evergreen-breadcrumb { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; color: var(--muted, #64748b); font-size: .9rem; }
+.evergreen-breadcrumb a { color: inherit; }
+.evergreen-hero { max-width: 880px; margin-bottom: 28px; }
+.evergreen-hero h1 { margin: 8px 0 12px; font-size: clamp(2rem, 5vw, 3.6rem); line-height: 1.05; }
+.evergreen-hero > p { max-width: 760px; font-size: 1.05rem; line-height: 1.7; }
+.evergreen-freshness, .evergreen-note { color: var(--muted, #64748b); font-size: .88rem !important; }
+.evergreen-section, .evergreen-related { margin-top: 24px; padding: clamp(18px, 3vw, 30px); border: 1px solid var(--border, #dbe3ee); border-radius: 20px; background: var(--surface, #fff); }
+.evergreen-section h2, .evergreen-related h2 { margin: 0 0 18px; }
+.evergreen-table-wrap { overflow-x: auto; }
+.evergreen-table { width: 100%; border-collapse: collapse; text-align: center; }
+.evergreen-table caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.evergreen-table th, .evergreen-table td { padding: 12px 10px; border-bottom: 1px solid var(--border, #dbe3ee); white-space: nowrap; }
+.evergreen-table th[scope="row"] { text-align: left; }
+.evergreen-table tbody tr:last-child > * { border-bottom: 0; }
+.evergreen-table a, .evergreen-link-grid a, .evergreen-player-list a { color: inherit; font-weight: 750; text-decoration: none; }
+.evergreen-table a:hover, .evergreen-link-grid a:hover, .evergreen-player-list a:hover { color: var(--accent, #1e7a52); }
+.evergreen-form { display: inline-flex; gap: 5px; }
+.evergreen-form i { display: grid; place-items: center; min-width: 26px; height: 26px; padding: 0 5px; border-radius: 50%; background: #64748b; color: #fff; font-style: normal; font-weight: 800; }
+.evergreen-form i.is-win { background: #138a5b; }
+.evergreen-form i.is-loss { background: #d14343; }
+.evergreen-form i.is-draw { background: #b7791f; }
+.evergreen-form-large { margin-top: 20px; }
+.evergreen-form-large i { min-width: 36px; height: 36px; }
+.evergreen-two-column { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.evergreen-score-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.evergreen-score-grid > div { padding: 16px; border-radius: 14px; background: var(--surface-soft, #f3f6fa); }
+.evergreen-score-grid span, .evergreen-score-grid strong { display: block; }
+.evergreen-score-grid span { color: var(--muted, #64748b); font-size: .82rem; }
+.evergreen-score-grid strong { margin-top: 4px; font-size: 1.45rem; }
+.evergreen-player-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 0; list-style: none; }
+.evergreen-player-list a { display: flex; flex-direction: column; gap: 3px; padding: 14px; border-radius: 12px; background: var(--surface-soft, #f3f6fa); }
+.evergreen-player-list span { color: var(--muted, #64748b); font-size: .84rem; font-weight: 500; }
+.evergreen-link-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.evergreen-link-grid > a { display: flex; align-items: center; min-height: 50px; padding: 12px 14px; border: 1px solid var(--border, #dbe3ee); border-radius: 12px; background: var(--surface, #fff); }
+.evergreen-card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.evergreen-card { padding: 22px; border: 1px solid var(--border, #dbe3ee); border-radius: 18px; background: var(--surface, #fff); }
+.evergreen-card h2 { margin: 0 0 8px; font-size: 1.2rem; }
+.evergreen-card a { font-weight: 800; }
+.evergreen-home-links { padding-top: 32px; padding-bottom: 32px; }
+@media (max-width: 760px) {
+  .evergreen-two-column, .evergreen-card-grid { grid-template-columns: 1fr; }
+  .evergreen-player-list, .evergreen-link-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) {
+  .evergreen-player-list, .evergreen-link-grid { grid-template-columns: 1fr; }
+}

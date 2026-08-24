@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "postbuild": "node scripts/generate-evergreen-seo-pages.mjs && node scripts/inject-asset-version.mjs",
+    "generate:evergreen-seo": "node scripts/generate-evergreen-seo-pages.mjs",
+    "test:seo-foundation": "node scripts/test-seo-foundation.mjs",
+    "posttest": "node scripts/test-seo-foundation.mjs",
     "test:scheduled-updates": "node scripts/test-scheduled-updates.mjs",
     "pretest": "node scripts/test-live-score-stream.mjs && node scripts/test-official-transfers-20260814.mjs",
     "update:full": "node scripts/run-scheduled-update.mjs --type=full --force",
