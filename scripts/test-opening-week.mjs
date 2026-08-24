@@ -97,11 +97,22 @@ const foreignLive = {
   kickoff: "2026-08-14T22:00:00+03:00", status: "LIVE", live: true, source: "api-football"
 };
 
-for (const phase of lifecycle.slice(0, 5)) {
+assert.deepEqual(
+  selectFeaturedMatches([foreignLive, lifecycle[0].record], { now: new Date(lifecycle[0].now), today: "2026-08-14" }),
+  [],
+  "başlamamış maç canlı hero havuzuna girmemeli"
+);
+
+for (const phase of lifecycle.slice(1, 4)) {
   const [first] = selectFeaturedMatches([foreignLive, phase.record], { now: new Date(phase.now), today: "2026-08-14" });
   assert.equal(first.match.homeTeam, HOME, `${phase.label}: hero ilk kartı Türk maçı olmalı`);
   assert.ok(first.reason.startsWith("turkish-"), `${phase.label}: sebep turkish- ile başlamalı (gelen ${first.reason})`);
 }
+assert.deepEqual(
+  selectFeaturedMatches([foreignLive, lifecycle[4].record], { now: new Date(lifecycle[4].now), today: "2026-08-14" }),
+  [],
+  "biten maç canlı hero havuzuna girmemeli"
+);
 // Canlıyken kademe 0: yabancı canlı maç önüne geçemez.
 const liveSelection = selectFeaturedMatches([foreignLive, lifecycle[1].record], { now: new Date(lifecycle[1].now), today: "2026-08-14" });
 assert.equal(liveSelection[0].tier, 0, "canlı Türk maçı kademe 0 olmalı");

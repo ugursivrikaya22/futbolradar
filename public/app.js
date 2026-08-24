@@ -4,16 +4,13 @@
   var API_ROOT = "/api/";
   var DATA_ROOT = "/data/";
   var FETCH_TIMEOUT_MS = 6500;
-  var MATCH_LIVE_POLL_MS = 20000;
+  // Slow discovery only. Once a match is live, SSE takes over and the
+  // fallback follows the provider's documented 15-second refresh cadence.
+  var MATCH_LIVE_POLL_MS = 60000;
   var MATCH_DETAIL_POLL_MS = 15000;
-  // CANLI MAÇTA HIZLI YOKLAMA — kullanıcı talebi: "canlı maçta 5-10
-  // saniyelik polling yap". 7sn bu aralığın ortasında: skorun ekranda
-  // geç kalma payını küçültürken sağlayıcı kotasını (API-Football'ın
-  // ücretsiz/düşük katmanlarında dakikalık istek sınırı var, bkz.
-  // services/liveDataService.js PROVIDER_PLAN_ERROR günlükleri) 5sn'ye
-  // göre daha az zorluyor. Canlı maç yokken bu hıza gerek yok; ilgili
-  // bölümler MATCH_LIVE_POLL_MS/POLL_MS'e (20sn) geri döner.
-  var LIVE_MATCH_FAST_POLL_MS = 7000;
+  // API-Football refreshes fixture scores/events every 15 seconds. Polling
+  // faster consumes application requests without producing fresher data.
+  var LIVE_MATCH_FAST_POLL_MS = 15000;
   // Son düdükten sonra nihai istatistiklerin yayımlanması için beklenen süre.
   // Yoklama aralığıyla birlikte maç sonu analizi ~30-60 saniyede tam veriye
   // oturur; sağlayıcı geç yayımlarsa sonraki yoklama tamamlar.
@@ -4748,7 +4745,7 @@
     );
   }
 
-  // Canlı yoklamada yeniden çizilen maç bölümleri. "match-center-metrics"
+  // Canlı akışta yeniden çizilen maç bölümleri. "match-center-metrics"
   // buraya dahildir: "Analizi hazır" ve "Canlı" sayaçları sayfa açıldığı anda
   // dondurulmamalı, skor ve analiz durumu değiştikçe güncellenmelidir.
   var MATCH_SECTION_BINDINGS = [
@@ -4786,13 +4783,10 @@
   // için) ayrı yüklenip burada saklanır ki her yoklamada yeniden çekilmesin.
   var latestSuperLigTeams = [];
 
-  // Canlı yoklama API-Football'ın gerçek zamanlı uç noktasını kullanır
-  // (/api/matches?live=all). Bu uç nokta YALNIZCA oynanmakta olan maçları
-  // döndürdüğü için sonuç listeyi değiştirmez, günün listesinin üzerine
-  // birleştirilir; aksi halde canlı maç yokken tablo boşalırdı. Biten bir maç
-  // canlı listeden düştüğü için nihai skoru kaçırmamak adına belirli
-  // aralıklarla tam liste de yeniden çekilir.
-  var LIVE_FULL_RELOAD_EVERY = 5;
+  // SSE API-Football'ın gerçek zamanlı uç noktasını kullanır
+  // (/fixtures?live=all). Yalnızca oynanan maçlar geldiği için paket günün
+  // listesiyle birleştirilir; maç akıştan düşünce nihai durum bir kez tam
+  // listeden doğrulanır.
 
   function mergeLiveIntoMatches(baseMatches, liveMatches) {
     var base = Array.isArray(baseMatches) ? baseMatches.slice() : [];
@@ -4853,15 +4847,20 @@
       return;
     }
 
-    var tick = 0;
     var hasLiveMatchNow = false;
+    var lastKnownMatches = [];
+    var eventSource = null;
+    var fallbackTimer = null;
+    var streamRetryAt = 0;
+    var lastReportedPacket = "";
 
     function paint(matches) {
-      hasLiveMatchNow = Array.isArray(matches) && matches.some(function (match) { return isLiveMatch(match); });
+      lastKnownMatches = Array.isArray(matches) ? matches : [];
+      hasLiveMatchNow = lastKnownMatches.some(function (match) { return isLiveMatch(match); });
 
       activeBindings.forEach(function (binding) {
         var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
-        var html = binding.renderer(matches);
+        var html = binding.renderer(lastKnownMatches);
         if (!target) return;
 
         // `data-empty-hide` taşıyan bölüm içeriğiyle birlikte görünür ya da
@@ -4875,36 +4874,154 @@
       });
     }
 
-    createLivePoller(function () { return hasLiveMatchNow ? LIVE_MATCH_FAST_POLL_MS : MATCH_LIVE_POLL_MS; }, function () {
-      tick += 1;
+    function clearFallbackTimer() {
+      if (fallbackTimer) window.clearTimeout(fallbackTimer);
+      fallbackTimer = null;
+    }
 
-      if (tick % LIVE_FULL_RELOAD_EVERY === 0) {
-        return forceReload("matches").then(paint);
+    function closeStream() {
+      if (eventSource) eventSource.close();
+      eventSource = null;
+    }
+
+    function scheduleFallback(delay) {
+      clearFallbackTimer();
+      if (isDocumentHidden()) return;
+      fallbackTimer = window.setTimeout(runFallback, delay);
+    }
+
+    function mergeAndPaint(live, forceTerminalRefresh) {
+      if (forceTerminalRefresh || liveRosterChanged(lastKnownMatches, live)) {
+        return forceReload("matches").then(function (matches) {
+          var refreshed = live.length ? mergeLiveIntoMatches(matches, live) : matches;
+          cache.matches = Promise.resolve(refreshed);
+          paint(refreshed);
+          return refreshed;
+        });
       }
+      if (!live.length) {
+        paint(lastKnownMatches.filter(function (match) { return !isLiveMatch(match); }));
+        return Promise.resolve(lastKnownMatches);
+      }
+      var merged = mergeLiveIntoMatches(lastKnownMatches, live);
+      cache.matches = Promise.resolve(merged);
+      paint(merged);
+      return Promise.resolve(merged);
+    }
 
+    function reportRender(packet) {
+      if (!packet || !packet.id || packet.id === lastReportedPacket) return;
+      lastReportedPacket = packet.id;
+      window.requestAnimationFrame(function () {
+        var clientRenderedAt = new Date(
+          window.performance && Number.isFinite(performance.timeOrigin)
+            ? performance.timeOrigin + performance.now()
+            : Date.now()
+        ).toISOString();
+        var events = (packet.matches || []).reduce(function (all, match) {
+          return all.concat(Array.isArray(match.events) ? match.events : []);
+        }, []);
+        var actualEvent = events.slice().reverse().find(function (event) { return event.providerEventAt; });
+        var estimatedEvent = events.slice().reverse().find(function (event) { return event.providerEventTimeEstimated; });
+        var detail = {
+          packetId: packet.id,
+          matchIds: (packet.matches || []).map(function (match) { return String(match.id || match.providerId || ""); }).filter(Boolean),
+          providerEventAt: actualEvent ? actualEvent.providerEventAt : null,
+          providerEventTimeEstimated: estimatedEvent ? estimatedEvent.providerEventTimeEstimated : null,
+          serverReceivedAt: packet.timing && packet.timing.serverReceivedAt,
+          apiResponseAt: packet.timing && packet.timing.apiResponseAt,
+          clientRenderedAt: clientRenderedAt
+        };
+
+        if (window.performance && typeof performance.mark === "function") {
+          try { performance.mark("futbolradar-live-render", { detail: detail }); } catch (error) {
+            performance.mark("futbolradar-live-render");
+          }
+        }
+        document.dispatchEvent(new CustomEvent("futbolradar:live-latency", { detail: detail }));
+        fetch(API_ROOT + "live-score-stream", {
+          method: "POST",
+          cache: "no-store",
+          keepalive: true,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(detail)
+        }).catch(function () {});
+      });
+    }
+
+    function handleStreamSnapshot(message) {
+      var packet;
+      try { packet = JSON.parse(message.data); } catch (error) { return; }
+      var live = Array.isArray(packet.matches) ? packet.matches : [];
+      mergeAndPaint(live, !live.length && hasLiveMatchNow).then(function () {
+        reportRender(packet);
+        if (!hasLiveMatchNow) {
+          closeStream();
+          scheduleFallback(MATCH_LIVE_POLL_MS);
+        }
+      });
+    }
+
+    function connectStream() {
+      clearFallbackTimer();
+      if (!hasLiveMatchNow || !window.EventSource || isDocumentHidden() || eventSource) {
+        scheduleFallback(hasLiveMatchNow ? LIVE_MATCH_FAST_POLL_MS : MATCH_LIVE_POLL_MS);
+        return;
+      }
+      eventSource = new EventSource(API_ROOT + "live-score-stream");
+      eventSource.addEventListener("snapshot", handleStreamSnapshot);
+      eventSource.addEventListener("stream-end", function () {
+        closeStream();
+        streamRetryAt = 0;
+        connectStream();
+      });
+      eventSource.onerror = function () {
+        closeStream();
+        streamRetryAt = Date.now() + MATCH_LIVE_POLL_MS;
+        scheduleFallback(0);
+      };
+    }
+
+    function runFallback() {
+      fallbackTimer = null;
+      if (isDocumentHidden()) return;
       return fetchJson(API_ROOT + "matches?live=all", { noStore: true })
         .then(function (result) {
           var live = (result && result.data) || [];
-          return loadData("matches").then(function (matches) {
-            // Canlı uç noktadan bir maç düştüyse (son düdük/iptal) eski
-            // LIVE kartını bir sonraki periyodik tam yenilemeye kadar
-            // ekranda tutma. Tam listeyi hemen çekerek kesin durumu al.
-            if (liveRosterChanged(matches, live)) {
-              return forceReload("matches").then(paint);
-            }
-            if (!live.length) return null;
-
-            var merged = mergeLiveIntoMatches(matches, live);
-            cache.matches = Promise.resolve(merged);
-            paint(merged);
-            return merged;
-          });
+          return mergeAndPaint(live, !live.length && hasLiveMatchNow);
         })
         .catch(function () {
-          // Canlı uç nokta erişilemezse tam listeye düş; skorlar yine tazelenir.
           return forceReload("matches").then(paint);
+        })
+        .then(function () {
+          if (hasLiveMatchNow && window.EventSource && Date.now() >= streamRetryAt) {
+            connectStream();
+          } else {
+            scheduleFallback(hasLiveMatchNow ? LIVE_MATCH_FAST_POLL_MS : MATCH_LIVE_POLL_MS);
+          }
         });
-    }).start();
+    }
+
+    loadData("matches").then(function (matches) {
+      paint(matches);
+      if (hasLiveMatchNow) connectStream();
+      else scheduleFallback(MATCH_LIVE_POLL_MS);
+    }).catch(function () {
+      scheduleFallback(MATCH_LIVE_POLL_MS);
+    });
+
+    document.addEventListener("visibilitychange", function () {
+      if (isDocumentHidden()) {
+        closeStream();
+        clearFallbackTimer();
+      } else {
+        scheduleFallback(0);
+      }
+    });
+    window.addEventListener("pagehide", function () {
+      closeStream();
+      clearFallbackTimer();
+    });
   }
 
   /**

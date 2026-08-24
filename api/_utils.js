@@ -9,6 +9,7 @@ const CACHE_POLICIES = Object.freeze({
   // yokluyor (app.js MATCH_LIVE_POLL_MS); CDN'in araya ikinci bir
   // gecikme katmanı eklemesine gerek yok.
   "matches-live": { noStore: true },
+  "live-stream": { noStore: true },
   "match-detail": { maxAge: 30, stale: 120 },
   // Maç detayı CANLIYSA no-store'a geçer (server/liveLatencyRoute.js ve
   // api/match-detail.js bu politikayı seçer); bitmiş/başlamamış maçta

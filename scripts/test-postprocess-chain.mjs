@@ -72,7 +72,11 @@ console.log("postprocess-chain");
   );
 
   // Derleme, son işlemi gerçekten çağırıyor mu?
-  assert.match(pkg.scripts.build || "", /npm run postprocess/, "build, postprocess'i çağırmalı");
+  assert.match(
+    pkg.scripts.build || "",
+    /(?:npm run postprocess|node scripts\/postprocess\.mjs)/,
+    "build, postprocess'i çağırmalı"
+  );
 }
 
 // ── 4. Saatlik kuyruk zinciri TÜRETMELİ ────────────────────────────────────
@@ -107,8 +111,8 @@ console.log("postprocess-chain");
 
 // ── 5. Saatlik ve tam derleme aynı adımları görmeli ────────────────────────
 //
-// Tam derleme `npm run build` → `npm run postprocess` yolundan, saatlik
-// koşu doğrudan zincirden geçiyor. İkisi de aynı listeyi okuduğu için
+// Tam derleme `npm run build` içinden postprocess komutuna, saatlik koşuysa
+// doğrudan zincire geçiyor. İkisi de aynı listeyi okuduğu için
 // kapsam eşit; burada o eşitliği açıkça yazıya döküyoruz ki zincire adım
 // ekleyen kişi iki yolun da kapsandığını görsün.
 {
