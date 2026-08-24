@@ -1727,8 +1727,8 @@
    * sağlayıcı bir maçı hiç "FINISHED"e çevirmezse (iki sağlayıcı aynı maçı
    * ayrı kayıtla bildirip biri gecikince olduğu gibi) ham kontrol o maçı
    * GÜNLERCE "canlı" sayardı. Kural `services/featuredMatchSelector.js`
-   * ile AYNI: yalnızca YAŞ denetlenir (skor kapısı burada aranmaz — o ayrı
-   * bir sözleşme ve canlı skor yüzeylerinde zaten uygulanıyor).
+   * ile AYNI: yaş ve okunabilir skor birlikte denetlenir; büyük kart
+   * doğrulanmamış bir canlılık iddiasını göstermez.
    */
   function featuredIsLiveMatch(match, nowMs) {
     if (!match) {
@@ -1738,7 +1738,7 @@
     var status = String((match && (match.status || match.providerStatus)) || "").toUpperCase();
     var claimsLive = match.live === true ||
       ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].indexOf(status) !== -1;
-    if (!claimsLive) {
+    if (!claimsLive || !hasReadableScore(match)) {
       return false;
     }
 
@@ -1836,16 +1836,14 @@
     var settings = options || {};
     var now = settings.now instanceof Date ? settings.now : new Date();
     var nowMs = now.getTime();
-    var today = settings.today || todayInIstanbul();
     var limit = settings.limit > 0 ? settings.limit : FEATURED_MAX_SLIDES;
     var list = (Array.isArray(matches) ? matches : []).filter(Boolean);
 
-    // Gece yarısını aşan bir maç TSİ'de "dün" görünse de canlıysa havuzdadır.
-    // "Canlı" burada da `featuredIsLiveMatch` ile karar verilir (bayat canlı
-    // korumalı) — yoksa bir günlerdir bitmiş ama hâlâ "LIVE" işaretli kayıt
-    // yalnızca bugünün tarihine bakan filtreyi hep atlatır.
+    // Büyük kart yalnızca doğrulanmış canlı maçları gösterir. Başlamamış,
+    // bitmiş, skorsuz veya bayat bir kayıt karuseli dolduramaz. Gece
+    // yarısını aşan gerçek bir canlı maç tarih filtresi olmadığı için kalır.
     var pool = list.filter(function (match) {
-      return (matchDateValue(match) === today || featuredIsLiveMatch(match, nowMs)) && !isUnplayedMatch(match);
+      return featuredIsLiveMatch(match, nowMs);
     });
     var turkishCount = pool.filter(isTurkishMatch).length;
 
@@ -1865,52 +1863,14 @@
       return compareFeaturedWithinBand(leftBand, left, right);
     });
 
-    if (ordered.length) {
-      var cards = ordered.slice(0, limit).map(function (match) {
-        return describeFeaturedSelection(
-          match,
-          featuredReasonFor(match, nowMs),
-          featuredBandOf(match, nowMs),
-          featuredTierOf(match, nowMs),
-          pool.length,
-          turkishCount
-        );
-      });
-
-      // Bugün Türk maçı yoksa hero yabancı maça bırakılmaz; en yakın Türk
-      // karşılaşması ilk karta geçer. Kural services/featuredMatchSelector.js
-      // ile aynı — ayrışırsa scripts/test-featured-turkish-match.mjs kırılır.
-      if (!turkishCount) {
-        var nextTurkish = list.filter(function (match) {
-          return isTurkishMatch(match) &&
-            matchDateValue(match) > today &&
-            !isUnplayedMatch(match);
-        }).sort(function (left, right) {
-          return featuredKickoffTime(left).value - featuredKickoffTime(right).value;
-        })[0];
-
-        if (nextTurkish) {
-          cards.unshift(describeFeaturedSelection(
-            nextTurkish, "turkish-next", "upcoming", featuredTierOf(nextTurkish, nowMs), pool.length, turkishCount
-          ));
-          cards.length = Math.min(cards.length, limit);
-        }
-      }
-
-      return cards;
-    }
-
-    // Bugün maç yoksa karusel boş kalmasın: takvimdeki sıradaki karşılaşmalar.
-    var upcoming = list.filter(function (match) {
-      return matchDateValue(match) > today;
-    }).sort(function (left, right) {
-      var turkishGap = Number(isTurkishMatch(right)) - Number(isTurkishMatch(left));
-      return turkishGap || featuredKickoffTime(left).value - featuredKickoffTime(right).value;
-    });
-
-    return upcoming.slice(0, limit).map(function (match) {
+    return ordered.slice(0, limit).map(function (match) {
       return describeFeaturedSelection(
-        match, "next-fixture", "upcoming", featuredTierOf(match, nowMs), pool.length, turkishCount
+        match,
+        featuredReasonFor(match, nowMs),
+        featuredBandOf(match, nowMs),
+        featuredTierOf(match, nowMs),
+        pool.length,
+        turkishCount
       );
     });
   }
@@ -2756,7 +2716,7 @@
         '<div class="featured-fixture">' +
         '<div class="featured-fixture-head"><span class="featured-fixture-league">Canlı skor panosu</span><span>' +
         escapeHtml(formatMatchDate(todayInIstanbul())) + "</span></div>" +
-        '<div class="home-match-command-empty"><strong>Bugün doğrulanmış maç görünmüyor.</strong><span>Önceki ve sonraki günleri maç merkezinden kontrol edebilirsin.</span></div>' +
+        '<div class="home-match-command-empty"><strong>Şu anda doğrulanmış canlı maç yok.</strong><span>Bugünün programını ve sonuçlarını maç merkezinden kontrol edebilirsin.</span></div>' +
         '<div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Canlı skor</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>' +
         "</div>" +
         quickStats
@@ -3125,44 +3085,43 @@
     return '<span class="superlig-strip-kicker">Süper Lig\'de Bugün</span><div class="superlig-strip-rail">' + rows + '</div>';
   }
 
-  /**
-   * Mobilde ekran dar: "daha fazla göster"e basmadan görünen pencere
-   * masaüstünden çok daha az kart taşır. 760px eşiği page.css'teki baskın
-   * mobil kırılma noktasıyla aynı (bkz. `.fixture-card` @media kuralları).
-   */
-  function isMobileViewport() {
-    return typeof window !== "undefined" && typeof window.matchMedia === "function" &&
-      window.matchMedia("(max-width: 760px)").matches;
+  // today-match-card-selection:start
+  function selectTodayMatchCards(matches, options) {
+    var settings = options || {};
+    var today = settings.today || todayInIstanbul();
+    var list = (Array.isArray(matches) ? matches : []).filter(function (match) {
+      return match && istanbulDayOf(match.kickoff || match.date || match.utcDate) === today;
+    });
+
+    function rank(match) {
+      var status = String(match.status || match.providerStatus || "").toUpperCase();
+      if (isLiveMatch(match)) return 0;
+      if (["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(status)) return 1;
+      return 2;
+    }
+
+    return list.sort(function (left, right) {
+      var stateGap = rank(left) - rank(right);
+      if (stateGap !== 0) return stateGap;
+
+      // Aynı durum bandında Türk takımı maçı önce gelir; canlı yabancı maç
+      // yine başlamamış Türk maçının önündedir. Böylece veri doğruluğu ve
+      // yerel ilgi sırası birbirini ezmez. Mobilde dar pencere bu sırayı
+      // özellikle önemli kılar: "daha fazla göster"e basmadan görünen
+      // pencere masaüstünden çok daha az kart taşır.
+      var turkishGap = Number(isTurkishMatch(right)) - Number(isTurkishMatch(left));
+      return turkishGap || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
+    });
   }
+  // today-match-card-selection:end
 
   function renderTodayMatchesPreview(matches) {
     if (!Array.isArray(matches) || !matches.length) {
       return "";
     }
 
-    var prioritizeTurkish = isMobileViewport();
-
-    var ordered = matches.slice().sort(function (left, right) {
-      function rank(match) {
-        var status = String(match.status || match.providerStatus || "").toUpperCase();
-        if (isLiveMatch(match)) return 0;
-        if (["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(status)) return 1;
-        return 2;
-      }
-
-      var rankGap = rank(left) - rank(right);
-      if (rankGap !== 0) return rankGap;
-
-      // Mobilde dar pencere Türk takımı maçlarını "daha fazla göster"
-      // düğmesinin arkasına düşürebiliyordu; aynı bantta Türk takımı
-      // maçı önce gelir. Masaüstünde davranış değişmez.
-      if (prioritizeTurkish) {
-        var turkishGap = (isTurkishMatch(left) ? 0 : 1) - (isTurkishMatch(right) ? 0 : 1);
-        if (turkishGap !== 0) return turkishGap;
-      }
-
-      return String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
-    });
+    var ordered = selectTodayMatchCards(matches);
+    if (!ordered.length) return "";
 
     // Sekiz kart, yoğun bir Avrupa gecesinde günün yarısını gizliyordu. On iki
     // görünür, gerisi butonun arkasında; on ikiden azsa buton hiç basılmaz.
@@ -3658,6 +3617,16 @@
     return base;
   }
 
+  function liveRosterChanged(baseMatches, liveMatches) {
+    var current = (Array.isArray(baseMatches) ? baseMatches : []).filter(isLiveMatch);
+    var incoming = (Array.isArray(liveMatches) ? liveMatches : []).filter(isLiveMatch);
+    if (current.length !== incoming.length) return true;
+
+    var incomingKeys = {};
+    incoming.forEach(function (match) { incomingKeys[matchIdentityKey(match)] = true; });
+    return current.some(function (match) { return !incomingKeys[matchIdentityKey(match)]; });
+  }
+
   function initLiveMatchPolling() {
     var activeBindings = MATCH_SECTION_BINDINGS.filter(function (binding) {
       return document.querySelector('[data-api-target="' + binding.selector + '"]');
@@ -3699,10 +3668,15 @@
       return fetchJson(API_ROOT + "matches?live=all", { noStore: true })
         .then(function (result) {
           var live = (result && result.data) || [];
-          if (!live.length) {
-            return null;
-          }
           return loadData("matches").then(function (matches) {
+            // Canlı uç noktadan bir maç düştüyse (son düdük/iptal) eski
+            // LIVE kartını bir sonraki periyodik tam yenilemeye kadar
+            // ekranda tutma. Tam listeyi hemen çekerek kesin durumu al.
+            if (liveRosterChanged(matches, live)) {
+              return forceReload("matches").then(paint);
+            }
+            if (!live.length) return null;
+
             var merged = mergeLiveIntoMatches(matches, live);
             cache.matches = Promise.resolve(merged);
             paint(merged);
