@@ -682,6 +682,9 @@ function normalizeFixture(item) {
     goalExpectation: null,
     goalPotential: null,
     risk: null,
+    // `/fixtures?live=...` already embeds events. Reusing them avoids one
+    // `/fixtures/events` provider request per live match and preserves quota.
+    events: normalizeFixtureEvents(item.events),
     source: "api-football"
   };
 }
@@ -1248,6 +1251,8 @@ function normalizeFixtureEvents(items) {
     const player = item.player && item.player.name;
     const assist = item.assist && item.assist.name;
     const details = [player, assist ? `Asist: ${assist}` : "", item.detail].filter(Boolean);
+    const explicitEventTime = item.timestamp || item.date || item.createdAt || item.updatedAt;
+    const parsedEventTime = explicitEventTime ? Date.parse(explicitEventTime) : NaN;
 
     return {
       time: minute,
@@ -1255,7 +1260,8 @@ function normalizeFixtureEvents(items) {
       type: item.type || "Mac olayi",
       detail: item.detail || "",
       value: details.join(" · "),
-      comments: item.comments || ""
+      comments: item.comments || "",
+      providerEventAt: Number.isFinite(parsedEventTime) ? new Date(parsedEventTime).toISOString() : null
     };
   });
 }
