@@ -2822,16 +2822,21 @@
 
   function featuredTierOf(match, nowMs) {
     var band = featuredBandOf(match, nowMs);
+    if (band !== "live") return isTurkishMatch(match) ? 1 : 6;
 
-    if (isTurkishMatch(match)) {
-      return band === "live" ? 0 : 1;
-    }
-
-    if (band === "live") {
-      return isMajorClubMatch(match) ? 2 : 3;
-    }
-
-    return 4;
+    // Ana sayfa canlı maç sırası: Türk takımı, Süper Lig, 1. Lig, UEFA,
+    // beş büyük lig ve diğerleri. Sağlayıcı lig kimliği isimden önce gelir.
+    if (isTurkishTeamName(match.homeTeam) || isTurkishTeamName(match.awayTeam)) return 0;
+    var competitionId = String(match.competitionId || "");
+    var providerLeagueId = String(match.providerLeagueId || "");
+    var leagueKey = turkishKey(match.league || match.competition || "");
+    if (competitionId === "super-lig" || providerLeagueId === "203" || leagueKey.indexOf("super lig") !== -1) return 1;
+    if (competitionId === "1-lig" || providerLeagueId === "204" || leagueKey === "1 lig" || leagueKey.indexOf("trendyol 1 lig") !== -1) return 2;
+    if (["sampiyonlar-ligi", "avrupa-ligi", "konferans-ligi"].indexOf(competitionId) !== -1 ||
+        ["2", "3", "848"].indexOf(providerLeagueId) !== -1 || leagueKey.indexOf("uefa") !== -1) return 3;
+    if (["premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1"].indexOf(competitionId) !== -1 ||
+        ["39", "140", "135", "78", "61"].indexOf(providerLeagueId) !== -1) return 4;
+    return 5;
   }
 
   function featuredReasonFor(match, nowMs) {
@@ -4851,11 +4856,76 @@
     var lastKnownMatches = [];
     var eventSource = null;
     var fallbackTimer = null;
+    var liveAgeTimer = null;
     var streamRetryAt = 0;
     var lastReportedPacket = "";
+    var lastLiveUpdateMs = 0;
+
+    function numericScore(value) {
+      if (typeof value === "number" && isFinite(value)) return value;
+      if (typeof value === "string" && value.trim() !== "" && isFinite(Number(value))) return Number(value);
+      return null;
+    }
+
+    function goalChangeIds(previous, next) {
+      var before = Object.create(null);
+      (Array.isArray(previous) ? previous : []).forEach(function (match) {
+        var score = match && match.score;
+        if (!score) return;
+        before[matchIdentityKey(match)] = { home: numericScore(score.home), away: numericScore(score.away) };
+      });
+      return (Array.isArray(next) ? next : []).filter(function (match) {
+        var old = before[matchIdentityKey(match)];
+        var score = match && match.score;
+        if (!old || !score) return false;
+        var home = numericScore(score.home);
+        var away = numericScore(score.away);
+        return (home !== null && old.home !== null && home > old.home) ||
+          (away !== null && old.away !== null && away > old.away);
+      }).map(function (match) { return String(match.id || match.providerId || ""); }).filter(Boolean);
+    }
+
+    function updateLiveAges() {
+      activeBindings.forEach(function (binding) {
+        if (["featured-match", "live-score"].indexOf(binding.selector) === -1) return;
+        var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
+        if (!target) return;
+        var existing = target.querySelector("[data-live-last-updated]");
+        if (!hasLiveMatchNow || !lastLiveUpdateMs) {
+          if (existing) existing.remove();
+          return;
+        }
+        if (!existing) {
+          existing = document.createElement("p");
+          existing.className = "live-last-updated";
+          existing.setAttribute("data-live-last-updated", "");
+          existing.setAttribute("aria-live", "polite");
+          target.appendChild(existing);
+        }
+        var seconds = Math.max(0, Math.floor((Date.now() - lastLiveUpdateMs) / 1000));
+        existing.textContent = "Son güncelleme " + seconds + " saniye önce";
+      });
+    }
+
+    function flashGoals(ids) {
+      if (!ids.length) return;
+      activeBindings.forEach(function (binding) {
+        var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
+        if (!target) return;
+        Array.prototype.forEach.call(target.querySelectorAll("[data-match]"), function (card) {
+          if (ids.indexOf(String(card.getAttribute("data-match") || "")) === -1) return;
+          card.classList.remove("is-goal-update");
+          void card.offsetWidth;
+          card.classList.add("is-goal-update");
+          window.setTimeout(function () { card.classList.remove("is-goal-update"); }, 2200);
+        });
+      });
+    }
 
     function paint(matches) {
-      lastKnownMatches = Array.isArray(matches) ? matches : [];
+      var nextMatches = Array.isArray(matches) ? matches : [];
+      var changedGoals = goalChangeIds(lastKnownMatches, nextMatches);
+      lastKnownMatches = nextMatches;
       hasLiveMatchNow = lastKnownMatches.some(function (match) { return isLiveMatch(match); });
 
       activeBindings.forEach(function (binding) {
@@ -4872,6 +4942,8 @@
           setContent(target, html);
         }
       });
+      updateLiveAges();
+      flashGoals(changedGoals);
     }
 
     function clearFallbackTimer() {
@@ -4930,7 +5002,11 @@
           providerEventTimeEstimated: estimatedEvent ? estimatedEvent.providerEventTimeEstimated : null,
           serverReceivedAt: packet.timing && packet.timing.serverReceivedAt,
           apiResponseAt: packet.timing && packet.timing.apiResponseAt,
-          clientRenderedAt: clientRenderedAt
+          clientRenderedAt: clientRenderedAt,
+          provider_event_time: packet.timing && packet.timing.provider_event_time || (actualEvent ? actualEvent.providerEventAt : null),
+          backend_receive_time: packet.timing && packet.timing.backend_receive_time || packet.timing && packet.timing.serverReceivedAt,
+          api_response_time: packet.timing && packet.timing.api_response_time || packet.timing && packet.timing.apiResponseAt,
+          client_render_time: clientRenderedAt
         };
 
         if (window.performance && typeof performance.mark === "function") {
@@ -4953,18 +5029,15 @@
       var packet;
       try { packet = JSON.parse(message.data); } catch (error) { return; }
       var live = Array.isArray(packet.matches) ? packet.matches : [];
+      lastLiveUpdateMs = Date.parse(packet.timing && (packet.timing.api_response_time || packet.timing.apiResponseAt)) || Date.now();
       mergeAndPaint(live, !live.length && hasLiveMatchNow).then(function () {
         reportRender(packet);
-        if (!hasLiveMatchNow) {
-          closeStream();
-          scheduleFallback(MATCH_LIVE_POLL_MS);
-        }
       });
     }
 
     function connectStream() {
       clearFallbackTimer();
-      if (!hasLiveMatchNow || !window.EventSource || isDocumentHidden() || eventSource) {
+      if (!window.EventSource || isDocumentHidden() || eventSource) {
         scheduleFallback(hasLiveMatchNow ? LIVE_MATCH_FAST_POLL_MS : MATCH_LIVE_POLL_MS);
         return;
       }
@@ -4988,6 +5061,7 @@
       return fetchJson(API_ROOT + "matches?live=all", { noStore: true })
         .then(function (result) {
           var live = (result && result.data) || [];
+          lastLiveUpdateMs = Date.now();
           return mergeAndPaint(live, !live.length && hasLiveMatchNow);
         })
         .catch(function () {
@@ -5004,11 +5078,12 @@
 
     loadData("matches").then(function (matches) {
       paint(matches);
-      if (hasLiveMatchNow) connectStream();
-      else scheduleFallback(MATCH_LIVE_POLL_MS);
+      connectStream();
     }).catch(function () {
       scheduleFallback(MATCH_LIVE_POLL_MS);
     });
+
+    liveAgeTimer = window.setInterval(updateLiveAges, 1000);
 
     document.addEventListener("visibilitychange", function () {
       if (isDocumentHidden()) {
@@ -5021,6 +5096,7 @@
     window.addEventListener("pagehide", function () {
       closeStream();
       clearFallbackTimer();
+      if (liveAgeTimer) window.clearInterval(liveAgeTimer);
     });
   }
 

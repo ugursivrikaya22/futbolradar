@@ -9,9 +9,11 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const {
   EXHAUSTED_QUOTA_CADENCE_MS,
   LOW_QUOTA_CADENCE_MS,
+  NO_LIVE_CADENCE_MS,
   LiveScoreHub,
   PROVIDER_CADENCE_MS,
   estimatedEventTime,
+  nextPollCadence,
   quotaAwareCadence
 } = require("../services/liveScoreStream.js");
 const { cacheControlFor } = require("../api/_utils.js");
@@ -87,6 +89,10 @@ unsubscribeSecond();
 assert.equal(quotaAwareCadence({ getProviderRateLimit: () => ({ remaining: 50 }) }), PROVIDER_CADENCE_MS);
 assert.equal(quotaAwareCadence({ getProviderRateLimit: () => ({ remaining: 5 }) }), LOW_QUOTA_CADENCE_MS);
 assert.equal(quotaAwareCadence({ getProviderRateLimit: () => ({ remaining: 0 }) }), EXHAUSTED_QUOTA_CADENCE_MS);
+assert.equal(nextPollCadence(provider, true), PROVIDER_CADENCE_MS, "canlı maç varken yaklaşık 15sn kullanılmalı");
+assert.equal(nextPollCadence(provider, false), NO_LIVE_CADENCE_MS, "canlı maç yokken merkezi istek seyrekleşmeli");
+assert.equal(nextPollCadence({ getProviderRateLimit: () => ({ remaining: 0 }) }, true), EXHAUSTED_QUOTA_CADENCE_MS,
+  "kota koruması canlı kadanstan öncelikli olmalı");
 
 assert.deepEqual(cacheControlFor("live-stream"), { browser: "no-store", cdn: "no-store" });
 
@@ -116,14 +122,39 @@ const normalized = apiFootball.normalizeFixture({
 assert.equal(normalized.events.length, 1, "canlı fikstürün gömülü olayları ayrıca API'den istenmemeli");
 assert.equal(normalized.events[0].providerEventAt, null, "olmayan sağlayıcı zamanı uydurulmamalı");
 
+const providerSource = fs.readFileSync(path.join(root, "services", "providers", "apiFootballProvider.js"), "utf8");
+const liveFixtureBranch = providerSource.match(/async function getFixtures\(query\)[\s\S]*?\n\}/);
+assert.ok(liveFixtureBranch, "getFixtures bulunmalı");
+assert.match(liveFixtureBranch[0], /providerFetch\("\/fixtures",\s*\{[\s\S]*?live:\s*liveValue/,
+  "ana canlı kaynak API-Football fixtures?live=all olmalı");
+assert.match(liveFixtureBranch[0], /liveValue \? matches : filterSupportedCompetitions\(matches\)/,
+  "live=all katalogdaki büyük liglerle sınırlandırılmamalı");
+
+const { compareLiveMatchPriority, liveMatchPriority } = require("../services/liveMatchPriority.js");
+const priorityRows = [
+  { id: "other", homeTeam: "Alpha", awayTeam: "Beta", providerLeagueId: "9999" },
+  { id: "big-five", homeTeam: "Alpha", awayTeam: "Beta", providerLeagueId: "39" },
+  { id: "uefa", homeTeam: "Alpha", awayTeam: "Beta", providerLeagueId: "2" },
+  { id: "first-lig", homeTeam: "Alpha", awayTeam: "Beta", providerLeagueId: "204" },
+  { id: "super-lig", homeTeam: "Alpha", awayTeam: "Beta", providerLeagueId: "203" },
+  { id: "turkish-team", homeTeam: "Galatasaray", awayTeam: "Alpha", providerLeagueId: "2" }
+];
+assert.deepEqual(priorityRows.slice().sort(compareLiveMatchPriority).map((match) => match.id),
+  ["turkish-team", "super-lig", "first-lig", "uefa", "big-five", "other"]);
+assert.equal(liveMatchPriority(priorityRows[0]), 5);
+
 const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
 const route = fs.readFileSync(path.join(root, "api", "[...route].js"), "utf8");
 assert.match(app, /new EventSource\(API_ROOT \+ "live-score-stream"\)/);
-assert.match(app, /if \(!hasLiveMatchNow \|\| !window\.EventSource/,
-  "SSE yalnızca canlı maç varken açılmalı");
+assert.match(app, /if \(!window\.EventSource \|\| isDocumentHidden\(\) \|\| eventSource\)/,
+  "SSE tüm istemcileri tek merkezi hub'a bağlamalı; canlı keşfi kullanıcı pollingine kalmamalı");
 assert.match(app, /hasLiveMatchNow \? LIVE_MATCH_FAST_POLL_MS : MATCH_LIVE_POLL_MS/,
   "polling geri düşüşü canlı ve keşif kadanslarını ayırmalı");
 assert.match(app, /futbolradar:live-latency/, "istemci render zamanı ölçülmeli");
+assert.match(app, /provider_event_time:[\s\S]*backend_receive_time:[\s\S]*api_response_time:[\s\S]*client_render_time:/,
+  "dört gecikme zamanı açık alan adlarıyla raporlanmalı");
+assert.match(app, /Son güncelleme " \+ seconds \+ " saniye önce/);
+assert.match(app, /function goalChangeIds\(/, "skor artışında görsel gol vurgusu hesaplanmalı");
 assert.match(route, /handleLiveScoreStream/);
 assert.match(route, /maxDuration: 300/, "SSE işlev ömrü akış rotasyonundan uzun olmalı");
 

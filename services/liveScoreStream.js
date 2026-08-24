@@ -9,6 +9,7 @@
 const { getProvider } = require("./providers");
 
 const PROVIDER_CADENCE_MS = 15000;
+const NO_LIVE_CADENCE_MS = 60000;
 const LOW_QUOTA_CADENCE_MS = 60000;
 const EXHAUSTED_QUOTA_CADENCE_MS = 5 * 60 * 1000;
 const LIVE_STATUS_CODES = new Set(["LIVE", "IN_PLAY", "1H", "2H", "HT", "HALFTIME", "ET", "BT", "P", "INT", "PAUSED"]);
@@ -64,6 +65,11 @@ function matchSnapshot(match, serverReceivedAt) {
     providerId: String((match && (match.providerId || match.id)) || ""),
     homeTeam: (match && match.homeTeam) || "",
     awayTeam: (match && match.awayTeam) || "",
+    homeTeamLogo: (match && match.homeTeamLogo) || null,
+    awayTeamLogo: (match && match.awayTeamLogo) || null,
+    league: (match && match.league) || "",
+    competitionId: (match && match.competitionId) || null,
+    providerLeagueId: (match && match.providerLeagueId) || null,
     kickoff: (match && match.kickoff) || null,
     status: (match && match.status) || null,
     providerStatus: (match && match.providerStatus) || null,
@@ -79,7 +85,9 @@ function matchSnapshot(match, serverReceivedAt) {
     timing: {
       providerEventAt: latestActualEvent ? latestActualEvent.providerEventAt : null,
       providerEventTimeEstimated: latestEstimatedEvent ? latestEstimatedEvent.providerEventTimeEstimated : null,
-      serverReceivedAt: isoOrNull(match && match.fetchedAt) || serverReceivedAt
+      serverReceivedAt: isoOrNull(match && match.fetchedAt) || serverReceivedAt,
+      provider_event_time: latestActualEvent ? latestActualEvent.providerEventAt : null,
+      backend_receive_time: isoOrNull(match && match.fetchedAt) || serverReceivedAt
     }
   };
 }
@@ -105,6 +113,13 @@ function quotaAwareCadence(provider) {
   return PROVIDER_CADENCE_MS;
 }
 
+function nextPollCadence(provider, hasLiveMatches) {
+  return Math.max(
+    hasLiveMatches ? PROVIDER_CADENCE_MS : NO_LIVE_CADENCE_MS,
+    quotaAwareCadence(provider)
+  );
+}
+
 class LiveScoreHub {
   constructor(options = {}) {
     this.provider = options.provider || getProvider("matches");
@@ -117,6 +132,7 @@ class LiveScoreHub {
     this.inFlight = null;
     this.lastSignature = null;
     this.lastPacket = null;
+    this.hasLiveMatches = false;
   }
 
   subscribe(listener) {
@@ -146,6 +162,7 @@ class LiveScoreHub {
         const receivedMs = this.now();
         const serverReceivedAt = new Date(receivedMs).toISOString();
         const matches = (Array.isArray(rows) ? rows : []).filter(isLiveMatch).map((match) => matchSnapshot(match, serverReceivedAt));
+        this.hasLiveMatches = matches.length > 0;
         const providerDataReceivedAt = matches
           .map((match) => match.timing && match.timing.serverReceivedAt)
           .filter(Boolean)
@@ -162,7 +179,9 @@ class LiveScoreHub {
             // age visible instead of pretending cached data just arrived.
             serverReceivedAt: providerDataReceivedAt,
             hubObservedAt: serverReceivedAt,
-            providerFetchDurationMs: Math.max(0, receivedMs - startedMs)
+            providerFetchDurationMs: Math.max(0, receivedMs - startedMs),
+            provider_event_time: matches.map((match) => match.timing.provider_event_time).filter(Boolean).sort().slice(-1)[0] || null,
+            backend_receive_time: providerDataReceivedAt
           }
         };
 
@@ -186,7 +205,7 @@ class LiveScoreHub {
       .finally(() => {
         this.inFlight = null;
         if (this.subscribers.size) {
-          const cadence = quotaAwareCadence(this.provider);
+          const cadence = nextPollCadence(this.provider, this.hasLiveMatches);
           this.timer = this.setTimer(() => {
             this.timer = null;
             this.poll();
@@ -216,6 +235,7 @@ module.exports = {
   EXHAUSTED_QUOTA_CADENCE_MS,
   LIVE_STATUS_CODES,
   LOW_QUOTA_CADENCE_MS,
+  NO_LIVE_CADENCE_MS,
   LiveScoreHub,
   PROVIDER_CADENCE_MS,
   estimatedEventTime,
@@ -223,6 +243,7 @@ module.exports = {
   getLiveScoreHub,
   isLiveMatch,
   matchSnapshot,
+  nextPollCadence,
   parseElapsedMinutes,
   quotaAwareCadence,
   snapshotSignature

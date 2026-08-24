@@ -18,6 +18,7 @@
 const { isTurkishMatch, turkishSideOf } = require("./turkishTeams");
 const { isMajorClubMatch, majorClubSideOf } = require("./majorClubs");
 const { hasReadableScore, isAwardedStatus, isUnplayedStatus } = require("./matchStatus");
+const { liveMatchPriority } = require("./liveMatchPriority");
 
 const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"]);
 const FINISHED_STATUSES = new Set(["FINISHED", "FT", "AET", "PEN", "AWARDED", "WO"]);
@@ -181,17 +182,8 @@ function compareWithinBand(band, left, right) {
  */
 function tierOf(match, nowMs) {
   const band = bandOf(match, nowMs);
-  const turkish = isTurkishMatch(match);
-
-  if (turkish) {
-    return band === "live" ? 0 : 1;
-  }
-
-  if (band === "live") {
-    return isMajorClubMatch(match) ? 2 : 3;
-  }
-
-  return 4;
+  if (band === "live") return liveMatchPriority(match);
+  return isTurkishMatch(match) ? 1 : 6;
 }
 
 /** Kademe + bant birleşiminden okunabilir seçim sebebi. */

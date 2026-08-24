@@ -911,8 +911,13 @@ async function getFixtures(query) {
     live: liveValue || undefined
   });
   const matches = responseItems(payload).map(normalizeFixture);
-  const supportedMatches = filterSupportedCompetitions(matches);
+  // `live=all` gerçekten küresel canlı akıştır. Katalog filtresi burada
+  // uygulanırsa sağlayıcı tüm maçları döndürse bile yalnızca FutbolRadar'ın
+  // önceden tanıdığı ligler kalır. Editoryal öncelik sunum katmanının işi;
+  // backend canlı kayıtlardan hiçbir ligi elemez.
+  const supportedMatches = liveValue ? matches : filterSupportedCompetitions(matches);
   const filteredMatches = league && competition
+    && !liveValue
     ? supportedMatches.filter((match) => competitionMatchesFixture(match, competition))
     : supportedMatches;
   return stampProviderData(filteredMatches, "matches", 5 * 60 * 1000);

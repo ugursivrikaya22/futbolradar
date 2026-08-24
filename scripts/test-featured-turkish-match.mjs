@@ -212,18 +212,19 @@ const rotation = selectFeaturedMatches(
 );
 assert.equal(rotation[0].match.id, "trabzonspor-al-sadd", "Canlı Türk maçı ilk kart olmalı");
 assert.equal(rotation[0].reason, "turkish-live", "İlk kartın sebebi turkish-live olmalı");
-assert.equal(rotation[1].match.id, "real-madrid-osijek", "Büyük kulübün canlı maçı Türk maçından sonra");
-assert.equal(rotation[1].reason, "major-live", "Büyük kulüp maçının sebebi major-live olmalı");
-assert.equal(rotation[1].major, true, "Büyük kulüp işareti taşımalı");
-assert.equal(rotation[2].match.id, "rennes-venezia", "Diğer canlı maç büyük kulüpten sonra");
+assert.equal(rotation[1].match.id, "rennes-venezia", "Aynı öncelik kademesinde erken başlayan maç önde olmalı");
+assert.equal(rotation[2].match.id, "real-madrid-osijek", "Büyük kulüp etiketi editoryal lig sırasını ezmemeli");
+assert.equal(rotation[2].reason, "major-live", "Büyük kulüp maçının sebebi major-live kalmalı");
+assert.equal(rotation[2].major, true, "Büyük kulüp işareti taşımalı");
 assert.equal(rotation.length, 3, "Canlı olmayan maçlar karusele girmemeli");
 
-// Türk maçı yokken sıra büyük kulüplerin canlı maçlarına geçer.
+// Türk maçı yokken hazırlık maçları aynı "diğer" kademesinde başlama
+// saatine göre sıralanır; kulüp şöhreti editoryal lig sırasını ezmez.
 const majorFirst = selectFeaturedMatches([foreignFriendly, foreignLive, bayernLive, realMadridLive], { now, today });
-assert.equal(majorFirst[0].match.id, "real-madrid-osijek", "Büyük kulübün canlı maçı ilk kart olmalı");
-assert.equal(majorFirst[1].match.id, "bayern-aek", "İkinci büyük kulüp maçı hemen arkasında");
-assert.equal(majorFirst[2].match.id, "rennes-venezia", "Diğer canlı maç büyük kulüplerden sonra");
-assert.equal(majorFirst[0].reason, "major-live", "Sebep major-live olmalı");
+assert.equal(majorFirst[0].match.id, "rennes-venezia", "Diğer kademesinde en erken canlı maç ilk olmalı");
+assert.equal(majorFirst[1].match.id, "real-madrid-osijek", "İkinci başlama saati hemen arkasında olmalı");
+assert.equal(majorFirst[2].match.id, "bayern-aek", "Daha geç başlayan maç sonra gelmeli");
+assert.equal(majorFirst[1].reason, "major-live", "Büyük kulüp açıklama etiketi korunmalı");
 
 // Bugün Türk maçı varsa, yabancı bir maç canlı olsa bile ilk kart Türk maçıdır.
 const turkishBeatsMajor = selectFeaturedMatches([realMadridLive, { ...trabzonspor, status: "LIVE", score: { home: 0, away: 0 } }], { now, today });
@@ -254,9 +255,9 @@ assert.equal(turkishTodayWins[0].reason, "turkish-live", "Canlı Türk maçı do
 
 assert.equal(tierOf({ ...trabzonspor, status: "LIVE", score: { home: 0, away: 0 } }, noon), 0, "Canlı Türk maçı kademe 0");
 assert.equal(tierOf(trabzonspor, noon), 1, "Bugünün Türk maçı kademe 1");
-assert.equal(tierOf(realMadridLive, noon), 2, "Büyük kulübün canlı maçı kademe 2");
-assert.equal(tierOf(foreignLive, noon), 3, "Diğer canlı maç kademe 3");
-assert.equal(tierOf(foreignFriendly, noon), 4, "Canlı olmayan yabancı maç kademe 4");
+assert.equal(tierOf(realMadridLive, noon), 5, "Katalog dışı hazırlık maçı diğerler kademesinde");
+assert.equal(tierOf(foreignLive, noon), 5, "Diğer canlı maç kademe 5");
+assert.equal(tierOf(foreignFriendly, noon), 6, "Canlı olmayan yabancı maç canlı sırasının dışında");
 
 // Karusel sınırı: havuz büyüse de kart sayısı sabit tavanda kalır.
 const crowd = Array.from({ length: 12 }, (unused, index) => ({
@@ -295,7 +296,7 @@ assert.match(logLine, /reason=turkish-live/, "Günlükte seçim sebebi yazmalı"
 assert.match(logLine, /turkish=true/, "Günlükte Türk maçı bilgisi yazmalı");
 assert.match(logLine, /id=fc-midtjylland-besiktas/, "Günlükte seçilen maç id'si yazmalı");
 assert.match(
-  formatFeaturedSelectionLog("test", majorFirst[0], 1),
+  formatFeaturedSelectionLog("test", majorFirst[1], 2),
   /major=true majorClub="Real Madrid"/,
   "Büyük kulüp seçimi günlükte işaretlenmeli"
 );
