@@ -10,7 +10,7 @@ function writeSse(res, event, payload) {
   const apiResponseAt = new Date().toISOString();
   const data = {
     ...payload,
-    timing: { ...(payload.timing || {}), apiResponseAt }
+    timing: { ...(payload.timing || {}), apiResponseAt, api_response_time: apiResponseAt }
   };
   if (data.id) res.write(`id: ${String(data.id).replace(/[\r\n]/g, "")}\n`);
   res.write(`event: ${event}\n`);
@@ -47,6 +47,10 @@ async function recordClientTiming(req, res) {
     serverReceivedAt: validIso(body && body.serverReceivedAt),
     apiResponseAt: validIso(body && body.apiResponseAt),
     clientRenderedAt: validIso(body && body.clientRenderedAt),
+    provider_event_time: validIso(body && (body.provider_event_time || body.providerEventAt)),
+    backend_receive_time: validIso(body && (body.backend_receive_time || body.serverReceivedAt)),
+    api_response_time: validIso(body && (body.api_response_time || body.apiResponseAt)),
+    client_render_time: validIso(body && (body.client_render_time || body.clientRenderedAt)),
     serverObservedAt: new Date().toISOString()
   };
   if (!metric.packetId || !metric.clientRenderedAt) {

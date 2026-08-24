@@ -18838,6 +18838,27 @@ a.motm-week__card:focus-visible {
   border-color: rgba(255, 107, 107, 0.4);
 }
 
+.live-last-updated {
+  margin: 10px 0 0;
+  color: var(--muted, #687386);
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+[data-match].is-goal-update {
+  animation: live-goal-update 2.2s ease-out;
+}
+
+@keyframes live-goal-update {
+  0%, 18% { background-color: rgba(49, 214, 132, 0.34); box-shadow: 0 0 0 3px rgba(49, 214, 132, 0.24); }
+  55% { background-color: rgba(49, 214, 132, 0.12); }
+  100% { background-color: transparent; box-shadow: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-match].is-goal-update { animation: none; outline: 2px solid rgba(49, 214, 132, 0.7); }
+}
+
 .live-compact-status {
   display: inline-flex;
   align-items: center;
