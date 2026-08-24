@@ -90,7 +90,7 @@ assert.equal(
   "Pencereyi aşan maç oynanmış sayılmalı"
 );
 assert.equal(
-  bandOf({ kickoff: "2026-07-30T20:00:00+03:00", status: "LIVE" }, noon),
+  bandOf({ kickoff: "2026-07-30T20:00:00+03:00", status: "LIVE", score: { home: 0, away: 0 } }, noon),
   "live",
   "Sağlayıcı canlı diyorsa bant live olmalı"
 );
@@ -109,37 +109,33 @@ const trabzonspor = { id: "trabzonspor-al-sadd", kickoff: "2026-07-30T18:30:00+0
 const basaksehir = { id: "inter-turku-basaksehir", kickoff: "2026-07-30T19:00:00+03:00", homeTeam: "Inter Turku", awayTeam: "Başakşehir", league: "Konferans Ligi", status: "SCHEDULED" };
 const besiktas = { id: "fc-midtjylland-besiktas", kickoff: "2026-07-30T20:00:00+03:00", homeTeam: "FC Midtjylland", awayTeam: "Beşiktaş", league: "Avrupa Ligi", status: "SCHEDULED" };
 const foreignFriendly = { id: "aek-osijek", kickoff: "2026-07-30T17:00:00+03:00", homeTeam: "AEK Athens", awayTeam: "Osijek", league: "Hazırlık Maçı", status: "SCHEDULED" };
-const foreignLive = { id: "rennes-venezia", kickoff: "2026-07-30T18:45:00+03:00", homeTeam: "Rennes", awayTeam: "Venezia", league: "Hazırlık Maçı", status: "LIVE" };
+const foreignLive = { id: "rennes-venezia", kickoff: "2026-07-30T18:45:00+03:00", homeTeam: "Rennes", awayTeam: "Venezia", league: "Hazırlık Maçı", status: "LIVE", score: { home: 0, away: 0 } };
 
-// Sağlayıcı durumu tazelemediğinde bile (hepsi "SCHEDULED") 19:08'de
-// oynanmakta olan Trabzonspor maçı hero'ya gelir.
+// Sağlayıcı canlı demiyorsa büyük kart maç uydurmaz.
 const staleStatuses = selectFeaturedMatch([foreignFriendly, besiktas, basaksehir, trabzonspor], { now, today });
-assert.equal(staleStatuses.match.id, "trabzonspor-al-sadd", "Oynanmakta olan Trabzonspor maçı hero'da olmalı");
-assert.equal(staleStatuses.reason, "turkish-in-progress", "Seçim sebebi Türk maçını işaret etmeli");
-assert.equal(staleStatuses.turkish, true, "Seçilen maç Türk maçı işaretlenmeli");
-assert.equal(staleStatuses.turkishTeam, "Trabzonspor", "Günlükte Türk taraf yazmalı");
+assert.equal(staleStatuses.match, null, "Doğrulanmış canlı maç yoksa hero boş kalmalı");
+assert.equal(staleStatuses.reason, "empty", "Boş seçim açıkça işaretlenmeli");
 
-// Yabancı bir maç CANLI olsa bile Türk takımı maçını ezemez.
+// Canlı olmayan Türk maçı, doğrulanmış canlı yabancı maçı ezemez.
 const withForeignLive = selectFeaturedMatch([foreignLive, foreignFriendly, trabzonspor, besiktas], { now, today });
-assert.equal(withForeignLive.match.id, "trabzonspor-al-sadd", "Canlı yabancı maç Türk maçını ezmemeli");
+assert.equal(withForeignLive.match.id, "rennes-venezia", "Yalnızca doğrulanmış canlı maç büyük karta girmeli");
 
 // Canlı Türk maçı, oynanmakta olan diğer Türk maçlarının önüne geçer.
 const withTurkishLive = selectFeaturedMatch(
-  [trabzonspor, { ...besiktas, status: "LIVE" }, foreignLive],
+  [trabzonspor, { ...besiktas, status: "LIVE", score: { home: 0, away: 1 } }, foreignLive],
   { now, today }
 );
 assert.equal(withTurkishLive.match.id, "fc-midtjylland-besiktas", "Canlı Türk maçı en üste sabitlenmeli");
 assert.equal(withTurkishLive.reason, "turkish-live", "Canlı Türk maçının sebebi turkish-live olmalı");
 
-// Canlı yoksa bugünün en yakın Türk takımı maçı gelir.
+// Canlı yoksa yaklaşan maç büyük kartı doldurmaz.
 const beforeKickoff = selectFeaturedMatch(
   [foreignFriendly, besiktas, basaksehir, trabzonspor],
   { now: new Date(Date.parse("2026-07-30T12:00:00+03:00")), today }
 );
-assert.equal(beforeKickoff.match.id, "trabzonspor-al-sadd", "Gün içinde en yakın Türk maçı seçilmeli");
-assert.equal(beforeKickoff.reason, "turkish-upcoming", "Sebep turkish-upcoming olmalı");
+assert.equal(beforeKickoff.match, null, "Başlamamış maç büyük kartta görünmemeli");
 
-// Bugünün Türk maçları bittiyse hero yine Türk maçında kalır.
+// Biten maç büyük kartta kalmaz.
 const allFinished = selectFeaturedMatch(
   [
     { ...foreignFriendly, status: "SCHEDULED", kickoff: "2026-07-30T23:30:00+03:00" },
@@ -148,8 +144,7 @@ const allFinished = selectFeaturedMatch(
   ],
   { now: new Date(Date.parse("2026-07-30T22:30:00+03:00")), today }
 );
-assert.equal(allFinished.match.id, "fc-midtjylland-besiktas", "Biten Türk maçlarından en yenisi seçilmeli");
-assert.equal(allFinished.reason, "turkish-played", "Sebep turkish-played olmalı");
+assert.equal(allFinished.match, null, "Biten maç büyük kartta görünmemeli");
 
 // Türk takımı maçı yoksa kural devreye girmez; normal sıralama uygulanır.
 const noTurkish = selectFeaturedMatch([foreignFriendly, foreignLive], { now, today });
@@ -164,7 +159,7 @@ assert.equal(noTurkish.turkish, false, "Yabancı maç Türk işaretlenmemeli");
 // farkla aşan ayrı bir an kullanılır.
 const overnightNow = new Date(Date.parse("2026-07-30T00:45:00+03:00"));
 const overnight = selectFeaturedMatch(
-  [{ ...trabzonspor, kickoff: "2026-07-29T23:00:00+03:00", status: "LIVE" }, foreignFriendly],
+  [{ ...trabzonspor, kickoff: "2026-07-29T23:00:00+03:00", status: "LIVE", score: { home: 1, away: 0 } }, foreignFriendly],
   { now: overnightNow, today: "2026-07-30" }
 );
 assert.equal(overnight.reason, "turkish-live", "Canlı Türk maçı tarih filtresine takılmamalı");
@@ -175,20 +170,20 @@ assert.equal(overnight.reason, "turkish-live", "Canlı Türk maçı tarih filtre
 // hero'ya sabitleniyordu.
 const staleOvernightNow = new Date(Date.parse("2026-07-30T19:08:00+03:00"));
 const staleOvernight = selectFeaturedMatch(
-  [{ ...trabzonspor, kickoff: "2026-07-29T23:00:00+03:00", status: "LIVE" }, foreignFriendly],
+  [{ ...trabzonspor, kickoff: "2026-07-29T23:00:00+03:00", status: "LIVE", score: { home: 1, away: 0 } }, foreignFriendly],
   { now: staleOvernightNow, today: "2026-07-30" }
 );
 assert.notEqual(staleOvernight.reason, "turkish-live",
   "Kalkıştan 150 dakikadan uzun süre geçmiş 'canlı' kayıt artık canlı sayılmamalı");
-assert.equal(staleOvernight.match && staleOvernight.match.id, "aek-osijek",
-  "Bayat canlı kayıt havuzdan düşünce bugünün maçı öne çıkmalı");
+assert.equal(staleOvernight.match, null,
+  "Bayat canlı kayıt havuzdan düşünce canlı olmayan bugünün maçı öne çıkmamalı");
 
-// Bugün hiç maç yoksa hero boş kalmaz; takvimdeki sıradaki maç gösterilir.
+// Bugün hiç canlı maç yoksa hero boş kalır.
 const emptyDay = selectFeaturedMatch(
   [{ ...trabzonspor, kickoff: "2026-08-02T20:00:00+03:00" }],
   { now, today }
 );
-assert.equal(emptyDay.reason, "next-fixture", "Bugün maç yoksa sıradaki karşılaşma gösterilmeli");
+assert.equal(emptyDay.reason, "empty", "Canlı maç yoksa sıradaki karşılaşma büyük karta taşınmamalı");
 
 const nothing = selectFeaturedMatch([], { now, today });
 assert.equal(nothing.match, null, "Maç yoksa seçim boş dönmeli");
@@ -207,23 +202,21 @@ assert.equal(isMajorClubName("Rennes"), false, "Rennes bu listede yok");
 assert.equal(isMajorClubName(""), false, "Boş ad büyük kulüp sayılmamalı");
 
 // --- KARUSEL SIRASI ---
-const realMadridLive = { id: "real-madrid-osijek", kickoff: "2026-07-30T19:00:00+03:00", homeTeam: "Real Madrid", awayTeam: "Osijek", league: "Hazırlık Maçı", status: "LIVE" };
-const bayernLive = { id: "bayern-aek", kickoff: "2026-07-30T19:30:00+03:00", homeTeam: "Bayern München", awayTeam: "AEK Athens", league: "Hazırlık Maçı", status: "LIVE" };
+const realMadridLive = { id: "real-madrid-osijek", kickoff: "2026-07-30T19:00:00+03:00", homeTeam: "Real Madrid", awayTeam: "Osijek", league: "Hazırlık Maçı", status: "LIVE", score: { home: 1, away: 0 } };
+const bayernLive = { id: "bayern-aek", kickoff: "2026-07-30T19:30:00+03:00", homeTeam: "Bayern München", awayTeam: "AEK Athens", league: "Hazırlık Maçı", status: "LIVE", score: { home: 0, away: 0 } };
 
 // Canlı Türk maçı ilk karta sabitlenir; kalanlar arkasından sıralanır.
 const rotation = selectFeaturedMatches(
-  [foreignFriendly, realMadridLive, besiktas, { ...trabzonspor, status: "LIVE" }, foreignLive],
+  [foreignFriendly, realMadridLive, besiktas, { ...trabzonspor, status: "LIVE", score: { home: 2, away: 1 } }, foreignLive],
   { now, today }
 );
 assert.equal(rotation[0].match.id, "trabzonspor-al-sadd", "Canlı Türk maçı ilk kart olmalı");
 assert.equal(rotation[0].reason, "turkish-live", "İlk kartın sebebi turkish-live olmalı");
-assert.equal(rotation[1].match.id, "fc-midtjylland-besiktas", "Bugünün diğer Türk maçı ikinci sırada");
-assert.equal(rotation[2].match.id, "real-madrid-osijek", "Büyük kulübün canlı maçı Türk maçlarından sonra");
-assert.equal(rotation[2].reason, "major-live", "Büyük kulüp maçının sebebi major-live olmalı");
-assert.equal(rotation[2].major, true, "Büyük kulüp işareti taşımalı");
-assert.equal(rotation[3].match.id, "rennes-venezia", "Diğer canlı maç büyük kulüpten sonra");
-assert.equal(rotation[4].match.id, "aek-osijek", "Canlı olmayan yabancı maç en sonda");
-assert.equal(rotation.length, 5, "Havuzdaki her maç karusele girmeli");
+assert.equal(rotation[1].match.id, "real-madrid-osijek", "Büyük kulübün canlı maçı Türk maçından sonra");
+assert.equal(rotation[1].reason, "major-live", "Büyük kulüp maçının sebebi major-live olmalı");
+assert.equal(rotation[1].major, true, "Büyük kulüp işareti taşımalı");
+assert.equal(rotation[2].match.id, "rennes-venezia", "Diğer canlı maç büyük kulüpten sonra");
+assert.equal(rotation.length, 3, "Canlı olmayan maçlar karusele girmemeli");
 
 // Türk maçı yokken sıra büyük kulüplerin canlı maçlarına geçer.
 const majorFirst = selectFeaturedMatches([foreignFriendly, foreignLive, bayernLive, realMadridLive], { now, today });
@@ -233,17 +226,11 @@ assert.equal(majorFirst[2].match.id, "rennes-venezia", "Diğer canlı maç büy�
 assert.equal(majorFirst[0].reason, "major-live", "Sebep major-live olmalı");
 
 // Bugün Türk maçı varsa, yabancı bir maç canlı olsa bile ilk kart Türk maçıdır.
-const turkishBeatsMajor = selectFeaturedMatches([realMadridLive, trabzonspor], { now, today });
-assert.equal(turkishBeatsMajor[0].match.id, "trabzonspor-al-sadd", "Bugünün Türk maçı büyük kulübün canlı maçını geçer");
+const turkishBeatsMajor = selectFeaturedMatches([realMadridLive, { ...trabzonspor, status: "LIVE", score: { home: 0, away: 0 } }], { now, today });
+assert.equal(turkishBeatsMajor[0].match.id, "trabzonspor-al-sadd", "Canlı Türk maçı büyük kulübün canlı maçını geçer");
 assert.equal(turkishBeatsMajor[1].match.id, "real-madrid-osijek", "Büyük kulüp maçı karuselde ikinci kart");
 
-// ── Bugün hiç Türk maçı yoksa hero yabancı maça bırakılmaz ────────────────
-//
-// Kademe sırası bugün bir Türk maçı VARSA doğru çalışıyordu. Hiç yoksa havuz
-// yabancı maçlarla dolu olduğu için "bugün maç yok" yedeği hiç devreye
-// girmiyordu ve ana sayfanın en büyük kartı Fakel-Akhmat gibi bir maç
-// oluyordu — Türkiye'den gelen okuyucu ilk ekranda Türk futboluna dair
-// hiçbir şey görmüyordu. En yakın Türk karşılaşması artık ilk karta geçer.
+// ── Canlı olmayan sıradaki Türk maçı hero'ya girmez ──────────────────────
 const nextTurkishFixture = {
   id: "sturm-graz-fenerbahce",
   kickoff: "2026-07-31T21:30:00+03:00",
@@ -257,22 +244,15 @@ const noTurkishToday = selectFeaturedMatches(
   [foreignFriendly, foreignLive, nextTurkishFixture],
   { now, today }
 );
-assert.equal(noTurkishToday[0].match.id, "sturm-graz-fenerbahce", "Bugün Türk maçı yoksa sıradaki Türk maçı ilk kart olmalı");
-assert.equal(noTurkishToday[0].reason, "turkish-next", "Sebep turkish-next olmalı");
-assert.equal(noTurkishToday[0].turkish, true, "Öne alınan kart Türk maçı işaretlenmeli");
-assert.match(noTurkishToday[0].reasonLabel, /sıradaki/i, "Kart bugün oynanıyormuş gibi etiketlenmemeli");
-// Günün maçları karuselden DÜŞMEZ, yalnızca bir sıra geri kayar.
-assert.ok(
-  noTurkishToday.some((entry) => entry.match.id === "rennes-venezia"),
-  "bugünün maçları karuselde kalmalı"
-);
+assert.equal(noTurkishToday.length, 1, "Yalnızca doğrulanmış canlı maç kalmalı");
+assert.equal(noTurkishToday[0].match.id, "rennes-venezia", "Canlı olmayan Türk maçı büyük karta taşınmamalı");
 
 // Bugün Türk maçı VARSA sıradaki maç öne alınmaz: bugünkü maç her zaman önde.
-const turkishTodayWins = selectFeaturedMatches([foreignLive, nextTurkishFixture, trabzonspor], { now, today });
+const turkishTodayWins = selectFeaturedMatches([foreignLive, nextTurkishFixture, { ...trabzonspor, status: "LIVE", score: { home: 1, away: 1 } }], { now, today });
 assert.equal(turkishTodayWins[0].match.id, "trabzonspor-al-sadd", "Bugünkü Türk maçı sıradakinin önünde olmalı");
-assert.notEqual(turkishTodayWins[0].reason, "turkish-next", "Bugünkü maç turkish-next olarak etiketlenmemeli");
+assert.equal(turkishTodayWins[0].reason, "turkish-live", "Canlı Türk maçı doğru etiketlenmeli");
 
-assert.equal(tierOf({ ...trabzonspor, status: "LIVE" }, noon), 0, "Canlı Türk maçı kademe 0");
+assert.equal(tierOf({ ...trabzonspor, status: "LIVE", score: { home: 0, away: 0 } }, noon), 0, "Canlı Türk maçı kademe 0");
 assert.equal(tierOf(trabzonspor, noon), 1, "Bugünün Türk maçı kademe 1");
 assert.equal(tierOf(realMadridLive, noon), 2, "Büyük kulübün canlı maçı kademe 2");
 assert.equal(tierOf(foreignLive, noon), 3, "Diğer canlı maç kademe 3");
@@ -285,7 +265,8 @@ const crowd = Array.from({ length: 12 }, (unused, index) => ({
   homeTeam: "AEK Athens",
   awayTeam: "Osijek",
   league: "Hazırlık Maçı",
-  status: "SCHEDULED"
+  status: "LIVE",
+  score: { home: index % 3, away: 0 }
 }));
 assert.equal(
   selectFeaturedMatches(crowd, { now, today }).length,
@@ -307,12 +288,12 @@ assert.equal(
 );
 
 // --- Günlük satırı ---
-const logLine = formatFeaturedSelectionLog("test", staleStatuses, 1);
+const logLine = formatFeaturedSelectionLog("test", withTurkishLive, 1);
 assert.match(logLine, /^\[futbolradar:featured-match\]/, "Günlük ortak önekle başlamalı");
 assert.match(logLine, /slot=1/, "Günlükte kaçıncı kart olduğu yazmalı");
-assert.match(logLine, /reason=turkish-in-progress/, "Günlükte seçim sebebi yazmalı");
+assert.match(logLine, /reason=turkish-live/, "Günlükte seçim sebebi yazmalı");
 assert.match(logLine, /turkish=true/, "Günlükte Türk maçı bilgisi yazmalı");
-assert.match(logLine, /id=trabzonspor-al-sadd/, "Günlükte seçilen maç id'si yazmalı");
+assert.match(logLine, /id=fc-midtjylland-besiktas/, "Günlükte seçilen maç id'si yazmalı");
 assert.match(
   formatFeaturedSelectionLog("test", majorFirst[0], 1),
   /major=true majorClub="Real Madrid"/,
@@ -321,14 +302,14 @@ assert.match(
 
 // --- Gerçek veri üzerinde değişmez kural ---
 // Tarih ilerledikçe veri değişir; sabit bir maç yerine kuralın kendisi
-// doğrulanır: havuzda Türk takımı maçı varsa seçim Türk maçı OLMAK ZORUNDA.
+// doğrulanır: havuzda canlı Türk takımı maçı varsa seçim Türk maçı olmalı.
 const live = curatedMatches();
 const realToday = new Intl.DateTimeFormat("en-CA", {
   timeZone: "Europe/Istanbul", year: "numeric", month: "2-digit", day: "2-digit"
 }).format(new Date());
 const realSelection = selectFeaturedMatch(live, { today: realToday });
-const realPool = live.filter((match) => String(match.kickoff || "").slice(0, 10) === realToday);
-const realTurkishPool = realPool.filter(isTurkishMatch);
+const realRotation = selectFeaturedMatches(live, { today: realToday });
+const realTurkishPool = realRotation.filter((entry) => entry.turkish);
 
 if (realTurkishPool.length) {
   assert.equal(
@@ -393,6 +374,10 @@ const clientModule = new Function(`
     if (match.live === true) return true;
     var status = String(match.status || match.providerStatus || "").toUpperCase();
     return ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].includes(status);
+  }
+  function hasReadableScore(match) {
+    var score = match && match.score;
+    return Boolean(score) && Number.isFinite(Number(score.home)) && Number.isFinite(Number(score.away));
   }
   function todayInIstanbul() {
     return new Intl.DateTimeFormat("en-CA", {
