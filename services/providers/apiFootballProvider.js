@@ -727,6 +727,7 @@ function normalizeStandingRow(row, leagueName) {
     rank: numberOrNull(row.rank),
     team: teamName(team),
     name: teamName(team),
+    logo: teamLogo(team),
     league: leagueName || "",
     played: numberOrNull(row.all && row.all.played),
     won: numberOrNull(row.all && row.all.win),

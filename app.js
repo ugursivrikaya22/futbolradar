@@ -5623,15 +5623,85 @@
     if ((isSuperLigStandingsView() && todayInIstanbul() < SUPER_LIG_SEASON_START) || !rows.length) {
       return standingsEmptyHtml(compact);
     }
-    return sortedByRank(rows).map(compact ? renderHomeStandingRow : renderStandingRow).join("");
+    var sorted = sortedByRank(rows);
+    if (!compact) {
+      return sorted.map(renderStandingRow).join("");
+    }
+    var total = sorted.length;
+    return sorted.map(function (team) { return renderHomeStandingRow(team, total); }).join("");
   }
 
-  function renderHomeStandingRow(team) {
-    var teamName = team.name || team.team;
+  /**
+   * ANA SAYFA KOMPAKT SATIRI: bölge vurgusu (şampiyonluk/Avrupa/küme düşme)
+   * TAKIM SAYISINA göre hesaplanır, sabit "18 takım" varsayılmaz — lig
+   * kadrosu sezon içinde değişirse (küme düşme/çıkma) sınıf kendiliğinden
+   * doğru satırlara düşer.
+   */
+  function homeStandingZoneClass(rank, total) {
+    var r = Number(rank);
+    var t = Number(total);
+    if (!Number.isFinite(r) || !Number.isFinite(t) || t <= 0) {
+      return "";
+    }
+    if (r === 1) return " is-leader";
+    if (r <= 4) return " is-europe";
+    if (r > t - 3) return " is-relegation";
+    return "";
+  }
+
+  function formatGoalDifference(value) {
+    if (value === null || value === undefined || value === "") {
+      return "-";
+    }
+    var n = Number(value);
+    if (!Number.isFinite(n)) {
+      return "-";
+    }
+    return (n > 0 ? "+" : "") + n;
+  }
+
+  function homeStandingLogoHtml(team) {
+    var name = getTeamName(team);
+    var logo = getTeamLogo(team);
+    var initials = escapeHtml(teamInitials(name));
+
+    if (!logo) {
+      return '<span class="home-standing-logo home-standing-logo-fallback" aria-hidden="true">' + initials + "</span>";
+    }
 
     return (
-      '<div class="standing-row" data-card="standing-row" data-team="' + escapeHtml(team.id) + '">' +
-      "<span>" + escapeHtml(displayValue(team.rank)) + "</span><b>" + escapeHtml(teamName) + "</b><span>" + escapeHtml(displayValue(team.points)) + " P</span><span>" + escapeHtml(displayValue(team.momentum)) + " M</span>" +
+      '<span class="home-standing-logo-wrap">' +
+      '<img class="home-standing-logo" src="' + escapeHtml(logo) + '" alt="" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
+      '<span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">' + initials + "</span>" +
+      "</span>"
+    );
+  }
+
+  /**
+   * ANA SAYFA PUAN DURUMU SATIRI — asgari zorunlu sütunlar: sıra, takım
+   * (logo + takım sayfası bağlantısı), O, G, B, M, averaj, puan. Sütun
+   * kümesi puan-durumu.html'deki tam tablodan bilerek farklı: o sayfa
+   * ayrıca form/momentum gösterir, ana sayfa widget'ı brifingin istediği
+   * sekiz alanla sınırlı kalır.
+   */
+  function renderHomeStandingRow(team, total) {
+    var teamName = team.name || team.team;
+    var zoneClass = homeStandingZoneClass(team.rank, total);
+    var gd = formatGoalDifference(team.goalDifference);
+    var gdClass = gd.charAt(0) === "+" ? " is-positive" : (gd.charAt(0) === "-" ? " is-negative" : "");
+
+    return (
+      '<div class="home-standing-row' + zoneClass + '" data-card="standing-row" data-team="' + escapeHtml(team.id) + '">' +
+      '<span class="home-standing-rank">' + escapeHtml(displayValue(team.rank)) + "</span>" +
+      '<a class="home-standing-team" href="' + escapeHtml(teamDetailHref(team)) + '">' +
+      homeStandingLogoHtml(team) + "<b>" + escapeHtml(teamName) + "</b>" +
+      "</a>" +
+      "<span>" + escapeHtml(displayValue(team.played)) + "</span>" +
+      "<span>" + escapeHtml(displayValue(team.won)) + "</span>" +
+      "<span>" + escapeHtml(displayValue(team.drawn)) + "</span>" +
+      "<span>" + escapeHtml(displayValue(team.lost)) + "</span>" +
+      '<span class="home-standing-gd' + gdClass + '">' + escapeHtml(gd) + "</span>" +
+      '<span class="home-standing-points">' + escapeHtml(displayValue(team.points)) + "</span>" +
       "</div>"
     );
   }
