@@ -1103,6 +1103,8 @@ function homeStandingRowHtml(team, total) {
     "</div>";
 }
 
+const HOME_STANDINGS_LIMIT = 6;
+
 function staticHomeStandingRows() {
   const rows = teams.filter((team) => Number(team.played) > 0 &&
     team.points !== null && team.points !== undefined &&
@@ -1111,8 +1113,11 @@ function staticHomeStandingRows() {
     return standingsPreseason(true);
   }
   const sorted = rows.slice().sort((left, right) => Number(left.rank || 0) - Number(right.rank || 0));
+  // Ana sayfa widget'ı kompakt: yalnızca ilk 6 takım (app.js#renderStandingsTable
+  // ile birebir aynı kural). `total` yine TAM takım sayısı — bölge sınıfı bu
+  // sayıya göre hesaplanır.
   const total = sorted.length;
-  return sorted.map((team) => homeStandingRowHtml(team, total)).join("");
+  return sorted.slice(0, HOME_STANDINGS_LIMIT).map((team) => homeStandingRowHtml(team, total)).join("");
 }
 
 function staticMomentumRows() {

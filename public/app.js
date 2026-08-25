@@ -5618,6 +5618,8 @@
     );
   }
 
+  var HOME_STANDINGS_LIMIT = 6;
+
   function renderStandingsTable(teams, compact) {
     var rows = standingsWithResults(teams);
     if ((isSuperLigStandingsView() && todayInIstanbul() < SUPER_LIG_SEASON_START) || !rows.length) {
@@ -5627,8 +5629,12 @@
     if (!compact) {
       return sorted.map(renderStandingRow).join("");
     }
+    // Ana sayfa widget'ı kompakt: yalnızca ilk 6 takım. `total` yine TAM
+    // takım sayısı — bölge sınıfı (şampiyonluk/Avrupa/küme düşme)
+    // hesaplaması bu sayıya göre yapılır, görüntülenen satır sayısına göre
+    // değil. Tam tablo `puan-durumu.html`de (section-link + CTA).
     var total = sorted.length;
-    return sorted.map(function (team) { return renderHomeStandingRow(team, total); }).join("");
+    return sorted.slice(0, HOME_STANDINGS_LIMIT).map(function (team) { return renderHomeStandingRow(team, total); }).join("");
   }
 
   /**

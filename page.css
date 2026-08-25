@@ -20387,3 +20387,32 @@ a.motm-week__card:focus-visible {
     min-width: 44px;
   }
 }
+
+/* ── ANA SAYFA PUAN DURUMU: KOMPAKT YARI GENİŞLİK KART ──────────────
+   Görev: bölüm 1120px konteynerin tamamını kaplıyordu ve 18 satır
+   (~740px yükseklik) ana sayfanın en büyük bloğuydu. Satır sayısı 6'ya
+   indirildi (`app.js#renderStandingsTable`,
+   `scripts/prerender-core-pages.mjs#staticHomeStandingRows`) — bölge
+   sınıfı (şampiyonluk/Avrupa/küme düşme) hesaplaması yine TAM takım
+   sayısını kullanır, yalnızca görüntülenen satır azalır. Tam tabloya
+   bağlantı korunur (`section-link` + alt CTA, ikisi de `puan-durumu.html`).
+
+   Masaüstünde (641px+) başlık, kart ve CTA 600px'e sabitlenir — 1120px
+   konteynerin yarısı civarı, brifingin istediği 560-640px aralığında.
+   Blok bloktur (flex/grid değil), bu yüzden `max-width` tek başına sola
+   yaslı bırakır — ek saplama gerekmez. 640px ve altında (mobil) kart
+   tam genişliğe döner; satır yoğunluğu yukarıdaki
+   `@media (max-width: 640px)` / `(max-width: 360px)` kurallarında zaten
+   sıkılaştırılmıştı — burada yalnızca satır iç boşluğu bir basamak daha
+   daraltılır. */
+@media (min-width: 641px) {
+  .home-standings .section-head,
+  .home-standings-panel,
+  .home-standings-cta {
+    max-width: 600px;
+  }
+
+  .home-standing-row {
+    padding: 8px 14px;
+  }
+}
