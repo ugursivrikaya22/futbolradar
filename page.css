@@ -20416,3 +20416,15 @@ a.motm-week__card:focus-visible {
     padding: 8px 14px;
   }
 }
+
+/* ── TAKIM PUAN DURUMU SAYFALARI: SATIR VURGUSU ─────────────────────
+   `galatasaray-puan-durumu.html` vb. sayfalar `puan-durumu.html` ile
+   AYNI tam 18 satırlık tabloyu basar; içerik farklılaşmaz, yalnızca o
+   sayfanın konusu olan takımın satırı görsel olarak öne çıkar. Diğer
+   `.table-row` kullanımlarını (momentum tablosu, puan-durumu.html'in
+   kendisi) etkilememesi için yalnızca bu sayfaların paneline kapsanır. */
+.team-standings-panel .table-row.is-featured-team {
+  background: rgba(11, 143, 90, 0.07);
+  border-left: 3px solid var(--green);
+  padding-left: 15px;
+}

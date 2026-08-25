@@ -1,0 +1,72 @@
+{
+  "_comment": "Süper Lig SEO fırsat haritasının tek gerçek kaynağı. scripts/seo-weekly-review.mjs bu dosyayı okuyup hangi P2/P3 fırsatlarının hâlâ açık olduğunu raporlar. İnsan-okur görünümü: yayınlanan 'FutbolRadar SEO Map' artifact'ı (bu JSON'dan elle senkronize edilir — bir alanı değiştirince diğerini de güncelle).",
+  "updated": "2026-08-25",
+  "categories": [
+    {
+      "id": "standings",
+      "title": "Puan durumu",
+      "items": [
+        { "priority": "P1", "title": "Süper Lig puan durumu (tam tablo)", "page": "puan-durumu.html", "status": "fixed", "note": "Tazelik hatası giderildi: artık her zaman gerçek veriyle basılıyor." },
+        { "priority": "P1", "title": "Büyük 4 takım puan durumu (GS/FB/BJK/TS)", "page": "galatasaray-puan-durumu.html, fenerbahce-puan-durumu.html, besiktas-puan-durumu.html, trabzonspor-puan-durumu.html", "status": "shipped", "note": "Yeni; scripts/generate-team-standings-pages.mjs" },
+        { "priority": "P2", "title": "Kalan 14 takımın puan durumu sayfaları", "page": null, "status": "planned", "note": "Aynı şablon, uzun kuyruk hacmi." },
+        { "priority": "P2", "title": "Küme düşme hattı sayfası", "page": null, "status": "planned", "note": "Sezon sonu yoğun arama bağlamı." },
+        { "priority": "P3", "title": "Sezon/hafta bazlı tarihsel puan durumu arşivi", "page": null, "status": "idea", "note": null }
+      ]
+    },
+    {
+      "id": "matches",
+      "title": "Maçlar",
+      "items": [
+        { "priority": "P1", "title": "Büyük 4 takım maç programı (GS/FB/BJK/TS)", "page": "galatasaray-maclari.html, fenerbahce-maclari.html, besiktas-maclari.html, trabzonspor-maclari.html", "status": "fixed", "note": "Başlık soneki ve puan durumu bağlantısı düzeltildi." },
+        { "priority": "P2", "title": "Kalan 14 takımın maç sayfaları", "page": null, "status": "planned", "note": "Üretici script var; ince-içerik eşiği düşük hacimli takımları atlıyor." },
+        { "priority": "P2", "title": "Bugünün maçları", "page": "bugunun-maclari.html", "status": "live", "note": null },
+        { "priority": "P3", "title": "Derbi tarihi geri sayım sayfaları", "page": null, "status": "idea", "note": null }
+      ]
+    },
+    {
+      "id": "results",
+      "title": "Sonuçlar",
+      "items": [
+        { "priority": "P1", "title": "Maç sonuçları", "page": "mac-sonuclari.html", "status": "live", "note": "Metadata zaten tam." },
+        { "priority": "P2", "title": "Takım özel sonuç sayfaları", "page": null, "status": "planned", "note": null },
+        { "priority": "P3", "title": "Hafta bazlı sonuç özeti", "page": null, "status": "idea", "note": null }
+      ]
+    },
+    {
+      "id": "livescore",
+      "title": "Canlı skor",
+      "items": [
+        { "priority": "P1", "title": "Canlı skor", "page": "canli-skor.html", "status": "shipped", "note": "Ana sayfa sonuç merkezi modülüne eklendi." },
+        { "priority": "P2", "title": "Statik, taranabilir lig-filtreli canlı skor sayfaları", "page": null, "status": "planned", "note": "Şu an yalnızca ?league= sorgu parametresi." }
+      ]
+    },
+    {
+      "id": "stats",
+      "title": "İstatistik",
+      "items": [
+        { "priority": "P1", "title": "Gol krallığı radarı", "page": "gol-kralligi.html", "status": "needswork", "note": "Sıralı ranked-list bölümü eklenmeli." },
+        { "priority": "P1", "title": "Asist krallığı radarı", "page": "asist-kralligi.html", "status": "needswork", "note": "Aynı öneri." },
+        { "priority": "P2", "title": "Kart istatistikleri", "page": null, "status": "planned", "note": null },
+        { "priority": "P3", "title": "Takım bazlı gol istatistikleri", "page": null, "status": "idea", "note": null }
+      ]
+    },
+    {
+      "id": "derbies",
+      "title": "Derbiler",
+      "items": [
+        { "priority": "P1", "title": "Derbi radarı", "page": "derbi-radari.html", "status": "live", "note": null },
+        { "priority": "P2", "title": "Tekil derbi sayfaları (GS-FB, BJK-FB, Karadeniz derbisi)", "page": null, "status": "planned", "note": "Genel hub'dan çok daha yüksek hacimli." },
+        { "priority": "P3", "title": "Tarihsel derbi karşılıklı skor arşivi", "page": null, "status": "idea", "note": null }
+      ]
+    },
+    {
+      "id": "comparisons",
+      "title": "Karşılaştırma",
+      "items": [
+        { "priority": "P1", "title": "Oyuncu karşılaştırmaları", "page": "oyuncu-karsilastirmalari.html", "status": "live", "note": null },
+        { "priority": "P2", "title": "Takım karşılaştırma sayfaları", "page": null, "status": "planned", "note": null },
+        { "priority": "P3", "title": "Derbi çiftleri için programatik karşılıklı istatistik sayfaları", "page": null, "status": "idea", "note": null }
+      ]
+    }
+  ]
+}

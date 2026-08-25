@@ -1039,8 +1039,37 @@ function trendTeamCards() {
     .join("");
 }
 
+/**
+ * TAM PUAN DURUMU TABLOSU (puan-durumu.html) — İSTEMCİYLE BİREBİR AYNI
+ * İŞARETLEME (`app.js#renderStandingRow`).
+ *
+ * Önceden bu fonksiyon veriye bakmadan HER ZAMAN "sezon başlamadı" boş
+ * durumunu basıyordu — sezon başladıktan sonra bile statik HTML (JS'siz
+ * ilk boyama, arama motoru önizlemesi) yanlış bilgi gösteriyordu, istemci
+ * tarafı yalnızca `hydrate` sonrası düzeltiyordu. `staticHomeStandingRows()`
+ * ile aynı kural: gerçek veri varsa gerçek satırlar, yoksa boş durum.
+ */
 function staticStandingRows() {
-  return standingsPreseason(false);
+  const rows = teams.filter((team) => Number(team.played) > 0 &&
+    team.points !== null && team.points !== undefined &&
+    team.rank !== null && team.rank !== undefined);
+  if (!rows.length) {
+    return standingsPreseason(false);
+  }
+  const sorted = rows.slice().sort((left, right) => Number(left.rank || 0) - Number(right.rank || 0));
+  return sorted.map((team) => fullStandingRowHtml(team)).join("");
+}
+
+function fullStandingRowHtml(team) {
+  const teamName = team.name || "";
+  return `<div class="table-row" data-card="standing-row" data-team="${escapeHtml(team.id || "")}">` +
+    `<span>${escapeHtml(homeStandingDisplay(team.rank))}</span>` +
+    `<b>${escapeHtml(teamName)}</b>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.played))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.points))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.average))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.momentum))}</span>` +
+    "</div>";
 }
 
 function standingsPreseason(compact) {
