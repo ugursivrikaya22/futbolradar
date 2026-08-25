@@ -5581,11 +5581,12 @@
     );
   }
 
-  function renderStandingRow(team) {
+  function renderStandingRow(team, highlightId) {
     var teamName = team.name || team.team;
+    var featured = highlightId && team.id === highlightId ? " is-featured-team" : "";
 
     return (
-      '<div class="table-row" data-card="standing-row" data-team="' + escapeHtml(team.id) + '">' +
+      '<div class="table-row' + featured + '" data-card="standing-row" data-team="' + escapeHtml(team.id) + '">' +
       "<span>" + escapeHtml(displayValue(team.rank)) + "</span><b>" + escapeHtml(teamName) + "</b><span>" + escapeHtml(displayValue(team.played)) + "</span><span>" + escapeHtml(displayValue(team.points)) + "</span><span>" + escapeHtml(displayValue(team.average)) + "</span><span>" + escapeHtml(displayValue(team.momentum)) + "</span>" +
       "</div>"
     );
@@ -5618,17 +5619,23 @@
     );
   }
 
-  function renderStandingsTable(teams, compact) {
+  var HOME_STANDINGS_LIMIT = 6;
+
+  function renderStandingsTable(teams, compact, highlightId) {
     var rows = standingsWithResults(teams);
     if ((isSuperLigStandingsView() && todayInIstanbul() < SUPER_LIG_SEASON_START) || !rows.length) {
       return standingsEmptyHtml(compact);
     }
     var sorted = sortedByRank(rows);
     if (!compact) {
-      return sorted.map(renderStandingRow).join("");
+      return sorted.map(function (team) { return renderStandingRow(team, highlightId); }).join("");
     }
+    // Ana sayfa widget'ı kompakt: yalnızca ilk 6 takım. `total` yine TAM
+    // takım sayısı — bölge sınıfı (şampiyonluk/Avrupa/küme düşme)
+    // hesaplaması bu sayıya göre yapılır, görüntülenen satır sayısına göre
+    // değil. Tam tablo `puan-durumu.html`de (section-link + CTA).
     var total = sorted.length;
-    return sorted.map(function (team) { return renderHomeStandingRow(team, total); }).join("");
+    return sorted.slice(0, HOME_STANDINGS_LIMIT).map(function (team) { return renderHomeStandingRow(team, total); }).join("");
   }
 
   /**
@@ -12063,14 +12070,22 @@
     initTeamsPage(document.querySelector('[data-api-target="teams-page"]'));
 
 
-    renderInto(
-      document.querySelector('[data-api-target="standings"]'),
-      "standings",
-      function (teams) {
-        return renderStandingsTable(teams, false);
-      },
-      "Puan durumu yüklenemedi"
-    );
+    (function () {
+      var standingsTarget = document.querySelector('[data-api-target="standings"]');
+      // Büyük 4 takım puan durumu sayfalarında (ör. galatasaray-puan-durumu.html)
+      // konteynerin `data-highlight-team` özniteliği o takımın satırını
+      // JS ile yeniden çizilen tabloda da vurgulu tutar — statik önizlemedeki
+      // vurgu istemci verisiyle değişince kaybolmasın diye.
+      var highlightId = standingsTarget ? standingsTarget.dataset.highlightTeam : "";
+      renderInto(
+        standingsTarget,
+        "standings",
+        function (teams) {
+          return renderStandingsTable(teams, false, highlightId);
+        },
+        "Puan durumu yüklenemedi"
+      );
+    })();
 
     renderInto(
       document.querySelector('[data-api-target="home-standings"]'),
