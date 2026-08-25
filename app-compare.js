@@ -4,16 +4,13 @@
   var API_ROOT = "/api/";
   var DATA_ROOT = "/data/";
   var FETCH_TIMEOUT_MS = 6500;
-  var MATCH_LIVE_POLL_MS = 20000;
+  // Slow discovery only. Once a match is live, SSE takes over and the
+  // fallback follows the provider's documented 15-second refresh cadence.
+  var MATCH_LIVE_POLL_MS = 60000;
   var MATCH_DETAIL_POLL_MS = 15000;
-  // CANLI MAÇTA HIZLI YOKLAMA — kullanıcı talebi: "canlı maçta 5-10
-  // saniyelik polling yap". 7sn bu aralığın ortasında: skorun ekranda
-  // geç kalma payını küçültürken sağlayıcı kotasını (API-Football'ın
-  // ücretsiz/düşük katmanlarında dakikalık istek sınırı var, bkz.
-  // services/liveDataService.js PROVIDER_PLAN_ERROR günlükleri) 5sn'ye
-  // göre daha az zorluyor. Canlı maç yokken bu hıza gerek yok; ilgili
-  // bölümler MATCH_LIVE_POLL_MS/POLL_MS'e (20sn) geri döner.
-  var LIVE_MATCH_FAST_POLL_MS = 7000;
+  // API-Football refreshes fixture scores/events every 15 seconds. Polling
+  // faster consumes application requests without producing fresher data.
+  var LIVE_MATCH_FAST_POLL_MS = 15000;
   // Son düdükten sonra nihai istatistiklerin yayımlanması için beklenen süre.
   // Yoklama aralığıyla birlikte maç sonu analizi ~30-60 saniyede tam veriye
   // oturur; sağlayıcı geç yayımlarsa sonraki yoklama tamamlar.
@@ -1727,8 +1724,8 @@
    * sağlayıcı bir maçı hiç "FINISHED"e çevirmezse (iki sağlayıcı aynı maçı
    * ayrı kayıtla bildirip biri gecikince olduğu gibi) ham kontrol o maçı
    * GÜNLERCE "canlı" sayardı. Kural `services/featuredMatchSelector.js`
-   * ile AYNI: yalnızca YAŞ denetlenir (skor kapısı burada aranmaz — o ayrı
-   * bir sözleşme ve canlı skor yüzeylerinde zaten uygulanıyor).
+   * ile AYNI: yaş ve okunabilir skor birlikte denetlenir; büyük kart
+   * doğrulanmamış bir canlılık iddiasını göstermez.
    */
   function featuredIsLiveMatch(match, nowMs) {
     if (!match) {
@@ -1738,7 +1735,7 @@
     var status = String((match && (match.status || match.providerStatus)) || "").toUpperCase();
     var claimsLive = match.live === true ||
       ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].indexOf(status) !== -1;
-    if (!claimsLive) {
+    if (!claimsLive || !hasReadableScore(match)) {
       return false;
     }
 
@@ -1789,16 +1786,21 @@
 
   function featuredTierOf(match, nowMs) {
     var band = featuredBandOf(match, nowMs);
+    if (band !== "live") return isTurkishMatch(match) ? 1 : 6;
 
-    if (isTurkishMatch(match)) {
-      return band === "live" ? 0 : 1;
-    }
-
-    if (band === "live") {
-      return isMajorClubMatch(match) ? 2 : 3;
-    }
-
-    return 4;
+    // Ana sayfa canlı maç sırası: Türk takımı, Süper Lig, 1. Lig, UEFA,
+    // beş büyük lig ve diğerleri. Sağlayıcı lig kimliği isimden önce gelir.
+    if (isTurkishTeamName(match.homeTeam) || isTurkishTeamName(match.awayTeam)) return 0;
+    var competitionId = String(match.competitionId || "");
+    var providerLeagueId = String(match.providerLeagueId || "");
+    var leagueKey = turkishKey(match.league || match.competition || "");
+    if (competitionId === "super-lig" || providerLeagueId === "203" || leagueKey.indexOf("super lig") !== -1) return 1;
+    if (competitionId === "1-lig" || providerLeagueId === "204" || leagueKey === "1 lig" || leagueKey.indexOf("trendyol 1 lig") !== -1) return 2;
+    if (["sampiyonlar-ligi", "avrupa-ligi", "konferans-ligi"].indexOf(competitionId) !== -1 ||
+        ["2", "3", "848"].indexOf(providerLeagueId) !== -1 || leagueKey.indexOf("uefa") !== -1) return 3;
+    if (["premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1"].indexOf(competitionId) !== -1 ||
+        ["39", "140", "135", "78", "61"].indexOf(providerLeagueId) !== -1) return 4;
+    return 5;
   }
 
   function featuredReasonFor(match, nowMs) {
@@ -1836,16 +1838,14 @@
     var settings = options || {};
     var now = settings.now instanceof Date ? settings.now : new Date();
     var nowMs = now.getTime();
-    var today = settings.today || todayInIstanbul();
     var limit = settings.limit > 0 ? settings.limit : FEATURED_MAX_SLIDES;
     var list = (Array.isArray(matches) ? matches : []).filter(Boolean);
 
-    // Gece yarısını aşan bir maç TSİ'de "dün" görünse de canlıysa havuzdadır.
-    // "Canlı" burada da `featuredIsLiveMatch` ile karar verilir (bayat canlı
-    // korumalı) — yoksa bir günlerdir bitmiş ama hâlâ "LIVE" işaretli kayıt
-    // yalnızca bugünün tarihine bakan filtreyi hep atlatır.
+    // Büyük kart yalnızca doğrulanmış canlı maçları gösterir. Başlamamış,
+    // bitmiş, skorsuz veya bayat bir kayıt karuseli dolduramaz. Gece
+    // yarısını aşan gerçek bir canlı maç tarih filtresi olmadığı için kalır.
     var pool = list.filter(function (match) {
-      return (matchDateValue(match) === today || featuredIsLiveMatch(match, nowMs)) && !isUnplayedMatch(match);
+      return featuredIsLiveMatch(match, nowMs);
     });
     var turkishCount = pool.filter(isTurkishMatch).length;
 
@@ -1865,52 +1865,14 @@
       return compareFeaturedWithinBand(leftBand, left, right);
     });
 
-    if (ordered.length) {
-      var cards = ordered.slice(0, limit).map(function (match) {
-        return describeFeaturedSelection(
-          match,
-          featuredReasonFor(match, nowMs),
-          featuredBandOf(match, nowMs),
-          featuredTierOf(match, nowMs),
-          pool.length,
-          turkishCount
-        );
-      });
-
-      // Bugün Türk maçı yoksa hero yabancı maça bırakılmaz; en yakın Türk
-      // karşılaşması ilk karta geçer. Kural services/featuredMatchSelector.js
-      // ile aynı — ayrışırsa scripts/test-featured-turkish-match.mjs kırılır.
-      if (!turkishCount) {
-        var nextTurkish = list.filter(function (match) {
-          return isTurkishMatch(match) &&
-            matchDateValue(match) > today &&
-            !isUnplayedMatch(match);
-        }).sort(function (left, right) {
-          return featuredKickoffTime(left).value - featuredKickoffTime(right).value;
-        })[0];
-
-        if (nextTurkish) {
-          cards.unshift(describeFeaturedSelection(
-            nextTurkish, "turkish-next", "upcoming", featuredTierOf(nextTurkish, nowMs), pool.length, turkishCount
-          ));
-          cards.length = Math.min(cards.length, limit);
-        }
-      }
-
-      return cards;
-    }
-
-    // Bugün maç yoksa karusel boş kalmasın: takvimdeki sıradaki karşılaşmalar.
-    var upcoming = list.filter(function (match) {
-      return matchDateValue(match) > today;
-    }).sort(function (left, right) {
-      var turkishGap = Number(isTurkishMatch(right)) - Number(isTurkishMatch(left));
-      return turkishGap || featuredKickoffTime(left).value - featuredKickoffTime(right).value;
-    });
-
-    return upcoming.slice(0, limit).map(function (match) {
+    return ordered.slice(0, limit).map(function (match) {
       return describeFeaturedSelection(
-        match, "next-fixture", "upcoming", featuredTierOf(match, nowMs), pool.length, turkishCount
+        match,
+        featuredReasonFor(match, nowMs),
+        featuredBandOf(match, nowMs),
+        featuredTierOf(match, nowMs),
+        pool.length,
+        turkishCount
       );
     });
   }
@@ -2725,7 +2687,7 @@
         '<div class="featured-fixture">' +
         '<div class="featured-fixture-head"><span class="featured-fixture-league">Canlı skor panosu</span><span>' +
         escapeHtml(formatMatchDate(todayInIstanbul())) + "</span></div>" +
-        '<div class="home-match-command-empty"><strong>Bugün doğrulanmış maç görünmüyor.</strong><span>Önceki ve sonraki günleri maç merkezinden kontrol edebilirsin.</span></div>' +
+        '<div class="home-match-command-empty"><strong>Şu anda doğrulanmış canlı maç yok.</strong><span>Bugünün programını ve sonuçlarını maç merkezinden kontrol edebilirsin.</span></div>' +
         '<div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Canlı skor</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>' +
         "</div>" +
         quickStats
@@ -3094,21 +3056,41 @@
     return '<span class="superlig-strip-kicker">Süper Lig\'de Bugün</span><div class="superlig-strip-rail">' + rows + '</div>';
   }
 
+  // today-match-card-selection:start
+  function selectTodayMatchCards(matches, options) {
+    var settings = options || {};
+    var today = settings.today || todayInIstanbul();
+    var list = (Array.isArray(matches) ? matches : []).filter(function (match) {
+      return match && istanbulDayOf(match.kickoff || match.date || match.utcDate) === today;
+    });
+
+    function rank(match) {
+      var status = String(match.status || match.providerStatus || "").toUpperCase();
+      if (isLiveMatch(match)) return 0;
+      if (["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(status)) return 1;
+      return 2;
+    }
+
+    return list.sort(function (left, right) {
+      var stateGap = rank(left) - rank(right);
+      if (stateGap !== 0) return stateGap;
+
+      // Aynı durum bandında Türk takımı maçı önce gelir; canlı yabancı maç
+      // yine başlamamış Türk maçının önündedir. Böylece veri doğruluğu ve
+      // yerel ilgi sırası birbirini ezmez.
+      var turkishGap = Number(isTurkishMatch(right)) - Number(isTurkishMatch(left));
+      return turkishGap || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
+    });
+  }
+  // today-match-card-selection:end
+
   function renderTodayMatchesPreview(matches) {
     if (!Array.isArray(matches) || !matches.length) {
       return "";
     }
 
-    var ordered = matches.slice().sort(function (left, right) {
-      function rank(match) {
-        var status = String(match.status || match.providerStatus || "").toUpperCase();
-        if (isLiveMatch(match)) return 0;
-        if (["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(status)) return 1;
-        return 2;
-      }
-
-      return rank(left) - rank(right) || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
-    });
+    var ordered = selectTodayMatchCards(matches);
+    if (!ordered.length) return "";
 
     // Sekiz kart, yoğun bir Avrupa gecesinde günün yarısını gizliyordu. On iki
     // görünür, gerisi butonun arkasında; on ikiden azsa buton hiç basılmaz.
@@ -3518,7 +3500,7 @@
     );
   }
 
-  // Canlı yoklamada yeniden çizilen maç bölümleri. "match-center-metrics"
+  // Canlı akışta yeniden çizilen maç bölümleri. "match-center-metrics"
   // buraya dahildir: "Analizi hazır" ve "Canlı" sayaçları sayfa açıldığı anda
   // dondurulmamalı, skor ve analiz durumu değiştikçe güncellenmelidir.
   var MATCH_SECTION_BINDINGS = [
@@ -3556,13 +3538,10 @@
   // için) ayrı yüklenip burada saklanır ki her yoklamada yeniden çekilmesin.
   var latestSuperLigTeams = [];
 
-  // Canlı yoklama API-Football'ın gerçek zamanlı uç noktasını kullanır
-  // (/api/matches?live=all). Bu uç nokta YALNIZCA oynanmakta olan maçları
-  // döndürdüğü için sonuç listeyi değiştirmez, günün listesinin üzerine
-  // birleştirilir; aksi halde canlı maç yokken tablo boşalırdı. Biten bir maç
-  // canlı listeden düştüğü için nihai skoru kaçırmamak adına belirli
-  // aralıklarla tam liste de yeniden çekilir.
-  var LIVE_FULL_RELOAD_EVERY = 5;
+  // SSE API-Football'ın gerçek zamanlı uç noktasını kullanır
+  // (/fixtures?live=all). Yalnızca oynanan maçlar geldiği için paket günün
+  // listesiyle birleştirilir; maç akıştan düşünce nihai durum bir kez tam
+  // listeden doğrulanır.
 
   function mergeLiveIntoMatches(baseMatches, liveMatches) {
     var base = Array.isArray(baseMatches) ? baseMatches.slice() : [];
@@ -3604,6 +3583,16 @@
     return base;
   }
 
+  function liveRosterChanged(baseMatches, liveMatches) {
+    var current = (Array.isArray(baseMatches) ? baseMatches : []).filter(isLiveMatch);
+    var incoming = (Array.isArray(liveMatches) ? liveMatches : []).filter(isLiveMatch);
+    if (current.length !== incoming.length) return true;
+
+    var incomingKeys = {};
+    incoming.forEach(function (match) { incomingKeys[matchIdentityKey(match)] = true; });
+    return current.some(function (match) { return !incomingKeys[matchIdentityKey(match)]; });
+  }
+
   function initLiveMatchPolling() {
     var activeBindings = MATCH_SECTION_BINDINGS.filter(function (binding) {
       return document.querySelector('[data-api-target="' + binding.selector + '"]');
@@ -3613,15 +3602,85 @@
       return;
     }
 
-    var tick = 0;
     var hasLiveMatchNow = false;
+    var lastKnownMatches = [];
+    var eventSource = null;
+    var fallbackTimer = null;
+    var liveAgeTimer = null;
+    var streamRetryAt = 0;
+    var lastReportedPacket = "";
+    var lastLiveUpdateMs = 0;
+
+    function numericScore(value) {
+      if (typeof value === "number" && isFinite(value)) return value;
+      if (typeof value === "string" && value.trim() !== "" && isFinite(Number(value))) return Number(value);
+      return null;
+    }
+
+    function goalChangeIds(previous, next) {
+      var before = Object.create(null);
+      (Array.isArray(previous) ? previous : []).forEach(function (match) {
+        var score = match && match.score;
+        if (!score) return;
+        before[matchIdentityKey(match)] = { home: numericScore(score.home), away: numericScore(score.away) };
+      });
+      return (Array.isArray(next) ? next : []).filter(function (match) {
+        var old = before[matchIdentityKey(match)];
+        var score = match && match.score;
+        if (!old || !score) return false;
+        var home = numericScore(score.home);
+        var away = numericScore(score.away);
+        return (home !== null && old.home !== null && home > old.home) ||
+          (away !== null && old.away !== null && away > old.away);
+      }).map(function (match) { return String(match.id || match.providerId || ""); }).filter(Boolean);
+    }
+
+    function updateLiveAges() {
+      activeBindings.forEach(function (binding) {
+        if (["featured-match", "live-score"].indexOf(binding.selector) === -1) return;
+        var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
+        if (!target) return;
+        var existing = target.querySelector("[data-live-last-updated]");
+        if (!hasLiveMatchNow || !lastLiveUpdateMs) {
+          if (existing) existing.remove();
+          return;
+        }
+        if (!existing) {
+          existing = document.createElement("p");
+          existing.className = "live-last-updated";
+          existing.setAttribute("data-live-last-updated", "");
+          existing.setAttribute("aria-live", "polite");
+          target.appendChild(existing);
+        }
+        var seconds = Math.max(0, Math.floor((Date.now() - lastLiveUpdateMs) / 1000));
+        existing.textContent = "Son güncelleme " + seconds + " saniye önce";
+      });
+    }
+
+    function flashGoals(ids) {
+      if (!ids.length) return;
+      activeBindings.forEach(function (binding) {
+        var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
+        if (!target) return;
+        Array.prototype.forEach.call(target.querySelectorAll("[data-match]"), function (card) {
+          if (ids.indexOf(String(card.getAttribute("data-match") || "")) === -1) return;
+          card.classList.remove("is-goal-update");
+          void card.offsetWidth;
+          card.classList.add("is-goal-update");
+          window.setTimeout(function () { card.classList.remove("is-goal-update"); }, 2200);
+        });
+      });
+    }
 
     function paint(matches) {
-      hasLiveMatchNow = Array.isArray(matches) && matches.some(function (match) { return isLiveMatch(match); });
+      var nextMatches = Array.isArray(matches) ? matches : [];
+      var changedGoals = goalChangeIds(lastKnownMatches, nextMatches);
+      lastKnownMatches = nextMatches;
+      hasLiveMatchNow = lastKnownMatches.some(function (match) { return isLiveMatch(match); });
 
       activeBindings.forEach(function (binding) {
         var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
-        var html = binding.renderer(matches);
+        var html = binding.renderer(lastKnownMatches);
         if (!target) return;
 
         // `data-empty-hide` taşıyan bölüm içeriğiyle birlikte görünür ya da
@@ -3633,33 +3692,162 @@
           setContent(target, html);
         }
       });
+      updateLiveAges();
+      flashGoals(changedGoals);
     }
 
-    createLivePoller(function () { return hasLiveMatchNow ? LIVE_MATCH_FAST_POLL_MS : MATCH_LIVE_POLL_MS; }, function () {
-      tick += 1;
+    function clearFallbackTimer() {
+      if (fallbackTimer) window.clearTimeout(fallbackTimer);
+      fallbackTimer = null;
+    }
 
-      if (tick % LIVE_FULL_RELOAD_EVERY === 0) {
-        return forceReload("matches").then(paint);
+    function closeStream() {
+      if (eventSource) eventSource.close();
+      eventSource = null;
+    }
+
+    function scheduleFallback(delay) {
+      clearFallbackTimer();
+      if (isDocumentHidden()) return;
+      fallbackTimer = window.setTimeout(runFallback, delay);
+    }
+
+    function mergeAndPaint(live, forceTerminalRefresh) {
+      if (forceTerminalRefresh || liveRosterChanged(lastKnownMatches, live)) {
+        return forceReload("matches").then(function (matches) {
+          var refreshed = live.length ? mergeLiveIntoMatches(matches, live) : matches;
+          cache.matches = Promise.resolve(refreshed);
+          paint(refreshed);
+          return refreshed;
+        });
       }
+      if (!live.length) {
+        paint(lastKnownMatches.filter(function (match) { return !isLiveMatch(match); }));
+        return Promise.resolve(lastKnownMatches);
+      }
+      var merged = mergeLiveIntoMatches(lastKnownMatches, live);
+      cache.matches = Promise.resolve(merged);
+      paint(merged);
+      return Promise.resolve(merged);
+    }
 
+    function reportRender(packet) {
+      if (!packet || !packet.id || packet.id === lastReportedPacket) return;
+      lastReportedPacket = packet.id;
+      window.requestAnimationFrame(function () {
+        var clientRenderedAt = new Date(
+          window.performance && Number.isFinite(performance.timeOrigin)
+            ? performance.timeOrigin + performance.now()
+            : Date.now()
+        ).toISOString();
+        var events = (packet.matches || []).reduce(function (all, match) {
+          return all.concat(Array.isArray(match.events) ? match.events : []);
+        }, []);
+        var actualEvent = events.slice().reverse().find(function (event) { return event.providerEventAt; });
+        var estimatedEvent = events.slice().reverse().find(function (event) { return event.providerEventTimeEstimated; });
+        var detail = {
+          packetId: packet.id,
+          matchIds: (packet.matches || []).map(function (match) { return String(match.id || match.providerId || ""); }).filter(Boolean),
+          providerEventAt: actualEvent ? actualEvent.providerEventAt : null,
+          providerEventTimeEstimated: estimatedEvent ? estimatedEvent.providerEventTimeEstimated : null,
+          serverReceivedAt: packet.timing && packet.timing.serverReceivedAt,
+          apiResponseAt: packet.timing && packet.timing.apiResponseAt,
+          clientRenderedAt: clientRenderedAt,
+          provider_event_time: packet.timing && packet.timing.provider_event_time || (actualEvent ? actualEvent.providerEventAt : null),
+          backend_receive_time: packet.timing && packet.timing.backend_receive_time || packet.timing && packet.timing.serverReceivedAt,
+          api_response_time: packet.timing && packet.timing.api_response_time || packet.timing && packet.timing.apiResponseAt,
+          client_render_time: clientRenderedAt
+        };
+
+        if (window.performance && typeof performance.mark === "function") {
+          try { performance.mark("futbolradar-live-render", { detail: detail }); } catch (error) {
+            performance.mark("futbolradar-live-render");
+          }
+        }
+        document.dispatchEvent(new CustomEvent("futbolradar:live-latency", { detail: detail }));
+        fetch(API_ROOT + "live-score-stream", {
+          method: "POST",
+          cache: "no-store",
+          keepalive: true,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(detail)
+        }).catch(function () {});
+      });
+    }
+
+    function handleStreamSnapshot(message) {
+      var packet;
+      try { packet = JSON.parse(message.data); } catch (error) { return; }
+      var live = Array.isArray(packet.matches) ? packet.matches : [];
+      lastLiveUpdateMs = Date.parse(packet.timing && (packet.timing.api_response_time || packet.timing.apiResponseAt)) || Date.now();
+      mergeAndPaint(live, !live.length && hasLiveMatchNow).then(function () {
+        reportRender(packet);
+      });
+    }
+
+    function connectStream() {
+      clearFallbackTimer();
+      if (!window.EventSource || isDocumentHidden() || eventSource) {
+        scheduleFallback(hasLiveMatchNow ? LIVE_MATCH_FAST_POLL_MS : MATCH_LIVE_POLL_MS);
+        return;
+      }
+      eventSource = new EventSource(API_ROOT + "live-score-stream");
+      eventSource.addEventListener("snapshot", handleStreamSnapshot);
+      eventSource.addEventListener("stream-end", function () {
+        closeStream();
+        streamRetryAt = 0;
+        connectStream();
+      });
+      eventSource.onerror = function () {
+        closeStream();
+        streamRetryAt = Date.now() + MATCH_LIVE_POLL_MS;
+        scheduleFallback(0);
+      };
+    }
+
+    function runFallback() {
+      fallbackTimer = null;
+      if (isDocumentHidden()) return;
       return fetchJson(API_ROOT + "matches?live=all", { noStore: true })
         .then(function (result) {
           var live = (result && result.data) || [];
-          if (!live.length) {
-            return null;
-          }
-          return loadData("matches").then(function (matches) {
-            var merged = mergeLiveIntoMatches(matches, live);
-            cache.matches = Promise.resolve(merged);
-            paint(merged);
-            return merged;
-          });
+          lastLiveUpdateMs = Date.now();
+          return mergeAndPaint(live, !live.length && hasLiveMatchNow);
         })
         .catch(function () {
-          // Canlı uç nokta erişilemezse tam listeye düş; skorlar yine tazelenir.
           return forceReload("matches").then(paint);
+        })
+        .then(function () {
+          if (hasLiveMatchNow && window.EventSource && Date.now() >= streamRetryAt) {
+            connectStream();
+          } else {
+            scheduleFallback(hasLiveMatchNow ? LIVE_MATCH_FAST_POLL_MS : MATCH_LIVE_POLL_MS);
+          }
         });
-    }).start();
+    }
+
+    loadData("matches").then(function (matches) {
+      paint(matches);
+      connectStream();
+    }).catch(function () {
+      scheduleFallback(MATCH_LIVE_POLL_MS);
+    });
+
+    liveAgeTimer = window.setInterval(updateLiveAges, 1000);
+
+    document.addEventListener("visibilitychange", function () {
+      if (isDocumentHidden()) {
+        closeStream();
+        clearFallbackTimer();
+      } else {
+        scheduleFallback(0);
+      }
+    });
+    window.addEventListener("pagehide", function () {
+      closeStream();
+      clearFallbackTimer();
+      if (liveAgeTimer) window.clearInterval(liveAgeTimer);
+    });
   }
 
   /**

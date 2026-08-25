@@ -224,6 +224,7 @@ function normalizeLiveStanding(item) {
     rank: numberOrNull(firstDefined(item.position, item.rank)),
     team: teamName(team) || item.team || item.name || "",
     name: teamName(team) || item.name || item.team || "",
+    logo: team.crest || team.logo || "",
     league: item.league || "",
     played: numberOrNull(firstDefined(item.playedGames, item.played, item.matchesPlayed)),
     won: numberOrNull(item.won),

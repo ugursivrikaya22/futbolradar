@@ -1043,12 +1043,76 @@ function staticStandingRows() {
   return standingsPreseason(false);
 }
 
-function staticHomeStandingRows() {
-  return standingsPreseason(true);
-}
-
 function standingsPreseason(compact) {
   return `<div class="standings-empty${compact ? " compact" : ""}" data-card="standings-preseason"><span class="card-kicker">Süper Lig · 2026/27</span><strong>2026/27 sezonu henüz başlamadı</strong><p>Süper Lig 14 Ağustos'ta başlayacak. İlk maçlar tamamlandığında puan tablosu otomatik güncellenecek.</p><a class="detail-link" href="./super-lig-fikstur.html">Sezon fikstürünü aç</a></div>`;
+}
+
+/**
+ * ANA SAYFA PUAN DURUMU — İSTEMCİYLE BİREBİR AYNI İŞARETLEME.
+ *
+ * `app.js#renderHomeStandingRow` ile bilerek özdeş: JavaScript yüklenip
+ * `/api/standings`den taze veri gelince satırlar yerinden oynamasın, yalnızca
+ * içerik güncellensin. Bölge sınıfı (şampiyonluk/Avrupa/küme düşme) takım
+ * SAYISINA göre hesaplanır — "18 takım" sabit varsayılmaz, kadro sezon
+ * içinde değişirse (küme düşme/çıkma) doğru satırlara düşmeye devam eder.
+ */
+function homeStandingZoneClass(rank, total) {
+  const r = Number(rank);
+  const t = Number(total);
+  if (!Number.isFinite(r) || !Number.isFinite(t) || t <= 0) return "";
+  if (r === 1) return " is-leader";
+  if (r <= 4) return " is-europe";
+  if (r > t - 3) return " is-relegation";
+  return "";
+}
+
+function formatGoalDifference(value) {
+  if (value === null || value === undefined || value === "") return "-";
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "-";
+  return `${n > 0 ? "+" : ""}${n}`;
+}
+
+function homeStandingDisplay(value) {
+  return value === undefined || value === null || value === "" ? "-" : value;
+}
+
+function homeStandingLogoHtml(team) {
+  const initials = escapeHtml(fixtureTeamInitials(team.name));
+  if (!team.logo) {
+    return `<span class="home-standing-logo home-standing-logo-fallback" aria-hidden="true">${initials}</span>`;
+  }
+  return `<span class="home-standing-logo-wrap"><img class="home-standing-logo" src="${escapeHtml(team.logo)}" alt="" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">${initials}</span></span>`;
+}
+
+function homeStandingRowHtml(team, total) {
+  const zoneClass = homeStandingZoneClass(team.rank, total);
+  const gd = formatGoalDifference(team.goalDifference);
+  const gdClass = gd.charAt(0) === "+" ? " is-positive" : (gd.charAt(0) === "-" ? " is-negative" : "");
+  const href = `./takim-detay.html?team=${encodeURIComponent(team.name || "")}`;
+
+  return `<div class="home-standing-row${zoneClass}" data-card="standing-row" data-team="${escapeHtml(team.id || "")}">` +
+    `<span class="home-standing-rank">${escapeHtml(homeStandingDisplay(team.rank))}</span>` +
+    `<a class="home-standing-team" href="${escapeHtml(href)}">${homeStandingLogoHtml(team)}<b>${escapeHtml(team.name || "")}</b></a>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.played))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.won))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.drawn))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.lost))}</span>` +
+    `<span class="home-standing-gd${gdClass}">${escapeHtml(gd)}</span>` +
+    `<span class="home-standing-points">${escapeHtml(homeStandingDisplay(team.points))}</span>` +
+    "</div>";
+}
+
+function staticHomeStandingRows() {
+  const rows = teams.filter((team) => Number(team.played) > 0 &&
+    team.points !== null && team.points !== undefined &&
+    team.rank !== null && team.rank !== undefined);
+  if (!rows.length) {
+    return standingsPreseason(true);
+  }
+  const sorted = rows.slice().sort((left, right) => Number(left.rank || 0) - Number(right.rank || 0));
+  const total = sorted.length;
+  return sorted.map((team) => homeStandingRowHtml(team, total)).join("");
 }
 
 function staticMomentumRows() {
