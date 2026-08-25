@@ -1718,6 +1718,15 @@
   function teamDetailHref(team) {
     return "./takim-detay.html?team=" + encodeURIComponent(team.name || team.team || team.id || "");
   }
+  function teamStandingsHref(team) {
+    var routes = {
+      galatasaray: "./galatasaray-puan-durumu",
+      fenerbahce: "./fenerbahce-puan-durumu",
+      besiktas: "./besiktas-puan-durumu",
+      trabzonspor: "./trabzonspor-puan-durumu"
+    };
+    return routes[normalizeTeamKey(team && (team.name || team.team || team.id) || team)] || "./super-lig-puan-durumu";
+  }
 
   function statusTr(status) {
     var normalized = String(status || "").toUpperCase();
@@ -8252,6 +8261,7 @@
       "</div>" +
       '<div class="player-actions"><a class="detail-link" href="./oyuncu-radari.html?team=' +
       encodeURIComponent(team.name) + '">Oyuncu radarını aç</a>' +
+      '<a class="detail-link ghost" href="' + escapeHtml(teamStandingsHref(team)) + '">' + escapeHtml(team.name) + ' puan durumu</a>' +
       '<a class="detail-link ghost" href="./momentum.html">Momentum tablosu</a></div>' +
       "</article>"
     );
@@ -9385,6 +9395,8 @@
     var actions = [
       { label: "Ev sahibi oyuncular", title: home, text: "Kadro içinde form, gol tehdidi ve AI rating filtrelerini aç.", href: "./oyuncu-radari.html?team=" + encodeURIComponent(home) },
       { label: "Deplasman oyuncular", title: away, text: "Rakip kadronun yaratıcılık, pres ve form sinyallerini incele.", href: "./oyuncu-radari.html?team=" + encodeURIComponent(away) },
+      { label: "Lig sıralaması", title: home + " puan durumu", text: "Ev sahibinin güncel lig sırasını ve liderle puan farkını gör.", href: teamStandingsHref(home) },
+      { label: "Lig sıralaması", title: away + " puan durumu", text: "Deplasman takımının güncel lig sırasını ve liderle puan farkını gör.", href: teamStandingsHref(away) },
       { label: "Momentum kiyas", title: "Takım momentumu", text: "Maç öncesi güç dengesini momentum sıralamasında oku.", href: "./momentum.html" },
       { label: "Maç listesi", title: "Bugünün maçları", text: "Aynı günün diğer radar maçlarına geri dön.", href: "./bugunun-maclari.html" }
     ];

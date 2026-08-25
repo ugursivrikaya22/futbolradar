@@ -561,7 +561,10 @@ function checkSeoAndLinks() {
       const resolvedTarget = cleanTarget.startsWith("/")
         ? path.join(root, cleanTarget.replace(/^\/+/, ""))
         : path.resolve(root, pageDir, cleanTarget);
-      expect(fs.existsSync(resolvedTarget), `${page}: missing local target ${target}`);
+      const resolvedStaticTarget = fs.existsSync(resolvedTarget)
+        ? resolvedTarget
+        : `${resolvedTarget}.html`;
+      expect(fs.existsSync(resolvedStaticTarget), `${page}: missing local target ${target}`);
     }
   }
 

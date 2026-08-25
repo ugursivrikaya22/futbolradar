@@ -15,7 +15,9 @@ const contentTypes = {
 http.createServer((request, response) => {
   const pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
   const relative = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
-  const filePath = path.resolve(root, relative);
+  const directPath = path.resolve(root, relative);
+  const htmlPath = path.resolve(root, `${relative}.html`);
+  const filePath = fs.existsSync(directPath) ? directPath : htmlPath;
 
   if (!filePath.startsWith(`${root}${path.sep}`) || !fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
