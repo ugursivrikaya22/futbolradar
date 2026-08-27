@@ -40,7 +40,6 @@ const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // aynı servisi kullanıyor.
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
 const { selectTickerRecords } = require("../services/transferRadarTicker.js");
-const { isTransferWindowOpen } = require("../services/transferWindow.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -95,6 +94,23 @@ const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
 // (app.js: istanbulDayOf). Ayrışırsa JavaScript açılana kadar farklı bir
 // gün listelenir ve sayfa gözün önünde değişir.
 const { istanbulDay } = require("../services/matchStatus.js");
+
+/**
+ * ANA SAYFADA HİÇ GÖSTERİLMEYECEK OYUNCULAR.
+ *
+ * `evaluateTrendPlayerCard` serbest oyuncuları ve mock sağlayıcı kimliklerini
+ * zaten eliyor, ama bu kural DOLAYLI: veri değişirse (örn. oyuncu yeniden bir
+ * kulüple ilişkilendirilirse) dolaylı filtre tek başına yetmeyebilir. Mauro
+ * Icardi için ayrıca AÇIK bir kara liste tutuyoruz — ana sayfa "trend" ve
+ * "son transfer" bölümlerinde bir daha hiç görünmemesi gerekiyor.
+ */
+const HOMEPAGE_EXCLUDED_PLAYER_IDS = new Set(["mauro-icardi"]);
+
+function excludeHomepageBlockedPlayers(list) {
+  return (Array.isArray(list) ? list : []).filter(
+    (player) => !HOMEPAGE_EXCLUDED_PLAYER_IDS.has(String(player && player.id || ""))
+  );
+}
 
 const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
 const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
@@ -1039,16 +1055,114 @@ function trendTeamCards() {
     .join("");
 }
 
+/**
+ * TAM PUAN DURUMU TABLOSU (puan-durumu.html) — İSTEMCİYLE BİREBİR AYNI
+ * İŞARETLEME (`app.js#renderStandingRow`).
+ *
+ * Önceden bu fonksiyon veriye bakmadan HER ZAMAN "sezon başlamadı" boş
+ * durumunu basıyordu — sezon başladıktan sonra bile statik HTML (JS'siz
+ * ilk boyama, arama motoru önizlemesi) yanlış bilgi gösteriyordu, istemci
+ * tarafı yalnızca `hydrate` sonrası düzeltiyordu. `staticHomeStandingRows()`
+ * ile aynı kural: gerçek veri varsa gerçek satırlar, yoksa boş durum.
+ */
 function staticStandingRows() {
-  return standingsPreseason(false);
+  const rows = teams.filter((team) => Number(team.played) > 0 &&
+    team.points !== null && team.points !== undefined &&
+    team.rank !== null && team.rank !== undefined);
+  if (!rows.length) {
+    return standingsPreseason(false);
+  }
+  const sorted = rows.slice().sort((left, right) => Number(left.rank || 0) - Number(right.rank || 0));
+  return sorted.map((team) => fullStandingRowHtml(team)).join("");
 }
 
-function staticHomeStandingRows() {
-  return standingsPreseason(true);
+function fullStandingRowHtml(team) {
+  const teamName = team.name || "";
+  return `<div class="table-row" data-card="standing-row" data-team="${escapeHtml(team.id || "")}">` +
+    `<span>${escapeHtml(homeStandingDisplay(team.rank))}</span>` +
+    `<b>${escapeHtml(teamName)}</b>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.played))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.points))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.average))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.momentum))}</span>` +
+    "</div>";
 }
 
 function standingsPreseason(compact) {
   return `<div class="standings-empty${compact ? " compact" : ""}" data-card="standings-preseason"><span class="card-kicker">Süper Lig · 2026/27</span><strong>2026/27 sezonu henüz başlamadı</strong><p>Süper Lig 14 Ağustos'ta başlayacak. İlk maçlar tamamlandığında puan tablosu otomatik güncellenecek.</p><a class="detail-link" href="./super-lig-fikstur.html">Sezon fikstürünü aç</a></div>`;
+}
+
+/**
+ * ANA SAYFA PUAN DURUMU — İSTEMCİYLE BİREBİR AYNI İŞARETLEME.
+ *
+ * `app.js#renderHomeStandingRow` ile bilerek özdeş: JavaScript yüklenip
+ * `/api/standings`den taze veri gelince satırlar yerinden oynamasın, yalnızca
+ * içerik güncellensin. Bölge sınıfı (şampiyonluk/Avrupa/küme düşme) takım
+ * SAYISINA göre hesaplanır — "18 takım" sabit varsayılmaz, kadro sezon
+ * içinde değişirse (küme düşme/çıkma) doğru satırlara düşmeye devam eder.
+ */
+function homeStandingZoneClass(rank, total) {
+  const r = Number(rank);
+  const t = Number(total);
+  if (!Number.isFinite(r) || !Number.isFinite(t) || t <= 0) return "";
+  if (r === 1) return " is-leader";
+  if (r <= 4) return " is-europe";
+  if (r > t - 3) return " is-relegation";
+  return "";
+}
+
+function formatGoalDifference(value) {
+  if (value === null || value === undefined || value === "") return "-";
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "-";
+  return `${n > 0 ? "+" : ""}${n}`;
+}
+
+function homeStandingDisplay(value) {
+  return value === undefined || value === null || value === "" ? "-" : value;
+}
+
+function homeStandingLogoHtml(team) {
+  const initials = escapeHtml(fixtureTeamInitials(team.name));
+  if (!team.logo) {
+    return `<span class="home-standing-logo home-standing-logo-fallback" aria-hidden="true">${initials}</span>`;
+  }
+  return `<span class="home-standing-logo-wrap"><img class="home-standing-logo" src="${escapeHtml(team.logo)}" alt="" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">${initials}</span></span>`;
+}
+
+function homeStandingRowHtml(team, total) {
+  const zoneClass = homeStandingZoneClass(team.rank, total);
+  const gd = formatGoalDifference(team.goalDifference);
+  const gdClass = gd.charAt(0) === "+" ? " is-positive" : (gd.charAt(0) === "-" ? " is-negative" : "");
+  const href = `./takim-detay.html?team=${encodeURIComponent(team.name || "")}`;
+
+  return `<div class="home-standing-row${zoneClass}" data-card="standing-row" data-team="${escapeHtml(team.id || "")}">` +
+    `<span class="home-standing-rank">${escapeHtml(homeStandingDisplay(team.rank))}</span>` +
+    `<a class="home-standing-team" href="${escapeHtml(href)}">${homeStandingLogoHtml(team)}<b>${escapeHtml(team.name || "")}</b></a>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.played))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.won))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.drawn))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.lost))}</span>` +
+    `<span class="home-standing-gd${gdClass}">${escapeHtml(gd)}</span>` +
+    `<span class="home-standing-points">${escapeHtml(homeStandingDisplay(team.points))}</span>` +
+    "</div>";
+}
+
+const HOME_STANDINGS_LIMIT = 6;
+
+function staticHomeStandingRows() {
+  const rows = teams.filter((team) => Number(team.played) > 0 &&
+    team.points !== null && team.points !== undefined &&
+    team.rank !== null && team.rank !== undefined);
+  if (!rows.length) {
+    return standingsPreseason(true);
+  }
+  const sorted = rows.slice().sort((left, right) => Number(left.rank || 0) - Number(right.rank || 0));
+  // Ana sayfa widget'ı kompakt: yalnızca ilk 6 takım (app.js#renderStandingsTable
+  // ile birebir aynı kural). `total` yine TAM takım sayısı — bölge sınıfı bu
+  // sayıya göre hesaplanır.
+  const total = sorted.length;
+  return sorted.slice(0, HOME_STANDINGS_LIMIT).map((team) => homeStandingRowHtml(team, total)).join("");
 }
 
 function staticMomentumRows() {
@@ -1069,7 +1183,7 @@ function staticMomentumRows() {
  * göstermenin gerekçesi değil.
  */
 function verifiedTrendPlayers(limit) {
-  const { kept, removed } = filterPlayerCards(topPlayers, {
+  const { kept, removed } = filterPlayerCards(excludeHomepageBlockedPlayers(topPlayers), {
     trend: true,
     leagueTeams: fixtureTeamNames()
   });
@@ -1094,6 +1208,91 @@ function trendPlayerSlot(limit) {
     );
   }
   return verified.map(simplePlayerCard).join("");
+}
+
+/**
+ * ANA SAYFA "SÜPER LİG LİDERLERİ" RAFI — dört sekme, sekme başına en çok 5
+ * satır.
+ *
+ * Gol/asist sekmeleri `verifiedTrendPlayers`in bara tabi DEĞİL: kadro
+ * senkronu gol/asist hiç göndermiyor (yukarıdaki denetim notuna bkz.), yani
+ * o bar burada her zaman sıfır satır üretirdi. Bunun yerine gol-kralligi.html
+ * ve asist-kralligi.html'in zaten kullandığı düzenlenmiş örnek veri
+ * havuzundan besleniyor — TEK şart, oyuncunun hâlâ gerçekten o Süper Lig
+ * kulübünde olması. Serbest kalan ya da yurt dışına giden oyuncular
+ * (Icardi, Dzeko, Szymanski, Gedson) bu yüzden burada hiç görünmez; kalan
+ * havuz üçten fazla değil, o yüzden bazı sekmeler beşten az satır basar —
+ * sayfayı doldurmak için sahte bir satır uydurulmuyor.
+ */
+function isCurrentSuperLigClub(team) {
+  const value = String(team || "").trim();
+  if (!value || /serbest|free agent|kulüpsüz/i.test(value)) return false;
+  const leagueTeams = fixtureTeamNames();
+  const normalized = value.toLocaleLowerCase("tr-TR");
+  return leagueTeams.some((name) => {
+    const candidate = String(name || "").toLocaleLowerCase("tr-TR");
+    return candidate && (candidate === normalized || candidate.includes(normalized) || normalized.includes(candidate));
+  });
+}
+
+function homeLeaderPlayerPool(statField) {
+  return excludeHomepageBlockedPlayers(players)
+    .filter((player) => Number(player[statField]) > 0)
+    .filter((player) => isCurrentSuperLigClub(player.currentTeam || player.team))
+    .sort((left, right) => Number(right[statField]) - Number(left[statField]));
+}
+
+function homeLeaderPlayerRow(rank, player, statField, statUnit) {
+  const team = escapeHtml(player.currentTeam || player.team || "");
+  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./oyuncular/${escapeHtml(player.id)}.html"><strong>${escapeHtml(player.name)}</strong><span>${team}</span></a><span class="leaders-value">${escapeHtml(player[statField])}<small>${escapeHtml(statUnit)}</small></span></li>`;
+}
+
+function homeLeaderFormRow(rank, player) {
+  const kicker = [player.currentTeam || player.team, player.position].filter(Boolean).map((value) => escapeHtml(value)).join(" · ");
+  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./oyuncular/${escapeHtml(player.id)}.html"><strong>${escapeHtml(player.name)}</strong><span>${kicker}</span></a></li>`;
+}
+
+function homeLeaderTeamRow(rank, row) {
+  return `<li class="leaders-row" data-card="leader-team"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./takim-detay.html?team=${encodeURIComponent(row.team)}"><strong>${escapeHtml(row.team)}</strong><span>Momentum</span></a><span class="leaders-value">${escapeHtml(row.momentum)}</span></li>`;
+}
+
+function homeLeadersSlot(rows, rowHtmlFor, emptyNote) {
+  if (!rows.length) {
+    return emptyStateCard("Veri bekleniyor", emptyNote);
+  }
+  return `<ol class="leaders-list">${rows.map((item, index) => rowHtmlFor(index + 1, item)).join("")}</ol>`;
+}
+
+function homeLeadersScorersSlot(limit) {
+  const rows = homeLeaderPlayerPool("goals").slice(0, limit);
+  return homeLeadersSlot(
+    rows,
+    (rank, player) => homeLeaderPlayerRow(rank, player, "goals", "gol"),
+    "Gol krallığı sıralaması, oyuncular resmî maçlarda gol attıkça güncellenir."
+  );
+}
+
+function homeLeadersAssistsSlot(limit) {
+  const rows = homeLeaderPlayerPool("assists").slice(0, limit);
+  return homeLeadersSlot(
+    rows,
+    (rank, player) => homeLeaderPlayerRow(rank, player, "assists", "asist"),
+    "Asist krallığı sıralaması, oyuncular resmî maçlarda asist yaptıkça güncellenir."
+  );
+}
+
+function homeLeadersFormSlot(limit) {
+  const rows = verifiedTrendPlayers(limit);
+  return homeLeadersSlot(
+    rows,
+    homeLeaderFormRow,
+    "Formdaki oyuncular yalnızca doğrulanmış, sağlayıcı kimliği olan güncel sezon verisinden üretilir."
+  );
+}
+
+function homeLeadersTeamFormSlot(limit) {
+  const rows = momentum.slice().sort((left, right) => Number(left.rank) - Number(right.rank)).slice(0, limit);
+  return homeLeadersSlot(rows, homeLeaderTeamRow, "Takım formu tablosu resmî maç sonuçlarıyla güncellenir.");
 }
 
 /**
@@ -1132,7 +1331,7 @@ function simplePlayerCard(player) {
  * ilan ediyor; dayandığı kayıt doğrulanamıyorsa bu iddia yayımlanmamalı.
  */
 function playerSignalsSlot() {
-  const { kept } = filterPlayerCards(players, { trend: true, leagueTeams: fixtureTeamNames() });
+  const { kept } = filterPlayerCards(excludeHomepageBlockedPlayers(players), { trend: true, leagueTeams: fixtureTeamNames() });
   if (!kept.length) {
     return emptyStateCard(
       "Veri bekleniyor",
@@ -1257,28 +1456,30 @@ function liveScoresTrack() {
 }
 
 /**
- * ANA SAYFANIN EN ALTINDAKİ TRANSFER RADARI BANDI.
+ * ANA SAYFANIN EN ALTINDAKİ TRANSFER RADARI BANDI — ÜÇÜNCÜ KAYAN BANT.
  *
- * Yalnızca gerçek TFF tescil dönemi içindeyken basılır (services/
- * transferWindow.js, tarihler data/transfer-window.json'da — koda tarih
- * gömülmez). Pencere kapandığında bu fonksiyon boş dize döner; site zaten
- * saatte bir yeniden derlendiği için bant, bir sonraki derlemede koda
- * dokunmadan kaybolur — pencere açıldığında da aynı şekilde geri gelir.
+ * Ana sayfanın daimî bir parçası: haber bandı (tepede) ve Canlı Skorlar
+ * bandından sonra üçüncü kayan şerit. Artık TFF tescil dönemine göre
+ * KOŞULLU BASILMIYOR — önceki hâli pencere kapandığında ya da son 3 günde
+ * "SON DAKİKA" sayılacak kayıt olmadığında bandı sayfadan TAMAMEN
+ * kaldırıyordu; okuyucu "Transfer Radarı" bölümünün var olduğunu bile
+ * bilmiyordu. Bant artık her derlemede basılır.
  *
- * Seçim kuralı services/transferRadarTicker.js'te: yalnızca son 3 günün
- * doğrulanmış hareketleri (bkz. o dosyanın başındaki "UYDURMA YOK" kuralı).
- * Pencere açık ama seçilecek güncel kayıt yoksa da boş dize dönülür —
- * boş yer tutucu ya da bayat kayıt gösterilmez.
+ * Seçim kuralı hâlâ services/transferRadarTicker.js'te: yalnızca son 3
+ * günün doğrulanmış hareketleri "SON DAKİKA" sayılır (bkz. o dosyanın
+ * başındaki "UYDURMA YOK" kuralı) — bu editoryal kural değişmedi. Değişen
+ * tek şey: seçilecek güncel kayıt yokken (ya da pencere kapalıyken) bant
+ * KAYBOLMAK yerine kendi yer tutucusunu gösterir
+ * (transferTickerTrack → "Transfer güncellemeleri hazırlanıyor.") —
+ * `keepEmpty: true` bunu sağlıyor.
  *
  * Canlı Skorlar bandından (ana sayfanın TEPESİNDE) bilerek ayrı ve
  * bağımsız: farklı konum, farklı veri, farklı görünme kuralı. Onun
  * kodu/CSS'i burada değiştirilmez.
  */
 function transferRadarBottomTicker() {
-  if (!isTransferWindowOpen()) return "";
   const records = selectTickerRecords(transfers);
-  if (!records.length) return "";
-  return transferTickerBlock(records, { locale: "tr", sourceRel: SOURCE_LINK_REL });
+  return transferTickerBlock(records, { locale: "tr", sourceRel: SOURCE_LINK_REL, keepEmpty: true });
 }
 
 /**
@@ -1291,6 +1492,7 @@ const TRANSFER_RADAR_SINCE = "2026-07-01";
 
 function transferWatch() {
   const selected = transfers
+    .filter((transfer) => !HOMEPAGE_EXCLUDED_PLAYER_IDS.has(String(transfer && transfer.playerId || "")))
     .filter((transfer) => String(transfer && transfer.date || "").slice(0, 10) >= TRANSFER_RADAR_SINCE)
     .sort((left, right) => String(right.date || "").localeCompare(String(left.date || ""))).slice(0, 5);
   if (!selected.length) {
@@ -1481,6 +1683,10 @@ writePage("index.html", {
   "home-standings": staticHomeStandingRows(),
   "player-radar": trendPlayerSlot(3),
   "player-signals": playerSignalsSlot(),
+  "leaders-scorers": homeLeadersScorersSlot(5),
+  "leaders-assists": homeLeadersAssistsSlot(5),
+  "leaders-form": homeLeadersFormSlot(5),
+  "leaders-team-form": homeLeadersTeamFormSlot(5),
   "news-preview": newsCards(3),
   "analysis-preview": analysisCards(),
   "live-scores-ticker": liveScoresTrack()
@@ -1551,6 +1757,11 @@ const RESULTS_FAQ = {
     { question: "Canlı maç sonuçları ne sıklıkla güncelleniyor?", answer: "Oynanmakta olan maçların skoru sayfa açıkken otomatik olarak güncellenir; maç bittiğinde doğrulanmış sonuç bölümüne taşınır." },
     { question: "Şu anda canlı maç yoksa sayfa boş mu kalır?", answer: "Hayır; canlı maç yokken bugünün tamamlanmış sonuçları ve yaklaşan karşılaşmalar aynı sayfada gösterilmeye devam eder." },
     { question: "Süper Lig maçları öncelikli mi gösteriliyor?", answer: "Evet, Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor ve diğer Süper Lig takımlarının maçları listede öne çıkar." }
+  ],
+  canliMaclar: [
+    { question: "Bu sayfada biten maçların sonuçları var mı?", answer: "Hayır; bu sayfa yalnızca şu anda oynanan canlı maçları ve bugün oynanacak maçları listeler. Biten maçların doğrulanmış sonuçları için maç sonuçları sayfasına bakın." },
+    { question: "Şu anda canlı maç yoksa sayfa boş mu kalır?", answer: "Hayır; canlı maç yokken bugünün henüz oynanacak maçları aynı sayfada gösterilmeye devam eder." },
+    { question: "Süper Lig maçları öncelikli mi gösteriliyor?", answer: "Evet, Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor ve diğer Süper Lig takımlarının maçları listede öne çıkar." }
   ]
 };
 
@@ -1592,6 +1803,22 @@ writePage("canli-mac-sonuclari.html", {
   "results-schema": matchListSchemaBlock(verifiedResultMatches(), "Canlı ve doğrulanmış maç sonuçları"),
   "results-faq": faqSectionHtml(RESULTS_FAQ.canliMacSonuclari, "Canlı maç sonuçları hakkında sık sorulanlar"),
   "results-faq-schema": faqSchemaBlock(RESULTS_FAQ.canliMacSonuclari)
+});
+
+/**
+ * "/canli-maclar" — YALNIZCA canlı ve bugünün maçları, BİTMİŞ maç YOK.
+ * Bilerek `verified-results` hedefi hiç yazılmıyor: sayfa "canlı maç sonuçları"
+ * (canli-mac-sonuclari.html) ile aynı içeriği tekrarlamasın diye kapsamı dar
+ * tutuluyor — kapsam ayrımı "şu an oynanan + bugün oynanacak", bitmiş
+ * karşılaşmalar değil.
+ */
+writePage("canli-maclar.html", {
+  "live-score": resultsLiveSection(),
+  "matches-page": resultsUpcomingSection()
+}, fixtureFreshness, {
+  "results-schema": matchListSchemaBlock(calendarProgramMatches(MATCH_LIST_INITIAL), "Canlı maçlar ve bugünün maçları"),
+  "results-faq": faqSectionHtml(RESULTS_FAQ.canliMaclar, "Canlı maçlar hakkında sık sorulanlar"),
+  "results-faq-schema": faqSchemaBlock(RESULTS_FAQ.canliMaclar)
 });
 
 writePage("haberler.html", {

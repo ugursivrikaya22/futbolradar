@@ -682,6 +682,9 @@ function normalizeFixture(item) {
     goalExpectation: null,
     goalPotential: null,
     risk: null,
+    // `/fixtures?live=...` already embeds events. Reusing them avoids one
+    // `/fixtures/events` provider request per live match and preserves quota.
+    events: normalizeFixtureEvents(item.events),
     source: "api-football"
   };
 }
@@ -724,6 +727,7 @@ function normalizeStandingRow(row, leagueName) {
     rank: numberOrNull(row.rank),
     team: teamName(team),
     name: teamName(team),
+    logo: teamLogo(team),
     league: leagueName || "",
     played: numberOrNull(row.all && row.all.played),
     won: numberOrNull(row.all && row.all.win),
@@ -908,8 +912,13 @@ async function getFixtures(query) {
     live: liveValue || undefined
   });
   const matches = responseItems(payload).map(normalizeFixture);
-  const supportedMatches = filterSupportedCompetitions(matches);
+  // `live=all` gerçekten küresel canlı akıştır. Katalog filtresi burada
+  // uygulanırsa sağlayıcı tüm maçları döndürse bile yalnızca FutbolRadar'ın
+  // önceden tanıdığı ligler kalır. Editoryal öncelik sunum katmanının işi;
+  // backend canlı kayıtlardan hiçbir ligi elemez.
+  const supportedMatches = liveValue ? matches : filterSupportedCompetitions(matches);
   const filteredMatches = league && competition
+    && !liveValue
     ? supportedMatches.filter((match) => competitionMatchesFixture(match, competition))
     : supportedMatches;
   return stampProviderData(filteredMatches, "matches", 5 * 60 * 1000);
@@ -1248,6 +1257,8 @@ function normalizeFixtureEvents(items) {
     const player = item.player && item.player.name;
     const assist = item.assist && item.assist.name;
     const details = [player, assist ? `Asist: ${assist}` : "", item.detail].filter(Boolean);
+    const explicitEventTime = item.timestamp || item.date || item.createdAt || item.updatedAt;
+    const parsedEventTime = explicitEventTime ? Date.parse(explicitEventTime) : NaN;
 
     return {
       time: minute,
@@ -1255,7 +1266,8 @@ function normalizeFixtureEvents(items) {
       type: item.type || "Mac olayi",
       detail: item.detail || "",
       value: details.join(" · "),
-      comments: item.comments || ""
+      comments: item.comments || "",
+      providerEventAt: Number.isFinite(parsedEventTime) ? new Date(parsedEventTime).toISOString() : null
     };
   });
 }

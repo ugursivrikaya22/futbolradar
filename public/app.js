@@ -4,16 +4,13 @@
   var API_ROOT = "/api/";
   var DATA_ROOT = "/data/";
   var FETCH_TIMEOUT_MS = 6500;
-  var MATCH_LIVE_POLL_MS = 20000;
+  // Slow discovery only. Once a match is live, SSE takes over and the
+  // fallback follows the provider's documented 15-second refresh cadence.
+  var MATCH_LIVE_POLL_MS = 60000;
   var MATCH_DETAIL_POLL_MS = 15000;
-  // CANLI MAÇTA HIZLI YOKLAMA — kullanıcı talebi: "canlı maçta 5-10
-  // saniyelik polling yap". 7sn bu aralığın ortasında: skorun ekranda
-  // geç kalma payını küçültürken sağlayıcı kotasını (API-Football'ın
-  // ücretsiz/düşük katmanlarında dakikalık istek sınırı var, bkz.
-  // services/liveDataService.js PROVIDER_PLAN_ERROR günlükleri) 5sn'ye
-  // göre daha az zorluyor. Canlı maç yokken bu hıza gerek yok; ilgili
-  // bölümler MATCH_LIVE_POLL_MS/POLL_MS'e (20sn) geri döner.
-  var LIVE_MATCH_FAST_POLL_MS = 7000;
+  // API-Football refreshes fixture scores/events every 15 seconds. Polling
+  // faster consumes application requests without producing fresher data.
+  var LIVE_MATCH_FAST_POLL_MS = 15000;
   // Son düdükten sonra nihai istatistiklerin yayımlanması için beklenen süre.
   // Yoklama aralığıyla birlikte maç sonu analizi ~30-60 saniyede tam veriye
   // oturur; sağlayıcı geç yayımlarsa sonraki yoklama tamamlar.
@@ -258,18 +255,24 @@
    * Yanıt bayatsa etiket zamanı göstermeye devam eder (bilgi silinmez) ama
    * yanına tazelemenin durduğunu yazar. Okuyucu ne gördüğünü bilir.
    */
-  function updateUpdatedAtLabel(updatedAt, freshness) {
+  function updateUpdatedAtLabel(updatedAt, freshness, source) {
     var label = formatUpdatedAt(updatedAt);
     var stale = Boolean(freshness && freshness.stale);
-    if (!label && !stale) {
+    var sourceLabel = String(source || "").trim();
+
+    if (!label && !stale && !sourceLabel) {
       return;
     }
 
     document.querySelectorAll(".source-strip div").forEach(function (item) {
       var title = item.querySelector("span");
       var value = item.querySelector("b");
+      if (!title || !value) {
+        return;
+      }
+      var titleText = title.textContent.toLocaleLowerCase("tr-TR");
 
-      if (title && value && title.textContent.toLocaleLowerCase("tr-TR").indexOf("son güncelleme") !== -1) {
+      if (titleText.indexOf("son güncelleme") !== -1) {
         if (label) value.textContent = label;
         item.setAttribute("data-stale", stale ? "true" : "false");
 
@@ -285,6 +288,8 @@
         } else if (notice) {
           notice.remove();
         }
+      } else if (titleText.indexOf("veri kaynağı") !== -1 && sourceLabel) {
+        value.textContent = sourceLabel;
       }
     });
   }
@@ -357,7 +362,7 @@
             if (config.reportSource) {
               // Tazelik değerlendirmesi sunucuda, verinin kendi zaman
               // damgalarından yapılıyor (services/dataFreshness.js).
-              updateUpdatedAtLabel(result.updatedAt, result.meta && result.meta.freshness);
+              updateUpdatedAtLabel(result.updatedAt, result.meta && result.meta.freshness, result.source);
             }
             if (name !== "matches") {
               return result.data;
@@ -761,6 +766,46 @@
     if (ratingStatus === "stale") return false;
 
     return true;
+  }
+
+  // SAYIM İSTATİSTİĞİ VE DERECELENDİRME AYRI AYRI DOĞRULANIR — sunucudaki
+  // services/cardCredibility.js statsAreVerified()/ratingIsVerified() ile
+  // aynı karar, istemcide TEKRAR alınıyor: karşılaştırma aracı /api/players
+  // yanıtını hiç kredibilite süzgecinden geçirmeden kullanıyordu (bkz.
+  // isPublishablePlayerCard yalnızca initPlayerDetail'de çağrılıyordu).
+  // Sonuç: kadro senkronundan gelen 0 gol/0 dakika "ölçüldü, üretmedi" gibi
+  // basılıyor, "estimated" puanlı kayıtlar gerçek bir puanmış gibi görünüyordu.
+  // KİMLİK DOĞRULAMASI, ALAN DOĞRULAMASI DEĞİLDİR — services/cardCredibility.js
+  // ile aynı iki kapılı karar. Bir alanın basılabilmesi için ÖNCE kaydın
+  // kimliği (gerçek sağlayıcı id, kaynak, doğrulama zamanı — isPublishablePlayerCard)
+  // doğrulanmış olmalı, SONRA o alanın kendi ölçüm kanıtı aranır. Yalnızca
+  // ikinciyi kontrol etmek, mock kimlikli bir kaydın "oynadı" göstergesini
+  // (appearances/minutes > 0 — kadro senkronunun kendi varsayılanı) gerçek
+  // bir doğrulama sanmak olurdu.
+  function playerStatsAreVerified(player) {
+    if (!isPublishablePlayerCard(player)) return false;
+    if (player.statsVerifiedAt || player.statsSource || player.statsFetchedAt) return true;
+    var stats = playerStats(player);
+    return Number(player.appearances) > 0 || Number(stats.minutesPlayed) > 0;
+  }
+
+  function playerRatingIsVerified(player) {
+    if (!isPublishablePlayerCard(player)) return false;
+    var status = String((player && player.ratingStatus) || "").toLowerCase();
+    return status === "verified" || status === "current";
+  }
+
+  /** Doğrulanmamışsa null döner — displayValue() bunu "-" olarak basar, asla 0 değil. */
+  function verifiedStatValue(player, rawValue) {
+    if (!playerStatsAreVerified(player)) return null;
+    var value = Number(rawValue);
+    return isFinite(value) ? value : null;
+  }
+
+  function verifiedRatingValue(player, rawValue) {
+    if (!playerRatingIsVerified(player)) return null;
+    var value = Number(rawValue);
+    return isFinite(value) ? value : null;
   }
 
   function playerInitials(player) {
@@ -2825,16 +2870,21 @@
 
   function featuredTierOf(match, nowMs) {
     var band = featuredBandOf(match, nowMs);
+    if (band !== "live") return isTurkishMatch(match) ? 1 : 6;
 
-    if (isTurkishMatch(match)) {
-      return band === "live" ? 0 : 1;
-    }
-
-    if (band === "live") {
-      return isMajorClubMatch(match) ? 2 : 3;
-    }
-
-    return 4;
+    // Ana sayfa canlı maç sırası: Türk takımı, Süper Lig, 1. Lig, UEFA,
+    // beş büyük lig ve diğerleri. Sağlayıcı lig kimliği isimden önce gelir.
+    if (isTurkishTeamName(match.homeTeam) || isTurkishTeamName(match.awayTeam)) return 0;
+    var competitionId = String(match.competitionId || "");
+    var providerLeagueId = String(match.providerLeagueId || "");
+    var leagueKey = turkishKey(match.league || match.competition || "");
+    if (competitionId === "super-lig" || providerLeagueId === "203" || leagueKey.indexOf("super lig") !== -1) return 1;
+    if (competitionId === "1-lig" || providerLeagueId === "204" || leagueKey === "1 lig" || leagueKey.indexOf("trendyol 1 lig") !== -1) return 2;
+    if (["sampiyonlar-ligi", "avrupa-ligi", "konferans-ligi"].indexOf(competitionId) !== -1 ||
+        ["2", "3", "848"].indexOf(providerLeagueId) !== -1 || leagueKey.indexOf("uefa") !== -1) return 3;
+    if (["premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1"].indexOf(competitionId) !== -1 ||
+        ["39", "140", "135", "78", "61"].indexOf(providerLeagueId) !== -1) return 4;
+    return 5;
   }
 
   function featuredReasonFor(match, nowMs) {
@@ -4781,7 +4831,7 @@
     );
   }
 
-  // Canlı yoklamada yeniden çizilen maç bölümleri. "match-center-metrics"
+  // Canlı akışta yeniden çizilen maç bölümleri. "match-center-metrics"
   // buraya dahildir: "Analizi hazır" ve "Canlı" sayaçları sayfa açıldığı anda
   // dondurulmamalı, skor ve analiz durumu değiştikçe güncellenmelidir.
   var MATCH_SECTION_BINDINGS = [
@@ -4819,13 +4869,10 @@
   // için) ayrı yüklenip burada saklanır ki her yoklamada yeniden çekilmesin.
   var latestSuperLigTeams = [];
 
-  // Canlı yoklama API-Football'ın gerçek zamanlı uç noktasını kullanır
-  // (/api/matches?live=all). Bu uç nokta YALNIZCA oynanmakta olan maçları
-  // döndürdüğü için sonuç listeyi değiştirmez, günün listesinin üzerine
-  // birleştirilir; aksi halde canlı maç yokken tablo boşalırdı. Biten bir maç
-  // canlı listeden düştüğü için nihai skoru kaçırmamak adına belirli
-  // aralıklarla tam liste de yeniden çekilir.
-  var LIVE_FULL_RELOAD_EVERY = 5;
+  // SSE API-Football'ın gerçek zamanlı uç noktasını kullanır
+  // (/fixtures?live=all). Yalnızca oynanan maçlar geldiği için paket günün
+  // listesiyle birleştirilir; maç akıştan düşünce nihai durum bir kez tam
+  // listeden doğrulanır.
 
   function mergeLiveIntoMatches(baseMatches, liveMatches) {
     var base = Array.isArray(baseMatches) ? baseMatches.slice() : [];
@@ -4886,15 +4933,85 @@
       return;
     }
 
-    var tick = 0;
     var hasLiveMatchNow = false;
+    var lastKnownMatches = [];
+    var eventSource = null;
+    var fallbackTimer = null;
+    var liveAgeTimer = null;
+    var streamRetryAt = 0;
+    var lastReportedPacket = "";
+    var lastLiveUpdateMs = 0;
+
+    function numericScore(value) {
+      if (typeof value === "number" && isFinite(value)) return value;
+      if (typeof value === "string" && value.trim() !== "" && isFinite(Number(value))) return Number(value);
+      return null;
+    }
+
+    function goalChangeIds(previous, next) {
+      var before = Object.create(null);
+      (Array.isArray(previous) ? previous : []).forEach(function (match) {
+        var score = match && match.score;
+        if (!score) return;
+        before[matchIdentityKey(match)] = { home: numericScore(score.home), away: numericScore(score.away) };
+      });
+      return (Array.isArray(next) ? next : []).filter(function (match) {
+        var old = before[matchIdentityKey(match)];
+        var score = match && match.score;
+        if (!old || !score) return false;
+        var home = numericScore(score.home);
+        var away = numericScore(score.away);
+        return (home !== null && old.home !== null && home > old.home) ||
+          (away !== null && old.away !== null && away > old.away);
+      }).map(function (match) { return String(match.id || match.providerId || ""); }).filter(Boolean);
+    }
+
+    function updateLiveAges() {
+      activeBindings.forEach(function (binding) {
+        if (["featured-match", "live-score"].indexOf(binding.selector) === -1) return;
+        var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
+        if (!target) return;
+        var existing = target.querySelector("[data-live-last-updated]");
+        if (!hasLiveMatchNow || !lastLiveUpdateMs) {
+          if (existing) existing.remove();
+          return;
+        }
+        if (!existing) {
+          existing = document.createElement("p");
+          existing.className = "live-last-updated";
+          existing.setAttribute("data-live-last-updated", "");
+          existing.setAttribute("aria-live", "polite");
+          target.appendChild(existing);
+        }
+        var seconds = Math.max(0, Math.floor((Date.now() - lastLiveUpdateMs) / 1000));
+        existing.textContent = "Son güncelleme " + seconds + " saniye önce";
+      });
+    }
+
+    function flashGoals(ids) {
+      if (!ids.length) return;
+      activeBindings.forEach(function (binding) {
+        var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
+        if (!target) return;
+        Array.prototype.forEach.call(target.querySelectorAll("[data-match]"), function (card) {
+          if (ids.indexOf(String(card.getAttribute("data-match") || "")) === -1) return;
+          card.classList.remove("is-goal-update");
+          void card.offsetWidth;
+          card.classList.add("is-goal-update");
+          window.setTimeout(function () { card.classList.remove("is-goal-update"); }, 2200);
+        });
+      });
+    }
 
     function paint(matches) {
-      hasLiveMatchNow = Array.isArray(matches) && matches.some(function (match) { return isLiveMatch(match); });
+      var nextMatches = Array.isArray(matches) ? matches : [];
+      var changedGoals = goalChangeIds(lastKnownMatches, nextMatches);
+      lastKnownMatches = nextMatches;
+      hasLiveMatchNow = lastKnownMatches.some(function (match) { return isLiveMatch(match); });
 
       activeBindings.forEach(function (binding) {
         var target = document.querySelector('[data-api-target="' + binding.selector + '"]');
-        var html = binding.renderer(matches);
+        var html = binding.renderer(lastKnownMatches);
         if (!target) return;
 
         // `data-empty-hide` taşıyan bölüm içeriğiyle birlikte görünür ya da
@@ -4906,38 +5023,162 @@
           setContent(target, html);
         }
       });
+      updateLiveAges();
+      flashGoals(changedGoals);
     }
 
-    createLivePoller(function () { return hasLiveMatchNow ? LIVE_MATCH_FAST_POLL_MS : MATCH_LIVE_POLL_MS; }, function () {
-      tick += 1;
+    function clearFallbackTimer() {
+      if (fallbackTimer) window.clearTimeout(fallbackTimer);
+      fallbackTimer = null;
+    }
 
-      if (tick % LIVE_FULL_RELOAD_EVERY === 0) {
-        return forceReload("matches").then(paint);
+    function closeStream() {
+      if (eventSource) eventSource.close();
+      eventSource = null;
+    }
+
+    function scheduleFallback(delay) {
+      clearFallbackTimer();
+      if (isDocumentHidden()) return;
+      fallbackTimer = window.setTimeout(runFallback, delay);
+    }
+
+    function mergeAndPaint(live, forceTerminalRefresh) {
+      if (forceTerminalRefresh || liveRosterChanged(lastKnownMatches, live)) {
+        return forceReload("matches").then(function (matches) {
+          var refreshed = live.length ? mergeLiveIntoMatches(matches, live) : matches;
+          cache.matches = Promise.resolve(refreshed);
+          paint(refreshed);
+          return refreshed;
+        });
       }
+      if (!live.length) {
+        paint(lastKnownMatches.filter(function (match) { return !isLiveMatch(match); }));
+        return Promise.resolve(lastKnownMatches);
+      }
+      var merged = mergeLiveIntoMatches(lastKnownMatches, live);
+      cache.matches = Promise.resolve(merged);
+      paint(merged);
+      return Promise.resolve(merged);
+    }
 
+    function reportRender(packet) {
+      if (!packet || !packet.id || packet.id === lastReportedPacket) return;
+      lastReportedPacket = packet.id;
+      window.requestAnimationFrame(function () {
+        var clientRenderedAt = new Date(
+          window.performance && Number.isFinite(performance.timeOrigin)
+            ? performance.timeOrigin + performance.now()
+            : Date.now()
+        ).toISOString();
+        var events = (packet.matches || []).reduce(function (all, match) {
+          return all.concat(Array.isArray(match.events) ? match.events : []);
+        }, []);
+        var actualEvent = events.slice().reverse().find(function (event) { return event.providerEventAt; });
+        var estimatedEvent = events.slice().reverse().find(function (event) { return event.providerEventTimeEstimated; });
+        var detail = {
+          packetId: packet.id,
+          matchIds: (packet.matches || []).map(function (match) { return String(match.id || match.providerId || ""); }).filter(Boolean),
+          providerEventAt: actualEvent ? actualEvent.providerEventAt : null,
+          providerEventTimeEstimated: estimatedEvent ? estimatedEvent.providerEventTimeEstimated : null,
+          serverReceivedAt: packet.timing && packet.timing.serverReceivedAt,
+          apiResponseAt: packet.timing && packet.timing.apiResponseAt,
+          clientRenderedAt: clientRenderedAt,
+          provider_event_time: packet.timing && packet.timing.provider_event_time || (actualEvent ? actualEvent.providerEventAt : null),
+          backend_receive_time: packet.timing && packet.timing.backend_receive_time || packet.timing && packet.timing.serverReceivedAt,
+          api_response_time: packet.timing && packet.timing.api_response_time || packet.timing && packet.timing.apiResponseAt,
+          client_render_time: clientRenderedAt
+        };
+
+        if (window.performance && typeof performance.mark === "function") {
+          try { performance.mark("futbolradar-live-render", { detail: detail }); } catch (error) {
+            performance.mark("futbolradar-live-render");
+          }
+        }
+        document.dispatchEvent(new CustomEvent("futbolradar:live-latency", { detail: detail }));
+        fetch(API_ROOT + "live-score-stream", {
+          method: "POST",
+          cache: "no-store",
+          keepalive: true,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(detail)
+        }).catch(function () {});
+      });
+    }
+
+    function handleStreamSnapshot(message) {
+      var packet;
+      try { packet = JSON.parse(message.data); } catch (error) { return; }
+      var live = Array.isArray(packet.matches) ? packet.matches : [];
+      lastLiveUpdateMs = Date.parse(packet.timing && (packet.timing.api_response_time || packet.timing.apiResponseAt)) || Date.now();
+      mergeAndPaint(live, !live.length && hasLiveMatchNow).then(function () {
+        reportRender(packet);
+      });
+    }
+
+    function connectStream() {
+      clearFallbackTimer();
+      if (!window.EventSource || isDocumentHidden() || eventSource) {
+        scheduleFallback(hasLiveMatchNow ? LIVE_MATCH_FAST_POLL_MS : MATCH_LIVE_POLL_MS);
+        return;
+      }
+      eventSource = new EventSource(API_ROOT + "live-score-stream");
+      eventSource.addEventListener("snapshot", handleStreamSnapshot);
+      eventSource.addEventListener("stream-end", function () {
+        closeStream();
+        streamRetryAt = 0;
+        connectStream();
+      });
+      eventSource.onerror = function () {
+        closeStream();
+        streamRetryAt = Date.now() + MATCH_LIVE_POLL_MS;
+        scheduleFallback(0);
+      };
+    }
+
+    function runFallback() {
+      fallbackTimer = null;
+      if (isDocumentHidden()) return;
       return fetchJson(API_ROOT + "matches?live=all", { noStore: true })
         .then(function (result) {
           var live = (result && result.data) || [];
-          return loadData("matches").then(function (matches) {
-            // Canlı uç noktadan bir maç düştüyse (son düdük/iptal) eski
-            // LIVE kartını bir sonraki periyodik tam yenilemeye kadar
-            // ekranda tutma. Tam listeyi hemen çekerek kesin durumu al.
-            if (liveRosterChanged(matches, live)) {
-              return forceReload("matches").then(paint);
-            }
-            if (!live.length) return null;
-
-            var merged = mergeLiveIntoMatches(matches, live);
-            cache.matches = Promise.resolve(merged);
-            paint(merged);
-            return merged;
-          });
+          lastLiveUpdateMs = Date.now();
+          return mergeAndPaint(live, !live.length && hasLiveMatchNow);
         })
         .catch(function () {
-          // Canlı uç nokta erişilemezse tam listeye düş; skorlar yine tazelenir.
           return forceReload("matches").then(paint);
+        })
+        .then(function () {
+          if (hasLiveMatchNow && window.EventSource && Date.now() >= streamRetryAt) {
+            connectStream();
+          } else {
+            scheduleFallback(hasLiveMatchNow ? LIVE_MATCH_FAST_POLL_MS : MATCH_LIVE_POLL_MS);
+          }
         });
-    }).start();
+    }
+
+    loadData("matches").then(function (matches) {
+      paint(matches);
+      connectStream();
+    }).catch(function () {
+      scheduleFallback(MATCH_LIVE_POLL_MS);
+    });
+
+    liveAgeTimer = window.setInterval(updateLiveAges, 1000);
+
+    document.addEventListener("visibilitychange", function () {
+      if (isDocumentHidden()) {
+        closeStream();
+        clearFallbackTimer();
+      } else {
+        scheduleFallback(0);
+      }
+    });
+    window.addEventListener("pagehide", function () {
+      closeStream();
+      clearFallbackTimer();
+      if (liveAgeTimer) window.clearInterval(liveAgeTimer);
+    });
   }
 
   /**
@@ -5421,11 +5662,12 @@
     );
   }
 
-  function renderStandingRow(team) {
+  function renderStandingRow(team, highlightId) {
     var teamName = team.name || team.team;
+    var featured = highlightId && team.id === highlightId ? " is-featured-team" : "";
 
     return (
-      '<div class="table-row" data-card="standing-row" data-team="' + escapeHtml(team.id) + '">' +
+      '<div class="table-row' + featured + '" data-card="standing-row" data-team="' + escapeHtml(team.id) + '">' +
       "<span>" + escapeHtml(displayValue(team.rank)) + "</span><b>" + escapeHtml(teamName) + "</b><span>" + escapeHtml(displayValue(team.played)) + "</span><span>" + escapeHtml(displayValue(team.points)) + "</span><span>" + escapeHtml(displayValue(team.average)) + "</span><span>" + escapeHtml(displayValue(team.momentum)) + "</span>" +
       "</div>"
     );
@@ -5458,22 +5700,126 @@
     );
   }
 
-  function renderStandingsTable(teams, compact) {
+  var HOME_STANDINGS_LIMIT = 6;
+
+  function renderStandingsTable(teams, compact, highlightId) {
     var rows = standingsWithResults(teams);
     if ((isSuperLigStandingsView() && todayInIstanbul() < SUPER_LIG_SEASON_START) || !rows.length) {
       return standingsEmptyHtml(compact);
     }
-    return sortedByRank(rows).map(compact ? renderHomeStandingRow : renderStandingRow).join("");
+    var sorted = sortedByRank(rows);
+    if (!compact) {
+      return sorted.map(function (team) { return renderStandingRow(team, highlightId); }).join("");
+    }
+    // Ana sayfa widget'ı kompakt: yalnızca ilk 6 takım. `total` yine TAM
+    // takım sayısı — bölge sınıfı (şampiyonluk/Avrupa/küme düşme)
+    // hesaplaması bu sayıya göre yapılır, görüntülenen satır sayısına göre
+    // değil. Tam tablo `puan-durumu.html`de (section-link + CTA).
+    var total = sorted.length;
+    return sorted.slice(0, HOME_STANDINGS_LIMIT).map(function (team) { return renderHomeStandingRow(team, total); }).join("");
   }
 
-  function renderHomeStandingRow(team) {
-    var teamName = team.name || team.team;
+  /**
+   * ANA SAYFA KOMPAKT SATIRI: bölge vurgusu (şampiyonluk/Avrupa/küme düşme)
+   * TAKIM SAYISINA göre hesaplanır, sabit "18 takım" varsayılmaz — lig
+   * kadrosu sezon içinde değişirse (küme düşme/çıkma) sınıf kendiliğinden
+   * doğru satırlara düşer.
+   */
+  function homeStandingZoneClass(rank, total) {
+    var r = Number(rank);
+    var t = Number(total);
+    if (!Number.isFinite(r) || !Number.isFinite(t) || t <= 0) {
+      return "";
+    }
+    if (r === 1) return " is-leader";
+    if (r <= 4) return " is-europe";
+    if (r > t - 3) return " is-relegation";
+    return "";
+  }
+
+  function formatGoalDifference(value) {
+    if (value === null || value === undefined || value === "") {
+      return "-";
+    }
+    var n = Number(value);
+    if (!Number.isFinite(n)) {
+      return "-";
+    }
+    return (n > 0 ? "+" : "") + n;
+  }
+
+  function homeStandingLogoHtml(team) {
+    var name = getTeamName(team);
+    var logo = getTeamLogo(team);
+    var initials = escapeHtml(teamInitials(name));
+
+    if (!logo) {
+      return '<span class="home-standing-logo home-standing-logo-fallback" aria-hidden="true">' + initials + "</span>";
+    }
 
     return (
-      '<div class="standing-row" data-card="standing-row" data-team="' + escapeHtml(team.id) + '">' +
-      "<span>" + escapeHtml(displayValue(team.rank)) + "</span><b>" + escapeHtml(teamName) + "</b><span>" + escapeHtml(displayValue(team.points)) + " P</span><span>" + escapeHtml(displayValue(team.momentum)) + " M</span>" +
+      '<span class="home-standing-logo-wrap">' +
+      '<img class="home-standing-logo" src="' + escapeHtml(logo) + '" alt="" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
+      '<span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">' + initials + "</span>" +
+      "</span>"
+    );
+  }
+
+  /**
+   * ANA SAYFA PUAN DURUMU SATIRI — asgari zorunlu sütunlar: sıra, takım
+   * (logo + takım sayfası bağlantısı), O, G, B, M, averaj, puan. Sütun
+   * kümesi puan-durumu.html'deki tam tablodan bilerek farklı: o sayfa
+   * ayrıca form/momentum gösterir, ana sayfa widget'ı brifingin istediği
+   * sekiz alanla sınırlı kalır.
+   */
+  function renderHomeStandingRow(team, total) {
+    var teamName = team.name || team.team;
+    var zoneClass = homeStandingZoneClass(team.rank, total);
+    var gd = formatGoalDifference(team.goalDifference);
+    var gdClass = gd.charAt(0) === "+" ? " is-positive" : (gd.charAt(0) === "-" ? " is-negative" : "");
+
+    return (
+      '<div class="home-standing-row' + zoneClass + '" data-card="standing-row" data-team="' + escapeHtml(team.id) + '">' +
+      '<span class="home-standing-rank">' + escapeHtml(displayValue(team.rank)) + "</span>" +
+      '<a class="home-standing-team" href="' + escapeHtml(teamDetailHref(team)) + '">' +
+      homeStandingLogoHtml(team) + "<b>" + escapeHtml(teamName) + "</b>" +
+      "</a>" +
+      "<span>" + escapeHtml(displayValue(team.played)) + "</span>" +
+      "<span>" + escapeHtml(displayValue(team.won)) + "</span>" +
+      "<span>" + escapeHtml(displayValue(team.drawn)) + "</span>" +
+      "<span>" + escapeHtml(displayValue(team.lost)) + "</span>" +
+      '<span class="home-standing-gd' + gdClass + '">' + escapeHtml(gd) + "</span>" +
+      '<span class="home-standing-points">' + escapeHtml(displayValue(team.points)) + "</span>" +
       "</div>"
     );
+  }
+
+  /**
+   * ANA SAYFA "TREND" KARTLARI İÇİN AYNI GÜVENİLİRLİK BARI.
+   *
+   * `services/cardCredibility.js` bu barı sunucu tarafında (statik ön
+   * render) uyguluyor, ama istemci `/api/players` (ya da API ulaşılamazsa
+   * `data/players.json`) yanıtını HAM olarak alıp doğrudan sıralıyordu:
+   * `players.slice(0, 3)` dosyadaki İLK üç kaydı basıyordu, `topPlayer(...)`
+   * ise en yüksek puanlı kaydı seçiyordu — ikisi de yer tutucu (mock)
+   * kimlikli, serbest kalmış bir kaydı ("Mauro Icardi") elemeden trend
+   * kartı diye yayına sokabiliyordu; JavaScript yüklenip veri gelir gelmez
+   * sunucunun bastığı doğru statik yedeğin ÜSTÜNE yazılıyordu. Bu yüzden
+   * istemci de aynı iki asgari şartı (gerçek sağlayıcı kimliği, serbest
+   * oyuncu değil) kontrol etmeden bir kaydı "trend" göstermiyor.
+   */
+  function isHomeTrendEligiblePlayer(player) {
+    var providerId = String((player && (player.providerId || player.provider_id)) || "").trim();
+    if (!providerId || !/^\d+$/.test(providerId)) {
+      return false;
+    }
+
+    var team = String((player && (player.currentTeam || player.team)) || "").trim();
+    if (!team || /serbest|free agent|kulüpsüz/i.test(team)) {
+      return false;
+    }
+
+    return true;
   }
 
   function renderPlayerHomeCard(player) {
@@ -6099,7 +6445,8 @@
   }
 
   function renderPlayerSignals(players) {
-    if (!Array.isArray(players) || !players.length) {
+    players = Array.isArray(players) ? players.filter(isHomeTrendEligiblePlayer) : [];
+    if (!players.length) {
       return "";
     }
 
@@ -8106,78 +8453,16 @@
     });
   }
 
-  function compareRowHtml(label, left, right) {
-    var leftNumber = Number(left);
-    var rightNumber = Number(right);
-    var hasNumbers = !Number.isNaN(leftNumber) && !Number.isNaN(rightNumber);
-    var delta = hasNumbers ? Math.abs(leftNumber - rightNumber) : 0;
-    var deltaText = !hasNumbers ? "Karşılaştır" : delta === 0 ? "Eşit" : (leftNumber > rightNumber ? "Sol +" : "Sağ +") + delta;
-    var leftClass = hasNumbers && leftNumber > rightNumber ? " is-leading" : "";
-    var rightClass = hasNumbers && rightNumber > leftNumber ? " is-leading" : "";
-
-    return (
-      '<div class="compare-row">' +
-      "<span>" + escapeHtml(label) + "</span>" +
-      '<b class="' + leftClass + '">' + escapeHtml(displayValue(left)) + "</b>" +
-      "<em>" + escapeHtml(deltaText) + "</em>" +
-      '<b class="' + rightClass + '">' + escapeHtml(displayValue(right)) + "</b>" +
-      "</div>"
-    );
-  }
-
-  function ratingValue(player, key) {
-    return playerScore(player, key, player.overallRating || player.aiRating || player.rating);
-  }
-
-  function compareAttributeRowsHtml(left, right) {
-    return [
-      ["Overall", "overallRating"],
-      ["Potansiyel", "potentialRating"],
-      ["Teknik", "technicalRating"],
-      ["Fiziksel", "physicalRating"],
-      ["Mental", "mentalRating"],
-      ["Hücum", "attackingRating"],
-      ["Savunma", "defensiveRating"],
-      ["Pas", "passingRating"],
-      ["Şut", "shootingRating"],
-      ["Hız", "paceRating"],
-      ["Dripling", "dribblingRating"],
-      ["Dayanıklılık", "staminaRating"],
-      ["Form", "formRating"]
-    ].map(function (row) {
-      return compareRowHtml(row[0], ratingValue(left, row[1]), ratingValue(right, row[1]));
-    }).join("");
-  }
-
-  function renderPlayerComparison(left, right) {
-    if (!left || !right) {
-      return "";
-    }
-
-    var leftTeam = playerTeamDisplay(left);
-    var rightTeam = playerTeamDisplay(right);
-
-    return (
-      '<article class="compare-card">' +
-      '<div class="compare-player"><span>' + escapeHtml(leftTeam) + " · " + escapeHtml(left.position) + "</span><h2>" + escapeHtml(left.name) + "</h2><p>Yaş " + escapeHtml(displayValue(playerAge(left))) + " · " + escapeHtml(displayValue(playerMarketValue(left))) + "</p></div>" +
-      '<div class="compare-player right"><span>' + escapeHtml(rightTeam) + " · " + escapeHtml(right.position) + "</span><h2>" + escapeHtml(right.name) + "</h2><p>Yaş " + escapeHtml(displayValue(playerAge(right))) + " · " + escapeHtml(displayValue(playerMarketValue(right))) + "</p></div>" +
-      compareAttributeRowsHtml(left, right) +
-      compareRowHtml("Gol tehdidi", playerScore(left, "threatScore"), playerScore(right, "threatScore")) +
-      compareRowHtml("Yaratıcılık", playerScore(left, "creativityScore"), playerScore(right, "creativityScore")) +
-      compareRowHtml("Pres gücü", playerScore(left, "pressingScore"), playerScore(right, "pressingScore")) +
-      playerRadarChartHtml(left, right, left.name + " / " + right.name) +
-      '<p class="compare-note">FutbolRadar yorumu: ' + escapeHtml(playerAiScore(left) >= playerAiScore(right) ? left.name : right.name) + " overall ve radar etkisinde öne çıkıyor; rol farkı için hücum, savunma, pas, şut ve pres satırlarını birlikte oku.</p>" +
-      "</article>"
-    );
-  }
-
   function comparePlayerSummaryHtml(player) {
+    var market = playerStatsAreVerified(player) ? playerMarketValue(player) : null;
+    var rating = verifiedRatingValue(player, player.overallRating || player.aiRating || player.rating);
+
     return (
       '<div class="compare-player">' +
       "<span>" + escapeHtml(playerTeamDisplay(player)) + " - " + escapeHtml(player.position) + "</span>" +
       "<h2>" + escapeHtml(player.name) + "</h2>" +
-      "<p>Yaş " + escapeHtml(displayValue(playerAge(player))) + " - " + escapeHtml(displayValue(playerMarketValue(player))) + "</p>" +
-      '<strong class="rating">' + escapeHtml(displayValue(player.overallRating || player.aiRating || player.rating)) + "</strong>" +
+      "<p>Yaş " + escapeHtml(displayValue(playerAge(player))) + " - " + escapeHtml(displayValue(market)) + "</p>" +
+      '<strong class="rating">' + escapeHtml(displayValue(rating)) + "</strong>" +
       "</div>"
     );
   }
@@ -8207,8 +8492,12 @@
   }
 
   function compareWinnerSummaryHtml(players) {
-    var selected = Array.isArray(players) ? players.filter(Boolean) : [];
-    if (!selected.length) {
+    // Lider yalnızca DOĞRULANMIŞ puanlı oyuncular arasından seçilir. Aksi
+    // hâlde "estimated" bir puan (kadro senkronunun varsayılanı) gerçek bir
+    // ölçümmüş gibi kazanan ilan edilir — tam olarak aynı isim/kulüpten iki
+    // farklı kayıt (mock + sağlayıcı) seçildiğinde önceden olan buydu.
+    var selected = (Array.isArray(players) ? players.filter(Boolean) : []).filter(playerRatingIsVerified);
+    if (selected.length < 2) {
       return "";
     }
 
@@ -8251,7 +8540,12 @@
   }
 
   function compareInsightCardsHtml(players) {
-    var selected = Array.isArray(players) ? players.filter(Boolean).slice(0, 3) : [];
+    // Her kart bir rating alanı (tehdit/yaratıcılık/pres puanı) ile bir
+    // sayım istatistiğini (gol/asist/pres) birlikte kullanıyor; ikisi de
+    // doğrulanmamış oyuncuda kart anlamsız bir sayı üretir.
+    var selected = (Array.isArray(players) ? players.filter(Boolean) : [])
+      .filter(function (player) { return playerRatingIsVerified(player) && playerStatsAreVerified(player); })
+      .slice(0, 3);
     if (selected.length < 2) {
       return "";
     }
@@ -8284,20 +8578,32 @@
       '<div class="compare-player-row">' + selected.map(comparePlayerSummaryHtml).join("") + "</div>" +
       compareWinnerSummaryHtml(selected) +
       compareInsightCardsHtml(selected) +
-      compareMultiRowHtml("Overall", selected, function (player) { return player.overallRating || player.aiRating || player.rating; }) +
-      compareMultiRowHtml("Form", selected, function (player) { return radarMetric(player, "form"); }) +
-      compareMultiRowHtml("Hücum", selected, function (player) { return radarMetric(player, "attack"); }) +
-      compareMultiRowHtml("Yaratıcılık", selected, function (player) { return radarMetric(player, "creativity"); }) +
-      compareMultiRowHtml("Savunma", selected, function (player) { return radarMetric(player, "defense"); }) +
-      compareMultiRowHtml("Disiplin", selected, function (player) { return radarMetric(player, "discipline"); }) +
-      compareMultiRowHtml("Süreklilik", selected, function (player) { return radarMetric(player, "durability"); }) +
-      compareMultiRowHtml("Potansiyel", selected, function (player) { return radarMetric(player, "potential"); }) +
+      // Doğrulanmamış puan/istatistik "-" basılır, asla 0 değil: aksi hâlde
+      // kadro senkronunun eksik-veri varsayılanı (0 gol, "estimated" 27
+      // puan gibi) ölçülmüş bir değermiş gibi okunur. Karar
+      // playerStatsAreVerified()/playerRatingIsVerified() ile alınır — sunucudaki
+      // services/cardCredibility.js kararının aynısı.
+      compareMultiRowHtml("Overall", selected, function (player) { return verifiedRatingValue(player, player.overallRating || player.aiRating || player.rating); }) +
+      compareMultiRowHtml("Form", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "form")); }) +
+      compareMultiRowHtml("Hücum", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "attack")); }) +
+      compareMultiRowHtml("Yaratıcılık", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "creativity")); }) +
+      compareMultiRowHtml("Savunma", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "defense")); }) +
+      compareMultiRowHtml("Disiplin", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "discipline")); }) +
+      compareMultiRowHtml("Süreklilik", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "durability")); }) +
+      compareMultiRowHtml("Potansiyel", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "potential")); }) +
+      // Veri güveni bilinçli olarak süzülmez: oyuncunun performansını değil,
+      // kaydın ne kadar iyi kaynaklandığını anlatıyor (bkz. cardCredibility.js).
       compareMultiRowHtml("Veri güveni", selected, function (player) { return radarMetric(player, "dataConfidence"); }) +
-      compareMultiRowHtml("Piyasa EUR", selected, function (player) { return player.marketValueEur; }) +
-      compareMultiRowHtml("Maç", selected, function (player) { return playerStats(player).appearances; }) +
-      compareMultiRowHtml("Dakika", selected, function (player) { return playerStats(player).minutesPlayed; }) +
-      compareMultiRowHtml("Gol", selected, function (player) { return playerStats(player).goals; }) +
-      compareMultiRowHtml("Asist", selected, function (player) { return playerStats(player).assists; }) +
+      compareMultiRowHtml("Piyasa EUR", selected, function (player) { return verifiedStatValue(player, player.marketValueEur); }) +
+      compareMultiRowHtml("Maç", selected, function (player) { return verifiedStatValue(player, playerStats(player).appearances); }) +
+      compareMultiRowHtml("Dakika", selected, function (player) { return verifiedStatValue(player, playerStats(player).minutesPlayed); }) +
+      compareMultiRowHtml("Gol", selected, function (player) { return verifiedStatValue(player, playerStats(player).goals); }) +
+      compareMultiRowHtml("Asist", selected, function (player) { return verifiedStatValue(player, playerStats(player).assists); }) +
+      // 90 dakikaya normalize edilmiş değer /api/players yanıtında hazır
+      // gelir (services/statNormalization.js) — istemci ham/dakika oranını
+      // yeniden hesaplamaz, sunucudaki karar tekrar edilmez.
+      compareMultiRowHtml("Gol (90 dk)", selected, function (player) { return player.goalsPer90; }) +
+      compareMultiRowHtml("Asist (90 dk)", selected, function (player) { return player.assistsPer90; }) +
       playerRadarChartHtml(selected[0], selected[1], selected.map(function (player) { return player.name; }).join(" / "), selected[2]) +
       '<p class="compare-note">FutbolRadar yorumu: lider oyuncu metrik bazında yeşil vurgulanır; üç oyunculu seçimde tüm radar alanları aynı grafikte okunur.</p>' +
       "</article>"
@@ -8472,11 +8778,24 @@
         return;
       }
 
-      var options = players.map(function (player) {
+      // TEKİL OYUNCU KİMLİĞİ — aynı gerçek kişi için sürüm listesinde iki
+      // kayıt görünmez. /api/players her kayda canonicalId ekler (bkz.
+      // services/duplicatePlayerService.js); açılır listede yalnızca her
+      // grubun kanonik (en güvenilir) kaydı yer alır. Eski bir bağlantı
+      // (?p1=ugurcan-cakir gibi) hâlâ çalışır — resolveCanonicalId onu
+      // otomatik kanonik kimliğe yönlendirir.
+      var canonicalPlayers = players.filter(function (player) { return !player.isDuplicate; });
+
+      function resolveCanonicalId(id) {
+        var record = players.find(function (player) { return player.id === id; });
+        return record ? (record.canonicalId || record.id) : id;
+      }
+
+      var options = canonicalPlayers.map(function (player) {
         return '<option value="' + escapeHtml(player.id) + '">' + escapeHtml(player.name) + " · " + escapeHtml(playerTeamDisplay(player)) + "</option>";
       }).join("");
 
-      var presets = comparePresetDefinitions(players);
+      var presets = comparePresetDefinitions(canonicalPlayers);
       var requestedIds = String(query.get("players") || "").split(",").filter(Boolean);
       var hasPlayersQuery = Boolean(query.get("players"));
       if (!requestedIds.length) {
@@ -8485,29 +8804,30 @@
       if (!requestedIds.length && seedIds.length) {
         requestedIds = seedIds;
       }
+      requestedIds = requestedIds.map(resolveCanonicalId);
       var hasSingleSeed = !hasPlayersQuery && requestedIds.length === 1;
 
       selects.forEach(function (select, index) {
-        var requestedId = requestedIds[index] || query.get(index === 0 ? "p1" : index === 1 ? "p2" : "p3");
-        var fallback = (players[index] && players[index].id) || (players[0] && players[0].id) || "";
-        var exists = players.some(function (player) { return player.id === requestedId; });
+        var requestedId = requestedIds[index] || resolveCanonicalId(query.get(index === 0 ? "p1" : index === 1 ? "p2" : "p3") || "");
+        var fallback = (canonicalPlayers[index] && canonicalPlayers[index].id) || (canonicalPlayers[0] && canonicalPlayers[0].id) || "";
+        var exists = canonicalPlayers.some(function (player) { return player.id === requestedId; });
         select.innerHTML = (index > 1 ? '<option value="">Opsiyonel 3. oyuncu</option>' : "") + options;
         select.value = exists ? requestedId : (index > 1 ? "" : fallback);
       });
 
       if (hasSingleSeed && selects[0] && selects[1]) {
-        var primary = players.find(function (player) { return player.id === selects[0].value; });
-        var peer = bestComparePeer(primary, players);
+        var primary = canonicalPlayers.find(function (player) { return player.id === selects[0].value; });
+        var peer = bestComparePeer(primary, canonicalPlayers);
         if (peer) {
           selects[1].value = peer.id;
         }
       }
 
-      if (selects[0] && selects[1] && selects[0].value === selects[1].value && players.length > 1) {
-        selects[1].value = players.find(function (player) { return player.id !== selects[0].value; }).id;
+      if (selects[0] && selects[1] && selects[0].value === selects[1].value && canonicalPlayers.length > 1) {
+        selects[1].value = canonicalPlayers.find(function (player) { return player.id !== selects[0].value; }).id;
       }
 
-      renderComparePresets(presetTarget, presets, players);
+      renderComparePresets(presetTarget, presets, canonicalPlayers);
 
       if (!selects.length) {
         var seededIds = requestedIds.filter(function (id, index) { return requestedIds.indexOf(id) === index; });
@@ -8516,7 +8836,7 @@
         }).filter(Boolean);
 
         if (seeded.length === 1) {
-          var seededPeer = bestComparePeer(seeded[0], players);
+          var seededPeer = bestComparePeer(seeded[0], canonicalPlayers);
           if (seededPeer) {
             seeded.push(seededPeer);
           }
@@ -8557,27 +8877,6 @@
         updatePlayerCompareMeta(selected);
         markActiveComparePreset(presetTarget, selected.map(function (player) { return player.id; }));
         setContent(target, renderPlayerComparisonSet(selected));
-        return;
-
-        var left = players.find(function (player) { return player.id === (selects[0] && selects[0].value); });
-        var right = players.find(function (player) { return player.id === (selects[1] && selects[1].value); });
-        var params = new URLSearchParams(window.location.search);
-
-        if (!left || !right) {
-          setEmpty(target, "Karşılaştırma hazırlanamadı", "Seçilen oyunculardan biri bulunamadı. Lütfen listeden farklı oyuncu seç.");
-          return;
-        }
-
-        if (left) {
-          params.set("p1", left.id);
-        }
-
-        if (right) {
-          params.set("p2", right.id);
-        }
-
-        window.history.replaceState({}, "", window.location.pathname + "?" + params.toString());
-        setContent(target, renderPlayerComparison(left, right));
       }
 
       selects.forEach(function (select) {
@@ -11888,14 +12187,22 @@
     initTeamsPage(document.querySelector('[data-api-target="teams-page"]'));
 
 
-    renderInto(
-      document.querySelector('[data-api-target="standings"]'),
-      "standings",
-      function (teams) {
-        return renderStandingsTable(teams, false);
-      },
-      "Puan durumu yüklenemedi"
-    );
+    (function () {
+      var standingsTarget = document.querySelector('[data-api-target="standings"]');
+      // Büyük 4 takım puan durumu sayfalarında (ör. galatasaray-puan-durumu.html)
+      // konteynerin `data-highlight-team` özniteliği o takımın satırını
+      // JS ile yeniden çizilen tabloda da vurgulu tutar — statik önizlemedeki
+      // vurgu istemci verisiyle değişince kaybolmasın diye.
+      var highlightId = standingsTarget ? standingsTarget.dataset.highlightTeam : "";
+      renderInto(
+        standingsTarget,
+        "standings",
+        function (teams) {
+          return renderStandingsTable(teams, false, highlightId);
+        },
+        "Puan durumu yüklenemedi"
+      );
+    })();
 
     renderInto(
       document.querySelector('[data-api-target="home-standings"]'),
@@ -11910,7 +12217,7 @@
       document.querySelector('[data-api-target="player-radar"]'),
       "players",
       function (players) {
-        return players.slice(0, 3).map(renderPlayerHomeCard).join("");
+        return players.filter(isHomeTrendEligiblePlayer).slice(0, 3).map(renderPlayerHomeCard).join("");
       },
       "Oyuncu radari yüklenemedi"
     );

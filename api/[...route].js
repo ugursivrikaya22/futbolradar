@@ -9,6 +9,7 @@ const { handleMotmWeek } = require("../server/motmWeekRoute");
 const { handleHomePoll } = require("../server/homePollRoute");
 const { handleMatchLineup } = require("../server/matchLineupRoute");
 const { handleLiveLatency } = require("../server/liveLatencyRoute");
+const { handleLiveScoreStream } = require("../server/liveScoreStreamRoute");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -292,6 +293,10 @@ module.exports = async function handler(req, res) {
     return handleLiveLatency(req, res);
   }
 
+  if (routeName(req) === "live-score-stream") {
+    return handleLiveScoreStream(req, res);
+  }
+
   if (rejectUnsupportedMethod(req, res)) {
     return;
   }
@@ -324,3 +329,7 @@ module.exports = async function handler(req, res) {
 
   return sendError(res, 404, "API endpoint bulunamadi.", "API_ROUTE_NOT_FOUND");
 };
+
+// SSE responses rotate before this ceiling. Keeping the stream in the
+// existing catch-all avoids adding another Vercel function on the Hobby plan.
+module.exports.config = { maxDuration: 300 };

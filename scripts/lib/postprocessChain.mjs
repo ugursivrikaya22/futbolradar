@@ -40,10 +40,6 @@
 export const POSTPROCESS_CHAIN = [
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },
-  // Tahmin anketi ana sayfaya derleme anında basılır: mobilde ilk ekranda
-  // JavaScript beklemeden görünmesi gerekiyor. Takvim saate bağlı olduğu
-  // için her derlemede yeniden değerlendirilir (gerekçe: lib/homePoll.mjs).
-  { id: "home-poll", script: "inject-home-poll.mjs", args: [], timeoutMinutes: 5 },
   // Maç dosyası tanıtım kutusu da saate bağlı: penceresi kapanınca kutu
   // kendiliğinden düşsün diye her derlemede yeniden değerlendirilir.
   { id: "match-special", script: "inject-match-special.mjs", args: [], timeoutMinutes: 5 },

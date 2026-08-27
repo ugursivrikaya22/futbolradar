@@ -20,18 +20,18 @@ GitHub cron is UTC. Istanbul is UTC+3 throughout the year.
 
 - Full update: `0 2 * * *` = 05:00 Europe/Istanbul.
 - Hourly update: `0 0-1,3-23 * * *` = every UTC hour except 02:00.
-- Reliability fallbacks: `20 2 * * *` for the full job and
-  `20 0-1,3-23 * * *` for hourly jobs. The primary schedules still run at the
-  requested exact time; the minute-20 schedules recover a run only when GitHub
-  drops a top-of-hour event under load.
+
+There is deliberately no minute-20 reliability fallback: the two schedules
+above already trigger 25 runs/day, and each GitHub-hosted runner minute is
+billed against the account's Actions quota. A dropped top-of-hour event (rare)
+is simply picked up by the next scheduled run instead of a same-hour retry.
 
 Both schedules and authorized manual runs share the
 `futbolradar-production-update` concurrency group with
 `cancel-in-progress: false`. The full run is never interrupted and a second run
 cannot write concurrently. A durable Istanbul-date/hour dedupe key in
 `data/update-status.json` rejects repeated successful windows as an additional
-guard. When a primary run already succeeded, its fallback exits without
-touching the published status or data.
+guard.
 
 ## GitHub Actions configuration
 

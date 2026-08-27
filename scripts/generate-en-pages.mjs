@@ -33,7 +33,7 @@ import {
   officialLineupAlertHtml
 } from "./lib/matchCards.mjs";
 import { transferTypeEn } from "./lib/enTicker.mjs";
-import { homePollBlock, interleavePollPromo, pollPromoCardHtml, pollStickyWidgetHtml } from "./lib/homePoll.mjs";
+import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
 import { liveTickerBlock } from "./lib/liveScoresTicker.mjs";
 
 const require = createRequire(import.meta.url);
@@ -1086,32 +1086,14 @@ function archiveSection() {
 }
 
 /**
- * TAHMİN ANKETİ — TÜRKÇE ANA SAYFAYLA BİREBİR AYNI YAPI, AYNI BİLEŞENDEN.
+ * TAHMİN ANKETİ — ANA SAYFADA ARTIK BASILMIYOR.
  *
- * İşaretleme artık burada yazılmıyor: iki dil de `scripts/lib/homePoll.mjs`
- * bileşenini çağırıyor. Kabuğu iki yerde tutmak, sürümlerin zamanla
- * ayrışması demekti — nitekim bir aşama önce Türkçe taraf dolu, İngilizce
- * taraf boş doğuyordu.
- *
- * Soru ve seçenekler derleme anında basılıyor (gerekçe bileşenin başında);
- * takvimde yayında anket yoksa boş dize döner ve bölüm hiç çizilmez.
- */
-function homePollSection() {
-  const selection = selectHomePoll({
-    polls: readJson("home-polls.json", {}),
-    teams: readJson("teams.json", [])
-  });
-  if (!selection.poll) return "";
-  return homePollBlock(localizePoll(selection.poll, LOCALE), {
-    locale: LOCALE,
-    status: selection.status
-  });
-}
-
-/**
- * ANKET VİTRİN KARTI VE SABİT KUTU — Türkçe tarafla AYNI bileşenden
- * (gerekçe scripts/lib/homePoll.mjs başlığında: tam formu tekrarlamaz,
- * mevcut ankete bağlanır, katılım sayısı istemcide dolar).
+ * Ana sayfa enjeksiyonu prodüksiyonda kapatıldı: `home-poll` adımı
+ * `scripts/lib/postprocessChain.mjs`den çıkarıldı ve bu üreticinin ana
+ * sayfaya özel çağrıları (`homePollSection`, `pollStickySection`) kaldırıldı.
+ * `pollPromoSection` yalnızca `newsPage()` içinde, haber listesine serpiştirilen
+ * vitrin kartı için hâlâ kullanılıyor — o çağrı ana sayfaya değil
+ * `en/news.html`e yazıyor, kapsam dışı bırakıldı.
  */
 function pollPromoSection(href) {
   const selection = selectHomePoll({
@@ -1123,18 +1105,6 @@ function pollPromoSection(href) {
     locale: LOCALE,
     status: selection.status,
     href
-  });
-}
-
-function pollStickySection() {
-  const selection = selectHomePoll({
-    polls: readJson("home-polls.json", {}),
-    teams: readJson("teams.json", [])
-  });
-  if (!selection.poll) return "";
-  return pollStickyWidgetHtml(localizePoll(selection.poll, LOCALE), {
-    locale: LOCALE,
-    status: selection.status
   });
 }
 
@@ -1163,25 +1133,24 @@ function officialLineupAlertsSection() {
 
 function homePage() {
   // BÖLÜM SIRASI TÜRKÇE ANA SAYFANIN AYNISI (prerender-core-pages.mjs):
-  //   hero → tahmin anketi → köşe yazıları → günün başlıkları → bugünün
-  //   maçları → günün radar maçı → son maç raporu → son raporlar → oyuncu
-  //   radarı → trend takımlar → hızlı gezinme → transfer radarı → haber
-  //   akışı → arşiv → kaynak şeridi
+  //   hero → köşe yazıları → günün başlıkları → bugünün maçları → günün
+  //   radar maçı → son maç raporu → son raporlar → oyuncu radarı → trend
+  //   takımlar → hızlı gezinme → transfer radarı → haber akışı → arşiv →
+  //   kaynak şeridi
+  // Tahmin anketi prodüksiyonda kapatıldı (gerekçe: scripts/lib/postprocessChain.mjs),
+  // sırada artık yok.
   // Puan tablosu özeti Türkçe ana sayfada yok; İngilizce tarafta VAR olan
   // tek tablo girişi olduğu için kaldırılmadı, arşivin ardına alındı.
   const body = `      ${heroSection()}
       ${officialLineupAlertsSection()}
-      ${homePollSection()}
       ${columnsSection()}
       ${dailyHeadlinesSection()}
       ${todaySection()}
       ${radarMatchSection()}
-      ${pollPromoSection("#tahmin-anketi")}
       ${playerRadarSection()}
       ${trendTeamsSection()}
       ${quickNavSection()}
       ${transferWatchSection()}
-      ${pollPromoSection("#tahmin-anketi")}
       ${newsSection()}
       ${archiveSection()}
       <section class="container section" aria-labelledby="en-standings-title">
@@ -1198,7 +1167,6 @@ function homePage() {
     heroTitle: "Turkish football, in English",
     heroLead: "Live scores, fixtures, standings and verified results from the Trendyol Süper Lig and Turkish clubs in European competitions.",
     heroMeta: todayLabel,
-    stickyWidget: pollStickySection(),
     body,
     schema: schemaFor("home", "en/index.html", "WebPage"),
     bare: true
