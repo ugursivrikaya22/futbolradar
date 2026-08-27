@@ -96,6 +96,23 @@ const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
 // gün listelenir ve sayfa gözün önünde değişir.
 const { istanbulDay } = require("../services/matchStatus.js");
 
+/**
+ * ANA SAYFADA HİÇ GÖSTERİLMEYECEK OYUNCULAR.
+ *
+ * `evaluateTrendPlayerCard` serbest oyuncuları ve mock sağlayıcı kimliklerini
+ * zaten eliyor, ama bu kural DOLAYLI: veri değişirse (örn. oyuncu yeniden bir
+ * kulüple ilişkilendirilirse) dolaylı filtre tek başına yetmeyebilir. Mauro
+ * Icardi için ayrıca AÇIK bir kara liste tutuyoruz — ana sayfa "trend" ve
+ * "son transfer" bölümlerinde bir daha hiç görünmemesi gerekiyor.
+ */
+const HOMEPAGE_EXCLUDED_PLAYER_IDS = new Set(["mauro-icardi"]);
+
+function excludeHomepageBlockedPlayers(list) {
+  return (Array.isArray(list) ? list : []).filter(
+    (player) => !HOMEPAGE_EXCLUDED_PLAYER_IDS.has(String(player && player.id || ""))
+  );
+}
+
 const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
 const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
 
@@ -1167,7 +1184,7 @@ function staticMomentumRows() {
  * göstermenin gerekçesi değil.
  */
 function verifiedTrendPlayers(limit) {
-  const { kept, removed } = filterPlayerCards(topPlayers, {
+  const { kept, removed } = filterPlayerCards(excludeHomepageBlockedPlayers(topPlayers), {
     trend: true,
     leagueTeams: fixtureTeamNames()
   });
@@ -1192,6 +1209,91 @@ function trendPlayerSlot(limit) {
     );
   }
   return verified.map(simplePlayerCard).join("");
+}
+
+/**
+ * ANA SAYFA "SÜPER LİG LİDERLERİ" RAFI — dört sekme, sekme başına en çok 5
+ * satır.
+ *
+ * Gol/asist sekmeleri `verifiedTrendPlayers`in bara tabi DEĞİL: kadro
+ * senkronu gol/asist hiç göndermiyor (yukarıdaki denetim notuna bkz.), yani
+ * o bar burada her zaman sıfır satır üretirdi. Bunun yerine gol-kralligi.html
+ * ve asist-kralligi.html'in zaten kullandığı düzenlenmiş örnek veri
+ * havuzundan besleniyor — TEK şart, oyuncunun hâlâ gerçekten o Süper Lig
+ * kulübünde olması. Serbest kalan ya da yurt dışına giden oyuncular
+ * (Icardi, Dzeko, Szymanski, Gedson) bu yüzden burada hiç görünmez; kalan
+ * havuz üçten fazla değil, o yüzden bazı sekmeler beşten az satır basar —
+ * sayfayı doldurmak için sahte bir satır uydurulmuyor.
+ */
+function isCurrentSuperLigClub(team) {
+  const value = String(team || "").trim();
+  if (!value || /serbest|free agent|kulüpsüz/i.test(value)) return false;
+  const leagueTeams = fixtureTeamNames();
+  const normalized = value.toLocaleLowerCase("tr-TR");
+  return leagueTeams.some((name) => {
+    const candidate = String(name || "").toLocaleLowerCase("tr-TR");
+    return candidate && (candidate === normalized || candidate.includes(normalized) || normalized.includes(candidate));
+  });
+}
+
+function homeLeaderPlayerPool(statField) {
+  return excludeHomepageBlockedPlayers(players)
+    .filter((player) => Number(player[statField]) > 0)
+    .filter((player) => isCurrentSuperLigClub(player.currentTeam || player.team))
+    .sort((left, right) => Number(right[statField]) - Number(left[statField]));
+}
+
+function homeLeaderPlayerRow(rank, player, statField, statUnit) {
+  const team = escapeHtml(player.currentTeam || player.team || "");
+  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./oyuncular/${escapeHtml(player.id)}.html"><strong>${escapeHtml(player.name)}</strong><span>${team}</span></a><span class="leaders-value">${escapeHtml(player[statField])}<small>${escapeHtml(statUnit)}</small></span></li>`;
+}
+
+function homeLeaderFormRow(rank, player) {
+  const kicker = [player.currentTeam || player.team, player.position].filter(Boolean).map((value) => escapeHtml(value)).join(" · ");
+  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./oyuncular/${escapeHtml(player.id)}.html"><strong>${escapeHtml(player.name)}</strong><span>${kicker}</span></a></li>`;
+}
+
+function homeLeaderTeamRow(rank, row) {
+  return `<li class="leaders-row" data-card="leader-team"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./takim-detay.html?team=${encodeURIComponent(row.team)}"><strong>${escapeHtml(row.team)}</strong><span>Momentum</span></a><span class="leaders-value">${escapeHtml(row.momentum)}</span></li>`;
+}
+
+function homeLeadersSlot(rows, rowHtmlFor, emptyNote) {
+  if (!rows.length) {
+    return emptyStateCard("Veri bekleniyor", emptyNote);
+  }
+  return `<ol class="leaders-list">${rows.map((item, index) => rowHtmlFor(index + 1, item)).join("")}</ol>`;
+}
+
+function homeLeadersScorersSlot(limit) {
+  const rows = homeLeaderPlayerPool("goals").slice(0, limit);
+  return homeLeadersSlot(
+    rows,
+    (rank, player) => homeLeaderPlayerRow(rank, player, "goals", "gol"),
+    "Gol krallığı sıralaması, oyuncular resmî maçlarda gol attıkça güncellenir."
+  );
+}
+
+function homeLeadersAssistsSlot(limit) {
+  const rows = homeLeaderPlayerPool("assists").slice(0, limit);
+  return homeLeadersSlot(
+    rows,
+    (rank, player) => homeLeaderPlayerRow(rank, player, "assists", "asist"),
+    "Asist krallığı sıralaması, oyuncular resmî maçlarda asist yaptıkça güncellenir."
+  );
+}
+
+function homeLeadersFormSlot(limit) {
+  const rows = verifiedTrendPlayers(limit);
+  return homeLeadersSlot(
+    rows,
+    homeLeaderFormRow,
+    "Formdaki oyuncular yalnızca doğrulanmış, sağlayıcı kimliği olan güncel sezon verisinden üretilir."
+  );
+}
+
+function homeLeadersTeamFormSlot(limit) {
+  const rows = momentum.slice().sort((left, right) => Number(left.rank) - Number(right.rank)).slice(0, limit);
+  return homeLeadersSlot(rows, homeLeaderTeamRow, "Takım formu tablosu resmî maç sonuçlarıyla güncellenir.");
 }
 
 /**
@@ -1230,7 +1332,7 @@ function simplePlayerCard(player) {
  * ilan ediyor; dayandığı kayıt doğrulanamıyorsa bu iddia yayımlanmamalı.
  */
 function playerSignalsSlot() {
-  const { kept } = filterPlayerCards(players, { trend: true, leagueTeams: fixtureTeamNames() });
+  const { kept } = filterPlayerCards(excludeHomepageBlockedPlayers(players), { trend: true, leagueTeams: fixtureTeamNames() });
   if (!kept.length) {
     return emptyStateCard(
       "Veri bekleniyor",
@@ -1389,6 +1491,7 @@ const TRANSFER_RADAR_SINCE = "2026-07-01";
 
 function transferWatch() {
   const selected = transfers
+    .filter((transfer) => !HOMEPAGE_EXCLUDED_PLAYER_IDS.has(String(transfer && transfer.playerId || "")))
     .filter((transfer) => String(transfer && transfer.date || "").slice(0, 10) >= TRANSFER_RADAR_SINCE)
     .sort((left, right) => String(right.date || "").localeCompare(String(left.date || ""))).slice(0, 5);
   if (!selected.length) {
@@ -1579,6 +1682,10 @@ writePage("index.html", {
   "home-standings": staticHomeStandingRows(),
   "player-radar": trendPlayerSlot(3),
   "player-signals": playerSignalsSlot(),
+  "leaders-scorers": homeLeadersScorersSlot(5),
+  "leaders-assists": homeLeadersAssistsSlot(5),
+  "leaders-form": homeLeadersFormSlot(5),
+  "leaders-team-form": homeLeadersTeamFormSlot(5),
   "news-preview": newsCards(3),
   "analysis-preview": analysisCards(),
   "live-scores-ticker": liveScoresTrack()
