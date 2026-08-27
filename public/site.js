@@ -2301,8 +2301,18 @@
     function render() {
       return load().then(function (data) {
         var polls = data && Array.isArray(data.polls) ? data.polls : [];
+        // Açık, kapalı ve hata durumları AYNI ANDA görünemez: her dal hem
+        // durum metnini hem listeyi kendi başına ayarlar, birbirine güvenmez.
+        // Eskiden yalnızca başarı dalı `status.hidden`ı sıfırlıyordu; oy
+        // sonrası yeniden çizimde ağ hatası olursa metin "hidden" kalıyor,
+        // bir önceki başarılı listenin bayat kartları ekranda asılı kalıyordu.
         if (!polls.length) {
-          if (status) status.textContent = data ? strings.empty : strings.failed;
+          if (status) {
+            status.hidden = false;
+            status.textContent = data ? strings.empty : strings.failed;
+          }
+          list.innerHTML = "";
+          section.classList.remove("is-ready");
           return;
         }
         if (status) status.hidden = true;
@@ -2416,8 +2426,15 @@
       .catch(function () { return null; })
       .then(function (data) {
         var rows = data && Array.isArray(data.matches) ? data.matches : [];
+        // setupPollArchive ile aynı kural: durum metni ve liste birlikte
+        // güncellenir, biri diğerine bakmadan "hidden" bırakılmaz.
         if (!rows.length) {
-          if (status) status.textContent = data ? strings.empty : strings.failed;
+          if (status) {
+            status.hidden = false;
+            status.textContent = data ? strings.empty : strings.failed;
+          }
+          list.innerHTML = "";
+          section.classList.remove("is-ready");
           return;
         }
         if (status) status.hidden = true;

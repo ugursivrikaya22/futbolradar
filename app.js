@@ -3668,6 +3668,33 @@
   }
 
   /**
+   * BAYAT CANLI KORUMASI — services/featuredMatchSelector.js ve
+   * services/matchStatus.js#liveVerdict ile AYNI eşik (150 dk).
+   *
+   * Sağlayıcı bir maçı hiç "FINISHED"e çevirmezse ham `isLiveMatch` o maçı
+   * GÜNLERCE canlı sayar ve "günün başlıkları" bölümünde en üstte asılı
+   * kalır — tam olarak eski maçın güncelmiş gibi gösterilmesi hatası.
+   * Burada da yalnızca YAŞ denetlenir; skor kapısı `isLiveMatch` içinde var.
+   */
+  var DAILY_HEADLINE_LIVE_GRACE_MS = 150 * 60 * 1000;
+
+  function dailyHeadlineKickoffMs(match) {
+    var raw = headlineText(match && (match.kickoff || match.date || match.utcDate));
+    if (!raw || (raw.indexOf("T") === -1 && raw.indexOf(":") === -1)) {
+      return NaN;
+    }
+    var parsed = Date.parse(raw);
+    return Number.isNaN(parsed) ? NaN : parsed;
+  }
+
+  function isFreshLiveMatch(match, nowMs) {
+    if (!isLiveMatch(match)) return false;
+    var kickoff = dailyHeadlineKickoffMs(match);
+    if (!isFinite(kickoff) || !isFinite(nowMs)) return true;
+    return nowMs - kickoff <= DAILY_HEADLINE_LIVE_GRACE_MS;
+  }
+
+  /**
    * GÜNÜN ÜÇ BAŞLIĞI — kural services/dailyHeadlines.js ile aynı.
    *
    * Kancası olmayan aday DÜŞER: "analiz yakında" gibi içi boş bir satır
@@ -3679,18 +3706,22 @@
     var reports = Array.isArray(settings.reports) ? settings.reports : [];
     var day = headlineText(settings.today);
     var limit = isFinite(settings.limit) ? Math.max(0, settings.limit) : DAILY_HEADLINE_LIMIT;
+    var nowMs = isFinite(settings.nowMs) ? settings.nowMs : Date.now();
     var candidates = [];
 
     list.forEach(function (match) {
       if (!match || typeof match !== "object") return;
 
-      if (isLiveMatch(match)) {
+      if (isFreshLiveMatch(match, nowMs)) {
         var live = withHeadlineRelevance(liveHeadlineOf(match, reports), match);
         if (live) candidates.push(live);
         return;
       }
 
-      if (isFinishedMatch(match)) {
+      // Bayat canlı (sağlayıcı hâlâ "LIVE" diyor ama başlama üzerinden 150
+      // dakikadan uzun süre geçmiş) biten maç muamelesi görür: bu artık
+      // güvenilir bir "canlı" iddiası değil, muhtemelen bitmiş bir sonuçtur.
+      if (isFinishedMatch(match) || isLiveMatch(match)) {
         if (!headlineIsOnDay(match, day)) return;
         var finished = withHeadlineRelevance(finishedHeadlineOf(match, reports), match);
         if (finished) candidates.push(finished);
@@ -4272,7 +4303,9 @@
 
       // Aynı durum bandında Türk takımı maçı önce gelir; canlı yabancı maç
       // yine başlamamış Türk maçının önündedir. Böylece veri doğruluğu ve
-      // yerel ilgi sırası birbirini ezmez.
+      // yerel ilgi sırası birbirini ezmez. Mobilde dar pencere bu sırayı
+      // özellikle önemli kılar: "daha fazla göster"e basmadan görünen
+      // pencere masaüstünden çok daha az kart taşır.
       var turkishGap = Number(isTurkishMatch(right)) - Number(isTurkishMatch(left));
       return turkishGap || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
     });
@@ -7696,6 +7729,41 @@
     return records.slice().sort(sorters[sortKey] || sorters.updated);
   }
 
+  /**
+   * TRANSFER RADARI TAZELİK UYARISI.
+   *
+   * Kayıtların en yenisinin "Son kontrol" damgası (lastVerifiedAt || date)
+   * 24 saatten eskiyse zamanlı güncelleme akışı (bkz. .github/workflows)
+   * muhtemelen sekteye uğramıştır. Sayfa sessizce eski veri göstermek yerine
+   * hem yeniden çekmeyi dener hem de deneme boşa çıkarsa okuyucuyu uyarır.
+   */
+  var TRANSFER_STALE_GRACE_MS = 24 * 60 * 60 * 1000;
+
+  function transferFreshnessInfo(records, nowMs) {
+    var stamps = (Array.isArray(records) ? records : [])
+      .map(function (record) { return Date.parse((record && (record.lastVerifiedAt || record.date)) || ""); })
+      .filter(function (value) { return isFinite(value); });
+
+    if (!stamps.length) {
+      return null;
+    }
+
+    var latestMs = Math.max.apply(null, stamps);
+    var ageMs = nowMs - latestMs;
+    return { latestMs: latestMs, ageMs: ageMs, stale: ageMs > TRANSFER_STALE_GRACE_MS };
+  }
+
+  function renderTransferFreshnessNotice(freshness) {
+    if (!freshness || !freshness.stale) {
+      return "";
+    }
+
+    var hours = Math.max(24, Math.floor(freshness.ageMs / (60 * 60 * 1000)));
+    return '<p class="transfer-freshness-warning" role="status" data-transfer-freshness-warning>' +
+      "⚠️ Transfer verileri " + hours + " saattir doğrulanmadı; en güncel kayıtlar kontrol ediliyor." +
+      "</p>";
+  }
+
   function renderTransferFeedStats(records) {
     var list = Array.isArray(records) ? records : [];
     var confirmed = list.filter(function (record) { return normalizeSearchText(record.status) === "confirmed"; }).length;
@@ -7992,7 +8060,8 @@
           filtered = sortTransferRecords(filtered, state.sort || "updated");
 
           if (summary) {
-            summary.innerHTML = renderTransferFeedStats(filtered);
+            summary.innerHTML = renderTransferFreshnessNotice(transferFreshnessInfo(base, Date.now())) +
+              renderTransferFeedStats(filtered);
           }
 
           if (count) {
@@ -8025,6 +8094,25 @@
         });
 
         render();
+
+        // OTOMATİK YENİLEME: gösterilen en yeni "Son kontrol" damgası 24
+        // saatten eskiyse zamanlı güncelleme akışı muhtemelen sekteye
+        // uğramıştır. Önbelleği temizleyip BİR KEZ yeniden çekilir; taze
+        // veri gelirse uyarı kendiliğinden kalkar (render() onu yeniden
+        // hesaplar), gelmezse uyarı ekranda kalıp okuyucuyu bilgilendirir.
+        var freshness = transferFreshnessInfo(base, Date.now());
+        if (freshness && freshness.stale) {
+          delete cache.transfers;
+          loadData("transfers")
+            .then(function (freshRecords) {
+              base = filterTransferRadarWindow(freshRecords);
+              render();
+            })
+            .catch(function () {
+              // Yeniden çekme başarısız oldu; render() zaten çizdiği uyarı
+              // ekranda kalır, ekstra bir hata gösterimi gerekmez.
+            });
+        }
       })
       .catch(function () {
         setEmpty(target, "Transfer Radarı yüklenemedi", "Kesinleşen transfer kayıtları geçici olarak okunamıyor.");
