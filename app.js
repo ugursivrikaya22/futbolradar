@@ -775,14 +775,22 @@
   // isPublishablePlayerCard yalnızca initPlayerDetail'de çağrılıyordu).
   // Sonuç: kadro senkronundan gelen 0 gol/0 dakika "ölçüldü, üretmedi" gibi
   // basılıyor, "estimated" puanlı kayıtlar gerçek bir puanmış gibi görünüyordu.
+  // KİMLİK DOĞRULAMASI, ALAN DOĞRULAMASI DEĞİLDİR — services/cardCredibility.js
+  // ile aynı iki kapılı karar. Bir alanın basılabilmesi için ÖNCE kaydın
+  // kimliği (gerçek sağlayıcı id, kaynak, doğrulama zamanı — isPublishablePlayerCard)
+  // doğrulanmış olmalı, SONRA o alanın kendi ölçüm kanıtı aranır. Yalnızca
+  // ikinciyi kontrol etmek, mock kimlikli bir kaydın "oynadı" göstergesini
+  // (appearances/minutes > 0 — kadro senkronunun kendi varsayılanı) gerçek
+  // bir doğrulama sanmak olurdu.
   function playerStatsAreVerified(player) {
-    if (!player) return false;
+    if (!isPublishablePlayerCard(player)) return false;
     if (player.statsVerifiedAt || player.statsSource || player.statsFetchedAt) return true;
     var stats = playerStats(player);
     return Number(player.appearances) > 0 || Number(stats.minutesPlayed) > 0;
   }
 
   function playerRatingIsVerified(player) {
+    if (!isPublishablePlayerCard(player)) return false;
     var status = String((player && player.ratingStatus) || "").toLowerCase();
     return status === "verified" || status === "current";
   }
