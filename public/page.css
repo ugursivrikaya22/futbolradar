@@ -17893,17 +17893,6 @@ body,
  * Sıra CSS ile değiştiriliyor, işaretleme bozulmadan: ekran okuyucu ve
  * arama motoru için belge sırası aynı kalır, dar ekranda anket öne alınır.
  */
-@media (max-width: 720px) {
-  .home-main {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .home-poll { order: -1; }
-  /* Hero hemen ardından gelir; kalan bölümler kendi sıralarını korur. */
-  .home-main > .hero { order: 0; }
-}
-
 .home-poll__inner {
   position: relative;
   padding: clamp(20px, 3.5vw, 34px) clamp(16px, 3vw, 30px);
@@ -20097,44 +20086,22 @@ a.motm-week__card:focus-visible {
   }
 }
 
-/* ── MOBİL BİLGİ HİYERARŞİSİ ────────────────────────────────────────
-   İstenen sıra: son dakika/ticker → canlı skor → bugünün maçları →
-   anket → haberler → analizler → puan durumu → diğerleri.
-
-   Ölçülen sıra bundan farklıydı: canlı skor 4., bugünün maçları 8. ve
-   anket 3. sıradaydı. Sıralama CSS ile düzeltiliyor, İŞARETLEME
-   BOZULMADAN — belge sırası ekran okuyucu ve arama motoru için aynı
-   kalıyor (deponun anket için zaten benimsediği yaklaşım).
-
-   Kişisel iki şerit (favori takım, Şimdi Futbolda) en üstte kalıyor:
-   ikisi de ~120 px ve brifingin "ilk 5-10 saniyede cevap" hedefi tam
-   olarak bu — büyük bölümlerin sırası aşağıda düzeltiliyor.
-
-   Seçiciler kimlik taşıyor çünkü mevcut kurallar sınıf üzerinden
-   yazılmış (`.home-poll { order: -1 }`, `.home-main > .hero { order: 0 }`)
-   ve sınıf özgüllüğüyle yazılan yeni kural onları yenemezdi. */
+/* ── MOBİL DÜZEN ─────────────────────────────────────────────────────
+   Anket kaldırıldıktan sonra ana sayfa bölüm sırası artık belgede
+   İSTENEN sırayla birebir yazılıyor: canlı skor → bugünün maçları →
+   puan durumu + istatistik rafı → trend içerik → köşe yazıları →
+   transfer/haber → arşiv. Mobil için ayrı bir `order` haritası çıkarmaya
+   gerek kalmadı; `.home-main` yine de flex kalıyor çünkü maç dosyası
+   tanıtımı (`.match-special-promo-group`, bkz. `scripts/inject-match-special.mjs`)
+   yayında olduğunda kendi konumunu `order` ile ayarlıyor. */
 @media (max-width: 720px) {
-  .home-main > #hero-canli-skor { order: -2; }        /* canlı skor */
-  .home-main > #bugunun-maclari-preview { order: -1; } /* bugünün maçları */
-  .home-main > #tahmin-anketi { order: 0; }            /* şampiyonluk anketi */
-  /* Maç dosyası tanıtımı 2.142 px ile sayfadaki en büyük blok; belge
-     sırasında anketten önce geldiği için onu aşağı itiyordu. İstenen
-     listede "maç analizleri" başlıklar ve anketten sonra geliyor. */
+  .home-main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .home-main > #hero-canli-skor { order: -2; }         /* canlı skor */
   .home-main > .match-special-promo-group { order: 2; }
-  .home-main > #gunun-basliklari { order: 1; }         /* son haberler */
-  .home-main > #futbol-gundemi { order: 1; }
-  .home-main > #gunun-radar-maci { order: 2; }         /* maç analizleri */
-  .home-main > #ana-sayfa-puan-durumu { order: 3; }    /* puan durumu */
-  .home-main > #radar-yorumu { order: 4; }             /* köşe yazıları */
-  /* Brifingin son basamağı: "diğer ligler/içerik". Bu dört bölüm bugünün
-     maçıyla veya Türk takımlarıyla değil, genel keşifle ilgili — trend
-     oyuncular, trend takımlar, hızlı gezinme kısayolları ve sezon arşivi.
-     Belge sırasında maçlardan hemen sonra geliyorlardı ve anketi/haberleri
-     ekranın altına itiyorlardı; en sona alınıyorlar. */
-  .home-main > #oyuncu-radar-preview { order: 5; }     /* trend oyuncular */
-  .home-main > #trend-takimlar { order: 5; }           /* trend takımlar */
-  .home-main > .home-statistics-entry { order: 5; }    /* hızlı gezinme */
-  .home-main > #arsiv-girisi { order: 6; }             /* sezon arşivi */
 }
 
 /* ── SÜPER LİG PUAN DURUMU (ANA SAYFA) ──────────────────────────────
@@ -20305,6 +20272,126 @@ a.motm-week__card:focus-visible {
     padding: 8px 6px;
   }
 }
+
+/* ── PUAN DURUMU + İSTATİSTİK RAFI (ÜST IZGARA) ─────────────────────
+   Mobil öncelik: tek sütun, puan durumu önce, istatistik rafı hemen
+   ardından — ikisi de aynı `.container` genişliğinde akar. Masaüstünde
+   (≥900px) puan durumu solda genişler, istatistik rafı sağda sabit
+   genişlikte bir "aside" olarak yanına oturur. */
+.home-top-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 6px;
+}
+
+.home-top-grid__main { min-width: 0; }
+
+@media (min-width: 900px) {
+  .home-top-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(272px, 308px);
+    gap: 24px;
+  }
+}
+
+.home-stats-rail {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.063), rgba(var(--surface-rgb), 0.029)), var(--panel);
+  box-shadow: 0 18px 60px rgba(14, 26, 22, 0.06);
+}
+
+.home-stats-rail__head { margin: 0; }
+
+.home-stats-rail__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.home-stats-rail__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: var(--tap);
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text);
+  text-decoration: none;
+  background: rgba(var(--surface-rgb), 0.03);
+}
+
+.home-stats-rail__item:hover,
+.home-stats-rail__item:focus-visible {
+  border-color: var(--green);
+  background: rgba(11, 143, 90, 0.06);
+  outline: none;
+}
+
+.home-stats-rail__badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(11, 143, 90, 0.1);
+  color: var(--green);
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.home-stats-rail__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.home-stats-rail__text strong {
+  font-size: 0.87rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.home-stats-rail__text span {
+  font-size: 0.75rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-stats-rail__chevron {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+}
+
+.home-stats-rail__more {
+  align-self: center;
+  min-height: var(--tap);
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--green);
+  text-decoration: none;
+}
+
+.home-stats-rail__more:hover,
+.home-stats-rail__more:focus-visible { text-decoration: underline; }
 
 /* ── MAÇ MERKEZİ CTA: MOBİLDE KOMPAKT ───────────────────────────────
    Ölçüm: iki tanıtım kartı mobilde 2.142 px — sayfanın en büyük bloğu.

@@ -96,6 +96,23 @@ const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
 // gün listelenir ve sayfa gözün önünde değişir.
 const { istanbulDay } = require("../services/matchStatus.js");
 
+/**
+ * ANA SAYFADA HİÇ GÖSTERİLMEYECEK OYUNCULAR.
+ *
+ * `evaluateTrendPlayerCard` serbest oyuncuları ve mock sağlayıcı kimliklerini
+ * zaten eliyor, ama bu kural DOLAYLI: veri değişirse (örn. oyuncu yeniden bir
+ * kulüple ilişkilendirilirse) dolaylı filtre tek başına yetmeyebilir. Mauro
+ * Icardi için ayrıca AÇIK bir kara liste tutuyoruz — ana sayfa "trend" ve
+ * "son transfer" bölümlerinde bir daha hiç görünmemesi gerekiyor.
+ */
+const HOMEPAGE_EXCLUDED_PLAYER_IDS = new Set(["mauro-icardi"]);
+
+function excludeHomepageBlockedPlayers(list) {
+  return (Array.isArray(list) ? list : []).filter(
+    (player) => !HOMEPAGE_EXCLUDED_PLAYER_IDS.has(String(player && player.id || ""))
+  );
+}
+
 const FIXTURE_STATUS_TR = { SCHEDULED: "Planlandı", LIVE: "Canlı", FINISHED: "Bitti", POSTPONED: "Ertelendi", CANCELLED: "İptal" };
 const FIXTURE_STATUS_SLUG = { SCHEDULED: "scheduled", LIVE: "live", FINISHED: "finished", POSTPONED: "postponed", CANCELLED: "cancelled" };
 
@@ -1167,7 +1184,7 @@ function staticMomentumRows() {
  * göstermenin gerekçesi değil.
  */
 function verifiedTrendPlayers(limit) {
-  const { kept, removed } = filterPlayerCards(topPlayers, {
+  const { kept, removed } = filterPlayerCards(excludeHomepageBlockedPlayers(topPlayers), {
     trend: true,
     leagueTeams: fixtureTeamNames()
   });
@@ -1230,7 +1247,7 @@ function simplePlayerCard(player) {
  * ilan ediyor; dayandığı kayıt doğrulanamıyorsa bu iddia yayımlanmamalı.
  */
 function playerSignalsSlot() {
-  const { kept } = filterPlayerCards(players, { trend: true, leagueTeams: fixtureTeamNames() });
+  const { kept } = filterPlayerCards(excludeHomepageBlockedPlayers(players), { trend: true, leagueTeams: fixtureTeamNames() });
   if (!kept.length) {
     return emptyStateCard(
       "Veri bekleniyor",
@@ -1389,6 +1406,7 @@ const TRANSFER_RADAR_SINCE = "2026-07-01";
 
 function transferWatch() {
   const selected = transfers
+    .filter((transfer) => !HOMEPAGE_EXCLUDED_PLAYER_IDS.has(String(transfer && transfer.playerId || "")))
     .filter((transfer) => String(transfer && transfer.date || "").slice(0, 10) >= TRANSFER_RADAR_SINCE)
     .sort((left, right) => String(right.date || "").localeCompare(String(left.date || ""))).slice(0, 5);
   if (!selected.length) {
