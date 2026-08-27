@@ -40,7 +40,6 @@ const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // aynı servisi kullanıyor.
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
 const { selectTickerRecords } = require("../services/transferRadarTicker.js");
-const { isTransferWindowOpen } = require("../services/transferWindow.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -1457,28 +1456,30 @@ function liveScoresTrack() {
 }
 
 /**
- * ANA SAYFANIN EN ALTINDAKİ TRANSFER RADARI BANDI.
+ * ANA SAYFANIN EN ALTINDAKİ TRANSFER RADARI BANDI — ÜÇÜNCÜ KAYAN BANT.
  *
- * Yalnızca gerçek TFF tescil dönemi içindeyken basılır (services/
- * transferWindow.js, tarihler data/transfer-window.json'da — koda tarih
- * gömülmez). Pencere kapandığında bu fonksiyon boş dize döner; site zaten
- * saatte bir yeniden derlendiği için bant, bir sonraki derlemede koda
- * dokunmadan kaybolur — pencere açıldığında da aynı şekilde geri gelir.
+ * Ana sayfanın daimî bir parçası: haber bandı (tepede) ve Canlı Skorlar
+ * bandından sonra üçüncü kayan şerit. Artık TFF tescil dönemine göre
+ * KOŞULLU BASILMIYOR — önceki hâli pencere kapandığında ya da son 3 günde
+ * "SON DAKİKA" sayılacak kayıt olmadığında bandı sayfadan TAMAMEN
+ * kaldırıyordu; okuyucu "Transfer Radarı" bölümünün var olduğunu bile
+ * bilmiyordu. Bant artık her derlemede basılır.
  *
- * Seçim kuralı services/transferRadarTicker.js'te: yalnızca son 3 günün
- * doğrulanmış hareketleri (bkz. o dosyanın başındaki "UYDURMA YOK" kuralı).
- * Pencere açık ama seçilecek güncel kayıt yoksa da boş dize dönülür —
- * boş yer tutucu ya da bayat kayıt gösterilmez.
+ * Seçim kuralı hâlâ services/transferRadarTicker.js'te: yalnızca son 3
+ * günün doğrulanmış hareketleri "SON DAKİKA" sayılır (bkz. o dosyanın
+ * başındaki "UYDURMA YOK" kuralı) — bu editoryal kural değişmedi. Değişen
+ * tek şey: seçilecek güncel kayıt yokken (ya da pencere kapalıyken) bant
+ * KAYBOLMAK yerine kendi yer tutucusunu gösterir
+ * (transferTickerTrack → "Transfer güncellemeleri hazırlanıyor.") —
+ * `keepEmpty: true` bunu sağlıyor.
  *
  * Canlı Skorlar bandından (ana sayfanın TEPESİNDE) bilerek ayrı ve
  * bağımsız: farklı konum, farklı veri, farklı görünme kuralı. Onun
  * kodu/CSS'i burada değiştirilmez.
  */
 function transferRadarBottomTicker() {
-  if (!isTransferWindowOpen()) return "";
   const records = selectTickerRecords(transfers);
-  if (!records.length) return "";
-  return transferTickerBlock(records, { locale: "tr", sourceRel: SOURCE_LINK_REL });
+  return transferTickerBlock(records, { locale: "tr", sourceRel: SOURCE_LINK_REL, keepEmpty: true });
 }
 
 /**

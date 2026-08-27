@@ -707,7 +707,16 @@
     <script src="./site.js?v=8dad8dea" defer></script>
     <script src="./app.js?v=f1b6d342" defer></script>
     <!-- prerender:transfer-radar-bottom:start -->
-
+<div class="transfer-radar-ticker" data-component="TransferRadarTicker" data-source="static" role="region" aria-label="Transfer Radarı">
+      <div class="container-wide transfer-radar-ticker__inner">
+        <span class="transfer-radar-ticker__label">Transfer Radarı</span>
+        <div class="transfer-radar-ticker__viewport" aria-live="polite">
+          <div class="transfer-radar-ticker__track is-static" data-transfer-radar-track>
+            <div class="transfer-radar-ticker__group"><span class="transfer-radar-ticker__empty">Transfer güncellemeleri hazırlanıyor.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
 <!-- prerender:transfer-radar-bottom:end -->
   </body>
 </html>
