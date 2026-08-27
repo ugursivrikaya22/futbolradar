@@ -20309,77 +20309,153 @@ a.motm-week__card:focus-visible {
 
 .home-stats-rail__head { margin: 0; }
 
-.home-stats-rail__list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* ── SÜPER LİG LİDERLERİ SEKMELERİ ────────────────────────────────────
+   Saf CSS sekme deseni: gizli radyo düğmeleri + `for` etiketleri + genel
+   kardeş seçici (`~`). JavaScript OLMADAN çalışır — ilk sekme (Goller)
+   her zaman işaretli doğar, geri kalan üç panel de aynı belgede, yalnızca
+   `display:none` ile gizli durur. Yani arama motoru dört panelin
+   içeriğini de HER ZAMAN görür; değişen tek şey görünürlük.
+   `site.js`teki `setupLeadersTabs` bunun üstüne yalnızca `aria-selected`
+   senkronu ekler, temel işlev CSS'te tamamlanmış olur. */
+.leaders-tabs { display: flex; flex-direction: column; gap: 12px; }
+
+.leaders-tabs__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }
 
-.home-stats-rail__item {
+.leaders-tabs__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.leaders-tabs__label {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
   min-height: var(--tap);
-  padding: 9px 10px;
+  padding: 6px 8px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  color: var(--text);
-  text-decoration: none;
   background: rgba(var(--surface-rgb), 0.03);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
 }
 
-.home-stats-rail__item:hover,
-.home-stats-rail__item:focus-visible {
+.leaders-tabs__label:hover { border-color: var(--green); color: var(--text); }
+
+#leaders-tab-scorers:checked ~ .leaders-tabs__list #leaders-tablabel-scorers,
+#leaders-tab-assists:checked ~ .leaders-tabs__list #leaders-tablabel-assists,
+#leaders-tab-form:checked ~ .leaders-tabs__list #leaders-tablabel-form,
+#leaders-tab-team:checked ~ .leaders-tabs__list #leaders-tablabel-team {
   border-color: var(--green);
-  background: rgba(11, 143, 90, 0.06);
-  outline: none;
+  background: rgba(11, 143, 90, 0.1);
+  color: var(--green);
 }
 
-.home-stats-rail__badge {
+#leaders-tab-scorers:focus-visible ~ .leaders-tabs__list #leaders-tablabel-scorers,
+#leaders-tab-assists:focus-visible ~ .leaders-tabs__list #leaders-tablabel-assists,
+#leaders-tab-form:focus-visible ~ .leaders-tabs__list #leaders-tablabel-form,
+#leaders-tab-team:focus-visible ~ .leaders-tabs__list #leaders-tablabel-team {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+.leaders-tabs__panel { display: none; }
+
+#leaders-tab-scorers:checked ~ .leaders-tabs__panels #leaders-panel-scorers,
+#leaders-tab-assists:checked ~ .leaders-tabs__panels #leaders-panel-assists,
+#leaders-tab-form:checked ~ .leaders-tabs__panels #leaders-panel-form,
+#leaders-tab-team:checked ~ .leaders-tabs__panels #leaders-panel-team {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.leaders-list { display: flex; flex-direction: column; gap: 6px; }
+
+.leaders-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: var(--tap);
+  padding: 7px 8px;
+  border-radius: var(--radius);
+}
+
+.leaders-row > .leaders-rank { margin-top: 1px; }
+.leaders-row > .leaders-value { margin-top: 1px; }
+
+.leaders-row:hover { background: rgba(var(--surface-rgb), 0.05); }
+
+.leaders-rank {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
   background: rgba(11, 143, 90, 0.1);
   color: var(--green);
-  font-size: 0.66rem;
+  font-size: 0.7rem;
   font-weight: 900;
-  letter-spacing: 0.02em;
 }
 
-.home-stats-rail__text {
+.leaders-name {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
   flex: 1 1 auto;
-}
-
-.home-stats-rail__text strong {
-  font-size: 0.87rem;
-  font-weight: 800;
   color: var(--text);
+  text-decoration: none;
 }
 
-.home-stats-rail__text span {
-  font-size: 0.75rem;
+.leaders-name strong {
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.leaders-name span {
+  font-size: 0.72rem;
   color: var(--muted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.home-stats-rail__chevron {
+.leaders-name:hover strong { color: var(--green); }
+
+.leaders-value {
   flex: 0 0 auto;
-  width: 18px;
-  height: 18px;
-  color: var(--muted);
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  color: var(--text);
+  font-weight: 900;
+  font-size: 0.92rem;
 }
 
-.home-stats-rail__more {
+.leaders-value small {
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+}
+
+.leaders-see-all {
   align-self: center;
   min-height: var(--tap);
   display: inline-flex;
@@ -20390,8 +20466,8 @@ a.motm-week__card:focus-visible {
   text-decoration: none;
 }
 
-.home-stats-rail__more:hover,
-.home-stats-rail__more:focus-visible { text-decoration: underline; }
+.leaders-see-all:hover,
+.leaders-see-all:focus-visible { text-decoration: underline; }
 
 /* ── MAÇ MERKEZİ CTA: MOBİLDE KOMPAKT ───────────────────────────────
    Ölçüm: iki tanıtım kartı mobilde 2.142 px — sayfanın en büyük bloğu.

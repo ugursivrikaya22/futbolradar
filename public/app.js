@@ -5713,6 +5713,34 @@
     );
   }
 
+  /**
+   * ANA SAYFA "TREND" KARTLARI İÇİN AYNI GÜVENİLİRLİK BARI.
+   *
+   * `services/cardCredibility.js` bu barı sunucu tarafında (statik ön
+   * render) uyguluyor, ama istemci `/api/players` (ya da API ulaşılamazsa
+   * `data/players.json`) yanıtını HAM olarak alıp doğrudan sıralıyordu:
+   * `players.slice(0, 3)` dosyadaki İLK üç kaydı basıyordu, `topPlayer(...)`
+   * ise en yüksek puanlı kaydı seçiyordu — ikisi de yer tutucu (mock)
+   * kimlikli, serbest kalmış bir kaydı ("Mauro Icardi") elemeden trend
+   * kartı diye yayına sokabiliyordu; JavaScript yüklenip veri gelir gelmez
+   * sunucunun bastığı doğru statik yedeğin ÜSTÜNE yazılıyordu. Bu yüzden
+   * istemci de aynı iki asgari şartı (gerçek sağlayıcı kimliği, serbest
+   * oyuncu değil) kontrol etmeden bir kaydı "trend" göstermiyor.
+   */
+  function isHomeTrendEligiblePlayer(player) {
+    var providerId = String((player && (player.providerId || player.provider_id)) || "").trim();
+    if (!providerId || !/^\d+$/.test(providerId)) {
+      return false;
+    }
+
+    var team = String((player && (player.currentTeam || player.team)) || "").trim();
+    if (!team || /serbest|free agent|kulüpsüz/i.test(team)) {
+      return false;
+    }
+
+    return true;
+  }
+
   function renderPlayerHomeCard(player) {
     var team = playerTeamDisplay(player);
     var position = displayValue(player.position, "Mevki bekleniyor");
@@ -6336,7 +6364,8 @@
   }
 
   function renderPlayerSignals(players) {
-    if (!Array.isArray(players) || !players.length) {
+    players = Array.isArray(players) ? players.filter(isHomeTrendEligiblePlayer) : [];
+    if (!players.length) {
       return "";
     }
 
@@ -12100,7 +12129,7 @@
       document.querySelector('[data-api-target="player-radar"]'),
       "players",
       function (players) {
-        return players.slice(0, 3).map(renderPlayerHomeCard).join("");
+        return players.filter(isHomeTrendEligiblePlayer).slice(0, 3).map(renderPlayerHomeCard).join("");
       },
       "Oyuncu radari yüklenemedi"
     );

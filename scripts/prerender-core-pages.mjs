@@ -1212,6 +1212,91 @@ function trendPlayerSlot(limit) {
 }
 
 /**
+ * ANA SAYFA "SÜPER LİG LİDERLERİ" RAFI — dört sekme, sekme başına en çok 5
+ * satır.
+ *
+ * Gol/asist sekmeleri `verifiedTrendPlayers`in bara tabi DEĞİL: kadro
+ * senkronu gol/asist hiç göndermiyor (yukarıdaki denetim notuna bkz.), yani
+ * o bar burada her zaman sıfır satır üretirdi. Bunun yerine gol-kralligi.html
+ * ve asist-kralligi.html'in zaten kullandığı düzenlenmiş örnek veri
+ * havuzundan besleniyor — TEK şart, oyuncunun hâlâ gerçekten o Süper Lig
+ * kulübünde olması. Serbest kalan ya da yurt dışına giden oyuncular
+ * (Icardi, Dzeko, Szymanski, Gedson) bu yüzden burada hiç görünmez; kalan
+ * havuz üçten fazla değil, o yüzden bazı sekmeler beşten az satır basar —
+ * sayfayı doldurmak için sahte bir satır uydurulmuyor.
+ */
+function isCurrentSuperLigClub(team) {
+  const value = String(team || "").trim();
+  if (!value || /serbest|free agent|kulüpsüz/i.test(value)) return false;
+  const leagueTeams = fixtureTeamNames();
+  const normalized = value.toLocaleLowerCase("tr-TR");
+  return leagueTeams.some((name) => {
+    const candidate = String(name || "").toLocaleLowerCase("tr-TR");
+    return candidate && (candidate === normalized || candidate.includes(normalized) || normalized.includes(candidate));
+  });
+}
+
+function homeLeaderPlayerPool(statField) {
+  return excludeHomepageBlockedPlayers(players)
+    .filter((player) => Number(player[statField]) > 0)
+    .filter((player) => isCurrentSuperLigClub(player.currentTeam || player.team))
+    .sort((left, right) => Number(right[statField]) - Number(left[statField]));
+}
+
+function homeLeaderPlayerRow(rank, player, statField, statUnit) {
+  const team = escapeHtml(player.currentTeam || player.team || "");
+  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./oyuncular/${escapeHtml(player.id)}.html"><strong>${escapeHtml(player.name)}</strong><span>${team}</span></a><span class="leaders-value">${escapeHtml(player[statField])}<small>${escapeHtml(statUnit)}</small></span></li>`;
+}
+
+function homeLeaderFormRow(rank, player) {
+  const kicker = [player.currentTeam || player.team, player.position].filter(Boolean).map((value) => escapeHtml(value)).join(" · ");
+  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./oyuncular/${escapeHtml(player.id)}.html"><strong>${escapeHtml(player.name)}</strong><span>${kicker}</span></a></li>`;
+}
+
+function homeLeaderTeamRow(rank, row) {
+  return `<li class="leaders-row" data-card="leader-team"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./takim-detay.html?team=${encodeURIComponent(row.team)}"><strong>${escapeHtml(row.team)}</strong><span>Momentum</span></a><span class="leaders-value">${escapeHtml(row.momentum)}</span></li>`;
+}
+
+function homeLeadersSlot(rows, rowHtmlFor, emptyNote) {
+  if (!rows.length) {
+    return emptyStateCard("Veri bekleniyor", emptyNote);
+  }
+  return `<ol class="leaders-list">${rows.map((item, index) => rowHtmlFor(index + 1, item)).join("")}</ol>`;
+}
+
+function homeLeadersScorersSlot(limit) {
+  const rows = homeLeaderPlayerPool("goals").slice(0, limit);
+  return homeLeadersSlot(
+    rows,
+    (rank, player) => homeLeaderPlayerRow(rank, player, "goals", "gol"),
+    "Gol krallığı sıralaması, oyuncular resmî maçlarda gol attıkça güncellenir."
+  );
+}
+
+function homeLeadersAssistsSlot(limit) {
+  const rows = homeLeaderPlayerPool("assists").slice(0, limit);
+  return homeLeadersSlot(
+    rows,
+    (rank, player) => homeLeaderPlayerRow(rank, player, "assists", "asist"),
+    "Asist krallığı sıralaması, oyuncular resmî maçlarda asist yaptıkça güncellenir."
+  );
+}
+
+function homeLeadersFormSlot(limit) {
+  const rows = verifiedTrendPlayers(limit);
+  return homeLeadersSlot(
+    rows,
+    homeLeaderFormRow,
+    "Formdaki oyuncular yalnızca doğrulanmış, sağlayıcı kimliği olan güncel sezon verisinden üretilir."
+  );
+}
+
+function homeLeadersTeamFormSlot(limit) {
+  const rows = momentum.slice().sort((left, right) => Number(left.rank) - Number(right.rank)).slice(0, limit);
+  return homeLeadersSlot(rows, homeLeaderTeamRow, "Takım formu tablosu resmî maç sonuçlarıyla güncellenir.");
+}
+
+/**
  * Kartın alanları KAPIDAN GEÇENLERDEN okunur, ham kayıttan değil.
  *
  * Kaydın kaynağının doğrulanmış olması üstündeki her sayıyı doğrulamıyor:
@@ -1597,6 +1682,10 @@ writePage("index.html", {
   "home-standings": staticHomeStandingRows(),
   "player-radar": trendPlayerSlot(3),
   "player-signals": playerSignalsSlot(),
+  "leaders-scorers": homeLeadersScorersSlot(5),
+  "leaders-assists": homeLeadersAssistsSlot(5),
+  "leaders-form": homeLeadersFormSlot(5),
+  "leaders-team-form": homeLeadersTeamFormSlot(5),
   "news-preview": newsCards(3),
   "analysis-preview": analysisCards(),
   "live-scores-ticker": liveScoresTrack()

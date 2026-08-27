@@ -3280,3 +3280,37 @@
     setupMatchLiveStats();
   }
 })();
+
+/**
+ * ANA SAYFA "SÜPER LİG LİDERLERİ" SEKMELERİ — yalnızca `aria-selected`
+ * senkronu. Sekme geçişinin kendisi zaten sade CSS ile çalışıyor
+ * (`#leaders-tab-*:checked ~ ...`); bu betik olmadan da JavaScript'siz
+ * bir tarayıcıda dört panel de erişilebilir kalır, yalnızca ekran
+ * okuyucunun "seçili sekme" bildirimi bu betiğe bağlı.
+ */
+(function () {
+  function setupLeadersTabs() {
+    var radios = document.querySelectorAll(".leaders-tabs__radio");
+    if (!radios.length) return;
+
+    function sync() {
+      Array.prototype.forEach.call(radios, function (radio) {
+        var label = document.getElementById(
+          "leaders-tablabel-" + radio.id.replace("leaders-tab-", "")
+        );
+        if (label) label.setAttribute("aria-selected", radio.checked ? "true" : "false");
+      });
+    }
+
+    Array.prototype.forEach.call(radios, function (radio) {
+      radio.addEventListener("change", sync);
+    });
+    sync();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupLeadersTabs);
+  } else {
+    setupLeadersTabs();
+  }
+})();
