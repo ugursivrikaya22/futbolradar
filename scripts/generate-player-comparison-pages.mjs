@@ -8,8 +8,11 @@ import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
-const { publicPlayerView } = require("../services/cardCredibility.js");
-const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
+const { publicPlayerView, sourceMetadata } = require("../services/cardCredibility.js");
+const { annotateDuplicates, sameCanonicalPlayer } = require("../services/duplicatePlayerService.js");
+const { playerPer90Stats } = require("../services/statNormalization.js");
+const { formatFreshnessDate } = require("../services/freshnessService.js");
+const players = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
 const outDir = path.join(root, "karsilastirma");
 const publicOutDir = path.join(root, "public", "karsilastirma");
 const domain = "https://www.futbolradar.com";
@@ -78,6 +81,9 @@ function comparisonSlug(leftId, rightId) {
 
 function comparePeerScore(primary, candidate) {
   if (!primary || !candidate || primary.id === candidate.id) return -1;
+  // Aynı gerçek oyuncunun iki kaydı (mock + sağlayıcı senkronu) birbiriyle
+  // "karşılaştırılmaz" — bu, oyuncunun kendisiyle kıyaslanması demektir.
+  if (sameCanonicalPlayer(primary, candidate)) return -1;
 
   const sameRole = playerPositionGroup(primary) === playerPositionGroup(candidate) ? 44 : 0;
   const sameLeague = primary.league && candidate.league && primary.league === candidate.league ? 16 : 0;
@@ -99,7 +105,7 @@ function uniqueCompareCandidates(list) {
 }
 
 function profileCompareCandidates(player) {
-  const candidates = players.filter((candidate) => candidate.id !== player.id);
+  const candidates = players.filter((candidate) => candidate.id !== player.id && !sameCanonicalPlayer(player, candidate));
   const bestPeer = candidates.slice().sort((a, b) => comparePeerScore(player, b) - comparePeerScore(player, a))[0];
   const sameRole = candidates
     .filter((candidate) => playerPositionGroup(candidate) === playerPositionGroup(player))
@@ -126,7 +132,7 @@ function profileCompareCandidates(player) {
 }
 
 function addPair(map, left, right, context) {
-  if (!left || !right || left.id === right.id) {
+  if (!left || !right || left.id === right.id || sameCanonicalPlayer(left, right)) {
     return;
   }
 
@@ -147,16 +153,18 @@ function addPair(map, left, right, context) {
   }
 }
 
+const EDITORIAL_PAIRS = [
+  ["mauro-icardi", "edin-dzeko", "Super Lig gol tehdidi"],
+  ["kerem-akturkoglu", "semih-kilicsoy", "Yükselen yerli hücum profili"],
+  ["ugurcan-cakir", "abdulkerim-bardakci", "Savunma güveni"],
+  ["sebastian-szymanski", "gedson-fernandes", "Orta saha etki kıyaslaması"]
+];
+const EDITORIAL_SLUGS = new Set(EDITORIAL_PAIRS.map(([leftId, rightId]) => comparisonSlug(leftId, rightId)));
+
 function buildPairs() {
   const map = new Map();
-  const editorialPairs = [
-    ["mauro-icardi", "edin-dzeko", "Super Lig gol tehdidi"],
-    ["kerem-akturkoglu", "semih-kilicsoy", "Yükselen yerli hücum profili"],
-    ["ugurcan-cakir", "abdulkerim-bardakci", "Savunma güveni"],
-    ["sebastian-szymanski", "gedson-fernandes", "Orta saha etki kıyaslaması"]
-  ];
 
-  for (const [leftId, rightId, reason] of editorialPairs) {
+  for (const [leftId, rightId, reason] of EDITORIAL_PAIRS) {
     addPair(
       map,
       players.find((player) => player.id === leftId),
@@ -237,6 +245,23 @@ function playerMiniCard(player) {
   if (rating) verifiedRows.push(`<div><dt>Overall</dt><dd>${escapeHtml(rating)}</dd></div>`);
   if (market) verifiedRows.push(`<div><dt>Piyasa</dt><dd>${escapeHtml(market)}</dd></div>`);
 
+  // Ham VE 90 dakikaya normalize edilmiş değer birlikte basılır — yalnızca
+  // istatistik gerçekten doğrulanmışsa (fields.goals/assists zaten
+  // publicPlayerView'dan sadece bu durumda geliyor, bkz. cardCredibility.js
+  // statsAreVerified). Dakika verisi yoksa per-90 satırı hiç basılmaz;
+  // tahmini bir oran gerçek ölçüm gibi gösterilmez.
+  if (fields.goals != null || fields.assists != null) {
+    const per90 = playerPer90Stats(player);
+    if (fields.goals != null) {
+      verifiedRows.push(`<div><dt>Gol (ham)</dt><dd>${escapeHtml(fields.goals)}</dd></div>`);
+      if (per90.goalsPer90 != null) verifiedRows.push(`<div><dt>Gol (90 dk)</dt><dd>${escapeHtml(per90.goalsPer90)}</dd></div>`);
+    }
+    if (fields.assists != null) {
+      verifiedRows.push(`<div><dt>Asist (ham)</dt><dd>${escapeHtml(fields.assists)}</dd></div>`);
+      if (per90.assistsPer90 != null) verifiedRows.push(`<div><dt>Asist (90 dk)</dt><dd>${escapeHtml(per90.assistsPer90)}</dd></div>`);
+    }
+  }
+
   const rows = verified && verifiedRows.length
     ? verifiedRows.join("\n      ")
     : `<div><dt>Veri durumu</dt><dd>Doğrulanmış kayıt bekleniyor</dd></div>`;
@@ -249,6 +274,33 @@ function playerMiniCard(player) {
     </dl>
     <a href="../oyuncular/${escapeHtml(player.id)}.html">Oyuncu profilini aç</a>
   </article>`;
+}
+
+/**
+ * "SON GÜNCELLEME" + "VERİ KAYNAĞI" — her karşılaştırma sayfasında görünür.
+ *
+ * İki tarafın da kendi kaynak künyesi var (sourceMetadata); okuyucuya
+ * tekil bir tarih/kaynak gösterilir: en ESKİ doğrulama zamanı alınır, çünkü
+ * sayfa iki kaydın DAHA AZ güncel olanı kadar güncel sayılabilir. Kaynak
+ * isimleri farklıysa ikisi de yazılır.
+ */
+function comparisonSourceStripHtml(left, right) {
+  const leftMeta = sourceMetadata(left);
+  const rightMeta = sourceMetadata(right);
+  const timestamps = [leftMeta.last_verified_at, rightMeta.last_verified_at]
+    .map((value) => Date.parse(value))
+    .filter((value) => Number.isFinite(value));
+  const oldest = timestamps.length ? Math.min(...timestamps) : null;
+  const updatedLabel = oldest === null ? "Tarih bekleniyor" : formatFreshnessDate(new Date(oldest).toISOString());
+
+  const sourceNames = Array.from(new Set([leftMeta.source_name, rightMeta.source_name].filter(Boolean)));
+  const sourceLabel = sourceNames.length ? sourceNames.join(" · ") : "Kaynak doğrulaması bekleniyor";
+
+  return `<section class="source-strip" aria-label="Karşılaştırma veri künyesi">
+        <div><span>Son güncelleme</span><b>${escapeHtml(updatedLabel)}</b></div>
+        <div><span>Veri kaynağı</span><b>${escapeHtml(sourceLabel)}</b></div>
+        <div><span>Veri durumu</span><b>${escapeHtml(leftMeta.data_confidence === "high" && rightMeta.data_confidence === "high" ? "İki taraf da doğrulandı" : "En az bir taraf doğrulama bekliyor")}</b></div>
+      </section>`;
 }
 
 function pageHtml(pair) {
@@ -345,6 +397,8 @@ function pageHtml(pair) {
         ${playerMiniCard(right)}
       </section>
 
+      ${comparisonSourceStripHtml(left, right)}
+
       <section class="compare-grid" data-api-target="player-compare" data-compare-seed="${escapeHtml(left.id)},${escapeHtml(right.id)}">
         <article class="data-empty" data-card="empty-state">
           <strong>Karşılaştırma yükleniyor</strong>
@@ -370,16 +424,24 @@ function pageHtml(pair) {
 
 function comparisonIndexCard(pair) {
   const { left, right, slug, reasons } = pair;
-  const ratingDelta = Math.abs(playerRating(left) - playerRating(right));
   const roleLabel = playerPositionGroup(left) === playerPositionGroup(right)
     ? `${playerPositionGroup(left)} eslesmesi`
     : `${playerPositionGroup(left)} / ${playerPositionGroup(right)}`;
+
+  // Rating farkı bir SAYIDAN türetilmiş iddiadır; iki taraf da doğrulanmış
+  // değilse basılmaz — bu tam olarak comparisonInsight()'ın uyguladığı
+  // kural, indeks kartı için de geçerli (bkz. karar notu comparisonInsight).
+  const bothVerified = publicPlayerView(left).verified && publicPlayerView(right).verified;
+  const ratingDelta = bothVerified ? Math.abs(playerRating(left) - playerRating(right)) : null;
+  const footer = ratingDelta === null
+    ? "Doğrulanmış puan bekleniyor"
+    : `Rating farki ${escapeHtml(ratingDelta.toFixed(1))}`;
 
   return `<a class="comparison-index-card" href="./karsilastirma/${escapeHtml(slug)}.html">
     <span>${escapeHtml(roleLabel)}</span>
     <strong>${escapeHtml(left.name)} vs ${escapeHtml(right.name)}</strong>
     <p>${escapeHtml((reasons && reasons[0]) || "Rating, form ve rol etkisi")}</p>
-    <em>Rating farki ${escapeHtml(ratingDelta.toFixed(1))}</em>
+    <em>${footer}</em>
   </a>`;
 }
 
@@ -387,7 +449,20 @@ function comparisonIndexHtml(pairs) {
   const title = "Oyuncu Karşılaştırmaları | Statik Kıyaslar | FutbolRadar";
   const description = "FutbolRadar oyuncu karşılaştırmaları; Süper Lig oyuncularını AI rating, form, rol etkisi, piyasa değeri ve transfer sinyalleriyle yan yana inceler.";
   const canonical = `${domain}/oyuncu-karsilastirmalari.html`;
-  const topPairs = pairs.slice(0, 20);
+  // Aynı mevki kıyasları önce gelir: bir forvet arayan okuyucu için bir
+  // kaleci-forvet eşleşmesi daha az kullanışlıdır. Editoryal dörtlü (elle
+  // seçilmiş öne çıkanlar) sırasını korur; geri kalan aday havuzu yalnızca
+  // rol eşleşmesine göre yeniden sıralanır.
+  const editorial = pairs.filter((pair) => EDITORIAL_SLUGS.has(pair.slug));
+  const rest = pairs
+    .filter((pair) => !EDITORIAL_SLUGS.has(pair.slug))
+    .slice()
+    .sort((a, b) => {
+      const aSameRole = playerPositionGroup(a.left) === playerPositionGroup(a.right) ? 1 : 0;
+      const bSameRole = playerPositionGroup(b.left) === playerPositionGroup(b.right) ? 1 : 0;
+      return bSameRole - aSameRole;
+    });
+  const topPairs = editorial.concat(rest).slice(0, 20);
 
   return `<!doctype html>
 <html lang="tr">

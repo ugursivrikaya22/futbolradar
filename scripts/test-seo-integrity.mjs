@@ -40,7 +40,7 @@ const DOMAIN = "https://www.futbolradar.com";
 const SKIP_DIRS = new Set(["node_modules", "public", ".git", "docs", "components", "locales"]);
 
 /** Denetim dışı dosyalar: doğrulama sayfaları ve hata sayfası. */
-const SKIP_FILES = new Set(["404.html", "admin-updates.html", "canli-veri-testi.html"]);
+const SKIP_FILES = new Set(["404.html", "admin-updates.html", "admin-comparison-quality.html", "canli-veri-testi.html"]);
 
 function walk(dir, out = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {

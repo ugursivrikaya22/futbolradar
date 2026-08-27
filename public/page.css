@@ -3225,33 +3225,7 @@ p {
         font-size: 0.82rem;
       }
 
-      .standing-row {
-        display: grid;
-        grid-template-columns: 30px 1fr 48px 50px;
-        gap: 10px;
-        align-items: center;
-        padding: 13px 18px;
-        border-bottom: 1px solid rgba(14, 26, 22, 0.069);
-        color: var(--soft);
-        font-size: 0.88rem;
-      }
 
-      .standing-row:last-child {
-        border-bottom: 0;
-      }
-
-      .standing-row b {
-        color: var(--text);
-      }
-
-      .standing-row span:first-child,
-.standing-row span:nth-child(3),
-.standing-row span:nth-child(4) {
-        color: var(--muted);
-        text-align: right;
-      }
-
-      
 
       .player-toolbar {
         display: grid;
@@ -5886,6 +5860,17 @@ p {
         margin: 0 0 14px;
       }
 
+      .transfer-freshness-warning {
+        grid-column: 1 / -1;
+        margin: 0 0 10px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: rgba(176, 116, 16, 0.12);
+        color: var(--warn);
+        font-weight: 700;
+        font-size: 0.92rem;
+      }
+
       .transfer-timeline {
         position: relative;
         display: grid;
@@ -7330,11 +7315,6 @@ main.container {
 
         .player-radar .bar-row {
           grid-template-columns: 88px 1fr 34px;
-        }
-
-        .standing-row {
-          grid-template-columns: 24px 1fr 42px 44px;
-          padding-inline: 14px;
         }
       }
 /* Consolidated responsive navbar */
@@ -17924,17 +17904,6 @@ body,
  * Sıra CSS ile değiştiriliyor, işaretleme bozulmadan: ekran okuyucu ve
  * arama motoru için belge sırası aynı kalır, dar ekranda anket öne alınır.
  */
-@media (max-width: 720px) {
-  .home-main {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .home-poll { order: -1; }
-  /* Hero hemen ardından gelir; kalan bölümler kendi sıralarını korur. */
-  .home-main > .hero { order: 0; }
-}
-
 .home-poll__inner {
   position: relative;
   padding: clamp(20px, 3.5vw, 34px) clamp(16px, 3vw, 30px);
@@ -18836,6 +18805,27 @@ a.motm-week__card:focus-visible {
 
 .live-compact-card.is-live {
   border-color: rgba(255, 107, 107, 0.4);
+}
+
+.live-last-updated {
+  margin: 10px 0 0;
+  color: var(--muted, #687386);
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+[data-match].is-goal-update {
+  animation: live-goal-update 2.2s ease-out;
+}
+
+@keyframes live-goal-update {
+  0%, 18% { background-color: rgba(49, 214, 132, 0.34); box-shadow: 0 0 0 3px rgba(49, 214, 132, 0.24); }
+  55% { background-color: rgba(49, 214, 132, 0.12); }
+  100% { background-color: transparent; box-shadow: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-match].is-goal-update { animation: none; outline: 2px solid rgba(49, 214, 132, 0.7); }
 }
 
 .live-compact-status {
@@ -20107,114 +20097,388 @@ a.motm-week__card:focus-visible {
   }
 }
 
-/* ── MOBİL BİLGİ HİYERARŞİSİ ────────────────────────────────────────
-   İstenen sıra: son dakika/ticker → canlı skor → bugünün maçları →
-   anket → haberler → analizler → puan durumu → diğerleri.
-
-   Ölçülen sıra bundan farklıydı: canlı skor 4., bugünün maçları 8. ve
-   anket 3. sıradaydı. Sıralama CSS ile düzeltiliyor, İŞARETLEME
-   BOZULMADAN — belge sırası ekran okuyucu ve arama motoru için aynı
-   kalıyor (deponun anket için zaten benimsediği yaklaşım).
-
-   Kişisel iki şerit (favori takım, Şimdi Futbolda) en üstte kalıyor:
-   ikisi de ~120 px ve brifingin "ilk 5-10 saniyede cevap" hedefi tam
-   olarak bu — büyük bölümlerin sırası aşağıda düzeltiliyor.
-
-   Seçiciler kimlik taşıyor çünkü mevcut kurallar sınıf üzerinden
-   yazılmış (`.home-poll { order: -1 }`, `.home-main > .hero { order: 0 }`)
-   ve sınıf özgüllüğüyle yazılan yeni kural onları yenemezdi. */
+/* ── MOBİL DÜZEN ─────────────────────────────────────────────────────
+   Anket kaldırıldıktan sonra ana sayfa bölüm sırası artık belgede
+   İSTENEN sırayla birebir yazılıyor: canlı skor → bugünün maçları →
+   puan durumu + istatistik rafı → trend içerik → köşe yazıları →
+   transfer/haber → arşiv. Mobil için ayrı bir `order` haritası çıkarmaya
+   gerek kalmadı; `.home-main` yine de flex kalıyor çünkü maç dosyası
+   tanıtımı (`.match-special-promo-group`, bkz. `scripts/inject-match-special.mjs`)
+   yayında olduğunda kendi konumunu `order` ile ayarlıyor. */
 @media (max-width: 720px) {
-  .home-main > #hero-canli-skor { order: -2; }        /* canlı skor */
-  .home-main > #bugunun-maclari-preview { order: -1; } /* bugünün maçları */
-  .home-main > #tahmin-anketi { order: 0; }            /* şampiyonluk anketi */
-  /* Maç dosyası tanıtımı 2.142 px ile sayfadaki en büyük blok; belge
-     sırasında anketten önce geldiği için onu aşağı itiyordu. İstenen
-     listede "maç analizleri" başlıklar ve anketten sonra geliyor. */
+  .home-main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .home-main > #hero-canli-skor { order: -2; }         /* canlı skor */
   .home-main > .match-special-promo-group { order: 2; }
-  .home-main > #gunun-basliklari { order: 1; }         /* son haberler */
-  .home-main > #futbol-gundemi { order: 1; }
-  .home-main > #gunun-radar-maci { order: 2; }         /* maç analizleri */
-  .home-main > .mini-standings { order: 3; }            /* puan durumu */
-  .home-main > #radar-yorumu { order: 4; }             /* köşe yazıları */
-  /* Brifingin son basamağı: "diğer ligler/içerik". Bu dört bölüm bugünün
-     maçıyla veya Türk takımlarıyla değil, genel keşifle ilgili — trend
-     oyuncular, trend takımlar, hızlı gezinme kısayolları ve sezon arşivi.
-     Belge sırasında maçlardan hemen sonra geliyorlardı ve anketi/haberleri
-     ekranın altına itiyorlardı; en sona alınıyorlar. */
-  .home-main > #oyuncu-radar-preview { order: 5; }     /* trend oyuncular */
-  .home-main > #trend-takimlar { order: 5; }           /* trend takımlar */
-  .home-main > .home-statistics-entry { order: 5; }    /* hızlı gezinme */
-  .home-main > #arsiv-girisi { order: 6; }             /* sezon arşivi */
 }
 
-/* ── PUAN DURUMU MİNİ ───────────────────────────────────────────────
-   İlk beş + (varsa) kullanıcının takımı. Tam tablo bir tık uzakta. */
-.mini-standings {
+/* ── SÜPER LİG PUAN DURUMU (ANA SAYFA) ──────────────────────────────
+   Sekiz zorunlu alan tek satırda: sıra, takım, O, G, B, M, averaj, puan.
+   Yatay kaydırma yok: sayısal sütunlar sabit dar genişlikte, takım adı
+   `minmax(0, 1fr)` ile taşkını `.data-panel`in `overflow: hidden`
+   sınırında tutar — CSS grid taşması için standart çözüm. 640px altında
+   sütunlar daralır (task: "compact responsive version"), sütun SAYISI
+   değişmez — sekiz alan de mobilde görünür kalır. */
+.home-standings-panel { padding-bottom: 2px; }
+
+.home-standing-row {
   display: grid;
-  gap: 8px;
-  margin-top: 10px;
-  padding: 12px 14px;
-  border: 1px solid var(--line-strong, rgba(0, 0, 0, .12));
-  border-radius: 14px;
-  background: var(--surface, #fff);
-}
-
-.mini-standings__head { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; }
-
-.mini-standings__title {
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--muted, #5b6470);
-}
-
-.mini-standings__all {
-  min-height: 44px;
-  display: inline-flex;
+  grid-template-columns: 26px minmax(0, 1fr) 28px 28px 28px 28px 40px 44px;
   align-items: center;
-  color: var(--green, #0b8f5a);
-  font-size: 13px;
-  font-weight: 800;
-  white-space: nowrap;
+  gap: 6px;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(14, 26, 22, 0.069);
+  border-left: 3px solid transparent;
+  font-size: 0.86rem;
+  color: var(--muted);
   text-decoration: none;
 }
 
-.mini-standings__list { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; }
-
-.mini-standings__row {
-  display: grid;
-  grid-template-columns: 22px minmax(0, 1fr) auto;
-  gap: 8px;
-  align-items: center;
-  min-height: 32px;
-  padding: 2px 4px;
-  border-radius: 8px;
-  font-size: 14px;
+.home-standing-row > span,
+.home-standing-row > a {
+  min-width: 0;
 }
 
-.mini-standings__rank { color: var(--muted, #5b6470); font-weight: 800; font-variant-numeric: tabular-nums; }
+.home-standing-row > span:not(.home-standing-team) {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
 
-.mini-standings__team {
+.home-standings-body .home-standing-row:last-child { border-bottom: 0; }
+
+.home-standing-row.is-head {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+  padding-block: 10px;
+}
+
+.home-standing-team {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--text);
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.home-standing-team:hover,
+.home-standing-team:focus-visible {
+  color: var(--green);
+}
+
+.home-standing-team b {
   min-width: 0;
   overflow: hidden;
-  /* Uzun kulüp adı harf harf bölünmesin. */
   white-space: nowrap;
   text-overflow: ellipsis;
+  font-weight: inherit;
+}
+
+.home-standing-logo,
+.home-standing-logo-wrap {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+}
+
+.home-standing-logo-wrap { position: relative; display: inline-block; }
+
+.home-standing-logo {
+  display: block;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.home-standing-logo-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(11, 143, 90, 0.1);
+  color: var(--green);
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.home-standing-logo-wrap .home-standing-logo-fallback {
+  position: absolute;
+  inset: 0;
+}
+
+.home-standing-rank { font-weight: 800; color: var(--muted); }
+
+.home-standing-points { font-weight: 900; color: var(--text); }
+
+.home-standing-gd.is-positive { color: var(--green); }
+.home-standing-gd.is-negative { color: #c81e2d; }
+
+/* Bölge vurgusu: şampiyonluk / Avrupa kupası / küme düşme hattı. Renk TEK
+   başına anlam taşımaz — `.home-standings-legend` aynı bilgiyi metinle de
+   veriyor (renk körlüğü ve ekran okuyucu için). */
+.home-standing-row.is-leader { border-left-color: #caa43d; background: rgba(202, 164, 61, 0.08); }
+.home-standing-row.is-europe { border-left-color: var(--green); background: rgba(11, 143, 90, 0.05); }
+.home-standing-row.is-relegation { border-left-color: #c81e2d; background: rgba(200, 30, 45, 0.05); }
+
+.home-standings-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--line);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.home-standings-legend-item { display: inline-flex; align-items: center; gap: 5px; }
+
+.home-standings-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.home-standings-dot.is-leader { background: #caa43d; }
+.home-standings-dot.is-europe { background: var(--green); }
+.home-standings-dot.is-relegation { background: #c81e2d; }
+
+.home-standings-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+@media (max-width: 640px) {
+  .home-standing-row {
+    grid-template-columns: 20px minmax(0, 1fr) 22px 22px 22px 22px 32px 36px;
+    gap: 4px;
+    padding: 8px 10px;
+    font-size: 11.5px;
+  }
+
+  .home-standing-row.is-head { font-size: 10px; padding-block: 8px; }
+
+  .home-standing-logo,
+  .home-standing-logo-wrap,
+  .home-standing-logo-fallback { width: 16px; height: 16px; font-size: 8px; }
+
+  .home-standings-legend { font-size: 10.5px; padding: 8px 12px; }
+}
+
+@media (max-width: 360px) {
+  .home-standing-row {
+    grid-template-columns: 18px minmax(0, 1fr) 18px 18px 18px 18px 28px 32px;
+    gap: 3px;
+    padding: 8px 6px;
+  }
+}
+
+/* ── PUAN DURUMU + İSTATİSTİK RAFI (ÜST IZGARA) ─────────────────────
+   Mobil öncelik: tek sütun, puan durumu önce, istatistik rafı hemen
+   ardından — ikisi de aynı `.container` genişliğinde akar. Masaüstünde
+   (≥900px) puan durumu solda genişler, istatistik rafı sağda sabit
+   genişlikte bir "aside" olarak yanına oturur. */
+.home-top-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 6px;
+}
+
+.home-top-grid__main { min-width: 0; }
+
+@media (min-width: 900px) {
+  .home-top-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(272px, 308px);
+    gap: 24px;
+  }
+}
+
+.home-stats-rail {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.063), rgba(var(--surface-rgb), 0.029)), var(--panel);
+  box-shadow: 0 18px 60px rgba(14, 26, 22, 0.06);
+}
+
+.home-stats-rail__head { margin: 0; }
+
+/* ── SÜPER LİG LİDERLERİ SEKMELERİ ────────────────────────────────────
+   Saf CSS sekme deseni: gizli radyo düğmeleri + `for` etiketleri + genel
+   kardeş seçici (`~`). JavaScript OLMADAN çalışır — ilk sekme (Goller)
+   her zaman işaretli doğar, geri kalan üç panel de aynı belgede, yalnızca
+   `display:none` ile gizli durur. Yani arama motoru dört panelin
+   içeriğini de HER ZAMAN görür; değişen tek şey görünürlük.
+   `site.js`teki `setupLeadersTabs` bunun üstüne yalnızca `aria-selected`
+   senkronu ekler, temel işlev CSS'te tamamlanmış olur. */
+.leaders-tabs { display: flex; flex-direction: column; gap: 12px; }
+
+.leaders-tabs__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.leaders-tabs__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.leaders-tabs__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(var(--surface-rgb), 0.03);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.leaders-tabs__label:hover { border-color: var(--green); color: var(--text); }
+
+#leaders-tab-scorers:checked ~ .leaders-tabs__list #leaders-tablabel-scorers,
+#leaders-tab-assists:checked ~ .leaders-tabs__list #leaders-tablabel-assists,
+#leaders-tab-form:checked ~ .leaders-tabs__list #leaders-tablabel-form,
+#leaders-tab-team:checked ~ .leaders-tabs__list #leaders-tablabel-team {
+  border-color: var(--green);
+  background: rgba(11, 143, 90, 0.1);
+  color: var(--green);
+}
+
+#leaders-tab-scorers:focus-visible ~ .leaders-tabs__list #leaders-tablabel-scorers,
+#leaders-tab-assists:focus-visible ~ .leaders-tabs__list #leaders-tablabel-assists,
+#leaders-tab-form:focus-visible ~ .leaders-tabs__list #leaders-tablabel-form,
+#leaders-tab-team:focus-visible ~ .leaders-tabs__list #leaders-tablabel-team {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+.leaders-tabs__panel { display: none; }
+
+#leaders-tab-scorers:checked ~ .leaders-tabs__panels #leaders-panel-scorers,
+#leaders-tab-assists:checked ~ .leaders-tabs__panels #leaders-panel-assists,
+#leaders-tab-form:checked ~ .leaders-tabs__panels #leaders-panel-form,
+#leaders-tab-team:checked ~ .leaders-tabs__panels #leaders-panel-team {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.leaders-list { display: flex; flex-direction: column; gap: 6px; }
+
+.leaders-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: var(--tap);
+  padding: 7px 8px;
+  border-radius: var(--radius);
+}
+
+.leaders-row > .leaders-rank { margin-top: 1px; }
+.leaders-row > .leaders-value { margin-top: 1px; }
+
+.leaders-row:hover { background: rgba(var(--surface-rgb), 0.05); }
+
+.leaders-rank {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(11, 143, 90, 0.1);
+  color: var(--green);
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.leaders-name {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1 1 auto;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.leaders-name strong {
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.leaders-name span {
+  font-size: 0.72rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leaders-name:hover strong { color: var(--green); }
+
+.leaders-value {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  color: var(--text);
+  font-weight: 900;
+  font-size: 0.92rem;
+}
+
+.leaders-value small {
+  color: var(--muted);
   font-weight: 700;
+  font-size: 0.66rem;
+  text-transform: uppercase;
 }
 
-.mini-standings__pts { font-weight: 900; font-variant-numeric: tabular-nums; }
-
-.mini-standings__gap { padding-left: 6px; color: var(--muted, #5b6470); letter-spacing: .2em; }
-
-.mini-standings__row.is-favourite {
-  background: var(--green-soft, rgba(11, 143, 90, .1));
-  color: var(--green, #0b8f5a);
+.leaders-see-all {
+  align-self: center;
+  min-height: var(--tap);
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--green);
+  text-decoration: none;
 }
 
-/* Masaüstünde gizli: orada tam puan durumu bölümü zaten var. */
-@media (min-width: 901px) { .mini-standings { display: none; } }
+.leaders-see-all:hover,
+.leaders-see-all:focus-visible { text-decoration: underline; }
 
 /* ── MAÇ MERKEZİ CTA: MOBİLDE KOMPAKT ───────────────────────────────
    Ölçüm: iki tanıtım kartı mobilde 2.142 px — sayfanın en büyük bloğu.
@@ -20296,4 +20560,45 @@ a.motm-week__card:focus-visible {
   .bottom-nav a {
     min-width: 44px;
   }
+}
+
+/* ── ANA SAYFA PUAN DURUMU: KOMPAKT YARI GENİŞLİK KART ──────────────
+   Görev: bölüm 1120px konteynerin tamamını kaplıyordu ve 18 satır
+   (~740px yükseklik) ana sayfanın en büyük bloğuydu. Satır sayısı 6'ya
+   indirildi (`app.js#renderStandingsTable`,
+   `scripts/prerender-core-pages.mjs#staticHomeStandingRows`) — bölge
+   sınıfı (şampiyonluk/Avrupa/küme düşme) hesaplaması yine TAM takım
+   sayısını kullanır, yalnızca görüntülenen satır azalır. Tam tabloya
+   bağlantı korunur (`section-link` + alt CTA, ikisi de `puan-durumu.html`).
+
+   Masaüstünde (641px+) başlık, kart ve CTA 600px'e sabitlenir — 1120px
+   konteynerin yarısı civarı, brifingin istediği 560-640px aralığında.
+   Blok bloktur (flex/grid değil), bu yüzden `max-width` tek başına sola
+   yaslı bırakır — ek saplama gerekmez. 640px ve altında (mobil) kart
+   tam genişliğe döner; satır yoğunluğu yukarıdaki
+   `@media (max-width: 640px)` / `(max-width: 360px)` kurallarında zaten
+   sıkılaştırılmıştı — burada yalnızca satır iç boşluğu bir basamak daha
+   daraltılır. */
+@media (min-width: 641px) {
+  .home-standings .section-head,
+  .home-standings-panel,
+  .home-standings-cta {
+    max-width: 600px;
+  }
+
+  .home-standing-row {
+    padding: 8px 14px;
+  }
+}
+
+/* ── TAKIM PUAN DURUMU SAYFALARI: SATIR VURGUSU ─────────────────────
+   `galatasaray-puan-durumu.html` vb. sayfalar `puan-durumu.html` ile
+   AYNI tam 18 satırlık tabloyu basar; içerik farklılaşmaz, yalnızca o
+   sayfanın konusu olan takımın satırı görsel olarak öne çıkar. Diğer
+   `.table-row` kullanımlarını (momentum tablosu, puan-durumu.html'in
+   kendisi) etkilememesi için yalnızca bu sayfaların paneline kapsanır. */
+.team-standings-panel .table-row.is-featured-team {
+  background: rgba(11, 143, 90, 0.07);
+  border-left: 3px solid var(--green);
+  padding-left: 15px;
 }

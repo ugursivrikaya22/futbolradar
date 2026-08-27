@@ -8,7 +8,8 @@ const require = createRequire(import.meta.url);
 const { getPlayers } = require("../services/playerService.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
-const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
+const { annotateDuplicates, sameCanonicalPlayer } = require("../services/duplicatePlayerService.js");
+const players = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
 const outDir = path.join(root, "oyuncular");
 const publicOutDir = path.join(root, "public", "oyuncular");
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
@@ -141,6 +142,9 @@ function comparisonSlug(leftId, rightId) {
 
 function comparePeerScore(primary, candidate) {
   if (!primary || !candidate || primary.id === candidate.id) return -1;
+  // Aynı gerçek oyuncunun iki kaydı birbiriyle "karşılaştırılmaz" — bkz.
+  // generate-player-comparison-pages.mjs'deki aynı karar.
+  if (sameCanonicalPlayer(primary, candidate)) return -1;
 
   const sameRole = playerPositionGroup(primary) === playerPositionGroup(candidate) ? 44 : 0;
   const sameLeague = primary.league && candidate.league && primary.league === candidate.league ? 16 : 0;
@@ -162,7 +166,7 @@ function uniqueCompareCandidates(list) {
 }
 
 function staticCompareLinks(player) {
-  const candidates = players.filter((candidate) => candidate.id !== player.id);
+  const candidates = players.filter((candidate) => candidate.id !== player.id && !sameCanonicalPlayer(player, candidate));
   const bestPeer = candidates.slice().sort((a, b) => comparePeerScore(player, b) - comparePeerScore(player, a))[0];
   const sameRole = candidates
     .filter((candidate) => playerPositionGroup(candidate) === playerPositionGroup(player))

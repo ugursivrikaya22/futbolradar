@@ -1,5 +1,17 @@
 # Ana sayfa tahmin anketi
 
+> **DURUM (2026-08-27):** Ana sayfa enjeksiyonu prodüksiyonda **kapatıldı**.
+> Anket artık canlı sitede (`index.html`, `en/index.html`) görünmüyor.
+> `home-poll` adımı `scripts/lib/postprocessChain.mjs`deki `POSTPROCESS_CHAIN`den
+> çıkarıldı, bu yüzden `inject-home-poll.mjs` ne tam derlemede ne saatlik
+> otomatik yenilemede koşuyor; `scripts/generate-en-pages.mjs` de İngilizce
+> ana sayfaya artık anket bölümü/vitrin kartı/sabit kutu basmıyor. Aşağıdaki
+> belge özelliğin altyapısını (`services/homePoll.js`, `data/home-polls.json`)
+> hâlâ doğru anlatıyor — o kod silinmedi, yalnızca ana sayfaya bağlanması
+> kesildi. Yeniden açmak için `postprocessChain.mjs`ye `home-poll` adımını
+> geri eklemek ve `generate-en-pages.mjs`deki ana sayfa çağrılarını geri
+> koymak gerekir.
+
 Ana sayfanın en büyük etkileşimi: okuyucuya sezon hakkında bir soru sorar,
 oyları toplar ve canlı yüzdeleri lider vurgusuyla gösterir. Türkçe ve
 İngilizce sürümler **birebir aynı** ankettir; yalnızca dil değişir.
