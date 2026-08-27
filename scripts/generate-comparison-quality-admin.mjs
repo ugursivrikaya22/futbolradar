@@ -1,0 +1,94 @@
+import fs from "node:fs";
+import path from "node:path";
+
+const root = process.cwd();
+const fileName = "admin-comparison-quality.html";
+
+const html = `<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>FutbolRadar Karşılaştırma Veri Kalitesi</title>
+  <style>
+    :root{color-scheme:dark;--bg:#07101d;--panel:#101d2e;--line:#263a51;--text:#edf5ff;--muted:#93a8be;--ok:#35d07f;--warn:#ffbd4a;--bad:#ff6675}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}.wrap{width:min(1120px,calc(100% - 32px));margin:34px auto}.head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:22px}h1,h2{margin:0}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}.value{font-size:24px;font-weight:750;margin-top:8px}.badge{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:750}.duplicate_player{background:#3c3115;color:var(--warn)}.outdated_team{background:#3c3115;color:var(--warn)}.stale_transfer{background:#3c3115;color:var(--warn)}.abnormal_value{background:#451d27;color:var(--bad)}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-size:12px;text-transform:uppercase}.section{margin-top:18px}.empty{padding:18px 0;color:var(--muted)}.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.filters button{background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:999px;padding:6px 12px;font:inherit;cursor:pointer}.filters button.is-active{border-color:var(--ok);color:var(--ok)}@media(max-width:720px){.head{display:block}.head p{margin-bottom:0}.table-wrap{overflow:auto}}
+  </style>
+</head>
+<body>
+<main class="wrap" id="comparison-quality-monitor">
+  <div class="head"><div><h1>Karşılaştırma Veri Kalitesi</h1><p class="muted">Yinelenen oyuncu kaydı, güncelliğini yitirmiş takım, bayat transfer ve anormal değer taraması</p></div><div id="updated" class="muted">Yükleniyor…</div></div>
+  <section class="grid">
+    <article class="card"><h2>Toplam sorun</h2><div id="total-issues" class="value">0</div></article>
+    <article class="card"><h2>Yinelenen oyuncu</h2><div id="duplicate-players" class="value">0</div></article>
+    <article class="card"><h2>Güncel olmayan takım</h2><div id="outdated-teams" class="value">0</div></article>
+    <article class="card"><h2>Bayat transfer</h2><div id="stale-transfers" class="value">0</div></article>
+    <article class="card"><h2>Anormal değer</h2><div id="abnormal-values" class="value">0</div></article>
+  </section>
+  <section class="card section">
+    <h2>Sorun listesi</h2>
+    <div class="filters" id="filters"></div>
+    <div class="table-wrap"><div id="issues" class="empty">Yükleniyor…</div></div>
+  </section>
+</main>
+<script>
+(function(){
+  var CATEGORY_LABELS={duplicate_player:"Yinelenen oyuncu",outdated_team:"Güncel olmayan takım",stale_transfer:"Bayat transfer",abnormal_value:"Anormal değer"};
+  var activeCategory="all";
+  var lastData=null;
+  function esc(value){return String(value==null?"":value).replace(/[&<>"']/g,function(ch){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch];});}
+  function time(value){if(!value)return "Henüz çalışmadı";var date=new Date(value);return isNaN(date.getTime())?String(value):new Intl.DateTimeFormat("tr-TR",{timeZone:"Europe/Istanbul",dateStyle:"medium",timeStyle:"medium"}).format(date);}
+  function badge(category){return '<span class="badge '+esc(category)+'">'+esc(CATEGORY_LABELS[category]||category)+'</span>';}
+  function renderFilters(data){
+    var categories=["all"].concat(Object.keys(CATEGORY_LABELS));
+    document.getElementById("filters").innerHTML=categories.map(function(category){
+      var count=category==="all"?data.summary.totalIssues:(data.issues||[]).filter(function(issue){return issue.category===category;}).length;
+      var label=category==="all"?"Tümü":CATEGORY_LABELS[category];
+      return '<button type="button" data-category="'+esc(category)+'" class="'+(category===activeCategory?"is-active":"")+'">'+esc(label)+' ('+count+')</button>';
+    }).join("");
+  }
+  function renderIssues(data){
+    var issues=(data.issues||[]).filter(function(issue){return activeCategory==="all"||issue.category===activeCategory;});
+    document.getElementById("issues").outerHTML=issues.length
+      ? '<div id="issues" class="table-wrap"><table><thead><tr><th>Tür</th><th>Kimlik</th><th>Açıklama</th></tr></thead><tbody>'+issues.map(function(issue){
+          return "<tr><td>"+badge(issue.category)+"</td><td>"+esc(issue.id)+"</td><td>"+esc(issue.message)+"</td></tr>";
+        }).join("")+"</tbody></table></div>"
+      : '<div id="issues" class="empty">Bu kategoride sorun yok.</div>';
+  }
+  function render(data){
+    lastData=data;
+    document.getElementById("updated").textContent="Son taram: "+time(data.generatedAt);
+    document.getElementById("total-issues").textContent=data.summary.totalIssues||0;
+    document.getElementById("duplicate-players").textContent=data.summary.duplicatePlayers||0;
+    document.getElementById("outdated-teams").textContent=data.summary.outdatedTeams||0;
+    document.getElementById("stale-transfers").textContent=data.summary.staleTransfers||0;
+    document.getElementById("abnormal-values").textContent=data.summary.abnormalValues||0;
+    renderFilters(data);
+    renderIssues(data);
+  }
+  document.getElementById("filters").addEventListener("click",function(event){
+    var button=event.target.closest("[data-category]");
+    if(!button||!lastData)return;
+    activeCategory=button.getAttribute("data-category");
+    renderFilters(lastData);
+    renderIssues(lastData);
+  });
+  function load(){fetch("/data/comparison-quality-report.json",{cache:"no-store"}).then(function(response){if(!response.ok)throw new Error("HTTP "+response.status);return response.json();}).then(render).catch(function(error){document.getElementById("updated").textContent="Rapor okunamadı: "+error.message;});}
+  load();setInterval(load,60000);
+})();
+</script>
+</body>
+</html>`;
+
+let updated = 0;
+for (const target of [path.join(root, fileName), path.join(root, "public", fileName)]) {
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  const current = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : "";
+  if (current !== html) {
+    fs.writeFileSync(target, html, "utf8");
+    updated += 1;
+  }
+}
+
+console.log(`::summary::${JSON.stringify({ filesUpdated: updated, page: fileName })}`);
