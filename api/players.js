@@ -2,6 +2,9 @@ const { getProvider, mockProvider } = require("../services/providers");
 const { mergeProviderPlayers } = require("../services/playerService");
 const { enrichPlayerRating } = require("../services/ratingService");
 const { findCompetition, providerLeagueValue } = require("../services/competitionCatalog");
+const { assessFreshness } = require("../services/dataFreshness");
+const { annotateDuplicates } = require("../services/duplicatePlayerService");
+const { playerPer90Stats } = require("../services/statNormalization");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -187,5 +190,17 @@ module.exports = async function handler(req, res) {
 
   data = applyPlayerFilters(data.map((player) => enrichPlayerRating(player)), localQuery);
 
-  return sendSuccess(res, data, source);
+  // KİMLİK + PER-90 — bu iki adım TÜM tüketiciler için tek noktada yapılır,
+  // istemci kendi kuralını yeniden hesaplamaz (bkz. services/duplicatePlayerService.js,
+  // services/statNormalization.js). canonicalId aynı gerçek oyuncuya işaret
+  // eden farklı kayıtları birbirine bağlar; goalsPer90/assistsPer90 yalnızca
+  // istatistik doğrulanmışsa dolar, aksi hâlde null kalır.
+  data = annotateDuplicates(data).map((player) => ({
+    ...player,
+    ...playerPer90Stats(player)
+  }));
+
+  const freshness = assessFreshness(data, { resource: "players" });
+
+  return sendSuccess(res, data, source, undefined, { freshness });
 };
