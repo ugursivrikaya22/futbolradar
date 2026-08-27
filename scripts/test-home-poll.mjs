@@ -518,85 +518,62 @@ console.log("home-poll");
   process.env = saved;
 }
 
-// ── 10. İKİ SÜRÜM BİREBİR AYNI: TR ve EN ana sayfası ──────────────────────
+// ── 10. ANA SAYFADA ANKET ARTIK BASILMIYOR: TR ve EN ──────────────────────
 //
-// Gereksinim "birebir aynı işlevsellik ve yerleşim". Kabuk aynı sınıfları
-// ve aynı `data-*` kancalarını taşımak ZORUNDA; ayrışırsa bir dilde çalışan
-// anket öbüründe sessizce ölür.
+// Ana sayfa enjeksiyonu prodüksiyonda kapatıldı: `home-poll` adımı
+// `scripts/lib/postprocessChain.mjs`deki `POSTPROCESS_CHAIN`den çıkarıldı
+// (bu yüzden `inject-home-poll.mjs` artık ne tam derlemede ne saatlik
+// otomatik yenilemede koşuyor) ve `scripts/generate-en-pages.mjs`nin ana
+// sayfa üreticisi anket bölümünü/vitrin kartlarını/sabit kutuyu çağırmıyor.
+// Bu test eskisinin TAM TERSİNİ denetliyor: ne işaretleyici bloklar
+// (`home-poll:start` vb.) ne `data-home-poll*` kancaları ne `poll-promo`/
+// `poll-sticky` öbekleri iki ana sayfadan hiçbirinde kalmamalı — otomatik
+// yeniden derleme (saatlik dahil) onları sessizce geri getirmemeli.
+//
+// `public/index.html` kapsam dışı bırakıldı: Vercel `outputDirectory: "."`
+// ile kök dizini yayınlıyor, `public/` yalnızca `sync-public-assets.mjs`nin
+// bıraktığı bayat bir ayna ve prodüksiyonda hiç sunulmuyor.
 {
+  const MARKERS = [
+    "home-poll:start", "home-poll:end",
+    "poll-promo-matches:start", "poll-promo-matches:end",
+    "poll-promo-transfer:start", "poll-promo-transfer:end",
+    "poll-sticky:start", "poll-sticky:end"
+  ];
   const HOOKS = [
-    "data-home-poll", "data-home-poll-source", "data-home-poll-question",
-    "data-home-poll-subtitle", "data-home-poll-form", "data-home-poll-options",
-    "data-home-poll-submit", "data-home-poll-results", "data-home-poll-total",
-    'data-home-poll-note="closed"', 'data-home-poll-note="community"',
-    'data-home-poll-note="local"', "home-poll__inner", "home-poll__disclaimer"
+    "data-home-poll", "data-home-poll-source", "data-home-poll-locale",
+    "data-home-poll-question", "data-home-poll-subtitle", "data-home-poll-form",
+    "data-home-poll-options", "data-home-poll-submit", "data-home-poll-results",
+    "data-home-poll-total", "data-home-poll-note", "home-poll__inner",
+    "home-poll__disclaimer", "data-poll-promo", "poll-promo-cta",
+    "data-poll-sticky", "poll-sticky-link", "tahmin-anketi"
   ];
 
   const pages = [
     { file: "index.html", locale: "tr" },
-    { file: path.join("public", "index.html"), locale: "tr" },
     { file: path.join("en", "index.html"), locale: "en" }
   ];
-
-  // Yayındaki anket: basılı işaretleme bununla karşılaştırılır.
-  const live = selectHomePoll({ polls: JSON.parse(fs.readFileSync(path.join(root, "data", "home-polls.json"), "utf8")), teams });
 
   for (const page of pages) {
     const html = fs.readFileSync(path.join(root, page.file), "utf8");
 
-    // BLOK DOLU DOĞAR — mobilde ilk ekranda JavaScript beklemeden
-    // görünmesi gerekiyor. Boş kabuk basmak o gereksinimi karşılamıyordu.
-    assert.ok(!/<section[^>]*data-home-poll[^>]*\shidden>/.test(html),
-      `${page.file}: anket artık hidden doğmamalı (ilk ekranda görünmeli)`);
-
-    const expected = localizePoll(live.poll, page.locale);
-    assert.ok(html.includes(`>${expected.question}</h2>`),
-      `${page.file}: soru işaretlemede basılı olmalı`);
-    // 18 kulübün TAMAMI tıklanabilir seçenek olarak basılı olmalı.
-    const printed = (html.match(/class="home-poll__option"/g) || []).length;
-    assert.equal(printed, expected.options.length,
-      `${page.file}: ${expected.options.length} seçenek beklenir, ${printed} basılı`);
-    assert.equal((html.match(/class="home-poll__radio"/g) || []).length, expected.options.length,
-      `${page.file}: her seçenek tıklanabilir bir radyo taşımalı`);
-    // Gönder düğmesi KAPALI doğar; istemci depoyu hazır bulunca açar.
-    assert.match(html, /class="home-poll__submit"[^>]*disabled/,
-      `${page.file}: gönder düğmesi kapalı doğmalı`);
-    for (const hook of HOOKS) {
-      assert.ok(html.includes(hook), `${page.file}: "${hook}" kancası eksik`);
+    for (const marker of MARKERS) {
+      assert.ok(!html.includes(marker), `${page.file}: "${marker}" işaretleyicisi hâlâ basılı — anket geri dönmüş`);
     }
-    assert.ok(html.includes(`data-home-poll-locale="${page.locale}"`), `${page.file}: dil kancası yanlış`);
-    assert.equal((html.match(/data-home-poll-source/g) || []).length, 1, `${page.file}: anket bir kez basılmalı`);
-    // Anket bir ETKİLEŞİMDİR, içerik varlığı değil: JSON-LD bildirilmez.
-    const block = html.slice(html.indexOf("data-home-poll"), html.indexOf("</section>", html.indexOf("data-home-poll")));
-    assert.ok(!/application\/ld\+json/.test(block), `${page.file}: anket JSON-LD bildirmemeli`);
-  }
+    for (const hook of HOOKS) {
+      assert.ok(!html.includes(hook), `${page.file}: "${hook}" kancası hâlâ basılı — anket geri dönmüş`);
+    }
+    assert.ok(!/class="home-poll__option"/.test(html), `${page.file}: anket seçenek kartı hâlâ basılı`);
+    assert.ok(!/class="home-poll__radio"/.test(html), `${page.file}: anket radyo düğmesi hâlâ basılı`);
+    assert.ok(!/class="poll-promo[" ]/.test(html), `${page.file}: anket vitrin kartı hâlâ basılı`);
 
-  // Metinler COPY sözlüğünden gelir ve iki dilde de basılıdır. Karşılaştırma
-  // kaçırılmış biçim üzerinden: işaretlemede kesme işareti `&#039;` olarak
-  // durur ("readers&#039; votes"), ham metinle birebir tutmaz.
-  const escapeHtml = (value) => String(value)
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-
-  const tr = fs.readFileSync(path.join(root, "index.html"), "utf8");
-  const en = fs.readFileSync(path.join(root, "en", "index.html"), "utf8");
-  assert.ok(tr.includes(escapeHtml(COPY.tr.disclaimer)), "Türkçe uyarı metni basılı olmalı");
-  assert.ok(en.includes(escapeHtml(COPY.en.disclaimer)), "İngilizce uyarı metni basılı olmalı");
-  assert.ok(tr.includes(escapeHtml(COPY.tr.button)) && en.includes(escapeHtml(COPY.en.button)),
-    "düğme metni iki dilde de olmalı");
-  assert.ok(tr.includes(escapeHtml(COPY.tr.communityNote)) && en.includes(escapeHtml(COPY.en.communityNote)),
-    "topluluk notu iki dilde de olmalı");
-
-  // İstemci ve stil sözleşmesi.
-  const client = fs.readFileSync(path.join(root, "site.js"), "utf8");
-  for (const hook of ["data-home-poll-options", "/api/home-poll", "home-poll__radio", "is-leader"]) {
-    assert.ok(client.includes(hook), `site.js "${hook}" kancasını kaybetmiş`);
-  }
-  assert.match(client, /try\s*\{[\s\S]*localStorage/, "localStorage erişimi korumalı olmalı");
-
-  const css = fs.readFileSync(path.join(root, "page.css"), "utf8");
-  for (const selector of [".home-poll__inner", ".home-poll__crest", ".home-poll__result.is-leader"]) {
-    assert.ok(css.includes(selector), `page.css "${selector}" seçicisini kaybetmiş`);
+    // Metinler de kaybolmuş olmalı: kalan bir COPY dizesi, HTML'in başka
+    // yoldan (örn. elle) geri eklenmiş bir kalıntı taşıdığının işareti olur.
+    const escapeHtml = (value) => String(value)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    const disclaimer = escapeHtml(COPY[page.locale].disclaimer);
+    assert.ok(!html.includes(disclaimer), `${page.file}: anket uyarı metni hâlâ basılı`);
   }
 }
 

@@ -75,6 +75,9 @@ function escapeHtml(value) {
 // ── 2. Başlıklar yalnızca gerçek alanlardan ────────────────────────────────
 
 const today = "2026-07-31";
+// Kurgu "şimdi": kickoff'tan 90 dakika sonrası, 150 dakikalık bayat-canlı
+// eşiğinin içinde — liveTurkish burada hâlâ tazedir.
+const nowMs = Date.parse(`${today}T19:30:00+03:00`);
 
 const liveTurkish = {
   id: "trabzonspor-al-sadd-2026-07-31",
@@ -82,6 +85,18 @@ const liveTurkish = {
   kickoff: `${today}T18:00:00+03:00`, status: "LIVE",
   score: { home: 2, away: 1, halftimeHome: 1, halftimeAway: 1 },
   league: "Hazırlık Maçı", venue: "Şenol Güneş Stadyumu"
+};
+
+// REGRESYON: sağlayıcı bu maçı hiç "FINISHED"e çevirmemiş — kickoff üzerinden
+// 19 saatten uzun süre geçmiş ama durum hâlâ "LIVE". Analiz/özet yok, yani
+// kancası da yok: bayat-canlı korumasından sonra biten maç muamelesi görür
+// ve kancasız olduğu için başlık hiç çizilmemeli.
+const staleLiveGhost = {
+  id: "hayalet-mac-2026-07-31",
+  homeTeam: "E Takımı", awayTeam: "F Takımı",
+  kickoff: `${today}T00:05:00+03:00`, status: "LIVE",
+  score: { home: 1, away: 0 },
+  league: "Hazırlık Maçı"
 };
 
 const finishedWithAnalysis = {
@@ -123,7 +138,7 @@ const upcomingTurkish = {
 {
   const headlines = buildDailyHeadlines(
     [upcomingWithoutHook, finishedWithoutHook, upcomingTurkish, finishedWithAnalysis, liveTurkish],
-    { today }
+    { today, nowMs }
   );
 
   assert.equal(headlines.length, 3, "en fazla üç başlık çizilmeli");
@@ -189,8 +204,17 @@ const upcomingTurkish = {
 
 {
   // Aynı maç iki kez başlık olamaz.
-  const duplicated = buildDailyHeadlines([liveTurkish, { ...liveTurkish }], { today });
+  const duplicated = buildDailyHeadlines([liveTurkish, { ...liveTurkish }], { today, nowMs });
   assert.equal(duplicated.length, 1, "aynı maç tek başlık üretmeli");
+}
+
+{
+  // Bayat canlı ("LIVE" işaretli ama başlama üzerinden 150 dakikadan uzun
+  // süre geçmiş, sağlayıcı hiç "FINISHED"e çevirmemiş) eski maç, kancası da
+  // olmadığı için başlık hiç çizilmemeli — ana sayfada günlerce asılı
+  // kalan "eski maç başlığı" hatası budur.
+  const stale = buildDailyHeadlines([staleLiveGhost], { today, nowMs });
+  assert.deepEqual(stale, [], "başlama üzerinden 150 dakikadan uzun süre geçmiş 'LIVE' maç başlık olmamalı");
 }
 
 {
@@ -351,12 +375,13 @@ const parityCases = [
   { label: "kancasız adaylar", list: [finishedWithoutHook, upcomingWithoutHook] },
   { label: "yalnızca başlayacak", list: [upcomingTurkish] },
   { label: "boş liste", list: [] },
+  { label: "bayat canlı", list: [staleLiveGhost] },
   { label: "gerçek kürasyonlu liste", list: curatedMatches() }
 ];
 
 for (const testCase of parityCases) {
-  const fromService = buildDailyHeadlines(testCase.list, { today });
-  const fromClient = clientModule.buildDailyHeadlines(testCase.list, { today });
+  const fromService = buildDailyHeadlines(testCase.list, { today, nowMs });
+  const fromClient = clientModule.buildDailyHeadlines(testCase.list, { today, nowMs });
 
   assert.deepEqual(
     fromClient.map((headline) => [headline.matchId, headline.title, headline.hook, headline.kicker, headline.href]),

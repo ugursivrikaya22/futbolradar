@@ -388,79 +388,6 @@
   }
 
   /**
-   * "PUAN DURUMU MİNİ" — ilk beş + kullanıcının takımı.
-   *
-   * Ana sayfaya 18 satırlık tam tablo koymak telefonda bir ekran dolusu
-   * kaydırma demekti. İlk beş çoğu okuyucunun sorduğu şeyi karşılıyor;
-   * gerisi için "Tüm Puan Durumu" bağlantısı var.
-   *
-   * FAVORİ TAKIM İLK BEŞTE DEĞİLSE AYRICA GÖSTERİLİR. Kendi takımını
-   * göremeyen okuyucu için ilk beş bir bilgi değil, sadece bir liste.
-   * Araya "…" konuyor ki satır atlandığı belli olsun.
-   *
-   * Veri gelmezse bölüm hiç çizilmez — boş bir tablo iskeleti göstermek
-   * yer tutucudan farksız olurdu.
-   */
-  function setupMiniStandings() {
-    var main = document.querySelector("main.home-main");
-    if (!main || document.querySelector("[data-mini-standings]")) return;
-
-    var en = (document.documentElement.getAttribute("lang") || "tr").toLowerCase().indexOf("en") === 0;
-    var s = en
-      ? { title: "Table", all: "Full table →", href: "en/standings.html", pts: "Pts" }
-      : { title: "Puan Durumu", all: "Tüm Puan Durumu →", href: "puan-durumu.html", pts: "P" };
-
-    var chosen = readFavourite();
-    Promise.all([standingsOnce(), chosen ? favouriteTeams() : Promise.resolve([])]).then(function (results) {
-      var rows = results[0];
-      var favouriteList = results[1] || [];
-      if (!rows || !rows.length) return;
-
-      var sorted = rows.slice().sort(function (a, b) { return (a.rank || 99) - (b.rank || 99); });
-      var top = sorted.slice(0, 5);
-
-      // Favori takım ilk beşte mi?
-      var favKey = "";
-      for (var i = 0; i < favouriteList.length; i += 1) if (favouriteList[i].id === chosen) favKey = teamKey(favouriteList[i].name);
-      var extra = null;
-      if (favKey) {
-        var inTop = top.some(function (r) { return teamKey(r.team || r.name) === favKey; });
-        if (!inTop) {
-          for (var j = 0; j < sorted.length; j += 1) {
-            if (teamKey(sorted[j].team || sorted[j].name) === favKey) { extra = sorted[j]; break; }
-          }
-        }
-      }
-
-      var box = document.createElement("section");
-      box.className = "container mini-standings";
-      box.setAttribute("data-mini-standings", "");
-
-      var html = '<div class="mini-standings__head"><span class="mini-standings__title">' +
-        escapeText(s.title) + '</span><a class="mini-standings__all" href="' +
-        (en ? "../" : "./") + escapeText(s.href) + '">' + escapeText(s.all) + "</a></div>";
-
-      html += '<ol class="mini-standings__list">';
-      for (var k = 0; k < top.length; k += 1) html += row(top[k]);
-      if (extra) {
-        html += '<li class="mini-standings__gap" aria-hidden="true">…</li>' + row(extra, true);
-      }
-      html += "</ol>";
-
-      box.innerHTML = html;
-      main.appendChild(box);
-
-      function row(entry, isFav) {
-        return '<li class="mini-standings__row' + (isFav ? " is-favourite" : "") + '">' +
-          '<span class="mini-standings__rank">' + escapeText(entry.rank) + "</span>" +
-          '<span class="mini-standings__team">' + escapeText(entry.team || entry.name) + "</span>" +
-          '<span class="mini-standings__pts">' + escapeText(entry.points) + " " + escapeText(s.pts) + "</span>" +
-          "</li>";
-      }
-    });
-  }
-
-  /**
    * ALT NAVİGASYON: aktif sayfa işareti + "Menü" düğmesi.
    *
    * Çubuk ~900 sayfaya AYNI çıktıyla basılıyor (scripts/lib/layout.mjs) ve
@@ -1079,7 +1006,6 @@
   setupBottomNav();
   setupNowFootball();
   setupFavouriteTeam();
-  setupMiniStandings();
   document.querySelectorAll(".site-search").forEach(setupSearch);
 
   /* --------------------------------------------------------------------------
@@ -2375,8 +2301,18 @@
     function render() {
       return load().then(function (data) {
         var polls = data && Array.isArray(data.polls) ? data.polls : [];
+        // Açık, kapalı ve hata durumları AYNI ANDA görünemez: her dal hem
+        // durum metnini hem listeyi kendi başına ayarlar, birbirine güvenmez.
+        // Eskiden yalnızca başarı dalı `status.hidden`ı sıfırlıyordu; oy
+        // sonrası yeniden çizimde ağ hatası olursa metin "hidden" kalıyor,
+        // bir önceki başarılı listenin bayat kartları ekranda asılı kalıyordu.
         if (!polls.length) {
-          if (status) status.textContent = data ? strings.empty : strings.failed;
+          if (status) {
+            status.hidden = false;
+            status.textContent = data ? strings.empty : strings.failed;
+          }
+          list.innerHTML = "";
+          section.classList.remove("is-ready");
           return;
         }
         if (status) status.hidden = true;
@@ -2490,8 +2426,15 @@
       .catch(function () { return null; })
       .then(function (data) {
         var rows = data && Array.isArray(data.matches) ? data.matches : [];
+        // setupPollArchive ile aynı kural: durum metni ve liste birlikte
+        // güncellenir, biri diğerine bakmadan "hidden" bırakılmaz.
         if (!rows.length) {
-          if (status) status.textContent = data ? strings.empty : strings.failed;
+          if (status) {
+            status.hidden = false;
+            status.textContent = data ? strings.empty : strings.failed;
+          }
+          list.innerHTML = "";
+          section.classList.remove("is-ready");
           return;
         }
         if (status) status.hidden = true;
@@ -3352,5 +3295,39 @@
     document.addEventListener("DOMContentLoaded", setupMatchLiveStats);
   } else {
     setupMatchLiveStats();
+  }
+})();
+
+/**
+ * ANA SAYFA "SÜPER LİG LİDERLERİ" SEKMELERİ — yalnızca `aria-selected`
+ * senkronu. Sekme geçişinin kendisi zaten sade CSS ile çalışıyor
+ * (`#leaders-tab-*:checked ~ ...`); bu betik olmadan da JavaScript'siz
+ * bir tarayıcıda dört panel de erişilebilir kalır, yalnızca ekran
+ * okuyucunun "seçili sekme" bildirimi bu betiğe bağlı.
+ */
+(function () {
+  function setupLeadersTabs() {
+    var radios = document.querySelectorAll(".leaders-tabs__radio");
+    if (!radios.length) return;
+
+    function sync() {
+      Array.prototype.forEach.call(radios, function (radio) {
+        var label = document.getElementById(
+          "leaders-tablabel-" + radio.id.replace("leaders-tab-", "")
+        );
+        if (label) label.setAttribute("aria-selected", radio.checked ? "true" : "false");
+      });
+    }
+
+    Array.prototype.forEach.call(radios, function (radio) {
+      radio.addEventListener("change", sync);
+    });
+    sync();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupLeadersTabs);
+  } else {
+    setupLeadersTabs();
   }
 })();

@@ -305,7 +305,10 @@ function relatedLinks(team) {
   const links = [
     { href: "./super-lig-fikstur.html", kicker: "Lig", title: "Süper Lig fikstürü", text: "Tüm haftaların eşleşmelerini ve açıklanan saatleri gör." },
     { href: "./canli-skor.html", kicker: "Canlı", title: "Canlı skor", text: "Oynanan maçların dakikası ve skoru." },
-    { href: "./puan-durumu.html", kicker: "Tablo", title: "Puan durumu", text: "Süper Lig sıralaması ve averaj." }
+    { href: "./puan-durumu.html", kicker: "Tablo", title: "Puan durumu", text: "Süper Lig sıralaması ve averaj." },
+    // `generate-team-standings-pages.mjs` bu 4 takım için AYNI slug'ı kullanır
+    // (`${slug}-puan-durumu.html`); TEAMS burada da yalnızca büyük 4'ü taşır.
+    { href: `./${team.slug}-puan-durumu.html`, kicker: "Puan durumu", title: `${team.name} puan durumu`, text: `${team.name} Süper Lig'de kaçıncı sırada, tam tabloda vurgulu.` }
   ];
   if (team.radar) links.push({ href: `./${team.radar}`, kicker: "Kadro", title: `${team.name} oyuncu radarı`, text: "Kadro, form ve rol sinyalleri." });
   if (team.form) links.push({ href: `./${team.form}`, kicker: "Form", title: `${team.name} form durumu`, text: "Son maçların form okuması." });
