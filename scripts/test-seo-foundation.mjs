@@ -52,7 +52,7 @@ for (const href of ["./bugunun-maclari", "./super-lig-puan-durumu", "./form-tabl
 }
 
 const today = fs.readFileSync(path.join(root, "bugunun-maclari.html"), "utf8");
-assert.ok(today.includes(`rel="canonical" href="${siteUrl}/bugunun-maclari"`), "Bugünün maçları temiz canonical kullanmalı");
+assert.ok(today.includes(`rel="canonical" href="${siteUrl}/bugunun-maclari.html"`), "Bugünün maçları sitedeki yerleşik .html uzantılı canonical şemasını kullanmalı (test-i18n.mjs'in beklediği karşılıklı hreflang hedefiyle tutarlı)");
 
 const playerComparison = fs.readFileSync(path.join(root, "karsilastirma", "mauro-icardi-vs-sebastian-szymanski.html"), "utf8");
 assert.match(playerComparison, /<h1[\s>]/i, "Oyuncu karşılaştırmasında H1 olmalı");
