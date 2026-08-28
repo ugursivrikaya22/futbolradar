@@ -40,6 +40,7 @@ const html = `<!doctype html>
   function duration(ms){if(!Number.isFinite(Number(ms)))return "—";var seconds=Math.round(Number(ms)/1000);return seconds<60?seconds+" sn":Math.floor(seconds/60)+" dk "+seconds%60+" sn";}
   function badge(record){if(!record)return "—";var status=record.status||"unknown";return '<span class="badge '+esc(status)+'">'+esc(status)+'</span>';}
   function setRecord(prefix,record){document.getElementById(prefix).innerHTML=badge(record);document.getElementById(prefix+"-time").textContent=time(record&&(record.finishedAt||record.startedAt));}
+  // freshness-thresholds:start
   // Saatlik koşum aralığı 60 dk; FRESH_MS bir tazeleme kaçırılsa bile alarm
   // vermeyecek tampon taşıyor. STALE_MS aşıldığında koşu muhtemelen art arda
   // başarısız oluyor ya da GitHub Actions hiç başlamıyor (kota/faturalama) —
@@ -59,13 +60,19 @@ const html = `<!doctype html>
     if (hours < 48) return hours + " sa " + (minutes % 60) + " dk önce";
     return Math.floor(hours / 24) + " gün " + (hours % 24) + " sa önce";
   }
+  function levelFor(ms){
+    return ms === null || ms > STALE_MS ? "failed" : (ms > FRESH_MS ? "partial" : "success");
+  }
+  function labelFor(level){
+    return level === "success" ? "Güncel" : (level === "partial" ? "Bayat" : "KRİTİK — otomatik güncelleme durmuş olabilir");
+  }
+  // freshness-thresholds:end
   function renderFreshness(latest){
     var banner = document.getElementById("freshness-banner");
     var ms = ageMs(latest);
-    var level = ms === null || ms > STALE_MS ? "failed" : (ms > FRESH_MS ? "partial" : "success");
-    var label = level === "success" ? "Güncel" : (level === "partial" ? "Bayat" : "KRİTİK — otomatik güncelleme durmuş olabilir");
+    var level = levelFor(ms);
     banner.className = "freshness-banner " + level;
-    banner.textContent = label + " · en son kayıtlı çalışma " + fmtAge(ms) +
+    banner.textContent = labelFor(level) + " · en son kayıtlı çalışma " + fmtAge(ms) +
       (level === "success" ? "" : " — GitHub Actions çalışma geçmişini kontrol edin (kota/faturalama veya kaynak hatası olabilir).");
   }
   function render(data){

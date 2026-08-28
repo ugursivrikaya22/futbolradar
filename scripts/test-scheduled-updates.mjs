@@ -169,4 +169,26 @@ assert.match(adminGenerator, /data-update-monitor/);
 assert.match(adminGenerator, /data\/update-status\.json/);
 assert.match(adminGenerator, /Kaynak sorunu/);
 
+// admin-updates.html'in tazelik bandı mantığı (aynı test-match-program.mjs'in
+// orderMatchProgram için yaptığı gibi) gömülü <script> içinden çıkarılıp
+// çalıştırılır — panonun "otomatik güncelleme durmuş" alarmını gerçekten
+// doğru eşiklerde verdiğini kod okuyarak değil çalıştırarak doğrular.
+{
+  const block = adminGenerator.match(/\/\/ freshness-thresholds:start([\s\S]*?)\/\/ freshness-thresholds:end/);
+  assert.ok(block, "generate-update-admin.mjs içinde freshness-thresholds bloğu bulunmalı");
+  const freshness = new Function(`${block[1]}\nreturn { FRESH_MS, STALE_MS, ageMs, fmtAge, levelFor, labelFor };`)();
+
+  const iso = (msAgo) => new Date(Date.now() - msAgo).toISOString();
+
+  assert.equal(freshness.levelFor(freshness.ageMs({ finishedAt: iso(30 * 60 * 1000) })), "success", "30 dk önce çalışmış koşu güncel sayılmalı");
+  assert.equal(freshness.levelFor(freshness.ageMs({ finishedAt: iso(3 * 60 * 60 * 1000) })), "partial", "3 saat önce çalışmış koşu bayat sayılmalı");
+  assert.equal(freshness.levelFor(freshness.ageMs({ finishedAt: iso(24 * 60 * 60 * 1000) })), "failed", "24 saat önce çalışmış koşu kritik sayılmalı — tam olarak GitHub Actions kesintisinde görülen durum");
+  assert.equal(freshness.levelFor(freshness.ageMs(null)), "failed", "hiç kayıt yoksa kritik sayılmalı, güncel değil");
+  // Sınır: FRESH_MS'in tam bir milisaniye üstü bile "partial"a düşmeli.
+  assert.equal(freshness.levelFor(freshness.FRESH_MS + 1), "partial");
+  assert.equal(freshness.levelFor(freshness.STALE_MS + 1), "failed");
+  assert.equal(freshness.labelFor("success"), "Güncel");
+  assert.match(freshness.labelFor("failed"), /KRİTİK/);
+}
+
 console.log("Scheduled update tests passed (cron split, dedupe, live merge, standings, absences, RSS, monitoring cache)." );

@@ -10,6 +10,7 @@ const providers = require("../services/providers");
 const competitionCatalog = require("../services/competitionCatalog");
 const playersHandler = require("../api/players");
 const matchesHandler = require("../api/matches");
+const standingsHandler = require("../api/standings");
 const mockProvider = require("../services/providers/mockProvider");
 const { resetProviderHealth } = require("../services/liveDataService");
 
@@ -879,5 +880,39 @@ function testFixtureDetailUsesLiveCacheTtl() {
 }
 
 testFixtureDetailUsesLiveCacheTtl();
+
+/**
+ * /api/standings, services/standingsIntegrity.js:checkStandings'i hiç
+ * çağırmıyordu — validateStandings yalnızca "team ve points var mı" diye
+ * bakan bir şekil kontrolü, O=G+B+M / P=3G+B gibi aritmetik tutarsızlığı
+ * yakalamıyor. Bu test yalnızca TELİN gerçekten takılı olduğunu doğruluyor;
+ * checkStandings'in kendi kural testleri scripts/test-opening-week.mjs'te.
+ */
+async function testStandingsIntegrityIsWired() {
+  const envNames = [...utils.API_KEY_ENV_NAMES, "APIFOOTBALL_API_KEY", "FOOTBALL_PRIMARY_PROVIDER"];
+  const previous = Object.fromEntries(envNames.map((name) => [name, process.env[name]]));
+  try {
+    envNames.forEach((name) => delete process.env[name]);
+
+    const response = fakeResponse();
+    await standingsHandler({ method: "GET", url: "/api/standings", headers: {} }, response);
+
+    assert.equal(response.statusCode, 200);
+    assert.equal(response.payload.ok, true);
+    assert.ok(response.payload.meta, "yanit meta tasimali");
+    assert.ok(response.payload.meta.integrity, "meta.integrity eklenmeli");
+    assert.ok(Array.isArray(response.payload.meta.integrity.violations), "violations dizi olmali");
+    // Kürasyonlu (mock) tablo zaten tutarlı olmalı — boş dizi, kapının
+    // yanlışlıkla sağlam veriyi de işaretlemediğini gösteriyor.
+    assert.equal(response.payload.meta.integrity.violations.length, 0, "kurasyonlu tablo ihlal içermemeli");
+  } finally {
+    envNames.forEach((name) => {
+      if (previous[name] === undefined) delete process.env[name];
+      else process.env[name] = previous[name];
+    });
+  }
+}
+
+await testStandingsIntegrityIsWired();
 
 console.log("FutbolRadar API resilience tests passed");
