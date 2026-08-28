@@ -19,7 +19,7 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const { curatedMatches } = require("../services/providers/mockProvider.js");
+const { curatedMatches, resolveProviderVenue } = require("../services/providers/mockProvider.js");
 const { sameClub } = require("../services/superLigTeams.js");
 
 console.log("fixture-dedupe");
@@ -99,14 +99,33 @@ const matchDate = (match) => String((match && (match.kickoff || match.date)) || 
 // Stat adı editoryal olarak doğrulanmış bir alan. İki kayıt birleşirken
 // sağlayıcının yazımı ("Eryaman Stadium") doğrulanmışın ("Eryaman Stadyumu")
 // yerine geçmemeli.
+//
+// KURAL DOĞRUDAN SINANIR, BELİRLİ BİR MAÇ ÜZERİNDEN DEĞİL. Bu blok önce
+// takvimden tek bir maçı (Gençlerbirliği - Fenerbahçe, 15.08.2026) çekip
+// stadına bakıyordu. Fikstür takvimi kayan bir pencere: maç oynanıp
+// pencerenin gerisine düşünce satır siliniyor ve test, kuralda hiçbir şey
+// bozulmadığı hâlde "maç listede olmalı" diyerek kırılıyordu. Kuralı
+// uygulayan işlev (`resolveProviderVenue`) saf ve dışa açık; ölçülecek yer
+// orası.
 {
-  const genclerbirligi = all.find((match) =>
-    sameClub(match.homeTeam, "Gençlerbirliği") && sameClub(match.awayTeam, "Fenerbahçe"));
-  assert.ok(genclerbirligi, "Gençlerbirliği - Fenerbahçe maçı listede olmalı");
-  const venue = genclerbirligi.venue || "";
-  assert.equal(venue, "Eryaman Stadyumu",
-    `doğrulanmış stat adı sağlayıcı yazımıyla ezilmiş: ${venue}`);
-  console.log(`  ok  stat adı korundu: ${venue}`);
+  assert.equal(
+    resolveProviderVenue("Eryaman Stadyumu", "Eryaman Stadium"),
+    null,
+    "dolu ve doğrulanmış saha, sağlayıcı yazımıyla ezilmemeli"
+  );
+  assert.equal(
+    resolveProviderVenue(null, "Eryaman Stadium"),
+    "Eryaman Stadium",
+    "boş saha sağlayıcıdan doldurulmalı"
+  );
+  assert.equal(resolveProviderVenue("", "Rams Park"), "Rams Park");
+  assert.equal(resolveProviderVenue("Rams Park Stadyumu", null), null,
+    "sağlayıcı saha vermediyse dolu alan korunmalı");
+
+  // Yayındaki listede de doğrulanmış saha boşa düşmemeli.
+  const emptied = all.filter((match) => match.venueSource === "club-home-ground" && !String(match.venue || "").trim());
+  assert.deepEqual(emptied, [], "türetilmiş saha boş kalamaz");
+  console.log("  ok  doğrulanmış stat adı sağlayıcı yazımıyla ezilmiyor");
 }
 
 // ── 4. LİG MAÇINDA SAHA BOŞ KALMAZ ────────────────────────────────────────
@@ -115,32 +134,25 @@ const matchDate = (match) => String((match && (match.kickoff || match.date)) || 
 // sahibi kendi stadında oynar ve o stat fikstür dosyasında doğrulanmış;
 // alan boş bırakılmak yerine oradan doldurulur. Hazırlık maçlarına
 // UYGULANMAZ — kural orada yanlış sonuç veriyordu (yurt dışı kampı).
+//
+// SINANAN KURAL "SAHA BOŞ KALMAZ"DIR, "SAHA ŞU DİZEDİR" DEĞİL: bu blok önce
+// tek bir maçı ve onun tam stat adını şart koşuyordu; sağlayıcı stadı kendi
+// yazımıyla doldurunca da, maç takvim penceresinden düşünce de kırıldı.
+// Şimdi kural takvimdeki BÜTÜN lig maçlarına uygulanıyor.
 {
-  const kasimpasa = all.find((match) =>
-    sameClub(match.homeTeam, "Kasımpaşa") && sameClub(match.awayTeam, "Trabzonspor")
-    && matchDate(match) === "2026-08-15");
-  assert.ok(kasimpasa, "Kasımpaşa - Trabzonspor maçı listede olmalı");
+  const league = all.filter((match) => match.league === "Süper Lig");
+  assert.ok(league.length > 0, "ön koşul: takvimde en az bir Süper Lig maçı olmalı");
 
-  // SINANAN KURAL "SAHA BOŞ KALMAZ"DIR, "SAHA ŞU DİZEDİR" DEĞİL.
-  //
-  // Bu blok önce tam adı (`Recep Tayyip Erdoğan Stadyumu`) şart koşuyordu.
-  // Sağlayıcı maçtan sonra stadı kendi yazımıyla ("Recep Tayyip Erdogan
-  // Stadium") doldurunca test düştü — oysa davranış DOĞRUYDU: dolu bir
-  // alanın üstüne yazılmıyor, yalnızca boş alan kulübün stadından
-  // tamamlanıyor. Test, doldurma kuralının kendisini sınıyor: alan dolu
-  // olacak ve türetilmişse kaynağı işaretli olacak.
-  assert.ok(String(kasimpasa.venue || "").trim(),
-    `lig maçında saha boş kalmamalı: ${JSON.stringify(kasimpasa.venue)}`);
-  if (kasimpasa.venueSource === "club-home-ground") {
-    assert.equal(kasimpasa.venue, "Recep Tayyip Erdoğan Stadyumu",
-      "kulüp stadından türetilen saha, doğrulanmış adı taşımalı");
-  }
+  const empty = league
+    .filter((match) => !String(match.venue || "").trim())
+    .map((match) => `${match.homeTeam} - ${match.awayTeam} (${matchDate(match)})`);
+  assert.deepEqual(empty, [], `lig maçında saha boş kalmamalı:\n  ${empty.join("\n  ")}`);
 
   const friendly = all.find((match) =>
     match.league !== "Süper Lig" && match.venueSource === "club-home-ground");
   assert.equal(friendly, undefined,
     `kural lig dışına sızmış: ${friendly && `${friendly.homeTeam} - ${friendly.awayTeam}`}`);
-  console.log(`  ok  saha ev sahibinin stadından dolduruldu: ${kasimpasa.venue}`);
+  console.log(`  ok  ${league.length} lig maçının hepsinde saha dolu`);
 }
 
 // ── 5. TAKVİMİ DOĞRUDAN OKUYAN UÇ NOKTA DA ONARILMIŞ KAYIT GÖRÜR ─────────
@@ -160,12 +172,15 @@ const matchDate = (match) => String((match && (match.kickoff || match.date)) || 
 // daha kötü, çünkü sağlayıcıya boşuna gidilir.
 {
   const { findFixtureById } = require("../services/fixtureCalendar.js");
+  const { providerFixtureId } = require("../server/matchLineupRoute.js");
   const calendar = require("../data/fixture-calendar.json");
   const calendarRows = Array.isArray(calendar) ? calendar : (calendar.matches || []);
 
-  const upcoming = calendarRows.filter((match) =>
-    match && match.league === "Süper Lig" && matchDate(match) === "2026-08-15");
-  assert.ok(upcoming.length > 0, "15.08.2026 maçları takvimde olmalı");
+  // KURAL TAKVİMDEKİ BÜTÜN LİG MAÇLARINA UYGULANIR. Burası önce tek bir
+  // güne (15.08.2026) sabitlenmişti; takvim kayan bir pencere olduğu için
+  // o gün düştüğünde test, kuralda hiçbir şey bozulmadan kırılıyordu.
+  const upcoming = calendarRows.filter((match) => match && match.league === "Süper Lig");
+  assert.ok(upcoming.length > 0, "ön koşul: takvimde en az bir Süper Lig maçı olmalı");
 
   for (const source of upcoming) {
     const fixture = findFixtureById(calendar, source.id);
@@ -183,13 +198,18 @@ const matchDate = (match) => String((match && (match.kickoff || match.date)) || 
         `${source.id}: eş kaydın API-Football kimliği birleştirilmemiş`);
     }
 
-    // Uç noktanın kullandığı seçim: apiFootball || providerId. Sonuç,
-    // theSportsDb kimliği OLMAMALI.
+    // Uç noktanın GERÇEKTEN kullandığı seçim sınanır — burada yeniden
+    // yazılmaz. Kural: sonuç ya API-Football kimliğidir ya da hiçbir şey;
+    // theSportsDb kimliği ASLA API-Football kimliği yerine geçmez.
     const ids = fixture.providerIds || {};
-    const chosen = String(ids.apiFootball || fixture.providerId || "");
+    const chosen = providerFixtureId(fixture);
     if (ids.theSportsDb && chosen) {
       assert.notEqual(chosen, String(ids.theSportsDb),
         `${source.id}: theSportsDb kimliği API-Football kimliği yerine kullanılıyor (${chosen})`);
+    }
+    if (chosen) {
+      assert.equal(chosen, String(ids.apiFootball),
+        `${source.id}: seçilen kimlik API-Football kimliği olmalı`);
     }
   }
   console.log(`  ok  ${upcoming.length} maçta uç nokta doğru sağlayıcı kimliğini görüyor`);
