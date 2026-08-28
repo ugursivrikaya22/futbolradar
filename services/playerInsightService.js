@@ -331,8 +331,39 @@ function playerRatingValue(player) {
   return hasNumber(found) ? Number(found) : null;
 }
 
+/**
+ * Rol uyumu. Sağlayıcı mevkileri kaba dört kovaya düşüyor (Goalkeeper,
+ * Defender, Midfielder, Attacker); veri katmanındaki kürasyonlu kayıtlarda
+ * ise "Sol kanat" gibi ince ayrım var ve bu "winger" grubuna çözülüyor.
+ * Kanat ile forvet bu yüzden eşleşebilir sayılır, diğer gruplar birbirine
+ * kapalıdır: kalecinin bir kanat oyuncusuna "benzer oyuncu" olarak
+ * çıkması, rating ve kulüp kapı tarafından gizlendiğinde benzerlik skorunun
+ * yaşa düşmesinden kaynaklanıyordu.
+ */
+const COMPATIBLE_GROUPS = { winger: ["forward"], forward: ["winger"] };
+
+function groupsCompatible(left, right) {
+  const a = normalizeText(left);
+  const b = normalizeText(right);
+
+  if (!a || !b) {
+    return false;
+  }
+
+  if (a === b) {
+    return true;
+  }
+
+  return (COMPATIBLE_GROUPS[a] || []).includes(b);
+}
+
 function similarityScore(player, candidate) {
   if (!player || !candidate || player.id === candidate.id) {
+    return -1;
+  }
+
+  // Rol uyumu ön koşul: uymuyorsa aday hiç sıralanmaz.
+  if (!groupsCompatible(player.positionGroup, candidate.positionGroup)) {
     return -1;
   }
 
@@ -420,7 +451,7 @@ function buildAlternatives(player, pool, limit) {
   const team = normalizeText(player && (player.currentTeam || player.team));
   const items = list
     .filter((candidate) => candidate.id !== player.id)
-    .filter((candidate) => normalizeText(candidate.positionGroup) === group)
+    .filter((candidate) => groupsCompatible(group, candidate.positionGroup))
     .filter((candidate) => normalizeText(candidate.currentTeam || candidate.team) !== team)
     .sort((left, right) => (playerRatingValue(right) || 0) - (playerRatingValue(left) || 0))
     .slice(0, limit || 4)
@@ -487,6 +518,7 @@ module.exports = {
   buildSimilarPlayers,
   buildStrengthsAndWeaknesses,
   buildTransferRumors,
+  groupsCompatible,
   similarityScore,
   trendDirection
 };

@@ -155,7 +155,10 @@
     if (photo) {
       return (
         '<span class="' + escapeHtml(className) + '">' +
-        '<img src="' + escapeHtml(photo) + '" alt="' + escapeHtml(profile.name) + ' profil fotoğrafı" loading="lazy" decoding="async" width="96" height="96" />' +
+        // Ad zaten hemen yanında yazıyor; fotoğraf dekoratif. Boş alt metni
+        // hem ekran okuyucuda tekrarı önlüyor hem de görsel yüklenmediğinde
+        // uzun bir metnin avatar dairesinden taşmasını engelliyor.
+        '<img src="' + escapeHtml(photo) + '" alt="" loading="lazy" decoding="async" width="96" height="96" />' +
         "</span>"
       );
     }
@@ -207,8 +210,9 @@
       avatarHtml(profile, "large") +
       "<div>" +
       "<span>" + escapeHtml(eyebrow) + "</span>" +
-      // Sayfanın H1'i hero bölümünde zaten var; profil kartı ikinci bir H1
-      // basmasın diye başlık H2 olarak yazılır, görsel ölçek CSS'te korunur.
+      // Sayfanın H1'i hero bölümünde zaten oyuncunun adını taşıyor. Kart
+      // başlığı ikinci bir H1 basmaz ve aynı adı dev puntoyla tekrarlamaz;
+      // bağlam için küçük bir başlık yeterli.
       '<h2 class="profile-hero-name">' + escapeHtml(profile.name) + "</h2>" +
       (profile.analysis.available
         ? "<p>" + escapeHtml(profile.analysis.sentences[0]) + "</p>"
@@ -236,17 +240,18 @@
       return "";
     }
 
+    // Sayfa zaten "doğrulanmış veri bekleniyor" uyarısını taşıyabiliyor;
+    // burada uyarı tekrarlanmaz, eksik olanın NEDENİ eklenir.
     return (
       '<section class="profile-section player-credibility-section" data-player-verified="false">' +
-      '<article class="data-empty player-empty-block" data-card="empty-state">' +
-      "<strong>Doğrulanmış veri bekleniyor</strong>" +
-      "<span>" + escapeHtml(credibility.note) + "</span>" +
-      "</article>" +
+      '<div class="profile-section-head"><h2>Veri Doğrulama Durumu</h2>' +
+      "<span>Kulüp, performans ve piyasa değeri bu nedenle boş</span></div>" +
       (credibility.reasons && credibility.reasons.length
         ? '<div class="tag-row">' + credibility.reasons.map(function (reason) {
           return '<span class="tag soft">' + escapeHtml(reason) + "</span>";
         }).join("") + "</div>"
         : "") +
+      '<p class="profile-note">' + escapeHtml(credibility.note) + "</p>" +
       "</section>"
     );
   }
@@ -573,9 +578,10 @@
     var history = profile.transferHistory || [];
     var formerTeams = profile.formerTeams || [];
 
+    // Kulüp hareketi yoksa bölüm hiç çizilmez: boş bir zaman çizelgesi
+    // sayfaya bilgi katmıyor, yalnızca boş durum yığınını büyütüyor.
     if (!history.length && !formerTeams.length) {
-      return sectionShell("Kariyer Geçmişi", "Kulüp hareketleri",
-        emptyBlock("Kariyer geçmişi hazır değil", "Doğrulanmış transfer kaydı geldiğinde bu alan dolar."), "player-history-section");
+      return "";
     }
 
     return sectionShell("Kariyer Geçmişi", history.length ? history.length + " transfer kaydı" : "Eski kulüpler",
@@ -614,17 +620,47 @@
       (data.note ? '<p class="profile-note">' + escapeHtml(data.note) + "</p>" : ""), "player-data-section");
   }
 
+  /**
+   * Ölçüme dayanan bölümlerin hiçbirinde veri yoksa, altı ayrı "hazır değil"
+   * kartı basmak sayfayı boş durum duvarına çeviriyor. Bu durumda tek bir
+   * kart yazılır; hangi alanların beklendiği "Veri Güveni" bölümünde zaten
+   * ayrıntılı duruyor.
+   */
+  function measurementSectionsHtml(profile, options) {
+    var hasAny = profile.score.available ||
+      profile.season.available ||
+      profile.form.available ||
+      profile.recent.available ||
+      profile.analysis.available ||
+      profile.strengths.available ||
+      profile.weaknesses.available;
+
+    if (!hasAny) {
+      return sectionShell("Performans Verisi", "Skor, form, sezon ve maç kırılımı",
+        emptyBlock(
+          "Performans verisi bekleniyor",
+          "Bu oyuncu için sağlayıcıdan maç ve sezon istatistiği gelmedi; skor, form eğrisi, analiz özeti ve güçlü/gelişim alanları veri geldiğinde otomatik yayımlanır."
+        ), "player-measurement-section");
+    }
+
+    return [
+      scoreSection,
+      formSection,
+      analysisSection,
+      seasonSection,
+      recentSection,
+      function (item) { return scoutingList("Güçlü Yönler", item.strengths, "Pozisyon referansına göre öne çıkanlar"); },
+      function (item) { return scoutingList("Geliştirmesi Gereken Yönler", item.weaknesses, "Pozisyon referansının altında kalanlar"); }
+    ].map(function (renderer) {
+      return renderer(profile, options);
+    }).join("");
+  }
+
   var SECTION_RENDERERS = [
     heroSection,
     credibilitySection,
     identitySection,
-    scoreSection,
-    formSection,
-    analysisSection,
-    seasonSection,
-    recentSection,
-    function (profile) { return scoutingList("Güçlü Yönler", profile.strengths, "Pozisyon referansına göre öne çıkanlar"); },
-    function (profile) { return scoutingList("Geliştirmesi Gereken Yönler", profile.weaknesses, "Pozisyon referansının altında kalanlar"); },
+    measurementSectionsHtml,
     function (profile, options) { return peerSection("Benzer Oyuncular", "Rol, yaş ve piyasa değeri yakınlığı", profile.similarPlayers, options.hrefPrefix); },
     function (profile, options) { return peerSection("Aynı Mevkide Öne Çıkan Alternatifler", "Farklı kulüplerden karşılaştırma", profile.alternatives, options.hrefPrefix); },
     rumorSection,
@@ -654,7 +690,11 @@
     var renderers = verified
       ? SECTION_RENDERERS
       : UNVERIFIED_SECTIONS.concat([
+        // Benzer oyuncu ve alternatif listeleri bu oyuncu hakkında bir iddia
+        // taşımaz; başka profillere giden bağlantılardır ve doğrulanmamış
+        // kayıtta da yararlıdır.
         function (item, opts) { return peerSection("Benzer Oyuncular", "Rol, yaş ve mevki yakınlığı", item.similarPlayers, opts.hrefPrefix); },
+        function (item, opts) { return peerSection("Aynı Mevkide Öne Çıkan Alternatifler", "Farklı kulüplerden karşılaştırma", item.alternatives, opts.hrefPrefix); },
         dataSection
       ]);
 

@@ -324,7 +324,8 @@ assert.equal(html, view.renderProfileHtml(verifiedProfile, { hrefPrefix: "./", r
 // Doğrulanmamış kayıtta ölçüm bölümleri HİÇ çizilmez: tek gerekçe kartı.
 const unverifiedHtml = view.renderProfileHtml(unverifiedProfile, { hrefPrefix: "./" });
 assert.ok(unverifiedHtml.includes('data-player-verified="false"'), "doğrulanmamış profil işaretlenmeli");
-assert.ok(unverifiedHtml.includes("Doğrulanmış veri bekleniyor"), "gerekçe kartı basılmalı");
+assert.ok(unverifiedHtml.includes("Veri Doğrulama Durumu"), "doğrulama durumu bölümü basılmalı");
+assert.ok(unverifiedHtml.includes("sağlayıcı kimliği yer tutucu (mock)"), "doğrulanmama gerekçesi sayfada görünmeli");
 assert.ok(!unverifiedHtml.includes("Sezon İstatistikleri"), "doğrulanmamış kayıtta sezon tablosu çizilmemeli");
 assert.ok(!unverifiedHtml.includes("Oyuncu Skoru Kırılımı"), "doğrulanmamış kayıtta skor kırılımı çizilmemeli");
 assert.ok(!unverifiedHtml.includes("Test SK"), "doğrulanmamış kayıtta kulüp adı sızmamalı");
