@@ -52,6 +52,9 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "konyaspor.org.tr",
     "caykurrizespor.org.tr",
     "acmonza.com",
+    // Rafael Leão dosyasında karşı taraf: resmi açıklama Milan'ın kendi
+    // sitesinden gelirse doğrudan atıf yapılabilsin diye eklendi.
+    "acmilan.com",
     "mancity.com",
     "raal.be"
   ]),
