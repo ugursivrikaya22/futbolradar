@@ -18,7 +18,7 @@ const html = `<!doctype html>
 </head>
 <body>
 <main class="wrap" id="data-update-monitor">
-  <div class="head"><div><h1>Otomatik Güncelleme İzleme</h1><p class="muted">Europe/Istanbul · tam güncelleme 05:00 · saatlik güncelleme diğer saat başları</p></div><div id="updated" class="muted">Yükleniyor…</div></div>
+  <div class="head"><div><h1>Otomatik Güncelleme İzleme</h1><p class="muted">Europe/Istanbul · tam güncelleme 05:00 · saatlik güncelleme diğer saat başları · <a href="./canli-veri-testi.html" style="color:inherit">Canlı veri gecikme testi →</a></p></div><div id="updated" class="muted">Yükleniyor…</div></div>
   <!-- CRON SESSİZCE DURABİLİR: koşu GitHub Actions'ta hiç başlamazsa (kota/faturalama)
        depoya hiçbir şey yazılmaz, updated-status.json son başarılı yazımda donar ve
        aşağıdaki kart/tablo yeşil görünmeye devam eder. Bu bant, en son kayıtlı koşunun
