@@ -101,7 +101,16 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "reuters.com",
     "espn.com",
     "aljazeera.com",
-    "vanguardngr.com"
+    "vanguardngr.com",
+    // Rafael Leão-Galatasaray dosyasında birincil kaynak: İtalyan basını.
+    // Sky Sport Italia yayıncının kendi spor kanalı; ANSA İtalya'nın ulusal
+    // ajansı (Reuters/AP dengi); Corriere dello Sport ülkenin en büyük üç
+    // spor gazetesinden biri; Football Italia İngilizce yayın yapan yerleşik
+    // bir Serie A kaynağı.
+    "sport.sky.it",
+    "ansa.it",
+    "corrieredellosport.it",
+    "football-italia.net"
   ]),
 
   // BİRİNCİL KAYIT PLATFORMU — diğer gruplardan farkı bilinçli.
