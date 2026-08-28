@@ -18,6 +18,8 @@
  * Ölçü uydurulmaz: eksik olan alan tahmin edilmez, kart hiç çizilmez.
  */
 
+const { hasMojibake } = require("./textEncodingRepair.js");
+
 /** Yer tutucu kimlik kalıbı. Gerçek sağlayıcı kimliği yalnızca rakamdır. */
 const MOCK_ID_PATTERN = /^mock[-_]/i;
 const REAL_PROVIDER_ID = /^\d+$/;
@@ -65,6 +67,21 @@ function evaluatePlayerCard(player, options = {}) {
   }
 
   if (!String(player.name || "").trim()) reasons.push("isim yok");
+
+  // 0. Adın KENDİSİ bozuksa kart yayımlanmaz.
+  //
+  // Sağlayıcıdan bazı adlar UTF-8 baytları Latin-1 gibi çözülmüş hâlde
+  // geliyor ("Başkan" -> "BaÅkan"). Onarım önce senkron girişinde denenir
+  // (services/textEncodingRepair.js); bayt kaybı yüzünden onarılamayan kayıt
+  // burada elenir. Gerekçe: bozuk bir ad EKSİK bir alan değil, YANLIŞ bir
+  // bilgidir — okuyucuya yanlış isim gösterir ve kimlik/URL addan türediği
+  // için yanlış bir adresi site haritasına sokar.
+  //
+  // Kayıt veriden SİLİNMİYOR, yalnızca gizleniyor: sağlayıcı adı düzgün
+  // gönderdiği ilk senkronda kart kendiliğinden geri gelir.
+  if (hasMojibake(player.name) || String(player.name || "").includes("�")) {
+    reasons.push("ad kodlaması bozuk (onarılamadı)");
+  }
 
   // 1. Sağlayıcı kimliği: kaydın hangi gerçek oyuncuya karşılık geldiğini
   //    gösteremiyorsak, üstündeki hiçbir sayı doğrulanabilir değildir.
