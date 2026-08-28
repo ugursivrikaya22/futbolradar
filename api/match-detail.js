@@ -1,4 +1,6 @@
 const { getProvider, mockProvider } = require("../services/providers");
+const { quotesForMatch } = require("../services/managerQuotes");
+const managerQuoteStore = require("../data/manager-quotes.json");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -42,6 +44,16 @@ module.exports = async function handler(req, res) {
 
   if (!validateOrSend(res, data, validateMatchDetail)) {
     return;
+  }
+
+  // MAÇ SONU AÇIKLAMALARI yanıta burada ekleniyor, sağlayıcıdan gelmiyor.
+  // Sağlayıcı alıntı vermiyor; alıntılar küratörlü depoda duruyor ve hangi
+  // kaydın yayımlanabileceğine services/managerQuotes.js karar veriyor —
+  // yani kural sunucuda tek yerde kalıyor, istemci yalnızca çiziyor.
+  // Doğrulama SONRASINA konuldu: `validateMatchDetail` sağlayıcı sözleşmesini
+  // denetliyor, bizim eklediğimiz alan o sözleşmenin parçası değil.
+  if (detail) {
+    detail.quotes = quotesForMatch(detail.id, managerQuoteStore);
   }
 
   // Maç CANLIYSA önbellek politikası no-store'a geçer — bitmiş/başlamamış

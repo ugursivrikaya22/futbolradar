@@ -170,9 +170,12 @@ function quotesForMatch(matchId, store) {
       rejected,
       // Gerekçe okuyucuya gösterilecek metnin ta kendisi: bölüm boş kalmaz,
       // NEDEN boş olduğunu söyler.
+      // Metin "teknik direktör"le sınırlı DEĞİL: depo futbolcu açıklamalarını
+      // da taşıyor, dar bir gerekçe okuyucuya yalnızca hocanın konuşmadığını
+      // söyleyip futbolcuların susmuş göründüğü bir boşluk bırakırdı.
       reason: rejected.length
-        ? "Bu maç için kayıtlı teknik direktör açıklaması doğrulanamadı."
-        : "Bu maç için doğrulanmış teknik direktör açıklaması kaydedilmedi."
+        ? "Bu maç için kayıtlı maç sonu açıklaması doğrulanamadı."
+        : "Bu maç için doğrulanmış maç sonu açıklaması kaydedilmedi."
     };
   }
 

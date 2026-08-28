@@ -177,6 +177,49 @@ const VALID = {
   assert.ok(checked, "ön koşul: depodaki alıntıların en az biri üretilmiş bir rapor sayfasına ait olmalı");
 }
 
+// --- 6c. Maç detay sayfası (app.js) ile ön render aynı şeridi çiziyor ---
+{
+  // Şerit iki yerde çiziliyor: derleme anında (scripts/lib/matchQuotesTicker.mjs,
+  // ana sayfa + rapor sayfası) ve tarayıcıda (app.js, mac-detay.html). İkisi
+  // ayrışırsa aynı maç iki yüzeyde farklı görünür — okuyucu hangisinin doğru
+  // olduğunu bilemez. Bu blok istemci işaretlemesini modülünkine kilitliyor.
+  const app = fs.readFileSync(new URL("../app.js", import.meta.url), "utf8");
+  const start = app.indexOf("function mdShortenQuote");
+  const end = app.indexOf("function renderMatchDetail");
+  assert.ok(start > -1 && end > start, "app.js istemci şeridini tanımlamalı");
+
+  const source = app.slice(start, end);
+  const client = new Function(
+    "escapeHtml",
+    "isFinishedMatch",
+    `${source}\n return { mdQuotesHtml: mdQuotesHtml, mdShortenQuote: mdShortenQuote };`
+  )(
+    (value) => String(value === undefined || value === null ? "" : value)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#039;"),
+    (match) => Boolean(match && match.finished)
+  );
+
+  // Kısaltma aynı sınırda kesmeli: farklı kesim = aynı alıntının iki hâli.
+  for (const sample of ["Kısa söz.", `${"kelime ".repeat(40)}son`, "a".repeat(200)]) {
+    assert.equal(client.mdShortenQuote(sample), shortenQuote(sample), "kısaltma eşleşmeli");
+  }
+
+  const squash = (html) => html.replace(/>\s+</g, "><").replace(/\s+/g, " ").trim();
+  const ready = quotesForMatch("test-mac", { quotes: [{ ...VALID, role: "futbolcu" }] });
+
+  for (const [label, verdict] of [["dolu", ready], ["boş", { status: "unavailable", quotes: [], reason: "" }]]) {
+    assert.equal(
+      squash(client.mdQuotesHtml({ finished: true, quotes: verdict })),
+      squash(matchQuotesTickerBlock(verdict)),
+      `${label} şerit: istemci ve ön render aynı işaretlemeyi üretmeli`
+    );
+  }
+
+  // Başlamamış maçta bölüm HİÇ açılmaz: bekleyen bir açıklama yok.
+  assert.equal(client.mdQuotesHtml({ finished: false, quotes: ready }), "", "bitmemiş maçta şerit basılmamalı");
+}
+
 // --- 7. Şerit alıntıyı kelime ortasından kesmez ---
 {
   const long = `${"kelime ".repeat(40)}son`;

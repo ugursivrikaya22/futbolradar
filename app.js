@@ -10776,6 +10776,77 @@
     );
   }
 
+  /** Şerit alıntısını kelime sınırında kısaltır — scripts/lib/matchQuotesTicker.mjs eşi. */
+  function mdShortenQuote(value, limit) {
+    var max = limit || 120;
+    var text = String(value || "").trim();
+    if (text.length <= max) return text;
+
+    var cut = text.slice(0, max);
+    var lastSpace = cut.lastIndexOf(" ");
+    var stem = lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut;
+    return stem.replace(/\s+$/, "") + "…";
+  }
+
+  /**
+   * MAÇ SONU AÇIKLAMALARI ŞERİDİ — maç detay sayfasının canlı yüzü.
+   *
+   * Kural burada DEĞİL: hangi alıntının yayımlanabileceğine sunucuda
+   * services/managerQuotes.js karar veriyor ve `api/match-detail` kararın
+   * sonucunu `detail.quotes` olarak gönderiyor. İstemci yalnızca çiziyor;
+   * bu yüzden burada bir filtre ya da varsayılan yok — olsaydı sunucuyla
+   * istemci aynı veriden iki farklı sonuç üretebilirdi.
+   *
+   * BÖLÜM YALNIZCA BİTMİŞ MAÇTA açılıyor. Başlamamış bir maçta "Kaynaklardan
+   * bekleniyor" yazmak yanlış olurdu: ortada henüz açıklanacak bir şey yok,
+   * eksik olan bizim doğrulamamız değil maçın kendisi.
+   *
+   * Bitmiş maçta bölüm alıntı yokken de KAPANMIYOR: şerit "Kaynaklardan
+   * bekleniyor" der. Sessizce kaldırılsaydı okuyucu "kimse konuşmadı" diye
+   * okurdu; doğrusu "biz henüz doğrulamadık".
+   */
+  function mdQuotesHtml(detail) {
+    if (!isFinishedMatch(detail)) {
+      return "";
+    }
+
+    var verdict = detail.quotes || {};
+    var quotes = Object.prototype.toString.call(verdict.quotes) === "[object Array]"
+      ? verdict.quotes.filter(Boolean)
+      : [];
+    var inner;
+
+    if (quotes.length) {
+      var track = quotes.map(function (quote) {
+        var who = [quote.speaker, quote.roleLabel, quote.team].filter(Boolean).join(" · ");
+        return '<a class="match-quotes__item" href="' + escapeHtml(quote.source.url) + '"' +
+          ' target="_blank" rel="nofollow noopener noreferrer">' +
+          '<span class="match-quotes__who">' + escapeHtml(who) + "</span>" +
+          '<span class="match-quotes__text">' + escapeHtml("“" + mdShortenQuote(quote.quote) + "”") + "</span>" +
+          "</a>";
+      }).join('<span class="match-quotes__sep" aria-hidden="true"></span>');
+
+      inner = '<div class="match-quotes__track">' +
+        '<div class="match-quotes__group">' + track + "</div>" +
+        '<div class="match-quotes__group" aria-hidden="true">' + track + "</div>" +
+        "</div>";
+    } else {
+      inner = '<p class="match-quotes__awaiting" data-quotes-state="awaiting">' +
+        "<strong>Kaynaklardan bekleniyor</strong>" +
+        "<span>" + escapeHtml(verdict.reason ||
+          "Doğrulanmış bir maç sonu açıklaması yayımlandığında burada gösterilecek.") + "</span>" +
+        "</p>";
+    }
+
+    return '<div class="match-quotes-ticker" data-component="MatchQuotesTicker" role="region"' +
+      ' aria-label="Maç Sonu Açıklamaları">' +
+      '<div class="container-wide match-quotes-ticker__inner">' +
+      '<span class="match-quotes-ticker__label">Maç Sonu Açıklamaları</span>' +
+      '<div class="match-quotes-ticker__viewport"' + (quotes.length ? "" : ' data-empty="true"') + ">" +
+      inner +
+      "</div></div></div>";
+  }
+
   function renderMatchDetail(detail) {
     if (!detail) {
       return "";
@@ -10786,6 +10857,9 @@
     return (
       '<article class="match-detail-card card md-shell" data-card="match-detail" data-match="' + escapeHtml(detail.id) + '">' +
       mdScoreboardHtml(detail) +
+      // Şerit skorun hemen altında: okuyucu sonucu gördükten sonra "kim ne
+      // dedi"yi arıyor, istatistik tablolarının altında değil.
+      mdQuotesHtml(detail) +
       mdFactsHtml(detail) +
       (detail.summary ? '<p class="md-lead">' + escapeHtml(detail.summary) + "</p>" : "") +
       mdTimelineHtml(detail) +
