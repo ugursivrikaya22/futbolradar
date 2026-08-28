@@ -1,5 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { CATEGORIES, shelfLifeVerdict } = require("../../services/newsTicker.js");
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -66,6 +70,52 @@ function hasPublishedPage(article) {
     article.body.some((paragraph) => String(paragraph || "").trim());
 }
 
+/**
+ * "SON DAKİKA" rozeti bir haber kartında HÂLÂ geçerli mi?
+ *
+ * `data/news.json` kaydının kendi `ticker` bloğu tek doğruluk kaynağı —
+ * bant için zaten aynı bilgiyi taşıyor (bkz. services/newsTicker.js). Kart
+ * burada AYRI bir "son dakika" kararı vermiyor: bandın kullandığı
+ * `shelfLifeVerdict`i çağırıp aynı 24 saatlik pencereyi ve aynı `developing`
+ * istisnasını uyguluyor. Böylece bant sönümlendiğinde kart da aynı anda
+ * sönümleniyor; iki ayrı "son dakika" tanımı birbirinden asla ayrışamaz.
+ */
+export function isBreakingNewsItem(article, now = new Date()) {
+  const hint = article && article.ticker;
+  if (!hint || typeof hint !== "object" || hint.breaking !== true) return false;
+  if (!CATEGORIES[String(hint.category)]) return false;
+
+  const verdict = shelfLifeVerdict({
+    timestamp: article.publishedAt,
+    expiresAt: hint.expiresAt,
+    category: hint.category,
+    important: article.isFeatured === true,
+    breaking: true,
+    developing: hint.developing === true
+  }, now);
+
+  return verdict.breaking === true;
+}
+
+/**
+ * Haber kartının rozeti. "Son dakika" her zaman öncelikli — kategori
+ * etiketi (Transfer/Radar) yalnızca son dakika penceresi kapandığında geri
+ * döner, tıpkı banttaki rütbe düşüşü gibi.
+ *
+ * `fallbackLabel`: kategori boşsa gösterilecek metin. Çağıran yere göre
+ * değişiyor (ana sayfada "Radar", takım bölümünde takımın adı) — o yüzden
+ * burada sabitlenmiyor, önceki davranış aynen korunuyor.
+ */
+export function newsCardBadge(article, now = new Date(), fallbackLabel = "Radar") {
+  if (isBreakingNewsItem(article, now)) {
+    return { className: "mega-badge--breaking", label: "SON DAKİKA" };
+  }
+  const isTransfer = /transfer/i.test(String(article && article.category || ""));
+  return isTransfer
+    ? { className: "mega-badge--transfer", label: "Transfer" }
+    : { className: "mega-badge--radar", label: String((article && article.category) || fallbackLabel) };
+}
+
 export function renderTeamNewsSection(articles, { team, base = "./" }) {
   if (!Array.isArray(articles) || !articles.length) return "";
 
@@ -73,10 +123,9 @@ export function renderTeamNewsSection(articles, { team, base = "./" }) {
   const cards = articles.map((article) => {
     const slug = newsSlug(article.slug || article.id || article.title);
     const href = `${base}haber/${slug}`;
-    const isTransfer = /transfer/i.test(String(article.category || ""));
-    const badgeLabel = isTransfer ? "Transfer" : String(article.category || team);
+    const badge = newsCardBadge(article, new Date(), team);
     return `<a class="news-card" data-card="news" data-news="${escapeHtml(article.id || slug)}" href="${escapeHtml(href)}">
-      <div class="news-card-meta"><span class="mega-badge ${isTransfer ? "mega-badge--transfer" : "mega-badge--radar"}">${escapeHtml(badgeLabel)}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(formatDate(article.publishedAt))}</time></div>
+      <div class="news-card-meta"><span class="mega-badge ${badge.className}">${escapeHtml(badge.label)}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(formatDate(article.publishedAt))}</time></div>
       <div><span class="card-kicker">${escapeHtml(team)}</span><h3>${escapeHtml(article.title)}</h3><p>${escapeHtml(article.summary || article.spot || "")}</p></div>
       <div class="news-card-footer"><span>${escapeHtml(article.sourceName || "FutbolRadar")}</span><span class="detail-link">Haberi oku</span></div>
     </a>`;

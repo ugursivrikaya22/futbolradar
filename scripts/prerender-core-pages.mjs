@@ -3,6 +3,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
 import { transferTickerBlock } from "./lib/transferTicker.mjs";
+import { newsCardBadge } from "./lib/newsCards.mjs";
 import {
   fixtureCard as sharedFixtureCard,
   fixtureRow as sharedFixtureRow,
@@ -1367,16 +1368,14 @@ function newsCardActionLabel(item) {
 function newsCardList(limit) {
   return news.slice(0, limit || news.length).map((item) => {
     const action = newsCardActionLabel(item);
-    const isTransfer = /transfer/i.test(String(item.category || ""));
-    const badgeClass = isTransfer ? "mega-badge--transfer" : "mega-badge--radar";
-    const badgeLabel = isTransfer ? "Transfer" : String(item.category || "Radar");
+    const badge = newsCardBadge(item);
     // Kart tamamen tıklanabilir: <a> gövdesi, iç içe link yok. Kaynağa çıkan
     // linkler `nofollow` taşır (services/sourceLinks.js ile aynı kural).
     const attrs = action.href
       ? ` href="${escapeHtml(action.href)}"${action.external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : ""}`
       : "";
     const tag = action.href ? "a" : "article";
-    return `<${tag} class="news-card" data-card="news" data-news="${escapeHtml(item.id)}"${attrs}><div class="news-card-meta"><span class="mega-badge ${badgeClass}">${escapeHtml(badgeLabel)}</span><time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatFreshnessDate(item.publishedAt) || "Tarih açıklanmadı")}</time></div><div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p></div><div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Resmî kaynak")}</span>${action.href ? `<span class="detail-link">${action.label}</span>` : ""}</div></${tag}>`;
+    return `<${tag} class="news-card" data-card="news" data-news="${escapeHtml(item.id)}"${attrs}><div class="news-card-meta"><span class="mega-badge ${badge.className}">${escapeHtml(badge.label)}</span><time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatFreshnessDate(item.publishedAt) || "Tarih açıklanmadı")}</time></div><div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p></div><div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Resmî kaynak")}</span>${action.href ? `<span class="detail-link">${action.label}</span>` : ""}</div></${tag}>`;
   });
 }
 

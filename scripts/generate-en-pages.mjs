@@ -35,6 +35,7 @@ import {
 import { transferTypeEn } from "./lib/enTicker.mjs";
 import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
 import { liveTickerBlock } from "./lib/liveScoresTicker.mjs";
+import { newsCardBadge } from "./lib/newsCards.mjs";
 
 const require = createRequire(import.meta.url);
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -1054,11 +1055,9 @@ function newsSection() {
     // Bağlantı da servisten: kartın gösterildiği her haberin sayfası var.
     const href = escapeHtml(newsHref(item, BASE));
     const published = item.publishedAt || item.date || "";
-    const isTransfer = /transfer/i.test(String(item.category || ""));
-    const badgeClass = isTransfer ? "mega-badge--transfer" : "mega-badge--radar";
-    const badgeLabel = isTransfer ? "Transfer" : (item.category || "Radar");
+    const badge = newsCardBadge(item);
     return `<a class="news-card" data-card="news" data-news="${escapeHtml(item.id)}" href="${href}" hreflang="tr">` +
-      `<div class="news-card-meta"><span class="mega-badge ${badgeClass}" lang="tr">${escapeHtml(badgeLabel)}</span>` +
+      `<div class="news-card-meta"><span class="mega-badge ${badge.className}" lang="tr">${escapeHtml(badge.label)}</span>` +
       `<time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time></div>` +
       `<div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span>` +
       `<h3 lang="tr">${escapeHtml(item.title || "")}</h3><p lang="tr">${escapeHtml(item.summary || "")}</p></div>` +
@@ -1756,11 +1755,9 @@ function newsPage() {
   const cardList = newsList.slice(0, 24).map((item) => {
     const href = escapeHtml(newsHref(item, BASE));
     const published = item.publishedAt || item.date || "";
-    const isTransfer = /transfer/i.test(String(item.category || ""));
-    const badgeClass = isTransfer ? "mega-badge--transfer" : "mega-badge--radar";
-    const badgeLabel = isTransfer ? "Transfer" : (item.category || "Radar");
+    const badge = newsCardBadge(item);
     return `<a class="news-card" data-card="news" data-news="${escapeHtml(item.id)}" href="${href}" hreflang="tr" lang="tr">
-            <div class="news-card-meta"><span class="mega-badge ${badgeClass}" lang="tr">${escapeHtml(badgeLabel)}</span>
+            <div class="news-card-meta"><span class="mega-badge ${badge.className}" lang="tr">${escapeHtml(badge.label)}</span>
             <time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time></div>
             <div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span>
             <h3 lang="tr">${escapeHtml(item.title || "")}</h3>
