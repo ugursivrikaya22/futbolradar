@@ -99,8 +99,10 @@ export function liveTickerItem(item, options = {}) {
 }
 
 /**
- * Kayan şerit. Canlı maç yoksa yer tutucu KALIR — uydurma yapılmaz, boş
- * durum açıkça yazılır.
+ * Kayan şerit. Canlı maç yoksa "boş" yer tutucu metni yine burada
+ * basılır (uydurma yapılmaz), ama sarmalayıcı `.live-scores-ticker`
+ * öğedeki `data-empty` işaretine göre page.css'te `display: none` ile
+ * gizlenir — bant boşken sayfada içeriksiz bir çubuk asılı kalmaz.
  *
  * Süre öğe başına 5sn, 18-45sn arasında — transfer bandının 9sn/34-80sn'ine
  * göre belirgin biçimde daha hızlı.
