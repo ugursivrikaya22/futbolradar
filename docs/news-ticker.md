@@ -30,13 +30,15 @@ Bir haber kaydı isteğe bağlı bir `ticker` bloğu taşıyabilir:
   "id": "galatasaray-musiala-resmi-aciklama",
   "title": "Galatasaray, Jamal Musiala iddialarını resmen yalanladı",
   "publishedAt": "2026-07-31T12:31:00+03:00",
-  "url": "https://…",
-  "sourceName": "Fanatik",
+  "url": "https://www.futbolradar.com/haber/galatasaray-musiala-resmi-aciklama",
+  "sourceName": "FutbolRadar",
   "status": "verified",
+  "isFeatured": true,
   "ticker": {
     "category": "official",
     "confidence": "confirmed",
     "text": "Galatasaray, Jamal Musiala transferi iddialarının gerçek dışı olduğunu resmen açıkladı",
+    "publisher": "https://www.galatasaray.org",
     "expiresAt": "2026-08-14T23:59:59+03:00"
   }
 }
@@ -52,6 +54,26 @@ haber kaydı olmayan gündem maddeleri oraya yazılır.
 `ticker` bloğu OLMAYAN doğrulanmış bir haber banda girmez. "Doğrulanmış
 haber" ile "banda girecek kadar kesin haber" aynı şey değildir; güven
 seviyesi tahmin edilmez, editörden istenir.
+
+Bant öğesinin `source.url`'si her zaman KENDİ haber sayfamıza gider (yukarıki
+`url` alanı) — dış siteye değil. Bu yüzden `category: "official"` doğrudan
+kullanılamaz: `validateTickerItem` `source.url`'nin resmî bir alana
+(`services/sourceTrust.js` → `OFFICIAL_DOMAINS`) ait olmasını arar ve kendi
+sayfamız orada değildir. İki çıkış yolu var:
+
+- **`ticker.publisher`** — yukarıdaki örnekteki gibi, editör birincil kaynağın
+  gerçekten kulübün/UEFA'nın/federasyonun kendi ağzı olduğunu bu alanla
+  beyan eder; `mirrorFromNews` bunu bant öğesinin `source.publisher`'ına
+  taşır ve doğrulama oradan da resmîlik arar.
+- **`category` başka bir şey olur** — kaynak basın aktarımıysa (kulübün
+  kendisi değil, örn. AA/Fanatik "kulüp açıkladı" diye yazdıysa) doğru
+  kategori `club-agenda`'dır; "resmî" rozeti yalnızca birincil kaynak için
+  kullanılır. Bkz. Fatih Tekke istifası örneği — kaynak AA olduğu için
+  kategori `club-agenda`, `official` değil.
+
+`isFeatured: true`, bu haberi 5 güne kadar bantta/anasayfada tutar (bkz. §4);
+yalnızca gerçekten önemli haberler için kullanılmalı, her doğrulanmış kayıt
+için değil.
 
 ## 2. Güven modeli — kesinleşmemiş bilgi kesin gibi gösterilemez
 
@@ -85,33 +107,50 @@ Kaynak zorunlu: `source.name` ve `http(s)` şemalı `source.url`.
 
 ## 3. Kategoriler ve raf ömürleri
 
-`services/newsTicker.js` → `CATEGORIES`:
+`services/newsTicker.js` → `CATEGORIES`. Her kategori **72 saat (3 gün)**
+varsayılanını paylaşır (`DEFAULT_MAX_AGE_HOURS`) — eskiden kategoriye göre
+21 güne varan ayrı pencereler vardı, ama bu banttaki 20 öğenin altısının üç
+günden eski olmasına yol açtı (en eskisi 201 saatlik bir kulüp duyurusu).
+Artık iki İSTİSNA var, ikisi de UZATIR, hiçbiri kısaltmaz:
 
 | Kategori | Etiket | Raf ömrü |
 |---|---|---|
-| `official` | Resmî açıklama | 21 gün |
-| `post-match` | Maç sonu | 4 gün |
-| `fixture` | Maç programı | 14 gün |
-| `squad-update` | Kadro & sakatlık | 10 gün |
-| `manager-quote` | Teknik direktör | 7 gün |
-| `player-quote` | Oyuncu açıklaması | 7 gün |
-| `transfer-rumour` | Transfer iddiası | 7 gün |
+| `official` | Resmî açıklama | 72 saat |
+| `post-match` | Maç sonu | 72 saat |
+| `fixture` | Maç programı | 72 saat (kendi `expiresAt`'i varsa **14 gün**) |
+| `squad-update` | Kadro & sakatlık | 72 saat |
+| `manager-quote` | Teknik direktör | 72 saat |
+| `player-quote` | Oyuncu açıklaması | 72 saat |
+| `club-agenda` | Kulüp gündemi | 72 saat |
+| `transfer-rumour` | Transfer iddiası | 72 saat |
 
 Bayat bir transfer İDDİASI faydasızdan kötüdür: çoktan çürütülmüş olabilir
-ve bant onu hâlâ gündem gibi taşır. Resmî açıklama ise transfer penceresi
-boyunca geçerliliğini korur.
+ve bant onu hâlâ gündem gibi taşır.
+
+İkinci istisna KATEGORİDEN bağımsız: `data/news.json` kaydı
+`isFeatured: true` taşıyorsa (editörün "bu önemli bir haber" kararı),
+yansıyan bant öğesi `important: true` alır ve raf ömrü **5 güne**
+(`IMPORTANT_ARTICLE_MAX_AGE_HOURS`) uzar — kategori zaten bundan uzunsa
+(tarihli `fixture` gibi) o geçerli kalır, ikisinin büyüğü uygulanır. 5 gün
+dolduğunda öğe yalnızca banttan/anasayfadan düşer; haber sayfasının kendisi
+(`haber/<slug>.html`) kalıcıdır, URL'si silinmez, SEO indeksinde kalır.
 
 ## 4. Bayat içerik nasıl düşüyor?
 
-Üç bağımsız mekanizma, üçü de `services/newsTicker.js` içinde:
+Dört bağımsız mekanizma, dördü de `services/newsTicker.js` içinde:
 
-1. **Kategori raf ömrü** — yukarıdaki tablo. Yaşı aşan kayıt banda girmez ve
-   `refresh-news-ticker.mjs --apply` onu dosyadan da siler.
+1. **Kategori raf ömrü** — yukarıdaki tablo (72 saat varsayılan). Yaşı aşan
+   kayıt banda girmez ve `refresh-news-ticker.mjs --apply` onu dosyadan da
+   siler.
 2. **`expiresAt`** — sert son kullanma tarihi. "5 Ağustos'ta oynanacak"
    duyurusu 6 Ağustos'ta yanlıştır; raf ömrü değil TARİH bitirir. Maç
    duyuruları, kura sonuçları ve sezon açılışı gibi kalıcı görünen
    duyuruların bantta süresiz asılı kalmasını bu alan engeller.
-3. **`breaking` penceresi** — 24 saat (`BREAKING_WINDOW_HOURS`). Süre
+3. **`important` (5 gün)** — editörün `data/news.json` → `isFeatured: true`
+   ile işaretlediği önemli haber, normal 72 saati aşıp 5 güne kadar
+   anasayfada kalabilir (bkz. §3). Süre dolunca yalnızca bant/anasayfa
+   görünürlüğü biter; makale sayfası kalıcı ve indekslenebilir kalır.
+4. **`breaking` penceresi** — 24 saat (`BREAKING_WINDOW_HOURS`). Süre
    dolduğunda kayıt **düşmez, rütbesi iner**: haber hâlâ doğru, artık "son
    dakika" değil. Gelişme sürüyorsa `developing: true` pencereyi uzatır.
    Sönen işaret dosyadan da silinir — yalnızca ekranda gizlemek, dosyanın

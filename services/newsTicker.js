@@ -87,6 +87,19 @@ const DEFAULT_MAX_AGE_HOURS = 72;
 /** `expiresAt` taşıyan maç programı duyurusunun tanınan üst sınırı. */
 const DATED_FIXTURE_MAX_AGE_HOURS = 24 * 14;
 
+/**
+ * `important: true` taşıyan öğenin tanınan üst sınırı (5 gün).
+ *
+ * Bu da kategori istisnası değil — `fixture`+`expiresAt` gibi kendi bitiş
+ * tarihini taşımaz, editörün "bu önemli bir haber" kararını taşır
+ * (`data/news.json` → `isFeatured: true`, bkz. `refresh-news-ticker.mjs`
+ * → `mirrorFromNews`). Varsayılanı GEVŞETMEZ: işaretlenmemiş her öğe hâlâ
+ * 72 saatte düşer, yalnızca editörün önemli saydığı azınlık 5 güne kadar
+ * anasayfada kalabilir. Kategori zaten bundan uzunsa (örn. tarihli
+ * `fixture`) kısaltmaz — ikisinin büyüğü uygulanır.
+ */
+const IMPORTANT_ARTICLE_MAX_AGE_HOURS = 24 * 5;
+
 const CATEGORIES = Object.freeze({
   "official": { label: "Resmî açıklama", rumourOnly: false, priority: 0, maxAgeHours: DEFAULT_MAX_AGE_HOURS },
   "post-match": { label: "Maç sonu", rumourOnly: false, priority: 1, maxAgeHours: DEFAULT_MAX_AGE_HOURS },
@@ -418,6 +431,9 @@ function validateTickerItem(item) {
   if (item.developing !== undefined && !isBoolean(item.developing)) {
     errors.push("developing alanı boolean olmalı");
   }
+  if (item.important !== undefined && !isBoolean(item.important)) {
+    errors.push("important alanı boolean olmalı");
+  }
   // "Gelişme sürüyor" yalnızca son dakika penceresini uzatmak için vardır.
   // `breaking` olmayan bir kayıtta anlamı yok; sessizce yok saymak yerine
   // editoryal hata olarak bildiriliyor.
@@ -539,9 +555,15 @@ function shelfLifeVerdict(entry, now, overrideMaxAgeHours = null) {
     ? DATED_FIXTURE_MAX_AGE_HOURS
     : CATEGORIES[category].maxAgeHours;
 
+  // Editörün "önemli" işaretlediği haber (bkz. sabit tanımı) süreyi UZATIR,
+  // hiçbir zaman kısaltmaz — kategori zaten daha uzunsa o geçerli kalır.
+  const effectiveMaxAge = entry.important === true
+    ? Math.max(categoryMaxAge, IMPORTANT_ARTICLE_MAX_AGE_HOURS)
+    : categoryMaxAge;
+
   const shelfLife = Number.isFinite(overrideMaxAgeHours) && overrideMaxAgeHours !== null
     ? overrideMaxAgeHours
-    : categoryMaxAge;
+    : effectiveMaxAge;
 
   if (ageHours > shelfLife) {
     return {
@@ -785,6 +807,7 @@ module.exports = {
   CATEGORIES,
   DATED_FIXTURE_MAX_AGE_HOURS,
   DEFAULT_MAX_AGE_HOURS,
+  IMPORTANT_ARTICLE_MAX_AGE_HOURS,
   CONFIDENCE,
   CONFIRMATION_VERBS,
   DUPLICATE_CONTAINMENT,

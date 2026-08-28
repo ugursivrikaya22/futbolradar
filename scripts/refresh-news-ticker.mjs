@@ -134,10 +134,23 @@ function mirrorFromNews(entry) {
 
   if (text(hint.team) || text(entry.team)) mirrored.team = text(hint.team) || text(entry.team);
   if (text(hint.competition)) mirrored.competition = text(hint.competition);
+  // "official" kategorisi resmî ağız gerektirir ama bant öğesinin source.url
+  // alanı her zaman KENDİ haber sayfamıza gider (bkz. üstteki `mirrored`
+  // tanımı) — kulübün resmî sayfası bu yüzden asla oradan doğrulanamaz.
+  // `ticker.publisher`, editörün "bu haberin birincil kaynağı gerçekten
+  // kulübün/UEFA'nın kendi ağzı" dediği durumda ikinci, bağımsız yolu açar
+  // (services/newsTicker.js → validateTickerItem zaten publisher'ı da kabul
+  // ediyordu, yalnızca haber kaydından buraya taşınmıyordu).
+  if (text(hint.publisher)) mirrored.source.publisher = text(hint.publisher);
   if (text(hint.expiresAt)) mirrored.expiresAt = text(hint.expiresAt);
   if (text(entry.updatedAt)) mirrored.updatedAt = text(entry.updatedAt);
   if (hint.breaking === true) mirrored.breaking = true;
   if (hint.developing === true) mirrored.developing = true;
+  // Editörün `isFeatured: true` işaretlediği haber banttaki normal 72 saatlik
+  // raf ömrünü aşıp 5 güne kadar anasayfada kalabilir (services/newsTicker.js
+  // → IMPORTANT_ARTICLE_MAX_AGE_HOURS). Haber sayfasının kendisi bundan
+  // bağımsız kalıcıdır; bu yalnızca bant/anasayfa görünürlüğünü uzatır.
+  if (entry.isFeatured === true) mirrored.important = true;
 
   return mirrored;
 }

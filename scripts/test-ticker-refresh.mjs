@@ -258,7 +258,100 @@ const idsOf = (payload) => (payload.items || []).map((row) => row.id);
   assert.deepEqual(idsOf(ticker), ["elle-yazilmis"], "kaynağı kalmayan yansıma silinmeli, elle yazılmış kayıt korunmalı");
 }
 
-// ── 8. İÇERİK UYDURMAZ ─────────────────────────────────────────────────────
+// ── 8. isFeatured → important: önemli haber 5 güne kadar bantta kalır ─────
+//
+// data/news.json → isFeatured:true, mirrorFromNews üzerinden bant öğesine
+// important:true olarak taşınır (services/newsTicker.js →
+// IMPORTANT_ARTICLE_MAX_AGE_HOURS bu işareti okur). İşaretsiz haber normal
+// 72 saatlik raf ömrüne tabi kalır.
+{
+  const fourDaysAgo = offsetHours(-96);
+
+  const { ticker } = run({
+    news: [
+      {
+        id: "onemli-haber",
+        title: "Önemli ve kalıcı haber",
+        publishedAt: fourDaysAgo,
+        url: "https://example.com/onemli",
+        sourceName: "Kaynak",
+        status: "verified",
+        isFeatured: true,
+        // "club-agenda": "official" farklı bir denetime daha girer (kaynağın
+        // resmî alan olması); burada sınanan yalnızca raf ömrü olduğu için
+        // o denetimi tetiklemeyen bir kategori seçildi.
+        ticker: { category: "club-agenda", confidence: "confirmed" }
+      },
+      {
+        id: "sira-disi-olmayan-haber",
+        title: "Sıradan ve dört gün önceki haber",
+        publishedAt: fourDaysAgo,
+        url: "https://example.com/siradan",
+        sourceName: "Kaynak",
+        status: "verified",
+        ticker: { category: "club-agenda", confidence: "confirmed" }
+      }
+    ]
+  });
+
+  assert.deepEqual(
+    idsOf(ticker),
+    ["news-onemli-haber"],
+    "isFeatured:true işaretli 4 günlük haber bantta kalmalı, işaretsiz aynı yaştaki haber düşmeli"
+  );
+  assert.equal(ticker.items[0].important, true, "isFeatured, yansıyan öğede important:true olarak taşınmalı");
+}
+
+// ── 9. ticker.publisher → source.publisher: "official" kategorisi için ────
+//
+// Bant öğesinin source.url'si her zaman KENDİ haber sayfamıza gider; kulübün
+// resmî ağzı olduğunu söylemenin tek yolu editörün `ticker.publisher`
+// alanını doldurmasıdır. Doldurmazsa "official" kategorisi geçersiz sayılır
+// (services/newsTicker.js → validateTickerItem), doldurursa geçerli olur.
+{
+  // Geçersiz kayıt SİLİNMEZ (bkz. §11), yalnızca GEÇERSİZ diye işaretlenip
+  // günlüğe düşer — burada sınanan onun bandın "geçerli" tarafına
+  // sızmaması, dosyadan tamamen kaybolması değil.
+  const { ticker: withoutPublisher, stdout: stdoutWithoutPublisher } = run({
+    news: [{
+      id: "resmi-yayinci-yok",
+      title: "Yayıncı alanı olmayan resmî kategori haberi",
+      publishedAt: offsetHours(-4),
+      url: "https://example.com/resmi-yayinci-yok",
+      sourceName: "FutbolRadar",
+      status: "verified",
+      ticker: { category: "official", confidence: "confirmed" }
+    }]
+  });
+  assert.ok(
+    idsOf(withoutPublisher).includes("news-resmi-yayinci-yok"),
+    "geçersiz kayıt dosyadan silinmemeli, GEÇERSİZ olarak kalmalı"
+  );
+  assert.ok(
+    /GEÇERSİZ.*resmî kaynak gerektirir/.test(stdoutWithoutPublisher),
+    "gerekçe resmî kaynak eksikliğini söylemeli"
+  );
+
+  const { ticker: withPublisher } = run({
+    news: [{
+      id: "resmi-yayinci-var",
+      title: "Yayıncı alanı olan resmî kategori haberi",
+      publishedAt: offsetHours(-4),
+      url: "https://example.com/resmi-yayinci-var",
+      sourceName: "FutbolRadar",
+      status: "verified",
+      ticker: { category: "official", confidence: "confirmed", publisher: "https://www.galatasaray.org" }
+    }]
+  });
+  assert.deepEqual(idsOf(withPublisher), ["news-resmi-yayinci-var"], "ticker.publisher taşınınca official kategorisi geçerli olmalı");
+  assert.equal(
+    withPublisher.items[0].source.publisher,
+    "https://www.galatasaray.org",
+    "publisher, bant öğesinin source.publisher alanına aynen taşınmalı"
+  );
+}
+
+// ── 10. İÇERİK UYDURMAZ ────────────────────────────────────────────────────
 //
 // Bandın en kritik sözleşmesi. Kaynak boşalırsa betik boş bırakır; bandın
 // "son doğrulanmış içeriği koru" yedeği (scripts/lib/tickerFeed.mjs) devreye
@@ -271,7 +364,7 @@ const idsOf = (payload) => (payload.items || []).map((row) => row.id);
   assert.ok(/UYARI/.test(stdout), "boş bant sessizce geçilmemeli, uyarı basılmalı");
 }
 
-// ── 9. Geçersiz kayıt SİLİNMEZ, bildirilir ─────────────────────────────────
+// ── 11. Geçersiz kayıt SİLİNMEZ, bildirilir ────────────────────────────────
 //
 // Silmek editoryal içeriği kimse bakmadan yok eder; bırakmak testte kırmızı
 // yanar ve düzeltilir.
@@ -292,7 +385,7 @@ const idsOf = (payload) => (payload.items || []).map((row) => row.id);
   assert.equal(strictRun.status, 1, "--strict ile geçersiz kayıt koşuyu düşürmeli");
 }
 
-// ── 10. Kuru koşu yazmaz ───────────────────────────────────────────────────
+// ── 12. Kuru koşu yazmaz ───────────────────────────────────────────────────
 {
   const items = [entry({ id: "tarihi-gecmis", category: "fixture", expiresAt: offsetHours(-2) })];
   const { ticker } = run({ ticker: { items }, apply: false });
@@ -300,4 +393,4 @@ const idsOf = (payload) => (payload.items || []).map((row) => row.id);
   assert.deepEqual(idsOf(ticker), ["tarihi-gecmis"], "--apply olmadan dosya değişmemeli");
 }
 
-console.log("Bant tazeleme testleri geçti (expiresAt, raf ömrü, son dakika sönümü, tekleştirme, editoryal sıra, news.json aynası, uydurma yasağı, kuru koşu).");
+console.log("Bant tazeleme testleri geçti (expiresAt, raf ömrü, son dakika sönümü, tekleştirme, editoryal sıra, news.json aynası, isFeatured→important, ticker.publisher→official, uydurma yasağı, kuru koşu).");
