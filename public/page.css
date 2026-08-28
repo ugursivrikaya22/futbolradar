@@ -20569,7 +20569,7 @@ a.motm-week__card:focus-visible {
 .evergreen-hero { max-width: 880px; margin-bottom: 28px; }
 .evergreen-hero h1 { margin: 8px 0 12px; font-size: clamp(2rem, 5vw, 3.6rem); line-height: 1.05; }
 .evergreen-hero > p { max-width: 760px; font-size: 1.05rem; line-height: 1.7; }
-.evergreen-freshness, .evergreen-note { color: var(--muted, #64748b); font-size: .88rem !important; }
+.evergreen-freshness, .evergreen-note { margin: 6px 0 0; color: var(--muted, #64748b); font-size: .88rem !important; }
 .evergreen-section, .evergreen-related { margin-top: 24px; padding: clamp(18px, 3vw, 30px); border: 1px solid var(--border, #dbe3ee); border-radius: 20px; background: var(--surface, #fff); }
 .evergreen-section h2, .evergreen-related h2 { margin: 0 0 18px; }
 .evergreen-table-wrap { overflow-x: auto; }
@@ -20606,6 +20606,15 @@ a.motm-week__card:focus-visible {
 @media (max-width: 760px) {
   .evergreen-two-column, .evergreen-card-grid { grid-template-columns: 1fr; }
   .evergreen-player-list, .evergreen-link-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  /* Mobilde alttaki sabit gezinme çubuğu, sayfa ilk açıldığında tablonun
+     ilk satırlarını kapatıyordu — başlık öncesi boşluk çok büyüktü. Masaüstü
+     değerlerine dokunmadan yalnızca bu aralık sıkıştırıldı. */
+  .evergreen-page { padding-top: 16px; }
+  .evergreen-breadcrumb { margin-bottom: 14px; }
+  .evergreen-hero { margin-bottom: 16px; }
+  .evergreen-hero h1 { margin: 6px 0 8px; }
+  .evergreen-section, .evergreen-related { margin-top: 16px; }
 }
 @media (max-width: 480px) {
   .evergreen-player-list, .evergreen-link-grid { grid-template-columns: 1fr; }
