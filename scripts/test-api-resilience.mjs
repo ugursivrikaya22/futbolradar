@@ -5,7 +5,7 @@ const require = createRequire(import.meta.url);
 const utils = require("../api/_utils");
 const footballData = require("../services/providers/footballProvider");
 const apiFootball = require("../services/providers/apiFootballProvider");
-const { clearProviderCache } = require("../services/providerCache");
+const { clearProviderCache, DEFAULT_TTLS } = require("../services/providerCache");
 const providers = require("../services/providers");
 const competitionCatalog = require("../services/competitionCatalog");
 const playersHandler = require("../api/players");
@@ -861,5 +861,23 @@ async function testMatchPublishingPolicy() {
 }
 
 await testMatchPublishingPolicy();
+
+function testFixtureDetailUsesLiveCacheTtl() {
+  // mac-detay.html ve /api/live-latency tek fikstür kimliğiyle sorgular
+  // (getMatchDetail -> getFixtures({ fixtureId })); bu yol günlük listenin
+  // 60 sn TTL'ini almamalı, "matches-live"in 15 sn TTL'ini almalı — yoksa
+  // canlı bir maçın detay sayfası sağlayıcı katmaninda bir dakikaya kadar
+  // bayat kalır (bkz. cacheResourceFor'daki gerekçe).
+  assert.equal(apiFootball.cacheResourceFor("/fixtures", { id: "123" }), "matches-live");
+  assert.equal(apiFootball.cacheResourceFor("/fixtures", { live: "all" }), "matches-live");
+  // Günün fikstür listesi (kimlik yok, canlı bayrağı yok) uzun TTL'de kalmalı.
+  assert.equal(apiFootball.cacheResourceFor("/fixtures", { date: "2026-08-28" }), "matches");
+  assert.ok(
+    DEFAULT_TTLS["matches-live"] < DEFAULT_TTLS.matches,
+    "matches-live TTL'i matches TTL'inden kısa olmalı"
+  );
+}
+
+testFixtureDetailUsesLiveCacheTtl();
 
 console.log("FutbolRadar API resilience tests passed");

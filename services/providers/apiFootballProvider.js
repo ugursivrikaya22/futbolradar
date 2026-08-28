@@ -260,6 +260,15 @@ function cacheResourceFor(path, params) {
     return "matches-live";
   }
 
+  // Tek fikstür kimliğiyle sorgu — mac-detay.html ve /api/live-latency bu
+  // yoldan geçiyor ve ikisi de o TEK maçın güncel durumunu istiyor.
+  // Eşleme yalnızca yola bakıyorduysa bu da günlük listenin 60 sn TTL'ini
+  // alıyordu: canlı bir maçın detay sayfası CDN/istemci tazeyken sağlayıcı
+  // katmanında bir dakikaya kadar bayat kalabiliyordu.
+  if (path === "/fixtures" && params && params.id) {
+    return "matches-live";
+  }
+
   return CACHE_RESOURCE_BY_PATH[path];
 }
 
@@ -1702,6 +1711,7 @@ module.exports = {
   getConfig,
   hasConfig,
   providerFetch,
+  cacheResourceFor,
   apiKeyCandidates,
   looksLikeApiKey,
   classifyPayloadError,

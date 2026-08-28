@@ -6,7 +6,7 @@ import { mergeCalendarMatches, selectDetailTargets } from "./sync-live-fixtures.
 import { mergeStandings } from "./sync-standings.mjs";
 import { mergeSquadStatuses } from "./sync-squad-statuses.mjs";
 import { mergeNewsItems, parseRss, toTickerItem } from "./sync-football-news.mjs";
-import { dedupeKey } from "./run-scheduled-update.mjs";
+import { buildCrashRecord, dedupeKey } from "./run-scheduled-update.mjs";
 
 const root = process.cwd();
 
@@ -116,6 +116,28 @@ assert.equal(mergeNewsItems({ items: mergedNews.items }, [tickerItem], { nowMs: 
 
 assert.equal(dedupeKey("full", new Date("2026-08-08T02:00:00Z")), "full:2026-08-08");
 assert.equal(dedupeKey("hourly", new Date("2026-08-08T21:00:00Z")), "hourly:2026-08-09T00");
+
+// main() dışında patlayan bir hata da (ör. validateCiContext, kilit alma)
+// data/update-status.json'a yazılmalı — aksi hâlde panonun "son çalışma"
+// zamanı sessizce donar ve gerçek hata sebebi hiçbir yerde görünmez.
+{
+  const crash = buildCrashRecord(new Error("boom"), {
+    argv: ["--type=hourly"],
+    env: { GITHUB_RUN_ID: "123", GITHUB_EVENT_NAME: "schedule" },
+    now: new Date("2026-08-25T10:00:00Z")
+  });
+  assert.equal(crash.status, "failed", "çökme kaydı mevcut durum sözlüğünü kullanmalı (yeni bir değer paneli renksiz bırakırdı)");
+  assert.equal(crash.type, "hourly", "argv okunabiliyorsa gerçek tür kaydedilmeli");
+  assert.equal(crash.errors[0].step, "main", "adım kimliği normal bir adım hatasından ayrılabilmeli");
+  assert.equal(crash.errors[0].message, "boom");
+  assert.equal(crash.id, "123");
+  assert.equal(crash.dedupeKey, dedupeKey("hourly", new Date("2026-08-25T10:00:00Z")));
+
+  // argv okunamazsa (ör. parseArgs kendisi patladıysa) yine de bir kayıt üretilmeli.
+  const unknownType = buildCrashRecord(new Error("bad args"), { argv: ["--nonsense"], env: {}, now: new Date("2026-08-25T10:00:00Z") });
+  assert.equal(unknownType.type, "unknown");
+  assert.ok(unknownType.dedupeKey, "tür bilinmese de bir dedupe anahtarı üretilmeli");
+}
 
 const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "match-analysis.yml"), "utf8");
 assert.match(workflow, /cron: "0 2 \* \* \*"/);
