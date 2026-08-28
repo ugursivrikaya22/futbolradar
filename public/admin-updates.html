@@ -7,39 +7,17 @@
   <title>FutbolRadar Güncelleme İzleme</title>
   <style>
     :root{color-scheme:dark;--bg:#07101d;--panel:#101d2e;--line:#263a51;--text:#edf5ff;--muted:#93a8be;--ok:#35d07f;--warn:#ffbd4a;--bad:#ff6675}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}.wrap{width:min(1120px,calc(100% - 32px));margin:34px auto}.head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:22px}h1,h2{margin:0}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}.value{font-size:24px;font-weight:750;margin-top:8px}.badge{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:750}.success{background:#123b2a;color:var(--ok)}.partial,.skipped{background:#3c3115;color:var(--warn)}.failed{background:#451d27;color:var(--bad)}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-size:12px;text-transform:uppercase}.section{margin-top:18px}.empty{padding:18px 0;color:var(--muted)}@media(max-width:720px){.head{display:block}.head p{margin-bottom:0}.table-wrap{overflow:auto}}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}.wrap{width:min(1120px,calc(100% - 32px));margin:34px auto}.head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:22px}h1,h2{margin:0}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}.value{font-size:24px;font-weight:750;margin-top:8px}.badge{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:750}.success{background:#123b2a;color:var(--ok)}.partial,.skipped{background:#3c3115;color:var(--warn)}.failed{background:#451d27;color:var(--bad)}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-size:12px;text-transform:uppercase}.section{margin-top:18px}.empty{padding:18px 0;color:var(--muted)}.freshness-banner{border-radius:14px;padding:14px 18px;margin-bottom:18px;font-weight:750}@media(max-width:720px){.head{display:block}.head p{margin-bottom:0}.table-wrap{overflow:auto}}
   </style>
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
-  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
-<!-- favicon:start -->
-<link rel="icon" href="/favicon.ico" sizes="any" />
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
-<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
-<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<link rel="manifest" href="/site.webmanifest" />
-<!-- favicon:end -->
-  <!-- preconnect:start -->
-<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
-<link rel="dns-prefetch" href="https://media.api-sports.io" />
-<!-- preconnect:end -->
 </head>
 <body>
 <main class="wrap" id="data-update-monitor">
   <div class="head"><div><h1>Otomatik Güncelleme İzleme</h1><p class="muted">Europe/Istanbul · tam güncelleme 05:00 · saatlik güncelleme diğer saat başları</p></div><div id="updated" class="muted">Yükleniyor…</div></div>
+  <!-- CRON SESSİZCE DURABİLİR: koşu GitHub Actions'ta hiç başlamazsa (kota/faturalama)
+       depoya hiçbir şey yazılmaz, updated-status.json son başarılı yazımda donar ve
+       aşağıdaki kart/tablo yeşil görünmeye devam eder. Bu bant, en son kayıtlı koşunun
+       YAŞINI bekleneni aşınca bağımsız olarak kırmızıya çevirir; veri yazılmasa da tetiklenir. -->
+  <div id="freshness-banner" class="freshness-banner"></div>
   <section class="grid">
     <article class="card"><h2>Son çalışma</h2><div id="latest" class="value">—</div><div id="latest-time" class="muted"></div></article>
     <article class="card"><h2>Son tam güncelleme</h2><div id="full" class="value">—</div><div id="full-time" class="muted"></div></article>
@@ -56,9 +34,38 @@
   function duration(ms){if(!Number.isFinite(Number(ms)))return "—";var seconds=Math.round(Number(ms)/1000);return seconds<60?seconds+" sn":Math.floor(seconds/60)+" dk "+seconds%60+" sn";}
   function badge(record){if(!record)return "—";var status=record.status||"unknown";return '<span class="badge '+esc(status)+'">'+esc(status)+'</span>';}
   function setRecord(prefix,record){document.getElementById(prefix).innerHTML=badge(record);document.getElementById(prefix+"-time").textContent=time(record&&(record.finishedAt||record.startedAt));}
+  // Saatlik koşum aralığı 60 dk; FRESH_MS bir tazeleme kaçırılsa bile alarm
+  // vermeyecek tampon taşıyor. STALE_MS aşıldığında koşu muhtemelen art arda
+  // başarısız oluyor ya da GitHub Actions hiç başlamıyor (kota/faturalama) —
+  // ikisi de otomatik güncellemenin durduğu anlamına gelir.
+  var FRESH_MS = 90 * 60 * 1000;
+  var STALE_MS = 6 * 60 * 60 * 1000;
+  function ageMs(record){
+    var stamp = record && (record.finishedAt || record.startedAt);
+    var parsed = stamp ? Date.parse(stamp) : NaN;
+    return Number.isFinite(parsed) ? Date.now() - parsed : null;
+  }
+  function fmtAge(ms){
+    if (ms === null) return "bilinmiyor";
+    var minutes = Math.round(ms / 60000);
+    if (minutes < 60) return minutes + " dk önce";
+    var hours = Math.floor(minutes / 60);
+    if (hours < 48) return hours + " sa " + (minutes % 60) + " dk önce";
+    return Math.floor(hours / 24) + " gün " + (hours % 24) + " sa önce";
+  }
+  function renderFreshness(latest){
+    var banner = document.getElementById("freshness-banner");
+    var ms = ageMs(latest);
+    var level = ms === null || ms > STALE_MS ? "failed" : (ms > FRESH_MS ? "partial" : "success");
+    var label = level === "success" ? "Güncel" : (level === "partial" ? "Bayat" : "KRİTİK — otomatik güncelleme durmuş olabilir");
+    banner.className = "freshness-banner " + level;
+    banner.textContent = label + " · en son kayıtlı çalışma " + fmtAge(ms) +
+      (level === "success" ? "" : " — GitHub Actions çalışma geçmişini kontrol edin (kota/faturalama veya kaynak hatası olabilir).");
+  }
   function render(data){
     var latest=data.lastUpdate||((data.history||[])[0])||null;
     document.getElementById("updated").textContent="Status: "+time(data.updatedAt);
+    renderFreshness(latest);
     setRecord("latest",latest);setRecord("full",data.lastFull);setRecord("hourly",data.lastHourly);
     var counts=latest&&latest.counts||{};document.getElementById("files").textContent=counts.filesChanged||0;
     document.getElementById("counts").textContent="Maç "+(counts.matchesUpdated||0)+" · Haber "+(counts.newsUpdated||0)+" · Takım "+(counts.teamsUpdated||0)+" · Oyuncu "+(counts.playersUpdated||0);
