@@ -20609,12 +20609,17 @@ a.motm-week__card:focus-visible {
 
   /* Mobilde alttaki sabit gezinme çubuğu, sayfa ilk açıldığında tablonun
      ilk satırlarını kapatıyordu — başlık öncesi boşluk çok büyüktü. Masaüstü
-     değerlerine dokunmadan yalnızca bu aralık sıkıştırıldı. */
-  .evergreen-page { padding-top: 16px; }
-  .evergreen-breadcrumb { margin-bottom: 14px; }
-  .evergreen-hero { margin-bottom: 16px; }
-  .evergreen-hero h1 { margin: 6px 0 8px; }
-  .evergreen-section, .evergreen-related { margin-top: 16px; }
+     değerlerine dokunmadan yalnızca bu aralık sıkıştırıldı. Sayfalar arası
+     açıklama metni uzunluğu farklı olduğundan (bkz. form-tablosu/super-lig
+     vb.) yalnızca en kısa açıklamayı temel alan bir sıkıştırma yetmiyordu —
+     pay biraz daha genişletildi ki daha uzun açıklamalı sayfalarda da ilk
+     satır menünün üzerinde kalsın. */
+  .evergreen-page { padding-top: 10px; }
+  .evergreen-breadcrumb { margin-bottom: 10px; }
+  .evergreen-hero { margin-bottom: 10px; }
+  .evergreen-hero h1 { margin: 4px 0 6px; }
+  .evergreen-hero > p { font-size: .95rem; line-height: 1.5; }
+  .evergreen-section, .evergreen-related { margin-top: 10px; }
 }
 @media (max-width: 480px) {
   .evergreen-player-list, .evergreen-link-grid { grid-template-columns: 1fr; }
