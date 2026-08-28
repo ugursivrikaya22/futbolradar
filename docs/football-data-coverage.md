@@ -6,7 +6,22 @@ bloğunun genel bakışıdır. Kadro senkron detayları için
 `docs/fixture-sync-operations.md`, resmî ilk 11 için
 `docs/official-lineup-integration.md`'a bakın.
 
-## Önemli önkoşul: canlı sağlayıcı yapılandırılmadı
+## GÜNCEL DEĞİL — bu belge bir tamamlanma raporu olarak yazıldı
+
+Aşağıdaki "Önemli önkoşul" bölümü ve §5'teki sayılar, canlı sağlayıcı henüz
+bağlanmamışken ("v1" bloğunun tesliminde) yazıldı ve o andan beri
+güncellenmedi. `APIFOOTBALL_API_KEY` artık production'da tanımlı ve canlı
+veri akıyor: `data/football-coverage-summary.json` (üreten script:
+`scripts/audit-football-coverage.mjs`) en son 2026-08-24'te 18 takım, 672
+oyuncu (659'u güncel Süper Lig kadrosunda), coverageScore 86/100 raporladı —
+aşağıdaki "5 takım, 8 oyuncu, ~26/100" değil. Güncel sayı için her zaman
+`data/football-coverage-summary.json`'a bakın; bu dosyadaki metin tarihsel
+bağlam olarak kalsın diye elle düzeltilmedi. `.github/workflows/`
+altındaki gerçek dosya adı ve zamanlaması için de bu belgenin §15'i değil
+`docs/scheduled-updates.md` esas alınmalı — workflow o belgenin yazılmasından
+sonra yeniden yapılandırıldı.
+
+## Önemli önkoşul: canlı sağlayıcı yapılandırılmadı (TARİHSEL — yukarıya bakın)
 
 Bu depoda hiçbir `APIFOOTBALL_API_KEY` (veya eşdeğeri) ortam değişkeni tanımlı
 değil. Bu blokta eklenen tüm senkron altyapısı (`services/teamSyncService.js`,
@@ -40,9 +55,10 @@ ilk 11 üretilebilirlik %25, fikstür hazırlığı %10, resmî ilk 11 kapsamı 
 Bu script **koddaki hiçbir sorunu çözmez**, sadece mevcut durumu dürüstçe
 ölçer — kapsam sorununun "çözüldüğü" varsayılmaz.
 
-Bu depoda şu an (canlı sağlayıcı olmadan): 5 takım, 8 canonical oyuncu, 6
-"güncel Süper Lig oyuncusu", coverage score ~26/100. Bu düşük skor gerçek ve
-beklenen bir durumdur, script hatası değildir.
+TARİHSEL (bkz. belge başındaki uyarı) — canlı sağlayıcı henüz yokken: 5 takım,
+8 canonical oyuncu, 6 "güncel Süper Lig oyuncusu", coverage score ~26/100. Bu
+düşük skor o an için gerçek ve beklenen bir durumdu, script hatası değildi.
+Güncel sayı için `data/football-coverage-summary.json`'a bakın.
 
 ## 12. Dry-run nasıl çalıştırılır?
 
