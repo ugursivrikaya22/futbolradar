@@ -344,6 +344,7 @@ function pageHtml(player) {
       </section>
     </main>
     ${siteFooter({ base: "../" })}
+    <script src="../player-profile.js" defer></script>
     <script src="../site.js" defer></script>
     <script src="../app.js" defer></script>
   </body>

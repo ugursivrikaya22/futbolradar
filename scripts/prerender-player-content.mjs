@@ -6,6 +6,8 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
+const { buildPlayerProfile } = require("../services/playerProfileService.js");
+const playerProfileView = require("../player-profile.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 
@@ -95,72 +97,40 @@ function transferCard(transfer) {
   </article>`;
 }
 
-function profileContent(player) {
+/**
+ * Oyuncu profilinin sunucu tarafında basılmış hâli.
+ *
+ * Aynı görünüm modülü tarayıcıda da çalışır; böylece arama motorunun gördüğü
+ * HTML ile kullanıcının API tazelemesinden sonra gördüğü HTML aynı yapıdadır.
+ * Kabuk (`player-profile-shell`) korunur: sayfa açıldığında modül canlı
+ * veriyle içeriği tazeler, istek başarısız olursa burada basılan içerik
+ * yerinde kalır.
+ *
+ * Kart güvenilirliği kararı profil derleyicisinin içinde verilir; doğrulanmamış
+ * kayıtta ölçüm blokları hiç çizilmez, yerine gerekçe kartı basılır.
+ */
+function profileShell(player) {
   const view = publicPlayerView(player);
-  const age = player.computedAge || player.age || "Bilinmiyor";
+  const profile = buildPlayerProfile({ player, players, transfers, credibility: view });
+  const html = playerProfileView.renderProfileHtml(profile, { hrefPrefix: "./", rootPrefix: "../" });
 
-  // Doğrulanmamış kayıtta ölçüm ızgarası hiç çizilmez. "Veri yok" yazan bir
-  // hücre bile, yanındaki dolu hücrelerle birlikte okununca ölçülmüş bir
-  // tablo izlenimi verir; oysa hiçbiri doğrulanmamış.
-  if (!view.verified) {
-    return `<article class="card data-empty" data-card="empty-state" data-player-verified="false">
-      <strong>Doğrulanmış veri bekleniyor</strong>
-      <span>${escapeHtml(player.name)} için güncel kulüp, performans metrikleri ve piyasa değeri,
-      sağlayıcı kaydıyla eşleştirilip doğrulanana kadar yayımlanmıyor. Tahmini değer gösterilmiyor.</span>
-    </article>`;
+  return `<section class="player-profile-shell" data-api-target="player-detail" data-player-id="${escapeHtml(player.id)}" data-player-verified="${view.verified ? "true" : "false"}" data-prerendered="1">${html}</section>`;
+}
+
+/**
+ * Kabuğu yeniden yazar. Baştan-sona indeks aramasıyla çalışır: basılan profil
+ * iç içe `<section>` düğümleri içeriyor, tembel bir regex ilk kapanış
+ * etiketinde durup sayfayı bozardı.
+ */
+function replaceProfileShell(html, player) {
+  const start = html.indexOf('<section class="player-profile-shell"');
+  const end = html.indexOf('<section class="static-profile-links"');
+
+  if (start === -1 || end === -1 || end <= start) {
+    return html;
   }
 
-  // Izgara KAPIDAN GEÇEN alanlardan kurulur. Ham kayıt okunduğunda kadro
-  // senkronundan gelen varsayılanlar (Overall 24, Gol 0, Dakika 0) ölçülmüş
-  // bir tablo gibi basılıyordu; "Veri yok" yazan hücreler de yanlarındaki
-  // dolu hücrelerle birlikte okununca aynı izlenimi güçlendiriyordu.
-  // Değeri olmayan ölçü satır AÇMAZ.
-  const f = view.fields;
-  const metrics = [
-    ["Overall", f.overallRating || f.aiRating || f.rating],
-    ["Form", f.formRating || f.form],
-    ["Gol", f.goals],
-    ["Asist", f.assists],
-    ["Dakika", f.minutesPlayed ?? f.minutes],
-    ["Piyasa", f.marketValue || (f.marketValueEur !== undefined ? formatMarketValueEur(f.marketValueEur) : null)]
-  ].filter(([, value]) => value !== null && value !== undefined && String(value).trim() !== "");
-  const radar = player.radar || {};
-  // Axes are null until real performance data exists; rendering them anyway
-  // produces bare labels with no value, so drop them and fall back to the
-  // "yakinda" note below.
-  // Radar anahtarları veri modelinde İngilizce; sayfada ham anahtar
-  // ("finishing", "pressing") görünüyordu. Türkçe etiketler tek yerde.
-  const RADAR_LABELS = {
-    finishing: "Bitiricilik",
-    creativity: "Yaratıcılık",
-    pressing: "Pres",
-    tempo: "Tempo",
-    consistency: "İstikrar",
-    passing: "Pas",
-    dribbling: "Top sürme",
-    defending: "Savunma",
-    aerial: "Hava topu",
-    speed: "Hız"
-  };
-  const radarItems = Object.entries(radar)
-    .filter(([key]) => key !== "dataConfidence")
-    .filter(([, value]) => Number.isFinite(Number(value)) && value !== null && value !== "")
-    .slice(0, 5)
-    .map(([key, value]) => `<span>${escapeHtml(RADAR_LABELS[key] || key)} <b>${escapeHtml(value)}</b></span>`)
-    .join("");
-  // İşaret, QA ve denetimin "bu sayfa doğrulanmış bir kayda mı dayanıyor"
-  // sorusunu yanıtladığı tek yer; doğrulanmamış dalda basılıyor ama
-  // doğrulanmış dalda unutulmuştu, bu yüzden 480 profil işaretsiz kalıyordu.
-  const metricsHtml = metrics.length
-    ? `<div class="metric-grid profile-metrics">${metrics.map(([label, value]) => `<span>${escapeHtml(label)} <b>${escapeHtml(value)}</b></span>`).join("")}</div>`
-    : "";
-  return `<section class="profile-section profile-content-prerender" data-player-verified="true" aria-label="${escapeHtml(player.name)} performans özeti">
-    ${metricsHtml}
-    <div class="profile-section-head"><h2>Oyuncu özeti</h2><span>${escapeHtml(team(player))} · ${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)} yaş</span></div>
-    <p>${escapeHtml(player.summary || "Oyuncunun formu, rol etkisi ve radar metrikleri birlikte okunur.")}</p>
-    <div class="radar-mini-bars">${radarItems || "<span>Alt metrikler yakında</span>"}</div>
-    <div class="tag-row"><span class="tag green">Güncel takım: ${escapeHtml(team(player))}</span><span class="tag soft">${escapeHtml(player.league || "Süper Lig")}</span></div>
-  </section>`;
+  return `${html.slice(0, start)}${profileShell(player)}\n      ${html.slice(end)}`;
 }
 
 /**
@@ -231,7 +201,7 @@ function replaceFile(file, transform) {
 }
 
 for (const player of players) {
-  replaceFile(`oyuncular/${player.id}.html`, (html) => html.replace(/<section class="player-profile-shell"[\s\S]*?<\/section>/, profileContent(player)));
+  replaceFile(`oyuncular/${player.id}.html`, (html) => replaceProfileShell(html, player));
 }
 
 for (const slug of ["forvetler", "kaleciler", "defanslar", "orta-sahalar", "genc-yetenekler", "en-iyi-oyuncular"]) {

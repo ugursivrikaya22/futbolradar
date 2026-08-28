@@ -8911,6 +8911,16 @@
       return;
     }
 
+    // Oyuncu profili artık player-profile.js modülünde derleniyor: aynı
+    // görünüm hem statik sayfa üretiminde hem tarayıcıda kullanıldığı için
+    // SEO'ya basılan HTML ile tazelenen HTML ayrışmıyor. Modül sayfaya
+    // yüklenmişse render sorumluluğu onundur; buradaki eski akış yalnızca
+    // modülsüz sayfalar için yedek kalır.
+    if (window.FutbolRadarPlayerProfile && typeof window.FutbolRadarPlayerProfile.mount === "function") {
+      window.FutbolRadarPlayerProfile.mount(target);
+      return;
+    }
+
     var query = new URLSearchParams(window.location.search);
     var playerId = target.getAttribute("data-player-id") || query.get("id") || query.get("player");
 

@@ -2,6 +2,11 @@ const { getProvider, mockProvider } = require("../services/providers");
 const { mergeProviderPlayers } = require("../services/playerService");
 const { enrichPlayerRating } = require("../services/ratingService");
 const { MODEL_VERSION: MATCH_PREDICTION_MODEL_VERSION } = require("../services/matchPredictionService");
+const {
+  DEFAULT_RECENT_WINDOW,
+  MAX_RECENT_WINDOW,
+  buildPlayerProfile
+} = require("../services/playerProfileService");
 const { getFixtureWeeks, groupMatchesIntoWeeks } = require("../services/superLigFixtureService");
 const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
 const { handleMotmVote } = require("../server/motmVoteRoute");
@@ -95,6 +100,35 @@ function rankingScore(player, type) {
   return numberValue(radar.overall, numberValue(player.overallRating || player.aiRating || player.rating, 0));
 }
 
+/**
+ * Sağlayıcıdan son maç kırılımını çeker. Sağlayıcı kimliği yoksa (kürasyonlu
+ * kayıtlar `mock-*` kimliği taşır) veya çağrı başarısız olursa boş dizi
+ * döner; profil bu durumda maç kırılımı için boş durum gösterir, uydurma
+ * maç satırı üretilmez.
+ */
+async function loadPlayerMatchLog(player, query) {
+  const provider = getProvider("players");
+  const providerId = String(player.providerId || "");
+  const teamId = String(player.currentTeamProviderId || "");
+
+  if (!provider || typeof provider.getPlayerMatchLog !== "function") {
+    return [];
+  }
+
+  if (!/^\d+$/.test(providerId) || !/^\d+$/.test(teamId)) {
+    return [];
+  }
+
+  const last = Math.max(1, Math.min(Number(query.last || query.matches) || DEFAULT_RECENT_WINDOW, MAX_RECENT_WINDOW));
+
+  try {
+    const log = await withTimeout(provider.getPlayerMatchLog({ playerId: providerId, teamId, last }), DEFAULT_TIMEOUT_MS * 2);
+    return Array.isArray(log) ? log : [];
+  } catch (error) {
+    return [];
+  }
+}
+
 async function handlePlayerDetail(req, res, query) {
   const wanted = normalizeText(query.id || query.slug || query.player || query.playerId);
   const { data, source } = await getPlayerData(query);
@@ -108,7 +142,26 @@ async function handlePlayerDetail(req, res, query) {
     return sendError(res, 200, "Oyuncu kaydi bulunamadi.", "PLAYER_NOT_FOUND", source);
   }
 
-  return sendSuccess(res, [player], source);
+  const matchLog = await loadPlayerMatchLog(player, query);
+  let transfers = [];
+  try {
+    transfers = require("../data/transfers.json");
+  } catch (error) {
+    transfers = [];
+  }
+
+  const profile = buildPlayerProfile({
+    player,
+    players: data,
+    matchLog,
+    transfers,
+    recentWindow: query.last || query.matches
+  });
+
+  return sendSuccess(res, [{ ...player, profile }], source, undefined, {
+    profileVersion: profile ? profile.version : null,
+    matchLogSource: matchLog.length ? "provider" : "unavailable"
+  });
 }
 
 async function handlePlayerCompare(req, res, query) {
