@@ -237,7 +237,13 @@ function item(overrides = {}) {
     ids.add(entry.id);
   }
 
-  const { items, rejected } = normalizeTickerItems(payload, { now });
+  // Bu bölüm dosyanın synthetic testlerinde kullanılan sabit `now`'ı KASITLI
+  // OLARAK kullanmaz: burada sınanan gerçek, canlı veri dosyasının şu anki
+  // duvar saatine göre geçerli olup olmadığı. Sabit tarih kullanılsaydı
+  // gündem dosyası ilerledikçe test çürürdü — bkz. test-ticker-feed.mjs
+  // içindeki aynı hatanın belgelenmiş düzeltmesi ("Test saati VERİDEN
+  // türetilir, sabit yazılmaz").
+  const { items, rejected } = normalizeTickerItems(payload, { now: new Date() });
   console.log(`test-news-ticker: gerçek dosyadan ${items.length} öğe geçti, ${rejected.length} elendi`);
   for (const row of rejected) {
     console.log(`test-news-ticker:   elendi ${row.id}: ${row.errors.join("; ")}`);
