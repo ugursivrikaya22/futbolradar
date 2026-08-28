@@ -180,3 +180,28 @@ console.log(`Canlı skorlar bandı testleri geçti (yalnızca canlı maç, taraf
     `kalan ${allPages.length - expected.length} sayfada yok, 4 dil çifti eşit).`
   );
 }
+
+// ── 9. Boşken bant görünmemeli ───────────────────────────────────────────
+//
+// Sunucu (liveTickerBlock) ve istemci (app.js#LiveScoresTicker.render) canlı
+// maç yokken `.live-scores-ticker` öğesine `data-empty` işareti koyar; page.css
+// bunu `display: none` ile gizler. Üçü de aynı işaretten okumalı, yoksa bant
+// içeriksiz bir çubuk olarak sayfada asılı kalır.
+
+{
+  const css = fs.readFileSync(path.join(root, "page.css"), "utf8");
+  assert.match(
+    css,
+    /\.live-scores-ticker\[data-empty\]\s*\{[^}]*display:\s*none/,
+    "page.css .live-scores-ticker[data-empty] display:none içermeli — boşken bant görünmemeli"
+  );
+
+  const clientJs = fs.readFileSync(path.join(root, "app.js"), "utf8");
+  assert.match(
+    clientJs,
+    /toggleAttribute\("data-empty",\s*!items\.length\)/,
+    "istemci LiveScoresTicker.render() data-empty işaretini toggle etmeli"
+  );
+
+  console.log("Boş bant görünürlük testi geçti (data-empty → display:none, sunucu/istemci tutarlı).");
+}
