@@ -387,21 +387,33 @@ function normalizeLiveAnalysis(item) {
 async function getMatches(query) {
   const requestedCompetition = query && query.league ? String(query.league).trim() : "";
   const competition = findCompetition(query && (query.requestedCompetition || query.league));
+  const live = query && query.live;
+  const isLiveQuery = live === true || live === "1" || live === "true" || live === "all";
+  // Canlı sorgu TARİHE değil DURUMA göredir. `dateFrom`/`dateTo` ile
+  // sınırlamak iki sorunu birden yaratıyordu: (1) `query.live` hiç
+  // okunmuyordu, bu yüzden api-football tükendiğinde bu sağlayıcı yalnızca
+  // "bugünün fikstürünü" döndürüyordu — canlı olmayan maçlar da içeren, canlı
+  // olanları AYIRT ETMEYEN bir liste; (2) İstanbul gece yarısını aşan bir maç
+  // (TSİ günü değişmiş ama maç hâlâ sürüyor) tarih filtresiyle tamamen
+  // dışarıda kalıyordu. football-data.org'un `status=LIVE` filtresi IN_PLAY/
+  // PAUSED maçları tarihten bağımsız döndürür; canlı sorguda date yerine bu
+  // kullanılır.
   const dateFrom = query && query.date ? toDateOnly(query.date) : toDateOnly();
   const dateTo = dateFrom;
+  const params = isLiveQuery ? { status: "LIVE" } : { dateFrom, dateTo };
   let payload;
 
   if (requestedCompetition) {
     try {
-      payload = await providerFetch(`/competitions/${resolveCompetitionCode(query)}/matches`, { dateFrom, dateTo });
+      payload = await providerFetch(`/competitions/${resolveCompetitionCode(query)}/matches`, params);
     } catch (error) {
       if (!competition || !["PROVIDER_AUTH_ERROR", "PROVIDER_HTTP_ERROR"].includes(error.code)) {
         throw error;
       }
-      payload = await providerFetch("/matches", { dateFrom, dateTo });
+      payload = await providerFetch("/matches", params);
     }
   } else {
-    payload = await providerFetch("/matches", { dateFrom, dateTo });
+    payload = await providerFetch("/matches", params);
   }
 
   const allMatches = (payload.matches || payload.data || []).map(normalizeLiveMatch);
