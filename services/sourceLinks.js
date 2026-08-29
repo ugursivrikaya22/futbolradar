@@ -94,7 +94,10 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "haberturk.com",
     "ahaber.com.tr",
     "takvim.com.tr",
-    "t24.com.tr"
+    "t24.com.tr",
+    // CNN Türk: Leão-Galatasaray KAP bildirisinin (29 Ağustos 2026) tam
+    // metnini doğrudan aktaran ulusal yayın kuruluşu.
+    "cnnturk.com"
   ]),
 
   // Yurt dışı yayın organları. Türk basınında karşılığı olmayan haberlerde
