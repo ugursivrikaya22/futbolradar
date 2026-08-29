@@ -113,7 +113,11 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "sport.sky.it",
     "ansa.it",
     "corrieredellosport.it",
-    "football-italia.net"
+    "football-italia.net",
+    // Fabrizio Romano'nun "here we go" aktarımı için: SempreMilan, AC Milan'a
+    // odaklanan yerleşik İngilizce kaynak, künyeli alıntı yapıyor (ham X/Twitter
+    // gönderisi yerine).
+    "sempremilan.com"
   ]),
 
   // BİRİNCİL KAYIT PLATFORMU — diğer gruplardan farkı bilinçli.
