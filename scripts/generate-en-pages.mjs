@@ -640,7 +640,7 @@ function featuredCarousel() {
     const stateLabel = state === "FINISHED"
       ? label("card.fullTimeShort")
       : state === "LIVE"
-        ? label("status.LIVE")
+        ? `${label("status.LIVE")}${Number.isFinite(Number(match.minute)) ? ` ${match.minute}'` : ""}`
         : label("common.kickoff");
     const dateLabel = istanbulDay(match.kickoff || match.date) === TODAY ? "Today" : formatDate(match.kickoff, LOCALE);
     const competition = competitionLabel(match.league, LOCALE);

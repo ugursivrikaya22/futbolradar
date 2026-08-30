@@ -559,7 +559,11 @@ function staticFeaturedFixture() {
       && match.score.away !== null && match.score.away !== undefined;
     const headline = hasScore ? `${match.score.home} - ${match.score.away}` : (match.time || "—");
     // Skor/saat büyük alanda zaten yazıyor; rozet onu tekrar etmesin.
-    const stateLabel = status === "FINISHED" ? "Maç sonucu" : status === "LIVE" ? "Canlı" : "Başlama saati";
+    const stateLabel = status === "FINISHED"
+      ? "Maç sonucu"
+      : status === "LIVE"
+        ? `Canlı${Number.isFinite(Number(match.minute)) ? ` ${match.minute}'` : ""}`
+        : "Başlama saati";
     const dateLabel = istanbulDay(match.kickoff) === today ? "Bugün" : longDateLabel(match.kickoff);
 
     return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}" data-featured-reason="${escapeHtml(entry.reason)}" data-featured-turkish="${entry.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(entry.reasonLabel)}">
