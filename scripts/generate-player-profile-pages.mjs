@@ -7,12 +7,60 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { getPlayers } = require("../services/playerService.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
-const { publicPlayerView } = require("../services/cardCredibility.js");
+const { publicPlayerView, statsAreVerified } = require("../services/cardCredibility.js");
 const { annotateDuplicates, sameCanonicalPlayer } = require("../services/duplicatePlayerService.js");
 const players = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
+const confirmedTransfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"))
+  .filter((transfer) => transfer.status === "confirmed");
+const transferWindows = (JSON.parse(fs.readFileSync(path.join(root, "data", "transfer-window.json"), "utf8")).windows || []);
 const outDir = path.join(root, "oyuncular");
 const publicOutDir = path.join(root, "public", "oyuncular");
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
+
+/**
+ * "Yeni transfer" TFF'in resmî tescil penceresine göre tanımlanır — keyfi bir
+ * gün eşiği değil. Kanté'nin Şubat 2026 (2025/26 kış) transferi bu yüzden
+ * elenir: iki pencerenin de dışında kalıyor, artık "yeni" değil.
+ */
+function isWithinTransferWindow(dateValue) {
+  const time = Date.parse(`${dateValue}T12:00:00Z`);
+  if (!Number.isFinite(time)) return false;
+  return transferWindows.some((windowItem) => {
+    const opens = Date.parse(windowItem.opensAt);
+    const closes = Date.parse(windowItem.closesAt);
+    return Number.isFinite(opens) && Number.isFinite(closes) && time >= opens && time <= closes;
+  });
+}
+
+/** Serbest kalma bir "yeni transfer" kutlaması değil — yalnızca gerçek bir kulübe katılım. */
+function isActiveClub(teamName) {
+  return Boolean(teamName) && !/serbest|free agent|kulüpsüz|released/i.test(teamName);
+}
+
+/**
+ * Kaydın kaynağı bir kulüp açıklaması (transfers.json `status: "confirmed"`,
+ * `sourceUrl` zorunlu) — api-football'un sayısal sağlayıcı kimliğinden
+ * BAĞIMSIZ bir doğrulama. Bu yüzden burada `publicPlayerView`'in genel
+ * güvenilirlik kapısı (gerçek providerId şartı) atlanır: performans/rating
+ * alanları o kapıdan geçmeden yayımlanmaz, ama transfer kaydının kendisi
+ * ayrıca doğrulanmış sayılır.
+ */
+function latestRecentTransferFor(player) {
+  const matches = confirmedTransfers.filter((transfer) => transfer.playerId === player.id);
+  if (!matches.length) return null;
+  const latest = matches.slice().sort((a, b) => String(a.date || "").localeCompare(String(b.date || ""))).at(-1);
+  return isWithinTransferWindow(latest.date) && isActiveClub(latest.toTeam) ? latest : null;
+}
+
+function transferFeeLabel(transfer) {
+  return transfer.fee || (Number(transfer.feeEur) === 0 ? "Bedelsiz" : "Açıklanmadı");
+}
+
+function formatTransferDateTr(dateValue) {
+  const parsed = new Date(`${dateValue}`.length <= 10 ? `${dateValue}T12:00:00Z` : dateValue);
+  if (Number.isNaN(parsed.getTime())) return String(dateValue || "");
+  return new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "long", year: "numeric" }).format(parsed);
+}
 
 function writeGeneratedFile(file, contents) {
   for (let attempt = 0; attempt < 12; attempt += 1) {
@@ -212,24 +260,85 @@ function relatedLinks(currentId) {
     .join("\n        ");
 }
 
+/**
+ * Transfer bilgi kartı — yalnızca aktif tescil penceresinde kesinleşmiş
+ * (kulüp açıklamasıyla kaynaklı) bir transferi olan oyuncularda basılır.
+ * Sayfanın en üstünde, hero'nun hemen altında yer alır ("belirgin" şartı).
+ *
+ * Sezon istatistikleri yalnızca `statsAreVerified` geçerse gerçek sayıyla
+ * gösterilir; aksi hâlde "henüz toplanmadı" notu basılır — yeni transfer
+ * olan bir oyuncunun 0/0/0 kadro-senkron varsayılanı, gerçek "0 maçta 0 gol"
+ * ölçümü sanılmasın diye.
+ */
+function transferHeroHtml(player, transfer, age) {
+  const statsKnown = statsAreVerified(player);
+  const statsBlock = statsKnown
+    ? `<div class="transfer-radar-meta">
+        <article><span>Maç (güncel sezon)</span><b>${escapeHtml(player.appearances)}</b></article>
+        <article><span>Gol</span><b>${escapeHtml(player.goals)}</b></article>
+        <article><span>Asist</span><b>${escapeHtml(player.assists)}</b></article>
+        <article><span>Dakika</span><b>${escapeHtml(player.minutesPlayed != null ? player.minutesPlayed : player.minutes)}</b></article>
+      </div>`
+    : `<p class="transfer-note">Güncel sezon istatistikleri henüz toplanmadı; ${escapeHtml(transfer.toTeam)} forması altındaki ilk verilerle güncellenecek.</p>`;
+
+  return `<section class="transfer-highlight" aria-label="Transfer bilgisi">
+        <article class="transfer-radar-card" data-card="transfer-record" data-transfer="${escapeHtml(transfer.id || transfer.playerId)}">
+          <header>
+            <div class="player-card-title"><div><span class="card-kicker">${escapeHtml(transfer.league || "Süper Lig")} · Yeni Transfer</span><h2>${escapeHtml(player.name)} — ${escapeHtml(transfer.toTeam)}</h2></div></div>
+            <strong>${escapeHtml(formatTransferDateTr(transfer.date))}</strong>
+          </header>
+          <div class="transfer-route transfer-route-large"><b>${escapeHtml(transfer.fromTeam || "Önceki kulüp bilinmiyor")}</b><em>→</em><b>${escapeHtml(transfer.toTeam || "Yeni kulüp bilinmiyor")}</b></div>
+          <div class="transfer-radar-meta">
+            <article><span>Güncel kulüp</span><b>${escapeHtml(transfer.toTeam)}</b></article>
+            <article><span>Eski kulüp</span><b>${escapeHtml(transfer.fromTeam)}</b></article>
+            <article><span>Transfer tarihi</span><b>${escapeHtml(formatTransferDateTr(transfer.date))}</b></article>
+            <article><span>Transfer bedeli</span><b>${escapeHtml(transferFeeLabel(transfer))}</b></article>
+            <article><span>Mevki</span><b>${escapeHtml(player.position || "Mevki bekleniyor")}</b></article>
+            <article><span>Yaş</span><b>${escapeHtml(age)}</b></article>
+          </div>
+          ${statsBlock}
+          ${transfer.note ? `<p class="transfer-note">${escapeHtml(transfer.note)}</p>` : ""}
+          <p class="transfer-verification">Kaynak: ${escapeHtml(transfer.sourceName || "Kulüp açıklaması")} · Son kontrol: ${escapeHtml(formatTransferDateTr(transfer.lastVerifiedAt || transfer.date))}</p>
+          <div class="player-status-row"><span class="status-badge verified">Transfer kesinleşti</span></div>
+        </article>
+      </section>`;
+}
+
+function transferHeroDescription(player, transfer) {
+  const feeLabel = transferFeeLabel(transfer);
+  const feePhrase = feeLabel ? `, transfer bedeli ${feeLabel}` : "";
+  return `${player.name}: ${transfer.fromTeam} → ${transfer.toTeam} transferi (${formatTransferDateTr(transfer.date)})${feePhrase}. ` +
+    `Güncel kulüp, eski kulüp, mevki, yaş ve sezon istatistikleri FutbolRadar'da.`;
+}
+
 function pageHtml(player) {
   // TEK YETKİLİ KARAR. URL ve sayfa iskeleti korunur — 110 profilin bilgi
   // mimarisi bozulmaz. Değişen tek şey, doğrulanmamış kayıtta hangi
   // alanların yayımlandığı.
   const view = publicPlayerView(player);
-
+  // Kulübün KENDİSİ (transfer kartı, eyebrow, başlık) transfers.json'daki
+  // kesinleşmiş, kaynaklı kayıttan gösterilir — `publicPlayerView`'in genel
+  // kapısından (gerçek sağlayıcı kimliği şartı) BAĞIMSIZ bir doğrulama.
+  // schema.org `memberOf` ise KASITLI OLARAK bu yoldan açılmaz:
+  // test-player-surface-enforcement.mjs, makine okunur kulüp iddiasının
+  // tek yetkili karardan (`view.verified`) geçmesini zorunlu kılıyor.
+  const recentTransfer = latestRecentTransferFor(player);
   const team = view.verified
     ? (player.currentTeam || player.team || "Takım bilgisi yakında")
     : "Kulüp bilgisi doğrulanmadı";
   const seoTeam = view.verified ? playerSeoTeamLabel(player) : "Oyuncu Profili";
   const age = player.computedAge || player.age || "Yaş yakında";
-  const title = view.verified
-    ? `${player.name} Oyuncu Profili | ${seoTeam} | FutbolRadar`
-    : `${player.name} Oyuncu Profili | FutbolRadar`;
-  const description = playerDescription(player, view);
-  const lead = view.verified
-    ? (playerNeedsTransferReview(player) ? description : player.summary || description)
-    : description;
+  const title = recentTransfer
+    ? `${player.name} ${recentTransfer.toTeam} Transferi ve İstatistikleri | FutbolRadar`
+    : view.verified
+      ? `${player.name} Oyuncu Profili | ${seoTeam} | FutbolRadar`
+      : `${player.name} Oyuncu Profili | FutbolRadar`;
+  const description = recentTransfer ? transferHeroDescription(player, recentTransfer) : playerDescription(player, view);
+  const lead = recentTransfer
+    ? description
+    : view.verified
+      ? (playerNeedsTransferReview(player) ? description : player.summary || description)
+      : description;
   const canonical = `https://www.futbolradar.com/oyuncular/${player.id}.html`;
   // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
   // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
@@ -308,7 +417,7 @@ function pageHtml(player) {
         <div class="hero-row">
           ${profileAvatarHtml(player)}
           <div>
-            <span class="eyebrow">${escapeHtml(view.verified ? playerTeamEyebrow(player) : "Oyuncu profili")}</span>
+            <span class="eyebrow">${escapeHtml(recentTransfer ? `Yeni Transfer · ${recentTransfer.toTeam}` : view.verified ? playerTeamEyebrow(player) : "Oyuncu profili")}</span>
             <h1>${escapeHtml(player.name)}</h1>
             <p class="lead">${escapeHtml(lead)}</p>
           </div>
@@ -319,11 +428,14 @@ function pageHtml(player) {
             : `<span class="hero-meta">${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)}</span>`}
         </div>
       </section>
+      ${recentTransfer ? transferHeroHtml(player, recentTransfer, age) : ""}
       ${view.verified ? "" : `<section class="player-unverified-note" aria-label="Veri durumu">
         <article class="data-empty" data-card="empty-state" data-player-verified="false">
-          <strong>Doğrulanmış veri bekleniyor</strong>
-          <span>Bu oyuncunun güncel kulübü, performans metrikleri ve piyasa değeri, sağlayıcı kaydıyla
-          eşleştirilip doğrulanana kadar yayımlanmıyor. Tahmini ya da eski değer gösterilmiyor.</span>
+          <strong>${recentTransfer ? "Performans verisi bekleniyor" : "Doğrulanmış veri bekleniyor"}</strong>
+          <span>${recentTransfer
+            ? `${escapeHtml(player.name)} için güncel kulüp ve transfer bilgisi resmî kulüp açıklamasıyla doğrulandı. Rating, piyasa değeri ve detaylı performans metrikleri sağlayıcı kaydıyla eşleştirilip doğrulanana kadar yayımlanmıyor.`
+            : `Bu oyuncunun güncel kulübü, performans metrikleri ve piyasa değeri, sağlayıcı kaydıyla
+          eşleştirilip doğrulanana kadar yayımlanmıyor. Tahmini ya da eski değer gösterilmiyor.`}</span>
         </article>
       </section>`}
       <section class="player-profile-shell" data-api-target="player-detail" data-player-id="${escapeHtml(player.id)}" data-player-verified="${view.verified ? "true" : "false"}">
