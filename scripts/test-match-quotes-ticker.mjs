@@ -143,38 +143,53 @@ const VALID = {
   assert.ok(html.includes('aria-hidden="true"'), "kopya grup ekran okuyucudan gizlenmeli");
 }
 
-// --- 6b. Tam liste: şerit kısaltır, maç raporu TAM metni verir ---
+// --- 6b. Tam liste: şerit kısaltır, tam metin KAYBOLMAZ ---
 {
-  // Tam listeyi çekirdek raporun `manager-comment` bölümü çiziyor. Şerit
-  // kısaltılmış alıntı gösterdiği için tam metnin BİR YERDE durması şart:
+  // Şerit alıntıyı kısaltarak gösteriyor; tam metnin bir yerde durması şart,
   // yoksa okuyucu cümlenin tamamını hiçbir yerde bulamaz.
+  //
+  // SÖZLEŞME SERVİS DÜZEYİNDE ÖLÇÜLÜR. Önce bu blok, depodaki alıntının
+  // rapor SAYFASINDA görünmesini şart koşuyordu; ama maç raporu sayfaları
+  // fikstür penceresine bağlı üretiliyor (bkz. generate-post-match-pages.mjs)
+  // ve maç pencereden düştüğünde sayfa artık yeniden üretilmiyor — diskteki
+  // kopya özellik eklenmeden önceki hâlinde donuyor. Test o zaman, kodda
+  // hiçbir şey bozulmadan kırılıyordu.
   const store = JSON.parse(fs.readFileSync("data/manager-quotes.json", "utf8"));
   const quotes = (store.quotes || []).filter(Boolean);
-  const byMatch = new Map();
-  for (const quote of quotes) {
-    if (!byMatch.has(quote.matchId)) byMatch.set(quote.matchId, []);
-    byMatch.get(quote.matchId).push(quote);
-  }
+  assert.ok(quotes.length, "ön koşul: depoda en az bir alıntı olmalı");
 
-  let checked = 0;
-  for (const [matchId, entries] of byMatch) {
-    const page = `mac-raporu/${matchId}.html`;
-    if (!fs.existsSync(page)) continue;
-    const html = fs.readFileSync(page, "utf8");
-    checked += 1;
+  for (const matchId of new Set(quotes.map((quote) => quote.matchId))) {
+    const verdict = quotesForMatch(matchId, store);
+    assert.equal(verdict.status, "ready", `${matchId}: depodaki alıntı yayına hazır olmalı`);
 
-    for (const quote of entries) {
-      assert.ok(
-        html.includes(quote.quote),
-        `${page}: "${quote.speaker}" alıntısının TAM metni sayfada bulunmalı`
-      );
-      assert.ok(html.includes(quote.source.url), `${page}: alıntı kaynağına bağlanmalı`);
-      const roleLabel = ROLE_LABELS[resolveRole(quote.role).role];
-      assert.ok(html.includes(roleLabel), `${page}: "${roleLabel}" rolü yazılmalı`);
+    for (const quote of quotes.filter((row) => row.matchId === matchId)) {
+      const carried = verdict.quotes.find((row) => row.quote === quote.quote);
+      assert.ok(carried, `${matchId}: "${quote.speaker}" alıntısının TAM metni taşınmalı`);
+      assert.equal(carried.source.url, quote.source.url, "kaynak bağlantısı taşınmalı");
+      assert.equal(carried.roleLabel, ROLE_LABELS[resolveRole(quote.role).role], "rol etiketi taşınmalı");
+
+      // Şerit kısaltır, servis KISALTMAZ: ikisi aynı olsaydı tam metin
+      // hiçbir yerde kalmazdı.
+      assert.equal(carried.quote, quote.quote, "servis alıntıyı kırpmamalı");
     }
   }
 
-  assert.ok(checked, "ön koşul: depodaki alıntıların en az biri üretilmiş bir rapor sayfasına ait olmalı");
+  // Üretilmiş sayfa varsa tam metin orada da görünmeli. Yalnızca ŞU ANKİ
+  // üretecin bastığı sayfalara bakılır (şerit işaretini taşıyanlar); bayat
+  // kopyalar bu sözleşmenin kapsamı değil.
+  let checkedPages = 0;
+  for (const matchId of new Set(quotes.map((quote) => quote.matchId))) {
+    const page = `mac-raporu/${matchId}.html`;
+    if (!fs.existsSync(page)) continue;
+    const html = fs.readFileSync(page, "utf8");
+    if (!html.includes('data-component="MatchQuotesTicker"')) continue;
+    checkedPages += 1;
+    for (const quote of quotes.filter((row) => row.matchId === matchId)) {
+      assert.ok(html.includes(quote.quote), `${page}: "${quote.speaker}" alıntısının TAM metni sayfada bulunmalı`);
+      assert.ok(html.includes(quote.source.url), `${page}: alıntı kaynağına bağlanmalı`);
+    }
+  }
+  console.log(`  ok  tam metin sözleşmesi: ${quotes.length} alıntı (servis), ${checkedPages} güncel sayfa`);
 }
 
 // --- 6c. Maç detay sayfası (app.js) ile ön render aynı şeridi çiziyor ---
@@ -277,9 +292,26 @@ const VALID = {
     if (hasAwaiting) withAwaiting += 1;
   }
 
-  // Taban: şerit bir avuç sayfada değil, rapor yüzeyinin genelinde basılmalı.
-  // Üretecin sessizce tek sayfaya düşmesi bu eşikte yakalanır.
-  assert.ok(withTicker >= 100, `şerit yalnızca ${withTicker} rapor sayfasında — üretimde bir kopukluk var`);
+  // TABAN MUTLAK SAYI DEĞİL, EN YENİ SAYFALAR.
+  //
+  // Önce "en az 100 sayfada şerit olacak" deniyordu; fikstür penceresi
+  // daralınca üretilen sayfa sayısı da düşüyor ve test, üretimde hiçbir şey
+  // bozulmadan kırılıyordu (77'ye indi). Anlamlı olan şu: üretecin ŞU AN
+  // bastığı sayfalarda şerit var mı? En yeni maçların sayfaları her koşuda
+  // yeniden üretilir, bayat kopyalar ise hep daha eskidir — bu yüzden
+  // taban, tarihe göre en yeni sayfalar üzerinden kuruluyor.
+  const dated = files
+    .map((file) => ({ file, day: (file.match(/(\d{4}-\d{2}-\d{2})\.html$/) || [])[1] }))
+    .filter((row) => row.day)
+    .sort((left, right) => right.day.localeCompare(left.day));
+  assert.ok(dated.length >= 20, "ön koşul: tarihli rapor sayfaları üretilmiş olmalı");
+
+  for (const { file } of dated.slice(0, 20)) {
+    const html = fs.readFileSync(`${reportDir}/${file}`, "utf8");
+    assert.ok(html.includes('data-component="MatchQuotesTicker"'),
+      `${file}: en yeni rapor sayfalarında şerit basılmalı`);
+  }
+  assert.ok(withTicker >= 20, `şerit yalnızca ${withTicker} rapor sayfasında — üretimde bir kopukluk var`);
 
   // İki hâl de gerçek çıktıda görülmeli: yalnızca "bekleniyor" basan bir
   // sürüm, alıntı yolunun hiç çalışmadığını gizlerdi.
