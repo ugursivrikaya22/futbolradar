@@ -146,7 +146,54 @@ console.log("weekly-player-enrichment");
   check("gözlem zamanı damgalanıyor", typeof rate.observedAt === "string" && rate.observedAt.length > 0, String(rate.observedAt));
 }
 
-// --- 7-8: uçtan uca haftalık adım ----------------------------------------
+// --- 7: sağlayıcı boş veya eksik transfer kaydını filtreler ---------------
+//
+// API-Football bazı transferlerde `date` ya da `toTeam` döndürmez (serbest
+// kalış, eksik belge vs.). Böyle bir kayıt doğrudan geçilirse
+// `validatePlayerData` "transferHistory[i] date ve toTeam içermeli" hatasını
+// fırlatır ve tüm haftalık koşu düşer. `normalizeTransfer` bu kayıtları
+// sessizce eliyor; bu bölüm o güvenceyi doğrular.
+{
+  const original = globalThis.fetch;
+  globalThis.fetch = async () => ({
+    ok: true,
+    status: 200,
+    headers: {
+      get: (name) => {
+        const h = {
+          "x-ratelimit-requests-limit": "7500",
+          "x-ratelimit-requests-remaining": "7400",
+          "x-ratelimit-limit": "300",
+          "x-ratelimit-remaining": "299"
+        };
+        return h[String(name).toLowerCase()] ?? null;
+      }
+    },
+    json: async () => ({
+      get: "transfers",
+      errors: [],
+      results: 3,
+      paging: { current: 1, total: 1 },
+      response: [
+        // date yok, toTeam var → elenmeli
+        { player: { id: 478077, name: "E. Aydın" }, transfers: [{ teams: { out: { name: "Süper Lig" }, in: { name: "Konyaspor" } }, date: null, type: "Free" }] },
+        // date var, toTeam yok → elenmeli
+        { player: { id: 478077, name: "E. Aydın" }, transfers: [{ teams: { out: { name: "Süper Lig" }, in: {} }, date: "2024-07-01", type: "Free" }] },
+        // her ikisi de var → korunmalı
+        { player: { id: 478077, name: "E. Aydın" }, transfers: [{ teams: { out: { name: "Ankaragücü" }, in: { name: "Konyaspor" } }, date: "2026-07-01", type: "Free" }] }
+      ]
+    })
+  });
+  const transfers = await apiFootballProvider.getPlayerTransfers({ teamId: "9001" });
+  globalThis.fetch = original;
+  check(
+    "eksik date/toTeam içeren transferler eleniyor",
+    transfers.length === 1 && transfers[0].date === "2026-07-01" && transfers[0].toTeam === "Konyaspor",
+    `length=${transfers.length} ${JSON.stringify(transfers.map((t) => ({ date: t.date, toTeam: t.toTeam })))}`
+  );
+}
+
+// --- 8-9: uçtan uca haftalık adım ----------------------------------------
 function runWeeklyStep(extraEnv = {}, extraArgs = []) {
   const result = spawnSync(process.execPath, [
     "--require", STUB,
