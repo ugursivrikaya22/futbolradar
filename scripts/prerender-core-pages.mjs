@@ -1456,14 +1456,23 @@ function liveScoresTrack() {
 }
 
 /**
- * ANA SAYFANIN EN ALTINDAKİ TRANSFER RADARI BANDI — ÜÇÜNCÜ KAYAN BANT.
+ * ANA SAYFANIN ÜÇÜNCÜ KAYAN BANDI — TRANSFER RADARI.
  *
- * Ana sayfanın daimî bir parçası: haber bandı (tepede) ve Canlı Skorlar
- * bandından sonra üçüncü kayan şerit. Artık TFF tescil dönemine göre
- * KOŞULLU BASILMIYOR — önceki hâli pencere kapandığında ya da son 3 günde
- * "SON DAKİKA" sayılacak kayıt olmadığında bandı sayfadan TAMAMEN
- * kaldırıyordu; okuyucu "Transfer Radarı" bölümünün var olduğunu bile
- * bilmiyordu. Bant artık her derlemede basılır.
+ * Ana sayfanın tepesinde, haber bandı (1.) ve Canlı Skorlar bandından (2.)
+ * hemen sonra basılır — index.html'de sırasıyla
+ * `<!-- shared-layout:ticker:start -->`, `<!-- prerender:live-scores-
+ * ticker:start -->` ve bu fonksiyonun ürettiği `<!-- prerender:transfer-
+ * radar-ticker:start -->` işaretleri art arda durur. Daha önce ana
+ * sayfanın en altında, footer'ın ardında duruyordu — orası okuyucunun
+ * neredeyse hiç görmediği bir yerdi. Editör kararıyla üçüncü bant olarak
+ * ilk ikisinin hemen altına taşındı; bu konum artık kalıcı.
+ *
+ * TFF tescil dönemine göre KOŞULLU BASILMIYOR — eski hâli pencere
+ * kapandığında ya da son 3 günde "SON DAKİKA" sayılacak kayıt olmadığında
+ * bandı sayfadan TAMAMEN kaldırıyordu; okuyucu "Transfer Radarı"
+ * bölümünün var olduğunu bile bilmiyordu. Bant artık her derlemede basılır
+ * ve diğer sayfa güncellemeleri (haber/skor tazeleme, SEO sayfa üretimi
+ * vb.) bu markerlara dokunmaz — yalnızca aralarındaki içerik değişir.
  *
  * Seçim kuralı hâlâ services/transferRadarTicker.js'te. Önce son 3 günün
  * "SON DAKİKA" hareketleri denenir; sakin bir haftada bunlardan hiçbiri
@@ -1475,11 +1484,10 @@ function liveScoresTrack() {
  * (transferTickerTrack → "Transfer güncellemeleri hazırlanıyor.") —
  * `keepEmpty: true` bunu sağlıyor.
  *
- * Canlı Skorlar bandından (ana sayfanın TEPESİNDE) bilerek ayrı ve
- * bağımsız: farklı konum, farklı veri, farklı görünme kuralı. Onun
- * kodu/CSS'i burada değiştirilmez.
+ * Canlı Skorlar bandından bilerek ayrı ve bağımsız: farklı veri, farklı
+ * görünme kuralı. Onun kodu/CSS'i burada değiştirilmez, yalnızca komşusu.
  */
-function transferRadarBottomTicker() {
+function transferRadarTicker() {
   const records = selectRecentTickerRecords(transfers);
   return transferTickerBlock(records, { locale: "tr", sourceRel: SOURCE_LINK_REL, keepEmpty: true });
 }
@@ -1694,7 +1702,7 @@ writePage("index.html", {
   "live-scores-ticker": liveScoresTrack()
 }, fixtureFreshness, {
   "official-lineup-alerts": officialLineupAlerts(),
-  "transfer-radar-bottom": transferRadarBottomTicker()
+  "transfer-radar-ticker": transferRadarTicker()
 });
 
 writePage("analizler.html", {

@@ -119,12 +119,13 @@ console.log(`Canlı skorlar bandı testleri geçti (yalnızca canlı maç, taraf
   const { LIVE_TICKER_PAGES, LIVE_TICKER_OWN_PAGES } = await import("./lib/liveScoresTicker.mjs");
 
   const BAND = 'data-component="LiveScoresTicker"';
-  // Eski, tepedeki transfer bandının işareti — apply-shared-layout.mjs'in
-  // LEGACY_TRANSFER_TICKER_RE ile temizlediği aynı yorum bloğu. Bilerek
-  // `data-component="TransferRadarTicker"` DEĞİL: ana sayfanın EN ALTINDAKİ
-  // güncel Transfer Radarı bandı (prerender-core-pages.mjs
-  // transferRadarBottomTicker) aynı bileşen özniteliğini taşıyor ve bu
-  // ayrı, kasıtlı bir yüzey — o bant burada "eski" sayılmamalı.
+  // Eski, ayrı bir enjeksiyon mekanizmasıyla basılan transfer bandının
+  // işareti — apply-shared-layout.mjs'in LEGACY_TRANSFER_TICKER_RE ile
+  // temizlediği aynı yorum bloğu. Bilerek `data-component=
+  // "TransferRadarTicker"` DEĞİL: güncel Transfer Radarı bandı
+  // (prerender-core-pages.mjs transferRadarTicker(), ana sayfanın
+  // TEPESİNDE, üçüncü bant) aynı bileşen özniteliğini taşıyor ve bu ayrı,
+  // kasıtlı bir yüzey — o bant burada "eski" sayılmamalı.
   const OLD_BAND = "<!-- shared-layout:transfer-ticker:start -->";
   const hasBand = (file) => {
     const full = path.join(root, file);
