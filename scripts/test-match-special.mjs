@@ -247,6 +247,11 @@ console.log("match-special");
 }
 
 // ── 9. Veri dosyası elle düzenleniyor — bozuk kayıt sessizce geçmesin ─────
+//
+// Takvim "past" penceresi dar tutulduğu için tamamlanmış maçların kaydı
+// güncellemeden sonra takvimde bulunmayabilir. Bu normal: fikstür eksikliği
+// TEK hata ise derleme sessizce atlar. Başka bir doğrulama hatası varsa
+// (bozuk modül, eksik çeviri vb.) gerçek bir veri sorunudur ve kırmızı kalır.
 {
   const payload = JSON.parse(fs.readFileSync(path.join(root, "data", "match-specials.json"), "utf8"));
   assert.ok(Array.isArray(payload.specials) && payload.specials.length > 0);
@@ -255,7 +260,10 @@ console.log("match-special");
     const fixtures = Array.isArray(sources.fixtures) ? sources.fixtures : (sources.fixtures.matches || []);
     const fixture = fixtures.find((match) => match.id === record.matchId) || null;
     const verdict = validateSpecial(record, fixture);
-    assert.equal(verdict.valid, true,
+    const onlyMissingFixture = !verdict.valid &&
+      verdict.errors.length === 1 &&
+      verdict.errors[0].startsWith("fikstürde maç yok");
+    assert.ok(verdict.valid || onlyMissingFixture,
       `${record.matchId}: ${verdict.errors.join("; ")}`);
   }
 }
@@ -526,4 +534,47 @@ console.log("match-special");
   }
 }
 
-console.log("match-special OK (14 bölüm)");
+// ── 15. TAKVİMDE OLMAYAN ESKİ MAÇ — DERLEME KIRILMAMALI ─────────────────────
+//
+// Fikstür takvimi "past" penceresi (varsayılan 3 gün) daraldığında tamamlanmış
+// maçların kaydı takvimden düşer. Maç dosyası kaydı silinmediyse
+// generate-match-special.mjs bu kaydı işlerken fixture null gelir ve
+// validateSpecial yalnızca "fikstürde maç yok" hatası döner.
+// Başka bir hata YOK ise bu kayıt sessizce atlanmalı, derleme kırılmamalıdır.
+{
+  const payload = JSON.parse(fs.readFileSync(path.join(root, "data", "match-specials.json"), "utf8"));
+  const specials = Array.isArray(payload.specials) ? payload.specials : [];
+
+  // Boş takvimle kayıtları doğrula: hiçbiri "tek olmayan" hatayla çıkmamalı.
+  const emptyFixtures = { matches: [], source: "test", fetchedAt: new Date().toISOString(), windowDays: { past: 3, future: 35 }, teamCount: 18 };
+  const problems = [];
+  for (const record of specials) {
+    const verdict = validateSpecial(record, null);
+    const onlyMissingFixture =
+      !verdict.valid &&
+      verdict.errors.length === 1 &&
+      verdict.errors[0].startsWith("fikstürde maç yok");
+    if (!verdict.valid && !onlyMissingFixture) {
+      problems.push(`${record.matchId}: ${verdict.errors.join("; ")}`);
+    }
+  }
+  assert.equal(problems.length, 0,
+    `takvim boşken bazı kayıtlar başka hatalar da içeriyor:\n${problems.join("\n")}`);
+  console.log("  ok  takvimde olmayan kayıtlar yalnızca fikstür hatasıyla düşüyor");
+
+  // selectMatchSpecial arayüzü de aynı sözleşmeyi taşımalı: rejected dizisi
+  // yalnızca "fikstürde maç yok" içerdiğinde onlyMissingFixture true olur.
+  for (const record of specials) {
+    const testSources = { specials: { specials: [record] }, fixtures: emptyFixtures, squads: [], archive: {} };
+    const { special, rejected } = selectMatchSpecial(testSources, { matchId: record.matchId });
+    assert.equal(special, null);
+    assert.equal(rejected.length, 1);
+    assert.ok(
+      rejected[0].errors.length === 1 && rejected[0].errors[0].startsWith("fikstürde maç yok"),
+      `${record.matchId}: beklenen tek hata "fikstürde maç yok", alınan: ${rejected[0].errors.join("; ")}`
+    );
+  }
+  console.log("  ok  selectMatchSpecial boş fikstür için tek rejection döndürüyor");
+}
+
+console.log("match-special OK (15 bölüm)");
