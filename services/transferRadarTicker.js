@@ -36,6 +36,14 @@ const { hasOfficialSource } = require("./sourceTrust");
 /** Üç gün. Bu pencerenin dışındaki kayıt güncel bantta gösterilmez. */
 const BREAKING_WINDOW_MS = 3 * 24 * 60 * 60 * 1000;
 
+/**
+ * 21 gün — scripts/lib/tickerFeed.mjs TRANSFER_MAX_AGE_HOURS ile AYNI
+ * editoryal pencere (transferler bir maç sonucundan daha uzun ömürlü
+ * sayılır). `selectRecentTickerRecords` bunu SON DAKİKA (3 gün) penceresi
+ * boşken kullanır — bant sakin bir haftada tamamen boş kalmasın diye.
+ */
+const RECENT_WINDOW_MS = 21 * 24 * 60 * 60 * 1000;
+
 /** Bantta en fazla kaç kayıt? Kayan bir şerit liste değildir. */
 const MAX_ITEMS = 12;
 
@@ -197,8 +205,68 @@ function withDisplayStatus(records) {
   });
 }
 
+/**
+ * BANT BOŞ KALMASIN — SON DAKİKA (3 GÜN) YOKSA DAHA GENİŞ, DOĞRULANMIŞ
+ * PENCEREDEN GÖSTERİLİR.
+ *
+ * `selectTickerRecords` kasıtlı dar tutuldu ve öyle kalıyor — "SON DAKİKA"
+ * rozetini kullanan her yer (üçüncü bant dahil) hâlâ ondan geçer. Ama
+ * transfer sezonunda sakin günler her zaman olur; bant o günlerde
+ * tamamen boş kalırsa üçüncü bant fiilen hiç var olmamış gibi görünür.
+ *
+ * Bu yüzden SON DAKİKA boşsa RECENT_WINDOW_MS (21 gün) penceresine
+ * düşülür — ama yalnızca `status: "confirmed"` kayıtlar oraya girer.
+ * Söylenti/görüşme (Rumor/Talks) bu geniş pencereden ASLA gösterilmez:
+ * "SON DAKİKA" rozeti olmadan tarihli görünen bir iddia, okuyucuya
+ * "eski ama doğru" der — oysa doğrulanmamış bir iddia hiçbir zaman öyle
+ * sunulamaz. Sonuç `isBreaking: false` taşır; şablon (transferTicker.mjs)
+ * bunu tarih etiketiyle çizer, "SON DAKİKA" rozetiyle değil.
+ */
+function selectRecentTickerRecords(payload, options = {}) {
+  const breaking = selectTickerRecords(payload, options);
+  if (breaking.length) return breaking;
+
+  const nowMs = Number.isFinite(options.now) ? options.now : Date.now();
+  const limit = Number.isFinite(options.limit) ? options.limit : MAX_ITEMS;
+  const locale = options.locale === "en" ? "en-GB" : "tr-TR";
+  // Biçimlendirici döngü başına değil, çağrı başına bir kez kurulur.
+  const dateFormatter = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "Europe/Istanbul" });
+
+  return asList(payload)
+    .filter((record) => record && record.status === "confirmed")
+    .map((record) => {
+      const playerName = String((record.playerName || record.name) || "").trim();
+      const toTeam = String((record.toTeam || record.newTeam) || "").trim();
+      const fromTeam = String((record.fromTeam || record.oldTeam) || "").trim();
+      // Tarafı eksik kayıt banda girmez: boşluğu doldurmak bilgi üretmektir.
+      if (!playerName || !toTeam || !fromTeam) return null;
+
+      const stamp = stampOf(record);
+      const age = nowMs - stamp;
+      if (stamp <= 0 || age < 0 || age > RECENT_WINDOW_MS) return null;
+
+      return {
+        playerName,
+        toTeam,
+        fromTeam,
+        isBreaking: false,
+        dateLabel: dateFormatter.format(new Date(stamp)),
+        statusKey: transferStatusKey(record),
+        url: (record.url || record.sourceUrl || (record.source && record.source.url)) || "",
+        stamp,
+        clubRank: clubRank(record)
+      };
+    })
+    .filter(Boolean)
+    .sort((left, right) => right.stamp - left.stamp ||
+      left.clubRank - right.clubRank ||
+      left.playerName.localeCompare(right.playerName, "tr"))
+    .slice(0, limit);
+}
+
 module.exports = {
   BREAKING_WINDOW_MS,
+  RECENT_WINDOW_MS,
   withDisplayStatus,
   MAX_ITEMS,
   PRIORITY_CLUBS,
@@ -206,6 +274,7 @@ module.exports = {
   asList,
   clubRank,
   foldText,
+  selectRecentTickerRecords,
   selectTickerRecords,
   stampOf,
   transferStatusKey
