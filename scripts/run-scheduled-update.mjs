@@ -321,6 +321,11 @@ function fullMaintenanceSteps(providerReady) {
     // bayrağı ancak lig kimliği doğrulandıktan sonra güvenilir olur.
     nodeStep("league-standings", "sync-league-standings.mjs", ["--apply", "--json"], { kind: "source", source: "api-football", attempts: 1, timeoutMs: 5 * 60 * 1000, skip: noProvider }),
     nodeStep("super-lig-squads", "sync-super-lig-squads.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 12 * 60 * 1000, skip: noProvider }),
+    // Türk kulüplerinin data/matches.json'daki UEFA kupası rakiplerinin
+    // kadrosu — super-lig-squads'tan SONRA çalışır: "bilinen takım" listesi
+    // (data/teams.json) o adımda güncellenmiş olur, rakip tespiti bu listeye
+    // bakar. Kapsamı dar: onlarca değil, birkaç rakip takım.
+    nodeStep("international-opponents", "sync-international-opponents.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 6 * 60 * 1000, skip: noProvider }),
     nodeStep("canonical-players", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--apply", "--offline", "--skip-squad-refresh"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("confirmed-transfers", "sync-confirmed-transfers.mjs", ["--apply"], { kind: "transform", timeoutMs: 3 * 60 * 1000 }),
     nodeStep("weekly-player-enrichment", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--incomplete-profiles", "--stale-days=14", "--request-budget=80", "--apply", "--skip-squad-refresh"], { kind: "source", source: "api-football", timeoutMs: 15 * 60 * 1000, skip: !monday ? "Deep player enrichment runs in the Monday full update only." : noProvider }),
