@@ -39,7 +39,7 @@ const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // Transfer bandının seçim/sıralama kuralı da tek yerde; İngilizce bant da
 // aynı servisi kullanıyor.
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
-const { selectTickerRecords } = require("../services/transferRadarTicker.js");
+const { selectRecentTickerRecords } = require("../services/transferRadarTicker.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -1465,11 +1465,13 @@ function liveScoresTrack() {
  * kaldırıyordu; okuyucu "Transfer Radarı" bölümünün var olduğunu bile
  * bilmiyordu. Bant artık her derlemede basılır.
  *
- * Seçim kuralı hâlâ services/transferRadarTicker.js'te: yalnızca son 3
- * günün doğrulanmış hareketleri "SON DAKİKA" sayılır (bkz. o dosyanın
- * başındaki "UYDURMA YOK" kuralı) — bu editoryal kural değişmedi. Değişen
- * tek şey: seçilecek güncel kayıt yokken (ya da pencere kapalıyken) bant
- * KAYBOLMAK yerine kendi yer tutucusunu gösterir
+ * Seçim kuralı hâlâ services/transferRadarTicker.js'te. Önce son 3 günün
+ * "SON DAKİKA" hareketleri denenir; sakin bir haftada bunlardan hiçbiri
+ * yoksa `selectRecentTickerRecords` 21 günlük pencereden yalnızca
+ * `status: "confirmed"` kayıtları SON DAKİKA rozeti OLMADAN, tarih
+ * etiketiyle gösterir (bkz. o dosyadaki "UYDURMA YOK" kuralı — söylenti
+ * hiçbir pencereden banda giremez). Her iki liste de boşsa (ya da pencere
+ * kapalıyken) bant KAYBOLMAK yerine kendi yer tutucusunu gösterir
  * (transferTickerTrack → "Transfer güncellemeleri hazırlanıyor.") —
  * `keepEmpty: true` bunu sağlıyor.
  *
@@ -1478,7 +1480,7 @@ function liveScoresTrack() {
  * kodu/CSS'i burada değiştirilmez.
  */
 function transferRadarBottomTicker() {
-  const records = selectTickerRecords(transfers);
+  const records = selectRecentTickerRecords(transfers);
   return transferTickerBlock(records, { locale: "tr", sourceRel: SOURCE_LINK_REL, keepEmpty: true });
 }
 
