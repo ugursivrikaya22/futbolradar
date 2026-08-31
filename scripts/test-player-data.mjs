@@ -8,6 +8,7 @@ const require = createRequire(import.meta.url);
 const {
   getPlayerBySlug,
   getPlayers,
+  mergePlayerWithProvider,
   normalizePlayer,
   updatePlayerTransfer,
   validatePlayerData
@@ -142,6 +143,31 @@ assert.equal(
   assert.ok(
     defenders >= forwards * 0.5,
     `defans/forvet dağılımı gerçekçi değil (defans ${defenders}, forvet ${forwards}) — mevki eşlemesi bozulmuş olabilir`
+  );
+}
+
+// Sağlayıcı eksik transfer girdisi döndürdüğünde (date veya toTeam yok)
+// bu girdiler birleştirme sırasında süzülmeli; validasyon geçmeli.
+{
+  const base = normalizePlayer({ id: "test-enrich", name: "Test Player", currentTeam: "Test SK", position: "Forvet", rating: 70 });
+  const providerWithIncomplete = {
+    id: "test-enrich",
+    name: "Test Player",
+    currentTeam: "Test SK",
+    transferHistory: [
+      { date: null, toTeam: null, fromTeam: null },       // tarih ve hedef yok — süzülmeli
+      { date: "2025-07-01", toTeam: null, fromTeam: "Eski FK" }, // hedef yok — süzülmeli
+      { date: "2024-07-01", toTeam: "Test SK", fromTeam: "Eski FK" } // geçerli — kalmalı
+    ]
+  };
+  const merged = mergePlayerWithProvider(base, providerWithIncomplete, "api-football");
+  assert.ok(
+    merged.transferHistory.every((t) => t.date && t.toTeam),
+    "eksik date veya toTeam içeren sağlayıcı transfer girdileri birleştirmede süzülmeli"
+  );
+  assert.equal(
+    merged.transferHistory.length, 1,
+    "yalnızca geçerli (tam) sağlayıcı transfer girdisi eklenmeli"
   );
 }
 
