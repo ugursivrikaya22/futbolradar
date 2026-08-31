@@ -298,7 +298,7 @@ function eligibleHeadToHeadMatches(homeTeam, awayTeam, fixtureKickoff, matches) 
 }
 
 function headToHeadMeeting(entry) {
-  const { match } = entry;
+  const { match, kickoffTime } = entry;
   const score = match.score || {};
   const homeGoals = score.home;
   const awayGoals = score.away;
@@ -310,7 +310,11 @@ function headToHeadMeeting(entry) {
   const competition = classifyFixtureCompetition(match);
   return {
     matchId: match.id || null,
-    kickoff: match.kickoff || null,
+    // eligibleHeadToHeadMatches zaten kickoffTime'ı çözdü (kickoff||date
+    // düşer); burada match.kickoff'a AYRICA bakılırsa ikisi ıraksayabilir —
+    // kaynak yalnızca `date` taşıyorsa match.kickoff boş kalır ve eleman
+    // uygunken raporlanan kickoff null olurdu. Aynı Date nesnesi kullanılır.
+    kickoff: kickoffTime.toISOString(),
     homeTeam: match.homeTeam,
     awayTeam: match.awayTeam,
     homeGoals,

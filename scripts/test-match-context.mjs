@@ -35,7 +35,7 @@ function match({ home, away, homeGoals, awayGoals, kickoff, status = "FT", compe
   assert.equal(h2h.home.goalsFor, 3, "2+0+1 taraf gözetmeksizin Takım A'nın attığı gollerin toplamı");
   assert.equal(h2h.home.goalsAgainst, 4, "1+0+3 Takım A'nın yediği goller");
   assert.equal(h2h.meetings.length, 3, "meetings sampleSize ile eşleşmeli");
-  assert.equal(h2h.meetings[0].kickoff, "2026-05-10T20:00:00Z", "en yeni karşılaşma başta olmalı");
+  assert.equal(new Date(h2h.meetings[0].kickoff).getTime(), new Date("2026-05-10T20:00:00Z").getTime(), "en yeni karşılaşma başta olmalı");
   assert.equal(h2h.lastMeeting.kickoff, h2h.meetings[0].kickoff, "lastMeeting en yeni karşılaşma olmalı");
   assert.equal(h2h.dataStatus, "sufficient", "3+ örneklemde durum yeterli olmalı");
 }
@@ -75,8 +75,8 @@ function match({ home, away, homeGoals, awayGoals, kickoff, status = "FT", compe
   );
   const h2h = computeHeadToHead("Takım A", "Takım B", "2026-12-31T00:00:00Z", matches, 2);
   assert.equal(h2h.sampleSize, 2, "limit=2 iken yalnızca en yeni iki karşılaşma sayılmalı");
-  assert.equal(h2h.meetings[0].kickoff, "2026-04-01T20:00:00Z", "en yeni karşılaşma ilk sırada olmalı");
-  assert.equal(h2h.meetings[1].kickoff, "2026-03-01T20:00:00Z");
+  assert.equal(new Date(h2h.meetings[0].kickoff).getTime(), new Date("2026-04-01T20:00:00Z").getTime(), "en yeni karşılaşma ilk sırada olmalı");
+  assert.equal(new Date(h2h.meetings[1].kickoff).getTime(), new Date("2026-03-01T20:00:00Z").getTime());
 }
 
 console.log("FutbolRadar match context (head-to-head) tests passed");
