@@ -83,6 +83,34 @@ console.log("match-special");
   assert.match(verdict.errors.join(" "), /fikstürde maç yok/);
 }
 
+// ── 2b. ESKİ FİKSTÜR DERLEMEYI KIRMAMALI — onlyMissingFixture sözleşmesi ──
+//
+// generate-match-special.mjs eski bir maç dosyasını atlamak için aşağıdaki
+// koşula bakıyor:
+//
+//   rejected.length > 0 &&
+//   rejected.every(row => row.errors.length === 1 &&
+//                         row.errors[0].startsWith("fikstürde maç yok"))
+//
+// Bu koşulun çalışabilmesi için selectMatchSpecial, fikstür eksikliğini
+// YALNIZCA bu tek hatayla raporlamalı; başka bir hata eklememeli.
+// Koşul yanlış değerlendirilirse derleme gereksiz yere kırılır
+// (bkz. CI run 33370822960, 2026-08-31).
+{
+  // Takvimde bulunmayan bir matchId, ama doğru dolu bir özel kayıt.
+  const { special, rejected } = selectMatchSpecial({
+    ...sources,
+    fixtures: { matches: [] }   // boş takvim — hiçbir fikstür yok
+  }, { matchId: MATCH_ID });
+
+  assert.equal(special, null, "fikstürsüz kayıt için özel üretilmemeli");
+  assert.equal(rejected.length, 1, "tam olarak bir ret kaydı olmalı");
+  assert.equal(rejected[0].errors.length, 1,
+    "tek hata olmalı — ekstra hata onlyMissingFixture koşulunu bozar");
+  assert.match(rejected[0].errors[0], /^fikstürde maç yok/,
+    "hata \"fikstürde maç yok\" ile başlamalı");
+}
+
 // ── 3. KADRODA OLMAYAN OYUNCU KİLİT OYUNCU KARTINA GİREMEZ ────────────────
 //
 // Bir sezon önce ayrılmış futbolcuyu "kilit oyuncu" diye göstermek,
@@ -526,4 +554,4 @@ console.log("match-special");
   }
 }
 
-console.log("match-special OK (14 bölüm)");
+console.log("match-special OK (15 bölüm)");

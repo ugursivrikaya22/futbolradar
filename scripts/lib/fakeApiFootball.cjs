@@ -123,7 +123,27 @@ function install(options = {}) {
     }
 
     if (url.pathname.endsWith("/transfers")) {
-      return jsonResponse({ get: "transfers", parameters: params, errors: [], results: 0, paging: { current: 1, total: 1 }, response: [] }, { headers });
+      // Geçersiz transfer verisi testi: FUTBOLRADAR_FAKE_INVALID_TRANSFERS=1
+      // olduğunda sağlayıcının zaman zaman döndürdüğü eksik date/toTeam
+      // içeren kayıtları simüle eder. normalizeTransfer bu kayıtları
+      // filtrelemeli; aksi hâlde validatePlayerData adımı düşer
+      // (bkz. CI run 33370822960, 2026-08-31).
+      //
+      // normalizeTransfer yapısı:
+      //   toTeam = teamName(transfer.teams.in) || null   → boş `in` → null
+      //   date   = transfer.date || null
+      //   .filter(t => Boolean(t.date && t.toTeam))
+      //
+      // Kayıt 1: date=null, toTeam="Test SK" → date eksik, filtre düşürür.
+      // Kayıt 2: date="2026-08-01", teams.in={} → teamName({})="" → toTeam=null → filtre düşürür.
+      const withInvalidTransfers = process.env.FUTBOLRADAR_FAKE_INVALID_TRANSFERS === "1";
+      const response = withInvalidTransfers
+        ? [
+            { player: { id: "99001", name: "Eksik Tarih" }, transfers: [{ teams: { out: {}, in: { name: "Test SK" } }, date: null }] },
+            { player: { id: "99002", name: "Eksik Kulüp" }, transfers: [{ teams: { out: {}, in: {} }, date: "2026-08-01" }] }
+          ]
+        : [];
+      return jsonResponse({ get: "transfers", parameters: params, errors: [], results: response.length, paging: { current: 1, total: 1 }, response }, { headers });
     }
 
     return jsonResponse({ get: url.pathname, parameters: params, errors: [], results: 0, paging: { current: 1, total: 1 }, response: [] }, { headers });

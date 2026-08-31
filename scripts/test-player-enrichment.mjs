@@ -166,7 +166,8 @@ function runWeeklyStep(extraEnv = {}, extraArgs = []) {
       APIFOOTBALL_API_KEY: FAKE_KEY,
       APIFOOTBALL_LEAGUE_ID: "203",
       APIFOOTBALL_SEASON: "2026",
-      GITHUB_STEP_SUMMARY: ""
+      GITHUB_STEP_SUMMARY: "",
+      ...extraEnv
     }
   });
 
@@ -214,6 +215,19 @@ function runWeeklyStep(extraEnv = {}, extraArgs = []) {
     check("durma sebebi yazılıyor", report.coverage.stoppedBy === "request-budget", String(report.coverage.stoppedBy));
     check("ulaşılan takımlar korunuyor", report.coverage.complete > 0, JSON.stringify(report.coverage));
   }
+}
+
+// ── Geçersiz transfer verisi adımı düşürmemeli ───────────────────────────────
+//
+// API-Football zaman zaman date veya toTeam alanı boş transfer kayıtları
+// döner (bkz. CI run 33370822960, 2026-08-31). Eski kod bu kayıtları
+// olduğu gibi geçiriyordu; validatePlayerData "date ve toTeam içermeli"
+// kuralını kırdığı için weekly-player-enrichment adımı düşüyordu. Düzeltme
+// normalizeTransfer'e .filter() ekleyerek geçersiz kayıtları ayıklıyor.
+{
+  const { result } = runWeeklyStep({ FUTBOLRADAR_FAKE_INVALID_TRANSFERS: "1" });
+  check("geçersiz transfer kaydı adımı düşürmüyor", result.status === 0,
+    `exit=${result.status} stderr=${String(result.stderr).trim().slice(0, 300)}`);
 }
 
 if (failures.length) {
