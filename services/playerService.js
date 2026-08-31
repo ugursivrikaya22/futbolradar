@@ -391,10 +391,18 @@ function transferKey(transfer) {
 
 function mergeTransferHistory(localHistory, providerHistory) {
   const local = normalizeTransferHistory(localHistory);
-  const provider = normalizeTransferHistory(providerHistory).map((transfer) => ({
-    ...transfer,
-    source: transfer.source || "provider"
-  }));
+  const provider = normalizeTransferHistory(providerHistory)
+    .filter((transfer) => {
+      if (!transfer.date || !transfer.toTeam) {
+        console.warn(`[playerService] Skipping incomplete provider transfer (missing date or toTeam): ${JSON.stringify(transfer)}`);
+        return false;
+      }
+      return true;
+    })
+    .map((transfer) => ({
+      ...transfer,
+      source: transfer.source || "provider"
+    }));
   const seen = new Set(local.map(transferKey));
   const merged = local.slice();
 
