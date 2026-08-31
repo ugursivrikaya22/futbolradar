@@ -1459,13 +1459,13 @@ function liveScoresTrack() {
  * ANA SAYFANIN ÜÇÜNCÜ KAYAN BANDI — TRANSFER RADARI.
  *
  * Ana sayfanın tepesinde, haber bandı (1.) ve Canlı Skorlar bandından (2.)
- * hemen sonra basılır — index.html'de sırasıyla
- * `<!-- shared-layout:ticker:start -->`, `<!-- prerender:live-scores-
- * ticker:start -->` ve bu fonksiyonun ürettiği `<!-- prerender:transfer-
- * radar-ticker:start -->` işaretleri art arda durur. Daha önce ana
- * sayfanın en altında, footer'ın ardında duruyordu — orası okuyucunun
- * neredeyse hiç görmediği bir yerdi. Editör kararıyla üçüncü bant olarak
- * ilk ikisinin hemen altına taşındı; bu konum artık kalıcı.
+ * hemen sonra basılır — index.html'de sırasıyla `<!-- shared-layout:ticker:start -->`,
+ * `<!-- prerender:live-scores-ticker:start -->` ve bu fonksiyonun ürettiği
+ * `<!-- prerender:transfer-radar-ticker:start -->` işaretleri art arda
+ * durur. Daha önce ana sayfanın en altında, footer'ın ardında duruyordu —
+ * orası okuyucunun neredeyse hiç görmediği bir yerdi. Editör kararıyla
+ * üçüncü bant olarak ilk ikisinin hemen altına taşındı; bu konum artık
+ * kalıcı.
  *
  * TFF tescil dönemine göre KOŞULLU BASILMIYOR — eski hâli pencere
  * kapandığında ya da son 3 günde "SON DAKİKA" sayılacak kayıt olmadığında
