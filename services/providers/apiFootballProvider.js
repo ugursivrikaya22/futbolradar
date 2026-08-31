@@ -1019,6 +1019,30 @@ async function getTeams(query) {
   return stampProviderData(responseItems(payload).map(normalizeTeam), "teams", 24 * 60 * 60 * 1000);
 }
 
+/**
+ * ADA DÜNYA GENELİNDE TAKIM ARAR — Süper Lig'e daraltılmadan.
+ *
+ * `getTeams()` iki yerde sessizce Türkiye'ye kilitlenir: `resolveLeague`
+ * ligi vermezsen `config.leagueId`'ye (Süper Lig) düşer, `country` da
+ * vermezsen `config.country`'ye (Türkiye) düşer. Bu, `getTeams()`'i bir
+ * Avrupa kupası rakibini bulmak için kullanılamaz kılar — sonuç sessizce
+ * boş dönerdi ve "böyle bir takım yok" ile "yanlış ülkeye arandı" ayırt
+ * edilemezdi. Bu fonksiyon `league`'e HİÇ dokunmaz, `country`'yi de yalnız
+ * açıkça verilirse kullanır; aksi hâlde sağlayıcının global adı-arama
+ * davranışına bırakılır.
+ */
+async function searchTeams(query) {
+  const name = query && (query.name || query.search);
+  if (!name) {
+    throw new ProviderError("PROVIDER_QUERY_MISSING", "Takım arama icin name/search gerekli.");
+  }
+  const payload = await providerFetch("/teams", compactParams({
+    search: name,
+    country: query && query.country
+  }));
+  return stampProviderData(responseItems(payload).map(normalizeTeam), "teams", 24 * 60 * 60 * 1000);
+}
+
 async function getSquad(query) {
   const teamId = query && query.teamId;
   if (!teamId) {
@@ -1722,6 +1746,7 @@ module.exports = {
   getStandings,
   getLeagues,
   getTeams,
+  searchTeams,
   getSquad,
   getPlayers,
   getPlayersPaginated,

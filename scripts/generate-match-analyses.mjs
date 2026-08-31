@@ -28,6 +28,8 @@ const CALENDAR_PATH = path.join(DATA_DIR, "fixture-calendar.json");
 const ARCHIVE_PATH = path.join(DATA_DIR, "historical-match-archive.json");
 const TEAMS_PATH = path.join(DATA_DIR, "teams.json");
 const PLAYERS_PATH = path.join(DATA_DIR, "players.json");
+const INTL_TEAMS_PATH = path.join(DATA_DIR, "international-teams.json");
+const INTL_SQUADS_PATH = path.join(DATA_DIR, "international-squads.json");
 const SQUAD_STATUS_PATH = path.join(DATA_DIR, "squad-statuses.json");
 const OUTPUT_PATH = path.join(DATA_DIR, "match-analyses.json");
 // Doğrulayıcı (validate-match-analyses checkPublicSync) kök dosya ile public
@@ -214,6 +216,42 @@ function selectTargets(fixtures, args) {
 
   const targetDate = !args.date || args.date === "today" ? todayInIstanbul() : args.date;
   return withKickoff.filter((fixture) => dateOnly(fixture.kickoff) === targetDate);
+}
+
+/**
+ * data/international-teams.json + data/international-squads.json'ı
+ * (scripts/sync-international-opponents.mjs'in ürettiği, Türk kulüplerinin
+ * UEFA kupası rakiplerine ait dar kapsamlı veri) çalışma kümesine EKLER —
+ * data/teams.json / data/players.json diske hiç YAZILMAZ. Böylece bu iki
+ * dosyayı "18 Süper Lig takımı" varsayan onlarca başka sayfa üretici
+ * (takımlar, puan durumu, karşılaştırmalar…) hiç etkilenmez; yalnızca bu
+ * betiğin kendi bellekteki `teams`/`players` kümesi genişler.
+ *
+ * Rakip takımların lig sırası ve momentumu YOKTUR — buildLeagueSnapshot ve
+ * buildMomentumSnapshot zaten bu satırlarda `rank`/`form` alanı bulamayıp
+ * dürüstçe "unavailable" döner; burada ayrıca bir şey uydurulmaz.
+ */
+function mergeInternationalData(teams, players) {
+  const intlTeams = readJson(INTL_TEAMS_PATH, []);
+  const intlSquads = readJson(INTL_SQUADS_PATH, []);
+
+  const mergedTeams = [...teams, ...intlTeams];
+
+  const intlPlayers = intlSquads.flatMap((snapshot) =>
+    (snapshot.players || []).map((player) => ({
+      id: player.providerId ? `intl-${player.providerId}` : undefined,
+      providerId: player.providerId || null,
+      name: player.name,
+      number: player.number ?? null,
+      position: player.position || null,
+      age: player.age ?? null,
+      photo: player.photo || null,
+      currentTeam: snapshot.teamName,
+      team: snapshot.teamName
+    }))
+  );
+
+  return { teams: mergedTeams, players: [...players, ...intlPlayers] };
 }
 
 function findTeamRecord(teamName, teams) {
@@ -455,8 +493,7 @@ async function main() {
   const calendarMatches = Array.isArray(calendar.matches) ? calendar.matches : [];
   const archive = readJson(ARCHIVE_PATH, { records: [] });
   const archiveRecords = Array.isArray(archive.records) ? archive.records : [];
-  const teams = readJson(TEAMS_PATH, []);
-  const players = readJson(PLAYERS_PATH, []);
+  const { teams, players } = mergeInternationalData(readJson(TEAMS_PATH, []), readJson(PLAYERS_PATH, []));
   const squadStatus = readJson(SQUAD_STATUS_PATH, { teams: [] });
   const existingAnalyses = readJson(OUTPUT_PATH, []);
   const existingById = new Map(existingAnalyses.map((item) => [item.fixtureId, item]));
