@@ -229,6 +229,8 @@ function selectRecentTickerRecords(payload, options = {}) {
   const nowMs = Number.isFinite(options.now) ? options.now : Date.now();
   const limit = Number.isFinite(options.limit) ? options.limit : MAX_ITEMS;
   const locale = options.locale === "en" ? "en-GB" : "tr-TR";
+  // Biçimlendirici döngü başına değil, çağrı başına bir kez kurulur.
+  const dateFormatter = new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "Europe/Istanbul" });
 
   return asList(payload)
     .filter((record) => record && record.status === "confirmed")
@@ -248,8 +250,7 @@ function selectRecentTickerRecords(payload, options = {}) {
         toTeam,
         fromTeam,
         isBreaking: false,
-        dateLabel: new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", timeZone: "Europe/Istanbul" })
-          .format(new Date(stamp)),
+        dateLabel: dateFormatter.format(new Date(stamp)),
         statusKey: transferStatusKey(record),
         url: (record.url || record.sourceUrl || (record.source && record.source.url)) || "",
         stamp,
