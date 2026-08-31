@@ -517,7 +517,18 @@ for (const record of records) {
   const { special, rejected } = selectMatchSpecial(sources, { matchId: record.matchId });
   logRejected(rejected);
   if (!special) {
-    problems.push(`${record.matchId}: dosya üretilemedi`);
+    // Fikstür takvimi eski, tamamlanmış maçları bir süre sonra listeden
+    // düşürür (bkz. sync-fixture-calendar.mjs); editoryal kayıt o zaman
+    // kadar temizlenmediyse tek başına "fikstürde maç yok" derlemeyi
+    // KIRMAMALI — sayfa sessizce atlanır, uyarı zaten logRejected ile basıldı.
+    // Başka bir doğrulama hatası varsa (bozuk modül, eksik alan vb.) bu
+    // gerçek bir veri sorunudur ve derleme kırmızı kalmalı.
+    const onlyMissingFixture = rejected.length > 0 && rejected.every((row) =>
+      row.errors.length === 1 && row.errors[0].startsWith("fikstürde maç yok")
+    );
+    if (!onlyMissingFixture) {
+      problems.push(`${record.matchId}: dosya üretilemedi`);
+    }
     continue;
   }
   // Eşleşmeler servis çıktısında yok (editoryal ek); kayıttan alınır.

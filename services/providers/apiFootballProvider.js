@@ -847,29 +847,39 @@ function normalizePlayer(item) {
   };
 }
 
+/**
+ * Sağlayıcı bazı transfer kayıtlarında tarih veya varış kulübünü BOŞ döner
+ * (örn. serbest kalış/kayıp belge). Böyle bir kaydı olduğu gibi geçirmek
+ * `validatePlayerData`in "transferHistory[i] date ve toTeam içermeli"
+ * kuralını kırar ve senkron adımını tamamen düşürür — tek eksik kayıt için
+ * bütün koşu kaybedilir. Doğru davranış eksik kaydı sessizce ATLAMAK: diğer
+ * transferler ve profil zenginleştirmesi etkilenmeden ilerler.
+ */
 function normalizeTransfer(item) {
   const player = item.player || {};
   const transfers = Array.isArray(item.transfers) ? item.transfers : [];
-  return transfers.map((transfer, index) => {
-    const teams = transfer.teams || {};
-    const fromTeam = teams.out || {};
-    const toTeam = teams.in || {};
-    const date = transfer.date || null;
-    return {
-      id: String(`${player.id || player.name || "player"}-${date || index}-${teamName(toTeam)}`),
-      playerId: player.id ? String(player.id) : "",
-      playerName: player.name || "",
-      date,
-      season: date ? `${String(date).slice(0, 4)}/${String(Number(String(date).slice(2, 4)) + 1).padStart(2, "0")}` : null,
-      fromTeam: teamName(fromTeam) || null,
-      toTeam: teamName(toTeam) || null,
-      type: transfer.type || null,
-      fee: null,
-      feeEur: null,
-      marketValueEur: null,
-      source: "api-football"
-    };
-  });
+  return transfers
+    .map((transfer, index) => {
+      const teams = transfer.teams || {};
+      const fromTeam = teams.out || {};
+      const toTeam = teams.in || {};
+      const date = transfer.date || null;
+      return {
+        id: String(`${player.id || player.name || "player"}-${date || index}-${teamName(toTeam)}`),
+        playerId: player.id ? String(player.id) : "",
+        playerName: player.name || "",
+        date,
+        season: date ? `${String(date).slice(0, 4)}/${String(Number(String(date).slice(2, 4)) + 1).padStart(2, "0")}` : null,
+        fromTeam: teamName(fromTeam) || null,
+        toTeam: teamName(toTeam) || null,
+        type: transfer.type || null,
+        fee: null,
+        feeEur: null,
+        marketValueEur: null,
+        source: "api-football"
+      };
+    })
+    .filter((transfer) => Boolean(transfer.date && transfer.toTeam));
 }
 
 /**
