@@ -7337,8 +7337,9 @@
       var primary = items.map(function (item) { return itemHtml(item, false); }).join("");
       var duplicate = items.map(function (item) { return itemHtml(item, true); }).join("");
       // Transfer bandına göre belirgin biçimde daha hızlı: öğe başına 5sn,
-      // 18-45sn arasında (transfer bandı 9sn/34-80sn kullanıyordu).
-      track.style.setProperty("--live-ticker-duration", Math.max(18, Math.min(45, items.length * 5)) + "s");
+      // 18-45sn arasında (transfer bandı 9sn/34-80sn kullanıyordu). Tamamı
+      // /1.2 ile bölünür (%20 daha hızlı kaydırma).
+      track.style.setProperty("--live-ticker-duration", (Math.max(18, Math.min(45, items.length * 5)) / 1.2) + "s");
       track.innerHTML =
         '<div class="live-scores-ticker__group">' + primary + '</div>' +
         '<div class="live-scores-ticker__group" aria-hidden="true">' + duplicate + '</div>';

@@ -11937,12 +11937,13 @@ body .container {
 }
 
 /* Öğe başına 5sn, 18-45sn arasında — transfer bandının 9sn/34-80sn'inden
-   belirgin biçimde daha hızlı (bkz. scripts/lib/liveScoresTicker.mjs). */
+   belirgin biçimde daha hızlı (bkz. scripts/lib/liveScoresTicker.mjs).
+   Tamamı /1.2 ile bölünür (%20 daha hızlı kaydırma). */
 .live-scores-ticker__track {
   display: flex;
   width: max-content;
   min-height: 42px;
-  animation: ticker-scroll var(--live-ticker-duration, 26s) linear infinite;
+  animation: ticker-scroll var(--live-ticker-duration, 21.67s) linear infinite;
   backface-visibility: hidden;
   will-change: transform;
 }
