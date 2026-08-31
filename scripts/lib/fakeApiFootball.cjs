@@ -123,7 +123,10 @@ function install(options = {}) {
     }
 
     if (url.pathname.endsWith("/transfers")) {
-      return jsonResponse({ get: "transfers", parameters: params, errors: [], results: 0, paging: { current: 1, total: 1 }, response: [] }, { headers });
+      const injectTransfers = Array.isArray(options.injectTransfers) ? options.injectTransfers : [];
+      const playerId = Number(params.player) || null;
+      const matching = injectTransfers.filter((row) => !playerId || (row.player && String(row.player.id) === String(playerId)));
+      return jsonResponse({ get: "transfers", parameters: params, errors: [], results: matching.length, paging: { current: 1, total: 1 }, response: matching }, { headers });
     }
 
     return jsonResponse({ get: url.pathname, parameters: params, errors: [], results: 0, paging: { current: 1, total: 1 }, response: [] }, { headers });
@@ -139,8 +142,15 @@ function install(options = {}) {
 }
 
 if (process.env.FUTBOLRADAR_FAKE_API_FOOTBALL === "1") {
+  let injectTransfers;
+  try {
+    injectTransfers = process.env.FUTBOLRADAR_FAKE_INJECT_TRANSFERS
+      ? JSON.parse(process.env.FUTBOLRADAR_FAKE_INJECT_TRANSFERS)
+      : undefined;
+  } catch { injectTransfers = undefined; }
   install({
-    quotaRemaining: Number(process.env.FUTBOLRADAR_FAKE_QUOTA_REMAINING) || undefined
+    quotaRemaining: Number(process.env.FUTBOLRADAR_FAKE_QUOTA_REMAINING) || undefined,
+    injectTransfers
   });
 }
 

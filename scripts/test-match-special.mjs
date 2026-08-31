@@ -526,4 +526,34 @@ console.log("match-special");
   }
 }
 
-console.log("match-special OK (14 bölüm)");
+// ── 15. ESKİ MAÇLAR (fikstürde yok) derlemeyi kırmamalı ──────────────────
+//
+// Fikstür takvimi tamamlanmış maçları bir süre sonra düşürür; editoryal
+// kayıt temizlenmeden önce `generate-match-special.mjs` çalışırsa kaydı
+// "fikstürde maç yok" hatası nedeniyle atlamalı, derlemeyi DÜŞÜRMEMELİ.
+// CI hatası: kasimpasa-trabzonspor-2026-08-15 ve iki başka maç.
+{
+  const emptyFixturesSources = {
+    specials: sources.specials,
+    fixtures: { matches: [] },
+    squads: sources.squads,
+    archive: sources.archive
+  };
+
+  const records = Array.isArray(sources.specials.specials) ? sources.specials.specials : [];
+  for (const record of records) {
+    const { special, rejected } = selectMatchSpecial(emptyFixturesSources, { matchId: record.matchId });
+    assert.equal(special, null, `${record.matchId}: fikstürsüz special=null olmalı`);
+    assert.ok(rejected.length > 0, `${record.matchId}: rejected boş olmamalı`);
+    const onlyMissingFixture = rejected.every(
+      (row) => row.errors.length === 1 && row.errors[0].startsWith("fikstürde maç yok")
+    );
+    assert.ok(onlyMissingFixture,
+      `${record.matchId}: tek hata "fikstürde maç yok" olmalı — ek hatalar: ${JSON.stringify(rejected)}`);
+  }
+  console.log("  ok  fikstürsüz eski maçlar derlemeyi kırmıyor");
+}
+
+
+
+console.log("match-special OK (15 bölüm)");

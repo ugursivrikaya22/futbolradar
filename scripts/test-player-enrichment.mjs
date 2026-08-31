@@ -166,7 +166,8 @@ function runWeeklyStep(extraEnv = {}, extraArgs = []) {
       APIFOOTBALL_API_KEY: FAKE_KEY,
       APIFOOTBALL_LEAGUE_ID: "203",
       APIFOOTBALL_SEASON: "2026",
-      GITHUB_STEP_SUMMARY: ""
+      GITHUB_STEP_SUMMARY: "",
+      ...extraEnv
     }
   });
 
@@ -214,6 +215,57 @@ function runWeeklyStep(extraEnv = {}, extraArgs = []) {
     check("durma sebebi yazılıyor", report.coverage.stoppedBy === "request-budget", String(report.coverage.stoppedBy));
     check("ulaşılan takımlar korunuyor", report.coverage.complete > 0, JSON.stringify(report.coverage));
   }
+}
+
+// --- 19. geçersiz transfer (date/toTeam eksik) senkronizasyonu düşürmemeli --
+//
+// Sağlayıcı bazı transfer kayıtlarında tarih veya varış kulübünü boş döner.
+// `normalizeTransfer` bu kayıtları filtrelemeden geçirmek `validatePlayerData`
+// kuralını kırıyor ve senkron adımını tamamen düşürüyordu (CI hatası: E. Aydın).
+// Bu test regresyonu engellemek için hem `normalizeTransfer` birimini hem de
+// uçtan uca adımı sınar.
+{
+  const { normalizeTransfer } = apiFootballProvider;
+
+  // Birim: tarih veya takım eksik kayıtlar sessizce elenmeli.
+  const raw = {
+    player: { id: 12345, name: "Test Oyuncu" },
+    transfers: [
+      { date: "2026-07-01", teams: { out: { id: 1, name: "Eski FK" }, in: { id: 2, name: "Yeni FK" } }, type: "Bonservis" },
+      { date: null, teams: { out: { id: 1, name: "Eski FK" }, in: { id: 2, name: "Yeni FK" } }, type: "Bonservis" },
+      { date: "2026-07-02", teams: { out: { id: 1, name: "Eski FK" }, in: { id: null, name: null } }, type: "Serbest" }
+    ]
+  };
+  const filtered = normalizeTransfer(raw);
+  check(
+    "geçersiz transfer kayıtları eleniyor",
+    filtered.length === 1 && filtered[0].date === "2026-07-01" && filtered[0].toTeam === "Yeni FK",
+    `filtered.length=${filtered.length}`
+  );
+  check(
+    "tarihi null kayıt geçmiyor",
+    filtered.every((row) => Boolean(row.date)),
+    JSON.stringify(filtered)
+  );
+  check(
+    "hedef takımı null kayıt geçmiyor",
+    filtered.every((row) => Boolean(row.toTeam)),
+    JSON.stringify(filtered)
+  );
+
+  // Uçtan uca: sağlayıcının geçersiz transfer döndürdüğü senaryoda adım DÜŞMEMELİ.
+  const badTransfer = JSON.stringify([{
+    player: { id: 49866, name: "U. Çakır" },
+    transfers: [
+      { date: null, teams: { out: {}, in: { name: "Bir FK" } }, type: "Serbest" }
+    ]
+  }]);
+  const { result: result3 } = runWeeklyStep({ FUTBOLRADAR_FAKE_INJECT_TRANSFERS: badTransfer });
+  check(
+    "sağlayıcı geçersiz transfer döndürdüğünde adım düşmüyor",
+    result3.status === 0,
+    `exit=${result3.status} stderr=${String(result3.stderr).trim().slice(0, 300)}`
+  );
 }
 
 if (failures.length) {
