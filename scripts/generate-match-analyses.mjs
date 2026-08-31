@@ -6,7 +6,8 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
-const { buildMatchContext } = require("../services/matchContextService.js");
+const { buildMatchContext, computeHeadToHead } = require("../services/matchContextService.js");
+const { computeTeamMomentum, hasMomentumInputs } = require("../services/momentumService.js");
 const {
   generateProbableLineupForFixture,
   computeLineupStrength,
@@ -215,6 +216,56 @@ function selectTargets(fixtures, args) {
   return withKickoff.filter((fixture) => dateOnly(fixture.kickoff) === targetDate);
 }
 
+function findTeamRecord(teamName, teams) {
+  const key = normalizeText(teamName);
+  if (!key) return null;
+  return (Array.isArray(teams) ? teams : []).find((team) => normalizeText(team.name || team.team) === key) || null;
+}
+
+/**
+ * Lig sıralaması: teams.json'daki senkronlanmış satırdan AYNEN okunur,
+ * yeniden hesaplanmaz — bu dosya generate-team-standings-pages.mjs'in de
+ * kaynağı, yani site genelinde tek bir "doğru" sıralama vardır. Takım
+ * bulunamazsa (henüz senkronlanmamış / şimdilik Süper Lig dışı) alanlar
+ * null kalır; sıra uydurulmaz.
+ */
+function buildLeagueSnapshot(teamName, teams) {
+  const record = findTeamRecord(teamName, teams);
+  if (!record || !Number.isFinite(Number(record.rank))) {
+    return { rank: null, points: null, played: null, goalDifference: null, season: null, status: "unavailable" };
+  }
+  return {
+    rank: record.rank,
+    points: Number.isFinite(Number(record.points)) ? record.points : null,
+    played: Number.isFinite(Number(record.played)) ? record.played : null,
+    goalDifference: Number.isFinite(Number(record.average)) ? record.average : null,
+    season: record.standingsSeason || null,
+    status: record.standingsStatus || "available"
+  };
+}
+
+/**
+ * Momentum: /api/momentum ile AYNI hesap (computeTeamMomentum), aynı
+ * girdilerle (teams hem takım hem "standings" argümanı olarak) çağrılır —
+ * maç analizindeki momentum sayısı, kullanıcının momentum sayfasında
+ * gördüğüyle HER ZAMAN tutarlı olmalı. Girdi yoksa (hasMomentumInputs
+ * false döner) hesap uydurulmaz; alan "unavailable" durumuyla null kalır.
+ */
+function buildMomentumSnapshot(teamName, teams, matchPool) {
+  const record = findTeamRecord(teamName, teams) || { name: teamName };
+  if (!hasMomentumInputs(record)) {
+    return { score: null, trend: null, goalSignal: null, risk: null, status: "unavailable" };
+  }
+  const computed = computeTeamMomentum(record, matchPool, teams);
+  return {
+    score: computed.momentum,
+    trend: computed.trend,
+    goalSignal: computed.goalSignal,
+    risk: computed.risk,
+    status: "available"
+  };
+}
+
 function buildTeamBundle(teamName, fixture, players, teams, squadStatus, matchupTeamContext) {
   const teamPlayers = getPlayers(players).filter((player) => normalizeText(player.currentTeam || player.team) === normalizeText(teamName));
   const radarMatch = calculateMatchRadar({ homeTeam: fixture.homeTeam.name, awayTeam: fixture.awayTeam.name, providerId: fixture.providerId }, { teams, players, squadStatus });
@@ -231,6 +282,17 @@ function buildTeamBundle(teamName, fixture, players, teams, squadStatus, matchup
 
 function generateFreshAnalysis(fixture, matches, players, teams, squadStatus) {
   const context = buildMatchContext(fixture, fixture.homeTeam.name, fixture.awayTeam.name, matches);
+  context.home = {
+    ...context.home,
+    leaguePosition: buildLeagueSnapshot(fixture.homeTeam.name, teams),
+    momentum: buildMomentumSnapshot(fixture.homeTeam.name, teams, matches)
+  };
+  context.away = {
+    ...context.away,
+    leaguePosition: buildLeagueSnapshot(fixture.awayTeam.name, teams),
+    momentum: buildMomentumSnapshot(fixture.awayTeam.name, teams, matches)
+  };
+  const headToHead = computeHeadToHead(fixture.homeTeam.name, fixture.awayTeam.name, fixture.kickoff, matches);
   const home = buildTeamBundle(fixture.homeTeam.name, fixture, players, teams, squadStatus, context.home);
   const away = buildTeamBundle(fixture.awayTeam.name, fixture, players, teams, squadStatus, context.away);
   home.lineup.missingKeyPlayers = home.missingKeyPlayers;
@@ -281,6 +343,7 @@ function generateFreshAnalysis(fixture, matches, players, teams, squadStatus) {
     modelVersion: MODEL_VERSION,
     homeContext: context.home,
     awayContext: context.away,
+    headToHead,
     probableLineups: { home: home.lineup, away: away.lineup },
     officialLineups: { home: null, away: null },
     officialLineupStatus: "unavailable",
