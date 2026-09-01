@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-01T20:48:35.047Z",
+  "updatedAt": "2026-09-01T23:11:01.996Z",
   "items": [
     {
       "id": "news-trabzonspor-fatih-tekke-ile-yollar-ayrildi",
@@ -239,6 +239,26 @@
       }
     },
     {
+      "id": "auto-news-90f50186bbc55160867d",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Beşiktaş:2 Çorum FK:1 (U-19)",
+      "team": "Beşiktaş",
+      "timestamp": "2026-08-31T15:07:50.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE53bUg3VEp1dHJNMmhtQjluVmo3MjNOSlJoV0NwUE5fZUxfcDVZRnU2Yy1RSld1eXNveHJNeHA5UXBuTkFld19yMW9XVGhUSlAwT0hMR0FvelJjNFRJM0FtSmtlNVBfV0d2aW5nMWg4T3JsRDRtNUxXaw?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
+    {
       "id": "auto-news-481e4fb1cfa366b039c0",
       "category": "official",
       "confidence": "confirmed",
@@ -299,26 +319,6 @@
       }
     },
     {
-      "id": "auto-news-63b3820cfa718e82f851",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "maç detayı - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-08-29T21:39:49.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE1fZW1IWDJuLTdscFFWR2FNb2V0WXpJcHp4U1I4QWFQUDlQaXJfcFFSYmg0d3lidmlwVEdtNmtLb2JKa1owTTNDTjNQOEJkQy1HNzdFTXhESnFZY1JNaU15MA?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "news-galatasaray-sampiyonlar-ligi-rakipleri-belli-oldu",
       "origin": "news.json",
       "category": "official",
@@ -368,22 +368,22 @@
       "important": true
     },
     {
-      "id": "auto-news-0efb72185d7370c21ad2",
+      "id": "auto-news-78a1aceb51464973d8c4",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Conference League league phase fixtures by team",
-      "team": "Avrupa futbolu",
-      "timestamp": "2026-08-29T22:08:34.000Z",
+      "text": "Nesine 2. ve 3. Lig'de Haftanın Canlı Yayınlanacak Maçları Belirlendi",
+      "team": "Süper Lig",
+      "timestamp": "2026-09-01T12:38:27.000Z",
       "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNQl91VERqVG5uaUN2ZXJVd0l3X0hXbXd1YXdhazM3b3ZSRWd5bk5FV09iMXkwNFllOER3SGFhLWROSHdNbzF3WjBfeEljcmNHOWNIWEE2M2RsVm1NaDN6YlJrdkpiNlVPRi0zN2RORTA0LVJ0Z09wRDNoOE9DeElmOWJMbHMtQXRCSDA2bDlNVWNJRG5hQTdYdlVaTDE3M3BqLXlvdUZobGJoMllkSHlCU1daRkRGOVRVcmxPbXUyTnR0d0FRbVBsRjVEdjY?oc=5",
-        "publisher": "uefa.com"
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBBeU9JT3N4cnFnay1vZ3FFOUdSLUVzVlJLVlBpV1pUQXhOSTh6LWNzU2Y1V1NnU0RlbmQybzFWV1JVbXNPbWhvUTVWTEdxbGNCX05QZHNUUnUySmFpY0xwT1Q2SEp4ZGs?oc=5",
+        "publisher": "tff.org"
       },
       "automation": {
         "source": "rss",
-        "feed": "uefa",
-        "priority": 9,
+        "feed": "super-lig",
+        "priority": 5,
         "status": "OFFICIAL"
       }
     }
