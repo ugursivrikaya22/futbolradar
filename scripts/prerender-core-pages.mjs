@@ -1072,10 +1072,26 @@ function trendTeamCards() {
  * tarafı yalnızca `hydrate` sonrası düzeltiyordu. `staticHomeStandingRows()`
  * ile aynı kural: gerçek veri varsa gerçek satırlar, yoksa boş durum.
  */
-function staticStandingRows() {
-  const rows = teams.filter((team) => Number(team.played) > 0 &&
+/**
+ * Sezon gerçekten başladı mı — LİG SEVİYESİNDE karar verilir, takım
+ * seviyesinde değil. Önceden her takım tek başına `played > 0` şartına
+ * tabiydi: bir maçı ertelenen (played=0 kalan ama sırası/puanı senkronize)
+ * takım tam tablodan tamamen düşüyordu — "ligin tamamını basar" vaadiyle
+ * çelişen, sessiz eksik satır. Sezon en az bir maçla başladıysa artık rankı/
+ * puanı senkronize OLAN her takım (kendi maçı ertelense bile 0 oynanmış
+ * satırla) tabloya girer; hiç maç oynanmamışken (gerçek preseason) liste
+ * yine boş kalır.
+ */
+function standingsSeasonRows() {
+  const started = teams.some((team) => Number(team.played) > 0);
+  if (!started) return [];
+  return teams.filter((team) =>
     team.points !== null && team.points !== undefined &&
     team.rank !== null && team.rank !== undefined);
+}
+
+function staticStandingRows() {
+  const rows = standingsSeasonRows();
   if (!rows.length) {
     return standingsPreseason(false);
   }
@@ -1147,9 +1163,7 @@ function homeStandingRowHtml(team, total) {
 const HOME_STANDINGS_LIMIT = 6;
 
 function staticHomeStandingRows() {
-  const rows = teams.filter((team) => Number(team.played) > 0 &&
-    team.points !== null && team.points !== undefined &&
-    team.rank !== null && team.rank !== undefined);
+  const rows = standingsSeasonRows();
   if (!rows.length) {
     return standingsPreseason(true);
   }

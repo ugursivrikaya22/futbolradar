@@ -5690,9 +5690,20 @@
     });
   }
 
+  /**
+   * Sezon LİG SEVİYESİNDE başladı mı — takım seviyesinde değil. Önceden her
+   * takım tek başına `played > 0` şartına tabiydi: maçı ertelenen (rankı/
+   * puanı senkronize ama played=0 kalan) bir takım tabloda hiç görünmüyordu.
+   * En az bir takım oynadıysa sezon başlamış sayılır ve rankı/puanı
+   * senkronize OLAN her takım (kendi maçı ertelense bile) listeye girer;
+   * hiç maç oynanmamışken (gerçek sezon öncesi) liste yine boş kalır.
+   */
   function standingsWithResults(teams) {
-    return (Array.isArray(teams) ? teams : []).filter(function (team) {
-      return Number(team.played) > 0 && team.points !== null && team.points !== undefined && team.rank !== null && team.rank !== undefined;
+    var list = Array.isArray(teams) ? teams : [];
+    var started = list.some(function (team) { return Number(team.played) > 0; });
+    if (!started) return [];
+    return list.filter(function (team) {
+      return team.points !== null && team.points !== undefined && team.rank !== null && team.rank !== undefined;
     });
   }
 
