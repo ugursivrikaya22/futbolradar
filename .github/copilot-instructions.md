@@ -1,0 +1,3 @@
+For small repository fixes, do not merge or rebase `main` into a Copilot task branch unless the user explicitly asks for it. This repository's default branch changes frequently with generated HTML/data updates, and merging `main` into a task branch can explode the diff size enough to break Copilot's review/check steps.
+
+Prefer the smallest validation command that covers the change. For scheduled-update workflow or orchestration changes, use `node scripts/test-scheduled-updates.mjs`; for match-special changes, use `node scripts/test-match-special.mjs`; for player-data regressions, use `node scripts/test-player-data.mjs` and `node scripts/test-player-enrichment.mjs`.
