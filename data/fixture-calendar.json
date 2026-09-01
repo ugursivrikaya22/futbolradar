@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-09-01T17:50:01.400Z",
+  "fetchedAt": "2026-09-01T20:48:03.676Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -33700,11 +33700,11 @@
       "awayTeam": "Keçiörengücü",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3569.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3595.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 0,
         "away": 2,
@@ -33726,15 +33726,48 @@
       "events": [],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-01T17:50:02.340Z",
-      "staleAfter": "2026-09-01T17:55:02.340Z",
+      "fetchedAt": "2026-09-01T20:48:04.548Z",
+      "staleAfter": "2026-09-01T20:53:04.548Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1585731"
       },
-      "competitionId": "1-lig"
+      "competitionId": "1-lig",
+      "lineups": [
+        {
+          "team": "Boluspor",
+          "formation": null,
+          "players": [],
+          "substitutes": [],
+          "startingDetails": [],
+          "substituteDetails": []
+        },
+        {
+          "team": "Keçiörengücü",
+          "formation": null,
+          "players": [],
+          "substitutes": [],
+          "startingDetails": [],
+          "substituteDetails": []
+        }
+      ],
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Keçiörengücü skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Keçiörengücü tarafında.",
+        "confidence": "Sınırlı",
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-2",
+            "text": "Keçiörengücü skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 0,
+        "dataPoints": 1,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      }
     },
     {
       "id": "sariyer-pendikspor-2026-09-01",
@@ -33750,13 +33783,13 @@
       "awayTeam": "Pendikspor",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3605.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/3601.png",
-      "status": "HALFTIME",
-      "providerStatus": "HT",
-      "minute": 45,
-      "elapsed": 45,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 0,
+        "home": 2,
         "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
@@ -33776,15 +33809,1291 @@
       "events": [],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-01T17:50:02.340Z",
-      "staleAfter": "2026-09-01T17:55:02.340Z",
+      "fetchedAt": "2026-09-01T20:48:04.548Z",
+      "staleAfter": "2026-09-01T20:53:04.548Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1585735"
       },
-      "competitionId": "1-lig"
+      "competitionId": "1-lig",
+      "lineups": [
+        {
+          "team": "Sarıyer",
+          "formation": null,
+          "players": [],
+          "substitutes": [],
+          "startingDetails": [],
+          "substituteDetails": []
+        },
+        {
+          "team": "Pendikspor",
+          "formation": null,
+          "players": [],
+          "substitutes": [],
+          "startingDetails": [],
+          "substituteDetails": []
+        }
+      ],
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Sarıyer skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Sarıyer tarafında.",
+        "confidence": "Sınırlı",
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "2-0",
+            "text": "Sarıyer skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 0,
+        "dataPoints": 1,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 3605,
+            "name": "Sarıyer",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": "+1.5",
+          "goals": {
+            "home": "-3.5",
+            "away": "-2.5"
+          },
+          "advice": "Combo Double chance : Sarıyer or draw and +1.5 goals",
+          "percent": {
+            "home": "45%",
+            "draw": "45%",
+            "away": "10%"
+          }
+        },
+        "league": {
+          "id": 204,
+          "name": "1. Lig",
+          "country": "Turkey",
+          "logo": "https://media.api-sports.io/football/leagues/204.png",
+          "flag": "https://media.api-sports.io/flags/tr.svg",
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 3605,
+            "name": "Sarıyer",
+            "logo": "https://media.api-sports.io/football/teams/3605.png",
+            "last_5": {
+              "played": 4,
+              "form": "58%",
+              "att": "100%",
+              "def": "20%",
+              "goals": {
+                "for": {
+                  "total": 6,
+                  "average": "1.5"
+                },
+                "against": {
+                  "total": 4,
+                  "average": "1.0"
+                }
+              }
+            },
+            "league": {
+              "form": "WDLW",
+              "fixtures": {
+                "played": {
+                  "home": 2,
+                  "away": 2,
+                  "total": 4
+                },
+                "wins": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "loses": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 3,
+                    "away": 3,
+                    "total": 6
+                  },
+                  "average": {
+                    "home": "1.5",
+                    "away": "1.5",
+                    "total": "1.5"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "16.67%"
+                    },
+                    "46-60": {
+                      "total": 2,
+                      "percentage": "33.33%"
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "16.67%"
+                    },
+                    "76-90": {
+                      "total": 2,
+                      "percentage": "33.33%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 4,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 4
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 2,
+                    "away": 2,
+                    "total": 4
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 2,
+                      "percentage": "50.00%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "25.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 3
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 4
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 1,
+                  "draws": 1,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": "2-0",
+                  "away": "1-2"
+                },
+                "loses": {
+                  "home": "1-2",
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 2,
+                    "away": 2
+                  },
+                  "against": {
+                    "home": 2,
+                    "away": 1
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 1,
+                "away": 0,
+                "total": 1
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 2,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 2
+              },
+              "lineups": [
+                {
+                  "formation": "4-1-4-1",
+                  "played": 1
+                },
+                {
+                  "formation": "4-3-2-1",
+                  "played": 1
+                },
+                {
+                  "formation": "4-2-3-1",
+                  "played": 1
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": 2,
+                    "percentage": "28.57%"
+                  },
+                  "31-45": {
+                    "total": 1,
+                    "percentage": "14.29%"
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "14.29%"
+                  },
+                  "61-75": {
+                    "total": 2,
+                    "percentage": "28.57%"
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": 1,
+                    "percentage": "14.29%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 3601,
+            "name": "Pendikspor",
+            "logo": "https://media.api-sports.io/football/teams/3601.png",
+            "last_5": {
+              "played": 4,
+              "form": "42%",
+              "att": "100%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 7,
+                  "average": "1.8"
+                },
+                "against": {
+                  "total": 9,
+                  "average": "2.3"
+                }
+              }
+            },
+            "league": {
+              "form": "DLWD",
+              "fixtures": {
+                "played": {
+                  "home": 2,
+                  "away": 2,
+                  "total": 4
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "draws": {
+                  "home": 2,
+                  "away": 0,
+                  "total": 2
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 3,
+                    "away": 4,
+                    "total": 7
+                  },
+                  "average": {
+                    "home": "1.5",
+                    "away": "2.0",
+                    "total": "1.8"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 2,
+                      "percentage": "28.57%"
+                    },
+                    "31-45": {
+                      "total": 2,
+                      "percentage": "28.57%"
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 4,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 4
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 4
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 3,
+                    "away": 6,
+                    "total": 9
+                  },
+                  "average": {
+                    "home": "1.5",
+                    "away": "3.0",
+                    "total": "2.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 2,
+                      "percentage": "22.22%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 2,
+                      "percentage": "22.22%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 3,
+                      "percentage": "33.33%"
+                    },
+                    "76-90": {
+                      "total": 2,
+                      "percentage": "22.22%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 4,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 3,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 1,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 4
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 1,
+                  "draws": 1,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": null,
+                  "away": "2-3"
+                },
+                "loses": {
+                  "home": null,
+                  "away": "4-1"
+                },
+                "goals": {
+                  "for": {
+                    "home": 2,
+                    "away": 3
+                  },
+                  "against": {
+                    "home": 2,
+                    "away": 4
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [
+                {
+                  "formation": "4-1-4-1",
+                  "played": 4
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": 3,
+                    "percentage": "75.00%"
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "25.00%"
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "58%",
+            "away": "42%"
+          },
+          "att": {
+            "home": "46%",
+            "away": "54%"
+          },
+          "def": {
+            "home": "69%",
+            "away": "31%"
+          },
+          "poisson_distribution": {
+            "home": "64%",
+            "away": "36%"
+          },
+          "h2h": {
+            "home": "60%",
+            "away": "40%"
+          },
+          "goals": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "total": {
+            "home": "57.8%",
+            "away": "42.2%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1398563,
+              "referee": "D. Celik",
+              "timezone": "UTC",
+              "date": "2026-02-15T16:00:00+00:00",
+              "timestamp": 1771171200,
+              "periods": {
+                "first": 1771171200,
+                "second": 1771174800
+              },
+              "venue": {
+                "id": null,
+                "name": "Pendik Stadyumu",
+                "city": "Istanbul"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 4
+              }
+            },
+            "league": {
+              "id": 204,
+              "name": "1. Lig",
+              "country": "Turkey",
+              "logo": "https://media.api-sports.io/football/leagues/204.png",
+              "flag": "https://media.api-sports.io/flags/tr.svg",
+              "season": 2025,
+              "round": "Regular Season - 25",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 3601,
+                "name": "Pendikspor",
+                "logo": "https://media.api-sports.io/football/teams/3601.png",
+                "winner": true
+              },
+              "away": {
+                "id": 3605,
+                "name": "Sarıyer",
+                "logo": "https://media.api-sports.io/football/teams/3605.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 2,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1398371,
+              "referee": "Omer Faruk Turtay, Türkiye",
+              "timezone": "UTC",
+              "date": "2025-09-21T13:00:00+00:00",
+              "timestamp": 1758459600,
+              "periods": {
+                "first": 1758459600,
+                "second": 1758463200
+              },
+              "venue": {
+                "id": null,
+                "name": "Yusuf Ziya Onis",
+                "city": "Istanbul"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 5
+              }
+            },
+            "league": {
+              "id": 204,
+              "name": "1. Lig",
+              "country": "Turkey",
+              "logo": "https://media.api-sports.io/football/leagues/204.png",
+              "flag": "https://media.api-sports.io/flags/tr.svg",
+              "season": 2025,
+              "round": "Regular Season - 6",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 3605,
+                "name": "Sarıyer",
+                "logo": "https://media.api-sports.io/football/teams/3605.png",
+                "winner": false
+              },
+              "away": {
+                "id": 3601,
+                "name": "Pendikspor",
+                "logo": "https://media.api-sports.io/football/teams/3601.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 236722,
+              "referee": "O. Bingöl",
+              "timezone": "UTC",
+              "date": "2020-01-11T10:30:00+00:00",
+              "timestamp": 1578738600,
+              "periods": {
+                "first": 1578738600,
+                "second": 1578742200
+              },
+              "venue": {
+                "id": 2407,
+                "name": "Yusuf Ziya Öniş Stadyumu",
+                "city": "İstanbul"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 205,
+              "name": "2. Lig",
+              "country": "Turkey",
+              "logo": "https://media.api-sports.io/football/leagues/205.png",
+              "flag": "https://media.api-sports.io/flags/tr.svg",
+              "season": 2019,
+              "round": "Beyaz - 18",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 3605,
+                "name": "Sarıyer",
+                "logo": "https://media.api-sports.io/football/teams/3605.png",
+                "winner": true
+              },
+              "away": {
+                "id": 3601,
+                "name": "Pendikspor",
+                "logo": "https://media.api-sports.io/football/teams/3601.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 236574,
+              "referee": "B. Başkan",
+              "timezone": "UTC",
+              "date": "2019-09-01T14:00:00+00:00",
+              "timestamp": 1567346400,
+              "periods": {
+                "first": 1567346400,
+                "second": 1567350000
+              },
+              "venue": {
+                "id": 2403,
+                "name": "Pendik Stadyumu",
+                "city": "İstanbul"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 205,
+              "name": "2. Lig",
+              "country": "Turkey",
+              "logo": "https://media.api-sports.io/football/leagues/205.png",
+              "flag": "https://media.api-sports.io/flags/tr.svg",
+              "season": 2019,
+              "round": "Beyaz - 1",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 3601,
+                "name": "Pendikspor",
+                "logo": "https://media.api-sports.io/football/teams/3601.png",
+                "winner": false
+              },
+              "away": {
+                "id": 3605,
+                "name": "Sarıyer",
+                "logo": "https://media.api-sports.io/football/teams/3605.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 512932,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2016-01-24T11:30:00+00:00",
+              "timestamp": 1453635000,
+              "periods": {
+                "first": 1453635000,
+                "second": 1453638600
+              },
+              "venue": {
+                "id": 2403,
+                "name": "Pendik Stadyumu",
+                "city": "İstanbul"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 205,
+              "name": "2. Lig",
+              "country": "Turkey",
+              "logo": "https://media.api-sports.io/football/leagues/205.png",
+              "flag": "https://media.api-sports.io/flags/tr.svg",
+              "season": 2015,
+              "round": "Regular Season - 19",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 3601,
+                "name": "Pendikspor",
+                "logo": "https://media.api-sports.io/football/teams/3601.png",
+                "winner": false
+              },
+              "away": {
+                "id": 3605,
+                "name": "Sarıyer",
+                "logo": "https://media.api-sports.io/football/teams/3605.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 512779,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2015-09-13T13:30:00+00:00",
+              "timestamp": 1442151000,
+              "periods": {
+                "first": 1442151000,
+                "second": 1442154600
+              },
+              "venue": {
+                "id": 2407,
+                "name": "Yusuf Ziya Öniş Stadyumu",
+                "city": "İstanbul"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 205,
+              "name": "2. Lig",
+              "country": "Turkey",
+              "logo": "https://media.api-sports.io/football/leagues/205.png",
+              "flag": "https://media.api-sports.io/flags/tr.svg",
+              "season": 2015,
+              "round": "Regular Season - 2",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 3605,
+                "name": "Sarıyer",
+                "logo": "https://media.api-sports.io/football/teams/3605.png",
+                "winner": true
+              },
+              "away": {
+                "id": 3601,
+                "name": "Pendikspor",
+                "logo": "https://media.api-sports.io/football/teams/3601.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": null,
+                "away": null
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 513634,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2014-03-29T12:30:00+00:00",
+              "timestamp": 1396096200,
+              "periods": {
+                "first": 1396096200,
+                "second": 1396099800
+              },
+              "venue": {
+                "id": 2407,
+                "name": "Yusuf Ziya Öniş Stadyumu",
+                "city": "İstanbul"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 205,
+              "name": "2. Lig",
+              "country": "Turkey",
+              "logo": "https://media.api-sports.io/football/leagues/205.png",
+              "flag": "https://media.api-sports.io/flags/tr.svg",
+              "season": 2013,
+              "round": "Regular Season - 28",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 3605,
+                "name": "Sarıyer",
+                "logo": "https://media.api-sports.io/football/teams/3605.png",
+                "winner": false
+              },
+              "away": {
+                "id": 3601,
+                "name": "Pendikspor",
+                "logo": "https://media.api-sports.io/football/teams/3601.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 513503,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2013-11-10T11:30:00+00:00",
+              "timestamp": 1384083000,
+              "periods": {
+                "first": 1384083000,
+                "second": 1384086600
+              },
+              "venue": {
+                "id": 2403,
+                "name": "Pendik Stadyumu",
+                "city": "İstanbul"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 205,
+              "name": "2. Lig",
+              "country": "Turkey",
+              "logo": "https://media.api-sports.io/football/leagues/205.png",
+              "flag": "https://media.api-sports.io/flags/tr.svg",
+              "season": 2013,
+              "round": "Regular Season - 11",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 3601,
+                "name": "Pendikspor",
+                "logo": "https://media.api-sports.io/football/teams/3601.png",
+                "winner": true
+              },
+              "away": {
+                "id": 3605,
+                "name": "Sarıyer",
+                "logo": "https://media.api-sports.io/football/teams/3605.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": null,
+                "away": null
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "gj-vik-lyn-brumunddal-2026-09-01",
@@ -35503,12 +36812,160 @@
       "competitionId": "cup"
     },
     {
+      "id": "ado-20-excelsior-maassluis-2026-09-01",
+      "providerId": "1622731",
+      "league": "KNVB Beker",
+      "providerLeagueId": "90",
+      "round": null,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-01T21:00:00+03:00",
+      "time": "21:00",
+      "homeTeam": "ADO '20",
+      "awayTeam": "Excelsior Maassluis",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/3886.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/17129.png",
+      "status": "LIVE",
+      "providerStatus": "P",
+      "minute": null,
+      "elapsed": null,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "23'",
+          "team": {
+            "name": "ADO '20"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "69'",
+          "team": {
+            "name": "ADO '20"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "Red Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "Excelsior Maassluis"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "120+1'",
+          "team": {
+            "name": "ADO '20"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "Penalty",
+          "comments": "Penalty Shootout",
+          "providerEventAt": null
+        },
+        {
+          "time": "120+1'",
+          "team": {
+            "name": "Excelsior Maassluis"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "Penalty",
+          "comments": "Penalty Shootout",
+          "providerEventAt": null
+        },
+        {
+          "time": "120+2'",
+          "team": {
+            "name": "ADO '20"
+          },
+          "type": "Goal",
+          "detail": "Missed Penalty",
+          "value": "Missed Penalty",
+          "comments": "Penalty Shootout",
+          "providerEventAt": null
+        },
+        {
+          "time": "120+2'",
+          "team": {
+            "name": "Excelsior Maassluis"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "Penalty",
+          "comments": "Penalty Shootout",
+          "providerEventAt": null
+        },
+        {
+          "time": "120+3'",
+          "team": {
+            "name": "ADO '20"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "Penalty",
+          "comments": "Penalty Shootout",
+          "providerEventAt": null
+        },
+        {
+          "time": "120+3'",
+          "team": {
+            "name": "Excelsior Maassluis"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "Penalty",
+          "comments": "Penalty Shootout",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-01T20:48:03.979Z",
+      "staleAfter": "2026-09-01T20:53:03.979Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1622731"
+      },
+      "competitionId": "knvb-beker"
+    },
+    {
       "id": "lincoln-blackburn-2026-09-01",
       "providerId": "1563120",
       "league": "Championship",
       "providerLeagueId": "40",
       "round": 4,
-      "venue": "LNER stadium",
+      "venue": "Sincil Bank",
       "referee": "W. Finnie",
       "kickoff": "2026-09-01T21:45:00+03:00",
       "time": "21:45",
@@ -35516,14 +36973,14 @@
       "awayTeam": "Blackburn",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/1379.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/67.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -35539,18 +36996,1032 @@
       "goalExpectation": null,
       "goalPotential": null,
       "risk": null,
-      "events": [],
+      "events": [
+        {
+          "time": "13'",
+          "team": {
+            "name": "Blackburn"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "T. Atcheson · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Lincoln"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "F. Draper · Asist: T. Olaofe · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Lincoln"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "T. Bayliss · Asist: I. Varfolomeev · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Blackburn"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "K. Montgomery · Asist: A. Forshaw · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "68'",
+          "team": {
+            "name": "Blackburn"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "O. Afolayan · Asist: J. Fevrier · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "69'",
+          "team": {
+            "name": "Blackburn"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "T. Atcheson · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "69'",
+          "team": {
+            "name": "Blackburn"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "T. Atcheson · Red Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "77'",
+          "team": {
+            "name": "Lincoln"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "R. Street · Asist: M. Ladefoged · Substitution 3",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Blackburn"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "T. Cantwell · Asist: J. Garrett · Substitution 3",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "Blackburn"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "J. Garrett · Yellow Card",
+          "comments": "Unsportsmanlike conduct",
+          "providerEventAt": null
+        },
+        {
+          "time": "87'",
+          "team": {
+            "name": "Lincoln"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "R. Hackett-Fairchild · Asist: M. Melia · Substitution 4",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "87'",
+          "team": {
+            "name": "Lincoln"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "D. Jefferies · Asist: A. Coubis · Substitution 5",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "90+1'",
+          "team": {
+            "name": "Blackburn"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "R. Alebiosu · Asist: L. Houghton · Substitution 4",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "90+4'",
+          "team": {
+            "name": "Lincoln"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "C. McGrandles · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "90+5'",
+          "team": {
+            "name": "Blackburn"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "A. Forshaw · Yellow Card",
+          "comments": "Unsportsmanlike conduct",
+          "providerEventAt": null
+        }
+      ],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-31T18:46:51.708Z",
-      "staleAfter": "2026-08-31T18:51:51.708Z",
+      "fetchedAt": "2026-09-01T20:48:04.548Z",
+      "staleAfter": "2026-09-01T20:53:04.548Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1563120"
       },
-      "competitionId": "championship"
+      "competitionId": "championship",
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Blackburn kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Kulübeler oyuna müdahale etti; 9 oyuncu değişikliği kayda geçti.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Disiplin dengesi",
+            "value": "1 kırmızı kart",
+            "text": "Blackburn kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "9 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 9 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
+        "eventCount": 15,
+        "dataPoints": 3,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 67,
+            "name": "Blackburn",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": "+1.5",
+          "goals": {
+            "home": "-2.5",
+            "away": "-3.5"
+          },
+          "advice": "Combo Double chance : draw or Blackburn and +1.5 goals",
+          "percent": {
+            "home": "10%",
+            "draw": "45%",
+            "away": "45%"
+          }
+        },
+        "league": {
+          "id": 40,
+          "name": "Championship",
+          "country": "England",
+          "logo": "https://media.api-sports.io/football/leagues/40.png",
+          "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 1379,
+            "name": "Lincoln",
+            "logo": "https://media.api-sports.io/football/teams/1379.png",
+            "last_5": {
+              "played": 3,
+              "form": "33%",
+              "att": "17%",
+              "def": "72%",
+              "goals": {
+                "for": {
+                  "total": 3,
+                  "average": "1.0"
+                },
+                "against": {
+                  "total": 5,
+                  "average": "1.7"
+                }
+              }
+            },
+            "league": {
+              "form": "LLW",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 2,
+                  "total": 3
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 1,
+                    "away": 2,
+                    "total": 3
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 3,
+                    "away": 2,
+                    "total": 5
+                  },
+                  "average": {
+                    "home": "3.0",
+                    "away": "1.0",
+                    "total": "1.7"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 2,
+                      "percentage": "40.00%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 2
+                },
+                "wins": {
+                  "home": null,
+                  "away": "0-1"
+                },
+                "loses": {
+                  "home": "1-3",
+                  "away": "2-1"
+                },
+                "goals": {
+                  "for": {
+                    "home": 1,
+                    "away": 1
+                  },
+                  "against": {
+                    "home": 3,
+                    "away": 2
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 1,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 1
+              },
+              "lineups": [
+                {
+                  "formation": "5-3-2",
+                  "played": 1
+                },
+                {
+                  "formation": "4-2-3-1",
+                  "played": 1
+                },
+                {
+                  "formation": "3-4-3",
+                  "played": 1
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": 1,
+                    "percentage": "12.50%"
+                  },
+                  "31-45": {
+                    "total": 2,
+                    "percentage": "25.00%"
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": 2,
+                    "percentage": "25.00%"
+                  },
+                  "76-90": {
+                    "total": 2,
+                    "percentage": "25.00%"
+                  },
+                  "91-105": {
+                    "total": 1,
+                    "percentage": "12.50%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 67,
+            "name": "Blackburn",
+            "logo": "https://media.api-sports.io/football/teams/67.png",
+            "last_5": {
+              "played": 3,
+              "form": "44%",
+              "att": "28%",
+              "def": "72%",
+              "goals": {
+                "for": {
+                  "total": 5,
+                  "average": "1.7"
+                },
+                "against": {
+                  "total": 5,
+                  "average": "1.7"
+                }
+              }
+            },
+            "league": {
+              "form": "DWL",
+              "fixtures": {
+                "played": {
+                  "home": 2,
+                  "away": 1,
+                  "total": 3
+                },
+                "wins": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "loses": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 3,
+                    "away": 2,
+                    "total": 5
+                  },
+                  "average": {
+                    "home": "1.5",
+                    "away": "2.0",
+                    "total": "1.7"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": 4,
+                      "percentage": "80.00%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 3,
+                    "away": 2,
+                    "total": 5
+                  },
+                  "average": {
+                    "home": "1.5",
+                    "away": "2.0",
+                    "total": "1.7"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 1,
+                  "draws": 1,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": "2-1",
+                  "away": null
+                },
+                "loses": {
+                  "home": "1-2",
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 2,
+                    "away": 2
+                  },
+                  "against": {
+                    "home": 2,
+                    "away": 2
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [
+                {
+                  "formation": "4-2-3-1",
+                  "played": 3
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": 1,
+                    "percentage": "10.00%"
+                  },
+                  "31-45": {
+                    "total": 3,
+                    "percentage": "30.00%"
+                  },
+                  "46-60": {
+                    "total": 2,
+                    "percentage": "20.00%"
+                  },
+                  "61-75": {
+                    "total": 1,
+                    "percentage": "10.00%"
+                  },
+                  "76-90": {
+                    "total": 3,
+                    "percentage": "30.00%"
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "43%",
+            "away": "57%"
+          },
+          "att": {
+            "home": "38%",
+            "away": "63%"
+          },
+          "def": {
+            "home": "50%",
+            "away": "50%"
+          },
+          "poisson_distribution": {
+            "home": "22%",
+            "away": "78%"
+          },
+          "h2h": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "goals": {
+            "home": "17%",
+            "away": "83%"
+          },
+          "total": {
+            "home": "34.0%",
+            "away": "66.2%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 870941,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2022-07-23T14:00:00+00:00",
+              "timestamp": 1658584800,
+              "periods": {
+                "first": 1658584800,
+                "second": 1658588400
+              },
+              "venue": {
+                "id": 10610,
+                "name": "LNER Stadium",
+                "city": "Lincoln, Lincolnshire"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 667,
+              "name": "Friendlies Clubs",
+              "country": "World",
+              "logo": "https://media.api-sports.io/football/leagues/667.png",
+              "flag": null,
+              "season": 2022,
+              "round": "Club Friendlies 3",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 1379,
+                "name": "Lincoln",
+                "logo": "https://media.api-sports.io/football/teams/1379.png",
+                "winner": false
+              },
+              "away": {
+                "id": 67,
+                "name": "Blackburn",
+                "logo": "https://media.api-sports.io/football/teams/67.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 454982,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2018-08-28T18:45:00+00:00",
+              "timestamp": 1535481900,
+              "periods": {
+                "first": 1535481900,
+                "second": 1535485500
+              },
+              "venue": {
+                "id": 500,
+                "name": "Ewood Park",
+                "city": "Blackburn, Lancashire"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 48,
+              "name": "League Cup",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/48.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2018,
+              "round": "2nd Round",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 67,
+                "name": "Blackburn",
+                "logo": "https://media.api-sports.io/football/teams/67.png",
+                "winner": true
+              },
+              "away": {
+                "id": 1379,
+                "name": "Lincoln",
+                "logo": "https://media.api-sports.io/football/teams/1379.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 4,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 4,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "portsmouth-derby-2026-09-01",
@@ -35566,14 +38037,14 @@
       "awayTeam": "Derby",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/1355.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/69.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -35592,15 +38063,1409 @@
       "events": [],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-31T18:46:51.708Z",
-      "staleAfter": "2026-08-31T18:51:51.708Z",
+      "fetchedAt": "2026-09-01T20:48:04.548Z",
+      "staleAfter": "2026-09-01T20:53:04.548Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "providerIds": {
         "apiFootball": "1563121"
       },
-      "competitionId": "championship"
+      "competitionId": "championship",
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Derby skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Derby tarafında.",
+        "confidence": "Sınırlı",
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-2",
+            "text": "Derby skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 0,
+        "dataPoints": 1,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": 69,
+            "name": "Derby",
+            "comment": "Win or draw"
+          },
+          "win_or_draw": true,
+          "under_over": null,
+          "goals": {
+            "home": "-2.5",
+            "away": "-2.5"
+          },
+          "advice": "Double chance : draw or Derby",
+          "percent": {
+            "home": "10%",
+            "draw": "45%",
+            "away": "45%"
+          }
+        },
+        "league": {
+          "id": 40,
+          "name": "Championship",
+          "country": "England",
+          "logo": "https://media.api-sports.io/football/leagues/40.png",
+          "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 1355,
+            "name": "Portsmouth",
+            "logo": "https://media.api-sports.io/football/teams/1355.png",
+            "last_5": {
+              "played": 3,
+              "form": "33%",
+              "att": "28%",
+              "def": "67%",
+              "goals": {
+                "for": {
+                  "total": 5,
+                  "average": "1.7"
+                },
+                "against": {
+                  "total": 6,
+                  "average": "2.0"
+                }
+              }
+            },
+            "league": {
+              "form": "LWL",
+              "fixtures": {
+                "played": {
+                  "home": 1,
+                  "away": 2,
+                  "total": 3
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 1,
+                    "away": 4,
+                    "total": 5
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "2.0",
+                    "total": "1.7"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 2,
+                      "percentage": "40.00%"
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": 1,
+                      "percentage": "20.00%"
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 3,
+                    "away": 3,
+                    "total": 6
+                  },
+                  "average": {
+                    "home": "3.0",
+                    "away": "1.5",
+                    "total": "2.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": 4,
+                      "percentage": "66.67%"
+                    },
+                    "46-60": {
+                      "total": 2,
+                      "percentage": "33.33%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 1,
+                  "draws": 0,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": null,
+                  "away": "1-3"
+                },
+                "loses": {
+                  "home": "1-3",
+                  "away": "2-1"
+                },
+                "goals": {
+                  "for": {
+                    "home": 1,
+                    "away": 3
+                  },
+                  "against": {
+                    "home": 3,
+                    "away": 2
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 1,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 1
+              },
+              "lineups": [
+                {
+                  "formation": "4-2-3-1",
+                  "played": 3
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 69,
+            "name": "Derby",
+            "logo": "https://media.api-sports.io/football/teams/69.png",
+            "last_5": {
+              "played": 3,
+              "form": "11%",
+              "att": "17%",
+              "def": "61%",
+              "goals": {
+                "for": {
+                  "total": 3,
+                  "average": "1.0"
+                },
+                "against": {
+                  "total": 7,
+                  "average": "2.3"
+                }
+              }
+            },
+            "league": {
+              "form": "LDL",
+              "fixtures": {
+                "played": {
+                  "home": 2,
+                  "away": 1,
+                  "total": 3
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                },
+                "loses": {
+                  "home": 1,
+                  "away": 1,
+                  "total": 2
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 2,
+                    "away": 1,
+                    "total": 3
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "1.0",
+                    "total": "1.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": 2,
+                      "percentage": "66.67%"
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "33.33%"
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 2,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 5,
+                    "away": 2,
+                    "total": 7
+                  },
+                  "average": {
+                    "home": "2.5",
+                    "away": "2.0",
+                    "total": "2.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "31-45": {
+                      "total": 2,
+                      "percentage": "28.57%"
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "76-90": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "91-105": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 3,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 3,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 2
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 3
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 3
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 1,
+                  "loses": 1
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": "0-3",
+                  "away": "2-1"
+                },
+                "goals": {
+                  "for": {
+                    "home": 2,
+                    "away": 1
+                  },
+                  "against": {
+                    "home": 3,
+                    "away": 2
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 1,
+                "away": 0,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [
+                {
+                  "formation": "4-2-3-1",
+                  "played": 2
+                },
+                {
+                  "formation": "5-3-2",
+                  "played": 1
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": 1,
+                    "percentage": "9.09%"
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": 3,
+                    "percentage": "27.27%"
+                  },
+                  "61-75": {
+                    "total": 1,
+                    "percentage": "9.09%"
+                  },
+                  "76-90": {
+                    "total": 5,
+                    "percentage": "45.45%"
+                  },
+                  "91-105": {
+                    "total": 1,
+                    "percentage": "9.09%"
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "75%",
+            "away": "25%"
+          },
+          "att": {
+            "home": "63%",
+            "away": "38%"
+          },
+          "def": {
+            "home": "54%",
+            "away": "46%"
+          },
+          "poisson_distribution": {
+            "home": "36%",
+            "away": "64%"
+          },
+          "h2h": {
+            "home": "25%",
+            "away": "75%"
+          },
+          "goals": {
+            "home": "33%",
+            "away": "67%"
+          },
+          "total": {
+            "home": "47.7%",
+            "away": "52.5%"
+          }
+        },
+        "h2h": [
+          {
+            "fixture": {
+              "id": 1387002,
+              "referee": "A. Backhouse",
+              "timezone": "UTC",
+              "date": "2026-03-16T20:00:00+00:00",
+              "timestamp": 1773691200,
+              "periods": {
+                "first": 1773691200,
+                "second": 1773694800
+              },
+              "venue": {
+                "id": 573,
+                "name": "Fratton Park",
+                "city": "Portsmouth"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 7
+              }
+            },
+            "league": {
+              "id": 40,
+              "name": "Championship",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/40.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2025,
+              "round": "Regular Season - 38",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 1355,
+                "name": "Portsmouth",
+                "logo": "https://media.api-sports.io/football/teams/1355.png",
+                "winner": false
+              },
+              "away": {
+                "id": 69,
+                "name": "Derby",
+                "logo": "https://media.api-sports.io/football/teams/69.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1386810,
+              "referee": "Farai Hallam, England",
+              "timezone": "UTC",
+              "date": "2025-12-20T15:00:00+00:00",
+              "timestamp": 1766242800,
+              "periods": {
+                "first": 1766242800,
+                "second": 1766246400
+              },
+              "venue": {
+                "id": 527,
+                "name": "Pride Park",
+                "city": "Derby"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 4
+              }
+            },
+            "league": {
+              "id": 40,
+              "name": "Championship",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/40.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2025,
+              "round": "Regular Season - 22",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 69,
+                "name": "Derby",
+                "logo": "https://media.api-sports.io/football/teams/69.png",
+                "winner": null
+              },
+              "away": {
+                "id": 1355,
+                "name": "Portsmouth",
+                "logo": "https://media.api-sports.io/football/teams/1355.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1216342,
+              "referee": "R. Ricardo",
+              "timezone": "UTC",
+              "date": "2025-04-12T14:00:00+00:00",
+              "timestamp": 1744466400,
+              "periods": {
+                "first": 1744466400,
+                "second": 1744470000
+              },
+              "venue": {
+                "id": 573,
+                "name": "Fratton Park",
+                "city": "Portsmouth"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 10
+              }
+            },
+            "league": {
+              "id": 40,
+              "name": "Championship",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/40.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2024,
+              "round": "Regular Season - 42",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 1355,
+                "name": "Portsmouth",
+                "logo": "https://media.api-sports.io/football/teams/1355.png",
+                "winner": null
+              },
+              "away": {
+                "id": 69,
+                "name": "Derby",
+                "logo": "https://media.api-sports.io/football/teams/69.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1216086,
+              "referee": "O. Langford",
+              "timezone": "UTC",
+              "date": "2024-12-13T20:00:00+00:00",
+              "timestamp": 1734120000,
+              "periods": {
+                "first": 1734120000,
+                "second": 1734123600
+              },
+              "venue": {
+                "id": 527,
+                "name": "Pride Park Stadium",
+                "city": "Derby"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": 5
+              }
+            },
+            "league": {
+              "id": 40,
+              "name": "Championship",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/40.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2024,
+              "round": "Regular Season - 21",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 69,
+                "name": "Derby",
+                "logo": "https://media.api-sports.io/football/teams/69.png",
+                "winner": true
+              },
+              "away": {
+                "id": 1355,
+                "name": "Portsmouth",
+                "logo": "https://media.api-sports.io/football/teams/1355.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 4,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 3,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 4,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1041157,
+              "referee": "W. Finnie",
+              "timezone": "UTC",
+              "date": "2024-04-02T19:00:00+00:00",
+              "timestamp": 1712084400,
+              "periods": {
+                "first": 1712084400,
+                "second": 1712088000
+              },
+              "venue": {
+                "id": 573,
+                "name": "Fratton Park",
+                "city": "Portsmouth"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 41,
+              "name": "League One",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/41.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2023,
+              "round": "Regular Season - 42",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 1355,
+                "name": "Portsmouth",
+                "logo": "https://media.api-sports.io/football/teams/1355.png",
+                "winner": null
+              },
+              "away": {
+                "id": 69,
+                "name": "Derby",
+                "logo": "https://media.api-sports.io/football/teams/69.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 1,
+                "away": 2
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 1039370,
+              "referee": "R. Welch",
+              "timezone": "UTC",
+              "date": "2023-09-16T14:00:00+00:00",
+              "timestamp": 1694872800,
+              "periods": {
+                "first": 1694872800,
+                "second": 1694876400
+              },
+              "venue": {
+                "id": 527,
+                "name": "Pride Park Stadium",
+                "city": "Derby"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 41,
+              "name": "League One",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/41.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2023,
+              "round": "Regular Season - 8",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 69,
+                "name": "Derby",
+                "logo": "https://media.api-sports.io/football/teams/69.png",
+                "winner": null
+              },
+              "away": {
+                "id": 1355,
+                "name": "Portsmouth",
+                "logo": "https://media.api-sports.io/football/teams/1355.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 923174,
+              "referee": "L. Swabey",
+              "timezone": "UTC",
+              "date": "2023-04-29T14:00:00+00:00",
+              "timestamp": 1682776800,
+              "periods": {
+                "first": 1682776800,
+                "second": 1682780400
+              },
+              "venue": {
+                "id": 527,
+                "name": "Pride Park Stadium",
+                "city": "Derby"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 41,
+              "name": "League One",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/41.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2022,
+              "round": "Regular Season - 45",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 69,
+                "name": "Derby",
+                "logo": "https://media.api-sports.io/football/teams/69.png",
+                "winner": null
+              },
+              "away": {
+                "id": 1355,
+                "name": "Portsmouth",
+                "logo": "https://media.api-sports.io/football/teams/1355.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 875726,
+              "referee": "B. Speedie",
+              "timezone": "UTC",
+              "date": "2022-11-18T20:00:00+00:00",
+              "timestamp": 1668801600,
+              "periods": {
+                "first": 1668801600,
+                "second": 1668805200
+              },
+              "venue": {
+                "id": 573,
+                "name": "Fratton Park",
+                "city": "Portsmouth"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 41,
+              "name": "League One",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/41.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2022,
+              "round": "Regular Season - 19",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 1355,
+                "name": "Portsmouth",
+                "logo": "https://media.api-sports.io/football/teams/1355.png",
+                "winner": null
+              },
+              "away": {
+                "id": 69,
+                "name": "Derby",
+                "logo": "https://media.api-sports.io/football/teams/69.png",
+                "winner": null
+              }
+            },
+            "goals": {
+              "home": 0,
+              "away": 0
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 0,
+                "away": 0
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 455317,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2015-08-12T18:45:00+00:00",
+              "timestamp": 1439405100,
+              "periods": {
+                "first": 1439405100,
+                "second": 1439408700
+              },
+              "venue": {
+                "id": 573,
+                "name": "Fratton Park",
+                "city": "Portsmouth"
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 48,
+              "name": "League Cup",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/48.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2015,
+              "round": "1st Round",
+              "standings": false
+            },
+            "teams": {
+              "home": {
+                "id": 1355,
+                "name": "Portsmouth",
+                "logo": "https://media.api-sports.io/football/teams/1355.png",
+                "winner": true
+              },
+              "away": {
+                "id": 69,
+                "name": "Derby",
+                "logo": "https://media.api-sports.io/football/teams/69.png",
+                "winner": false
+              }
+            },
+            "goals": {
+              "home": 2,
+              "away": 1
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 0
+              },
+              "fulltime": {
+                "home": 2,
+                "away": 1
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          },
+          {
+            "fixture": {
+              "id": 447638,
+              "referee": null,
+              "timezone": "UTC",
+              "date": "2012-04-21T14:00:00+00:00",
+              "timestamp": 1335016800,
+              "periods": {
+                "first": 1335016800,
+                "second": 1335020400
+              },
+              "venue": {
+                "id": null,
+                "name": "Fratton Park",
+                "city": null
+              },
+              "status": {
+                "long": "Match Finished",
+                "short": "FT",
+                "elapsed": 90,
+                "extra": null
+              }
+            },
+            "league": {
+              "id": 40,
+              "name": "Championship",
+              "country": "England",
+              "logo": "https://media.api-sports.io/football/leagues/40.png",
+              "flag": "https://media.api-sports.io/flags/gb-eng.svg",
+              "season": 2011,
+              "round": "Regular Season - 45",
+              "standings": true
+            },
+            "teams": {
+              "home": {
+                "id": 1355,
+                "name": "Portsmouth",
+                "logo": "https://media.api-sports.io/football/teams/1355.png",
+                "winner": false
+              },
+              "away": {
+                "id": 69,
+                "name": "Derby",
+                "logo": "https://media.api-sports.io/football/teams/69.png",
+                "winner": true
+              }
+            },
+            "goals": {
+              "home": 1,
+              "away": 2
+            },
+            "score": {
+              "halftime": {
+                "home": 0,
+                "away": 1
+              },
+              "fulltime": {
+                "home": 1,
+                "away": 2
+              },
+              "extratime": {
+                "home": null,
+                "away": null
+              },
+              "penalty": {
+                "home": null,
+                "away": null
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "preston-bristol-city-2026-09-01",
@@ -35616,14 +39481,14 @@
       "awayTeam": "Bristol City",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/59.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/56.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 3,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -35642,8 +39507,8 @@
       "events": [],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-31T18:46:51.708Z",
-      "staleAfter": "2026-08-31T18:51:51.708Z",
+      "fetchedAt": "2026-09-01T20:48:04.548Z",
+      "staleAfter": "2026-09-01T20:53:04.548Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -35666,14 +39531,14 @@
       "awayTeam": "Bolton",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/62.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/68.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 3,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -35692,8 +39557,8 @@
       "events": [],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-31T18:46:51.708Z",
-      "staleAfter": "2026-08-31T18:51:51.708Z",
+      "fetchedAt": "2026-09-01T20:48:04.548Z",
+      "staleAfter": "2026-09-01T20:53:04.548Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -35716,14 +39581,14 @@
       "awayTeam": "Watford",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/76.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/38.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 2,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -35742,8 +39607,8 @@
       "events": [],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-31T18:46:51.708Z",
-      "staleAfter": "2026-08-31T18:51:51.708Z",
+      "fetchedAt": "2026-09-01T20:48:04.548Z",
+      "staleAfter": "2026-09-01T20:53:04.548Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -35766,14 +39631,14 @@
       "awayTeam": "Wolves",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/48.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/39.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 4,
+        "away": 2,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -35792,8 +39657,8 @@
       "events": [],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-31T18:46:51.708Z",
-      "staleAfter": "2026-08-31T18:51:51.708Z",
+      "fetchedAt": "2026-09-01T20:48:04.548Z",
+      "staleAfter": "2026-09-01T20:53:04.548Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -35803,12 +39668,259 @@
       "competitionId": "championship"
     },
     {
+      "id": "accrington-st-grimsby-2026-09-01",
+      "providerId": "1563719",
+      "league": "League Two",
+      "providerLeagueId": "42",
+      "round": 4,
+      "venue": "The Wham Stadium",
+      "referee": "M. Barlow",
+      "kickoff": "2026-09-01T21:45:00+03:00",
+      "time": "21:45",
+      "homeTeam": "Accrington ST",
+      "awayTeam": "Grimsby",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/1360.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/1365.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 90,
+      "elapsed": 90,
+      "live": true,
+      "score": {
+        "home": 2,
+        "away": 2
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "6'",
+          "team": {
+            "name": "Grimsby"
+          },
+          "type": "Goal",
+          "detail": "Own Goal",
+          "value": "J. Anderson · Own Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "38'",
+          "team": {
+            "name": "Grimsby"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Cook · Asist: K. Green · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "45+7'",
+          "team": {
+            "name": "Accrington ST"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "J. Woods · Penalty",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Grimsby"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "C. Pym · Asist: S. Auton · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Accrington ST"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "S. Mols · Asist: A. Henderson · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "57'",
+          "team": {
+            "name": "Accrington ST"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "D. Tutonda · Asist: S. Whalley · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "58'",
+          "team": {
+            "name": "Accrington ST"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "C. Caton · Asist: C. Warren · Substitution 3",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "60'",
+          "team": {
+            "name": "Accrington ST"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "T. Walton · Asist: D. Love · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "65'",
+          "team": {
+            "name": "Grimsby"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "I. Morgan · Asist: C. Vernam · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "65'",
+          "team": {
+            "name": "Grimsby"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "R. Reynolds · Asist: C. Doyle · Substitution 3",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "Accrington ST"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "S. Whalley · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "Grimsby"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "C. McJannet · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "77'",
+          "team": {
+            "name": "Accrington ST"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "T. Walton · Asist: C. Stockton · Substitution 4",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "77'",
+          "team": {
+            "name": "Grimsby"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "K. Green · Asist: J. Walker · Substitution 4",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "86'",
+          "team": {
+            "name": "Accrington ST"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "S. Whalley · Asist: C. Grant · Substitution 5",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "89'",
+          "team": {
+            "name": "Accrington ST"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "J. Woods · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "90+1'",
+          "team": {
+            "name": "Accrington ST"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "D. Matthews · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "90+8'",
+          "team": {
+            "name": "Accrington ST"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "J. Anderson · Yellow Card",
+          "comments": "Delay of game",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-01T20:48:03.979Z",
+      "staleAfter": "2026-09-01T20:53:03.979Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1563719"
+      },
+      "competitionId": "league-two"
+    },
+    {
       "id": "birmingham-southampton-2026-09-01",
       "providerId": "1563119",
       "league": "Championship",
       "providerLeagueId": "40",
       "round": 4,
-      "venue": null,
+      "venue": "St. Andrew's @ Knighthead Park",
       "referee": "A. Backhouse",
       "kickoff": "2026-09-01T22:00:00+03:00",
       "time": "22:00",
@@ -35816,14 +39928,14 @@
       "awayTeam": "Southampton",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/54.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/41.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 88,
+      "elapsed": 88,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -35842,8 +39954,8 @@
       "events": [],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-31T18:46:51.708Z",
-      "staleAfter": "2026-08-31T18:51:51.708Z",
+      "fetchedAt": "2026-09-01T20:48:04.548Z",
+      "staleAfter": "2026-09-01T20:53:04.548Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -35858,7 +39970,7 @@
       "league": "Championship",
       "providerLeagueId": "40",
       "round": 4,
-      "venue": "Bet365 Stadium",
+      "venue": "bet365 Stadium",
       "referee": "A. Kitchen",
       "kickoff": "2026-09-01T22:00:00+03:00",
       "time": "22:00",
@@ -35866,14 +39978,14 @@
       "awayTeam": "Norwich",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/75.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/71.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 90,
+      "elapsed": 90,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -35892,8 +40004,8 @@
       "events": [],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-08-31T18:46:51.708Z",
-      "staleAfter": "2026-08-31T18:51:51.708Z",
+      "fetchedAt": "2026-09-01T20:48:04.548Z",
+      "staleAfter": "2026-09-01T20:53:04.548Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -35901,6 +40013,986 @@
         "apiFootball": "1563124"
       },
       "competitionId": "championship"
+    },
+    {
+      "id": "penafiel-u23-leixoes-u23-2026-09-01",
+      "providerId": "1598669",
+      "league": "Liga Revelação U23",
+      "providerLeagueId": "701",
+      "round": 4,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-01T22:00:00+03:00",
+      "time": "22:00",
+      "homeTeam": "Penafiel U23",
+      "awayTeam": "Leixões U23",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/28015.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/15465.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 89,
+      "elapsed": 89,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "12'",
+          "team": {
+            "name": "Leixões U23"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Moroni · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "28'",
+          "team": {
+            "name": "Penafiel U23"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-01T20:48:03.979Z",
+      "staleAfter": "2026-09-01T20:53:03.979Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1598669"
+      },
+      "competitionId": "liga-revelacao-u23"
+    },
+    {
+      "id": "potenza-ss-monopoli-2026-09-01",
+      "providerId": "1627591",
+      "league": "Coppa Italia Serie C",
+      "providerLeagueId": "891",
+      "round": 32,
+      "venue": "Stadio Comunale Alfredo Viviani",
+      "referee": null,
+      "kickoff": "2026-09-01T22:00:00+03:00",
+      "time": "22:00",
+      "homeTeam": "Potenza",
+      "awayTeam": "SS Monopoli",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/1710.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/10138.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 89,
+      "elapsed": 89,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "39'",
+          "team": {
+            "name": "SS Monopoli"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "S. Paukstys · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Potenza"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "J. Murano · Penalty",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-01T20:48:03.979Z",
+      "staleAfter": "2026-09-01T20:53:03.979Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1627591"
+      },
+      "competitionId": "coppa-italia-serie-c"
+    },
+    {
+      "id": "torino-monza-2026-09-01",
+      "providerId": "1628894",
+      "league": "Coppa Italia",
+      "providerLeagueId": "137",
+      "round": 32,
+      "venue": "Stadio Olimpico di Torino",
+      "referee": null,
+      "kickoff": "2026-09-01T22:00:00+03:00",
+      "time": "22:00",
+      "homeTeam": "Torino",
+      "awayTeam": "Monza",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/503.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/1579.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 87,
+      "elapsed": 87,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "38'",
+          "team": {
+            "name": "Torino"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "S. Kulenovic · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "45+3'",
+          "team": {
+            "name": "Monza"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "D. Mota · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "56'",
+          "team": {
+            "name": "Torino"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "G. Oristanio · Asist: N. Vlasic · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "56'",
+          "team": {
+            "name": "Torino"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "S. Kulenovic · Asist: D. Zapata · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Torino"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "A. Luongo · Asist: F. Anjorin · Substitution 3",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Torino"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "A. Cacciamani · Asist: Z. Aboukhlal · Substitution 4",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "Monza"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "D. Mota · Asist: P. Cutrone · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "Monza"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "O. Forson · Asist: A. Colpani · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "Monza"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "J. Robinson · Asist: S. Birindelli · Substitution 3",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "Monza"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "Y. Maye · Asist: J. Ziolkowski · Substitution 4",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Torino"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "A. Ismajli · Asist: C. Adams · Substitution 5",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "80'",
+          "team": {
+            "name": "Monza"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Folorunsho · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-01T20:48:03.979Z",
+      "staleAfter": "2026-09-01T20:53:03.979Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1628894"
+      },
+      "competitionId": "coppa-italia"
+    },
+    {
+      "id": "bari-az-picerno-2026-09-01",
+      "providerId": "1628960",
+      "league": "Coppa Italia Serie C",
+      "providerLeagueId": "891",
+      "round": 32,
+      "venue": "Stadio San Nicola",
+      "referee": null,
+      "kickoff": "2026-09-01T22:00:00+03:00",
+      "time": "22:00",
+      "homeTeam": "Bari",
+      "awayTeam": "AZ Picerno",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/508.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/1587.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 90,
+      "elapsed": 90,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "4'",
+          "team": {
+            "name": "Bari"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "M. Elia · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "31'",
+          "team": {
+            "name": "AZ Picerno"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "G. Coppola · Penalty",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-01T20:48:03.979Z",
+      "staleAfter": "2026-09-01T20:53:03.979Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1628960"
+      },
+      "competitionId": "coppa-italia-serie-c"
+    },
+    {
+      "id": "ravenna-forli-2026-09-01",
+      "providerId": "1628965",
+      "league": "Coppa Italia Serie C",
+      "providerLeagueId": "891",
+      "round": 32,
+      "venue": "Stadio Comunale Bruno Benelli",
+      "referee": null,
+      "kickoff": "2026-09-01T22:00:00+03:00",
+      "time": "22:00",
+      "homeTeam": "Ravenna",
+      "awayTeam": "Forli",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/1705.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/1688.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 89,
+      "elapsed": 89,
+      "live": true,
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "59'",
+          "team": {
+            "name": "Forli"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "N. Tordiglione · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "64'",
+          "team": {
+            "name": "Ravenna"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "J. Tenkorang · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "67'",
+          "team": {
+            "name": "Ravenna"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "C. Spini · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-01T20:48:03.979Z",
+      "staleAfter": "2026-09-01T20:53:03.979Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1628965"
+      },
+      "competitionId": "coppa-italia-serie-c"
+    },
+    {
+      "id": "rubio-nu-club-sp-san-lorenzo-2026-09-01",
+      "providerId": "1631995",
+      "league": "Division Profesional - Clausura",
+      "providerLeagueId": "252",
+      "round": 8,
+      "venue": "La Arboleda",
+      "referee": null,
+      "kickoff": "2026-09-01T22:00:00+03:00",
+      "time": "22:00",
+      "homeTeam": "Rubio NU",
+      "awayTeam": "Club Sp. San Lorenzo",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/1185.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/2125.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 89,
+      "elapsed": 89,
+      "live": true,
+      "score": {
+        "home": 3,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "12'",
+          "team": {
+            "name": "Club Sp. San Lorenzo"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "J. Barrios · Red Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "18'",
+          "team": {
+            "name": "Rubio NU"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "K. Paredes · Asist: W. Mendieta · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "24'",
+          "team": {
+            "name": "Club Sp. San Lorenzo"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Garcia · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "25'",
+          "team": {
+            "name": "Rubio NU"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "J. Vallejos · Asist: R. Rojas · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "26'",
+          "team": {
+            "name": "Club Sp. San Lorenzo"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "I. Fretes · Asist: M. Ferreira · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "31'",
+          "team": {
+            "name": "Rubio NU"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "C. Nunez · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "39'",
+          "team": {
+            "name": "Club Sp. San Lorenzo"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "M. Ferreira · Asist: G. Gerzel · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Club Sp. San Lorenzo"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "R. Amarilla · Asist: K. Ferreira Gonzalez · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Rubio NU"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "C. Nunez · Asist: S. Fretes · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Rubio NU"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "M. Garrone · Asist: E. Alfonso · Substitution 3",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Rubio NU"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "A. Paez · Asist: E. Perez · Substitution 4",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Rubio NU"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "E. Alfonso · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "57'",
+          "team": {
+            "name": "Club Sp. San Lorenzo"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "J. Doldan · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Rubio NU"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "E. Perez · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "62'",
+          "team": {
+            "name": "Rubio NU"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "E. Perez · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Club Sp. San Lorenzo"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "B. Pinatares · Asist: J. Salcedo · Substitution 3",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "66'",
+          "team": {
+            "name": "Club Sp. San Lorenzo"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "G. Gerzel · Asist: B. Machuca · Substitution 4",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "Rubio NU"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "E. Perez · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "Rubio NU"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "R. Rojas · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "Rubio NU"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "R. Rojas · Asist: A. Ledesma · Substitution 5",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "83'",
+          "team": {
+            "name": "Club Sp. San Lorenzo"
+          },
+          "type": "subst",
+          "detail": "Substitution 5",
+          "value": "F. Aragon · Asist: E. Ortiz · Substitution 5",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-01T20:48:03.979Z",
+      "staleAfter": "2026-09-01T20:53:03.979Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1631995"
+      },
+      "competitionId": "division-profesional-clausura"
+    },
+    {
+      "id": "atletico-grau-fbc-melgar-2026-09-01",
+      "providerId": "1549469",
+      "league": "Primera División",
+      "providerLeagueId": "281",
+      "round": 7,
+      "venue": "Estadio Miguel Grau",
+      "referee": "R. Mendez",
+      "kickoff": "2026-09-01T23:00:00+03:00",
+      "time": "23:00",
+      "homeTeam": "Atletico Grau",
+      "awayTeam": "FBC Melgar",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/2564.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/2554.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 45,
+      "elapsed": 45,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "24'",
+          "team": {
+            "name": "Atletico Grau"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "A. de la Cruz · Asist: I. Tapia · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "38'",
+          "team": {
+            "name": "Atletico Grau"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "L. Acevedo · Asist: F. Oncoy · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "43'",
+          "team": {
+            "name": "FBC Melgar"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "J. Escobar · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-01T20:48:03.979Z",
+      "staleAfter": "2026-09-01T20:53:03.979Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1549469"
+      },
+      "competitionId": "la-liga"
+    },
+    {
+      "id": "envigado-union-magdalena-2026-09-01",
+      "providerId": "1549582",
+      "league": "Primera B",
+      "providerLeagueId": "240",
+      "round": 3,
+      "venue": "Estadio Polideportivo Sur",
+      "referee": null,
+      "kickoff": "2026-09-01T23:00:00+03:00",
+      "time": "23:00",
+      "homeTeam": "Envigado",
+      "awayTeam": "Union Magdalena",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/1129.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/1465.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 45,
+      "elapsed": 45,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "37'",
+          "team": {
+            "name": "Envigado"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "42'",
+          "team": {
+            "name": "Union Magdalena"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "45+2'",
+          "team": {
+            "name": "Union Magdalena"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-01T20:48:03.979Z",
+      "staleAfter": "2026-09-01T20:53:03.979Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1549582"
+      },
+      "competitionId": "primera-b"
+    },
+    {
+      "id": "orsomarso-w-deportivo-cali-w-2026-09-01",
+      "providerId": "1632319",
+      "league": "Liga Femenina",
+      "providerLeagueId": "712",
+      "round": 3,
+      "venue": "Estadio Municipal Raul Miranda",
+      "referee": null,
+      "kickoff": "2026-09-01T23:00:00+03:00",
+      "time": "23:00",
+      "homeTeam": "Orsomarso W",
+      "awayTeam": "Deportivo Cali W",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/18432.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/15723.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 45,
+      "elapsed": 45,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "45+1'",
+          "team": {
+            "name": "Orsomarso W"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-01T20:48:03.979Z",
+      "staleAfter": "2026-09-01T20:53:03.979Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1632319"
+      },
+      "competitionId": "liga-femenina"
     },
     {
       "id": "vanspor-fk-batman-petrolspor-2026-09-02",
