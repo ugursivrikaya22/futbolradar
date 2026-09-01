@@ -41,7 +41,7 @@ function initialsOf(name) {
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
-    .map((part) => part.charAt(0).toLocaleUpperCase("tr-TR"))
+    .map((part) => part.charAt(0).toUpperCase())
     .join("") || "?";
 }
 
@@ -115,7 +115,7 @@ function panelBody(entry, locale, copy, base) {
   // burada AYRICA "en/" ile ÖNEKLENMEZ; önek çağıranın `base` seçimiyle
   // zaten doğru dizine göre kurulmuş olur.
   const slug = locale === "en" ? entry.slugEn : entry.slugTr;
-  return `${head}<div class="standings-tabs__body home-standings-body" data-api-target="standings-home-${escapeHtml(entry.id)}" aria-label="${escapeHtml(locale === "en" ? entry.nameEn : entry.nameTr)}">${body}</div>` +
+  return `${head}<div class="standings-tabs__body home-standings-body" aria-label="${escapeHtml(locale === "en" ? entry.nameEn : entry.nameTr)}">${body}</div>` +
     `<a class="button primary standings-tabs__cta" href="${escapeHtml(base)}${escapeHtml(slug)}">${escapeHtml(copy.cta)}</a>`;
 }
 
@@ -126,7 +126,9 @@ function panelBody(entry, locale, copy, base) {
  * fonksiyon yalnızca konteynerin İÇ HTML'ini döner.
  *
  * @param {"tr"|"en"} locale
- * @param {string} base Köke göre önek ("./" TR ana sayfada, "../" EN ana sayfada).
+ * @param {string} base Çağıranın kendi dizin bağlamına göre önek — TR ana
+ *   sayfada köke göre "./", EN ana sayfasında da "./" (en/index.html zaten
+ *   en/ klasöründe yaşıyor, bkz. `panelBody` içindeki not).
  */
 export function renderStandingsTabsInner(locale = "tr", base = "./") {
   const copy = COPY[locale] || COPY.tr;
