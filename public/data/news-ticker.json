@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-08-31T22:41:04.236Z",
+  "updatedAt": "2026-09-01T01:45:56.613Z",
   "items": [
     {
       "id": "auto-news-4065fa59e6bc02678cf1",
@@ -241,6 +241,26 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-3bafa8d0109a386630ad",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Çorum FK Maçı Hazırlıkları Başladı - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-08-29T11:57:27.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5qUTRWcjRFZXM0TjhEcUJTQTU1dnBZa0hBaFduazAtT2hZSWxUb2x4ZEg3ZGN4QVVjUEppcmdKc0pUc09hN0syR2ZudnFGcDFSRmVqTGZMTE5lUUU?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
         "status": "OFFICIAL"
       }
     },
