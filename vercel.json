@@ -47,6 +47,11 @@
       "permanent": true
     },
     {
+      "source": "/public/:path*",
+      "destination": "/:path*",
+      "permanent": true
+    },
+    {
       "source": "/oyuncular/edina-dzeko",
       "destination": "/oyuncular/edin-dzeko.html",
       "permanent": true
@@ -169,7 +174,7 @@
     {
       "source": "/haber/mohamed-salah-trabzonspor-transferi-resmen-aciklandi.html",
       "destination": "/haber/mohamed-salah-trabzonspor-transferi-resmen-aciklandi",
-      "permanent": false
+      "permanent": true
     }
   ],
   "rewrites": [
