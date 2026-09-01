@@ -317,7 +317,7 @@ export function columnPageHtml(column, locale = "tr") {
     <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
   </head>
   <body class="subpage column-page">
-    ${siteHeader({ base })}
+    ${siteHeader({ base, locale, altHref: column.counterpartPath || undefined })}
     <main class="container">
       <nav class="breadcrumb" aria-label="${copy.breadcrumbLabel}"><a href="${base}${locale === "en" ? "en/index.html" : "index.html"}">${escapeHtml(copy.home)}</a><span>/</span><a href="${base}${copy.indexPath}">${escapeHtml(locale === "en" ? "Columns" : SECTION_NAME)}</a><span>/</span><span>${escapeHtml(column.title)}</span></nav>
 
