@@ -44,31 +44,12 @@ const sources = {
   archive: require(path.join(root, "data", "season-archive.json"))
 };
 
-// Takvim tarafından bilinmeyen fikstürler zamanla listeden düşer; editoryal
-// kayıt o temizlenene kadar "fikstürde maç yok" hatası alır ama derlemeyi
-// KIRMAMALI (bkz. generate-match-special.mjs). Test de bu davranışı yansıtır:
-// geçerli bir kayıt varsa tam denetim yapılır, yoksa eski-fikstür davranışı
-// sınanır.
-const calendarFixtures = Array.isArray(sources.fixtures)
-  ? sources.fixtures
-  : (sources.fixtures.matches || []);
-const allSpecials = (sources.specials.specials || []);
-const VALID_MATCH_ID = (() => {
-  for (const record of allSpecials) {
-    const { special } = selectMatchSpecial(sources, { matchId: record.matchId });
-    if (special) return record.matchId;
-  }
-  return null;
-})();
-
-// Geriye dönük uyumluluk: sabit MATCH_ID ile yazılmış bölümler bu değişkeni
-// kullanır. Geçerli kayıt yoksa o bölümler atlanır.
-const MATCH_ID = VALID_MATCH_ID;
+const MATCH_ID = "galatasaray-corum-fk-2026-08-14";
 
 console.log("match-special");
 
 // ── 1. Yayındaki dosya geçerli ve fikstürle uyumlu ────────────────────────
-if (MATCH_ID) {
+{
   const { special, rejected } = selectMatchSpecial(sources, { matchId: MATCH_ID });
   assert.equal(rejected.length, 0,
     `dosya elendi: ${rejected.map((row) => row.errors.join("; ")).join(" | ")}`);
@@ -81,25 +62,15 @@ if (MATCH_ID) {
   // Stadyumu") ve beklenen değeri teste gömmek, kuralı değil o günkü yazımı
   // ölçmek olurdu — sınanmak istenen şey stadın adı değil, stat bilgisinin
   // maç dosyasına ELLE değil VERİDEN gelmesi.
-  const calendarMatch = calendarFixtures.find((row) => row.id === MATCH_ID);
+  const calendarMatch = (sources.fixtures.matches || []).find((row) => row.id === MATCH_ID);
   assert.ok(calendarMatch, "takvim kaydı bulunmalı");
-  assert.ok(special.fixture.homeTeam, "ev sahibi takım bilgisi boş kalmamalı");
-  assert.ok(special.fixture.awayTeam, "deplasman takım bilgisi boş kalmamalı");
+  assert.equal(special.fixture.homeTeam, "Galatasaray");
+  assert.equal(special.fixture.awayTeam, "Çorum FK");
   assert.equal(special.fixture.venue, calendarMatch.venue);
   assert.ok(special.fixture.venue, "stat bilgisi boş kalmamalı");
+  assert.equal(special.fixture.round, 1);
+  assert.match(special.fixture.kickoff, /^2026-08-14T21:30/);
   assert.ok(special.modules.length >= MIN_MODULES);
-} else {
-  // Tüm kayıtlar eski fikstüre sahip: derleme kırılmamalı, reddetme
-  // hatası "fikstürde maç yok" ile sınırlı kalmalı.
-  for (const record of allSpecials) {
-    const { special, rejected } = selectMatchSpecial(sources, { matchId: record.matchId });
-    assert.ok(!special, `${record.matchId}: eski fikstür dosya üretmemeli`);
-    const onlyMissingFixture = rejected.length > 0 && rejected.every((row) =>
-      row.errors.length === 1 && row.errors[0].startsWith("fikstürde maç yok")
-    );
-    assert.ok(onlyMissingFixture,
-      `${record.matchId}: eski fikstür haricinde hata var: ${rejected.flatMap((r) => r.errors).join("; ")}`);
-  }
 }
 
 // ── 2. FİKSTÜRDE OLMAYAN MAÇ İÇİN DOSYA ÜRETİLMEZ ─────────────────────────
@@ -136,7 +107,7 @@ if (MATCH_ID) {
 }
 
 // ── 4. Konuk takım için kadrodan DENGELİ seçki ────────────────────────────
-if (MATCH_ID) {
+{
   const { special } = selectMatchSpecial(sources, { matchId: MATCH_ID });
   const away = special.teams.away.keyPlayers;
   assert.ok(away.length > 0, "konuk takım için kilit oyuncu üretilmeli");
@@ -161,7 +132,7 @@ if (MATCH_ID) {
 //
 // Doğrulanmış arşivden gelen form ile editoryal girdi aynı görünümde
 // sunulamaz: ikincisi olmayan bir doğrulama iddiası olurdu.
-if (MATCH_ID) {
+{
   const { special } = selectMatchSpecial(sources, { matchId: MATCH_ID });
 
   // Galatasaray'ın maçları arşivde var → doğrulanmış.
@@ -233,7 +204,7 @@ if (MATCH_ID) {
 }
 
 // ── 7. İKİ DİL, TEK DOSYA ─────────────────────────────────────────────────
-if (MATCH_ID) {
+{
   const { special } = selectMatchSpecial(sources, { matchId: MATCH_ID });
   const tr = localizeSpecial(special, "tr");
   const en = localizeSpecial(special, "en");
@@ -259,7 +230,7 @@ if (MATCH_ID) {
 }
 
 // ── 8. Yayındaki içerik hacimli — "kısa önizleme" değil ───────────────────
-if (MATCH_ID) {
+{
   const { special } = selectMatchSpecial(sources, { matchId: MATCH_ID });
   const tr = localizeSpecial(special, "tr");
   const words = tr.modules
@@ -281,18 +252,11 @@ if (MATCH_ID) {
   assert.ok(Array.isArray(payload.specials) && payload.specials.length > 0);
 
   for (const record of payload.specials) {
-    const fixture = calendarFixtures.find((match) => match.id === record.matchId) || null;
+    const fixtures = Array.isArray(sources.fixtures) ? sources.fixtures : (sources.fixtures.matches || []);
+    const fixture = fixtures.find((match) => match.id === record.matchId) || null;
     const verdict = validateSpecial(record, fixture);
-    // "fikstürde maç yok" tek hatası olan kayıtlar, fikstür takviminden
-    // düştükten sonra editoryal dosya temizlenene kadar geçici olarak
-    // geçersiz görünür. Bu beklenen bir durumdur ve derlemeyi kırmamalıdır
-    // (bkz. generate-match-special.mjs onlyMissingFixture mantığı).
-    const onlyMissingFixture = !verdict.valid && verdict.errors.length > 0 &&
-      verdict.errors.every((e) => e.startsWith("fikstürde maç yok"));
-    if (!onlyMissingFixture) {
-      assert.equal(verdict.valid, true,
-        `${record.matchId}: ${verdict.errors.join("; ")}`);
-    }
+    assert.equal(verdict.valid, true,
+      `${record.matchId}: ${verdict.errors.join("; ")}`);
   }
 }
 
@@ -302,9 +266,7 @@ if (MATCH_ID) {
 // bozulursa boş hedefe kart basılır — okuyucuya olmayan bir söz.
 {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "data", "match-special-pages.json"), "utf8"));
-  // Tüm editoryal kayıtlar eski fikstüre sahipse manifest boş olabilir —
-  // bu beklenen bir durumdur (bkz. generate-match-special.mjs).
-  if (manifest.length > 0) {
+  assert.ok(Array.isArray(manifest) && manifest.length > 0, "sayfa listesi üretilmeli");
 
   for (const entry of manifest) {
     for (const locale of ["tr", "en"]) {
@@ -336,7 +298,6 @@ if (MATCH_ID) {
       entry.locales.en.modules.map((module) => module.id)
     );
   }
-  } // if (manifest.length > 0)
 }
 
 // ── 11. HİÇBİR SAYFADA `href="#"` VE YER TUTUCU YOK ──────────────────────
@@ -483,8 +444,7 @@ if (MATCH_ID) {
 
   const manifest = JSON.parse(fs.readFileSync(path.join(root, "data", "match-special-pages.json"), "utf8"));
   const entry = manifest.find((row) => row.homepagePromo !== false);
-  // Manifest boşsa (tüm kayıtlar eski fikstür) pencere denetimleri atlanır.
-  if (entry) {
+  assert.ok(entry, "ana sayfada gösterilebilir en az bir dosya olmalı");
   const kickoff = Date.parse(entry.kickoff);
 
   // PENCERE TEK KAYIT ÜZERİNDE ÖLÇÜLÜR. Manifesto birden çok dosya taşıyor
@@ -540,8 +500,6 @@ if (MATCH_ID) {
       assert.ok(fs.existsSync(path.resolve(homeDir, href.split("#")[0])), `${locale}: ${href} hedefi yok`);
     }
   }
-
-  }  // if (entry)
 
   // Kayıt olmadığında kutu boş dize döner (blok hiç basılmaz).
   assert.equal(matchSpecialPromoBlock(null, { locale: "tr" }), "");
