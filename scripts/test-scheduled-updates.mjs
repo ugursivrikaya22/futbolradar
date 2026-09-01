@@ -119,16 +119,21 @@ assert.equal(dedupeKey("hourly", new Date("2026-08-08T21:00:00Z")), "hourly:2026
 
 const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "match-analysis.yml"), "utf8");
 assert.match(workflow, /cron: "0 2 \* \* \*"/);
-assert.match(workflow, /cron: "20 2 \* \* \*"/);
 assert.match(workflow, /cron: "0 0-1,3-23 \* \* \*"/);
-assert.match(workflow, /cron: "20 0-1,3-23 \* \* \*"/);
+assert.doesNotMatch(workflow, /cron: "20 2 \* \* \*"/);
+assert.doesNotMatch(workflow, /cron: "20 0-1,3-23 \* \* \*"/);
 assert.doesNotMatch(workflow, /\*\/5/);
 assert.match(workflow, /group: futbolradar-production-update/);
 assert.match(workflow, /FUTBOLRADAR_AUTOMATION_TOKEN/);
-assert.match(workflow, /SCHEDULE.*20 2 \* \* \*/s);
+assert.match(workflow, /SCHEDULE.*0 2 \* \* \*/s);
 
 const orchestrator = fs.readFileSync(path.join(root, "scripts", "run-scheduled-update.mjs"), "utf8");
 assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\.mjs"/);
+assert.match(orchestrator, /nodeStep\("render-column-pages", "generate-column-pages\.mjs"/);
+assert.match(
+  orchestrator,
+  /nodeStep\("render-news-pages", "generate-news-pages\.mjs"[\s\S]*?nodeStep\("render-column-pages", "generate-column-pages\.mjs"[\s\S]*?nodeStep\("render-match-pages", "generate-match-pages\.mjs"/
+);
 const duplicateGuard = orchestrator.match(/if \(duplicate && !args\.force\) \{([\s\S]*?)\r?\n  \}\r?\n\r?\n  const before/)?.[1];
 assert.ok(duplicateGuard, "duplicate guard block must remain detectable");
 assert.doesNotMatch(duplicateGuard, /writeStatus\(/, "fallback no-op must not replace the published last-success status");
