@@ -93,12 +93,41 @@ function findFixture(matchId) {
   return findFixtureById(loadFixtures(), matchId);
 }
 
-/** Sağlayıcı fikstür kimliği — yoksa sağlayıcıya hiç gidilmez. */
+/**
+ * Sağlayıcı fikstür kimliği — yoksa sağlayıcıya hiç gidilmez.
+ *
+ * YEDEK KİMLİK KÖRÜ KÖRÜNE KULLANILMAZ. `providerId` alanı kaydı KİM
+ * yazdıysa onun numarasını taşıyor; TheSportsDB'den gelen bir satırda o
+ * numara bir TheSportsDB olay numarasıdır. Eskiden `ids.apiFootball ||
+ * fixture.providerId` deniyordu ve takvimde API-Football karşılığı olmayan
+ * bir satır kaldığında o olay numarası API-Football'a fikstür kimliği diye
+ * gidiyordu: istek boşa gidiyor, kadro hiç gelmiyor, hata da verilmiyordu.
+ * Takvim yalnızca TheSportsDB satırlarına düştüğünde bu, İSTİSNA değil KURAL
+ * hâline gelirdi.
+ *
+ * Kimlik yoksa `null` dönmek bir kayıp değil: çağıran taraf zaten
+ * "sağlayıcı kimliği yok" gerekçesini yanıta yazıyor ve boşuna istek
+ * atılmıyor.
+ */
 function providerFixtureId(fixture) {
   const ids = (fixture && fixture.providerIds) || {};
-  const candidate = ids.apiFootball || fixture.providerId;
-  const text = String(candidate == null ? "" : candidate).trim();
-  return /^\d+$/.test(text) ? text : null;
+  const numeric = (value) => {
+    const text = String(value == null ? "" : value).trim();
+    return /^\d+$/.test(text) ? text : null;
+  };
+
+  const direct = numeric(ids.apiFootball);
+  if (direct) return direct;
+
+  const fallback = numeric(fixture && fixture.providerId);
+  if (!fallback) return null;
+
+  // Yedek numara TheSportsDB'ninkiyle aynıysa ya da kaydı yalnızca
+  // TheSportsDB yazdıysa, elimizde API-Football kimliği YOK demektir.
+  if (ids.theSportsDb && fallback === numeric(ids.theSportsDb)) return null;
+  if (!String((fixture && fixture.source) || "").includes("api-football")) return null;
+
+  return fallback;
 }
 
 function kickoffMs(fixture) {
@@ -325,6 +354,9 @@ module.exports = {
   isConfirmedSide,
   lineupStatusFor,
   markStaleFixtureStatus,
+  // Dışa açık ki test, kimlik seçimini YENİDEN YAZMAK yerine uç noktanın
+  // gerçekten kullandığı işlevi ölçsün.
+  providerFixtureId,
   publicSide,
   scoreboardFrom,
   windowState

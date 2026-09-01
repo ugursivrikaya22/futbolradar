@@ -1,5 +1,6 @@
 const apiFootballProvider = require("./providers/apiFootballProvider");
 const { normalizeText } = require("./matchRadarService");
+const { repairMojibake } = require("./textEncodingRepair.js");
 
 const PARTIAL_SQUAD_THRESHOLD = 11;
 
@@ -29,9 +30,15 @@ function buildSquadSnapshot(team, providerPlayers, season) {
     season: season || new Date().getUTCFullYear(),
     syncedAt: new Date().toISOString(),
     status,
+    // Ad, sağlayıcı anlık görüntüsüne yazılmadan ÖNCE onarılır. Kimlik ve URL
+    // addan türetildiği için bozuk bir ad buradan geçtiğinde zarar kalıcı
+    // oluyor: /oyuncular/b-baa-kan-trabzonspor.html gibi bir adres üretiliyor,
+    // site haritasına giriyor, kıyas sayfalarına ve İngilizce aynaya
+    // kopyalanıyor. Onarılamayan ad olduğu gibi bırakılır — tahmin edilmez —
+    // ve yayın kapısında (services/cardCredibility.js) elenir.
     players: players.map((player) => ({
       providerId: player.providerId || null,
-      name: player.name,
+      name: repairMojibake(player.name),
       number: player.number ?? null,
       position: player.position || null,
       age: player.age ?? null,

@@ -3,6 +3,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
 import { transferTickerBlock } from "./lib/transferTicker.mjs";
+import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
   fixtureRow as sharedFixtureRow,
@@ -39,7 +40,8 @@ const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // Transfer bandının seçim/sıralama kuralı da tek yerde; İngilizce bant da
 // aynı servisi kullanıyor.
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
-const { selectTickerRecords } = require("../services/transferRadarTicker.js");
+const { latestQuotes } = require("../services/managerQuotes.js");
+const { selectRecentTickerRecords } = require("../services/transferRadarTicker.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -1456,30 +1458,102 @@ function liveScoresTrack() {
 }
 
 /**
- * ANA SAYFANIN EN ALTINDAKİ TRANSFER RADARI BANDI — ÜÇÜNCÜ KAYAN BANT.
+ * ANA SAYFANIN ÜÇÜNCÜ KAYAN BANDI — TRANSFER RADARI.
  *
- * Ana sayfanın daimî bir parçası: haber bandı (tepede) ve Canlı Skorlar
- * bandından sonra üçüncü kayan şerit. Artık TFF tescil dönemine göre
- * KOŞULLU BASILMIYOR — önceki hâli pencere kapandığında ya da son 3 günde
- * "SON DAKİKA" sayılacak kayıt olmadığında bandı sayfadan TAMAMEN
- * kaldırıyordu; okuyucu "Transfer Radarı" bölümünün var olduğunu bile
- * bilmiyordu. Bant artık her derlemede basılır.
+ * Ana sayfanın tepesinde, haber bandı (1.) ve Canlı Skorlar bandından (2.)
+ * hemen sonra basılır — index.html'de sırasıyla `<!-- shared-layout:ticker:start -->`,
+ * `<!-- prerender:live-scores-ticker:start -->` ve bu fonksiyonun ürettiği
+ * `<!-- prerender:transfer-radar-ticker:start -->` işaretleri art arda
+ * durur. Daha önce ana sayfanın en altında, footer'ın ardında duruyordu —
+ * orası okuyucunun neredeyse hiç görmediği bir yerdi. Editör kararıyla
+ * üçüncü bant olarak ilk ikisinin hemen altına taşındı; bu konum artık
+ * kalıcı.
  *
- * Seçim kuralı hâlâ services/transferRadarTicker.js'te: yalnızca son 3
- * günün doğrulanmış hareketleri "SON DAKİKA" sayılır (bkz. o dosyanın
- * başındaki "UYDURMA YOK" kuralı) — bu editoryal kural değişmedi. Değişen
- * tek şey: seçilecek güncel kayıt yokken (ya da pencere kapalıyken) bant
- * KAYBOLMAK yerine kendi yer tutucusunu gösterir
+ * TFF tescil dönemine göre KOŞULLU BASILMIYOR — eski hâli pencere
+ * kapandığında ya da son 3 günde "SON DAKİKA" sayılacak kayıt olmadığında
+ * bandı sayfadan TAMAMEN kaldırıyordu; okuyucu "Transfer Radarı"
+ * bölümünün var olduğunu bile bilmiyordu. Bant artık her derlemede basılır
+ * ve diğer sayfa güncellemeleri (haber/skor tazeleme, SEO sayfa üretimi
+ * vb.) bu markerlara dokunmaz — yalnızca aralarındaki içerik değişir.
+ *
+ * Seçim kuralı hâlâ services/transferRadarTicker.js'te. Önce son 3 günün
+ * "SON DAKİKA" hareketleri denenir; sakin bir haftada bunlardan hiçbiri
+ * yoksa `selectRecentTickerRecords` 21 günlük pencereden yalnızca
+ * `status: "confirmed"` kayıtları SON DAKİKA rozeti OLMADAN, tarih
+ * etiketiyle gösterir (bkz. o dosyadaki "UYDURMA YOK" kuralı — söylenti
+ * hiçbir pencereden banda giremez). Her iki liste de boşsa (ya da pencere
+ * kapalıyken) bant KAYBOLMAK yerine kendi yer tutucusunu gösterir
  * (transferTickerTrack → "Transfer güncellemeleri hazırlanıyor.") —
  * `keepEmpty: true` bunu sağlıyor.
  *
- * Canlı Skorlar bandından (ana sayfanın TEPESİNDE) bilerek ayrı ve
- * bağımsız: farklı konum, farklı veri, farklı görünme kuralı. Onun
- * kodu/CSS'i burada değiştirilmez.
+ * Canlı Skorlar bandından bilerek ayrı ve bağımsız: farklı veri, farklı
+ * görünme kuralı. Onun kodu/CSS'i burada değiştirilmez, yalnızca komşusu.
  */
-function transferRadarBottomTicker() {
-  const records = selectTickerRecords(transfers);
+/**
+ * Alıntı deposu — SALT OKUNUR. Dosya yoksa ya da bozuksa şerit "bekleniyor"
+ * gösterir; ön derleme çökmez ve uydurma üretmez.
+ */
+const managerQuoteStore = (() => {
+  const file = path.join(root, "data", "manager-quotes.json");
+  if (!fs.existsSync(file)) return { quotes: [] };
+  try {
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch (error) {
+    console.warn(`[prerender] manager-quotes.json okunamadı: ${error.message}`);
+    return { quotes: [] };
+  }
+})();
+
+/** Maç raporu deposu — SALT OKUNUR; hangi maçın bittiğinin yetkili listesi. */
+function postMatchReportRecords() {
+  const file = path.join(root, "data", "post-match-reports.json");
+  if (!fs.existsSync(file)) return [];
+  try {
+    const parsed = JSON.parse(fs.readFileSync(file, "utf8"));
+    if (Array.isArray(parsed)) return parsed;
+    return Array.isArray(parsed && parsed.records) ? parsed.records : [];
+  } catch (error) {
+    console.warn(`[prerender] post-match-reports.json okunamadı: ${error.message}`);
+    return [];
+  }
+}
+
+function transferRadarTicker() {
+  const records = selectRecentTickerRecords(transfers);
   return transferTickerBlock(records, { locale: "tr", sourceRel: SOURCE_LINK_REL, keepEmpty: true });
+}
+
+/**
+ * MAÇ SONU AÇIKLAMALARI ŞERİDİ (ana sayfa, canlı maç alanının altında).
+ *
+ * Kural services/managerQuotes.js'te: kaynak bağlantısı ve zaman damgası
+ * zorunlu, tanınmayan rol reddedilir, uydurma alıntı asla üretilmez. Burada
+ * yalnızca son biten maçların doğrulanmış alıntıları toplanıp çiziliyor.
+ *
+ * Süzgeç BİTEN maçlarla sınırlı: "maç sonu açıklaması" başlığı bir iddia ve
+ * henüz oynanmamış bir maçın demeci onu yalanlar. Hangi maçın bittiğini bu
+ * modül biliyor, alıntı servisi bilmiyor — bu yüzden kimlik listesi buradan
+ * geçiriliyor.
+ *
+ * Doğrulanmış alıntı yoksa şerit KALDIRILMAZ, "Kaynaklardan bekleniyor"
+ * yazar: sessiz boşluk "kimse konuşmadı" diye okunurdu.
+ */
+function matchQuotesTicker() {
+  // Kaynak maç RAPORU deposu, sezon fikstürü değil: şerit maç raporuna
+  // bağlanıyor, dolayısıyla bir alıntının görünmesi için o maçın raporunun
+  // gerçekten var olması gerekiyor. Fikstür listesi bunu garanti etmez ve
+  // ilk denemede kırık bağlantı üretirdi.
+  const finishedIds = postMatchReportRecords()
+    .filter((record) => ["FINISHED", "FT", "AET", "PEN"].includes(String(record && record.status || "").toUpperCase()))
+    .map((record) => String(record.matchId || ""))
+    .filter(Boolean);
+
+  const verdict = latestQuotes(managerQuoteStore, { limit: 6, matchIds: finishedIds });
+
+  return matchQuotesTickerBlock(verdict, {
+    awaitingNote: "Son tamamlanan maçlar için doğrulanmış bir teknik direktör ya da futbolcu açıklaması henüz yayımlanmadı.",
+    href: (quote) => (quote.matchId ? `./mac-raporu/${quote.matchId}.html` : null)
+  });
 }
 
 /**
@@ -1692,7 +1766,8 @@ writePage("index.html", {
   "live-scores-ticker": liveScoresTrack()
 }, fixtureFreshness, {
   "official-lineup-alerts": officialLineupAlerts(),
-  "transfer-radar-bottom": transferRadarBottomTicker()
+  "transfer-radar-ticker": transferRadarTicker(),
+  "match-quotes": matchQuotesTicker()
 });
 
 writePage("analizler.html", {

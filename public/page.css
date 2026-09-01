@@ -20666,3 +20666,139 @@ a.motm-week__card:focus-visible {
   border-left: 3px solid var(--green);
   padding-left: 15px;
 }
+
+/* --------------------------------------------------------------------------
+   MAÇ SONU AÇIKLAMALARI
+
+   Ana sayfada canlı maç alanının altında, maç raporu sayfasında künyenin
+   altında kayan şerit; raporun omurga bölümünde tam liste.
+
+   Mevcut `ticker-scroll` animasyonu yeniden kullanılıyor — dördüncü bir
+   animasyon tanımlamak, aynı davranışın dört ayrı yerde sürüklenmesi olurdu.
+
+   Doğrulanmış alıntı yoksa şerit KALDIRILMAZ, "Kaynaklardan bekleniyor"
+   yazar: sessiz boşluk okuyucuya "kimse konuşmadı" diye okunurdu.
+   -------------------------------------------------------------------------- */
+.match-quotes-ticker {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  margin-block: var(--sp-3);
+  background: rgba(var(--surface-rgb), 0.6);
+}
+
+.match-quotes-ticker__inner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 12px;
+}
+
+.match-quotes-ticker__label {
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: rgba(11, 143, 90, 0.1);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.match-quotes-ticker__viewport {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+
+/* Bekleme hâli kaymıyor: sabit bir cümle, kayan şerit değil. */
+.match-quotes-ticker__viewport[data-empty="true"] {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+.match-quotes__track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll var(--match-quotes-duration, 64s) linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.match-quotes-ticker:hover .match-quotes__track,
+.match-quotes-ticker:focus-within .match-quotes__track {
+  animation-play-state: paused;
+}
+
+.match-quotes__group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-inline-end: 10px;
+}
+
+.match-quotes__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.match-quotes__who {
+  color: var(--green);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.match-quotes__text {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-style: italic;
+}
+
+.match-quotes__sep {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--glass-border);
+}
+
+.match-quotes__awaiting {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin: 0;
+}
+
+.match-quotes__awaiting strong {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.match-quotes__awaiting span {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+/* Azaltılmış hareket tercihinde şerit durur; içerik yatay kaydırmayla okunur. */
+@media (prefers-reduced-motion: reduce) {
+  .match-quotes__track {
+    animation: none;
+  }
+
+  .match-quotes-ticker__viewport {
+    overflow-x: auto;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .match-quotes__group[aria-hidden="true"] {
+    display: none;
+  }
+}
