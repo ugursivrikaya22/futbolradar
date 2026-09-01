@@ -14,6 +14,11 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/public/:path*",
+      "destination": "https://www.futbolradar.com/:path*",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [
         {
@@ -44,11 +49,6 @@
         }
       ],
       "destination": "https://www.futbolradar.com/:path*",
-      "permanent": true
-    },
-    {
-      "source": "/public/:path*",
-      "destination": "/:path*",
       "permanent": true
     },
     {
