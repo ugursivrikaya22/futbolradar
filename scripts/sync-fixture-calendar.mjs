@@ -48,6 +48,15 @@ const PAST_WINDOW_DAYS = 3;
 // genişletmek ek istek maliyeti getirmiyor: sağlayıcıdan takım başına gelen
 // olaylar zaten tek çağrıda çekiliyor, fark yalnızca kaçının saklandığı.
 const FUTURE_WINDOW_DAYS = 35;
+/**
+ * Bu koşunun tazelik damgası. Tek bir değer: aynı koşuda yazılan satırların
+ * hepsi aynı anda çekildi, farklı zaman damgaları taşımaları yanıltıcı olur.
+ * Ömür `services/dataFreshness.js`teki `matches` kaynağıyla (30 dk) aynı
+ * tutuldu — takvim saatlik tazeleniyor, daha kısa bir ömür her koşuda
+ * "bayat" diyen bir dosya üretirdi.
+ */
+const FETCHED_AT = new Date().toISOString();
+const STALE_AFTER = new Date(Date.parse(FETCHED_AT) + 30 * 60 * 1000).toISOString();
 
 /**
  * TheSportsDB takım kimlikleri. Bir kere çözülüp sabitlendi: her koşuda 18
@@ -240,6 +249,18 @@ function normalizeEvent(event) {
     round: event.intRound ? Number(event.intRound) || null : null,
     dataStatus: "provider",
     source: "thesportsdb",
+    // TAZELİK KAYDIN ÜZERİNDE TAŞINIR.
+    //
+    // services/dataFreshness.js kararını dosyanın başlığından değil, tek tek
+    // KAYITLARDAN okuyor (`fetchedAt`/`staleAfter`). Bu üretici o damgayı
+    // hiç basmıyordu; takvim api-football satırlarıyla dolu olduğu sürece
+    // fark edilmedi, çünkü örneklem onlardan geliyordu. Takvim yalnızca
+    // TheSportsDB satırlarına düştüğünde örneklem sıfıra iniyor ve tazelik
+    // katmanı hiçbir kayıt hakkında konuşamaz hâle geliyor — "bilmiyorum"
+    // değil, "soracak kimse yok" durumu.
+    fetchedAt: FETCHED_AT,
+    staleAfter: STALE_AFTER,
+    resource: "matches",
     sourceUrls: event.idEvent ? [`https://www.thesportsdb.com/event/${event.idEvent}`] : []
   };
 }
@@ -395,14 +416,30 @@ async function main() {
     ? JSON.parse(fs.readFileSync(OUTPUT_PATH, "utf8"))
     : { matches: [] };
   const previousMatches = Array.isArray(previous.matches) ? previous.matches : [];
-  const previousOwned = previousMatches.filter(ownsRow).length;
+  // KIYAS AYNI KÜME VE AYNI PENCERE ÜZERİNDEN.
+  //
+  // Eskiden dosyadaki BÜTÜN sağlayıcı satırları sayılıyordu; oysa `windowed`
+  // yalnızca BUGÜNKÜ pencereyi taşıyor. Betik birkaç gün koşmayınca stoktaki
+  // satırlar pencerenin gerisine düşüyor, sayıları ise sayaçta kalmaya devam
+  // ediyordu: sağlayıcı sağlıklı cevap verse bile taze pencere eski toplamın
+  // yarısını tutturamıyor ve koşu iptal ediliyordu. İptal budamayı da
+  // engellediği için eski satırlar hiç düşmüyordu — dosya bayatladıkça
+  // kilidin açılması İMKÂNSIZLAŞIYORDU. (Takvim 23 Ağustos'ta durdu:
+  // pencere içi 0 satıra karşı 21 bayat satır sayılıyordu.)
+  //
+  // Korumanın amacı bozulmadı: takvim tazeyken sağlayıcı kısmi cevap
+  // verirse pencere içi sayı hâlâ yarıya düşer ve koşu yine iptal edilir.
+  // Yalnızca DÜŞÜŞÜN BEKLENDİĞİ durumda — stok pencerenin dışına kaymışken —
+  // susuyor.
+  const previousOwned = previousMatches
+    .filter((row) => ownsRow(row) && withinWindow(row, today))
+    .length;
 
   // Sayı düşüşü koruması: sağlayıcı kısmi cevap verdiyse (ör. hız limiti)
   // dolu bir takvimi yarısına indirmek yerine mevcut dosya korunur.
-  // KIYAS AYNI KÜME ÜZERİNDEN: bu betiğin sahiplendiği satırlar.
   if (previousOwned >= 6 && windowed.length < previousOwned * 0.5) {
     console.error(
-      `Fixture calendar sync aborted: provider returned ${windowed.length} TheSportsDB matches vs ${previousOwned} stored (>50% drop).`
+      `Fixture calendar sync aborted: provider returned ${windowed.length} TheSportsDB matches vs ${previousOwned} stored in the same window (>50% drop).`
     );
     process.exitCode = 1;
     return;

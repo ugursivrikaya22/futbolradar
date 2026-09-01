@@ -56,8 +56,13 @@ const CORE_SECTIONS = Object.freeze([
   },
   {
     key: "manager-comment",
-    title: "Teknik direktör yorumu",
-    question: "Teknik direktör ne dedi?",
+    // Bölüm artık yalnızca teknik direktör alıntısı taşımıyor: futbolcu
+    // açıklamaları da aynı doğrulamadan geçip buraya giriyor. Başlık
+    // "Teknik direktör yorumu" kalsaydı, altındaki futbolcu alıntısını
+    // yanlış bir sıfatla sunardı. Anahtar (`manager-comment`) geriye dönük
+    // uyumluluk için değişmedi — ona bağlı seçiciler ve testler var.
+    title: "Maç sonu açıklamaları",
+    question: "Maç sonrası kim ne dedi?",
     // Bu bölümün kaynağı ölçüm DEĞİL, kayıtlı alıntıdır. from listesi boş:
     // hiçbir hesaplanmış bölümden türetilemez.
     from: []
