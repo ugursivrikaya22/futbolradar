@@ -1059,7 +1059,12 @@ function trendTeamCards() {
 
 /**
  * TAM PUAN DURUMU TABLOSU (puan-durumu.html) — İSTEMCİYLE BİREBİR AYNI
- * İŞARETLEME (`app.js#renderStandingRow`).
+ * İŞARETLEME (`app.js#renderHomeStandingRow`). Ana sayfadaki kompakt
+ * widget'la AYNI satır bileşenini (aynı sütunlar: O, G, B, M, averaj, puan)
+ * ve AYNI veri kaynağını (`data/teams.json`) kullanır — sadece ilk altı
+ * takımla sınırlı kalmaz, ligin tamamını basar. İki sayfa arasında farklı
+ * sütun kümesi ya da farklı sayı göstermenin okuyucuya çelişkili puan
+ * durumu sunma riski böylece ortadan kalkar.
  *
  * Önceden bu fonksiyon veriye bakmadan HER ZAMAN "sezon başlamadı" boş
  * durumunu basıyordu — sezon başladıktan sonra bile statik HTML (JS'siz
@@ -1075,19 +1080,8 @@ function staticStandingRows() {
     return standingsPreseason(false);
   }
   const sorted = rows.slice().sort((left, right) => Number(left.rank || 0) - Number(right.rank || 0));
-  return sorted.map((team) => fullStandingRowHtml(team)).join("");
-}
-
-function fullStandingRowHtml(team) {
-  const teamName = team.name || "";
-  return `<div class="table-row" data-card="standing-row" data-team="${escapeHtml(team.id || "")}">` +
-    `<span>${escapeHtml(homeStandingDisplay(team.rank))}</span>` +
-    `<b>${escapeHtml(teamName)}</b>` +
-    `<span>${escapeHtml(homeStandingDisplay(team.played))}</span>` +
-    `<span>${escapeHtml(homeStandingDisplay(team.points))}</span>` +
-    `<span>${escapeHtml(homeStandingDisplay(team.average))}</span>` +
-    `<span>${escapeHtml(homeStandingDisplay(team.momentum))}</span>` +
-    "</div>";
+  const total = sorted.length;
+  return sorted.map((team) => homeStandingRowHtml(team, total)).join("");
 }
 
 function standingsPreseason(compact) {

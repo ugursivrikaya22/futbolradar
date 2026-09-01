@@ -5711,12 +5711,27 @@
 
   var HOME_STANDINGS_LIMIT = 6;
 
-  function renderStandingsTable(teams, compact, highlightId) {
+  /**
+   * `mode` üç değer alır:
+   *   "full"  — puan-durumu.html: LİGİN TAMAMI, ana sayfayla AYNI satır
+   *             bileşeniyle (O, G, B, M, averaj, puan). Aynı veri kaynağı,
+   *             aynı sütunlar — iki sayfa asla çelişmez.
+   *   true    — ana sayfa widget'ı: kompakt, yalnızca ilk 6 takım.
+   *   false   — büyük kulüp puan durumu sayfaları (ör.
+   *             galatasaray-puan-durumu.html): eski dar tablo, o takımın
+   *             satırı vurgulu (`highlightId`).
+   */
+  function renderStandingsTable(teams, mode, highlightId) {
     var rows = standingsWithResults(teams);
+    var compact = mode === true;
     if ((isSuperLigStandingsView() && todayInIstanbul() < SUPER_LIG_SEASON_START) || !rows.length) {
       return standingsEmptyHtml(compact);
     }
     var sorted = sortedByRank(rows);
+    if (mode === "full") {
+      var fullTotal = sorted.length;
+      return sorted.map(function (team) { return renderHomeStandingRow(team, fullTotal); }).join("");
+    }
     if (!compact) {
       return sorted.map(function (team) { return renderStandingRow(team, highlightId); }).join("");
     }
@@ -12278,11 +12293,16 @@
       // JS ile yeniden çizilen tabloda da vurgulu tutar — statik önizlemedeki
       // vurgu istemci verisiyle değişince kaybolmasın diye.
       var highlightId = standingsTarget ? standingsTarget.dataset.highlightTeam : "";
+      // puan-durumu.html konteyneri `data-standings-view="full"` taşır: o
+      // sayfa ligin tamamını ana sayfayla aynı satır bileşeniyle basar.
+      // Büyük kulüp puan durumu sayfaları bu özniteliği taşımaz, eski dar
+      // tabloyu (highlight'lı) kullanmayı sürdürür.
+      var fullView = standingsTarget && standingsTarget.dataset.standingsView === "full";
       renderInto(
         standingsTarget,
         "standings",
         function (teams) {
-          return renderStandingsTable(teams, false, highlightId);
+          return renderStandingsTable(teams, fullView ? "full" : false, highlightId);
         },
         "Puan durumu yüklenemedi"
       );
