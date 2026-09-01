@@ -133,6 +133,8 @@ assert.match(workflow, /cron: "0 0-1,3-23 \* \* \*"/);
 // Tam koşu ile saatlik koşu ÇAKIŞMAZ: saatlik ifade 02:00'ı dışarıda
 // bırakıyor. Aksi hâlde iki iş aynı dosyalara yazmak için sıraya girerdi.
 assert.doesNotMatch(workflow, /cron: "0 \* \* \* \*"/);
+assert.doesNotMatch(workflow, /cron: "20 2 \* \* \*"/);
+assert.doesNotMatch(workflow, /cron: "20 0-1,3-23 \* \* \*"/);
 // Beş dakikada bir koşu hiçbir koşulda kabul edilmiyor: sağlayıcı kotası ve
 // Actions dakikası bu sıklığı kaldırmıyor.
 assert.doesNotMatch(workflow, /\*\/5/);
