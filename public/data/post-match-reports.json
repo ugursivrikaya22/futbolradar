@@ -1,9 +1,397 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-01T21:32:37.737Z",
-  "matchCount": 925,
+  "updatedAt": "2026-09-01T23:41:55.566Z",
+  "matchCount": 927,
   "records": [
+    {
+      "matchId": "birmingham-southampton-2026-09-01",
+      "fixtureId": "1563119",
+      "provider": "api-football",
+      "slug": "birmingham-southampton-2026-09-01",
+      "kickoff": "2026-09-01T22:00:00+03:00",
+      "kickoffUtc": "2026-09-01T19:00:00.000Z",
+      "kickoffLocal": "2026-09-01T22:00",
+      "date": "2026-09-01",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Championship",
+      "competition": "Championship",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Birmingham",
+      "awayTeam": "Southampton",
+      "venue": "St. Andrew's @ Knighthead Park",
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "finalScore": "1-1",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "api-key-missing",
+      "coverageLabel": "API anahtarı eksik",
+      "coverageNote": "Sağlayıcıya istek gönderilemiyor; gösterilen veri depoda saklanan son kayıttır.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": false,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "c2140133bc307a64",
+      "fingerprint": "c2140133bc307a64",
+      "analysisGeneratedAt": "2026-09-01T23:41:55.501Z",
+      "analysisUpdatedAt": "2026-09-01T23:41:55.501Z",
+      "generatedAt": "2026-09-01T23:41:55.501Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Birmingham 1-1 Southampton maç raporu: Championship istatistikleri | FutbolRadar",
+        "description": "Birmingham 1-1 Southampton maç raporu, kırılma anları ve sonraki maç.",
+        "path": "mac-raporu/birmingham-southampton-2026-09-01.html",
+        "competition": "Championship"
+      },
+      "reportUrl": "./mac-raporu/birmingham-southampton-2026-09-01.html",
+      "digest": {
+        "headline": "Birmingham ile Southampton 1-1 berabere kaldı",
+        "paragraph": "Birmingham ile Southampton, St. Andrew's @ Knighthead Park'ta oynanan Championship karşılaşmasında 1-1 berabere kaldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 1-1 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "stoke-city-norwich-2026-09-01",
+      "fixtureId": "1563124",
+      "provider": "api-football",
+      "slug": "stoke-city-norwich-2026-09-01",
+      "kickoff": "2026-09-01T22:00:00+03:00",
+      "kickoffUtc": "2026-09-01T19:00:00.000Z",
+      "kickoffLocal": "2026-09-01T22:00",
+      "date": "2026-09-01",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Championship",
+      "competition": "Championship",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Stoke City",
+      "awayTeam": "Norwich",
+      "venue": "bet365 Stadium",
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "finalScore": "1-0",
+      "winner": "Stoke City",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "api-key-missing",
+      "coverageLabel": "API anahtarı eksik",
+      "coverageNote": "Sağlayıcıya istek gönderilemiyor; gösterilen veri depoda saklanan son kayıttır.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": false,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "772fd6377f38fb3d",
+      "fingerprint": "772fd6377f38fb3d",
+      "analysisGeneratedAt": "2026-09-01T23:41:55.501Z",
+      "analysisUpdatedAt": "2026-09-01T23:41:55.501Z",
+      "generatedAt": "2026-09-01T23:41:55.501Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Stoke City 1-0 Norwich maç raporu: Championship istatistikleri | FutbolRadar",
+        "description": "Stoke City, bet365 Stadium'da oynanan Championship karşılaşmasında Norwich'i 1-0 mağlup etti.",
+        "path": "mac-raporu/stoke-city-norwich-2026-09-01.html",
+        "competition": "Championship"
+      },
+      "reportUrl": "./mac-raporu/stoke-city-norwich-2026-09-01.html",
+      "digest": {
+        "headline": "Stoke City, Norwich'i 1-0 yendi",
+        "paragraph": "Stoke City, bet365 Stadium'da oynanan Championship karşılaşmasında Norwich'i 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Stoke City",
+          "loser": "Norwich",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Stoke City, Norwich'i 1-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Stoke City sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "lincoln-blackburn-2026-09-01",
       "fixtureId": "1563120",
@@ -890,10 +1278,10 @@
       "winner": "Swansea",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "api-key-missing",
-      "coverageLabel": "API anahtarı eksik",
-      "coverageNote": "Sağlayıcıya istek gönderilemiyor; gösterilen veri depoda saklanan son kayıttır.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -901,9 +1289,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "statistics": {
           "present": false,
@@ -923,19 +1311,15 @@
       },
       "apiKeyPresent": false,
       "availability": {
-        "events": 0,
+        "events": 15,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -953,11 +1337,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "866dca6b3857137b",
-      "fingerprint": "866dca6b3857137b",
+      "analysisSourceHash": "bbc789cb59d07890",
+      "fingerprint": "bbc789cb59d07890",
       "analysisGeneratedAt": "2026-09-01T21:32:37.687Z",
-      "analysisUpdatedAt": "2026-09-01T21:32:37.687Z",
-      "generatedAt": "2026-09-01T21:32:37.687Z",
+      "analysisUpdatedAt": "2026-09-01T23:41:55.501Z",
+      "generatedAt": "2026-09-01T23:41:55.501Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -969,7 +1353,7 @@
       "reportUrl": "./mac-raporu/swansea-watford-2026-09-01.html",
       "digest": {
         "headline": "Swansea, Watford'u 2-0 yendi",
-        "paragraph": "Swansea.com Stadium'da oynanan Championship maçını Swansea 2-0 kazandı; Watford sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Swansea.com Stadium'da oynanan Championship maçını Swansea 2-0 kazandı; Watford sahadan puansız ayrıldı. Golleri 8. dakikada Eom Ji-Sung (Swansea), 29. dakikada A. Idah (Swansea) kaydetti.",
         "result": {
           "winner": "Swansea",
           "loser": "Watford",
@@ -982,42 +1366,129 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "8'",
+              "team": "Swansea",
+              "type": "Gol",
+              "detail": "Eom Ji-Sung",
+              "pivotal": true
+            },
+            {
+              "minute": "29'",
+              "team": "Swansea",
+              "type": "Gol",
+              "detail": "A. Idah",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "80'",
+              "team": "Watford",
+              "type": "Sarı kart",
+              "detail": "K. Keben",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Watford",
+              "type": "Oyuncu değişikliği",
+              "detail": "I. Bravo",
+              "decisive": false
+            },
+            {
+              "minute": "86'",
+              "team": "Swansea",
+              "type": "Oyuncu değişikliği",
+              "detail": "S. Welsh",
+              "decisive": false
+            },
+            {
+              "minute": "90+1'",
+              "team": "Watford",
+              "type": "Sarı kart",
+              "detail": "J. Zemura",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Idah",
+              "team": "Swansea",
+              "contribution": "29' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Eom Ji-Sung",
+              "team": "Swansea",
+              "contribution": "8' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "H. Kyprianou",
+              "team": "Watford",
+              "contribution": "68' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "J. Zemura",
+              "team": "Watford",
+              "contribution": "90+1' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "8' Swansea — Eom Ji-Sung: gol",
+            "29' Swansea — A. Idah: gol",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "31' Watford değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Watford değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "57' Swansea değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "57' Swansea değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "65' Watford değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "67' Swansea değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1049,10 +1520,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -1278,386 +1756,6 @@
       "winner": "Keçiörengücü",
       "turkish": true,
       "turkishTeam": "Boluspor & Keçiörengücü",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 30,
-      "dataSources": {
-        "score": {
-          "present": true,
-          "source": "curated",
-          "count": 1
-        },
-        "events": {
-          "present": false,
-          "source": null,
-          "count": 0
-        },
-        "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
-        },
-        "lineups": {
-          "present": true,
-          "source": "curated",
-          "count": 2
-        },
-        "players": {
-          "present": false,
-          "source": null,
-          "count": 0
-        }
-      },
-      "apiKeyPresent": false,
-      "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 2,
-        "players": 0
-      },
-      "dataCompleteness": 0.4,
-      "providerUpdatedAt": null,
-      "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
-      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
-      "analysisVersion": "futbolradar-post-match-v5",
-      "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "b6e521e9a109cc2e",
-      "fingerprint": "b6e521e9a109cc2e",
-      "analysisGeneratedAt": "2026-09-01T21:32:37.687Z",
-      "analysisUpdatedAt": "2026-09-01T21:32:37.687Z",
-      "generatedAt": "2026-09-01T21:32:37.687Z",
-      "analysisError": null,
-      "analysisAttempts": 0,
-      "seo": {
-        "title": "Boluspor 0-2 Keçiörengücü maç raporu: 1. Lig istatistikleri | FutbolRadar",
-        "description": "Boluspor 0-2 Keçiörengücü maç raporu, kırılma anları ve sonraki maç.",
-        "path": "mac-raporu/boluspor-keciorengucu-2026-09-01.html",
-        "competition": "1. Lig"
-      },
-      "reportUrl": "./mac-raporu/boluspor-keciorengucu-2026-09-01.html",
-      "digest": {
-        "headline": "Keçiörengücü, Boluspor'u 2-0 yendi",
-        "paragraph": "Keçiörengücü, Bolu Atatürk Stadium'da oynanan 1. Lig karşılaşmasında Boluspor'u 2-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
-        "result": {
-          "winner": "Keçiörengücü",
-          "loser": "Boluspor",
-          "draw": false,
-          "margin": 2
-        },
-        "finish": {
-          "status": "ready",
-          "type": "regular",
-          "label": "Normal sürede tamamlandı",
-          "wentToExtraTime": false,
-          "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
-        },
-        "turningPoints": {
-          "status": "unavailable",
-          "moments": []
-        },
-        "lateGame": {
-          "status": "unavailable",
-          "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
-        },
-        "keyPlayers": {
-          "status": "unavailable",
-          "players": []
-        },
-        "tactical": {
-          "status": "unavailable",
-          "notes": []
-        },
-        "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
-        },
-        "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
-        },
-        "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
-        },
-        "finalAssessment": {
-          "status": "ready",
-          "verdict": [
-            "Keçiörengücü, Boluspor'u 0-2 yendi."
-          ],
-          "strengths": [],
-          "improvements": [],
-          "closing": "Keçiörengücü sahadan 2 farkla ayrıldı.",
-          "basis": "events-only"
-        },
-        "aiRating": null,
-        "analysis": [],
-        "analysisOmitted": [
-          "hucum",
-          "savunma",
-          "sahiplik",
-          "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
-          "performans",
-          "taktik",
-          "sonuc",
-          "gecis-oyunu",
-          "pas-agi",
-          "en-zayif-performans"
-        ]
-      },
-      "readySections": [
-        "summary",
-        "finalAssessment"
-      ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
-      "publishState": "page"
-    },
-    {
-      "matchId": "sariyer-pendikspor-2026-09-01",
-      "fixtureId": "1585735",
-      "provider": "api-football",
-      "slug": "sariyer-pendikspor-2026-09-01",
-      "kickoff": "2026-09-01T20:00:00+03:00",
-      "kickoffUtc": "2026-09-01T17:00:00.000Z",
-      "kickoffLocal": "2026-09-01T20:00",
-      "date": "2026-09-01",
-      "status": "FINISHED",
-      "providerStatus": "FT",
-      "finishType": "regular",
-      "finishLabel": "Normal sürede tamamlandı",
-      "league": "1. Lig",
-      "competition": "1. Lig",
-      "competitionType": null,
-      "season": null,
-      "homeTeam": "Sarıyer",
-      "awayTeam": "Pendikspor",
-      "venue": "Yusuf Ziya Öniş Stadium",
-      "score": {
-        "home": 2,
-        "away": 0
-      },
-      "finalScore": "2-0",
-      "winner": "Sarıyer",
-      "turkish": true,
-      "turkishTeam": "Sarıyer & Pendikspor",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 30,
-      "dataSources": {
-        "score": {
-          "present": true,
-          "source": "curated",
-          "count": 1
-        },
-        "events": {
-          "present": false,
-          "source": null,
-          "count": 0
-        },
-        "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
-        },
-        "lineups": {
-          "present": true,
-          "source": "curated",
-          "count": 2
-        },
-        "players": {
-          "present": false,
-          "source": null,
-          "count": 0
-        }
-      },
-      "apiKeyPresent": false,
-      "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 2,
-        "players": 0
-      },
-      "dataCompleteness": 0.4,
-      "providerUpdatedAt": null,
-      "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
-      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
-      "analysisVersion": "futbolradar-post-match-v5",
-      "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "7ef1619192ffb5c5",
-      "fingerprint": "7ef1619192ffb5c5",
-      "analysisGeneratedAt": "2026-09-01T21:32:37.687Z",
-      "analysisUpdatedAt": "2026-09-01T21:32:37.687Z",
-      "generatedAt": "2026-09-01T21:32:37.687Z",
-      "analysisError": null,
-      "analysisAttempts": 0,
-      "seo": {
-        "title": "Sarıyer 2-0 Pendikspor maç raporu: 1. Lig istatistikleri | FutbolRadar",
-        "description": "Sarıyer 2-0 Pendikspor maç raporu, kırılma anları ve sonraki maç.",
-        "path": "mac-raporu/sariyer-pendikspor-2026-09-01.html",
-        "competition": "1. Lig"
-      },
-      "reportUrl": "./mac-raporu/sariyer-pendikspor-2026-09-01.html",
-      "digest": {
-        "headline": "Sarıyer, Pendikspor'u 2-0 yendi",
-        "paragraph": "Sarıyer, Yusuf Ziya Öniş Stadium'da oynanan 1. Lig karşılaşmasında Pendikspor'u 2-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
-        "result": {
-          "winner": "Sarıyer",
-          "loser": "Pendikspor",
-          "draw": false,
-          "margin": 2
-        },
-        "finish": {
-          "status": "ready",
-          "type": "regular",
-          "label": "Normal sürede tamamlandı",
-          "wentToExtraTime": false,
-          "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
-        },
-        "turningPoints": {
-          "status": "unavailable",
-          "moments": []
-        },
-        "lateGame": {
-          "status": "unavailable",
-          "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
-        },
-        "keyPlayers": {
-          "status": "unavailable",
-          "players": []
-        },
-        "tactical": {
-          "status": "unavailable",
-          "notes": []
-        },
-        "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
-        },
-        "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
-        },
-        "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
-        },
-        "finalAssessment": {
-          "status": "ready",
-          "verdict": [
-            "Sarıyer, Pendikspor'u 2-0 yendi."
-          ],
-          "strengths": [],
-          "improvements": [],
-          "closing": "Sarıyer sahadan 2 farkla ayrıldı.",
-          "basis": "events-only"
-        },
-        "aiRating": null,
-        "analysis": [],
-        "analysisOmitted": [
-          "hucum",
-          "savunma",
-          "sahiplik",
-          "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
-          "performans",
-          "taktik",
-          "sonuc",
-          "gecis-oyunu",
-          "pas-agi",
-          "en-zayif-performans"
-        ]
-      },
-      "readySections": [
-        "summary",
-        "finalAssessment"
-      ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
-      "publishState": "page"
-    },
-    {
-      "matchId": "umraniyespor-muglaspor-2026-09-01",
-      "fixtureId": "1585737",
-      "provider": "api-football",
-      "slug": "umraniyespor-muglaspor-2026-09-01",
-      "kickoff": "2026-09-01T17:00:00+03:00",
-      "kickoffUtc": "2026-09-01T14:00:00.000Z",
-      "kickoffLocal": "2026-09-01T17:00",
-      "date": "2026-09-01",
-      "status": "FINISHED",
-      "providerStatus": "FT",
-      "finishType": "regular",
-      "finishLabel": "Normal sürede tamamlandı",
-      "league": "1. Lig",
-      "competition": "1. Lig",
-      "competitionType": null,
-      "season": null,
-      "homeTeam": "Ümraniyespor",
-      "awayTeam": "Muğlaspor",
-      "venue": "Ümraniye Belediyesi Sehir Stadi",
-      "score": {
-        "home": 0,
-        "away": 1
-      },
-      "finalScore": "0-1",
-      "winner": "Muğlaspor",
-      "turkish": true,
-      "turkishTeam": "Ümraniyespor & Muğlaspor",
       "coverageGrade": "events-only",
       "coverageLabel": "Sadece olaylar",
       "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
@@ -1671,7 +1769,7 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 18
+          "count": 17
         },
         "statistics": {
           "present": false,
@@ -1691,7 +1789,7 @@
       },
       "apiKeyPresent": false,
       "availability": {
-        "events": 18,
+        "events": 17,
         "statistics": 0,
         "lineups": 2,
         "players": 0
@@ -1713,28 +1811,28 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "c1c9712def164536",
-      "fingerprint": "c1c9712def164536",
-      "analysisGeneratedAt": "2026-09-01T18:15:09.246Z",
-      "analysisUpdatedAt": "2026-09-01T18:15:09.246Z",
-      "generatedAt": "2026-09-01T18:15:09.246Z",
+      "analysisSourceHash": "730f77f54eb34c56",
+      "fingerprint": "730f77f54eb34c56",
+      "analysisGeneratedAt": "2026-09-01T21:32:37.687Z",
+      "analysisUpdatedAt": "2026-09-01T23:41:55.501Z",
+      "generatedAt": "2026-09-01T23:41:55.501Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
-        "title": "Ümraniyespor 0-1 Muğlaspor maç raporu: 1. Lig istatistikleri | FutbolRadar",
-        "description": "Ümraniyespor 0-1 Muğlaspor maç raporu, goller: M. Diarra, kırılma anları ve sonraki maç.",
-        "path": "mac-raporu/umraniyespor-muglaspor-2026-09-01.html",
+        "title": "Boluspor 0-2 Keçiörengücü maç raporu: 1. Lig istatistikleri | FutbolRadar",
+        "description": "Boluspor 0-2 Keçiörengücü maç raporu, goller: M. Diouf, kırılma anları ve sonraki maç.",
+        "path": "mac-raporu/boluspor-keciorengucu-2026-09-01.html",
         "competition": "1. Lig"
       },
-      "reportUrl": "./mac-raporu/umraniyespor-muglaspor-2026-09-01.html",
+      "reportUrl": "./mac-raporu/boluspor-keciorengucu-2026-09-01.html",
       "digest": {
-        "headline": "Muğlaspor, Ümraniyespor'u 1-0 yendi",
-        "paragraph": "Muğlaspor, Ümraniye Belediyesi Sehir Stadi'nde oynanan 1. Lig karşılaşmasında Ümraniyespor'u 1-0 mağlup etti. Tek golü 26. dakikada M. Diarra (Muğlaspor) kaydetti.",
+        "headline": "Keçiörengücü, Boluspor'u 2-0 yendi",
+        "paragraph": "Keçiörengücü, Bolu Atatürk Stadium'da oynanan 1. Lig karşılaşmasında Boluspor'u 2-0 mağlup etti. Golleri 13. dakikada M. Diouf (Keçiörengücü), 21. dakikada M. Diouf (Keçiörengücü) kaydetti.",
         "result": {
-          "winner": "Muğlaspor",
-          "loser": "Ümraniyespor",
+          "winner": "Keçiörengücü",
+          "loser": "Boluspor",
           "draw": false,
-          "margin": 1
+          "margin": 2
         },
         "finish": {
           "status": "ready",
@@ -1742,16 +1840,30 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 2
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
           "status": "ready",
           "moments": [
             {
-              "minute": "26'",
-              "team": "Muğlaspor",
+              "minute": "13'",
+              "team": "Keçiörengücü",
               "type": "Gol",
-              "detail": "M. Diarra",
+              "detail": "M. Diouf",
+              "pivotal": true
+            },
+            {
+              "minute": "21'",
+              "team": "Keçiörengücü",
+              "type": "Gol",
+              "detail": "M. Diouf",
+              "pivotal": true
+            },
+            {
+              "minute": "39'",
+              "team": "Keçiörengücü",
+              "type": "Gol",
+              "detail": "F. Ezeh",
               "pivotal": true
             }
           ]
@@ -1766,31 +1878,31 @@
           },
           "moments": [
             {
-              "minute": "75'",
-              "team": "Muğlaspor",
+              "minute": "77'",
+              "team": "Boluspor",
               "type": "Oyuncu değişikliği",
-              "detail": "J. Celhaka",
+              "detail": "L. F. Escobar",
               "decisive": false
             },
             {
-              "minute": "76'",
-              "team": "Ümraniyespor",
+              "minute": "77'",
+              "team": "Boluspor",
               "type": "Oyuncu değişikliği",
-              "detail": "B. Yilmaz",
+              "detail": "A. Saygi",
               "decisive": false
             },
             {
-              "minute": "86'",
-              "team": "Ümraniyespor",
+              "minute": "80'",
+              "team": "Keçiörengücü",
               "type": "Oyuncu değişikliği",
-              "detail": "A. Blanco",
+              "detail": "F. Ezeh",
               "decisive": false
             },
             {
-              "minute": "87'",
-              "team": "Muğlaspor",
+              "minute": "80'",
+              "team": "Keçiörengücü",
               "type": "Oyuncu değişikliği",
-              "detail": "D. Avramovski",
+              "detail": "O. Roshi",
               "decisive": false
             }
           ]
@@ -1799,27 +1911,27 @@
           "status": "ready",
           "players": [
             {
-              "name": "M. Diarra",
-              "team": "Muğlaspor",
-              "contribution": "26' gol",
+              "name": "M. Diouf",
+              "team": "Keçiörengücü",
+              "contribution": "13' gol · 21' gol · 45+1' sarı kart",
               "impact": "yüksek"
             },
             {
-              "name": "A. Djokanovic",
-              "team": "Ümraniyespor",
-              "contribution": "43' sarı kart",
+              "name": "F. Ezeh",
+              "team": "Keçiörengücü",
+              "contribution": "39' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. Cayli",
+              "team": "Boluspor",
+              "contribution": "84' sarı kart",
               "impact": "olumsuz"
             },
             {
-              "name": "A. Engin",
-              "team": "Muğlaspor",
-              "contribution": "90+5' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "A. Guneren",
-              "team": "Muğlaspor",
-              "contribution": "37' sarı kart",
+              "name": "A. Kirim",
+              "team": "Boluspor",
+              "contribution": "85' sarı kart",
               "impact": "olumsuz"
             }
           ]
@@ -1831,15 +1943,16 @@
         "firstHalf": {
           "status": "ready",
           "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
-            "26' Muğlaspor — M. Diarra: gol"
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "13' Keçiörengücü — M. Diouf: gol",
+            "21' Keçiörengücü — M. Diouf: gol"
           ],
-          "goals": 1
+          "goals": 2
         },
         "secondHalf": {
           "status": "ready",
           "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (15 olay).",
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
             "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
           ],
           "goals": 0
@@ -1847,12 +1960,12 @@
         "coaching": {
           "status": "ready",
           "notes": [
-            "46' Ümraniyespor değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "46' Ümraniyespor değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "46' Muğlaspor değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "64' Muğlaspor değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "73' Ümraniyespor değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "75' Muğlaspor değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "59' Boluspor değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "59' Boluspor değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' Boluspor değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "69' Keçiörengücü değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "69' Keçiörengücü değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "77' Boluspor değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
           "formations": [],
           "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
@@ -1860,11 +1973,11 @@
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Muğlaspor, Ümraniyespor'u 0-1 yendi."
+            "Keçiörengücü, Boluspor'u 0-2 yendi."
           ],
           "strengths": [],
           "improvements": [],
-          "closing": "Muğlaspor sahadan 1 farkla ayrıldı.",
+          "closing": "Keçiörengücü sahadan 2 farkla ayrıldı.",
           "basis": "events-only"
         },
         "aiRating": null,
@@ -1902,13 +2015,13 @@
       "publishState": "page"
     },
     {
-      "matchId": "bandirmaspor-antalyaspor-2026-09-01",
-      "fixtureId": "1585729",
+      "matchId": "sariyer-pendikspor-2026-09-01",
+      "fixtureId": "1585735",
       "provider": "api-football",
-      "slug": "bandirmaspor-antalyaspor-2026-09-01",
-      "kickoff": "2026-09-01T16:00:00+03:00",
-      "kickoffUtc": "2026-09-01T13:00:00.000Z",
-      "kickoffLocal": "2026-09-01T16:00",
+      "slug": "sariyer-pendikspor-2026-09-01",
+      "kickoff": "2026-09-01T20:00:00+03:00",
+      "kickoffUtc": "2026-09-01T17:00:00.000Z",
+      "kickoffLocal": "2026-09-01T20:00",
       "date": "2026-09-01",
       "status": "FINISHED",
       "providerStatus": "FT",
@@ -1918,17 +2031,17 @@
       "competition": "1. Lig",
       "competitionType": null,
       "season": null,
-      "homeTeam": "Bandırmaspor",
-      "awayTeam": "Antalyaspor",
-      "venue": "17 Eylül Stadyumu",
+      "homeTeam": "Sarıyer",
+      "awayTeam": "Pendikspor",
+      "venue": "Yusuf Ziya Öniş Stadium",
       "score": {
-        "home": 0,
-        "away": 1
+        "home": 2,
+        "away": 0
       },
-      "finalScore": "0-1",
-      "winner": "Antalyaspor",
+      "finalScore": "2-0",
+      "winner": "Sarıyer",
       "turkish": true,
-      "turkishTeam": "Bandırmaspor & Antalyaspor",
+      "turkishTeam": "Sarıyer & Pendikspor",
       "coverageGrade": "events-only",
       "coverageLabel": "Sadece olaylar",
       "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
@@ -1984,28 +2097,28 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "bbb3faa971825985",
-      "fingerprint": "bbb3faa971825985",
-      "analysisGeneratedAt": "2026-09-01T18:15:09.246Z",
-      "analysisUpdatedAt": "2026-09-01T18:15:09.246Z",
-      "generatedAt": "2026-09-01T18:15:09.246Z",
+      "analysisSourceHash": "90d1771a1921b53c",
+      "fingerprint": "90d1771a1921b53c",
+      "analysisGeneratedAt": "2026-09-01T21:32:37.687Z",
+      "analysisUpdatedAt": "2026-09-01T23:41:55.501Z",
+      "generatedAt": "2026-09-01T23:41:55.501Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
-        "title": "Bandırmaspor 0-1 Antalyaspor maç raporu: 1. Lig istatistikleri | FutbolRadar",
-        "description": "Bandırmaspor 0-1 Antalyaspor maç raporu, goller: S. Dikmen, kırılma anları ve sonraki maç.",
-        "path": "mac-raporu/bandirmaspor-antalyaspor-2026-09-01.html",
+        "title": "Sarıyer 2-0 Pendikspor maç raporu: 1. Lig istatistikleri | FutbolRadar",
+        "description": "Sarıyer 2-0 Pendikspor maç raporu, goller: E. Korkmazoglu, T. Ergul, kırılma anları ve sonraki maç.",
+        "path": "mac-raporu/sariyer-pendikspor-2026-09-01.html",
         "competition": "1. Lig"
       },
-      "reportUrl": "./mac-raporu/bandirmaspor-antalyaspor-2026-09-01.html",
+      "reportUrl": "./mac-raporu/sariyer-pendikspor-2026-09-01.html",
       "digest": {
-        "headline": "Antalyaspor, Bandırmaspor'u 1-0 yendi",
-        "paragraph": "Antalyaspor, 17 Eylül Stadyumu'nda oynanan 1. Lig karşılaşmasında Bandırmaspor'u 1-0 mağlup etti. Tek golü 5. dakikada S. Dikmen (Antalyaspor) kaydetti.",
+        "headline": "Sarıyer, Pendikspor'u 2-0 yendi",
+        "paragraph": "Sarıyer, Yusuf Ziya Öniş Stadium'da oynanan 1. Lig karşılaşmasında Pendikspor'u 2-0 mağlup etti. Golleri 66. dakikada E. Korkmazoglu (Sarıyer), 72. dakikada T. Ergul (Sarıyer) kaydetti.",
         "result": {
-          "winner": "Antalyaspor",
-          "loser": "Bandırmaspor",
+          "winner": "Sarıyer",
+          "loser": "Pendikspor",
           "draw": false,
-          "margin": 1
+          "margin": 2
         },
         "finish": {
           "status": "ready",
@@ -2013,23 +2126,30 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 4
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
           "status": "ready",
           "moments": [
             {
-              "minute": "5'",
-              "team": "Antalyaspor",
-              "type": "Gol",
-              "detail": "S. Dikmen",
+              "minute": "49'",
+              "team": "Pendikspor",
+              "type": "Kırmızı kart",
+              "detail": "F. Dogan",
               "pivotal": true
             },
             {
-              "minute": "56'",
-              "team": "Bandırmaspor",
-              "type": "Kırmızı kart",
-              "detail": "E. Aydin",
+              "minute": "66'",
+              "team": "Sarıyer",
+              "type": "Gol",
+              "detail": "E. Korkmazoglu",
+              "pivotal": true
+            },
+            {
+              "minute": "72'",
+              "team": "Sarıyer",
+              "type": "Gol",
+              "detail": "T. Ergul",
               "pivotal": true
             }
           ]
@@ -2037,38 +2157,38 @@
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Son bölümde 8 olay kaydedildi, gol yok.",
+          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
           "goals": {
             "home": 0,
             "away": 0
           },
           "moments": [
             {
-              "minute": "75'",
-              "team": "Bandırmaspor",
+              "minute": "86'",
+              "team": "Sarıyer",
               "type": "Oyuncu değişikliği",
-              "detail": "T. Kehinde",
+              "detail": "E. Karaca",
               "decisive": false
             },
             {
-              "minute": "75'",
-              "team": "Bandırmaspor",
+              "minute": "87'",
+              "team": "Sarıyer",
               "type": "Oyuncu değişikliği",
-              "detail": "G. Bruno",
+              "detail": "B. Kor",
               "decisive": false
             },
             {
-              "minute": "83'",
-              "team": "Bandırmaspor",
+              "minute": "90'",
+              "team": "Pendikspor",
               "type": "Oyuncu değişikliği",
-              "detail": "K. Donertas",
+              "detail": "H. Yesil",
               "decisive": false
             },
             {
-              "minute": "88'",
-              "team": "Antalyaspor",
+              "minute": "90'",
+              "team": "Pendikspor",
               "type": "Oyuncu değişikliği",
-              "detail": "Substitution 4",
+              "detail": "M. Ozdemir",
               "decisive": false
             }
           ]
@@ -2077,27 +2197,27 @@
           "status": "ready",
           "players": [
             {
-              "name": "S. Dikmen",
-              "team": "Antalyaspor",
-              "contribution": "5' gol · 90+9' sarı kart",
-              "impact": "orta"
+              "name": "E. Korkmazoglu",
+              "team": "Sarıyer",
+              "contribution": "66' gol",
+              "impact": "yüksek"
             },
             {
-              "name": "A. Ulgen",
-              "team": "Bandırmaspor",
-              "contribution": "59' sarı kart",
+              "name": "T. Ergul",
+              "team": "Sarıyer",
+              "contribution": "72' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "C. Karayel",
+              "team": "Sarıyer",
+              "contribution": "13' sarı kart",
               "impact": "olumsuz"
             },
             {
-              "name": "D. Lico",
-              "team": "Bandırmaspor",
-              "contribution": "90+5' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "L. Lima",
-              "team": "Bandırmaspor",
-              "contribution": "90+9' sarı kart",
+              "name": "M. Ozdemir",
+              "team": "Pendikspor",
+              "contribution": "14' sarı kart",
               "impact": "olumsuz"
             }
           ]
@@ -2109,28 +2229,29 @@
         "firstHalf": {
           "status": "ready",
           "notes": [
-            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
-            "5' Antalyaspor — S. Dikmen: gol"
+            "İlk yarı dengeli bir olay akışı üretti (3 olay)."
           ],
-          "goals": 1
+          "goals": 0
         },
         "secondHalf": {
           "status": "ready",
           "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (15 olay).",
-            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "66' Sarıyer — E. Korkmazoglu: gol",
+            "72' Sarıyer — T. Ergul: gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
           ],
-          "goals": 0
+          "goals": 2
         },
         "coaching": {
           "status": "ready",
           "notes": [
-            "57' Antalyaspor değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "60' Bandırmaspor değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "60' Bandırmaspor değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "67' Antalyaspor değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "67' Antalyaspor değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "75' Bandırmaspor değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "60' Pendikspor değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "62' Sarıyer değişikliği (Substitution 1). Değişiklikten sonra Sarıyer adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "62' Sarıyer değişikliği (Substitution 2). Değişiklikten sonra Sarıyer adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "62' Sarıyer değişikliği (Substitution 3). Değişiklikten sonra Sarıyer adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "73' Pendikspor değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "86' Sarıyer değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
           "formations": [],
           "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
@@ -2138,13 +2259,13 @@
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Antalyaspor, Bandırmaspor'u 0-1 yendi."
+            "Sarıyer, Pendikspor'u 2-0 yendi."
           ],
           "strengths": [],
           "improvements": [
-            "Kırmızı kart maçın seyrini etkiledi (56' Bandırmaspor)."
+            "Kırmızı kart maçın seyrini etkiledi (49' Pendikspor)."
           ],
-          "closing": "Antalyaspor sahadan 1 farkla ayrıldı.",
+          "closing": "Sarıyer sahadan 2 farkla ayrıldı.",
           "basis": "events-only"
         },
         "aiRating": null,
@@ -2178,6 +2299,386 @@
       ],
       "coverage": 64,
       "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "umraniyespor-muglaspor-2026-09-01",
+      "fixtureId": "1585737",
+      "provider": "api-football",
+      "slug": "umraniyespor-muglaspor-2026-09-01",
+      "kickoff": "2026-09-01T17:00:00+03:00",
+      "kickoffUtc": "2026-09-01T14:00:00.000Z",
+      "kickoffLocal": "2026-09-01T17:00",
+      "date": "2026-09-01",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "1. Lig",
+      "competition": "1. Lig",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Ümraniyespor",
+      "awayTeam": "Muğlaspor",
+      "venue": "Ümraniye Belediyesi Sehir Stadi",
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "Muğlaspor",
+      "turkish": true,
+      "turkishTeam": "Ümraniyespor & Muğlaspor",
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 30,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": false,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 2,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "a5524e0769f5bc8d",
+      "fingerprint": "a5524e0769f5bc8d",
+      "analysisGeneratedAt": "2026-09-01T18:15:09.246Z",
+      "analysisUpdatedAt": "2026-09-01T23:41:55.501Z",
+      "generatedAt": "2026-09-01T23:41:55.501Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Ümraniyespor 0-1 Muğlaspor maç raporu: 1. Lig istatistikleri | FutbolRadar",
+        "description": "Ümraniyespor 0-1 Muğlaspor maç raporu, kırılma anları ve sonraki maç.",
+        "path": "mac-raporu/umraniyespor-muglaspor-2026-09-01.html",
+        "competition": "1. Lig"
+      },
+      "reportUrl": "./mac-raporu/umraniyespor-muglaspor-2026-09-01.html",
+      "digest": {
+        "headline": "Muğlaspor, Ümraniyespor'u 1-0 yendi",
+        "paragraph": "Muğlaspor, Ümraniye Belediyesi Sehir Stadi'nde oynanan 1. Lig karşılaşmasında Ümraniyespor'u 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Muğlaspor",
+          "loser": "Ümraniyespor",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Muğlaspor, Ümraniyespor'u 0-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Muğlaspor sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "bandirmaspor-antalyaspor-2026-09-01",
+      "fixtureId": "1585729",
+      "provider": "api-football",
+      "slug": "bandirmaspor-antalyaspor-2026-09-01",
+      "kickoff": "2026-09-01T16:00:00+03:00",
+      "kickoffUtc": "2026-09-01T13:00:00.000Z",
+      "kickoffLocal": "2026-09-01T16:00",
+      "date": "2026-09-01",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "1. Lig",
+      "competition": "1. Lig",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Bandırmaspor",
+      "awayTeam": "Antalyaspor",
+      "venue": "17 Eylül Stadyumu",
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "Antalyaspor",
+      "turkish": true,
+      "turkishTeam": "Bandırmaspor & Antalyaspor",
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 30,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": false,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 2,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "08b682fa824061f8",
+      "fingerprint": "08b682fa824061f8",
+      "analysisGeneratedAt": "2026-09-01T18:15:09.246Z",
+      "analysisUpdatedAt": "2026-09-01T23:41:55.501Z",
+      "generatedAt": "2026-09-01T23:41:55.501Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Bandırmaspor 0-1 Antalyaspor maç raporu: 1. Lig istatistikleri | FutbolRadar",
+        "description": "Bandırmaspor 0-1 Antalyaspor maç raporu, kırılma anları ve sonraki maç.",
+        "path": "mac-raporu/bandirmaspor-antalyaspor-2026-09-01.html",
+        "competition": "1. Lig"
+      },
+      "reportUrl": "./mac-raporu/bandirmaspor-antalyaspor-2026-09-01.html",
+      "digest": {
+        "headline": "Antalyaspor, Bandırmaspor'u 1-0 yendi",
+        "paragraph": "Antalyaspor, 17 Eylül Stadyumu'nda oynanan 1. Lig karşılaşmasında Bandırmaspor'u 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "result": {
+          "winner": "Antalyaspor",
+          "loser": "Bandırmaspor",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Antalyaspor, Bandırmaspor'u 0-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Antalyaspor sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
