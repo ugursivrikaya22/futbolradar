@@ -144,6 +144,7 @@ assert.match(workflow, /SCHEDULE.*"0 2 \* \* \*"/s);
 
 const orchestrator = fs.readFileSync(path.join(root, "scripts", "run-scheduled-update.mjs"), "utf8");
 assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\.mjs"/);
+assert.match(orchestrator, /nodeStep\("render-column-pages", "generate-column-pages\.mjs"/);
 const duplicateGuard = orchestrator.match(/if \(duplicate && !args\.force\) \{([\s\S]*?)\r?\n  \}\r?\n\r?\n  const before/)?.[1];
 assert.ok(duplicateGuard, "duplicate guard block must remain detectable");
 assert.doesNotMatch(duplicateGuard, /writeStatus\(/, "fallback no-op must not replace the published last-success status");
