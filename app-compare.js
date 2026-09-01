@@ -2115,10 +2115,19 @@
     return hasTurkishClubSuffix(normalized);
   }
 
+  /**
+   * Lig adı ipucunu KELİME SINIRIYLA arar — services/turkishTeams.js eşi.
+   *
+   * Düz alt dize araması yetmiyor: Sırbistan'ın "Super Liga"sı "super lig"
+   * ipucunu İÇERİYOR ve FK Partizan - OFK Beograd ana sayfada "Canlı Türk
+   * takımı maçı" diye öne çıkıyordu.
+   */
   function isTurkishLeagueName(league) {
     var normalized = turkishKey(league);
-    return Boolean(normalized) && TURKISH_LEAGUE_HINTS.some(function (hint) {
-      return normalized.indexOf(hint) !== -1;
+    if (!normalized) return false;
+    return TURKISH_LEAGUE_HINTS.some(function (hint) {
+      var escaped = hint.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return new RegExp("(^|[^a-z0-9])" + escaped + "([^a-z0-9]|$)").test(normalized);
     });
   }
 
