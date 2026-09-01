@@ -297,6 +297,12 @@ function sourceSteps(type, providerReady) {
     nodeStep("standings", "sync-standings.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("injuries-suspensions", "sync-squad-statuses.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("football-news", "sync-football-news.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 4 * 60 * 1000 }),
+    // MAÇ SONU AÇIKLAMALARI. Maç sonrası saatlerde toplanır; saatlik koşuda
+    // olmalı ki açıklamalar yayımlandıkları gece şeride girsin, ertesi güne
+    // kalmasın. Zaman aşımı diğer beslemelerden uzun: aday başlıkların bir
+    // kısmı için makale gövdesi de çekiliyor (alıntının gerçekten söylendiği
+    // orada doğrulanıyor, bkz. services/quoteHarvest.js).
+    nodeStep("manager-quotes", "sync-manager-quotes.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("official-lineups", "refresh-official-lineups.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("provider-identities", "backfill-provider-ids.mjs", ["--apply"], { kind: "source", source: "api-football", timeoutMs: 5 * 60 * 1000, skip: noProvider }),
     nodeStep("match-results", "sync-match-results.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider }),
