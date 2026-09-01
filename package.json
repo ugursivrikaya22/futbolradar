@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "postbuild": "node scripts/generate-evergreen-seo-pages.mjs && node scripts/inject-asset-version.mjs",
+    "postbuild": "node scripts/generate-evergreen-seo-pages.mjs && node scripts/generate-league-standings-pages.mjs && node scripts/generate-en-league-standings-pages.mjs && node scripts/inject-asset-version.mjs",
     "generate:evergreen-seo": "node scripts/generate-evergreen-seo-pages.mjs",
+    "generate:league-standings-pages": "node scripts/generate-league-standings-pages.mjs",
+    "generate:en-league-standings-pages": "node scripts/generate-en-league-standings-pages.mjs",
     "test:seo-foundation": "node scripts/test-seo-foundation.mjs",
     "posttest": "node scripts/test-seo-foundation.mjs",
     "test:scheduled-updates": "node scripts/test-scheduled-updates.mjs",
