@@ -1,18 +1,38 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-01T08:29:09.343Z",
+  "updatedAt": "2026-09-01T14:03:43.454Z",
   "items": [
     {
-      "id": "auto-news-4065fa59e6bc02678cf1",
+      "id": "auto-news-9d915d7e59ff3d63d44d",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Atletlerimizden Akdeniz Oyunları’nda gümüş madalya",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-31T20:02:44.000Z",
+      "text": "Deniz Daniel Gül İstanbul'da!",
+      "team": "Galatasaray",
+      "timestamp": "2026-09-01T13:05:00.000Z",
       "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxObGRKYURoQ3B3bWw4R240N2hkbU5hOXdOZ1FYTlh6VnBkT2k1Y09iUHIwS1VOOEJ6WmFkM2tqZ2M2V2h3YjhYeWotRmJOUHRvNDBvMVlCOGNtVkk0MEZreFRqV3l0SUFGeTRmOVplQlJwNFZyTGcycHVJeW91b3ZuT2RmZDlGLVZ4WWxCVFBVUW0zOEk0a3UtX0hDRUM5Ml9V?oc=5",
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE4xRF91RmsxVURhVF9lUHFQVTRvTFQ4OUZuZkFYYWRYZW1hYVU2QXVUZE5YRDJmZ2EyZGpGbFExVkxjNHdIVnkxR25mZGhIWjhIMThpWjlqSlV4aGlCWFF4d1BESXNZNGNpTUVIdEpLWmhpUEt4SGZMZVF3Mk9pQ1E?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-9f0d3d0d0720b4922dfe",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Geçmiş olsun Jayden Oosterwolde",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-01T12:58:30.000Z",
+      "source": {
+        "name": "fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQc3lqNnVGaUtlbElLYXNySkxFdXZ5YkZRT2tMNXFEMnhOQ0xtTzZObUNHTEpFb2h5ZVpSOEhoM3JWa1hqb1lNaDlRbHpGWkd3M2V0b1h1RmEyaENMeWFaZE9MMGF4WUdudnc3cTZjNGdwSmhGSC0tVjd1dDdkSDZpbEVpbzVmQXhI?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
@@ -23,22 +43,64 @@
       }
     },
     {
-      "id": "auto-news-482d403c8518cd02f3cd",
+      "id": "auto-news-652a75a4180720cd7fa4",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Kamuoyuna Duyuru",
+      "text": "İmza Töreni Bilgilendirme | NESİNE ile Sponsorluk İş Birliğimize İmza Atıyoruz",
       "team": "Fenerbahçe",
-      "timestamp": "2026-08-31T19:47:36.000Z",
+      "timestamp": "2026-09-01T12:42:42.000Z",
       "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE9mVGtUNkt0YXlsNXRSTDRrTHU4WS1iMW9sSmFSN3gzeWVjTW1Qci1rOEtsdGxOQ2VlenlOLXp5ZHVuYUVOVDdjb3kyMVBBWFNuNkw3NW53amcxRnJJNTJqeXFrOUZPcXNxX1QwMFJCY09OSlh3Sk94MA?oc=5",
+        "name": "fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxOeHV5SjdNUnNUTkZxekRfV2tvLXlQREZXRFZIM2w0N04ycUM1ZG9rMW5yWmc2V0xhU1dYQnZmbUtUOGl6X3lxM1ZjTDdabTBvbWNJd0ZNUlBnNTNRYkhqdWJWT3ozbGNJTm1PcG5PNzNqNHE2bk4yNGRCUERvOFBtYWhEM0RrbE8zRzdNTjk4U1RncFpfeGoyOU02TmNjeWJrTGJSaDh3Z09aODZvWmlZN29lYmhFdTlwSFoyTWxMaTZhY0h3?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-08-31T09:36:11.000Z"
+      }
+    },
+    {
+      "id": "auto-news-23660fc30288529557bd",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "transfer",
+      "text": "Cabir Holding ile sponsorluk anlaşması imzalandı",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-01T10:01:43.000Z",
+      "source": {
+        "name": "fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxONVMzWWJhNHQwZm4zY0kyRGNUQjhVZDhLLVA1V3RWMG9XTDVjd2tIaXNhQUxlNW1vUVhQcUJsbFlDZ0czUFpFcW1rQXVsb2JlODFQS3U5SS1OVGwwWWVwQk5ySXpiRFVSX0dMbEhrUFlLcERnenQ0OG8wOXBuVGZySm9UdEZoSkdIVmVwLWZRcVc5eVdlenJqMGZ1UTZscUU?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-e982e4cd5b309f9d49e2",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "FUTBOL",
+      "team": "Galatasaray",
+      "timestamp": "2026-09-01T08:50:03.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE5qVlpIczFfMWc4NllwZjdxc3JTQkk0V2tkTGFVVVFRUUxmYmVjbzA1TjYwUHpWS2xOdEVwdHFIWnRVZmE5b0U0LVR6cVVYSVYtSEdheGZxN2dqNnVnUXZ5Ykk3cjZweEVTdDF2c25MTkprZXY4aVE?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
         "status": "OFFICIAL"
       }
     },
@@ -165,46 +227,6 @@
       }
     },
     {
-      "id": "auto-news-25280164aaeac2d1d5b6",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Teknik Direktörümüz Okan Buruk: \"En önemli şey birlik olmamız\"",
-      "team": "Galatasaray",
-      "timestamp": "2026-08-29T21:21:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPMkM3RTY3c0gwRmlqa0NTak9Tbm9xeGxvZmJHWXhFdDhfSUF0TFVtTTlubWRkeXBvRjJNN29BVW10eFlVUmtpRTRfbm9HLVNNak5oNjMwdXQ4SjZwU0JPZkthNEhyLU5zaWpWQjBPVXVPYklRZC1VTzNiT05xdExzdVlZNWE5c2Y0UHZKTWc2YnlWeHdMLWg2RzRxRzJyZWl3RWZrakozWVhndw?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-ce54c36e3a43c9fbdf4b",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Galatasaray 3-2 Göztepe",
-      "team": "Galatasaray",
-      "timestamp": "2026-08-29T20:39:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9TcXNLNWxrdXdtb0hxemVpblZPYWlEWFM1VEhkNzh3dnBNWkFyeXNXcDQ2QVZ5VFo2VkxuVEd6bzNURy11UFNWOUlSb2Vlb0xoVTJ0ZmtwbjNEN3ZyZktHUTFRdUZ3WlBpd3JBMkxvaU9VYWgwRUx6WnF3?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-13902c10af074f5fed7d",
       "category": "official",
       "confidence": "confirmed",
@@ -241,46 +263,6 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-3bafa8d0109a386630ad",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Çorum FK Maçı Hazırlıkları Başladı - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-08-29T11:57:27.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5qUTRWcjRFZXM0TjhEcUJTQTU1dnBZa0hBaFduazAtT2hZSWxUb2x4ZEg3ZGN4QVVjUEppcmdKc0pUc09hN0syR2ZudnFGcDFSRmVqTGZMTE5lUUU?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-55a2fe59a0d9b77b39f8",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "transfer",
-      "text": "Kojo Oppong’dan 4 yıllık imza",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-08-29T09:58:18.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxNRjU1akxyUG5tTV95WTJmaTdmbHFoZ01SMEwxcDgzUklBR2ZWUUt0a2stVDFWMjBBdHlLbzJOd2xzdXFmWW41YnhrWVFLLTFnV01NUEdwWkRWWTktaU5YNE9PV0RQaFBCb215aXBHeTdnN0k1aC1QQUQxQlMtdGNCT3c1clU4UQ?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
         "status": "OFFICIAL"
       }
     },
