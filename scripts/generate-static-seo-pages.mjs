@@ -47,6 +47,7 @@ const DAILY_PAGES = new Set([
   "index.html",
   "mac-merkezi.html",
   "haftanin-maclari.html",
+  "bugunun-maclari-hangi-kanalda.html",
   "bugunku-mac-tahminleri.html",
   "gunun-radar-bulteni.html",
   "super-lig-fikstur.html",
@@ -554,6 +555,7 @@ function sitemapXml(files) {
   const core = [
     "index.html",
     "bugunun-maclari.html",
+    "bugunun-maclari-hangi-kanalda.html",
     "mac-sonuclari.html",
     "iddaa-sonuclari.html",
     "bahis-sonuclari.html",

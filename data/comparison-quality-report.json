@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-09-02T03:54:28.333Z",
+  "generatedAt": "2026-09-02T07:06:23.725Z",
   "summary": {
-    "totalPlayers": 735,
+    "totalPlayers": 758,
     "totalTeams": 18,
     "totalTransfers": 46,
-    "duplicatePlayers": 93,
+    "duplicatePlayers": 96,
     "outdatedTeams": 18,
     "staleTransfers": 46,
-    "abnormalValues": 24,
-    "totalIssues": 181
+    "abnormalValues": 32,
+    "totalIssues": 192
   },
   "issues": [
     {
@@ -1500,13 +1500,61 @@
       }
     },
     {
+      "category": "duplicate_player",
+      "severity": "warning",
+      "id": "oppong|k|fenerbahce",
+      "message": "K. Peprah Oppong (Fenerbahçe): 2 ayrı kayıt aynı oyuncuya işaret ediyor — k-peprah-oppong-fenerbahce, kojo-peprah-oppong. Kanonik kayıt: k-peprah-oppong-fenerbahce.",
+      "detail": {
+        "key": "oppong|k|fenerbahce",
+        "name": "K. Peprah Oppong",
+        "team": "Fenerbahçe",
+        "canonicalId": "k-peprah-oppong-fenerbahce",
+        "memberIds": [
+          "k-peprah-oppong-fenerbahce",
+          "kojo-peprah-oppong"
+        ]
+      }
+    },
+    {
+      "category": "duplicate_player",
+      "severity": "warning",
+      "id": "miretti|f|besiktas",
+      "message": "F. Miretti (Beşiktaş): 2 ayrı kayıt aynı oyuncuya işaret ediyor — f-miretti-besiktas, fabio-miretti. Kanonik kayıt: f-miretti-besiktas.",
+      "detail": {
+        "key": "miretti|f|besiktas",
+        "name": "F. Miretti",
+        "team": "Beşiktaş",
+        "canonicalId": "f-miretti-besiktas",
+        "memberIds": [
+          "f-miretti-besiktas",
+          "fabio-miretti"
+        ]
+      }
+    },
+    {
+      "category": "duplicate_player",
+      "severity": "warning",
+      "id": "poku|e|besiktas",
+      "message": "E. Poku (Beşiktaş): 2 ayrı kayıt aynı oyuncuya işaret ediyor — e-poku-besiktas, ernest-poku. Kanonik kayıt: e-poku-besiktas.",
+      "detail": {
+        "key": "poku|e|besiktas",
+        "name": "E. Poku",
+        "team": "Beşiktaş",
+        "canonicalId": "e-poku-besiktas",
+        "memberIds": [
+          "e-poku-besiktas",
+          "ernest-poku"
+        ]
+      }
+    },
+    {
       "category": "outdated_team",
       "severity": "warning",
       "id": "galatasaray",
-      "message": "Galatasaray: takım kaydı 42 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Galatasaray: takım kaydı 46 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "galatasaray",
-        "ageMs": 152639483,
+        "ageMs": 164154875,
         "staleSince": "2026-09-01T09:30:28.850Z"
       }
     },
@@ -1514,10 +1562,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "fenerbahce",
-      "message": "Fenerbahçe: takım kaydı 29 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Fenerbahçe: takım kaydı 32 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "fenerbahce",
-        "ageMs": 105223747,
+        "ageMs": 116739139,
         "staleSince": "2026-09-01T22:40:44.586Z"
       }
     },
@@ -1525,10 +1573,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "besiktas",
-      "message": "Beşiktaş: takım kaydı 29 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Beşiktaş: takım kaydı 32 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "besiktas",
-        "ageMs": 105223747,
+        "ageMs": 116739139,
         "staleSince": "2026-09-01T22:40:44.586Z"
       }
     },
@@ -1536,10 +1584,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "trabzonspor",
-      "message": "Trabzonspor: takım kaydı 29 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Trabzonspor: takım kaydı 32 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "trabzonspor",
-        "ageMs": 105223747,
+        "ageMs": 116739139,
         "staleSince": "2026-09-01T22:40:44.586Z"
       }
     },
@@ -1547,10 +1595,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "samsunspor",
-      "message": "Samsunspor: takım kaydı 29 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Samsunspor: takım kaydı 32 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "samsunspor",
-        "ageMs": 105223747,
+        "ageMs": 116739139,
         "staleSince": "2026-09-01T22:40:44.586Z"
       }
     },
@@ -1558,10 +1606,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "564",
-      "message": "Başakşehir: takım kaydı 29 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Başakşehir: takım kaydı 32 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "564",
-        "ageMs": 105223747,
+        "ageMs": 116739139,
         "staleSince": "2026-09-01T22:40:44.586Z"
       }
     },
@@ -1569,10 +1617,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "607",
-      "message": "Konyaspor: takım kaydı 42 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Konyaspor: takım kaydı 46 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "607",
-        "ageMs": 152639483,
+        "ageMs": 164154875,
         "staleSince": "2026-09-01T09:30:28.850Z"
       }
     },
@@ -1580,10 +1628,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "994",
-      "message": "Göztepe: takım kaydı 29 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Göztepe: takım kaydı 32 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "994",
-        "ageMs": 105223747,
+        "ageMs": 116739139,
         "staleSince": "2026-09-01T22:40:44.586Z"
       }
     },
@@ -1591,10 +1639,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "996",
-      "message": "Alanyaspor: takım kaydı 29 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Alanyaspor: takım kaydı 32 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "996",
-        "ageMs": 105223747,
+        "ageMs": 116739139,
         "staleSince": "2026-09-01T22:40:44.586Z"
       }
     },
@@ -1602,10 +1650,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "997",
-      "message": "Gençlerbirliği S.K.: takım kaydı 42 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Gençlerbirliği S.K.: takım kaydı 46 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "997",
-        "ageMs": 152639483,
+        "ageMs": 164154875,
         "staleSince": "2026-09-01T09:30:28.850Z"
       }
     },
@@ -1613,10 +1661,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "1004",
-      "message": "Kasımpaşa: takım kaydı 29 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Kasımpaşa: takım kaydı 32 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "1004",
-        "ageMs": 105223747,
+        "ageMs": 116739139,
         "staleSince": "2026-09-01T22:40:44.586Z"
       }
     },
@@ -1624,10 +1672,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "1007",
-      "message": "Rizespor: takım kaydı 29 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Rizespor: takım kaydı 32 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "1007",
-        "ageMs": 105223747,
+        "ageMs": 116739139,
         "staleSince": "2026-09-01T22:40:44.586Z"
       }
     },
@@ -1635,10 +1683,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "1009",
-      "message": "Erzurumspor FK: takım kaydı 42 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Erzurumspor FK: takım kaydı 46 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "1009",
-        "ageMs": 152639483,
+        "ageMs": 164154875,
         "staleSince": "2026-09-01T09:30:28.850Z"
       }
     },
@@ -1646,10 +1694,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "3573",
-      "message": "Gaziantep FK: takım kaydı 29 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Gaziantep FK: takım kaydı 32 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "3573",
-        "ageMs": 105223747,
+        "ageMs": 116739139,
         "staleSince": "2026-09-01T22:40:44.586Z"
       }
     },
@@ -1657,10 +1705,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "3579",
-      "message": "Amed: takım kaydı 29 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Amed: takım kaydı 32 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "3579",
-        "ageMs": 105223747,
+        "ageMs": 116739139,
         "staleSince": "2026-09-01T22:40:44.586Z"
       }
     },
@@ -1668,10 +1716,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "3588",
-      "message": "Eyüpspor: takım kaydı 42 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Eyüpspor: takım kaydı 46 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "3588",
-        "ageMs": 152639483,
+        "ageMs": 164154875,
         "staleSince": "2026-09-01T09:30:28.850Z"
       }
     },
@@ -1679,10 +1727,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "6343",
-      "message": "Çorum FK: takım kaydı 29 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Çorum FK: takım kaydı 32 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "6343",
-        "ageMs": 105223747,
+        "ageMs": 116739139,
         "staleSince": "2026-09-01T22:40:44.586Z"
       }
     },
@@ -1690,10 +1738,10 @@
       "category": "outdated_team",
       "severity": "warning",
       "id": "7411",
-      "message": "Kocaelispor: takım kaydı 29 saattir güncellenmedi (24 saat eşiği aşıldı).",
+      "message": "Kocaelispor: takım kaydı 32 saattir güncellenmedi (24 saat eşiği aşıldı).",
       "detail": {
         "teamId": "7411",
-        "ageMs": 105223747,
+        "ageMs": 116739139,
         "staleSince": "2026-09-01T22:40:44.586Z"
       }
     },
@@ -1701,10 +1749,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "goktan-gurpuz-corum-2026",
-      "message": "Göktan Gürpüz: Trabzonspor → Çorum FK transferi 21 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Göktan Gürpüz: Trabzonspor → Çorum FK transferi 24 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "goktan-gurpuz-corum-2026",
-        "ageMs": 75268333,
+        "ageMs": 86783725,
         "staleSince": "2026-09-01T19:00:00.000Z"
       }
     },
@@ -1712,10 +1760,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "rafael-leao-galatasaray-2026",
-      "message": "Rafael Leão: AC Milan → Galatasaray transferi 21 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Rafael Leão: AC Milan → Galatasaray transferi 24 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "rafael-leao-galatasaray-2026",
-        "ageMs": 75268333,
+        "ageMs": 86783725,
         "staleSince": "2026-09-01T19:00:00.000Z"
       }
     },
@@ -1723,10 +1771,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "fabio-miretti-besiktas-2026",
-      "message": "Fabio Miretti: Juventus → Beşiktaş transferi 21 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Fabio Miretti: Juventus → Beşiktaş transferi 24 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "fabio-miretti-besiktas-2026",
-        "ageMs": 75268333,
+        "ageMs": 86783725,
         "staleSince": "2026-09-01T19:00:00.000Z"
       }
     },
@@ -1734,10 +1782,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "kojo-peprah-oppong-fenerbahce-2026",
-      "message": "Kojo Peprah Oppong: OGC Nice → Fenerbahçe transferi 21 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Kojo Peprah Oppong: OGC Nice → Fenerbahçe transferi 24 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "kojo-peprah-oppong-fenerbahce-2026",
-        "ageMs": 75268333,
+        "ageMs": 86783725,
         "staleSince": "2026-09-01T19:00:00.000Z"
       }
     },
@@ -1745,10 +1793,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "ernest-poku-besiktas-2026",
-      "message": "Ernest Poku: Bayer Leverkusen → Beşiktaş transferi 21 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Ernest Poku: Bayer Leverkusen → Beşiktaş transferi 24 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "ernest-poku-besiktas-2026",
-        "ageMs": 75268333,
+        "ageMs": 86783725,
         "staleSince": "2026-09-01T19:00:00.000Z"
       }
     },
@@ -1756,10 +1804,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "emre-demir-alanyaspor-2026",
-      "message": "Emre Demir: Fenerbahçe → Corendon Alanyaspor transferi 21 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Emre Demir: Fenerbahçe → Corendon Alanyaspor transferi 24 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "emre-demir-alanyaspor-2026",
-        "ageMs": 75268333,
+        "ageMs": 86783725,
         "staleSince": "2026-09-01T19:00:00.000Z"
       }
     },
@@ -1767,10 +1815,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "kevin-mouanga-kasimpasa-2026",
-      "message": "Kévin Mouanga: Lausanne-Sport → Kasımpaşa transferi 21 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Kévin Mouanga: Lausanne-Sport → Kasımpaşa transferi 24 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "kevin-mouanga-kasimpasa-2026",
-        "ageMs": 75268333,
+        "ageMs": 86783725,
         "staleSince": "2026-09-01T19:00:00.000Z"
       }
     },
@@ -1778,10 +1826,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "fabinho-trabzonspor-2026",
-      "message": "Fabinho: Serbest oyuncu → Trabzonspor transferi 21 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Fabinho: Serbest oyuncu → Trabzonspor transferi 24 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "fabinho-trabzonspor-2026",
-        "ageMs": 75268333,
+        "ageMs": 86783725,
         "staleSince": "2026-09-01T19:00:00.000Z"
       }
     },
@@ -1789,10 +1837,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "aleksey-batrakov-galatasaray-2026",
-      "message": "Aleksey Batrakov: Lokomotiv Moskova → Galatasaray transferi 21 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Aleksey Batrakov: Lokomotiv Moskova → Galatasaray transferi 24 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "aleksey-batrakov-galatasaray-2026",
-        "ageMs": 75268333,
+        "ageMs": 86783725,
         "staleSince": "2026-09-01T19:00:00.000Z"
       }
     },
@@ -1800,10 +1848,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "omar-fayed-frosinone-2026",
-      "message": "Omar Fayed: Fenerbahçe → Frosinone transferi 21 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Omar Fayed: Fenerbahçe → Frosinone transferi 24 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "omar-fayed-frosinone-2026",
-        "ageMs": 75268333,
+        "ageMs": 86783725,
         "staleSince": "2026-09-01T19:00:00.000Z"
       }
     },
@@ -1811,10 +1859,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "salih-ucan-genclerbirligi-2026",
-      "message": "Salih Uçan: Beşiktaş → Gençlerbirliği transferi 447 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Salih Uçan: Beşiktaş → Gençlerbirliği transferi 451 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "salih-ucan-genclerbirligi-2026",
-        "ageMs": 1610668333,
+        "ageMs": 1622183725,
         "staleSince": "2026-08-15T00:30:00.000Z"
       }
     },
@@ -1822,10 +1870,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "fred-fenerbahce-ayrilik-2026",
-      "message": "Fred: Fenerbahçe → Serbest oyuncu transferi 447 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Fred: Fenerbahçe → Serbest oyuncu transferi 451 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "fred-fenerbahce-ayrilik-2026",
-        "ageMs": 1610668333,
+        "ageMs": 1622183725,
         "staleSince": "2026-08-15T00:30:00.000Z"
       }
     },
@@ -1833,10 +1881,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "irfan-can-egribayat-genclerbirligi-2026",
-      "message": "İrfan Can Eğribayat: Fenerbahçe → Gençlerbirliği transferi 447 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "İrfan Can Eğribayat: Fenerbahçe → Gençlerbirliği transferi 451 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "irfan-can-egribayat-genclerbirligi-2026",
-        "ageMs": 1610668333,
+        "ageMs": 1622183725,
         "staleSince": "2026-08-15T00:30:00.000Z"
       }
     },
@@ -1844,10 +1892,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "dusan-vlahovic-besiktas-2026",
-      "message": "Dusan Vlahovic: Serbest oyuncu → Beşiktaş transferi 447 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Dusan Vlahovic: Serbest oyuncu → Beşiktaş transferi 451 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "dusan-vlahovic-besiktas-2026",
-        "ageMs": 1610668333,
+        "ageMs": 1622183725,
         "staleSince": "2026-08-15T00:30:00.000Z"
       }
     },
@@ -1855,10 +1903,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "umut-erdem-caykur-rizespor-2026",
-      "message": "Umut Erdem: Galatasaray → Çaykur Rizespor transferi 447 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Umut Erdem: Galatasaray → Çaykur Rizespor transferi 451 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "umut-erdem-caykur-rizespor-2026",
-        "ageMs": 1610668333,
+        "ageMs": 1622183725,
         "staleSince": "2026-08-15T00:30:00.000Z"
       }
     },
@@ -1866,10 +1914,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "romelu-lukaku-fenerbahce-2026",
-      "message": "Romelu Lukaku: Napoli → Fenerbahçe transferi 447 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Romelu Lukaku: Napoli → Fenerbahçe transferi 451 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "romelu-lukaku-fenerbahce-2026",
-        "ageMs": 1610668333,
+        "ageMs": 1622183725,
         "staleSince": "2026-08-15T00:30:00.000Z"
       }
     },
@@ -1877,10 +1925,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "markus-karlsbakk-corum-2026",
-      "message": "Markus Karlsbakk: Lillestrøm SK → Çorum FK transferi 571 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Markus Karlsbakk: Lillestrøm SK → Çorum FK transferi 574 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "markus-karlsbakk-corum-2026",
-        "ageMs": 2055268333,
+        "ageMs": 2066783725,
         "staleSince": "2026-08-09T21:00:00.000Z"
       }
     },
@@ -1888,10 +1936,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "muhammed-emin-bektas-kasimpasa-2026",
-      "message": "Muhammed Emin Bektaş: Bursa Yıldırım Spor → Kasımpaşa transferi 571 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Muhammed Emin Bektaş: Bursa Yıldırım Spor → Kasımpaşa transferi 574 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "muhammed-emin-bektas-kasimpasa-2026",
-        "ageMs": 2055268333,
+        "ageMs": 2066783725,
         "staleSince": "2026-08-09T21:00:00.000Z"
       }
     },
@@ -1899,10 +1947,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "baran-ali-gezek-alanyaspor-2026",
-      "message": "Baran Ali Gezek: Kayserispor → Alanyaspor transferi 571 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Baran Ali Gezek: Kayserispor → Alanyaspor transferi 574 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "baran-ali-gezek-alanyaspor-2026",
-        "ageMs": 2055268333,
+        "ageMs": 2066783725,
         "staleSince": "2026-08-09T21:00:00.000Z"
       }
     },
@@ -1910,10 +1958,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "sahin-dik-alanyaspor-2026",
-      "message": "Şahin Dik: Giresunspor → Alanyaspor transferi 571 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Şahin Dik: Giresunspor → Alanyaspor transferi 574 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "sahin-dik-alanyaspor-2026",
-        "ageMs": 2055268333,
+        "ageMs": 2066783725,
         "staleSince": "2026-08-09T21:00:00.000Z"
       }
     },
@@ -1921,10 +1969,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "serdar-dursun-gaziantep-2026",
-      "message": "Serdar Dursun: Kocaelispor → Gaziantep FK transferi 571 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Serdar Dursun: Kocaelispor → Gaziantep FK transferi 574 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "serdar-dursun-gaziantep-2026",
-        "ageMs": 2055268333,
+        "ageMs": 2066783725,
         "staleSince": "2026-08-09T21:00:00.000Z"
       }
     },
@@ -1932,10 +1980,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "jesus-ramirez-corum-2026",
-      "message": "Jesus Ramirez: Nacional (Madeira) → Çorum FK transferi 571 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Jesus Ramirez: Nacional (Madeira) → Çorum FK transferi 574 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "jesus-ramirez-corum-2026",
-        "ageMs": 2055268333,
+        "ageMs": 2066783725,
         "staleSince": "2026-08-09T21:00:00.000Z"
       }
     },
@@ -1943,10 +1991,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "igor-drapinski-samsunspor-2026",
-      "message": "Igor Drapinski: Piast Gliwice → Samsunspor transferi 571 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Igor Drapinski: Piast Gliwice → Samsunspor transferi 574 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "igor-drapinski-samsunspor-2026",
-        "ageMs": 2055268333,
+        "ageMs": 2066783725,
         "staleSince": "2026-08-09T21:00:00.000Z"
       }
     },
@@ -1954,10 +2002,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "mohamed-salah-trabzonspor-2026",
-      "message": "Mohamed Salah: Serbest oyuncu → Trabzonspor transferi 447 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Mohamed Salah: Serbest oyuncu → Trabzonspor transferi 451 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "mohamed-salah-trabzonspor-2026",
-        "ageMs": 1610668333,
+        "ageMs": 1622183725,
         "staleSince": "2026-08-15T00:30:00.000Z"
       }
     },
@@ -1965,10 +2013,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "tayyip-talha-sanuc-rizespor-2026",
-      "message": "Tayyip Talha Sanuç: Beşiktaş → Çaykur Rizespor transferi 1003 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Tayyip Talha Sanuç: Beşiktaş → Çaykur Rizespor transferi 1006 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "tayyip-talha-sanuc-rizespor-2026",
-        "ageMs": 3610468333,
+        "ageMs": 3621983725,
         "staleSince": "2026-07-22T21:00:00.000Z"
       }
     },
@@ -1976,10 +2024,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "christ-oulai-fiorentina-2026",
-      "message": "Christ Oulai: Trabzonspor → Fiorentina transferi 931 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Christ Oulai: Trabzonspor → Fiorentina transferi 934 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "christ-oulai-fiorentina-2026",
-        "ageMs": 3351268333,
+        "ageMs": 3362783725,
         "staleSince": "2026-07-25T21:00:00.000Z"
       }
     },
@@ -1987,10 +2035,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "cenk-ozkacar-trabzonspor-2026",
-      "message": "Cenk Özkaçar: Valencia → Trabzonspor transferi 1070 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Cenk Özkaçar: Valencia → Trabzonspor transferi 1074 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "cenk-ozkacar-trabzonspor-2026",
-        "ageMs": 3853468333,
+        "ageMs": 3864983725,
         "staleSince": "2026-07-20T01:30:00.000Z"
       }
     },
@@ -1998,10 +2046,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "mauro-icardi-galatasaray-ayrilik-2026",
-      "message": "Mauro Icardi: Galatasaray → Serbest oyuncu transferi 1003 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Mauro Icardi: Galatasaray → Serbest oyuncu transferi 1006 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "mauro-icardi-galatasaray-ayrilik-2026",
-        "ageMs": 3610468333,
+        "ageMs": 3621983725,
         "staleSince": "2026-07-22T21:00:00.000Z"
       }
     },
@@ -2009,10 +2057,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "leandro-trossard-besiktas-2026",
-      "message": "Leandro Trossard: Arsenal → Beşiktaş transferi 1148 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Leandro Trossard: Arsenal → Beşiktaş transferi 1152 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "leandro-trossard-besiktas-2026",
-        "ageMs": 4134268333,
+        "ageMs": 4145783725,
         "staleSince": "2026-07-16T19:30:00.000Z"
       }
     },
@@ -2020,10 +2068,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "lesley-ugochukwu-galatasaray-2026",
-      "message": "Lesley Ugochukwu: Burnley → Galatasaray transferi 1003 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Lesley Ugochukwu: Burnley → Galatasaray transferi 1006 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "lesley-ugochukwu-galatasaray-2026",
-        "ageMs": 3610468333,
+        "ageMs": 3621983725,
         "staleSince": "2026-07-22T21:00:00.000Z"
       }
     },
@@ -2031,10 +2079,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "mason-greenwood-fenerbahce-2026",
-      "message": "Mason Greenwood: Olympique Marsilya → Fenerbahçe transferi 1070 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Mason Greenwood: Olympique Marsilya → Fenerbahçe transferi 1074 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "mason-greenwood-fenerbahce-2026",
-        "ageMs": 3853468333,
+        "ageMs": 3864983725,
         "staleSince": "2026-07-20T01:30:00.000Z"
       }
     },
@@ -2042,10 +2090,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "emin-bayram-basaksehir-2026",
-      "message": "Emin Bayram: KVC Westerlo → Başakşehir FK transferi 1070 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Emin Bayram: KVC Westerlo → Başakşehir FK transferi 1074 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "emin-bayram-basaksehir-2026",
-        "ageMs": 3853468333,
+        "ageMs": 3864983725,
         "staleSince": "2026-07-20T01:30:00.000Z"
       }
     },
@@ -2053,10 +2101,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "salih-ozcan-besiktas-2026",
-      "message": "Salih Özcan: Serbest oyuncu → Beşiktaş transferi 1148 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Salih Özcan: Serbest oyuncu → Beşiktaş transferi 1152 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "salih-ozcan-besiktas-2026",
-        "ageMs": 4134268333,
+        "ageMs": 4145783725,
         "staleSince": "2026-07-16T19:30:00.000Z"
       }
     },
@@ -2064,10 +2112,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "alexander-nubel-besiktas-2026",
-      "message": "Alexander Nübel: Bayern Münih → Beşiktaş transferi 1148 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Alexander Nübel: Bayern Münih → Beşiktaş transferi 1152 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "alexander-nubel-besiktas-2026",
-        "ageMs": 4134268333,
+        "ageMs": 4145783725,
         "staleSince": "2026-07-16T19:30:00.000Z"
       }
     },
@@ -2075,10 +2123,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "dogan-alemdar-besiktas-2026",
-      "message": "Doğan Alemdar: Başakşehir FK → Beşiktaş transferi 1148 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Doğan Alemdar: Başakşehir FK → Beşiktaş transferi 1152 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "dogan-alemdar-besiktas-2026",
-        "ageMs": 4134268333,
+        "ageMs": 4145783725,
         "staleSince": "2026-07-16T19:30:00.000Z"
       }
     },
@@ -2086,10 +2134,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "nathan-ake-fenerbahce-2026",
-      "message": "Nathan Aké: Manchester City → Fenerbahçe transferi 1070 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Nathan Aké: Manchester City → Fenerbahçe transferi 1074 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "nathan-ake-fenerbahce-2026",
-        "ageMs": 3853468333,
+        "ageMs": 3864983725,
         "staleSince": "2026-07-20T01:30:00.000Z"
       }
     },
@@ -2097,10 +2145,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "andre-onana-trabzonspor-2026",
-      "message": "Andre Onana: Manchester United → Trabzonspor transferi 1148 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Andre Onana: Manchester United → Trabzonspor transferi 1152 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "andre-onana-trabzonspor-2026",
-        "ageMs": 4134268333,
+        "ageMs": 4145783725,
         "staleSince": "2026-07-16T19:30:00.000Z"
       }
     },
@@ -2108,10 +2156,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "kazeem-olaigbe-basel-2026",
-      "message": "Kazeem Olaigbe: Trabzonspor → Basel transferi 1070 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Kazeem Olaigbe: Trabzonspor → Basel transferi 1074 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "kazeem-olaigbe-basel-2026",
-        "ageMs": 3853468333,
+        "ageMs": 3864983725,
         "staleSince": "2026-07-20T01:30:00.000Z"
       }
     },
@@ -2119,10 +2167,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "samet-akaydin-trabzonspor-2026",
-      "message": "Samet Akaydın: Serbest oyuncu → Trabzonspor transferi 1070 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Samet Akaydın: Serbest oyuncu → Trabzonspor transferi 1074 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "samet-akaydin-trabzonspor-2026",
-        "ageMs": 3853468333,
+        "ageMs": 3864983725,
         "staleSince": "2026-07-20T01:30:00.000Z"
       }
     },
@@ -2130,10 +2178,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "amara-diouf-fenerbahce-2026",
-      "message": "Amara Diouf: Génération Foot → Fenerbahçe transferi 1148 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Amara Diouf: Génération Foot → Fenerbahçe transferi 1152 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "amara-diouf-fenerbahce-2026",
-        "ageMs": 4134268333,
+        "ageMs": 4145783725,
         "staleSince": "2026-07-16T19:30:00.000Z"
       }
     },
@@ -2141,10 +2189,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "edin-visca-basaksehir-2026",
-      "message": "Edin Vişça: Trabzonspor → Başakşehir FK transferi 1070 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Edin Vişça: Trabzonspor → Başakşehir FK transferi 1074 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "edin-visca-basaksehir-2026",
-        "ageMs": 3853468333,
+        "ageMs": 3864983725,
         "staleSince": "2026-07-20T01:30:00.000Z"
       }
     },
@@ -2152,10 +2200,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "vedat-muriqi-fenerbahce-2026",
-      "message": "Vedat Muriqi: Mallorca → Fenerbahçe transferi 1148 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Vedat Muriqi: Mallorca → Fenerbahçe transferi 1152 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "vedat-muriqi-fenerbahce-2026",
-        "ageMs": 4134268333,
+        "ageMs": 4145783725,
         "staleSince": "2026-07-16T19:30:00.000Z"
       }
     },
@@ -2163,10 +2211,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "ruslan-malinovskyi-trabzonspor-2026",
-      "message": "Ruslan Malinovskyi: Serbest oyuncu → Trabzonspor transferi 1070 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Ruslan Malinovskyi: Serbest oyuncu → Trabzonspor transferi 1074 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "ruslan-malinovskyi-trabzonspor-2026",
-        "ageMs": 3853468333,
+        "ageMs": 3864983725,
         "staleSince": "2026-07-20T01:30:00.000Z"
       }
     },
@@ -2174,10 +2222,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "ngolo-kante-fenerbahce-2026",
-      "message": "N'Golo Kanté: Al-Ittihad → Fenerbahçe transferi 1148 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "N'Golo Kanté: Al-Ittihad → Fenerbahçe transferi 1152 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "ngolo-kante-fenerbahce-2026",
-        "ageMs": 4134268333,
+        "ageMs": 4145783725,
         "staleSince": "2026-07-16T19:30:00.000Z"
       }
     },
@@ -2185,10 +2233,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "sebastian-szymanski-rennes-2026",
-      "message": "Sebastian Szymanski: Fenerbahçe → Rennes transferi 931 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Sebastian Szymanski: Fenerbahçe → Rennes transferi 934 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "sebastian-szymanski-rennes-2026",
-        "ageMs": 3351268333,
+        "ageMs": 3362783725,
         "staleSince": "2026-07-25T21:00:00.000Z"
       }
     },
@@ -2196,10 +2244,10 @@
       "category": "stale_transfer",
       "severity": "warning",
       "id": "gedson-fernandes-spartak-2025",
-      "message": "Gedson Fernandes: Beşiktaş → Spartak Moskova transferi 931 saattir doğrulanmadı (12 saat eşiği aşıldı).",
+      "message": "Gedson Fernandes: Beşiktaş → Spartak Moskova transferi 934 saattir doğrulanmadı (12 saat eşiği aşıldı).",
       "detail": {
         "transferId": "gedson-fernandes-spartak-2025",
-        "ageMs": 3351268333,
+        "ageMs": 3362783725,
         "staleSince": "2026-07-25T21:00:00.000Z"
       }
     },
@@ -2417,6 +2465,78 @@
       "message": "Markus Karlsbakk: yaş gerçek dışı görünüyor: 0.",
       "detail": {
         "playerId": "markus-karlsbakk"
+      }
+    },
+    {
+      "category": "abnormal_value",
+      "severity": "error",
+      "id": "fabinho-trabzonspor",
+      "message": "Fabinho: yaş gerçek dışı görünüyor: 0.",
+      "detail": {
+        "playerId": "fabinho-trabzonspor"
+      }
+    },
+    {
+      "category": "abnormal_value",
+      "severity": "error",
+      "id": "kevin-mouanga",
+      "message": "Kévin Mouanga: yaş gerçek dışı görünüyor: 0.",
+      "detail": {
+        "playerId": "kevin-mouanga"
+      }
+    },
+    {
+      "category": "abnormal_value",
+      "severity": "error",
+      "id": "emre-demir-alanyaspor",
+      "message": "Emre Demir: yaş gerçek dışı görünüyor: 0.",
+      "detail": {
+        "playerId": "emre-demir-alanyaspor"
+      }
+    },
+    {
+      "category": "abnormal_value",
+      "severity": "error",
+      "id": "ernest-poku",
+      "message": "Ernest Poku: yaş gerçek dışı görünüyor: 0.",
+      "detail": {
+        "playerId": "ernest-poku"
+      }
+    },
+    {
+      "category": "abnormal_value",
+      "severity": "error",
+      "id": "fabio-miretti",
+      "message": "Fabio Miretti: yaş gerçek dışı görünüyor: 0.",
+      "detail": {
+        "playerId": "fabio-miretti"
+      }
+    },
+    {
+      "category": "abnormal_value",
+      "severity": "error",
+      "id": "kojo-peprah-oppong",
+      "message": "Kojo Peprah Oppong: yaş gerçek dışı görünüyor: 0.",
+      "detail": {
+        "playerId": "kojo-peprah-oppong"
+      }
+    },
+    {
+      "category": "abnormal_value",
+      "severity": "error",
+      "id": "rafael-leao",
+      "message": "Rafael Leão: yaş gerçek dışı görünüyor: 0.",
+      "detail": {
+        "playerId": "rafael-leao"
+      }
+    },
+    {
+      "category": "abnormal_value",
+      "severity": "error",
+      "id": "goktan-gurpuz",
+      "message": "Göktan Gürpüz: yaş gerçek dışı görünüyor: 0.",
+      "detail": {
+        "playerId": "goktan-gurpuz"
       }
     }
   ]
