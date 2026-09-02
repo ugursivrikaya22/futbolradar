@@ -13849,6 +13849,64 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 }
 
 /* ----------------------------------------------------------------------------
+   "BUGÜNKÜ MAÇLAR HANGİ KANALDA" — yayın kanalı satırı ve saat etiketi.
+   `.fixture-card`in mevcut kartına eklenen tek yeni satır; başka hiçbir
+   sayfa bu sınıfları kullanmadığı için mevcut kart tasarımına dokunmaz.
+   -------------------------------------------------------------------------- */
+.fixture-card-time {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fixture-card-broadcast {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-top: 1px solid rgba(14, 26, 22, 0.069);
+  padding-top: 6px;
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+}
+
+.fixture-card-broadcast b {
+  color: var(--text);
+}
+
+.fixture-card-broadcast.is-unknown {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.fixture-card-broadcast-icon {
+  flex: 0 0 auto;
+}
+
+.fixture-card-live-minute {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-inline-start: 4px;
+}
+
+.broadcast-schedule-grid {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.broadcast-schedule-empty {
+  display: grid;
+  gap: 6px;
+  padding: var(--sp-4);
+  color: var(--text-soft);
+}
+
+.broadcast-schedule-empty span {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* ----------------------------------------------------------------------------
    MAÇ LİSTESİ PENCERESİ — "Daha Fazla Göster"
    Liste on iki kartta kesilir; gerisi DOM'da durur ama gizlidir. Silmek
    yerine gizlemek bilinçli: buton basıldığında yeniden çizim gerekmez ve
