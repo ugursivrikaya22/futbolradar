@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-02T20:48:00.688Z",
+  "updatedAt": "2026-09-02T23:09:08.240Z",
   "items": [
+    {
+      "id": "auto-news-833381471b1b4ee2e6b9",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Beşiktaşımıza Hoş Geldin Ümit Akdağ",
+      "team": "Beşiktaş",
+      "timestamp": "2026-09-02T21:54:29.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE4yRWlQZGpKQkdIcUVsS01ZdHc3ZHV0QVJMWmJtU1FkVmhMVTRTY1VzNmJsdUR3cWk4MDJfd0ZTOTd4X0c4YS14aDVEb0dsZ1NRT0paUmo4MEhJSEU?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-0d47d8e258645c428cba",
       "category": "official",
@@ -81,7 +101,9 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
-        "status": "OFFICIAL"
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-09-02T16:44:15.000Z"
       }
     },
     {
@@ -121,9 +143,7 @@
         "source": "rss",
         "feed": "besiktas",
         "priority": 3,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-08-30T21:25:23.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -341,8 +361,8 @@
         "feed": "uefa",
         "priority": 9,
         "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-01T18:29:34.000Z"
+        "mergedReports": 4,
+        "firstSeenAt": "2026-09-01T16:28:39.000Z"
       }
     },
     {
@@ -354,28 +374,8 @@
       "team": "Süper Lig",
       "timestamp": "2026-09-01T12:38:27.000Z",
       "source": {
-        "name": "TFF",
+        "name": "tff.org",
         "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBBeU9JT3N4cnFnay1vZ3FFOUdSLUVzVlJLVlBpV1pUQXhOSTh6LWNzU2Y1V1NnU0RlbmQybzFWV1JVbXNPbWhvUTVWTEdxbGNCX05QZHNUUnUySmFpY0xwT1Q2SEp4ZGs?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-c9d15b2923b864542f5b",
-      "category": "squad-update",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "U19 Kadın Millî Takımımızın Hazırlık Kampı Kadrosu Açıklandı",
-      "team": "Süper Lig",
-      "timestamp": "2026-09-01T11:36:10.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9fQ2RSdDlmLUIwb0FpZ3RjZ1BUR3g4Rk5OZjZvcTFES0xXWFJmd1BTNllNWXhScnZ3RmFuNy1DUnRRZXc0Ymc0TEZDaDM4TUl5dXpUXzliaHAxWVdOeEhmazVYbGFYTzA?oc=5",
         "publisher": "tff.org"
       },
       "automation": {
