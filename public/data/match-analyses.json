@@ -16391,7 +16391,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-04T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-02T13:27:03.969Z",
+    "generatedAt": "2026-09-02T17:46:11.952Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -18003,7 +18003,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-02T13:27:03.968Z",
+      "generatedAt": "2026-09-02T17:46:11.952Z",
       "asOf": "2026-09-04T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 83,
@@ -18065,7 +18065,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-05T14:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-02T13:27:04.114Z",
+    "generatedAt": "2026-09-02T17:46:12.078Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -18568,7 +18568,7 @@
               "note": "Suspended"
             }
           ],
-          "knownAvailabilityCoverage": 3,
+          "knownAvailabilityCoverage": 7,
           "rows": [
             {
               "playerId": "e-anapa-erzurumspor-fk",
@@ -18621,8 +18621,8 @@
             {
               "playerId": "o-ovacikli-erzurumspor-fk",
               "name": "O. Ovacıklı",
-              "status": "unknown",
-              "note": null
+              "status": "doubtful",
+              "note": "Injury"
             },
             {
               "playerId": "a-ulgen-erzurumspor-fk",
@@ -18874,17 +18874,6 @@
             "profileUrl": "./oyuncular/da-mata-konyaspor.html"
           },
           {
-            "id": "e-bardhi-konyaspor",
-            "name": "E. Bardhi",
-            "position": "Midfielder",
-            "slot": "MID",
-            "assignedGroup": "midfielder",
-            "outOfPosition": false,
-            "overallRating": 15,
-            "formRating": 18,
-            "profileUrl": "./oyuncular/e-bardhi-konyaspor.html"
-          },
-          {
             "id": "m-bj-rlo-konyaspor",
             "name": "M. Bjørlo",
             "position": "Midfielder",
@@ -18910,9 +18899,9 @@
             "id": "a-k-dagdevir-konyaspor",
             "name": "A. K. Dagdevir",
             "position": "Midfielder",
-            "slot": "WING",
-            "assignedGroup": "winger",
-            "outOfPosition": true,
+            "slot": "MID",
+            "assignedGroup": "midfielder",
+            "outOfPosition": false,
             "overallRating": 15,
             "formRating": 18,
             "profileUrl": "./oyuncular/a-k-dagdevir-konyaspor.html"
@@ -18929,6 +18918,17 @@
             "profileUrl": "./oyuncular/e-dogan-konyaspor.html"
           },
           {
+            "id": "diogo-goncalves-konyaspor",
+            "name": "Diogo Gonçalves",
+            "position": "Midfielder",
+            "slot": "WING",
+            "assignedGroup": "winger",
+            "outOfPosition": true,
+            "overallRating": 15,
+            "formRating": 18,
+            "profileUrl": "./oyuncular/diogo-goncalves-konyaspor.html"
+          },
+          {
             "id": "t-elgun-konyaspor",
             "name": "T. Elgun",
             "position": "Attacker",
@@ -18943,16 +18943,22 @@
         "availability": {
           "fixtureId": "erzurumspor-fk-konyaspor-2026-09-05",
           "totalKnownPlayers": 36,
-          "unavailableCount": 1,
+          "unavailableCount": 2,
           "unavailable": [
             {
               "playerId": "b-gungordu-konyaspor",
               "name": "B. Güngördü",
               "status": "injured",
               "note": "Injury"
+            },
+            {
+              "playerId": "e-bardhi-konyaspor",
+              "name": "E. Bardhi",
+              "status": "injured",
+              "note": "Red Card"
             }
           ],
-          "knownAvailabilityCoverage": 3,
+          "knownAvailabilityCoverage": 8,
           "rows": [
             {
               "playerId": "e-aydin-konyaspor",
@@ -19005,8 +19011,8 @@
             {
               "playerId": "e-bardhi-konyaspor",
               "name": "E. Bardhi",
-              "status": "unknown",
-              "note": null
+              "status": "injured",
+              "note": "Red Card"
             },
             {
               "playerId": "m-bj-rlo-konyaspor",
@@ -19059,8 +19065,8 @@
             {
               "playerId": "u-yazgili-konyaspor",
               "name": "U. Yazğılı",
-              "status": "unknown",
-              "note": null
+              "status": "doubtful",
+              "note": "Injury"
             },
             {
               "playerId": "y-andzouana-konyaspor",
@@ -19208,7 +19214,7 @@
             "B. Güngördü",
             "R. Baniya",
             "A. Demirbağ",
-            "Diogo Gonçalves",
+            "E. Bardhi",
             "M. İbrahimoğlu",
             "Jo Jin-Ho",
             "D. Türüç",
@@ -19263,7 +19269,7 @@
       },
       "availability": {
         "home": 85,
-        "away": 85
+        "away": 70
       },
       "confidence": 63,
       "advantages": [
@@ -19295,10 +19301,10 @@
         {
           "key": "availability",
           "label": "Kadro devamlılığı",
-          "advantage": "balanced"
+          "advantage": "home"
         }
       ],
-      "summary": "Ev sahibi mevcut verilerde Form alanlarında bir adım önde görünüyor."
+      "summary": "Ev sahibi mevcut verilerde Form ve Kadro devamlılığı alanlarında bir adım önde görünüyor."
     },
     "keyDuels": [
       {
@@ -19385,17 +19391,17 @@
           "profileUrl": "./oyuncular/s-akgun-erzurumspor-fk.html"
         },
         "awayPlayer": {
-          "id": "e-bardhi-konyaspor",
-          "name": "E. Bardhi",
+          "id": "m-bj-rlo-konyaspor",
+          "name": "M. Bjørlo",
           "position": "Midfielder",
           "overall": 15,
           "form": 18,
-          "profileUrl": "./oyuncular/e-bardhi-konyaspor.html"
+          "profileUrl": "./oyuncular/m-bj-rlo-konyaspor.html"
         },
         "advantage": "balanced",
         "advantageScore": 50,
         "confidence": 72,
-        "summary": "S. Akgün ve E. Bardhi arasındaki eşleşme mevcut verilerde dengeli görünüyor."
+        "summary": "S. Akgün ve M. Bjørlo arasındaki eşleşme mevcut verilerde dengeli görünüyor."
       },
       {
         "id": "goalkeepers",
@@ -19424,7 +19430,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-02T13:27:04.114Z",
+      "generatedAt": "2026-09-02T17:46:12.078Z",
       "asOf": "2026-09-05T14:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 70,
@@ -19486,7 +19492,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-05T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-02T13:27:04.224Z",
+    "generatedAt": "2026-09-02T17:46:12.189Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -21409,7 +21415,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-02T13:27:04.224Z",
+      "generatedAt": "2026-09-02T17:46:12.189Z",
       "asOf": "2026-09-05T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 87,
@@ -21471,7 +21477,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-06T14:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-02T13:27:04.307Z",
+    "generatedAt": "2026-09-02T17:46:12.266Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -22840,7 +22846,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-02T13:27:04.307Z",
+      "generatedAt": "2026-09-02T17:46:12.266Z",
       "asOf": "2026-09-06T14:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 66,
@@ -22902,7 +22908,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-06T14:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-02T13:27:04.403Z",
+    "generatedAt": "2026-09-02T17:46:12.350Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -23740,7 +23746,7 @@
     "keyDuels": [],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-02T13:27:04.403Z",
+      "generatedAt": "2026-09-02T17:46:12.349Z",
       "asOf": "2026-09-06T14:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 50,
@@ -23807,7 +23813,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-06T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-02T13:27:04.508Z",
+    "generatedAt": "2026-09-02T17:46:12.444Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -25374,7 +25380,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-02T13:27:04.508Z",
+      "generatedAt": "2026-09-02T17:46:12.444Z",
       "asOf": "2026-09-06T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 69,
@@ -25436,7 +25442,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-06T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-02T13:27:04.607Z",
+    "generatedAt": "2026-09-02T17:46:12.532Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -26620,7 +26626,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-02T13:27:04.607Z",
+      "generatedAt": "2026-09-02T17:46:12.532Z",
       "asOf": "2026-09-06T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 61,
@@ -26683,7 +26689,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-07T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-02T13:27:04.689Z",
+    "generatedAt": "2026-09-02T17:46:12.606Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -27636,7 +27642,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-02T13:27:04.688Z",
+      "generatedAt": "2026-09-02T17:46:12.605Z",
       "asOf": "2026-09-07T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 67,
@@ -27700,7 +27706,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-07T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-02T13:27:04.781Z",
+    "generatedAt": "2026-09-02T17:46:12.687Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -29068,7 +29074,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-02T13:27:04.780Z",
+      "generatedAt": "2026-09-02T17:46:12.687Z",
       "asOf": "2026-09-07T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 70,
