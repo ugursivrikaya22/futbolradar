@@ -1,7 +1,69 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-02T17:47:08.861Z",
+  "updatedAt": "2026-09-02T20:48:00.688Z",
   "items": [
+    {
+      "id": "auto-news-0d47d8e258645c428cba",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "2026 FIBA Kadınlar Süper Kupa finali 7 Ekim’de Mersin’de oynanacak",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-02T20:25:42.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxNYk5yd1g1eHFzakcxR2JzaDU2c2VXTEloSVIzMzNpOGxPNGlWaktPMndPckpWT1kyN1R6N20zSnRoRzZsMGhyaU1KY0JRVnhtZ0RfTHc4RGc0RXpRbnNTVGVvOWl3OXpRRzlNVEUzcF85YXhsU2NnamFlQ0toaFlfN2VBNDB0Nmt6c0JwNl93VXhjeXhoem5WWHYxeERQOUNGVEhPajJXWWFhblZiMkYtZkxDUDRsdG82QmVGSFpDX1BwbFk?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-610e4c2cefd7ba4acca0",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "El-Chadaille Bitshiabu sağlık kontrollerinden geçti",
+      "team": "Galatasaray",
+      "timestamp": "2026-09-02T19:01:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMivgFBVV95cUxQWnRsZzY5dzRCLWR5LThBRXdMVUN0cUY3VGFSZ0tCVnc5dXdOQjBhanNXVnlkQ3NKV3NkMDl6MnJCZlJIeWhlclQtRnlLNVhOd3p3bGdfT1lWNnV3SGhTaDJxMmdzSEhXQ3plTlNKTEstc2dHZ0c3a1NmeFBYenZ4SHNTYTFUbThiVFNPTk1jbC1GNkk4cmxVaDVLT0puekNldkx3ZEFoZ2IzeUFZUUxtRHdLR0VFYW83THZwd093?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL",
+        "mergedReports": 4,
+        "firstSeenAt": "2026-09-02T03:59:00.000Z"
+      }
+    },
+    {
+      "id": "auto-news-19334e496cf33916a4f2",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Akdeniz Oyunları’nda bir madalya da Özlem Becerek’ten geldi",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-02T18:45:30.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPdUNaaUN4R0wweWZVUnF2NzBWa3VLc0taOVJtSzVMdUd2ZkRoRFJZR3VUMG5KUjVuS3lxVFdGdDNSZVJ6ZG1sU1dXVVdaQkVyNnZFaVZaUi11VEtoTlc2djNTV05yTURxZFJOUG1qUld4VWpKMEdDVFF2cnBxdFoyT2hhcU9GMERCMHNlWWkwT2pMZnFrc1Qxb0lSRnh5RGJiN0NBVHN4X3VIWkc1?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-9132ecd6daf9febba720",
       "category": "official",
@@ -11,7 +73,7 @@
       "team": "Trabzonspor",
       "timestamp": "2026-09-02T16:44:15.000Z",
       "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "name": "trabzonspor.org.tr",
         "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxQRnQtU3JrZlViVkkxMjZnNmgyVndxS3lJaXJvSUpSX0tHX2lhanl1bUJpVTNCLVBhMVhIOTcyb1U4dl9vSUpta25BUEpkMURjc0s4LUR1dzB6eHZ2bTVPRnk4bHhMbU51N1BYaG5nUjdRN2MwajRiZ0paeWRxbVpsQzFHQmlKNENkZ2NaVU5tRUxyZGZGVXY4dURPenk?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
@@ -19,26 +81,6 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-481e72efaa016e714667",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Derbi öncesi stadımızın ses ve ışık sistemi güçlendiriliyor",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-02T14:25:23.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPQ0h4WG9uNWsyWVBDOVFzMDJablpnZExpYzdPcHIyM0ZMUDNKUUpucU1qLWFfQUVLd3pEdWRCcml3UDNmdGRodjNXSkRadXZ6d3JCT1J1b2d3dnpGSDJseDNVbnRUQnRYUzA0bHVRU2JZek43MGtHZllnb2U2OW1jRkhaS0x2SUJlT19MazlxeUU5NFhYcG81Qk9uOHZ2Zy1BU05JRjVJaTl6MmxG?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
         "status": "OFFICIAL"
       }
     },
@@ -107,28 +149,6 @@
       }
     },
     {
-      "id": "auto-news-9743b582cf2102388039",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "El-Chadaille Bitshiabu İstanbul'da!",
-      "team": "Galatasaray",
-      "timestamp": "2026-09-02T05:55:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxPR3NfMFg0Q2llTF9ndjNnX3g4WEdrbVhEZTFzMlVZcU1QdVA1WlFHLUw1UEgtaXhkZW5iTUZzX282Z3BCUnBrSXJIa0d0WDhvOWFILV8xRWpJOE5Lem1MaERKanJOQ0lzVXFOTzdlVjJYeGUyLXZyVVcta2wzRmZBVmVCdmlOR2c?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-02T03:59:00.000Z"
-      }
-    },
-    {
       "id": "auto-news-4dc3aa9d3f8043eaf7ef",
       "category": "official",
       "confidence": "confirmed",
@@ -177,7 +197,7 @@
       "team": "Trabzonspor",
       "timestamp": "2026-09-01T14:46:03.000Z",
       "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "name": "trabzonspor.org.tr",
         "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE9IVUpoWHdOZ29GdDJZd0NPQ3BvcmVMbUxuWWtOdWhrOTVHV0hXdi1Uc3c4bDA5UFpkd0Nmcm5aZXBqdWlRMWNfWmhIc2FJeGhCVnhvOGx3VUdlZzBUVjhBVFJ3WXFudUlqVzdXM21FZjJLdG92MlE?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
@@ -308,9 +328,9 @@
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "UEFA Champions League Debut Patch to be introduced for 2026/27 season | UEFA Champions League",
+      "text": "UEFA Champions League Debut Patch to be introduced for 2026/27 season",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-09-02T12:12:10.000Z",
+      "timestamp": "2026-09-02T13:04:06.000Z",
       "source": {
         "name": "UEFA.com",
         "url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxNZUx6WnA0QlBra1pLUDZ1UVFNNlJIc2RSMXcwSzRZbzRmbFozeEhOOEpacGVlRE4tVXA4U1Q5dEtCb0RNUzJucDM5MEZUM2MtNHROUUEyN1Bid1dFNHBLYVRxbWRwdWYzZHVSbEQwa2t1MWozQmNSWUhaOS1fQS00RVRjMEVRdV96VFREelo0b24zNWRTb2dvbVI0eVV0T0JXd1p6eHdIYUZyLV95NHFCMUt2UEJmM21ZX1FhZHRtZk10SnFVWjN6QzdrRGluVHNBcml5Sy1EeEhLUmM?oc=5",
@@ -322,7 +342,7 @@
         "priority": 9,
         "status": "OFFICIAL",
         "mergedReports": 2,
-        "firstSeenAt": "2026-09-01T19:14:57.000Z"
+        "firstSeenAt": "2026-09-01T18:29:34.000Z"
       }
     },
     {
