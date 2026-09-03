@@ -6,9 +6,17 @@ name: FutbolRadar Sporx News Discovery
 # çalıştırır. Ayrı bir iş akışı olmasının nedeni sıklık: ana güncelleme
 # (match-analysis.yml) saatlik çalışır, görev tanımı burada 15 dakikada bir
 # istiyor.
+#
+# Dakika :00/:15/:30/:45 DEĞİL, :07/:22/:37/:52 kullanılıyor. Bu repo bunu
+# zaten match-analysis.yml'de biliyor (bkz. docs/scheduled-updates.md):
+# GitHub'ın kendi belgeleri saat başının `schedule` kuyruğunun en yoğun
+# penceresi olduğunu söylüyor; bu iş akışı ilk yayınlandığında saat
+# dakikasına sabitlenmiş halde ~26 dakika (birden fazla tetikleme penceresi)
+# boyunca HİÇ çalışmadı — gözlemlenen gecikme saatler sürebiliyor. Ofset,
+# GitHub'ın belgelediği düzeltme.
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
     inputs:
       limit:
