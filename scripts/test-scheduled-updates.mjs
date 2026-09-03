@@ -151,6 +151,10 @@ assert.match(workflow, /SCHEDULE.*"7 2 \* \* \*"/s);
 
 const orchestrator = fs.readFileSync(path.join(root, "scripts", "run-scheduled-update.mjs"), "utf8");
 assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\.mjs"/);
+// EN core pages (live scores, standings, results, today's matches) must
+// render every hour alongside their TR equivalents, or EN can silently
+// drift up to 24h behind until the next full build.
+assert.match(orchestrator, /nodeStep\("render-en-pages", "generate-en-pages\.mjs"/);
 const duplicateGuard = orchestrator.match(/if \(duplicate && !args\.force\) \{([\s\S]*?)\r?\n  \}\r?\n\r?\n  const before/)?.[1];
 assert.ok(duplicateGuard, "duplicate guard block must remain detectable");
 assert.doesNotMatch(duplicateGuard, /writeStatus\(/, "fallback no-op must not replace the published last-success status");
