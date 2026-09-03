@@ -142,7 +142,7 @@ function defaultStatus() {
   return {
     schemaVersion: 1,
     timezone: ISTANBUL_TIME_ZONE,
-    schedule: { fullUtc: "0 2 * * *", hourlyUtc: "0 0-1,3-23 * * *", fullLocal: "05:00" },
+    schedule: { fullUtc: "7 2 * * *", hourlyUtc: "7 0-1,3-23 * * *", fullLocal: "~05:00" },
     updatedAt: null,
     lastUpdate: null,
     lastFull: null,
