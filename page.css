@@ -13629,6 +13629,15 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 .fixture-card {
   position: relative;
   display: grid;
+  /* SÜTUN TAVANI OLMADAN `overflow:hidden` YALANCI GÜVENDİ. Tek örtük
+     sütun, sarmayan bir alt öğenin (ör. üç butonluk hızlı bağlantı satırı)
+     min-content genişliğine göre kartın gerçek kutusundan onlarca piksel
+     daha geniş hesaplanıyordu; kart görünürde 238px'te kalırken içerik
+     265px'e göre diziliyor ve fazlalık (skor sütunu dahil) `overflow:hidden`
+     tarafından SESSİZCE kırpılıyordu — skor hiç basılmamış gibi kayboluyordu.
+     `minmax(0, 1fr)` sütunu kartın kendi kutusuna sabitler; taşan içerik artık
+     kendi kuralıyla (ellipsis/flex-shrink) kutunun İÇİNDE kırpılır. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
   overflow: hidden;
   border: 1px solid var(--glass-border);
