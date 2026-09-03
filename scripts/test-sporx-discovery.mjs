@@ -17,6 +17,7 @@ import { parseCandidates } from "./lib/sporxFeed.mjs";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
+const { validateTickerItem } = require("../services/newsTicker.js");
 const {
   classifyCandidate,
   buildArticle,
@@ -136,6 +137,50 @@ assert(corroboratedArticle.discovery.confidence === "confirmed", "sitenin kendi 
 if (corroboratedArticle.ticker) {
   assert(corroboratedArticle.ticker.category !== "official", "\"official\" ticker kategorisi Sporx kaynaklı kayıtlarda hiç kullanılmıyor");
 }
+
+// --- 5. Bant metni doğrulamadan geçiyor mu? (Copilot incelemesi) ----------
+// "squad"/"result"/"denial" gibi olay türlerinin KISA başlığı ("...kadro
+// gündemi") çekince belirteci taşımıyordu; ticker.text artık `lead`
+// cümlesini kullanıyor ve her `lead` en az bir çekince belirteci içeriyor.
+const squadCandidate = {
+  url: "https://www.sporx.com/besiktas-ilk-11-belli-oldu-SXHBQ9999999SXQ",
+  title: "Beşiktaş'ta ilk 11 belli oldu",
+  summary: "Teknik heyet kadroyu netleştirdi."
+};
+const squadClass = classifyCandidate(squadCandidate);
+assert(Boolean(squadClass) && squadClass.rank === PRIORITY.BESIKTAS, "kadro haberi Beşiktaş'a sınıflandı");
+const squadArticle = buildArticle({
+  candidate: { ...squadCandidate, publishedAt: now.toISOString() },
+  classification: squadClass,
+  transfers: [],
+  now
+});
+assert(Boolean(squadArticle.ticker), "Dört Büyükler haberi banda giriyor (isFeatured/includeInTicker)");
+if (squadArticle.ticker) {
+  const verdict = validateTickerItem({
+    id: squadArticle.id,
+    text: squadArticle.ticker.text,
+    category: squadArticle.ticker.category,
+    confidence: squadArticle.ticker.confidence,
+    timestamp: squadArticle.publishedAt,
+    source: { name: "FutbolRadar", url: squadArticle.url }
+  });
+  assert(verdict.valid, `bant öğesi services/newsTicker.js doğrulamasından geçiyor (hatalar: ${verdict.errors.join("; ")})`);
+}
+
+// --- 6. Deterministik slug (Copilot incelemesi) ---------------------------
+const runA = buildArticle({ candidate: { ...candidates[0], publishedAt: now.toISOString() }, classification: fbClass, transfers: [], now });
+const runB = buildArticle({ candidate: { ...candidates[0], publishedAt: now.toISOString() }, classification: fbClass, transfers: [], now: new Date(now.getTime() + 5000) });
+assert(runA.slug === runB.slug, `aynı Sporx adresi her koşuda aynı slug'ı üretiyor (${runA.slug} === ${runB.slug})`);
+
+// --- 7. En uzun kulüp adı eşleşmesi (Copilot incelemesi) -------------------
+const fatihKaragumrukCandidate = {
+  url: "https://www.sporx.com/fatih-karagumruk-yeni-transfer-SXHBQ8888888SXQ",
+  title: "Fatih Karagümrük'te yeni transfer iddiası",
+  summary: "Kulüp yeni bir isimle ilgileniyor."
+};
+const fatihKaragumrukClass = classifyCandidate(fatihKaragumrukCandidate);
+assert(Boolean(fatihKaragumrukClass) && fatihKaragumrukClass.team === "Fatih Karagümrük", `en uzun/en özel kulüp adı eşleşiyor (bulunan: ${fatihKaragumrukClass && fatihKaragumrukClass.team})`);
 
 // --- Türkçe ek üretimi -----------------------------------------------------
 assert(withLocative("Beşiktaş") === "Beşiktaş'ta", "Beşiktaş bulunma hâli doğru (ünsüz sertleşmesi)");

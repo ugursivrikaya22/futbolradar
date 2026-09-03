@@ -109,7 +109,12 @@ function classifyCandidate(candidate) {
     return { rank: PRIORITY.TRABZONSPOR, category: PRIORITY_LABELS[PRIORITY.TRABZONSPOR], team: "Trabzonspor" };
   }
 
-  const superLigClub = OTHER_SUPER_LIG_CLUBS.find((club) => containsWord(haystack, club));
+  // En uzun eşleşen ad tercih edilir: "Karagümrük" listede "Fatih
+  // Karagümrük"ten önce geldiği için `.find()` başlıkta "Fatih Karagümrük"
+  // geçse bile kısa adı döndürüyordu (bkz. Copilot incelemesi).
+  const superLigClub = OTHER_SUPER_LIG_CLUBS
+    .filter((club) => containsWord(haystack, club))
+    .sort((a, b) => b.length - a.length)[0];
   if (superLigClub || containsWord(haystack, "super lig")) {
     return { rank: PRIORITY.SUPER_LIG, category: PRIORITY_LABELS[PRIORITY.SUPER_LIG], team: superLigClub || "Süper Lig" };
   }
@@ -410,6 +415,20 @@ function jaccard(a, b) {
   return union === 0 ? 0 : shared / union;
 }
 
+/**
+ * Sabit (deterministik) kısa özet — FNV-1a 32 bit. Kriptografik değil,
+ * yalnızca aynı girdinin her koşuda aynı slug/id parçasını üretmesi için.
+ */
+function stableDigest(value) {
+  let hash = 0x811c9dc5;
+  const str = String(value || "");
+  for (let index = 0; index < str.length; index += 1) {
+    hash ^= str.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, "0");
+}
+
 function slugify(value) {
   return String(value || "")
     .normalize("NFD")
@@ -462,8 +481,13 @@ function buildArticle({ candidate, classification, transfers = [], now = new Dat
   const summary = lead;
 
   const publishedAt = text(candidate.publishedAt) || now.toISOString();
-  const idSource = `${team}-${eventType}-${playerName || rawTitle}-${candidate.url || ""}`;
-  const slug = slugify(`${team}-${playerName || eventType}-${candidate.id || Date.now()}`).slice(0, 90);
+  // Sporx adresinden TÜRETİLEN sabit bir kısa özet — aynı Sporx haberi için
+  // slug her koşuda AYNI olur. `Date.now()` kullanılsaydı aynı Sporx
+  // adresi bir sebeple iki kez işlense bile (ör. sporx-seen.json elle
+  // sıfırlanırsa) her seferinde farklı, çakışma riski taşıyan bir slug
+  // üretilirdi (bkz. Copilot incelemesi).
+  const urlDigest = stableDigest(text(candidate.url) || rawTitle);
+  const slug = slugify(`${team}-${playerName || eventType}-${urlDigest}`).slice(0, 90);
 
   const tags = [...new Set([team, sourceName, PRIORITY_LABELS[classification.rank], playerName].filter(Boolean))];
 
@@ -519,7 +543,13 @@ function buildArticle({ candidate, classification, transfers = [], now = new Dat
     article.ticker = {
       category: isTransferTopic && confidence !== "confirmed" ? "transfer-rumour" : "club-agenda",
       confidence,
-      text: title
+      // `title` DEĞİL `lead`: kesinleşmemiş güvende (`reported`/`rumour`)
+      // `services/newsTicker.js` → `validateTickerItem` metnin en az bir
+      // çekince belirteci taşımasını şart koşuyor ("göre", "aktarıldı"…).
+      // Her şablonun `lead` cümlesi bunu zaten taşıyor, kısa `title` taşımaz
+      // (ör. "…kadro gündemi") — bant bu yüzden kaydı sessizce reddediyordu
+      // (bkz. Copilot incelemesi).
+      text: lead
     };
   }
 
