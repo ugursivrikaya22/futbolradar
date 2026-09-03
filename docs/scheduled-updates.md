@@ -78,7 +78,19 @@ The 05:00 full job performs the keyless fixture refresh, live fixture/detail
 merge, standings and absence synchronization, news/ticker refresh, squads,
 canonical player merge, confirmed-transfer reconciliation, official lineups,
 results, match analyses, post-match reports, the full static build, validations
-and QA. Monday's full run also performs the deeper player/profile/photo pass.
+and QA. Monday's full run also performs the deeper player/profile/photo pass
+for incomplete/stale profiles.
+
+On the 1st of the calendar month (Europe/Istanbul date), the full job instead
+runs `monthly-full-player-sync`: every Süper Lig player with a provider ID is
+re-enriched from API-Football regardless of current profile completeness or
+staleness (`sync-turkish-player-profiles.mjs --stale-days=0`, no
+`--incomplete-profiles` filter), so fields the provider supplies (position,
+birth date, nationality, height, shirt number, photo, current club) stay
+correct even for players whose profile already looked "complete". The Monday
+`weekly-player-enrichment` step is skipped on that day since the monthly pass
+already covers it. Fields the provider never returns (market value, contract
+end date) are not part of this pass — see `docs/player-data.md`.
 
 The hourly job performs only live fixtures and details (including goals, cards,
 substitutions and lineups when supplied), standings, injuries/suspensions,

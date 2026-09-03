@@ -62,3 +62,12 @@ Gerçek player API bağlandığında adapter, normalize edilmiş alanları `serv
 `services/ratingService.js` form, hücum, yaratıcılık, savunma, disiplin, süreklilik, potansiyel, transfer değeri ve veri güveni skorlarını 0-100 aralığında üretir. Overall rating pozisyon grubuna göre ağırlıklandırılır; manuel/verified rating varsa otomatik provider verisiyle ezilmez.
 
 Oyuncu Radar ekranında transfer geçmişi, veri güncelleme ihtiyacı, piyasa değeri, yaş, uyruk, veri durumu ve rating durumu görünür kart alanlarıdır. `/api/players` tarafında `search`, `team`, `position`, `positionGroup`, `minRating`, `maxRating`, `minAge`, `maxAge`, `minMarketValue`, `maxMarketValue`, `hasTransfers`, `needsUpdate`, `sort` ve `limit` parametreleri desteklenir.
+
+## Periyodik Doluluk/Tazelik Yenilemesi
+
+`scripts/run-scheduled-update.mjs` içindeki `fullMaintenanceSteps` iki farklı ritimde `sync-turkish-player-profiles.mjs` çalıştırır (ikisi de `data/players.json`'daki `providerId`si olan kayıtları hedefler, API-Football'ın gerçekten döndürdüğü alanlarla sınırlıdır: `position`, `birthDate`, `nationality`, `height`, `number`, `photo`, `currentTeam`):
+
+- **Haftalık (her Pazartesi):** yalnızca `profileCompleteness(player) < 85` olan ("eksik") profiller, `--incomplete-profiles --stale-days=14`.
+- **Aylık (ayın 1'i):** filtre uygulanmadan (`--stale-days=0`, `--incomplete-profiles` YOK) provider kimliği olan **tüm** oyuncular yeniden çekilir — profili zaten "tam" görünen bir kayıt da dahil, çünkü sağlayıcı tarafında düzeltilmiş bir değer (ör. numara değişikliği, yanlış yazılmış uyruk) aksi halde hiç fark edilmezdi. Ayın 1'i pazartesiye denk gelirse haftalık adım atlanır; aylık koşu onu zaten kapsar.
+
+`services/playerProfileCompleteness.js` içindeki `PROFILE_FIELDS` listesi ölçülen alanları tanımlar. **Piyasa değeri (`marketValue`), sözleşme bitiş tarihi (`contractUntil`) ve boy-kilo dışındaki fiziksel ölçüler bu listede YOKTUR** çünkü API-Football bu alanları hiç döndürmez; bunları doldurmak ayrı bir sağlayıcı (ör. Transfermarkt) entegrasyonu gerektirir ve bugün yapılmamıştır. `outputs/player-profile-sync-report.json` her koşudan sonra hangi takımların/oyuncuların zenginleştirilebildiğini (`coverage`) raporlar.

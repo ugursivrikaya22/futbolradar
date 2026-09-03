@@ -315,6 +315,7 @@ function sourceSteps(type, providerReady) {
 
 function fullMaintenanceSteps(providerReady) {
   const monday = istanbulParts().weekday === "Mon";
+  const firstOfMonth = istanbulParts().date.endsWith("-01");
   const noProvider = providerReady ? false : "API-Football is unavailable; cached squads and players are retained.";
   return [
     // Statik lig metadata'sı (kimlik/logo/coverage) yalnızca günlük full
@@ -334,8 +335,21 @@ function fullMaintenanceSteps(providerReady) {
     nodeStep("international-opponents", "sync-international-opponents.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 6 * 60 * 1000, skip: noProvider }),
     nodeStep("canonical-players", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--apply", "--offline", "--skip-squad-refresh"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("confirmed-transfers", "sync-confirmed-transfers.mjs", ["--apply"], { kind: "transform", timeoutMs: 3 * 60 * 1000 }),
-    nodeStep("weekly-player-enrichment", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--incomplete-profiles", "--stale-days=14", "--request-budget=80", "--apply", "--skip-squad-refresh"], { kind: "source", source: "api-football", timeoutMs: 15 * 60 * 1000, skip: !monday ? "Deep player enrichment runs in the Monday full update only." : noProvider }),
-    nodeStep("weekly-photo-validation", "validate-player-photos.mjs", ["--apply", "--concurrency=3", "--stale-days=14"], { kind: "source", source: "player-photo-hosts", timeoutMs: 12 * 60 * 1000, skip: !monday ? "Photo refresh runs in the Monday full update only." : false })
+    // Ayın 1'i aynı zamanda pazartesiyse bu adım atlanır: aşağıdaki
+    // `monthly-full-player-sync` zaten TÜM oyuncuları (dolayısıyla eksik
+    // olanları da) kapsar; ikisini aynı koşuda çalıştırmak aynı isteği iki
+    // kez atıp günlük sağlayıcı kotasını gereksiz tüketirdi.
+    nodeStep("weekly-player-enrichment", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--incomplete-profiles", "--stale-days=14", "--request-budget=80", "--apply", "--skip-squad-refresh"], { kind: "source", source: "api-football", timeoutMs: 15 * 60 * 1000, skip: firstOfMonth ? "Superseded by monthly-full-player-sync on the 1st of the month." : !monday ? "Deep player enrichment runs in the Monday full update only." : noProvider }),
+    nodeStep("weekly-photo-validation", "validate-player-photos.mjs", ["--apply", "--concurrency=3", "--stale-days=14"], { kind: "source", source: "player-photo-hosts", timeoutMs: 12 * 60 * 1000, skip: !monday ? "Photo refresh runs in the Monday full update only." : false }),
+    // AYLIK TAM PROFİL YENİLEME. Haftalık adım yalnızca doluluk oranı %85'in
+    // altında kalan (`--incomplete-profiles`) kayıtları hedefler; zaten
+    // "tamam" sayılan bir profildeki boy/uyruk/foto/numara değişikliği
+    // (örn. sağlayıcı verisi düzeltildi, oyuncu numara değiştirdi) hiçbir
+    // zaman yeniden çekilmezdi. Ayın 1'inde `--incomplete-profiles` OLMADAN,
+    // `--stale-days=0` ile koşarak filtre uygulanmaz ve provider kimliği olan
+    // HER Süper Lig oyuncusu yeniden zenginleştirilir (bkz. selectedPlayer/
+    // shouldDeepEnrich, scripts/sync-turkish-player-profiles.mjs).
+    nodeStep("monthly-full-player-sync", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--stale-days=0", "--request-budget=120", "--apply", "--skip-squad-refresh"], { kind: "source", source: "api-football", timeoutMs: 20 * 60 * 1000, skip: !firstOfMonth ? "Full-roster player profile refresh runs on the 1st of the month only." : noProvider })
   ];
 }
 
