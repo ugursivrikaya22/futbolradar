@@ -4244,12 +4244,21 @@
       }
       // Kimlik ve editoryal alanlar korunur; sağlayıcı yalnızca canlı durumu
       // ve skoru ilerletir.
+      //
+      // SKOR YALNIZCA OKUNABİLİRSE DEVRALINIR. `liveMatch.score` dolu bir
+      // nesne olsa bile alanları `null` olabilir (ör. sağlayıcının canlı
+      // uç noktası bazı liglerde henüz gol alanını doldurmamışsa);
+      // `liveMatch.score || ...` bu nesneyi HER ZAMAN doğru sayar (boş
+      // nesne bile truthy'dir) ve zaten geçerli bir skoru sessizce `null`a
+      // düşürürdü — kart "Canlı veri doğrulanamadı"ya döner ve daha önce
+      // gösterilen skor kaybolurdu. Skor yalnızca yeni paket gerçekten
+      // okunabilirse ilerletilir; değilse elde olan korunur.
       base[existing] = Object.assign({}, base[existing], {
         status: liveMatch.status || base[existing].status,
         providerStatus: liveMatch.providerStatus || base[existing].providerStatus,
         minute: liveMatch.minute || base[existing].minute,
         elapsed: liveMatch.elapsed || base[existing].elapsed,
-        score: liveMatch.score || base[existing].score,
+        score: hasReadableScore(liveMatch) ? liveMatch.score : base[existing].score,
         // Kart ve penaltı rozetleri olay akışından okunur. Sağlayıcı canlı
         // uç noktada olay vermiyorsa mevcut (editoryal) kayıt korunur —
         // boş bir dizi doğrulanmış olayları silmemeli.
