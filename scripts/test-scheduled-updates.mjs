@@ -136,7 +136,10 @@ assert.match(workflow, /cron: "7 2 \* \* \*"/);
 assert.match(workflow, /cron: "7 0-1,3-23 \* \* \*"/);
 // Tam koşu ile saatlik koşu ÇAKIŞMAZ: saatlik ifade 02:00'ı dışarıda
 // bırakıyor. Aksi hâlde iki iş aynı dosyalara yazmak için sıraya girerdi.
-assert.doesNotMatch(workflow, /cron: "7 \* \* \* \*"/);
+// Yalnızca dakika 7 değil, HERHANGİ bir dakikada saatte-bir joker de
+// yasak: aksi hâlde biri ileride "7"yi de unutup `0 * * * *` (veya başka
+// bir dakika) eklerse aynı çakışma sessizce geri döner.
+assert.doesNotMatch(workflow, /cron: "\d+ \* \* \* \*"/);
 // Beş dakikada bir koşu hiçbir koşulda kabul edilmiyor: sağlayıcı kotası ve
 // Actions dakikası bu sıklığı kaldırmıyor.
 assert.doesNotMatch(workflow, /\*\/5/);
