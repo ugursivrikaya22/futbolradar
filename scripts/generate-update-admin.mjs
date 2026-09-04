@@ -20,7 +20,7 @@ const html = `<!doctype html>
 <main class="wrap" id="data-update-monitor">
   <div class="head"><div><h1>Otomatik Güncelleme İzleme</h1><p class="muted">Europe/Istanbul · tam güncelleme 05:00 · saatlik güncelleme diğer saat başları · <a href="./canli-veri-testi.html" style="color:inherit">Canlı veri gecikme testi →</a></p></div><div id="updated" class="muted">Yükleniyor…</div></div>
   <!-- CRON SESSİZCE DURABİLİR: koşu GitHub Actions'ta hiç başlamazsa (kota/faturalama)
-       depoya hiçbir şey yazılmaz, updated-status.json son başarılı yazımda donar ve
+       depoya hiçbir şey yazılmaz, update-status.json son başarılı yazımda donar ve
        aşağıdaki kart/tablo yeşil görünmeye devam eder. Bu bant, en son kayıtlı koşunun
        YAŞINI bekleneni aşınca bağımsız olarak kırmızıya çevirir; veri yazılmasa da tetiklenir. -->
   <div id="freshness-banner" class="freshness-banner"></div>
@@ -50,7 +50,7 @@ const html = `<!doctype html>
   function ageMs(record){
     var stamp = record && (record.finishedAt || record.startedAt);
     var parsed = stamp ? Date.parse(stamp) : NaN;
-    return Number.isFinite(parsed) ? Date.now() - parsed : null;
+    return Number.isFinite(parsed) ? Math.max(0, Date.now() - parsed) : null;
   }
   function fmtAge(ms){
     if (ms === null) return "bilinmiyor";

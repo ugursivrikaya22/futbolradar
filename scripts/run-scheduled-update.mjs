@@ -416,9 +416,9 @@ function hourlyBuildSteps(diff) {
   return steps;
 }
 
-function githubRunUrl() {
-  if (!process.env.GITHUB_SERVER_URL || !process.env.GITHUB_REPOSITORY || !process.env.GITHUB_RUN_ID) return null;
-  return `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+function githubRunUrl(env = process.env) {
+  if (!env.GITHUB_SERVER_URL || !env.GITHUB_REPOSITORY || !env.GITHUB_RUN_ID) return null;
+  return `${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}`;
 }
 
 function appendGithubSummary(record) {
@@ -607,7 +607,7 @@ function buildCrashRecord(error, options = {}) {
     sourceControl: {
       repository: env.GITHUB_REPOSITORY || null,
       commit: env.GITHUB_SHA || null,
-      runUrl: githubRunUrl()
+      runUrl: githubRunUrl(env)
     },
     sourcesChecked: [],
     counts: { matchesUpdated: 0, newsUpdated: 0, transfersUpdated: 0, teamsUpdated: 0, playersUpdated: 0, filesChanged: 0 },
