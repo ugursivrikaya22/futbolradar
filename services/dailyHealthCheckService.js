@@ -216,7 +216,7 @@ async function buildDailyHealthReport({ siteUrl, now, timeoutMs } = {}) {
   const matchCards = countStaleMatchAnalyses();
   const ticker = countStaleTickerItems(at);
 
-  const healthy = site.attempted ? site.ok : true;
+  const healthy = (site.attempted ? site.ok : true) && matchCards.ok && ticker.ok;
 
   return {
     generatedAt: at.toISOString(),

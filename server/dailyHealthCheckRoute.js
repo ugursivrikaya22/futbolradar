@@ -48,16 +48,13 @@ function suppliedSecret(req) {
 /** Sabit-zamanlı karşılaştırma — uzunluk farkı bile zamanlama ipucu vermesin diye eşit uzunluğa tamponlanır. */
 function secretsMatch(expected, provided) {
   if (!expected || !provided) return false;
-  const expectedBuffer = Buffer.from(expected);
-  const providedBuffer = Buffer.from(provided);
-  if (expectedBuffer.length !== providedBuffer.length) {
-    // Uzunluk uyuşmazlığında da timingSafeEqual'i (eşit boy şart koşan)
-    // rastgele bir tamponla çağırıyoruz ki erken dönüş zamanlamadan
-    // uzunluk bilgisi sızdırmasın.
-    crypto.timingSafeEqual(expectedBuffer, expectedBuffer);
-    return false;
-  }
-  return crypto.timingSafeEqual(expectedBuffer, providedBuffer);
+  // Sabit uzunluklu özet (SHA-256) üzerinden karşılaştırılır: girdi uzunluğu
+  // ne olursa olsun timingSafeEqual her zaman eşit boy tamponlar görür, bu
+  // yüzden uzunluk uyuşmazlığı için ayrı bir (ve sağlanan değeri hiç
+  // karşılaştırmaya katmayan) dal gerekmez.
+  const expectedHash = crypto.createHash("sha256").update(expected).digest();
+  const providedHash = crypto.createHash("sha256").update(provided).digest();
+  return crypto.timingSafeEqual(expectedHash, providedHash);
 }
 
 async function handleDailyHealthCheck(req, res) {
