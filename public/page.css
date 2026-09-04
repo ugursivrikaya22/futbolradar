@@ -13849,6 +13849,102 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 }
 
 /* ----------------------------------------------------------------------------
+   MAÇ KARTI İÇ LİNK SİSTEMİ — ana sayfanın "Bugünün Maçları" önizlemesinde
+   `.fixture-card-action`ın ALTINA eklenen üç küçük düğme (Analiz / Puan
+   Durumu / Takım Formu). Mevcut tek büyük eylem bağlantısı ve onun mobildeki
+   tam-kart dokunma alanı değişmeden kalır; bu satır yalnızca kartı biraz
+   uzatan, kendi yüksekliği sabit bir ek sıradır (düzen kayması yok, kart
+   ilk çizimde zaten bu haliyle basılır).
+   -------------------------------------------------------------------------- */
+.fixture-card-quicklinks {
+  display: flex;
+  gap: 6px;
+}
+
+.fixture-card-quicklinks a {
+  flex: 1 1 0;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  color: var(--text-soft);
+  font-size: 0.72rem;
+  font-weight: 650;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.fixture-card-quicklinks a:hover {
+  color: var(--cyan);
+  border-color: rgba(13, 148, 136, 0.28);
+}
+
+/* ----------------------------------------------------------------------------
+   "BUGÜNKÜ MAÇLAR HANGİ KANALDA" — yayın kanalı satırı ve saat etiketi.
+   `.fixture-card`in mevcut kartına eklenen tek yeni satır; başka hiçbir
+   sayfa bu sınıfları kullanmadığı için mevcut kart tasarımına dokunmaz.
+   -------------------------------------------------------------------------- */
+.fixture-card-time {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fixture-card-broadcast {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-top: 1px solid rgba(14, 26, 22, 0.069);
+  padding-top: 6px;
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+}
+
+.fixture-card-broadcast b {
+  color: var(--text);
+}
+
+.fixture-card-broadcast.is-unknown {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.fixture-card-broadcast-icon {
+  flex: 0 0 auto;
+}
+
+.fixture-card-live-minute {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-inline-start: 4px;
+}
+
+.broadcast-schedule-grid {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.broadcast-schedule-empty {
+  display: grid;
+  gap: 6px;
+  padding: var(--sp-4);
+  color: var(--text-soft);
+}
+
+.broadcast-schedule-empty span {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* ----------------------------------------------------------------------------
    MAÇ LİSTESİ PENCERESİ — "Daha Fazla Göster"
    Liste on iki kartta kesilir; gerisi DOM'da durur ama gizlidir. Silmek
    yerine gizlemek bilinçli: buton basıldığında yeniden çizim gerekmez ve
@@ -19931,6 +20027,24 @@ a.motm-week__card:focus-visible {
   /* Skor ve ad satırı sıkışmasın ama boşluk da yemesin. */
   .fixture-card-rows { gap: 4px; }
   .fixture-row-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* MAÇ KARTI İÇ LİNK SİSTEMİ — `.fixture-card-action` bu genişlikte
+     görünmez, kartın tamamını kaplayan tek bir bağlantıya dönüşüyor
+     (yukarıda). z-index verilmemiş o katmanın ÜSTÜNDE kalmazsa üç düğme de
+     görünmez kart bağlantısının altında kalır ve dokunulamaz olur; bu
+     yüzden kendi konumlanmış katmanına çıkarılıyor. Üç küçük düğme kartı
+     büyütmesin diye kompakt tutulur, yine de dokunma hedefi 28px'in altına
+     inmez. */
+  .fixture-card-quicklinks {
+    position: relative;
+    z-index: 1;
+  }
+
+  .fixture-card-quicklinks a {
+    min-height: 30px;
+    font-size: 0.68rem;
+    padding: 0 4px;
+  }
 }
 
 /* Rozet satırı boşsa hiç çizilmez: içi boş bir kutu, kart yüksekliğini
