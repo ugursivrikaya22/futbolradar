@@ -14,6 +14,7 @@ import {
   officialLineupAlertHtml
 } from "./lib/matchCards.mjs";
 import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
+import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -1130,8 +1131,9 @@ function trendTeamCards() {
  * Önceden bu fonksiyon veriye bakmadan HER ZAMAN "sezon başlamadı" boş
  * durumunu basıyordu — sezon başladıktan sonra bile statik HTML (JS'siz
  * ilk boyama, arama motoru önizlemesi) yanlış bilgi gösteriyordu, istemci
- * tarafı yalnızca `hydrate` sonrası düzeltiyordu. `staticHomeStandingRows()`
- * ile aynı kural: gerçek veri varsa gerçek satırlar, yoksa boş durum.
+ * tarafı yalnızca `hydrate` sonrası düzeltiyordu. Ana sayfa sekmeli
+ * widget'ı (`staticStandingsTabsSection()`) ile aynı kural: gerçek veri
+ * varsa gerçek satırlar, yoksa boş durum.
  */
 /**
  * Sezon gerçekten başladı mı — LİG SEVİYESİNDE karar verilir, takım
@@ -1165,8 +1167,13 @@ function standingsPreseason(compact) {
   return `<div class="standings-empty${compact ? " compact" : ""}" data-card="standings-preseason"><span class="card-kicker">Süper Lig · 2026/27</span><strong>2026/27 sezonu henüz başlamadı</strong><p>Süper Lig 14 Ağustos'ta başlayacak. İlk maçlar tamamlandığında puan tablosu otomatik güncellenecek.</p><a class="detail-link" href="./super-lig-fikstur.html">Sezon fikstürünü aç</a></div>`;
 }
 
+/** `fullStandingRowHtml` (tam puan durumu tablosu) için ortak "değer yoksa çizgi" kuralı. */
+function homeStandingDisplay(value) {
+  return value === undefined || value === null || value === "" ? "-" : value;
+}
+
 /**
- * ANA SAYFA PUAN DURUMU — İSTEMCİYLE BİREBİR AYNI İŞARETLEME.
+ * TAM PUAN DURUMU TABLOSU — İSTEMCİYLE BİREBİR AYNI İŞARETLEME.
  *
  * `app.js#renderHomeStandingRow` ile bilerek özdeş: JavaScript yüklenip
  * `/api/standings`den taze veri gelince satırlar yerinden oynamasın, yalnızca
@@ -1189,10 +1196,6 @@ function formatGoalDifference(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) return "-";
   return `${n > 0 ? "+" : ""}${n}`;
-}
-
-function homeStandingDisplay(value) {
-  return value === undefined || value === null || value === "" ? "-" : value;
 }
 
 function homeStandingLogoHtml(team) {
@@ -1221,19 +1224,16 @@ function homeStandingRowHtml(team, total) {
     "</div>";
 }
 
-const HOME_STANDINGS_LIMIT = 6;
-
-function staticHomeStandingRows() {
-  const rows = standingsSeasonRows();
-  if (!rows.length) {
-    return standingsPreseason(true);
-  }
-  const sorted = rows.slice().sort((left, right) => Number(left.rank || 0) - Number(right.rank || 0));
-  // Ana sayfa widget'ı kompakt: yalnızca ilk 6 takım (app.js#renderStandingsTable
-  // ile birebir aynı kural). `total` yine TAM takım sayısı — bölge sınıfı bu
-  // sayıya göre hesaplanır.
-  const total = sorted.length;
-  return sorted.slice(0, HOME_STANDINGS_LIMIT).map((team) => homeStandingRowHtml(team, total)).join("");
+/**
+ * ANA SAYFA "PUAN DURUMLARI" SEKMELİ WIDGET'I — 9 yarışma, her biri ilk 5
+ * takım. İşaretleme ve veri okuma `scripts/lib/standingsHomeWidget.mjs` /
+ * `scripts/lib/standingsData.mjs`de: TR ana sayfası (burada) ve EN ana
+ * sayfası (`generate-en-pages.mjs`) aynı fonksiyonu çağırır, yalnızca
+ * `locale` değişir — iki dilde sekme mekaniği ve satır işaretlemesi asla
+ * ayrışmaz.
+ */
+function staticStandingsTabsSection() {
+  return renderStandingsTabsInner("tr", "./");
 }
 
 function staticMomentumRows() {
@@ -1823,7 +1823,7 @@ writePage("index.html", {
   "league-directory": leagueDirectoryHtml(),
   "radar-signals": signalCards(),
   "team-radar": topTeams.slice(0, 4).map(staticTeamCard).join(""),
-  "home-standings": staticHomeStandingRows(),
+  "standings-tabs": staticStandingsTabsSection(),
   "player-radar": trendPlayerSlot(3),
   "player-signals": playerSignalsSlot(),
   "leaders-scorers": homeLeadersScorersSlot(5),

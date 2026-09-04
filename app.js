@@ -12384,15 +12384,6 @@
     })();
 
     renderInto(
-      document.querySelector('[data-api-target="home-standings"]'),
-      "standings",
-      function (teams) {
-        return renderStandingsTable(teams, true);
-      },
-      "Puan durumu yüklenemedi"
-    );
-
-    renderInto(
       document.querySelector('[data-api-target="player-radar"]'),
       "players",
       function (players) {

@@ -29,13 +29,10 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 
 const { curatedMatches } = require("../services/providers/mockProvider.js");
-const { isAnalyzableStatus, matchState } = require("../services/matchStatus.js");
+const { isStaleAnalysisRecord, matchState } = require("../services/matchStatus.js");
 
 const ANALYSES_PATH = path.join(root, "data", "match-analyses.json");
 const PUBLIC_ANALYSES_PATH = path.join(root, "public", "data", "match-analyses.json");
-
-/** Maç öncesi sayılan analiz durumları. */
-const PRE_MATCH_STATUSES = new Set(["scheduled", "live", "halftime"]);
 
 const apply = process.argv.includes("--apply");
 
@@ -70,7 +67,7 @@ for (const record of analyses) {
   if (!match) {
     // Karşılığı olmayan kayıt: maç listesinden düşmüş olabilir. Maç öncesi
     // durumdaysa artık gösterilemez.
-    if (PRE_MATCH_STATUSES.has(recordStatus)) {
+    if (isStaleAnalysisRecord(record, match)) {
       removed.push({ key, reason: "karşılık gelen maç bulunamadı, kayıt maç öncesi durumda", recordStatus });
       continue;
     }
@@ -78,7 +75,7 @@ for (const record of analyses) {
     continue;
   }
 
-  if (isAnalyzableStatus(match) && PRE_MATCH_STATUSES.has(recordStatus)) {
+  if (isStaleAnalysisRecord(record, match)) {
     removed.push({
       key,
       reason: `maç tamamlandı (${matchState(match)}) ama kayıt hâlâ "${recordStatus}"`,

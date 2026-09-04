@@ -199,6 +199,32 @@ function isAnalyzableStatus(match) {
   return ANALYZABLE_STATES.has(matchState(match));
 }
 
+/**
+ * Maç öncesi sayılan analiz kayıt durumları (`data/match-analyses.json`).
+ * Maç bittiğinde bu durumlardan biri hâlâ takılı kalmışsa kayıt bayatlamıştır
+ * — bkz. scripts/prune-stale-match-analyses.mjs.
+ */
+const PRE_MATCH_ANALYSIS_STATUSES = new Set(["scheduled", "live", "halftime"]);
+
+/**
+ * Bir maç-öncesi analiz kaydı ARTIK GEÇERSİZ mi?
+ *
+ * Tek yerde tanımlı olmalı: hem betik (scripts/prune-stale-match-analyses.mjs,
+ * gerçek silme) hem de günlük sağlık kontrolü (services/dailyHealthCheckService.js,
+ * salt-okunur sayım) AYNI kuralı kullanmalı — biri "3 bayat kayıt" derken
+ * diğeri farklı bir eşiğe göre "0" derse rapor kendi kendiyle çelişir.
+ *
+ * `match` bulunamazsa (havuzdan düşmüş) kayıt yalnızca hâlâ maç öncesi
+ * durumdaysa bayat sayılır; bulunursa maç tamamlanmış VE kayıt hâlâ maç
+ * öncesi durumdaysa bayat sayılır.
+ */
+function isStaleAnalysisRecord(record, match) {
+  const recordStatus = String((record && record.status) || "").toLowerCase();
+  if (!PRE_MATCH_ANALYSIS_STATUSES.has(recordStatus)) return false;
+  if (!match) return true;
+  return isAnalyzableStatus(match);
+}
+
 function statusLabel(match) {
   return STATE_LABELS[matchState(match)] || STATE_LABELS.UNKNOWN;
 }
@@ -397,6 +423,7 @@ module.exports = {
   isFinishedMatch,
   isFinishedStatus,
   isLiveStatus,
+  isStaleAnalysisRecord,
   isUnplayedStatus,
   istanbulDay,
   kickoffMs,
@@ -405,6 +432,7 @@ module.exports = {
   matchDay,
   matchState,
   normalizeStatusToken,
+  PRE_MATCH_ANALYSIS_STATUSES,
   statusLabel,
   statusesOf
 };
