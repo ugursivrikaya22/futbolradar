@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-04T12:59:39.979Z",
+  "updatedAt": "2026-09-04T15:56:06.882Z",
   "items": [
     {
       "id": "auto-news-309efde513c13913e75a",
@@ -209,44 +209,18 @@
       }
     },
     {
-      "id": "auto-news-d35bb86eec5ed344c1ab",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Kamuoyuna Açıklama",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-01T14:46:03.000Z",
+      "id": "news-galatasaray-basaksehir-muhtemel-11",
+      "origin": "news.json",
+      "category": "fixture",
+      "confidence": "reported",
+      "text": "Başakşehir - Galatasaray'da muhtemel 11'ler basına yansıdı: Leao'nun yedek başlaması bekleniyor",
+      "timestamp": "2026-09-04T18:15:00+03:00",
       "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE9IVUpoWHdOZ29GdDJZd0NPQ3BvcmVMbUxuWWtOdWhrOTVHV0hXdi1Uc3c4bDA5UFpkd0Nmcm5aZXBqdWlRMWNfWmhIc2FJeGhCVnhvOGx3VUdlZzBUVjhBVFJ3WXFudUlqVzdXM21FZjJLdG92MlE?oc=5",
-        "publisher": "trabzonspor.org.tr"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-basaksehir-muhtemel-11"
       },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-ef623c49afde266feeec",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Tüpraş Stadyumu 2026-27 Sezonu Kombine Son Satış Dönemi Hakkında Bilgilendirme",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-01T14:16:14.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE40X1RCNWMwWVc0ODctdlZ1VmoxX3YxMzItN0FOeW5fNXRGUEJ4Z1dzXzhkaTVXWUZncFdjT0JsSDRfUlVTUk5ObXJxVU1SclRTX1l1ZEpoaGd3RldFc0ww?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
+      "team": "Galatasaray",
+      "expiresAt": "2026-09-04T23:00:00+03:00"
     },
     {
       "id": "news-besiktas-samsunspor-serdal-adali-b66661d9",
