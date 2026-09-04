@@ -72,6 +72,11 @@ function metaContent(html, name) {
 function expectedCanonical(relativePath) {
   const normalized = relativePath.split(path.sep).join("/");
   if (normalized === "index.html") return `${DOMAIN}/`;
+  // mac-seo/<slug>.html tek istisna: vercel.json'daki `/:slug([a-z0-9-]+-maci)`
+  // kuralı bu dizini kaldırıp sayfayı kök düzeyde, uzantısız yayınlıyor
+  // (bkz. scripts/generate-match-seo-pages.mjs) — "sade ve kalıcı" URL isteği
+  // gereği dosya yolu ile yayınlanan adres burada kasıtlı olarak ayrışıyor.
+  if (normalized.startsWith("mac-seo/")) return `${DOMAIN}/${normalized.slice("mac-seo/".length).replace(/\.html$/, "")}`;
   return `${DOMAIN}/${normalized}`;
 }
 
