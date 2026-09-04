@@ -3331,3 +3331,48 @@
     setupLeadersTabs();
   }
 })();
+
+/**
+ * ANA SAYFA "PUAN DURUMLARI" SEKMELERİ — `leaders-tabs`teki aynı
+ * `aria-selected` senkronuna EK olarak, seçilen sekmeyi `localStorage`'a
+ * yazar. Sayfa yeniden yüklendiğinde ilk boyamadan ÖNCE çalışan satır içi
+ * betik (bkz. `scripts/lib/standingsHomeWidget.mjs`) bu değeri okuyup doğru
+ * radyoyu `checked` yapar — bu betik yalnızca sonraki değişiklikleri
+ * dinler ve `aria-selected`i günceller, ilk seçimi belirlemez.
+ */
+(function () {
+  var STORAGE_KEY = "futbolradar-standings-tab";
+
+  function setupStandingsTabs() {
+    var radios = document.querySelectorAll(".standings-tabs__radio");
+    if (!radios.length) return;
+
+    function sync() {
+      Array.prototype.forEach.call(radios, function (radio) {
+        var label = document.getElementById(
+          "standings-tablabel-" + radio.id.replace("standings-tab-", "")
+        );
+        if (label) label.setAttribute("aria-selected", radio.checked ? "true" : "false");
+      });
+    }
+
+    Array.prototype.forEach.call(radios, function (radio) {
+      radio.addEventListener("change", function () {
+        sync();
+        if (!radio.checked) return;
+        try {
+          window.localStorage.setItem(STORAGE_KEY, radio.id.replace("standings-tab-", ""));
+        } catch (error) {
+          /* localStorage kapalıysa yalnızca hatırlama devre dışı kalır. */
+        }
+      });
+    });
+    sync();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupStandingsTabs);
+  } else {
+    setupStandingsTabs();
+  }
+})();

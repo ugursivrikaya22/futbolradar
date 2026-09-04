@@ -1,0 +1,69 @@
+name: FutbolRadar Daily Health Check
+
+# Günlük bakım: bayat maç kartlarını ve üç günden eski ticker öğelerini
+# temizler (bu depoya commit'e dönüşür), sonra üretimdeki /api/daily-health-check
+# uç noktasını (sır ile korunuyor) çağırarak sayfa erişilebilirliğini ve
+# canlı skor gecikmesini ölçer. Neden ikisi ayrı: scripts/daily-health-check.mjs
+# başlığındaki "neden 1-2 yerel, 3 uzak" notuna bakın.
+#
+# 05:05 TSİ SEÇİLDİ, 05:00 DEĞİL. match-analysis.yml TAM OLARAK 05:00 ve
+# 05:20 TSİ'de (0 2 * * * / 20 2 * * *) main'e commit atıyor; aynı dakikada
+# ikinci bir iş başlatmak yalnızca ci-commit-push.mjs'nin rebase-yeniden
+# deneme mekanizmasını gereksiz yere zorlar. Beş dakikalık kayma, günlük
+# tam güncellemenin verisi tazeyken bu kontrolün onun ARDINDAN çalışmasını
+# da sağlıyor.
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "5 2 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: futbolradar-daily-health-check
+  cancel-in-progress: false
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SITE_URL: https://www.futbolradar.com
+      DAILY_HEALTH_CHECK_SECRET: ${{ secrets.DAILY_HEALTH_CHECK_SECRET }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Lint (scripts/qa.mjs)
+        run: npm run lint
+
+      - name: Run daily health check (cleanup + remote report)
+        id: health
+        continue-on-error: true
+        run: node scripts/daily-health-check.mjs --apply
+
+      - name: Commit cleanup and report if anything changed
+        if: always()
+        run: |
+          node scripts/ci-commit-push.mjs "ci(health): daily health check - stale match cards, ticker, latency report"
+
+      - name: Preserve report as an artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-health-check-${{ github.run_id }}
+          path: data/daily-health-check-report.json
+          if-no-files-found: ignore
+          retention-days: 30
+
+      - name: Fail the workflow if a real check failed
+        if: always() && steps.health.outcome == 'failure'
+        run: exit 1
